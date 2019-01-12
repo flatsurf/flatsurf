@@ -1,5 +1,5 @@
 #ifndef DEFS_H
-#define DEF_H
+#define DEFS_H
 
 #include <complex>
 
