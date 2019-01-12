@@ -2,6 +2,7 @@
 #define DEFS_H
 
 #include <complex>
+#include <string>
 
 
 //RETURN HERE
@@ -66,5 +67,8 @@ extern "C" {
 #include <pvm3.h>
 }
 #endif
+
+void ERR_RET(const std::string &s);
+void ERR_RET2(const std::string &s,int t);
 
 #endif    // DEFS_H
