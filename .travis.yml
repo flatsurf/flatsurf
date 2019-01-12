@@ -1,0 +1,39 @@
+language: generic
+  
+os:
+    - linux
+
+install:
+    # Install Miniconda.
+    - |
+      MINICONDA_URL="https://repo.continuum.io/miniconda"
+      if [ $TRAVIS_OS_NAME = linux ]; then
+          MINICONDA_FILE="Miniconda3-latest-Linux-x86_64.sh"
+      elif [ $TRAVIS_OS_NAME = osx ]; then
+          MINICONDA_FILE="Miniconda3-latest-MacOSX-x86_64.sh"
+      fi
+      curl -L -O "${MINICONDA_URL}/${MINICONDA_FILE}"
+      bash $MINICONDA_FILE -b
+
+    # Configure conda.
+    - |
+      source $HOME/miniconda3/bin/activate root
+      conda config --remove channels defaults
+      conda config --add channels defaults
+      conda config --add channels conda-forge
+      conda config --set show_channel_urls true
+      conda info
+
+    - conda create -n test --yes --quiet ntl mpfr boost-cpp
+    - source activate test
+    - export LDFLAGS="-L$CONDA_PREFIX/lib"
+    - export CPPFLAGS="-I$CONDA_PREFIX/include"
+    - export CXXFLAGS="-std=c++11"
+
+after_failure:
+    - cat config.log
+
+script:
+    - ./bootstrap
+    - ./configure
+    - make -j4 distcheck
