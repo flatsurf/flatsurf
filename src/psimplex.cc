@@ -1,12 +1,96 @@
 #include "two_complex.h"
 
+/**
+* Title               : Convert Decimal to Roman Numeral (Convert Decimal to Roman Numeral.cpp)
+* Program Description : Write a C++ program to Convert Decimal Number to Roman Numeral.
+* Author              : robustprogramming.com
+* Interface           : Console
+* IDE                 : Code::Blocks 13.12
+* Operating System    : Windows 8.1
+*/
+
 #include<iostream>
 
 using namespace std;
 
 string roman_numeral(int decimalNumber)
 {
-    throw std::logic_error("roman_numeral: The implementation of this function had to be removed since it's source was probably not GPL compatible.");
+	int j;   // Counter Variable
+	int m;   // Numerical Value 1000
+	int d;   // Numerical Value 500
+	int c;   // Numerical Value 100
+	int l;   // Numerical Value 50
+	int x;   // Numerical Value 10
+	int ix;  // Numerical Value 9
+	int v;   // Numerical Value 5
+	int iv;  // Numerical Value 4
+	int i;   // Numerical Value 1
+
+	if (decimalNumber == 0 ) {
+	    return("O");
+	}
+
+	
+	if (decimalNumber < 0)
+	{
+	    ERR_RET("roman_numeral: invalid number");
+	}
+	m = decimalNumber / 1000;
+	decimalNumber = decimalNumber % 1000;
+
+	d = decimalNumber / 500;
+	decimalNumber = decimalNumber % 500;
+
+	c = decimalNumber / 100;
+	decimalNumber = decimalNumber % 100;
+
+	l = decimalNumber / 50;
+	decimalNumber = decimalNumber % 50;
+
+	x = decimalNumber / 10;
+	decimalNumber = decimalNumber % 10;
+
+	ix = decimalNumber / 9;
+	decimalNumber = decimalNumber % 9;
+
+	v = decimalNumber / 5;
+	decimalNumber = decimalNumber % 5;
+
+	iv = decimalNumber / 4;
+	decimalNumber = decimalNumber % 4;
+
+	i = decimalNumber;
+
+	std::stringstream ss;
+	
+	for (j = 1; j <= m; j++)
+		ss << "M";
+
+	for (j = 1; j <= d; j++)
+		ss << "D";
+
+	for (j = 1; j <= c; j++)
+		ss << "C";
+
+	for (j = 1; j <= l; j++)
+		ss << "L";
+
+	for (j = 1; j <= x; j++)
+		ss << "X";
+
+	for (j = 1; j <= ix; j++)
+		ss << "IX";
+
+	for (j = 1; j <= v; j++)
+		ss << "V";
+
+	for (j = 1; j <= iv; j++)
+		ss << "IV";
+
+	for (j = 1; j <= i; j++)
+		ss << "I";
+
+	return ss.str();
 }
 
 
@@ -403,20 +487,20 @@ void PFace::DrawCylinders(my_ostream& output_stream,COORD scale_factor)
     tFaces.clear();
     tFaces.push_back(tmp);
 
-    out_s << "Face " << s->id() << endl;
-    out_s <<"tmp=";
-    tmp.Print(out_s);
+    std::cout << "Face " << s->id() << endl;
+    std::cout <<"tmp=";
+    tmp.Print(std::cout);
 
     
-    out_s << "Segments: ";
+    std::cout << "Segments: ";
     for(SegmentListIter i = s->segments_to_draw.begin();
 	i!=s->segments_to_draw.end(); i++) {
 	Point q1 = p+(*i).head*scale_factor;
 	Point q2 = p+(*i).tail*scale_factor;
 
-	out_s << q1 << q2 << " cyl_on_left =" << i->cyl_on_left << "; ";
+	std::cout << q1 << q2 << " cyl_on_left =" << i->cyl_on_left << "; ";
     }
-    out_s << endl;
+    std::cout << endl;
 
     
 
@@ -428,7 +512,7 @@ void PFace::DrawCylinders(my_ostream& output_stream,COORD scale_factor)
 	// find tFace containing q1
 	PointListIter k1;
 
-	out_s << "q1=" << q1 <<endl;
+	std::cout << "q1=" << q1 <<endl;
 	for ( j = tFaces.begin(); j!= tFaces.end(); j++) {
 	    k1 = (*j).FindPoint(q1);
 	    if ( k1 != (*j).verts.end() ) {
@@ -494,20 +578,20 @@ void PFace::DrawCylinders(my_ostream& output_stream,COORD scale_factor)
 	tFaces.push_back(ntf[0]);
 	tFaces.push_back(ntf[1]);
 
-	out_s << "Finished Segment. Current tFaces:" << endl;
+	std::cout << "Finished Segment. Current tFaces:" << endl;
 	
 	for (tFaceListIter j = tFaces.begin(); j!= tFaces.end(); j++) {
-	    j->Print(out_s);
+	    j->Print(std::cout);
 	}
 
     }
 
 
 
-    out_s << "Final tFaces: ";
+    std::cout << "Final tFaces: ";
 
     for (tFaceListIter j = tFaces.begin(); j!= tFaces.end(); j++) {
-	j->Print(out_s);
+	j->Print(std::cout);
     }
     
 
@@ -580,7 +664,7 @@ bool Face::intersects( Point pb, Point pv)
     for(OEdgeIter k = oedges.begin(); k != oedges.end(); k++ ) {
 	if ( colinear( pv, (*k).vec_cx() ) ) {
 
-//	    out_s << "Parallel: " << pb <<"--" << pb+pv << 
+//	    std::cout << "Parallel: " << pb <<"--" << pb+pv << 
 //		(*k).headOffset<Point>() << "--" << (*k).headOffset<Point>() +
 //		(*k).vec_cx() << "\n";
 
@@ -588,7 +672,7 @@ bool Face::intersects( Point pb, Point pv)
 	    Point e_ort = (*k).headOffset<Point>() - Dot((*k).headOffset<Point>(),
 						       pv)*pv/norm(pv);
 
-//	    out_s << "p_ort: " << p_ort << " e_ort " << e_ort;
+//	    std::cout << "p_ort: " << p_ort << " e_ort " << e_ort;
 
 	    if( abs(p_ort - e_ort) > 5*EPSILON ) {
 		
@@ -623,7 +707,7 @@ bool Face::intersects( Point pb, Point pv)
 	if( intersect_segment_interior(pb, pv, (*k).headOffset<Point>(), 
 				       (*k).vec_cx(), intersection)) {
 
-	    // out_s << "Intersecting segments" << pb <<  pb+pv <<  
+	    // std::cout << "Intersecting segments" << pb <<  pb+pv <<  
 	    // 	(*k).headOffset<Point>() << 
 	    // 	(*k).headOffset<Point>() + (*k).vec_cx() << "\n"; 
 		
@@ -631,7 +715,7 @@ bool Face::intersects( Point pb, Point pv)
 	}
     }
     if (contains( pb +Point(0.5)*pv ) ) {
-//	out_s << "contains" << pb+0.5*pv << "\n";
+//	std::cout << "contains" << pb+0.5*pv << "\n";
 	return(true);
     }
     return(false);
@@ -644,13 +728,13 @@ bool Face::intersects(FacePtr f, Point offset)
     
 //    fprintf(out_f,"Face F%d: ",this->id());
 //    for ( OEdgeIter k = oedges.begin(); k!= oedges.end(); k++ ) {
-//	out_s << (*k).headOffset<Point>() << " ";
+//	std::cout << (*k).headOffset<Point>() << " ";
 //    }
 //    fprintf(out_f,"\n");
 
 //    fprintf(out_f,"Face F%d: ",f->id());
 //    for ( OEdgeIter k = f->oedges.begin(); k!= f->oedges.end() ; k++ ) {
-//	out_s << (*k).headOffset<Point>() +offset;
+//	std::cout << (*k).headOffset<Point>() +offset;
 //    }
 //    fprintf(out_f,"\n");
 
@@ -662,23 +746,23 @@ bool Face::intersects(FacePtr f, Point offset)
 		       (*k).vec_cx()) ) {
 //	    fprintf(out_f,"Intersects: F%d F%d because of E%d", 
 //		   this->id(), f->id(), (*k).id());
-//	    out_s << " Offset: " << offset;
-//	    out_s << " Edge :" << (*k).headOffset<Point>()+offset << (*k).vec_cx() << endl;
+//	    std::cout << " Offset: " << offset;
+//	    std::cout << " Edge :" << (*k).headOffset<Point>()+offset << (*k).vec_cx() << endl;
 	    return(true);
 	}
     }
     if( this->contains( offset + f->barycenter() ) ) {
 //	fprintf(out_f,"F%d contains F%d", this->id(), f->id());
-//	out_s << " Offset " << offset <<"\n";
+//	std::cout << " Offset " << offset <<"\n";
 	return(true);
     }
     if( f->contains(-offset+this->barycenter() )) {
 //	fprintf(out_f,"F%d contains F%d", f->id(), this->id()); 
-//	out_s << " (-)Offset " << offset <<"\n";
+//	std::cout << " (-)Offset " << offset <<"\n";
 	return(true);
     }
 //    fprintf(out_f,"Do not Intersect: F%d F%d", this->id(), f->id());
-//    out_s << " Offset " << offset << "\n";
+//    std::cout << " Offset " << offset << "\n";
     return(false);
 
 }

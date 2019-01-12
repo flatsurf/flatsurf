@@ -197,12 +197,12 @@ UEdgePtr TwoComplex::FindMatchingEdge(UEdgePtr ue)
 
 
 /*
-   S->PrintAll(out_s);
+   S->PrintAll(std::cout);
 
-   out_s << endl;
+   std::cout << endl;
 
-   f->Print(out_s); out_s << endl;
-   e->Print(out_s); out_s << " " << endl;
+   f->Print(std::cout); std::cout << endl;
+   e->Print(std::cout); std::cout << " " << endl;
    e->vec().Check();
 */ 
 
@@ -251,8 +251,8 @@ void TwoComplex::CompleteSurface()
     UEdgePtrIter i;
 
     if ( verbose >= 1 ) {
-	out_s << "In CompleteSurface" << endl;
-	out_s << flush;
+	std::cout << "In CompleteSurface" << endl;
+	std::cout << flush;
     }
 
 

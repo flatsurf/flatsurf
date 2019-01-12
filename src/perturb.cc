@@ -8,7 +8,7 @@ void TwoComplex::PerturbConjugates(COORD max_perturb)
 {
     int n = Params::nbr_params();
 
-    out_s << "max_perturb = " << max_perturb << endl;
+    std::cout << "max_perturb = " << max_perturb << endl;
 
     vector<COORD> perturb;
 
@@ -35,7 +35,7 @@ void TwoComplex::PerturbConjugates(COORD max_perturb)
 	    continue;
 	}
 
-	out_s << perturb[0];
+	std::cout << perturb[0];
 
 	Params::AddParams(1,&(perturb[count]));
 	n++;
@@ -172,7 +172,7 @@ void TwoComplex::PerturbAll(COORD max_perturb)
        i++;
    }
 
-//   out_s <<    X;
+//   std::cout <<    X;
 
 
 
@@ -227,7 +227,7 @@ void TwoComplex::PerturbAll(COORD max_perturb)
    }
    
    for ( i=1; i <= N; i++ ) {
-       out_s << "Edge " << i << " moving by " << delta_array[i] << "\n";
+       std::cout << "Edge " << i << " moving by " << delta_array[i] << "\n";
        uedge_array[i]->ue_vecQ.cx += delta_array[i];
    }
    

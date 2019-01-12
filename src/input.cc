@@ -67,11 +67,11 @@ void TwoComplex::BuildTriangle(int alpha, int beta, int gamma)
 
 //    COORD c = MY_PI - a - b; 
 
-//    out_s << "check a: " << cosl(a)*cosl(a) + sinl(a)*sinl(a) - 1 << endl;
-//    out_s << "check b: " << cos(b)*cos(b) + sin(b)*sin(b) - 1 << endl;
-//    out_s << "check c: " << cos(c)*cos(c) + sin(c)*sin(c) - 1 << endl;
+//    std::cout << "check a: " << cosl(a)*cosl(a) + sinl(a)*sinl(a) - 1 << endl;
+//    std::cout << "check b: " << cos(b)*cos(b) + sin(b)*sin(b) - 1 << endl;
+//    std::cout << "check c: " << cos(c)*cos(c) + sin(c)*sin(c) - 1 << endl;
 
-//    out_s << "check PI: " << sinl(MY_PI) << endl; 
+//    std::cout << "check PI: " << sinl(MY_PI) << endl; 
 
 
     Point p = Point(1/tan(a) + 1/tan(b), 0);
@@ -83,18 +83,18 @@ void TwoComplex::BuildTriangle(int alpha, int beta, int gamma)
     p /= factor;
     q /= factor;
 
-    out_s << "Checking " << q_alg.tocomplex() - q << " " << p_alg.tocomplex() - p;
+    std::cout << "Checking " << q_alg.tocomplex() - q << " " << p_alg.tocomplex() - p;
 
     
-//   out_s << "p = " << abs(p) << " q = " << abs(q) << " p-q = " << abs(p-q) 
+//   std::cout << "p = " << abs(p) << " q = " << abs(q) << " p-q = " << abs(p-q) 
 //	 << endl;
 
-//    out_s << "check 1: " << abs(q-p)/sin(a) - abs(q)/sin(b) << endl; 
-//    out_s << "check 2: " << abs(q-p)/sin(a) - abs(p)/sin(c) << endl; 
+//    std::cout << "check 1: " << abs(q-p)/sin(a) - abs(q)/sin(b) << endl; 
+//    std::cout << "check 2: " << abs(q-p)/sin(a) - abs(p)/sin(c) << endl; 
 
 
  
-//    out_s << "check 3: " << abs(p)*abs(p)+abs(q)*abs(q)
+//    std::cout << "check 3: " << abs(p)*abs(p)+abs(q)*abs(q)
 //          -2*abs(p)*abs(q)*cos(a)-abs(q-p)*abs(q-p) << endl; 
 
     vector<algebraicQ> p_alg_v;
@@ -111,7 +111,7 @@ void TwoComplex::BuildTriangle(int alpha, int beta, int gamma)
     BigPointQ  bp(p_algt);
     BigPointQ  bq(q_algt);
 
-    out_s << "Checking " << bq.cx - q << " " << bp.cx - p << endl;
+    std::cout << "Checking " << bq.cx - q << " " << bp.cx - p << endl;
 
 
     VertexPtr v0 = AddVertex(UNDEFINED);
@@ -158,28 +158,28 @@ always going to be (1,0).
     COORD c = 2*MY_PI*int_angles[2]/denom;
     COORD d = 2*MY_PI - a - b - c;
 
-    out_s << "a =  "<< a << " b = " << b << " c= " << c << " d=" <<  d << endl; 
+    std::cout << "a =  "<< a << " b = " << b << " c= " << c << " d=" <<  d << endl; 
 
 
     COORD a1_max = MY_PI - b; 
     COORD a2_max = MY_PI - d;
     COORD a1_min = a - a2_max;
 
-    out_s << "a1_min = " << a1_min << " a1_max = " << a1_max << endl;
+    std::cout << "a1_min = " << a1_min << " a1_max = " << a1_max << endl;
     
 
     COORD a1 = a1_min/MY_PI+a1_max*(1.0-1/MY_PI); /*hack*/
-    out_s << "a1 = " << a1 << endl; 
+    std::cout << "a1 = " << a1 << endl; 
     COORD a2 = a - a1;
 
     COORD c1 = MY_PI - a1 - b;
     COORD c2 = c - c1; 
     /*
-    out_s << "check a: " << cos(a)*cos(a) + sin(a)*sin(a) - 1 << endl;
-    out_s << "check b: " << cos(b)*cos(b) + sin(b)*sin(b) - 1 << endl;
-    out_s << "check c: " << cos(c)*cos(c) + sin(c)*sin(c) - 1 << endl;
+    std::cout << "check a: " << cos(a)*cos(a) + sin(a)*sin(a) - 1 << endl;
+    std::cout << "check b: " << cos(b)*cos(b) + sin(b)*sin(b) - 1 << endl;
+    std::cout << "check c: " << cos(c)*cos(c) + sin(c)*sin(c) - 1 << endl;
 
-    out_s << "check PI: " << sin(MY_PI) << endl; 
+    std::cout << "check PI: " << sin(MY_PI) << endl; 
     */
 
     p = Point(1/tan(a1) + 1/tan(b), 0);
@@ -197,28 +197,28 @@ always going to be (1,0).
     r = r/factor;
 
 /*
-    out_s << "angle a1:" << true_angle(p,q) - a1 << endl;
-    out_s << "angle a2:" << angle(tmp1,tmp2) -a2 << endl;
-    out_s << "angle c2:" << angle(tmp1-tmp2, -tmp2) - c2 << endl;
+    std::cout << "angle a1:" << true_angle(p,q) - a1 << endl;
+    std::cout << "angle a2:" << angle(tmp1,tmp2) -a2 << endl;
+    std::cout << "angle c2:" << angle(tmp1-tmp2, -tmp2) - c2 << endl;
 */
-    out_s << "angle a check: " << true_angle(p,r) - a << endl;
-    out_s << "angle b check: " << true_angle(q-p, -p) - b << endl;
-    out_s << "angle c check: " << true_angle(r-q, q-p) - c << endl;
-    out_s << "angle d check: " << true_angle(-r, q-r) - d << endl;
+    std::cout << "angle a check: " << true_angle(p,r) - a << endl;
+    std::cout << "angle b check: " << true_angle(q-p, -p) - b << endl;
+    std::cout << "angle c check: " << true_angle(r-q, q-p) - c << endl;
+    std::cout << "angle d check: " << true_angle(-r, q-r) - d << endl;
     
 
-    out_s << "p = " << abs(p) << " q = " << abs(q) << " p-q = " << abs(p-q) 
+    std::cout << "p = " << abs(p) << " q = " << abs(q) << " p-q = " << abs(p-q) 
 	 << endl;
 
-    out_s << "p = " << p << " q = " << q << " r = " << r << endl;
+    std::cout << "p = " << p << " q = " << q << " r = " << r << endl;
 
 
-//    out_s << "check 1: " << abs(q-p)/sin(a) - abs(q)/sin(b) << endl; 
-//    out_s << "check 2: " << abs(q-p)/sin(a) - abs(p)/sin(c) << endl; 
+//    std::cout << "check 1: " << abs(q-p)/sin(a) - abs(q)/sin(b) << endl; 
+//    std::cout << "check 2: " << abs(q-p)/sin(a) - abs(p)/sin(c) << endl; 
 
 
  
-//    out_s << "check 3: " << abs(p)*abs(p)+abs(q)*abs(q)
+//    std::cout << "check 3: " << abs(p)*abs(p)+abs(q)*abs(q)
 //          -2*abs(p)*abs(q)*cos(a)-abs(q-p)*abs(q-p) << endl; 
     
 
@@ -252,7 +252,7 @@ void TwoComplex::BuildQuad(int alpha, int beta, int gamma, int delta)
     }
     assert(max_loc >= 0);
     
-    out_s << "max loc = " << max_loc << endl;
+    std::cout << "max loc = " << max_loc << endl;
     /* cyclically permute until a is the biggest */
     
     int tmp2[4];
@@ -268,7 +268,7 @@ void TwoComplex::BuildQuad(int alpha, int beta, int gamma, int delta)
     gamma = tmp2[2];
     delta = tmp2[3];
 
-    out_s << "alpha =  "<< alpha << " beta = " << beta << " gamma = " << gamma << " delta =" <<  delta << endl; 
+    std::cout << "alpha =  "<< alpha << " beta = " << beta << " gamma = " << gamma << " delta =" <<  delta << endl; 
 
     Point p, q, r;
 
@@ -281,7 +281,7 @@ void TwoComplex::BuildQuad(int alpha, int beta, int gamma, int delta)
     algebraicQ zero_F = algebraicQ(NumberField<bigrat>::F);
 
     Point t_cx = r*zeta.pow(-alpha).tocomplex();
-    out_s << "Imaginary of t_cx = " << t_cx.imag() << endl;
+    std::cout << "Imaginary of t_cx = " << t_cx.imag() << endl;
 
     
     COORD t = t_cx.real(); // match MakeRealQuad, r = t zeta^{alpha}
@@ -302,8 +302,8 @@ void TwoComplex::BuildQuad(int alpha, int beta, int gamma, int delta)
     alg_tQ p_algt(p_alg_v);
     alg_tQ r_algt(r_alg_v);
 
-    out_s << "p_algt = " << p_algt << endl;
-    out_s << "r_algt = " << r_algt << endl;
+    std::cout << "p_algt = " << p_algt << endl;
+    std::cout << "r_algt = " << r_algt << endl;
 
     algebraicQ r0_alg = (zeta.pow(-beta) - zeta.pow(beta))/(zeta.pow(gamma) - zeta.pow(-gamma)); 
     algebraicQ r1_alg = (zeta.pow(alpha+beta) - zeta.pow(-alpha-beta))/(zeta.pow(gamma) - zeta.pow(-gamma)); 
@@ -324,18 +324,18 @@ void TwoComplex::BuildQuad(int alpha, int beta, int gamma, int delta)
     Point q_alt = q_alg_v[0].tocomplex() + t*q_alg_v[1].tocomplex();
     Point r_alt = r_alg_v[0].tocomplex() + t*r_alg_v[1].tocomplex();
 
-    out_s << "Checking p_alt " << p_alt - p << endl;
-    out_s << "Checking q_alt " << q_alt - q << endl;
-    out_s << "Checking r_alt " << r_alt - r << endl;
+    std::cout << "Checking p_alt " << p_alt - p << endl;
+    std::cout << "Checking q_alt " << q_alt - q << endl;
+    std::cout << "Checking r_alt " << r_alt - r << endl;
 
     
     BigPointQ bp(p_algt);
     BigPointQ bq(q_algt);
     BigPointQ br(r_algt);
     
-    out_s << "Checking p_algt " << bp.cx - p << endl;
-    out_s << "Checking q_algt " << bq.cx - q << endl;
-    out_s << "Checking r_algt " << br.cx - r << endl;
+    std::cout << "Checking p_algt " << bp.cx - p << endl;
+    std::cout << "Checking q_algt " << bq.cx - q << endl;
+    std::cout << "Checking r_algt " << br.cx - r << endl;
     
 
 
@@ -707,11 +707,11 @@ void TwoComplex::read_face_line(FILE *fp,int line_number)
 
 //    COORD c = MY_PI - a - b; 
 
-//    out_s << "check a: " << cosl(a)*cosl(a) + sinl(a)*sinl(a) - 1 << endl;
-//    out_s << "check b: " << cos(b)*cos(b) + sin(b)*sin(b) - 1 << endl;
-//    out_s << "check c: " << cos(c)*cos(c) + sin(c)*sin(c) - 1 << endl;
+//    std::cout << "check a: " << cosl(a)*cosl(a) + sinl(a)*sinl(a) - 1 << endl;
+//    std::cout << "check b: " << cos(b)*cos(b) + sin(b)*sin(b) - 1 << endl;
+//    std::cout << "check c: " << cos(c)*cos(c) + sin(c)*sin(c) - 1 << endl;
 
-//    out_s << "check PI: " << sinl(MY_PI) << endl; 
+//    std::cout << "check PI: " << sinl(MY_PI) << endl; 
 
     Point p = Point(0, -1/tan(a) - 1/tan(b));
     Point q = Point(1.0, -1/tan(a));
@@ -722,15 +722,15 @@ void TwoComplex::read_face_line(FILE *fp,int line_number)
       q_alg(qtemp, S->field);
     
     
-//    out_s << "p = " << abs(p) << " q = " << abs(q) << " p-q = " << abs(p-q) 
+//    std::cout << "p = " << abs(p) << " q = " << abs(q) << " p-q = " << abs(p-q) 
 //	 << endl;
 
-//    out_s << "check 1: " << abs(q-p)/sin(a) - abs(q)/sin(b) << endl; 
-//    out_s << "check 2: " << abs(q-p)/sin(a) - abs(p)/sin(c) << endl; 
+//    std::cout << "check 1: " << abs(q-p)/sin(a) - abs(q)/sin(b) << endl; 
+//    std::cout << "check 2: " << abs(q-p)/sin(a) - abs(p)/sin(c) << endl; 
 
 
  
-//    out_s << "check 3: " << abs(p)*abs(p)+abs(q)*abs(q)
+//    std::cout << "check 3: " << abs(p)*abs(p)+abs(q)*abs(q)
 //          -2*abs(p)*abs(q)*cos(a)-abs(q-p)*abs(q-p) << endl; 
     
 

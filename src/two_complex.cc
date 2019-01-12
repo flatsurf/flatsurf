@@ -634,20 +634,6 @@ void TwoComplex::issueFinalReport(Summary& fsm, ostream& out,
 
 
 
-void ERR_RET(const char *s)
-{
-    fprintf(out_f,"%s\n",s);
-    fflush(out_f); 
-    abort();
-}
-
-void ERR_RET2(const char *s,int t)
-{
-    fprintf(out_f,"%s %d\n",s,t);
-    fflush(out_f); 
-    abort();
-}
-
 void TwoComplex::check_algebraicQ()
 {
   for(UEdgePtrIter i = uedges.begin(); i!= uedges.end(); i++)
@@ -690,7 +676,7 @@ int64_t TwoComplex::get_global_denom()
 	    }
 	}
     }
-    out_s << "Clearing denominators: multiplying by " << d << endl; 
+    std::cout << "Clearing denominators: multiplying by " << d << endl; 
     
     if (! d.fits_sint_p() ) {
 	ERR_RET("Denominator too large");

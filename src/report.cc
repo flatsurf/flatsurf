@@ -107,7 +107,7 @@ void VertPattern::add(Dir<Point>& d, saddle_t id)
 	j = round_to_int(a/MY_PI);
 	if ( abs(j*MY_PI - a) > EPSILON ) {
 	  smry.bad_angle_count++;
-//	  out_s << "angle = " << abs(angle(d.vec, base.vec)) -MY_PI << " " 
+//	  std::cout << "angle = " << abs(angle(d.vec, base.vec)) -MY_PI << " " 
 //		<< abs(a - j*MY_PI) << " at V" << base.v->id(); 
 
 
@@ -115,18 +115,18 @@ void VertPattern::add(Dir<Point>& d, saddle_t id)
 //	  fprintf(out_f,"angle = %lg %lg at V%d ", 
 //		  abs(angle(d.vec, base.vec)) -MY_PI, 
 //		  abs(a - j*MY_PI),base.v->id()); 
-//	    out_s << " " << base.vec <<"\n";
+//	    std::cout << " " << base.vec <<"\n";
 //	    throw vert_bad_angle(abs(j*MY_PI-a));
 //	    ERR_RET("VertPattern::add: bad angle");
 	}
 	
 	if( j == d.v->int_angle ) {
-	    out_s << "**WARNING: j == d.v->int_angle" << endl << flush;
+	    std::cout << "**WARNING: j == d.v->int_angle" << endl << flush;
 	    j = 0; 
 	}
 
 	if ( j >= d.v->int_angle ) {
-	    out_s << "a = " << a << " j = " << j 
+	    std::cout << "a = " << a << " j = " << j 
 		  << " diff = " << abs(j*MY_PI-a) 
 		  << " V" << d.v->id() 
 		  << " int angle = " << d.v->int_angle << endl << flush;
@@ -690,7 +690,7 @@ void SaddleConf::calculate_cylinders()
 		S->FindCrossSaddle(cyl_Dir, cross_saddle_Dir);
 
 		while( cross_saddle_Dir.v->euclidean ) {
-		    out_s << "Warining: CrossSaddle Euclidean Vertex" << endl;
+		    std::cout << "Warining: CrossSaddle Euclidean Vertex" << endl;
 
 		    Dir<Point> new_cross_saddle_Dir;
 		    
@@ -800,7 +800,7 @@ void SaddleConf::DrawCylinders()
 	int vert = find_vert(cyl[k].cross_saddle.v);
 	COORD a = vp[vert].base.AngleF(cyl[k].cross_saddle);
     
-//    out_s << "a/MY_PI = " << a/MY_PI << endl;
+//    std::cout << "a/MY_PI = " << a/MY_PI << endl;
 
 #ifdef USE_QUAD
 	int j = floor(a/MY_PI).convert_to<int>();
@@ -809,7 +809,7 @@ void SaddleConf::DrawCylinders()
 #endif
 
 					  
-//    out_s << "j = " << j << endl;
+//    std::cout << "j = " << j << endl;
 				      
 				      
         if ( j >= vp[vert].base.v->int_angle ) {
@@ -893,18 +893,18 @@ void SaddleConf::check_cross_saddle(COORD cyl_len, Dir<Point> cross_saddle_Dir)
     int vert = find_vert(cross_saddle_Dir.v);
     COORD a = vp[vert].base.AngleF(cross_saddle_Dir);
 
-//    out_s << "a/MY_PI = " << a/MY_PI << endl;
+//    std::cout << "a/MY_PI = " << a/MY_PI << endl;
 
 #ifdef USE_QUAD
     int j = floor(a/MY_PI).convert_to<int>();
 #else
     int j = static_cast<int>(floor(a/MY_PI));
 #endif
-//    out_s << "j = " << j << endl;
+//    std::cout << "j = " << j << endl;
 
     if ( abs(j*MY_PI - a) > EPSILON ) {
 	smry.bad_angle_count++;
-//	  out_s << "angle = " << abs(angle(d.vec, base.vec)) -MY_PI << " " 
+//	  std::cout << "angle = " << abs(angle(d.vec, base.vec)) -MY_PI << " " 
 //		<< abs(a - j*MY_PI) << " at V" << base.v->id(); 
 
 
@@ -912,14 +912,14 @@ void SaddleConf::check_cross_saddle(COORD cyl_len, Dir<Point> cross_saddle_Dir)
 //	  fprintf(out_f,"angle = %lg %lg at V%d ", 
 //		  abs(angle(d.vec, base.vec)) -MY_PI, 
 //		  abs(a - j*MY_PI),base.v->id()); 
-//	    out_s << " " << base.vec <<"\n";
+//	    std::cout << " " << base.vec <<"\n";
 //	    throw vert_bad_angle(abs(j*MY_PI-a));
 //	    ERR_RET("VertPattern::add: bad angle");
     }
 	
     
     if ( j >= vp[vert].base.v->int_angle ) {
-	out_s << "a = " << a << " j = " << j 
+	std::cout << "a = " << a << " j = " << j 
 	      << " diff = " << abs(j*MY_PI-a) 
 	      << " V" << vp[vert].base.v->id() 
 	      << " int angle = " << vp[vert].base.v->int_angle << endl << flush;
@@ -932,21 +932,21 @@ void SaddleConf::check_cross_saddle(COORD cyl_len, Dir<Point> cross_saddle_Dir)
     int count = 0; 
 
     if ( i >= 0 ) {
-	out_s << "a = " << a << " j = " << j 
+	std::cout << "a = " << a << " j = " << j 
 	      << " diff = " << abs(j*MY_PI-a) 
 	      << " V" << vp[vert].base.v->id() 
 	      << " int angle = " << vp[vert].base.v->int_angle << endl << flush;
 
 	for(int k = 0; k < n_vp; k++ ) {
-	    out_s << 'V' << vp[k].get_v()->id() << ": "; 
-	    vp[k].print(out_s,*this);
-	    out_s << ' ';
+	    std::cout << 'V' << vp[k].get_v()->id() << ": "; 
+	    vp[k].print(std::cout,*this);
+	    std::cout << ' ';
 	}
-	out_s << endl;
+	std::cout << endl;
 
-	out_s << "a/MY_PI = " << a/MY_PI << endl;
-	out_s << "j = " << j << endl;
-	out_s << "id = " << i << endl;
+	std::cout << "a/MY_PI = " << a/MY_PI << endl;
+	std::cout << "j = " << j << endl;
+	std::cout << "id = " << i << endl;
 	ERR_RET("CheckCrossSaddle: bad initial saddle");
     }
     while (1) {
@@ -955,7 +955,7 @@ void SaddleConf::check_cross_saddle(COORD cyl_len, Dir<Point> cross_saddle_Dir)
 
 
 	new_cyl_len += get_length_by_id(-i); /* fix ...*/
-//	out_s << "In CheckCrossSaddle, i = " << i << " new_cyl_len = " << new_cyl_len << endl;
+//	std::cout << "In CheckCrossSaddle, i = " << i << " new_cyl_len = " << new_cyl_len << endl;
 
 
 	i = follow_left(i);
@@ -977,9 +977,9 @@ void SaddleConf::check_cross_saddle(COORD cyl_len, Dir<Point> cross_saddle_Dir)
 
     }
     if( COORD c = abs( new_cyl_len - cyl_len )> LENGTH_THRESHOLD ) {
-	vp[vert].print(out_s, *this);
-	out_s << "i = " << i <<endl;
-	out_s << c << endl; 
+	vp[vert].print(std::cout, *this);
+	std::cout << "i = " << i <<endl;
+	std::cout << c << endl; 
 	ERR_RET("CheckCrossSaddle: cylinder lengths did not match");
     }
     return;
@@ -1051,9 +1051,9 @@ void SaddleConf::print(ostream& output_stream)
 
 bool SaddleConf::isom(SaddleConf& sc, int* s_matched)
 {
-  //     this->print(out_s);
-  //   sc.print(out_s);
-  //   out_s << "\n";
+  //     this->print(std::cout);
+  //   sc.print(std::cout);
+  //   std::cout << "\n";
 
     if( this->n_vp != sc.n_vp ) {
 	return(false);
@@ -1089,10 +1089,10 @@ bool SaddleConf::isom(SaddleConf& sc, int* s_matched)
 	/*
 	  printf("*******ruled out by number of cyls***\n");
 	  printf("*********%d %d\n",this->n_cyl,sc.n_cyl);
-	  this->print(out_s);
-	  out_s << " n_cyl:" << this->n_cyl << "\n";
-	  sc.print(out_s);
-	  out_s << " n_cyl:" << sc.n_cyl << "\n";
+	  this->print(std::cout);
+	  std::cout << " n_cyl:" << this->n_cyl << "\n";
+	  sc.print(std::cout);
+	  std::cout << " n_cyl:" << sc.n_cyl << "\n";
 	*/
 	  
 	  return(false);
@@ -1428,14 +1428,14 @@ int Summary::add_new_conf(SaddleConf& sc)
      //move this to add_one_conf, but calculate cylinders first
 
 
-//     out_s << sc.get_orig_min_cyl_length() <<endl;
+//     std::cout << sc.get_orig_min_cyl_length() <<endl;
 
 //     if( abs(sc.get_orig_min_cyl_length() -4.35978) < 0.01 ) {
      if( abs(sc.get_orig_min_cyl_length() -9.04971) < 0.01 ) {
 	 // DEBUGGING TOOL
 
-	 out_s << "Found it: n_saddles = " << sc.n_saddles() << endl; 
-	 out_s << "Drawing Saddles" << endl;
+	 std::cout << "Found it: n_saddles = " << sc.n_saddles() << endl; 
+	 std::cout << "Drawing Saddles" << endl;
 
 	
 //	 sc.DrawSaddles();
@@ -1510,15 +1510,15 @@ int Summary::add_one_conf(SaddleConf& sc)
 
     
 //    assert( scf.size() == scf.size() );
-//    out_s << "----------------------\n";
+//    std::cout << "----------------------\n";
 
     for (unsigned int i = 0; i < scf.size() ; i++ ) {
-//              sc.print(out_s);
-//              scf[i].print(out_s);
-//	      out_s << endl;
+//              sc.print(std::cout);
+//              scf[i].print(std::cout);
+//	      std::cout << endl;
 
 	if ( scf[i].isom(sc, s_matched)  ) {
-//	  	    out_s << "isom" << "\n";
+//	  	    std::cout << "isom" << "\n";
 
 
 	    if ( closure ) {
@@ -1548,8 +1548,8 @@ int Summary::add_one_conf(SaddleConf& sc)
 	    
 	    if ( show_lengths || show_cyls ) {
 		if( sc.get_orig_min_saddle_length() < 0 ) {
-		    sc.print(out_s);
-		    out_s << flush; 
+		    sc.print(std::cout);
+		    std::cout << flush; 
 		    ERR_RET("original_shortest_length < 0");
 		}
 		if ( scf[i].shortest_occurence > sc.get_orig_min_saddle_length()) {
@@ -1579,7 +1579,7 @@ int Summary::add_one_conf(SaddleConf& sc)
 	    scf[i].group_count++;
 	    return(scf[i].tag);
 	} else {
-          //   out_s << "not isom" << "\n";
+          //   std::cout << "not isom" << "\n";
 	}
     }
 
@@ -1618,11 +1618,11 @@ void Summary::merge(Summary& sm2)
 	    SA.n_unassigned()); 
  
     fprintf(out_f,"merging. summary1:\n"); 
-    summary1->print(out_s, 1.0/n_slices, 1.0, S->volume(),depth);
-//    out_s << "summary 1 scf.size() = " << summary1->scf.size() <<endl;
+    summary1->print(std::cout, 1.0/n_slices, 1.0, S->volume(),depth);
+//    std::cout << "summary 1 scf.size() = " << summary1->scf.size() <<endl;
 //    fprintf(out_f,"summary2:\n"); 
-//    summary2->print(out_s, 1.0, 1.0, S->volume(), depth);
-//    out_s << "summary 2 scf.size() = " << summary2->scf.size() <<endl;; 
+//    summary2->print(std::cout, 1.0, 1.0, S->volume(), depth);
+//    std::cout << "summary 2 scf.size() = " << summary2->scf.size() <<endl;; 
 
     for (int i = 0; i < summary1->scf.size(); i++ ) {
 	int j; 
@@ -1640,7 +1640,7 @@ void Summary::merge(Summary& sm2)
 
     }
     fprintf(out_f,"merged: "); 
-    summary2->print(out_s, 1.0*SA.n_finished()/n_slices, 
+    summary2->print(std::cout, 1.0*SA.n_finished()/n_slices, 
 		    1.0*SA.n_finished()/n_slices,S->volume(), depth);
     fprintf(out_f,"-----------------------------------------\n"); 
 }
@@ -1677,13 +1677,13 @@ mpi_merge_smry(void* sm1, void* sm2, int* len, MPI_Datatype* mpi_smry_type)
 
  
     fprintf(out_f,"merging. summary1:\n"); 
-    summary1->print(out_s, 1.0/n_slices, 1.0, S->volume(),depth);
-//    out_s << "summary 1 scf.size() = " << summary1->scf.size() <<endl;
+    summary1->print(std::cout, 1.0/n_slices, 1.0, S->volume(),depth);
+//    std::cout << "summary 1 scf.size() = " << summary1->scf.size() <<endl;
 
 //    fprintf(out_f,"summary2:\n"); 
-//    summary2->print(out_s, 1.0, 1.0, S->volume(), depth);
+//    summary2->print(std::cout, 1.0, 1.0, S->volume(), depth);
 
-//    out_s << "summary 2 scf.size() = " << summary2->scf.size() <<endl;; 
+//    std::cout << "summary 2 scf.size() = " << summary2->scf.size() <<endl;; 
 
     for (int i = 0; i < summary1->scf.size(); i++ ) {
 	int j; 
@@ -1701,7 +1701,7 @@ mpi_merge_smry(void* sm1, void* sm2, int* len, MPI_Datatype* mpi_smry_type)
 
     }
     fprintf(out_f,"merged: "); 
-    summary2->print(out_s, 1.0*SA.n_finished()/n_slices, 
+    summary2->print(std::cout, 1.0*SA.n_finished()/n_slices, 
 		    1.0*SA.n_finished()/n_slices,S->volume(), depth);
     fprintf(out_f,"-----------------------------------------\n"); 
 }
@@ -1770,7 +1770,7 @@ void Summary::pack()
     pvm_pkint(&close_count,1,1);
     int scf_count = scf.size(); 
     pvm_pkint(&scf_count,1,1);
-    out_s << "scf_count = " << scf_count << endl << flush;
+    std::cout << "scf_count = " << scf_count << endl << flush;
     for( int i = 0; i < scf_count; i++ ) {
 	scf[i].pack();
     }

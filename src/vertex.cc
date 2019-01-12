@@ -67,7 +67,7 @@ void Vertex::Check()
 	return;
 
     if( (int)out_edges.size() != order ) {
-	out_s << "V" << ID <<":" << "out_edges.size = " << out_edges.size() << " order = " << order << endl;
+	std::cout << "V" << ID <<":" << "out_edges.size = " << out_edges.size() << " order = " << order << endl;
 	ERR_RET("vertex_check:vertex order does not match");
     }
     Point q = Point(0,0);
@@ -87,7 +87,7 @@ void Vertex::Check()
 	    ERR_RET("vertex check: edges not CCW");
 	}
     }
-    //    out_s << "V" << id() << ": Total vertex vec: " << q << "\n";
+    //    std::cout << "V" << id() << ": Total vertex vec: " << q << "\n";
     if ( abs(q) > EPSILON ) {
 	ERR_RET("vertex check: star of vertex does not add up");
     }
@@ -144,7 +144,7 @@ int Vertex::total_angle_over_pi()
     */
 
     if ( abs(j*MY_PI - a) > 10*EPSILON ) {
-	out_s << abs(j*MY_PI - a) << endl; 
+	std::cerr << abs(j*MY_PI - a) << endl; 
 	ERR_RET("total_angle_over_pi: bad angle");
     }
     return(j);

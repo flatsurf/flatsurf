@@ -254,17 +254,17 @@ VertexPtr TwoComplex::SweepNextLeft(const Dir<PointT>& strt, Dir<PointT>& end_Di
 	count++;
 
 	if ( verbose >= 4 ) {
-	    out_s << "SweepNextLeft: E" << D.current_edge()->id();
-	    out_s << " F"<< D.current_face()->id();
-	    out_s << " next edge E" << D._next_edge()->id();
-	    out_s <<" count = " << count; 
-	    out_s  << " cf_offset = " << D._get_cf_offset() << endl;
+	    std::cout << "SweepNextLeft: E" << D.current_edge()->id();
+	    std::cout << " F"<< D.current_face()->id();
+	    std::cout << " next edge E" << D._next_edge()->id();
+	    std::cout <<" count = " << count; 
+	    std::cout  << " cf_offset = " << D._get_cf_offset() << endl;
 	}
 
 
 	if ( D.going_to_hit() ) {
 	    if ( verbose >= 3 ) {
-		out_s << "aligned: " << D._vertex_to_hit().v->id() << endl;
+		std::cout << "aligned: " << D._vertex_to_hit().v->id() << endl;
 	    }
 	    if ( norm(D._vertex_to_hit().vec) < len2 && 
 		 D._vertex_to_hit().v->relevant() ){
@@ -279,8 +279,8 @@ VertexPtr TwoComplex::SweepNextLeft(const Dir<PointT>& strt, Dir<PointT>& end_Di
 	    CCW(D._current_vert_pos(), end_pos) && 
 	    norm(D._current_vert_pos()) < len2 ) {
 	    if ( verbose >= 3 ) {
-		out_s << "New Candidate V"<<end_Dir.v->id();
-		out_s <<" " << end_pos <<endl;
+		std::cout << "New Candidate V"<<end_Dir.v->id();
+		std::cout <<" " << end_pos <<endl;
 	    }
 	    end_pos = D._current_vert_pos();
 	    end_Dir = D.current_vert_Dir();
@@ -298,12 +298,12 @@ bool TwoComplex::NewFollowDir(const Dir<PointT>& strt, Dir<PointT>& end, COORD l
     
     while( norm(D._get_cf_offset()) < len2 ) {
 	if ( verbose >= 4 ) {
-	    out_s << "F"<<D.current_face()->id() <<  "..";
+	    std::cout << "F"<<D.current_face()->id() <<  "..";
 	}
 	
 	if ( D.going_to_hit() ) {
 	    if ( verbose >= 3 ) {
-		out_s << "NewFollowDir: aligned: " << D._vertex_to_hit().v->id() << endl;
+		std::cout << "NewFollowDir: aligned: " << D._vertex_to_hit().v->id() << endl;
 	    }
 	    if ( norm(D._vertex_to_hit().vec) < len2 && 
 		 D._vertex_to_hit().v->relevant() ){
@@ -315,7 +315,7 @@ bool TwoComplex::NewFollowDir(const Dir<PointT>& strt, Dir<PointT>& end, COORD l
 	D.advance();
     }
     if( verbose >=4 ) 
-	out_s << endl;
+	std::cout << endl;
 
     return(false);
 }
@@ -334,11 +334,11 @@ void TwoComplex::FindCrossSaddle(const Dir<PointT>& strt,
 					     D._start().vec);
 
     if ( verbose >= 4 ) {
-	out_s << "CS: E" << D.current_edge()->id();
-	out_s << " F"<< D.current_face()->id();
-	out_s << " next edge E" << D._next_edge()->id();
-	out_s <<" count = " << count;
-	out_s << " cf_offset = " << D._get_cf_offset() << endl;
+	std::cout << "CS: E" << D.current_edge()->id();
+	std::cout << " F"<< D.current_face()->id();
+	std::cout << " next edge E" << D._next_edge()->id();
+	std::cout <<" count = " << count;
+	std::cout << " cf_offset = " << D._get_cf_offset() << endl;
     }
 
 
@@ -347,11 +347,11 @@ void TwoComplex::FindCrossSaddle(const Dir<PointT>& strt,
 	count++;
 
 	if ( verbose >= 4 ) {
-	    out_s << "CS: E" << D.current_edge()->id(); 
-	    out_s << " F"<< D.current_face()->id();
-	    out_s << " next edge E" << D._next_edge()->id();
-	    out_s <<" count = " << count;
-	    out_s << " cf_offset = " << D._get_cf_offset() << endl;
+	    std::cout << "CS: E" << D.current_edge()->id(); 
+	    std::cout << " F"<< D.current_face()->id();
+	    std::cout << " next edge E" << D._next_edge()->id();
+	    std::cout <<" count = " << count;
+	    std::cout << " cf_offset = " << D._get_cf_offset() << endl;
 	}
 
 	if((d_point_line2(D._current_vert_pos(),D._start().vec) 
@@ -360,7 +360,7 @@ void TwoComplex::FindCrossSaddle(const Dir<PointT>& strt,
 	    && D.current_vert_Dir().v->relevant() ) {
 	    
 	    if( verbose>= 3 ) {
-		out_s << "CS new candidate " << D._current_vert_pos() << endl;
+		std::cout << "CS new candidate " << D._current_vert_pos() << endl;
 	    }
 	    
 	    smallest_distance2=d_point_line2(D._current_vert_pos(), 
@@ -387,7 +387,7 @@ void TwoComplex::DrawSaddle<Point>(const Dir<Point> &strt, COORD len2,int id, CO
     
     while( norm(D._get_cf_offset()) < len2 ) {
 	if ( verbose >= 4 ) {
-	    out_s << "F"<<D.current_face()->id() <<  "..";
+	    std::cout << "F"<<D.current_face()->id() <<  "..";
 	}
 	
 	Segment s;
@@ -403,7 +403,7 @@ void TwoComplex::DrawSaddle<Point>(const Dir<Point> &strt, COORD len2,int id, CO
 
 
 	if ( verbose >= 5 ) {
-	    out_s << "p1="<<p1<<" p2="<<p2 <<" q1="<<q1<<" q2="<<q2 <<endl;
+	    std::cout << "p1="<<p1<<" p2="<<p2 <<" q1="<<q1<<" q2="<<q2 <<endl;
 	}
 
 	
@@ -426,7 +426,7 @@ void TwoComplex::DrawSaddle<Point>(const Dir<Point> &strt, COORD len2,int id, CO
 
  
 	if ( verbose >= 5 ) {
-	    out_s << "r1="<<r1<<" r2="<<r2 <<endl;
+	    std::cout << "r1="<<r1<<" r2="<<r2 <<endl;
 	}
 
 
@@ -481,7 +481,7 @@ void TwoComplex::DrawSaddle<Point>(const Dir<Point> &strt, COORD len2,int id, CO
 
 	if ( D.going_to_hit() && D._vertex_to_hit().v->relevant()) {
 	    if ( verbose >= 3 ) {
-		out_s << "Draw_Saddle: aligned: " << 
+		std::cout << "Draw_Saddle: aligned: " << 
 		    D._vertex_to_hit().v->id() << endl;
 	    }
 	    return;
@@ -489,7 +489,7 @@ void TwoComplex::DrawSaddle<Point>(const Dir<Point> &strt, COORD len2,int id, CO
 	D.advance();
     }
     if( verbose >=4 ) 
-	out_s << endl;
+	std::cout << endl;
 
     return;
 }
@@ -537,13 +537,13 @@ int TwoComplex::SweepNew(COORD depth, Dir<PointT> start_dir,
 	c = SweepNextLeft<PointT>(old_dir, new_dir, depth*depth,threshold);
 
 	if( verbose >= 2 ) {
-	    out_s << "c: " << c << "  " << old_dir.vec << " "<< -new_dir.vec;
+	    std::cout << "c: " << c << "  " << old_dir.vec << " "<< -new_dir.vec;
 	    if ( CCW( old_dir.vec, -new_dir.vec ) ) {
-		out_s << " +";
+		std::cout << " +";
 	    } else {
-		out_s << " -";
+		std::cout << " -";
 	    }
-	    out_s << angle(old_dir.vec, -new_dir.vec) << "\n";
+	    std::cout << angle(old_dir.vec, -new_dir.vec) << "\n";
 	}
 
 	if ( c != NULL && investigated_last == false
@@ -584,9 +584,9 @@ int TwoComplex::SweepNew(COORD depth, Dir<PointT> start_dir,
 
 /*
 	    if( abs(sc.get_orig_min_saddle_length() - 21.6226 ) < 0.0001 ) {
-		out_s << "Found Bad Pattern\n";
-		sc.print(out_s);
-		out_s << endl;
+		std::cout << "Found Bad Pattern\n";
+		sc.print(std::cout);
+		std::cout << endl;
 
 		SaddleConf sc2;
 
@@ -617,17 +617,17 @@ int TwoComplex::SweepNew(COORD depth, Dir<PointT> start_dir,
 		int tag = smry.add_one_conf(sc); 
 		
 		//draw if needed
-//		out_s << "sc.get_orig_min_saddle_length = " << sc.get_orig_min_saddle_length() << " draw_saddle_length = " << draw_saddle_length << endl;
-//		out_s << "tag = " << tag 
+//		std::cout << "sc.get_orig_min_saddle_length = " << sc.get_orig_min_saddle_length() << " draw_saddle_length = " << draw_saddle_length << endl;
+//		std::cout << "tag = " << tag 
 //		    << " draw_tag = " << draw_tag << endl; 
 
 		if ( abs(sc.get_orig_min_saddle_length() -
 			 draw_saddle_length)/draw_saddle_length < 0.001  &&
 		     ( draw_tag < 0 || tag == draw_tag )) {
-		    out_s << "Found it: n_saddles = " <<
+		    std::cout << "Found it: n_saddles = " <<
 			sc.n_saddles() << endl; 		
 		    if( draw_saddles ) {
-			out_s << "Drawing Saddles" << endl;
+			std::cout << "Drawing Saddles" << endl;
 			sc.DrawSaddles();
 			S->make_pcomplexes();
 			my_ostream saddle_stream("saddle");
@@ -635,7 +635,7 @@ int TwoComplex::SweepNew(COORD depth, Dir<PointT> start_dir,
 			saddle_stream.close();
 		    }
 		    if ( draw_cylinders ) {
-			out_s << "Drawing Cylinders" << endl;
+			std::cout << "Drawing Cylinders" << endl;
 			sc.DrawCylinders();
 			S->make_pcomplexes();
 			my_ostream saddle_stream("cylinders");
@@ -653,7 +653,7 @@ int TwoComplex::SweepNew(COORD depth, Dir<PointT> start_dir,
 
 		if( ! quiet  && !individual ) {
 		    /* issue running total report */
-		    sm->print(out_s, TotalAngle/(GoalTotalAngle*n_slices),
+		    sm->print(std::cout, TotalAngle/(GoalTotalAngle*n_slices),
 			      TotalAngle/GoalTotalAngle,
 			      get_area(), depth);
 		}
@@ -692,7 +692,7 @@ void TwoComplex::InvestigateVec(PointT vec, COORD len2, SaddleConf& sc,
     sc.clear();
 
     if ( verbose >= 1 ) {
-	 out_s << "InvestigateVec: " << vec << "\n";
+	 std::cout << "InvestigateVec: " << vec << "\n";
     }
 
     if ( individual ) {
@@ -700,7 +700,7 @@ void TwoComplex::InvestigateVec(PointT vec, COORD len2, SaddleConf& sc,
 	COORD real = vec_cx.real();
 	COORD imag = vec_cx.imag();
 	//fprintf(out_f,"%.24Lf %.24Lf\n",real,imag);
-	out_s << " " << real  << " " <<  imag  << endl;
+	std::cout << " " << real  << " " <<  imag  << endl;
     }
 
     for(VertexPtrIter i = vertices.begin(); i!=vertices.end(); i++ ) {
@@ -791,8 +791,8 @@ void TwoComplex::InvestigateVec(PointT vec, COORD len2, SaddleConf& sc,
 	int tmp_verbose = verbose;
 	verbose = 0;
 
-	sc.print(out_s);
-	out_s << "\n";
+	sc.print(std::cout);
+	std::cout << "\n";
 
 	//debugging hack
 	verbose = tmp_verbose;
@@ -829,7 +829,7 @@ COORD TwoComplex::GetSaddles(Dir<Point>& start, COORD len2, int N)
 	} else {
 	    factor = 1.0; /* FIX LATER */
 	}
-//	out_s << "c: " << c << "  " << -new_dir.vec << " "
+//	std::cout << "c: " << c << "  " << -new_dir.vec << " "
 //	     << angle(old_dir.vec, -new_dir.vec ) << " ";
 
 	TotalAngle += factor*angle(old_dir.vec, -new_dir.vec);
@@ -837,7 +837,7 @@ COORD TwoComplex::GetSaddles(Dir<Point>& start, COORD len2, int N)
 
 	if ( ! new_dir.v->euclidean ) {
 
-//	    out_s << "NOT EUCLIDEAN" <<"\n";
+//	    std::cout << "NOT EUCLIDEAN" <<"\n";
 	    if ( new_dir.v == old_dir.v ) {
 		count_same++;
 		number++;  /* FIX */
@@ -846,7 +846,7 @@ COORD TwoComplex::GetSaddles(Dir<Point>& start, COORD len2, int N)
 
 	}
 	else {
-//	    out_s << "EUCLIDEAN" << "\n";
+//	    std::cout << "EUCLIDEAN" << "\n";
 	}
 
 
@@ -872,7 +872,7 @@ COORD TwoComplex::RandomShoot(VertexPtr v0, COORD depth, int M)
 
     while ( count < 1.0*M/mc_group ) {
 	theta = v0->total_angle()*my_random()/RANDOM_MAX;
-//	out_s << "theta: " << theta << "\n";
+//	std::cout << "theta: " << theta << "\n";
 	new_dir = old_dir.RotateF(theta);
 	old_dir = new_dir;
 
@@ -883,10 +883,10 @@ COORD TwoComplex::RandomShoot(VertexPtr v0, COORD depth, int M)
 
 
 	COORD s1 = v0->total_angle()*mc_group/ta;
-	out_s << s1*get_area()*MY_PI/(6*depth*depth) << " ( " <<
+	std::cout << s1*get_area()*MY_PI/(6*depth*depth) << " ( " <<
 	       s1*get_area()/(MY_PI*depth*depth);
 
-	out_s << ") raw = " << s1 << endl;
+	std::cout << ") raw = " << s1 << endl;
 
 
 	count++;

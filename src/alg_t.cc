@@ -1,7 +1,5 @@
+#include "defs.h"
 #include "two_complex.h"
-
-extern void ERR_RET(const char *s);
-
 
 template<typename T>
 poly<T> cyclotomic_poly(int n)
@@ -30,7 +28,7 @@ poly<T> cyclotomic_poly(int n)
 	  poly<T> g = cyclotomic_poly<T>(d);
 	  divide<T>(quotient, remainder, current, g);
 	  if( not(remainder == poly<T>()) ) {
-	      printf("cyclotomic: failed to divide");
+              std::cout << "cyclotomic: failed to divide";
 	  }
 	  current = quotient;
       }

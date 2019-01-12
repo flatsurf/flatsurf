@@ -166,9 +166,6 @@ void Face::Check()
     OEdgeIter j;
     BigPointQ q,t,r;
 
-//    out_s << "q = " << q << endl;
-
-
     for(OEdgeIter i = oedges.begin(); i != oedges.end(); i++ ) {
 
 	if( this != (*i).in_face() ) {
@@ -261,10 +258,6 @@ void Face::Check()
 
 	q += t;
 
-  // out_s << "F" << id() << ": Total Vec: " << q << "\n";
-
-
-
     }
     if ( abs(q.cx) > EPSILON ) {
 	printf("F%d: ", this->id());
@@ -287,13 +280,13 @@ void Face::Check()
 	
 	transform_to_original(r, q);
 	if( abs(t.cx - q.cx) > EPSILON ) {
-	    out_s << this->id() << " original " << orig_f->id() << endl;
-	    out_s <<" i = "<< (*i).id() <<" j = " << (*j).id() << endl;
-	    out_s <<" i_prev " << i->prev_edge()->id() << " j_prev = " << j->prev_edge()->id() << endl;
-	    out_s <<" r = " << r.cx << " t = " << t.cx << " q = " << q.cx << endl;
+            std::cerr << this->id() << " original " << orig_f->id() << endl;
+	    std::cerr <<" i = "<< (*i).id() <<" j = " << (*j).id() << endl;
+	    std::cerr <<" i_prev " << i->prev_edge()->id() << " j_prev = " << j->prev_edge()->id() << endl;
+	    std::cerr <<" r = " << r.cx << " t = " << t.cx << " q = " << q.cx << endl;
 
-	    out_s <<" i->vec " << i->vecQ().cx << " j->vec " << j->vecQ().cx << endl;
-	    out_s << " i->prev-vec " << i->prev_edge()->vecQ().cx <<
+	    std::cerr <<" i->vec " << i->vecQ().cx << " j->vec " << j->vecQ().cx << endl;
+	    std::cerr << " i->prev-vec " << i->prev_edge()->vecQ().cx <<
 		" j->prev-vec " << j->prev_edge()->vecQ().cx << endl;
 		
 	    ERR_RET("billiard_mode: bad edge match");
@@ -341,14 +334,14 @@ bool Face::self_intersecting()
 	    if( k != i && intersect_segment_interior(s1, (*i).vec_cx(), 
 					   s, (*k).vec_cx(), intersection)) {
 
-		Simplex::Print(out_s);
-		out_s << " intersecting edges ";
-		i->Print(out_s);
-		out_s << " and ";
-		k->Print(out_s);
-		out_s << endl;
-		out_s << s1 << " " << s1+(*i).vec_cx() << " and ";
-		out_s << s << " " <<  s+(*k).vec_cx() << endl;
+		Simplex::Print(std::cout);
+                std::cout << " intersecting edges ";
+		i->Print(std::cout);
+		std::cout << " and ";
+		k->Print(std::cout);
+		std::cout << endl;
+		std::cout << s1 << " " << s1+(*i).vec_cx() << " and ";
+		std::cout << s << " " <<  s+(*k).vec_cx() << endl;
 
 		return(true);
 	    }

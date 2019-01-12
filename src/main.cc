@@ -63,7 +63,6 @@ int random_seed;
 FILE *out_f;
 
 ostdiostream out_stream; 
-ostdiostream out_s; 
 
 
 /* more global vars to get around compiler changes */
@@ -97,24 +96,7 @@ int main(int argc, char **argv)
 {
     S = new TwoComplex();
 
-// stream using a UNIX file descriptor
-//  std::ofstream os;
-//  __gnu_cxx::stdio_filebuf<char> fdbuf(1, std::ios::out);
-//  os.std::ios::rdbuf(&fdbuf);
-
-
-
-
-    __gnu_cxx::stdio_sync_filebuf<char> fdbuf(stdout);
-
-    out_s.std::ios::rdbuf(&fdbuf);
-
-
-    
-
-
     COORD t1, t2;
-
 
     gethostname(hostname, MAX_HOSTNAME-1); 
 
@@ -150,12 +132,12 @@ int main(int argc, char **argv)
     n_slices = 1; 
 #endif
 
-    out_s << "hostname = " << hostname << endl; 
+    std::cout << "hostname = " << hostname << endl; 
 
     for(int i = 0; i < argc; i++ ) {
-	out_s << argv[i] << " ";
+        std::cout << argv[i] << " ";
     }
-    out_s << endl; 
+    std::cout << endl; 
 
 
 
@@ -499,7 +481,7 @@ int main(int argc, char **argv)
     }
 
 	if( n_slices > MAX_SLICES ) {
-	    printf("Using %d slices\n", MAX_SLICES);
+            std::cout << "Using " << MAX_SLICES << " slices\n";
 	    n_slices = MAX_SLICES; 
 	}
 	
@@ -567,10 +549,10 @@ int main(int argc, char **argv)
 	S->ReadComplex(filename);
     }
     poly<bigrat> minimal_polynomial = NumberField<bigrat>::F->min_poly();
-    out_s << "Number field: min poly " << minimal_polynomial << endl;
+    std::cout << "Number field: min poly " << minimal_polynomial << endl;
 
 
-    S->PrintAll(out_s);
+    S->PrintAll(std::cout);
     S->CheckAllFaces();
 //    S->CheckAllVertices();
 
@@ -655,11 +637,11 @@ int main(int argc, char **argv)
 
 
 
-    out_s << "Longest Edge: " << S->MaxEdge()->len() << endl;
+    std::cout << "Longest Edge: " << S->MaxEdge()->len() << endl;
     Dir<Point> shortest_dir;
-    out_s << "Looking for shortest saddle...";
+    std::cout << "Looking for shortest saddle...";
     COORD shortest = S->MinSaddle(shortest_dir);
-    out_s  << shortest << endl;
+    std::cout  << shortest << endl;
     COORD mv = min(0.1, shortest/2);
 
 
@@ -673,8 +655,8 @@ int main(int argc, char **argv)
 	    if ( (*i)->euclidean ) {
 		tmp_offset = Point(mv*my_random()/RANDOM_MAX, 
 				     mv*my_random()/RANDOM_MAX);
-		out_s << "Moving: "; (*i)->Print(out_s);
-		out_s << " offset " << tmp_offset << "\n";
+                std::cout << "Moving: "; (*i)->Print(std::cout);
+                std::cout << " offset " << tmp_offset << "\n";
 		(*i)->MoveVertex(tmp_offset);
 	    } 
 	}
@@ -687,8 +669,8 @@ int main(int argc, char **argv)
 	}
 	for ( i = S->vertices.begin(); i != S->vertices.end(); i++ ) {
 	    if ( (*i)->id() == perturb_vertex ) {
-		out_s << "Moving: "; (*i)->Print(out_s);
-		out_s << " offset " << offset << "\n";
+                std::cout << "Moving: "; (*i)->Print(std::cout);
+                std::cout << " offset " << offset << "\n";
 		(*i)->MoveVertex(offset);
 		
 	    } 
@@ -724,7 +706,7 @@ int main(int argc, char **argv)
 
 
 
-//    S->PrintAll(out_s);
+//    S->PrintAll(std::cout);
     S->CheckAllFaces();
     S->CheckAllVertices();
     if(field_arithmetic)
@@ -740,7 +722,7 @@ int main(int argc, char **argv)
 	int_field_arithmetic = true; // use algebraic integers
 	S->check_algebraicI();
     }
-    S->PrintAll(out_s);
+    S->PrintAll(std::cout);
 
     
 
@@ -751,8 +733,8 @@ int main(int argc, char **argv)
 
     
 
-//    S->PrintAll(out_s);
-    S->StatPrint(out_s);    
+//    S->PrintAll(std::cout);
+    S->StatPrint(std::cout);    
 
 
     ofstream fout("the_surface.dat");
@@ -809,7 +791,7 @@ int main(int argc, char **argv)
 	    NA.init0();
 	    NA.main_loop0();
  
-	    S->issueFinalReport(fsm, out_s); 
+	    S->issueFinalReport(fsm, std::cout); 
 	    ofstream results_stream("final_results");
 	    S->issueFinalReport(fsm,results_stream); //check
 	    results_stream.close();
@@ -820,7 +802,7 @@ int main(int argc, char **argv)
 	}
 
 #else
-	out_s << "sweeping start V" << (*i)->id()<< " depth = " <<
+        std::cout << "sweeping start V" << (*i)->id()<< " depth = " <<
 	    depth << endl;
 	
 	
@@ -835,7 +817,7 @@ int main(int argc, char **argv)
 	    S->SweepNew<BigPointI>(depth,start_dir,GoalTotalAngle);
 	}
 
-	S->issueFinalReport(smry,out_s);
+	S->issueFinalReport(smry, std::cout);
 
 	ofstream results_stream("final_results");
 	S->issueFinalReport(smry,results_stream); //check

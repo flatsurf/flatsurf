@@ -30,7 +30,7 @@ Dir<PointT>::Dir(VertexPtr vp, const PointT &p) {
 
     while( i!= v->out_edges.end() ) {
 	
-	if ( aligned((*i)->vec<PointT>(), p ) || 
+	if ( aligned((*i)->template vec<PointT>(), p ) || 
              ( (!colinear((*i)->vec<PointT>(),p)) 
 	       && CCW((*i)->vec<PointT>(), p) 
 	       && (! aligned((*j)->vec<PointT>(),p )) &&
@@ -158,7 +158,7 @@ Dir<Point> Dir<Point>::RotateF( COORD theta){
     n = RotateCCwToVec(p);
     
     if( abs(AngleF(n) - theta ) > 1E-7 ) {
-	out_s << "in Angle_F, angle off by " 
+        std::cerr << "in Angle_F, angle off by " 
 	      << abs(AngleF(n) - theta ) << endl << flush; 
 	ERR_RET("Error in RotateF");
     }
@@ -183,8 +183,8 @@ Dir<Point> Dir<Point>::RotateF_general( COORD theta)
     if( theta < 0) {
 	ERR_RET("rotate_general: negative angle"); 
     }
-    out_s << "RotateF: theta = " << theta << endl << flush; 
-    out_s << "starting edge: E" << (*(this->ep))->id() << endl << flush;
+    std::cout << "RotateF: theta = " << theta << endl << flush; 
+    std::cout << "starting edge: E" << (*(this->ep))->id() << endl << flush;
 
     Dir<Point> bak = *this;
     COORD theta_bak = theta; 
@@ -198,7 +198,7 @@ Dir<Point> Dir<Point>::RotateF_general( COORD theta)
     int count = static_cast<int>(floor(2.0*theta/MY_PI));
 #endif
 
-    out_s << "RotateF: count = " << count << endl << flush; 
+    std::cout << "RotateF: count = " << count << endl << flush; 
     for(int j = 0; j < count; j++ ) {
 //	tmp = n; 
 //	tmp.RotateF(0.5*MY_PI,n);
@@ -209,9 +209,9 @@ Dir<Point> Dir<Point>::RotateF_general( COORD theta)
 //	tmp = n; 
 	n = n.RotateF(theta); 
     }
-    out_s << "ending edge: E" << (*(n.ep))->id() << endl << flush;
+    std::cout << "ending edge: E" << (*(n.ep))->id() << endl << flush;
     if( abs(bak.AngleF(n) - theta_bak ) > 1E-7 ) {
-	out_s << "in Angle_F, angle off by " 
+        std::cerr << "in Angle_F, angle off by " 
 	      << abs(bak.AngleF(n) - theta_bak ) << endl << flush; 
 	ERR_RET("error in RotateF_general"); 
     }
@@ -243,7 +243,7 @@ Dir<PointT> Dir<PointT>::RotateCCwToVec( PointT p )
 //	ERR_RET("Error in RotateCCwToVec"); 
 //    }
 //    if( AngleF(n) > MY_PI + 0.0001 ) {
-//	out_s << "*****WARNING: ROTATE CCW " << AngleF(n) << endl << flush;
+//	std::cerr << "*****WARNING: ROTATE CCW " << AngleF(n) << endl << flush;
 //    }
 
     return(n);
@@ -261,7 +261,7 @@ Dir<PointT> Dir<PointT>::RotateCwToVec( PointT p ){
     n.v = v;
     n.vec = p;
 
-    if ( aligned((*ep)->vec<PointT>(), p )) {
+    if ( aligned((*ep)->template vec<PointT>(), p )) {
 	n.ep = ep;
 	n.Check();
 	return(n);
@@ -280,7 +280,7 @@ Dir<PointT> Dir<PointT>::RotateCwToVec( PointT p ){
 //	ERR_RET("Error in RotateCwToVec"); 
 //   }
 //    if( n.AngleF(*this) > MY_PI + 0.0001 ) {
-//	out_s << "*****WARNING: ROTATE CW " << n.AngleF(*this)<<endl<<flush;
+//	std::cerr << "*****WARNING: ROTATE CW " << n.AngleF(*this)<<endl<<flush;
 //    }
 
     return(n);

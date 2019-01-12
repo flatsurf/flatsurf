@@ -138,7 +138,7 @@ void TwoComplex::TriangulateFace( FacePtr f )
 	delete movie_stream;
     }
 
-//    PrintAll(out_s);
+//    PrintAll(std::cout);
 //    CheckAllFaces();
 //    CheckAllVertices();
     
@@ -227,7 +227,7 @@ OEdgeIter TwoComplex::BisectFace(FacePtr f, OEdgeIter e1_iter,OEdgeIter e2_iter)
     BigPointQ bq = bp+bs;
 
     if ( field_arithmetic && !(bq.algt == alg_tQ()) ) { //bq is not zero
-	out_s << bq.algt; 
+	std::cout << bq.algt; 
 	ERR_RET("Bisect Face: total vec_algt not zero");
     }
 
@@ -378,7 +378,7 @@ void TwoComplex::AddSteinerPoint(FacePtr f)
 //  Point p_steiner = 0.1*v0_pos+0.45*v1_pos+0.45*v2_pos;
 
 
-    out_s << v0_pos << v1_pos << v2_pos << p_steiner <<"\n";
+    std::cout << v0_pos << v1_pos << v2_pos << p_steiner <<"\n";
 
   
     VertexPtr v0 = edge01->head();
@@ -512,7 +512,7 @@ void TwoComplex::RetriangulateSurface()
 		BuildNeighborLists();
 		CheckAllFaces();
 		CheckAllVertices();
-		//		PrintAll(out_s);
+		//		PrintAll(std::cout);
 
 		if ( verbose >= 1 ) {
 		    nbr++;
@@ -567,7 +567,7 @@ void TwoComplex::RetriangulateSurface()
 	BuildNeighborLists();
 	CheckAllVertices();
 	CheckAllFaces();
-	//	PrintAll(out_s);
+	//	PrintAll(std::cout);
 
 	if ( verbose >= 1 ) {
 	    nbr++;
@@ -778,14 +778,14 @@ void TwoComplex::doExtraFlips()
 	for (UEdgePtrIter i= uedges.begin(); i!= uedges.end(); i++ ) {
 	    if ( shouldFlip((*i)) ) {
 
-//		PrintAll(out_s);
+//		PrintAll(std::cout);
 
 		fprintf(out_f,"Extra: Flipping E%d\n", (*i)->id());
 		FlipEdge(*i);
 
 		BuildNeighborLists();
 
-//		PrintAll(out_s);
+//		PrintAll(std::cout);
 
 		CheckAllFaces();
 		CheckAllVertices();
