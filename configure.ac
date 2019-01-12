@@ -18,7 +18,8 @@ AC_CANONICAL_HOST
 dnl Check for required libraries
 AC_LANG([C++])
 
-dnl We use GMP for big rationals
+dnl We use GMP for big rationals (which links against libm)
+AC_CHECK_LIB([m], [log], , AC_MSG_ERROR([libm not found]))
 AC_CHECK_LIB([gmp], [__gmpq_init], , AC_MSG_ERROR([GMP library not found]))
 AC_CHECK_LIB([gmpxx], [__gmpq_get_str], , AC_MSG_ERROR([GMP library (C++) not found]))
 AC_CHECK_HEADERS([gmpxx.h], [], AC_MSG_ERROR([gmpxx header not found (gmp needs to be compiled with c++ support (--enable-cxx))]))
