@@ -1,0 +1,871 @@
+#include <cassert>
+#include "algebraic.h"
+#include "defs.h"
+#include <boost/lexical_cast.hpp>
+
+extern void ERR_RET(const char *s);
+
+// gcd_extended: a and b inputs, x and y outputs.
+template<class T>
+void gcd_extended(poly<T>& x, poly<T>& y, const poly<T> &a, const poly<T> &b)
+{
+    poly<T> u, v, quot, rem;
+    divide(quot, rem, a, b);
+    if(rem == poly<T>())  //i.e. b divides a
+    {
+	x=poly<T>();  //x=0
+	vector<T> ycoeff(1,1/b.leading_coefficient());
+	y=poly<T>(ycoeff);  //y=1
+	return;
+    }
+    else
+    {
+	gcd_extended(u, v, b, rem);
+	x = v;
+	y = u - v * quot;
+	x.reduce();
+	y.reduce();
+	return;
+    }
+}
+
+template<class T>
+poly<T>::poly()
+{
+  vector<T> temp(1, T(0));
+  coefficients = temp;
+}
+
+template<class T>
+poly<T>::poly(vector<T> c) : coefficients(c)
+{
+  reduce();
+}
+
+template<class T>
+poly<T>::poly(T c[], int degree)
+{
+  vector<T> v;
+  for(int i=0; i<=degree; i++)
+    v.push_back(c[i]);
+  coefficients = v;
+}
+
+template<class T>
+T poly<T>::leading_coefficient() const
+{
+  return *(coefficients.end()-1);
+}
+
+
+template<class T>
+void poly<T>::reduce()
+{
+  while(coefficients.back() == T(0) && coefficients.size() > 1)
+    coefficients.erase(coefficients.end()-1);
+}
+
+template<class T> 
+int poly<T>::degree() const
+{
+//  reduce();
+  return coefficients.size()-1;
+}
+
+template<class T>
+void poly<T>::fill_back(int n)
+{
+    while(coefficients.size() <= (unsigned int)n)
+    coefficients.push_back(T(0));
+}
+
+template<class T>
+void poly<T>::print()
+{
+  cout << *this<< "\n";
+}
+
+template<class T>
+poly<T>& poly<T>::operator +=(const poly<T> &p)
+{
+  int m = max(degree(), p.degree());
+  fill_back(m);
+//  p.fill_back(m);
+  for(int i = 0; i <= p.degree(); i++)
+    coefficients[i] += p.coefficients[i];
+  reduce();
+  return *this;
+}
+
+template<class T>
+poly<T>& poly<T>::operator -=(const poly<T> &p)
+{
+  int m = max(degree(), p.degree());
+  fill_back(m);
+  //p.fill_back(m);
+  for(int i = 0; i <= p.degree(); i++)
+    coefficients[i] -= p.coefficients[i];
+  reduce();
+  return *this;
+}
+
+//fix this later
+template<class T>
+poly<T> operator*(poly<T> p, const poly<T> &q)
+{
+  vector<T> c;
+  T temp;
+  int m = p.degree(), n = q.degree();
+  for(int i=0; i <= m+n; i++)
+    {
+      temp = 0;
+      for(int k = max(0, i-n); k<=m && k<=i; k++)
+	temp += p.coefficients[k] * q.coefficients[i-k];
+      c.push_back(temp);
+    }
+  p = poly<T>(c);
+  p.reduce();
+  return p; 
+//  return poly<T>(c);
+}
+  
+template<class T>
+poly<T> operator+(poly<T> p, const poly<T> &q)
+{
+//  poly<T> r = p;
+    p+=q;
+    p.reduce();
+    return p;
+  
+}
+
+template<class T>
+poly<T> operator-(poly<T> p, const poly<T> &q)
+{
+//  poly<T> r = p;
+    p-=q;
+    p.reduce();
+    return p; 
+}
+
+template<class T>
+poly<T>& poly<T>::operator*=(T r)
+{
+  for(typename vector<T>::iterator i = coefficients.begin(); i != coefficients.end(); i++)
+    *i = r * (*i);
+  reduce();
+  return *this;
+}
+
+template<class T>
+poly<T> operator*(T r, poly<T> p)
+{
+//  poly<T> q = p;
+   p*= r;
+   p.reduce();
+   return p;
+}
+
+template<class T>
+bool operator==(const poly<T> &p, const poly<T> &q)
+{
+  if(p.coefficients == q.coefficients)
+    return true;
+  else
+    return false;
+}
+
+template<class T>
+bool operator!=(const poly<T> &p, const poly<T> &q)
+{
+    return(!(p == q));
+}
+
+
+template<class T>
+algebraic<T> poly<T>::operator()(const algebraic<T> &a)
+{
+  algebraic<T> b(a.field());
+  for(int i=0; i<=degree(); i++)
+    b += coefficients[i] * a.pow(i);
+  return b;
+}
+
+
+inline bool is_unit( const poly<int64_t> &p)
+{
+    int n = p.leading_coefficient();
+    if ( n == 1 || n == -1 ) {
+	return true;
+    }
+    return false;
+}
+
+inline bool is_unit( const poly<bigrat> &p)
+{
+    bigrat q = p.leading_coefficient();
+    if ( q != bigrat(0,1) ) {
+	return true;
+    }
+    return false;
+}
+
+// f and g are inputs
+template<class T>
+void divide(poly<T>& quotient, poly<T>& remainder, const poly<T> &f, const poly<T> &g)
+{
+  int m = f.degree();
+  int n = g.degree();
+  if ( ! is_unit(g) ) {
+      ERR_RET("Division by non-unit");
+  }
+  if(m<n)
+    {
+      remainder = f;
+      quotient = poly<T>();
+      return;
+    }
+  
+  poly<T> h=f;
+  vector<T> c(m-n+1);
+  
+  for(int i=0; i<= m-n; i++)
+    {
+      c[m-n-i] = h.coefficients[m-i]/g.coefficients.back();
+      for(int j=0; j<=n; j++)
+	h.coefficients[m-n-i+j] -= c[m-n-i] * g.coefficients[j];
+    }
+  h.reduce();
+  remainder = h;
+  quotient = poly<T>(c);
+  quotient.reduce();
+  return;
+}
+
+template<class T>
+poly<T> operator%(const poly<T> &p, const poly<T> &q)
+{
+  poly<T> quot, rem;
+  divide(quot, rem, p, q);
+  return rem;
+}
+
+template<class T>
+ostream& operator <<(ostream& outputStream, const poly<T>& p)
+{
+  typename vector<T>::const_iterator i;
+  outputStream << "(";
+  for(i=p.coefficients.begin(); i!=p.coefficients.end()-1; i++)
+    outputStream << *i << " ";
+  outputStream << *(p.coefficients.end()-1) << ")"; 
+  return outputStream;
+}
+    
+
+
+
+inline int max(int a, int b)
+{
+  if(a >= b)
+    return a;
+  else
+    return b;
+}
+
+template<class T>
+NumberField<T>::NumberField()
+{}
+
+template<typename T>
+NumberField<T>::NumberField(T p[], int degree) : degree(degree)
+{
+  int i;
+  vector<T> coefficients;
+  for(i=0; i<=degree; i++)
+    coefficients.push_back(p[i]);
+  minimal_poly = poly<T>(coefficients);
+  F_zero = algebraic<T>(this);
+  F_one = algebraic<T>(0,this);
+  build_multiplication_table();
+  cross_product_table.resize(degree,degree);
+}
+
+template<class T>
+NumberField<T>::NumberField(T p[], int degree, complex<COORD> embedding) :  embedding(embedding), degree(degree)
+{
+  int i;
+  vector<T> coefficients;
+  for(i=0; i<=degree; i++)
+    coefficients.push_back(p[i]);
+  minimal_poly = poly<T>(coefficients);
+  F_zero = algebraic<T>(this);
+  F_one = algebraic<T>(0,this);
+  build_multiplication_table();
+  cross_product_table.resize(degree,degree);
+}
+
+template<class T>
+void NumberField<T>::build_multiplication_table()
+{
+  vector<T> xtothen, dummy(degree);
+  T v;
+  
+  for(int j = 0; j < minimal_poly.degree(); j++)
+    xtothen.push_back(-minimal_poly.coefficients[j]/ minimal_poly.leading_coefficient());
+  
+  dummy[0] = T(1)/T(1);
+
+  //dummy[0] = T(1,1);
+
+  for(int i=0; i<degree; i++)
+    {
+      multiplication_table.push_back(dummy);
+      dummy.insert(dummy.begin(), T(0));
+      dummy.erase(dummy.end() -1);
+    }
+  
+  for(int i=degree; i <= 2 * degree - 2; i++)
+    {
+      dummy = multiplication_table[i-1];
+      dummy.insert(dummy.begin(), T(0));
+      v=*(dummy.end()-1);
+      dummy.erase(dummy.end() -1);
+      multiplication_table.push_back(dummy + (v * xtothen));
+    }
+}
+
+template<class T>
+poly<T> NumberField<T>::min_poly()
+{
+  return minimal_poly;
+}
+
+
+template<class T>
+void NumberField<T>::store_conjugate(algebraic<T> a)
+{
+  conjugate = a;
+  conjugate_table.push_back(this->F_one);
+  for(int i = 1; i < degree; i++ ) {
+      conjugate_table.push_back(a.pow(i));
+  }
+  build_cross_product_table();
+}
+
+
+template<class T>
+algebraic<T>::algebraic() 
+{
+}
+
+
+
+template<class T>
+algebraic<T>::algebraic(NumberField<T>* field) : in_field(field)
+{
+  vector<T> v(field->degree);
+  coords = v;
+}
+
+template<class T>
+algebraic<T>::algebraic(int n, NumberField<T>* field) 
+{
+  vector<T> v(field->degree);
+  v[n] = 1;
+  coords=v;
+  in_field = field;
+}
+
+template<class T>
+algebraic<T>::algebraic(vector<T> newcoords, NumberField<T>* field) : coords(newcoords), in_field(field)
+{}
+
+template<class T>
+algebraic<T>::algebraic(T newcoords[], NumberField<T>* field) :in_field(field)
+{
+  for(int i = 0; i< field->degree; i++)
+    coords.push_back(newcoords[i]);
+}
+
+template<class T>
+algebraic<T> algebraic<T>::reciprocal() const
+{
+    poly<T> q(coords), u, v, w;
+    w = in_field->minimal_poly;
+    gcd_extended(u, v, q, in_field->minimal_poly);
+//    gcd_extended(u, v, q, w);
+  return u(algebraic<T>(1, in_field));
+}
+ 
+template<class T>
+NumberField<T>* algebraic<T>::field() const
+{
+  return in_field;
+}
+    
+  
+template<class T>
+algebraic<T> operator +(algebraic<T> a, const algebraic<T> &b)
+{
+//  algebraic<T> c=a;
+  return a+=b;
+}
+
+template<class T>
+algebraic<T> operator -(algebraic<T> a, const algebraic<T> &b)
+{
+//  algebraic<T> c=a;
+  return a-=b;
+}
+
+template<class T>
+algebraic<T> operator /(algebraic<T> a, const algebraic<T> &b)
+{
+  return a /= b;
+}
+
+
+
+template<class T>
+algebraic<T>& algebraic<T>::operator *=(const algebraic<T> &s)
+{
+  int i, j;
+  vector<T> newcoords(in_field -> degree);
+
+//  cout << *this << s << endl;
+
+  for(i=0; i < in_field -> degree; i++) {
+      for(j=0; j < in_field->degree; j++) {
+	  T tmp = coords[i] *s.coords[j];
+	  newcoords += tmp *in_field->multiplication_table[i+j];
+//	  newcoords += (coords[i]*s.coords[j])*in_field->multiplication_table[i+j];
+
+      }
+  }
+  coords = newcoords;
+  return *this;
+}
+
+template<class T>
+algebraic<T>& algebraic<T>::operator *=(T q) 
+{
+
+  typename vector<T>::iterator i;
+  for(i=coords.begin(); i!=coords.end(); i++) {
+      (*i) *= q;
+  }
+  return(*this);
+
+}
+
+template<class T>
+algebraic<T>& algebraic<T>::operator /=(T q) 
+{
+
+  typename vector<T>::iterator i;
+  for(i=coords.begin(); i!=coords.end(); i++) {
+      (*i) /= q;
+  }
+  return(*this);
+}
+
+
+
+template<class T>
+algebraic<T> operator *(algebraic<T> a, const algebraic<T> &b)
+{
+//  algebraic<T> c=a;
+  return (a*=b);
+}
+
+template<class T>
+algebraic<T> operator *(T a, algebraic<T> b)
+{
+  return (b*=a);
+}
+
+template<class T>
+algebraic<T> operator *(algebraic<T> b, T a)
+{
+  return (b*=a);
+}
+
+template<class T> 
+algebraic<T> operator /(algebraic<T> a, T b)
+{
+  return (a /= b);
+}
+
+
+
+// template<class T>
+// algebraic<T> operator *(T q, algebraic<T> r)
+// {
+//   vector<T> c;
+//   typename vector<T>::iterator i;
+//   for(i=r.coords.begin(); i!=r.coords.end(); i++)
+//     c.push_back(q * *i);
+//   return algebraic<T>(c, r.in_field);
+// }
+
+// template<class T>
+// algebraic<T> operator *(algebraic<T> r, T q)
+// {
+//   vector<T> c;
+//   typename vector<T>::iterator i;
+//   for(i=r.coords.begin(); i!=r.coords.end(); i++)
+//     c.push_back(q * *i);
+//   return algebraic<T>(c, r.in_field);
+// }
+
+
+extern algebraic<bigrat> operator /(algebraic<bigrat> a, int n);
+extern algebraic<bigrat> operator *(algebraic<bigrat> r, int n);
+extern algebraic<bigrat> operator *(int n , algebraic<bigrat> r);
+
+template<class T>
+algebraic<T>& algebraic<T>::operator +=(const algebraic<T> &a)
+{
+  for(unsigned int i=0; i < coords.size(); i++)
+    coords[i] += a.coords[i];
+  return *this;
+}
+
+template<class T>
+algebraic<T>& algebraic<T>::operator -=(const algebraic<T> &a)
+{
+  for(unsigned int i=0; i < coords.size(); i++)
+    coords[i] -= a.coords[i];
+  return *this;
+}
+
+template<class T>
+algebraic<T>& algebraic<T>::operator/=(const algebraic<T> &a)
+{
+  return *this *= a.reciprocal();
+}
+
+
+template<class T>
+bool operator==(const algebraic<T> &p, const algebraic<T> &q)
+{
+
+    if(p.in_field != q.in_field) {
+	return false;
+    }
+    if(p.coords == q.coords)
+	return true;
+    else
+	return false;
+}
+
+template<class T>
+bool operator!=(const algebraic<T> &p, const algebraic<T> &q)
+{
+    return(!(p == q));
+}
+
+
+//return here
+template<class T>
+algebraic<T> operator -(const algebraic<T> &r)
+{
+  typename vector<T>::const_iterator i;
+  vector<T> s;
+  for(i=r.coords.begin(); i!=r.coords.end(); i++)
+    s.push_back(-(*i));
+  return algebraic<T>(s, r.in_field);
+}
+
+// algebraic<T> algebraic<T>::operator -()
+// {
+//     algebraic<T> r = *this;
+//     vector<T>::iterator i;
+
+//     for(i=r.coords.begin(); i!=r.coords.end(); i++) {
+// 	*i = -(*i);
+//     }
+//     return(r);
+// }
+  
+// algebraic<T> operator ^(algebraic<T> r, int n)
+// {
+//   algebraic<T> s(0, r.in_field);
+//   int i;
+//   for(i=1; i<=n; i++)
+//     s = s * r;
+//   return s;
+// }
+
+template<class T>
+ostream& operator <<(ostream& outputStream, const algebraic<T>& num)
+{
+    typename vector<T>::iterator i;
+    outputStream << "(";
+    algebraic<T> tmp = num; 
+    for(i=tmp.coords.begin(); i!=tmp.coords.end()-1; i++)
+	outputStream << *i << " ";
+    outputStream << *(tmp.coords.end()-1) << ")"; 
+    return outputStream;
+}
+
+
+
+
+extern COORD my_mpq_get_d (bigrat op);
+extern COORD my_mpq_get_d(int op);
+
+template<class T>
+complex<COORD> algebraic<T>::tocomplex() const
+{
+  int i;
+  complex<COORD> z(0,0);
+  for(i=0; i<= in_field->degree -1; i++)
+    z += my_mpq_get_d(coords[i]) * (exp(in_field->embedding, i));
+  return z;
+}
+
+extern complex<COORD> exp(complex<COORD> z, int n);
+
+template<class T>
+vector<T>& operator+=(vector<T>& v, vector<T> w)
+{
+  for(unsigned int i =0; i < v.size(); i++)
+    v[i] += w[i];
+  return v;
+}
+
+template<class T>
+vector<T> operator+(vector<T> v, vector<T> w)
+{
+  vector<T> u;
+  for(unsigned int i =0; i < v.size(); i++)
+    u.push_back(v[i]+w[i]);
+  return u;
+}
+
+template<class T>
+vector<T> operator*(T v, vector<T> w)
+{
+  vector<T> u;
+  for(typename vector<T>::iterator i = w.begin(); i!= w.end(); i++)
+    u.push_back(v * *i);
+  return u;
+}
+
+template<class T>
+void NumberField<T>::print_mt()
+{
+  typename vector<vector<T> >::iterator i;
+  typename vector<T>::iterator j;
+  for(i=multiplication_table.begin(); i!=multiplication_table.end(); i++)
+    {
+      for(j= (*i).begin(); j!= (*i).end(); j++)
+	cout << *j << " ";
+      cout << "\n";
+    }
+}
+
+template <typename T>
+void NumberField<T>::print(ostream &out)
+{
+    out << "#Field Degree=" << NumberField<T>::F->degree;
+    out << " minimal polynomial=" << NumberField<T>::F->min_poly() << endl;
+    out << "#Field generator embedding: " << "(" << 
+	boost::lexical_cast<std::string>(NumberField<T>::F->embedding.real());
+    out <<boost::lexical_cast<std::string>(NumberField<T>::F->embedding.imag());
+    out << endl;
+					 
+}
+
+
+
+
+template<class T>
+algebraic<T> algebraic<T>::pow(int n) const
+{
+  algebraic<T> s(0, in_field);
+
+  if( n < 0 ) {
+    return(this->reciprocal().pow(-n));
+  }
+
+  int i;
+  for(i=1; i<=n; i++) {
+    s = s * (*this);
+  }
+  return s;
+}
+
+template<class T>
+algebraic<T> algebraic<T>::conjugate() const
+{
+  algebraic<T> conj(in_field);
+  for(int i=0; i < in_field->degree; i++)
+//    conj += (coords[i] * (in_field->conjugate).pow(i));
+      conj += (coords[i] * (in_field->conjugate_table)[i]);
+  return conj;
+}
+
+template<class T>
+algebraic<T> algebraic<T>::norm() const //not the real norm, complex conj only
+{
+    return((*this)*(this->conjugate()));
+}
+
+template<class T>
+algebraic<T> cross_product(const algebraic<T> &u, const algebraic<T> &v)
+{
+
+    algebraic<T> q(u.in_field);  //set to 0
+    T tmp;
+    
+    for(int i = 0; i < u.in_field->degree; i++ ) {
+	for(int j=i+1; j < u.in_field->degree; j++ ) {
+	    tmp = u.coords[i]*v.coords[j]-u.coords[j]*v.coords[i];
+	    q += u.in_field->cross_product_table(i,j)*tmp;
+	}
+    }
+//    q = u*v.conjugate() - v*u.conjugate(); 
+
+    return q; 
+
+}
+
+
+
+
+/*	     
+complex<long double> tolongdouble(complex<double> z)
+{
+  return complex<long double>(static_cast<long double>(z.real()), static_cast<l\
+ong double>(z.imag()));
+}
+
+complex<boost::multiprecision::float128> tofloat128(complex<double> z)
+{
+  return complex<boost::multiprecision::float128>(static_cast<boost::multiprecision::float128>(z.real()), static_cast<boost::multiprecision::float128>(z.imag()));
+}
+*/
+
+/*
+inline algebraic<bigrat> to_rational(const algebraic<int64_t> &p) //only works with given F
+{
+
+    assert( p.in_field == NumberField<int64_t>::F );
+
+    vector<bigrat> new_coords;
+    for(int i=0; i < p.in_field->degree; i++) {
+	bigrat r = bigrat(p.coords[i],1);
+	new_coords.push_back(r);
+    }
+
+
+    algebraic<bigrat> q = algebraic<bigrat>(new_coords, 
+					     NumberField<bigrat>::F);
+
+    return q;
+    
+};
+*/
+
+template<typename  T>
+void NumberField<T>::build_cross_product_table() 
+{
+
+    int d = degree;
+    algebraic<T> xi = algebraic<T>(1,this);
+
+//    std::vector< boost::array<algebraic<T>, d> > vecs;
+//    vecs.reserve(N);
+
+
+
+
+    // cross_product_table.reserve(d);
+    // for(int i=0; i < d; i++ ){
+    // 	cross_product_table[i].reserve(vector<algebraic<T> >(d));
+    // }
+
+
+//    vector< vector< algebraic<T > > >table(d, vector<algebraic<T> >(d));
+ 	 
+    for(int i = 0; i < d; i++ ) {
+//	vector<algebraic<T> > row;
+//	row.clear();
+	for(int j = 0; j < d; j++ ) { //check sign here
+	    cross_product_table(i,j) = xi.pow(i)*xi.pow(j).conjugate() - xi.pow(j)*xi.pow(i).conjugate();
+	//     row.push_back(xi.pow(i)*xi.pow(j).conjugate() 
+	// 		  - xi.pow(j)*xi.pow(i).conjugate());
+	 }
+	// cross_product_table.push_back(row);
+    }
+
+   
+
+}
+
+template class NumberField<bigrat>;
+template class algebraic<bigrat>;
+template class poly<bigrat>;
+
+template class NumberField<int64_t>;
+template class algebraic<int64_t>;
+template class poly<int64_t>;
+
+
+
+template void gcd_extended(poly<bigrat>& x, poly<bigrat>& y, const poly<bigrat> &a, const poly<bigrat> &b);
+template poly<bigrat> operator*(poly<bigrat> p, const poly<bigrat> &q);
+template poly<bigrat> operator+(poly<bigrat> p, const poly<bigrat> &q);
+template poly<bigrat> operator-(poly<bigrat> p, const poly<bigrat> &q);
+template poly<bigrat> operator*(bigrat r, poly<bigrat> p);
+template bool operator==(const poly<bigrat> &p, const poly<bigrat> &q);
+template bool operator!=(const poly<bigrat> &p, const poly<bigrat> &q);
+template void divide(poly<bigrat>& quotient, poly<bigrat>& remainder, const poly<bigrat> &f, const poly<bigrat> &g);
+
+template poly<bigrat> operator%(const poly<bigrat> &p, const poly<bigrat> &q);
+template ostream& operator <<(ostream& outputStream, const poly<bigrat>& p);
+template algebraic<bigrat> operator +(algebraic<bigrat> a, const algebraic<bigrat> &b);
+template algebraic<bigrat> operator -(algebraic<bigrat> a, const algebraic<bigrat> &b);
+template algebraic<bigrat> operator /(algebraic<bigrat> a, const algebraic<bigrat> &b);
+template algebraic<bigrat> operator *(algebraic<bigrat> a, const algebraic<bigrat> &b);
+template algebraic<bigrat> operator *(bigrat q, algebraic<bigrat> r);
+template algebraic<bigrat> operator *(algebraic<bigrat> r, bigrat q);
+template algebraic<bigrat> operator /(algebraic<bigrat> a, bigrat b);
+template bool operator==(const algebraic<bigrat> &p, const algebraic<bigrat> &q);
+template bool operator!=(const algebraic<bigrat> &p, const algebraic<bigrat> &q);
+template algebraic<bigrat> operator -(const algebraic<bigrat> &r);
+template ostream& operator <<(ostream& outputStream, const algebraic<bigrat>& num);
+template vector<bigrat> operator+(vector<bigrat> v, vector<bigrat> w);
+template vector<bigrat> operator*(bigrat v, vector<bigrat> w);
+template algebraic<bigrat> cross_product(const algebraic<bigrat> &u, const algebraic<bigrat> &v);
+
+
+template void gcd_extended(poly<int64_t>& x, poly<int64_t>& y, const poly<int64_t> &a, const poly<int64_t> &b);
+template poly<int64_t> operator*(poly<int64_t> p, const poly<int64_t> &q);
+template poly<int64_t> operator+(poly<int64_t> p, const poly<int64_t> &q);
+template poly<int64_t> operator-(poly<int64_t> p, const poly<int64_t> &q);
+template poly<int64_t> operator*(int64_t r, poly<int64_t> p);
+template bool operator==(const poly<int64_t> &p, const poly<int64_t> &q);
+template bool operator!=(const poly<int64_t> &p, const poly<int64_t> &q);
+template void divide(poly<int64_t>& quotient, poly<int64_t>& remainder, const poly<int64_t> &f, const poly<int64_t> &g);
+
+template poly<int64_t> operator%(const poly<int64_t> &p, const poly<int64_t> &q);
+template ostream& operator <<(ostream& outputStream, const poly<int64_t>& p);
+template algebraic<int64_t> operator +(algebraic<int64_t> a, const algebraic<int64_t> &b);
+template algebraic<int64_t> operator -(algebraic<int64_t> a, const algebraic<int64_t> &b);
+template algebraic<int64_t> operator /(algebraic<int64_t> a, const algebraic<int64_t> &b);
+template algebraic<int64_t> operator *(algebraic<int64_t> a, const algebraic<int64_t> &b);
+template algebraic<int64_t> operator *(int64_t q, algebraic<int64_t> r);
+template algebraic<int64_t> operator *(algebraic<int64_t> r, int64_t q);
+template bool operator==(const algebraic<int64_t> &p, const algebraic<int64_t> &q);
+template bool operator!=(const algebraic<int64_t> &p, const algebraic<int64_t> &q);
+template algebraic<int64_t> operator -(const algebraic<int64_t> &r);
+template ostream& operator <<(ostream& outputStream, const algebraic<int64_t>& num);
+template vector<int64_t> operator+(vector<int64_t> v, vector<int64_t> w);
+template vector<int64_t> operator*(int64_t v, vector<int64_t> w);
+template algebraic<int64_t> cross_product(const algebraic<int64_t> &u, const algebraic<int64_t> &v);
+
+
+
