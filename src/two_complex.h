@@ -19,14 +19,9 @@
 // #include <unistd.h>
 
 #include "defs.h"
-extern void ERR_RET(const char *s);
-extern void ERR_RET2(const char *s,int t);
 extern bool field_arithmetic;
 extern COORD EPSILON;
 
-
-
-#include "defs.h"
 #include "algebraic.h"
 #include "alg_t.h"
 
@@ -47,11 +42,6 @@ extern COORD EPSILON;
 
 #define NOT_HIT 0
 #define HIT_RELEVANT 1
-
-extern void ERR_RET(const char *s);
-extern void ERR_RET2(const char *s,int t);
-extern bool field_arithmetic;
-
 
 using namespace std;
 

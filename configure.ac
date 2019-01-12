@@ -18,13 +18,15 @@ AC_CANONICAL_HOST
 dnl Check for required libraries
 AC_LANG([C++])
 
-dnl We use GMP for big rationals
+dnl We use GMP for big rationals (which links against libm)
+AC_CHECK_LIB([m], [log], , AC_MSG_ERROR([libm not found]))
 AC_CHECK_LIB([gmp], [__gmpq_init], , AC_MSG_ERROR([GMP library not found]))
 AC_CHECK_LIB([gmpxx], [__gmpq_get_str], , AC_MSG_ERROR([GMP library (C++) not found]))
 AC_CHECK_HEADERS([gmpxx.h], [], AC_MSG_ERROR([gmpxx header not found (gmp needs to be compiled with c++ support (--enable-cxx))]))
 
-dnl We use NTL for integer matrices and LLL (which links against phtread)
-AC_CHECK_LIB([pthread], [pthread_create])
+dnl We use NTL for integer matrices and LLL (which links against phtread, gf2x)
+AC_CHECK_LIB([pthread], [pthread_create], , AC_MSG_ERROR([pthread library not fonud]))
+AC_CHECK_LIB([gf2x], [gf2x_mul], , AC_MSG_ERROR([gf2x library not found]))
 AX_CXX_CHECK_LIB([ntl], [NTL::ZZ::zero()], , AC_MSG_ERROR([NTL library not found]))
 AC_CHECK_HEADERS([NTL/mat_ZZ.h NTL/LLL.h], , AC_MSG_ERROR([NTL headers not found]))
 

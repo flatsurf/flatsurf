@@ -9,6 +9,7 @@ polygon_SOURCES =    \
     input.cc         \
     main.cc          \
     math.cc          \
+    misc.cc          \
     oedge.cc         \
     perturb.cc       \
     psimplex.cc      \
