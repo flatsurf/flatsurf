@@ -1,96 +1,12 @@
 #include "two_complex.h"
 
-/**
-* Title               : Convert Decimal to Roman Numeral (Convert Decimal to Roman Numeral.cpp)
-* Program Description : Write a C++ program to Convert Decimal Number to Roman Numeral.
-* Author              : robustprogramming.com
-* Interface           : Console
-* IDE                 : Code::Blocks 13.12
-* Operating System    : Windows 8.1
-*/
-
 #include<iostream>
 
 using namespace std;
 
 string roman_numeral(int decimalNumber)
 {
-	int j;   // Counter Variable
-	int m;   // Numerical Value 1000
-	int d;   // Numerical Value 500
-	int c;   // Numerical Value 100
-	int l;   // Numerical Value 50
-	int x;   // Numerical Value 10
-	int ix;  // Numerical Value 9
-	int v;   // Numerical Value 5
-	int iv;  // Numerical Value 4
-	int i;   // Numerical Value 1
-
-	if (decimalNumber == 0 ) {
-	    return("O");
-	}
-
-	
-	if (decimalNumber < 0)
-	{
-	    ERR_RET("roman_numeral: invalid number");
-	}
-	m = decimalNumber / 1000;
-	decimalNumber = decimalNumber % 1000;
-
-	d = decimalNumber / 500;
-	decimalNumber = decimalNumber % 500;
-
-	c = decimalNumber / 100;
-	decimalNumber = decimalNumber % 100;
-
-	l = decimalNumber / 50;
-	decimalNumber = decimalNumber % 50;
-
-	x = decimalNumber / 10;
-	decimalNumber = decimalNumber % 10;
-
-	ix = decimalNumber / 9;
-	decimalNumber = decimalNumber % 9;
-
-	v = decimalNumber / 5;
-	decimalNumber = decimalNumber % 5;
-
-	iv = decimalNumber / 4;
-	decimalNumber = decimalNumber % 4;
-
-	i = decimalNumber;
-
-	std::stringstream ss;
-	
-	for (j = 1; j <= m; j++)
-		ss << "M";
-
-	for (j = 1; j <= d; j++)
-		ss << "D";
-
-	for (j = 1; j <= c; j++)
-		ss << "C";
-
-	for (j = 1; j <= l; j++)
-		ss << "L";
-
-	for (j = 1; j <= x; j++)
-		ss << "X";
-
-	for (j = 1; j <= ix; j++)
-		ss << "IX";
-
-	for (j = 1; j <= v; j++)
-		ss << "V";
-
-	for (j = 1; j <= iv; j++)
-		ss << "IV";
-
-	for (j = 1; j <= i; j++)
-		ss << "I";
-
-	return ss.str();
+    throw std::logic_error("roman_numeral: The implementation of this function had to be removed since it's source was probably not GPL compatible.");
 }
 
 
