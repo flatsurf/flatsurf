@@ -132,7 +132,8 @@ int main(int argc, char **argv)
     n_slices = 1; 
 #endif
 
-    std::cout << "hostname = " << hostname << endl; 
+    // Do not display the hostname, to make runs more reproducible on CI
+    // std::cout << "hostname = " << hostname << endl; 
 
     for(int i = 0; i < argc; i++ ) {
         std::cout << argv[i] << " ";

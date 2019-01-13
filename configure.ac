@@ -24,15 +24,16 @@ AC_CHECK_LIB([gmp], [__gmpq_init], , AC_MSG_ERROR([GMP library not found]))
 AC_CHECK_LIB([gmpxx], [__gmpq_get_str], , AC_MSG_ERROR([GMP library (C++) not found]))
 AC_CHECK_HEADERS([gmpxx.h], [], AC_MSG_ERROR([gmpxx header not found (gmp needs to be compiled with c++ support (--enable-cxx))]))
 
-dnl We use NTL for integer matrices and LLL (which links against phtread, gf2x)
+dnl We use NTL for integer matrices and LLL (which links against phtread)
 AC_CHECK_LIB([pthread], [pthread_create], , AC_MSG_ERROR([pthread library not fonud]))
-AC_CHECK_LIB([gf2x], [gf2x_mul], , AC_MSG_ERROR([gf2x library not found]))
 AX_CXX_CHECK_LIB([ntl], [NTL::ZZ::zero()], , AC_MSG_ERROR([NTL library not found]))
 AC_CHECK_HEADERS([NTL/mat_ZZ.h NTL/LLL.h], , AC_MSG_ERROR([NTL headers not found]))
 
-dnl We use MPFR through Boost
-AC_CHECK_LIB([mpfr], [mpfr_init], , AC_MSG_ERROR([MPFR library not found]))
-AC_CHECK_HEADERS([boost/multiprecision/mpfr.hpp], , AC_MSG_ERROR([Boost MPFR headers not found]))
+dnl There is a code path that uses MPFR but it is not enabled currently
+dnl AC_CHECK_LIB([mpfr], [mpfr_init], , AC_MSG_ERROR([MPFR library not found]))
+
+dnl We use boost (e.g., to work with MPFR)
+AC_CHECK_HEADERS([boost/numeric/ublas/matrix.hpp], , AC_MSG_ERROR([Boost BLAS headers not found]))
 
 AC_CONFIG_HEADERS([src/config.h])
 AC_CONFIG_FILES([Makefile src/Makefile])

@@ -1,0 +1,42 @@
+package:
+  name: polygon
+  version: {{ environ.get('GIT_DESCRIBE_TAG', '') }}
+
+source:
+  git_url: ../
+
+# TODO: Add run_exports once this is a library
+# TODO: Add a coverage variant
+
+build:
+  number: {{ environ.get('GIT_DESCRIBE_NUMBER', 0) }}
+  string: {{ environ.get('GIT_BUILD_STR', '') }}
+  script_env:
+    - EXTRA_CXXFLAGS
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - automake
+  host:
+    - gmp
+    - ntl
+    - boost-cpp
+    # The code contains a code path for MPFR but it is not enabled by default.
+    # - mpfr
+
+test:
+  source_files:
+    - test/
+  commands:
+    - test/run.sh
+
+about:
+  home: https://github.com/saraedum/polygon
+  license: GPL2
+  license_file: COPYING
+  summary: Alex Eskin's polygon program
+
+extra:
+  maintainers:
+    - saraedum
