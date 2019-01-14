@@ -1,0 +1,497 @@
+polygon 1 1 4 6 --depth=10 --follow_depth=50 --show_cyls --show_moduli --cyls_only --quiet 
+max loc = 3
+alpha =  6 beta = 1 gamma = 1 delta =4
+a =  3.14159 b = 0.523599 c= 0.523599 d=2.0944
+a1_min = 2.0944 a1_max = 2.61799
+a1 = 2.45133
+angle a check: 0
+angle b check: -1.11022e-16
+angle c check: 3.14159
+angle d check: -4.44089e-16
+p = 1 q = 3.01393 p-q = 3.8382
+p = (1,0) q = (-2.32398,1.9191) r = (-1.21598,1.06531e-16)
+Imaginary of t_cx = -1.06531e-16
+p_algt = (1 0 0 0)+(0 0 0 0)t1
+r_algt = (0 0 0 0)+(-1 0 0 0)t1
+Checking p_alt (0,0)
+Checking q_alt (-4.44089e-16,4.44089e-16)
+Checking r_alt (0,-1.06531e-16)
+Checking p_algt (0,0)
+Checking q_algt (-4.44089e-16,4.44089e-16)
+Checking r_algt (0,-1.06531e-16)
+Number field: min poly (1 0 -1 0 1)
+#Field Degree=4 minimal polynomial=(1 0 -1 0 1)
+#Field generator embedding: (0.866025403784438710.49999999999999994
+#Params:1
+#t1=1.2159835222155908
+# Vertices: V0 V1 V2 V3
+# UEdges: 
+E0 ( V0 V1 F0 NULL ) (1.000000000000000000000000,0.000000000000000000000000)
+E1 ( V1 V2 F0 NULL ) (-3.323975283323385987443999,1.919098024606419539139779)
+E2 ( V2 V3 F0 NULL ) (1.107991761107795181118263,-1.919098024606419539139779)
+E3 ( V3 V0 F0 NULL ) (1.215983522215590806325736,-0.000000000000000000000000)
+# Faces: 
+F0 +E0 +E1 +E2 +E3
+#UEdges Algebraic 
+#E0: (1 0 0 0)+(0 0 0 0)t1
+#E1: (-2 0 1 0)+(-2 0 1 0)t1
+#E2: (1 0 -1 0)+(1 0 -1 0)t1
+#E3: (0 0 0 0)+(1 0 0 0)t1
+F0 V0(E0) V1(E1) a=0, can_bisect=0
+F0 V0(E0) V2(E2) a=0.166667, can_bisect=1
+F0 V0(E0) V3(E3) a=0, can_bisect=0
+F0 V1(E1) V2(E2) a=0, can_bisect=0
+F0 V1(E1) V3(E3) a=0, can_bisect=1
+F0 V2(E2) V3(E3) a=0, can_bisect=0
+F0 best_angle = 0.166667
+In RetriangulateSurface
+Removing V0
+F25 V3(E10) V40(E6) a=0, can_bisect=0
+F25 V3(E10) V21(E1) a=0.523599, can_bisect=1
+F25 V3(E10) V40(E2) a=0, can_bisect=0
+F25 V40(E6) V21(E1) a=0, can_bisect=0
+F25 V40(E6) V40(E2) a=1.0472, can_bisect=0
+F25 V21(E1) V40(E2) a=0, can_bisect=0
+F25 best_angle = 0.523599
+Removing V10
+F28 V40(E38) V15(E16) a=0, can_bisect=0
+F28 V40(E38) V40(E1) a=1.0472, can_bisect=0
+F28 V40(E38) V21(E21) a=0, can_bisect=0
+F28 V15(E16) V40(E1) a=0, can_bisect=0
+F28 V15(E16) V21(E21) a=0.523599, can_bisect=1
+F28 V40(E1) V21(E21) a=0, can_bisect=0
+F28 best_angle = 0.523599
+Removing V17
+F31 V40(E21) V21(E45) a=0, can_bisect=0
+F31 V40(E21) V40(E41) a=1.0472, can_bisect=0
+F31 V40(E21) V3(E2) a=0, can_bisect=0
+F31 V21(E45) V40(E41) a=0, can_bisect=0
+F31 V21(E45) V3(E2) a=0.523599, can_bisect=1
+F31 V40(E41) V3(E2) a=0, can_bisect=0
+F31 best_angle = 0.523599
+Removing V21
+F34 V40(E38) V15(E16) a=0, can_bisect=0
+F34 V40(E38) V40(E2) a=1.5708, can_bisect=0
+F34 V40(E38) V3(E10) a=0, can_bisect=1
+F34 V40(E38) V40(E25) a=0, can_bisect=1
+F34 V40(E38) V22(E47) a=0.417709, can_bisect=1
+F34 V40(E38) V40(E31) a=0.166667, can_bisect=1
+F34 V40(E38) V30(E53) a=0.417709, can_bisect=1
+F34 V40(E38) V40(E67) a=0, can_bisect=0
+F34 V40(E38) V59(E59) a=0.268726, can_bisect=1
+F34 V40(E38) V40(E41) a=1.21386, can_bisect=0
+F34 V40(E38) V3(E2) a=0, can_bisect=0
+F34 V15(E16) V40(E2) a=0, can_bisect=0
+F34 V15(E16) V3(E10) a=1.0472, can_bisect=1
+F34 V15(E16) V40(E25) a=0, can_bisect=1
+F34 V15(E16) V22(E47) a=1.7128, can_bisect=1
+F34 V15(E16) V40(E31) a=0.356792, can_bisect=0
+F34 V15(E16) V30(E53) a=2.0944, can_bisect=1
+F34 V15(E16) V40(E67) a=0.356792, can_bisect=0
+F34 V15(E16) V59(E59) a=1.7128, can_bisect=1
+F34 V15(E16) V40(E41) a=0, can_bisect=0
+F34 V15(E16) V3(E2) a=1.0472, can_bisect=1
+F34 V40(E2) V3(E10) a=0, can_bisect=0
+F34 V40(E2) V40(E25) a=1.21386, can_bisect=0
+F34 V40(E2) V22(E47) a=0.268726, can_bisect=1
+F34 V40(E2) V40(E31) a=0, can_bisect=0
+F34 V40(E2) V30(E53) a=0.417709, can_bisect=1
+F34 V40(E2) V40(E67) a=0.166667, can_bisect=1
+F34 V40(E2) V59(E59) a=0.417709, can_bisect=1
+F34 V40(E2) V40(E41) a=0, can_bisect=1
+F34 V40(E2) V3(E2) a=0, can_bisect=1
+F34 V3(E10) V40(E25) a=0, can_bisect=0
+F34 V3(E10) V22(E47) a=0.824318, can_bisect=1
+F34 V3(E10) V40(E31) a=0.690265, can_bisect=0
+F34 V3(E10) V30(E53) a=1.7128, can_bisect=1
+F34 V3(E10) V40(E67) a=0.356792, can_bisect=0
+F34 V3(E10) V59(E59) a=2.0944, can_bisect=1
+F34 V3(E10) V40(E41) a=0.333473, can_bisect=1
+F34 V3(E10) V3(E2) a=1.5708, can_bisect=1
+F34 V40(E25) V22(E47) a=0, can_bisect=0
+F34 V40(E25) V40(E31) a=1.21386, can_bisect=0
+F34 V40(E25) V30(E53) a=0.778472, can_bisect=0
+F34 V40(E25) V40(E67) a=0.690265, can_bisect=0
+F34 V40(E25) V59(E59) a=0.0607767, can_bisect=1
+F34 V40(E25) V40(E41) a=0.166667, can_bisect=1
+F34 V40(E25) V3(E2) a=0.333473, can_bisect=1
+F34 V22(E47) V40(E31) a=0, can_bisect=0
+F34 V22(E47) V30(E53) a=1.40413, can_bisect=1
+F34 V22(E47) V40(E67) a=0.42154, can_bisect=0
+F34 V22(E47) V59(E59) a=1.92773, can_bisect=1
+F34 V22(E47) V40(E41) a=0.0607767, can_bisect=1
+F34 V22(E47) V3(E2) a=2.0944, can_bisect=1
+F34 V40(E31) V30(E53) a=0, can_bisect=0
+F34 V40(E31) V40(E67) a=1.21386, can_bisect=0
+F34 V40(E31) V59(E59) a=0.42154, can_bisect=0
+F34 V40(E31) V40(E41) a=0.690265, can_bisect=0
+F34 V40(E31) V3(E2) a=0.356792, can_bisect=0
+F34 V30(E53) V40(E67) a=0, can_bisect=0
+F34 V30(E53) V59(E59) a=1.40413, can_bisect=1
+F34 V30(E53) V40(E41) a=0.778472, can_bisect=0
+F34 V30(E53) V3(E2) a=1.7128, can_bisect=1
+F34 V40(E67) V59(E59) a=0, can_bisect=0
+F34 V40(E67) V40(E41) a=1.21386, can_bisect=0
+F34 V40(E67) V3(E2) a=0.690265, can_bisect=0
+F34 V59(E59) V40(E41) a=0, can_bisect=0
+F34 V59(E59) V3(E2) a=0.824318, can_bisect=1
+F34 V40(E41) V3(E2) a=0, can_bisect=0
+F34 best_angle = 2.0944
+F36 V30(E53) V40(E67) a=0, can_bisect=0
+F36 V30(E53) V59(E59) a=1.0472, can_bisect=1
+F36 V30(E53) V40(E41) a=0.778472, can_bisect=0
+F36 V30(E53) V3(E2) a=0.738527, can_bisect=1
+F36 V30(E53) V40(E38) a=0.417709, can_bisect=1
+F36 V30(E53) V15(E74) a=0, can_bisect=0
+F36 V40(E67) V59(E59) a=0, can_bisect=0
+F36 V40(E67) V40(E41) a=1.21386, can_bisect=0
+F36 V40(E67) V3(E2) a=0.690265, can_bisect=0
+F36 V40(E67) V40(E38) a=0, can_bisect=0
+F36 V40(E67) V15(E74) a=0.333473, can_bisect=0
+F36 V59(E59) V40(E41) a=0, can_bisect=0
+F36 V59(E59) V3(E2) a=0.824318, can_bisect=1
+F36 V59(E59) V40(E38) a=0.268726, can_bisect=1
+F36 V59(E59) V15(E74) a=0.308671, can_bisect=1
+F36 V40(E41) V3(E2) a=0, can_bisect=0
+F36 V40(E41) V40(E38) a=1.21386, can_bisect=0
+F36 V40(E41) V15(E74) a=0, can_bisect=0
+F36 V3(E2) V40(E38) a=0, can_bisect=0
+F36 V3(E2) V15(E74) a=1.0472, can_bisect=1
+F36 V40(E38) V15(E74) a=0, can_bisect=0
+F36 best_angle = 1.0472
+F38 V59(E59) V40(E41) a=0, can_bisect=0
+F38 V59(E59) V3(E2) a=0.824318, can_bisect=1
+F38 V59(E59) V40(E38) a=0.268726, can_bisect=1
+F38 V59(E59) V15(E74) a=0.308671, can_bisect=1
+F38 V59(E59) V30(E75) a=0, can_bisect=0
+F38 V40(E41) V3(E2) a=0, can_bisect=0
+F38 V40(E41) V40(E38) a=1.21386, can_bisect=0
+F38 V40(E41) V15(E74) a=0, can_bisect=0
+F38 V40(E41) V30(E75) a=0.778472, can_bisect=0
+F38 V3(E2) V40(E38) a=0, can_bisect=0
+F38 V3(E2) V15(E74) a=1.0472, can_bisect=1
+F38 V3(E2) V30(E75) a=0.308671, can_bisect=1
+F38 V40(E38) V15(E74) a=0, can_bisect=0
+F38 V40(E38) V30(E75) a=0.417709, can_bisect=1
+F38 V15(E74) V30(E75) a=0, can_bisect=0
+F38 best_angle = 1.0472
+F40 V15(E74) V30(E75) a=0, can_bisect=0
+F40 V15(E74) V59(E59) a=0.308671, can_bisect=1
+F40 V15(E74) V40(E41) a=0, can_bisect=0
+F40 V15(E74) V3(E76) a=0, can_bisect=0
+F40 V30(E75) V59(E59) a=0, can_bisect=0
+F40 V30(E75) V40(E41) a=0.778472, can_bisect=0
+F40 V30(E75) V3(E76) a=0.308671, can_bisect=1
+F40 V59(E59) V40(E41) a=0, can_bisect=0
+F40 V59(E59) V3(E76) a=0.824318, can_bisect=1
+F40 V40(E41) V3(E76) a=0, can_bisect=0
+F40 best_angle = 0.824318
+F42 V3(E76) V15(E74) a=0, can_bisect=0
+F42 V3(E76) V30(E75) a=0.158715, can_bisect=1
+F42 V3(E76) V59(E77) a=0, can_bisect=0
+F42 V15(E74) V30(E75) a=0, can_bisect=0
+F42 V15(E74) V59(E77) a=0.308671, can_bisect=1
+F42 V30(E75) V59(E77) a=0, can_bisect=0
+F42 best_angle = 0.308671
+F35 V15(E16) V40(E2) a=0, can_bisect=0
+F35 V15(E16) V3(E10) a=1.0472, can_bisect=1
+F35 V15(E16) V40(E25) a=0, can_bisect=1
+F35 V15(E16) V22(E47) a=0.308671, can_bisect=1
+F35 V15(E16) V40(E31) a=0.333473, can_bisect=0
+F35 V15(E16) V30(E74) a=0, can_bisect=0
+F35 V40(E2) V3(E10) a=0, can_bisect=0
+F35 V40(E2) V40(E25) a=1.21386, can_bisect=0
+F35 V40(E2) V22(E47) a=0.268726, can_bisect=1
+F35 V40(E2) V40(E31) a=0, can_bisect=0
+F35 V40(E2) V30(E74) a=0.417709, can_bisect=1
+F35 V3(E10) V40(E25) a=0, can_bisect=0
+F35 V3(E10) V22(E47) a=0.824318, can_bisect=1
+F35 V3(E10) V40(E31) a=0.690265, can_bisect=0
+F35 V3(E10) V30(E74) a=0.738527, can_bisect=1
+F35 V40(E25) V22(E47) a=0, can_bisect=0
+F35 V40(E25) V40(E31) a=1.21386, can_bisect=0
+F35 V40(E25) V30(E74) a=0.778472, can_bisect=0
+F35 V22(E47) V40(E31) a=0, can_bisect=0
+F35 V22(E47) V30(E74) a=1.0472, can_bisect=1
+F35 V40(E31) V30(E74) a=0, can_bisect=0
+F35 best_angle = 1.0472
+F46 V30(E74) V15(E16) a=0, can_bisect=0
+F46 V30(E74) V40(E2) a=0.417709, can_bisect=1
+F46 V30(E74) V3(E10) a=0.308671, can_bisect=1
+F46 V30(E74) V40(E25) a=0.778472, can_bisect=0
+F46 V30(E74) V22(E79) a=0, can_bisect=0
+F46 V15(E16) V40(E2) a=0, can_bisect=0
+F46 V15(E16) V3(E10) a=1.0472, can_bisect=1
+F46 V15(E16) V40(E25) a=0, can_bisect=1
+F46 V15(E16) V22(E79) a=0.308671, can_bisect=1
+F46 V40(E2) V3(E10) a=0, can_bisect=0
+F46 V40(E2) V40(E25) a=1.21386, can_bisect=0
+F46 V40(E2) V22(E79) a=0.268726, can_bisect=1
+F46 V3(E10) V40(E25) a=0, can_bisect=0
+F46 V3(E10) V22(E79) a=0.824318, can_bisect=1
+F46 V40(E25) V22(E79) a=0, can_bisect=0
+F46 best_angle = 1.0472
+F48 V3(E10) V40(E25) a=0, can_bisect=0
+F48 V3(E10) V22(E79) a=0.824318, can_bisect=1
+F48 V3(E10) V30(E74) a=0.308671, can_bisect=1
+F48 V3(E10) V15(E80) a=0, can_bisect=0
+F48 V40(E25) V22(E79) a=0, can_bisect=0
+F48 V40(E25) V30(E74) a=0.778472, can_bisect=0
+F48 V40(E25) V15(E80) a=0, can_bisect=1
+F48 V22(E79) V30(E74) a=0, can_bisect=0
+F48 V22(E79) V15(E80) a=0.308671, can_bisect=1
+F48 V30(E74) V15(E80) a=0, can_bisect=0
+F48 best_angle = 0.824318
+F50 V22(E79) V30(E74) a=0, can_bisect=0
+F50 V22(E79) V15(E80) a=0.308671, can_bisect=1
+F50 V22(E79) V3(E81) a=0, can_bisect=0
+F50 V30(E74) V15(E80) a=0, can_bisect=0
+F50 V30(E74) V3(E81) a=0.158715, can_bisect=1
+F50 V15(E80) V3(E81) a=0, can_bisect=0
+F50 best_angle = 0.308671
+Removing V22
+F53 V3(E10) V40(E16) a=0, can_bisect=0
+F53 V3(E10) V15(E52) a=1.0472, can_bisect=1
+F53 V3(E10) V40(E31) a=0, can_bisect=1
+F53 V3(E10) V30(E74) a=0.738527, can_bisect=1
+F53 V3(E10) V15(E80) a=0, can_bisect=0
+F53 V40(E16) V15(E52) a=0, can_bisect=0
+F53 V40(E16) V40(E31) a=1.21386, can_bisect=0
+F53 V40(E16) V30(E74) a=0.268726, can_bisect=1
+F53 V40(E16) V15(E80) a=0, can_bisect=1
+F53 V15(E52) V40(E31) a=0, can_bisect=0
+F53 V15(E52) V30(E74) a=0.824318, can_bisect=1
+F53 V15(E52) V15(E80) a=0.523599, can_bisect=1
+F53 V40(E31) V30(E74) a=0, can_bisect=0
+F53 V40(E31) V15(E80) a=0.333473, can_bisect=1
+F53 V30(E74) V15(E80) a=0, can_bisect=0
+F53 best_angle = 1.0472
+F55 V15(E52) V40(E31) a=0, can_bisect=0
+F55 V15(E52) V30(E74) a=0.824318, can_bisect=1
+F55 V15(E52) V15(E80) a=0.523599, can_bisect=1
+F55 V15(E52) V3(E83) a=0, can_bisect=0
+F55 V40(E31) V30(E74) a=0, can_bisect=0
+F55 V40(E31) V15(E80) a=0.333473, can_bisect=1
+F55 V40(E31) V3(E83) a=0, can_bisect=1
+F55 V30(E74) V15(E80) a=0, can_bisect=0
+F55 V30(E74) V3(E83) a=0.738527, can_bisect=1
+F55 V15(E80) V3(E83) a=0, can_bisect=0
+F55 best_angle = 0.824318
+F57 V30(E74) V15(E80) a=0, can_bisect=0
+F57 V30(E74) V3(E83) a=0.738527, can_bisect=1
+F57 V30(E74) V15(E84) a=0, can_bisect=0
+F57 V15(E80) V3(E83) a=0, can_bisect=0
+F57 V15(E80) V15(E84) a=0.523599, can_bisect=1
+F57 V3(E83) V15(E84) a=0, can_bisect=0
+F57 best_angle = 0.738527
+Removing V30
+F60 V15(E52) V40(E10) a=0, can_bisect=0
+F60 V15(E52) V3(E41) a=1.0472, can_bisect=1
+F60 V15(E52) V40(E67) a=0, can_bisect=1
+F60 V15(E52) V59(E78) a=1.35587, can_bisect=1
+F60 V15(E52) V15(E80) a=0.523599, can_bisect=1
+F60 V15(E52) V3(E83) a=0, can_bisect=0
+F60 V40(E10) V3(E41) a=0, can_bisect=0
+F60 V40(E10) V40(E67) a=1.21386, can_bisect=0
+F60 V40(E10) V59(E78) a=0.268726, can_bisect=1
+F60 V40(E10) V15(E80) a=0.333473, can_bisect=1
+F60 V40(E10) V3(E83) a=0, can_bisect=1
+F60 V3(E41) V40(E67) a=0, can_bisect=0
+F60 V3(E41) V59(E78) a=0.824318, can_bisect=1
+F60 V3(E41) V15(E80) a=0.308671, can_bisect=1
+F60 V3(E41) V3(E83) a=0.523599, can_bisect=1
+F60 V40(E67) V59(E78) a=0, can_bisect=0
+F60 V40(E67) V15(E80) a=0.713724, can_bisect=0
+F60 V40(E67) V3(E83) a=0.333473, can_bisect=1
+F60 V59(E78) V15(E80) a=0, can_bisect=0
+F60 V59(E78) V3(E83) a=0.738527, can_bisect=1
+F60 V15(E80) V3(E83) a=0, can_bisect=0
+F60 best_angle = 1.35587
+F62 V59(E78) V15(E80) a=0, can_bisect=0
+F62 V59(E78) V3(E83) a=0.738527, can_bisect=1
+F62 V59(E78) V15(E86) a=0, can_bisect=0
+F62 V15(E80) V3(E83) a=0, can_bisect=0
+F62 V15(E80) V15(E86) a=0.523599, can_bisect=1
+F62 V3(E83) V15(E86) a=0, can_bisect=0
+F62 best_angle = 0.738527
+F61 V15(E52) V40(E10) a=0, can_bisect=0
+F61 V15(E52) V3(E41) a=0.738527, can_bisect=1
+F61 V15(E52) V40(E67) a=0, can_bisect=1
+F61 V15(E52) V59(E86) a=0, can_bisect=0
+F61 V40(E10) V3(E41) a=0, can_bisect=0
+F61 V40(E10) V40(E67) a=1.21386, can_bisect=0
+F61 V40(E10) V59(E86) a=0.268726, can_bisect=1
+F61 V3(E41) V40(E67) a=0, can_bisect=0
+F61 V3(E41) V59(E86) a=0.824318, can_bisect=1
+F61 V40(E67) V59(E86) a=0, can_bisect=0
+F61 best_angle = 0.824318
+F66 V59(E86) V15(E52) a=0, can_bisect=0
+F66 V59(E86) V40(E10) a=0.268726, can_bisect=1
+F66 V59(E86) V3(E88) a=0, can_bisect=0
+F66 V15(E52) V40(E10) a=0, can_bisect=0
+F66 V15(E52) V3(E88) a=0.738527, can_bisect=1
+F66 V40(E10) V3(E88) a=0, can_bisect=0
+F66 best_angle = 0.738527
+Removing V40
+F69 V3(E77) V59(E60) a=0, can_bisect=0
+F69 V3(E77) V15(E76) a=0.579812, can_bisect=1
+F69 V3(E77) V3(E80) a=0.523599, can_bisect=1
+F69 V3(E77) V15(E83) a=1.0472, can_bisect=1
+F69 V3(E77) V3(E89) a=0.523599, can_bisect=1
+F69 V3(E77) V15(E60) a=0.579812, can_bisect=1
+F69 V3(E77) V59(E88) a=0, can_bisect=0
+F69 V59(E60) V15(E76) a=0, can_bisect=0
+F69 V59(E60) V3(E80) a=0, can_bisect=1
+F69 V59(E60) V15(E83) a=0.399932, can_bisect=1
+F69 V59(E60) V3(E89) a=0.673367, can_bisect=1
+F69 V59(E60) V15(E60) a=0.250595, can_bisect=1
+F69 V59(E60) V59(E88) a=1.5708, can_bisect=0
+F69 V15(E76) V3(E80) a=0, can_bisect=0
+F69 V15(E76) V15(E83) a=0.523599, can_bisect=1
+F69 V15(E76) V3(E89) a=1.0472, can_bisect=1
+F69 V15(E76) V15(E60) a=1.5708, can_bisect=1
+F69 V15(E76) V59(E88) a=0.250595, can_bisect=1
+F69 V3(E80) V15(E83) a=0, can_bisect=0
+F69 V3(E80) V3(E89) a=0.523599, can_bisect=1
+F69 V3(E80) V15(E60) a=1.0472, can_bisect=1
+F69 V3(E80) V59(E88) a=0.673367, can_bisect=1
+F69 V15(E83) V3(E89) a=0, can_bisect=0
+F69 V15(E83) V15(E60) a=0.523599, can_bisect=1
+F69 V15(E83) V59(E88) a=0.399932, can_bisect=1
+F69 V3(E89) V15(E60) a=0, can_bisect=0
+F69 V3(E89) V59(E88) a=0, can_bisect=0
+F69 V15(E60) V59(E88) a=0, can_bisect=0
+F69 best_angle = 1.5708
+F71 V15(E60) V59(E88) a=0, can_bisect=0
+F71 V15(E60) V3(E77) a=0.523599, can_bisect=1
+F71 V15(E60) V59(E60) a=0.250595, can_bisect=1
+F71 V15(E60) V15(E90) a=0, can_bisect=0
+F71 V59(E88) V3(E77) a=0, can_bisect=0
+F71 V59(E88) V59(E60) a=1.5708, can_bisect=0
+F71 V59(E88) V15(E90) a=0.250595, can_bisect=1
+F71 V3(E77) V59(E60) a=0, can_bisect=0
+F71 V3(E77) V15(E90) a=0.523599, can_bisect=1
+F71 V59(E60) V15(E90) a=0, can_bisect=0
+F71 best_angle = 0.523599
+F73 V15(E90) V15(E60) a=0, can_bisect=0
+F73 V15(E90) V59(E88) a=0.216791, can_bisect=1
+F73 V15(E90) V3(E91) a=0, can_bisect=0
+F73 V15(E60) V59(E88) a=0, can_bisect=0
+F73 V15(E60) V3(E91) a=0.523599, can_bisect=1
+F73 V59(E88) V3(E91) a=0, can_bisect=0
+F73 best_angle = 0.523599
+F70 V15(E76) V3(E80) a=0, can_bisect=0
+F70 V15(E76) V15(E83) a=0.523599, can_bisect=1
+F70 V15(E76) V3(E89) a=0.523599, can_bisect=1
+F70 V15(E76) V15(E90) a=0, can_bisect=0
+F70 V3(E80) V15(E83) a=0, can_bisect=0
+F70 V3(E80) V3(E89) a=0.523599, can_bisect=1
+F70 V3(E80) V15(E90) a=0.523599, can_bisect=1
+F70 V15(E83) V3(E89) a=0, can_bisect=0
+F70 V15(E83) V15(E90) a=0.523599, can_bisect=1
+F70 V3(E89) V15(E90) a=0, can_bisect=0
+F70 best_angle = 0.523599
+F76 V3(E80) V15(E83) a=0, can_bisect=0
+F76 V3(E80) V3(E89) a=0.523599, can_bisect=1
+F76 V3(E80) V15(E93) a=0, can_bisect=0
+F76 V15(E83) V3(E89) a=0, can_bisect=0
+F76 V15(E83) V15(E93) a=0.523599, can_bisect=1
+F76 V3(E89) V15(E93) a=0, can_bisect=0
+F76 best_angle = 0.523599
+Removing V59
+F80 V15(E91) V3(E76) a=0, can_bisect=0
+F80 V15(E91) V15(E80) a=0.523599, can_bisect=1
+F80 V15(E91) V3(E83) a=1.0472, can_bisect=1
+F80 V15(E91) V15(E89) a=0.523599, can_bisect=1
+F80 V15(E91) V3(E92) a=0, can_bisect=0
+F80 V3(E76) V15(E80) a=0, can_bisect=0
+F80 V3(E76) V3(E83) a=0.523599, can_bisect=1
+F80 V3(E76) V15(E89) a=1.0472, can_bisect=1
+F80 V3(E76) V3(E92) a=0.523599, can_bisect=1
+F80 V15(E80) V3(E83) a=0, can_bisect=0
+F80 V15(E80) V15(E89) a=0.523599, can_bisect=1
+F80 V15(E80) V3(E92) a=1.0472, can_bisect=1
+F80 V3(E83) V15(E89) a=0, can_bisect=0
+F80 V3(E83) V3(E92) a=0.523599, can_bisect=1
+F80 V15(E89) V3(E92) a=0, can_bisect=0
+F80 best_angle = 1.0472
+F82 V3(E92) V15(E91) a=0, can_bisect=0
+F82 V3(E92) V3(E76) a=0.523599, can_bisect=1
+F82 V3(E92) V15(E95) a=0, can_bisect=0
+F82 V15(E91) V3(E76) a=0, can_bisect=0
+F82 V15(E91) V15(E95) a=0.523599, can_bisect=1
+F82 V3(E76) V15(E95) a=0, can_bisect=0
+F82 best_angle = 0.523599
+F81 V15(E80) V3(E83) a=0, can_bisect=0
+F81 V15(E80) V15(E89) a=0.523599, can_bisect=1
+F81 V15(E80) V3(E95) a=0, can_bisect=0
+F81 V3(E83) V15(E89) a=0, can_bisect=0
+F81 V3(E83) V3(E95) a=0.523599, can_bisect=1
+F81 V15(E89) V3(E95) a=0, can_bisect=0
+F81 best_angle = 0.523599
+Longest Edge: 4.43197
+Looking for shortest saddle...2.21598
+Clearing denominators: multiplying by 1
+#Field Degree=4 minimal polynomial=(1 0 -1 0 1)
+#Field generator embedding: (0.866025403784438710.49999999999999994
+#Params:1
+#t1=1.2159835222155908
+# Vertices: V3 V15
+# UEdges: 
+E76 ( V3 V15 F84 F77 ) (-2.215983522215591250414946,0.000000000000000000000000)
+E80 ( V15 V3 F85 F78 ) (-1.107991761107795625207473,-1.919098024606419539139779)
+E83 ( V3 V15 F85 F78 ) (1.107991761107794959073658,-1.919098024606419539139779)
+E89 ( V15 V3 F86 F79 ) (2.215983522215590806325736,0.000000000000000000000000)
+E90 ( V15 V15 F75 F77 ) (0.000000000000001332267630,3.838196049212839078279558)
+E91 ( V3 V15 F75 F83 ) (1.107991761107794737029053,-1.919098024606419539139779)
+E92 ( V15 V3 F75 F83 ) (-1.107991761107795625207473,-1.919098024606419539139779)
+E93 ( V3 V15 F77 F79 ) (-2.215983522215590362236526,3.838196049212839078279558)
+E94 ( V3 V3 F79 F78 ) (0.000000000000000666133815,3.838196049212839078279558)
+E95 ( V15 V3 F84 F86 ) (2.215983522215590362236526,-3.838196049212839078279558)
+E96 ( V3 V3 F84 F83 ) (0.000000000000000888178420,3.838196049212839078279558)
+E97 ( V15 V15 F86 F85 ) (-0.000000000000000666133815,-3.838196049212839078279558)
+# Faces: 
+F75 +E91 +E90 +E92
+F77 -E90 -E76 +E93
+F78 -E80 -E83 -E94
+F79 -E89 -E93 +E94
+F83 -E92 -E91 -E96
+F84 +E76 +E95 +E96
+F85 +E80 +E83 -E97
+F86 +E89 -E95 +E97
+#UEdges Algebraic 
+#E76: (-1 0 0 0)+(-1 0 0 0)t1
+#E80: (0 0 -1 0)+(0 0 -1 0)t1
+#E83: (1 0 -1 0)+(1 0 -1 0)t1
+#E89: (1 0 0 0)+(1 0 0 0)t1
+#E90: (-1 0 2 0)+(-1 0 2 0)t1
+#E91: (1 0 -1 0)+(1 0 -1 0)t1
+#E92: (0 0 -1 0)+(0 0 -1 0)t1
+#E93: (-2 0 2 0)+(-2 0 2 0)t1
+#E94: (-1 0 2 0)+(-1 0 2 0)t1
+#E95: (2 0 -2 0)+(2 0 -2 0)t1
+#E96: (-1 0 2 0)+(-1 0 2 0)t1
+#E97: (1 0 -2 0)+(1 0 -2 0)t1
+# File =  perturb = 0 rescale = 1
+# vertices: 2
+## V3(12) (4 PI) V15(12) (4 PI) 
+# edges: 12
+## E76(2) E80(2) E83(2) E89(2) E90(2) E91(2) E92(2) E93(2) E94(2) E95(2) E96(2) E97(2) 
+# faces: 8
+# genus: 2
+# area: 25.5161
+sweeping start V3 depth = 50.5135
+File =  depth = 50.5135 follow_depth = 252.568 perturb = 0
+Final Report:
+
+ part done:100% weird 0 bad_angle 20 unusual 0 close 164237 reject 0
+V3: AcBd V15: aDbC   cylinders |1|1|
+Moduli: |1|1| Min Area: 1 Max Area: 1
+    total: 1.39932 0.850683 sym = 4
+    raw = 1069 short saddle = 2.21598 short cyl = 6.64795 tag #0
+V3: AbBa V15: CcDd   cylinders |1|1|2|
+Moduli: |1|1|1| Min Area: 1 Max Area: 1
+    total: 0.76969 0.467916 sym = 4
+    raw = 588 short saddle = 3.8382 short cyl = 3.8382 tag #1
+
+total cylinders: 5.10509 3.10352 raw = 975 rejected = 0
