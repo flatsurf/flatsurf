@@ -15,8 +15,6 @@
 #include <stdio.h>
 #include <cerrno>
 #include <stdint.h>
-#include <ext/stdio_sync_filebuf.h>
-// #include <unistd.h>
 
 #include "defs.h"
 extern bool field_arithmetic;
