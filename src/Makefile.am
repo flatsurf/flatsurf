@@ -1,13 +1,18 @@
 bin_PROGRAMS = polygon
 
-polygon_SOURCES =    \
-    algebraic.cc     \
+polygon_SOURCES = main.cc
+
+polygon_LDADD = libpolygon.la
+
+lib_LTLIBRARIES = libpolygon.la
+
+libpolygon_la_SOURCES = \
+	algebraic.cc     \
     alg_misc.cc      \
     alg_t.cc         \
     dir.cc           \
     face.cc          \
     input.cc         \
-    main.cc          \
     math.cc          \
     misc.cc          \
     oedge.cc         \
@@ -22,6 +27,8 @@ polygon_SOURCES =    \
     two_complex.cc   \
     uedge.cc         \
     vertex.cc 
+
+libpolygon_la_LDFLAGS = -version-info $(libpolygon_version_info)
 
 include_HEADERS =    \
     algebraic.h \
