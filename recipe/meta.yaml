@@ -1,29 +1,29 @@
+{% set version = "0.0.1" %}
+{% set name = "polygon" %}
+
 package:
-  name: polygon
-  version: {{ environ.get('GIT_DESCRIBE_TAG', '') }}
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  git_url: ../
+  git_url: {{ environ.get('FEEDSTOCK_ROOT', '..') }}
 
-# TODO: Add run_exports once this is a library
-# TODO: Add a coverage variant
+# TODO: run_exports once this is a library
+# TODO: Do we want a coverage variant?
 
 build:
-  number: {{ environ.get('GIT_DESCRIBE_NUMBER', 0) }}
-  string: {{ environ.get('GIT_BUILD_STR', '') }}
-  script_env:
-    - EXTRA_CXXFLAGS
+  number: 0
+  skip: true        # [win or osx]
 
 requirements:
   build:
-    - {{ compiler('cxx') }}
+    - libtool
     - automake
+    - {{ compiler('cxx') }}
   host:
     - gmp
     - ntl
     - boost-cpp
-    # The code contains a code path for MPFR but it is not enabled by default.
-    # - mpfr
 
 test:
   source_files:
@@ -32,11 +32,11 @@ test:
     - test/run.sh
 
 about:
-  home: https://github.com/saraedum/polygon
+  home: https://github.com/polygon-tbd/polygon
   license: GPL2
   license_file: COPYING
   summary: Alex Eskin's polygon program
 
 extra:
-  maintainers:
+  recipe-maintainers:
     - saraedum
