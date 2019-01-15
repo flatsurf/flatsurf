@@ -1,15 +1,13 @@
-{% set version = "0.0.1" %}
 {% set name = "polygon" %}
 
 package:
   name: {{ name }}
-  version: {{ version }}
+  version: {{ GIT_DESCRIBE_HASH }}
 
 source:
   git_url: {{ environ.get('FEEDSTOCK_ROOT', '..') }}
 
-# TODO: run_exports once this is a library
-# TODO: Do we want a coverage variant?
+# TODO: run_exports & split outputs once this is a library
 
 build:
   number: 0
