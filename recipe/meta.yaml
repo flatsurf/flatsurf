@@ -2,7 +2,7 @@
 
 package:
   name: {{ name }}
-  version: {{ GIT_DESCRIBE_HASH }}
+  version: "{{ environ.get('GIT_DESCRIBE_TAG') }}"
 
 source:
   git_url: {{ environ.get('FEEDSTOCK_ROOT', '..') }}
@@ -10,7 +10,8 @@ source:
 # TODO: run_exports & split outputs once this is a library
 
 build:
-  number: 0
+  number: {{ environ.get('GIT_DESCRIBE_NUMBER') }}
+  string: master
   skip: true        # [win or osx]
 
 requirements:
