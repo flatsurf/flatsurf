@@ -1405,10 +1405,6 @@ int Summary::add_new_conf(SaddleConf& sc)
 
     
 
-     ostdiostream output_stream;
-
-
-
      if ( show_cyls && !closure ) {
 	 sc.calculate_cylinders();
 	 if ( sc.n_cyl ) {
@@ -1471,15 +1467,14 @@ int Summary::add_new_conf(SaddleConf& sc)
      if ( closure ) {
 	  /* open file here */
 	  sprintf(filename,"closure.%lu",scf.size());
-	  sc.output_f = fopen(filename,"w");
 
-	  __gnu_cxx::stdio_sync_filebuf<char> fdbuf(sc.output_f);
-	  output_stream.std::ios::rdbuf(&fdbuf);
-
+      ofstream output_stream(filename);
 	  S->StatPrint(output_stream);
 	  sc.print(output_stream);
 	  output_stream << endl << "------------------------" << endl;
+      output_stream.close();
 
+	  sc.output_f = fopen(filename,"a");
 	  sc.calculate_cylinders();
 
 	  sc.output_cylinders(sc.output_f);

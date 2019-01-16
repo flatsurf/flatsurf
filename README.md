@@ -1,5 +1,5 @@
-[![Linux](https://img.shields.io/circleci/project/github/polygon-tbd/polygon-feedstock/master.svg?label=Linux)](https://circleci.com/gh/polygon-tbd/polygon-feedstock)
-![OSX disabled](https://img.shields.io/badge/OSX-disabled-lightgrey.svg)
+[![Linux](https://img.shields.io/circleci/project/github/polygon-tbd/polygon/master.svg?label=Linux)](https://circleci.com/gh/polygon-tbd/polygon)
+[![OSX](https://img.shields.io/travis/polygon-tbd/polygon/master.svg?label=macOS)](https://travis-ci.org/polygon-tbd/polygon)
 ![Windows disabled](https://img.shields.io/badge/Windows-disabled-lightgrey.svg)
 [![Coverage Status](https://coveralls.io/repos/github/polygon-tbd/polygon/badge.svg?branch=master)](https://coveralls.io/github/polygon-tbd/polygon?branch=master)
 

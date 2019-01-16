@@ -28,7 +28,6 @@ include_HEADERS =    \
     alg_t.h \
     config.h \
     defs.h \
-    getopt.h \
     psimplex.h \
     saddleconf.h \
     slice.h \

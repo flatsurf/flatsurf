@@ -287,8 +287,6 @@ vector<T> operator*(T v, vector<T> w);
 template<class T>
 void gcd_extended(poly<T>& x, poly<T>& y, const poly<T> &a, const poly<T> &b);
 
-
-
 inline algebraic<bigrat> to_rational(const algebraic<int64_t> &p) //only works with given F
 {
 
@@ -296,8 +294,9 @@ inline algebraic<bigrat> to_rational(const algebraic<int64_t> &p) //only works w
 
     vector<bigrat> new_coords;
     for(int i=0; i < p.in_field->degree; i++) {
-	bigrat r = bigrat(p.coords[i],1);
-	new_coords.push_back(r);
+        static_assert(std::is_convertible<int64_t, long>::value, "mpz does not implement conversion from long long, so we can only initialize like this if long and int64_t have the same size; note that they might not the same type as long == long long and only one of the two can be aliased to int64_t");
+	    bigrat r = bigrat((long)p.coords[i], 1);
+	    new_coords.push_back(r);
     }
 
 
