@@ -1,4 +1,4 @@
-#include "two_complex.h"
+#include "libpolygon/two_complex.h"
 
 template <typename PointT>
 Dir<PointT>::Dir() {

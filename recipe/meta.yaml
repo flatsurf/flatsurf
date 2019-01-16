@@ -1,20 +1,20 @@
-{% set name = "polygon" %}
+# conda-smithy assumes that the build number is >= 1000 when building with the new anaconda compilers,
+# this probably is not important but make_build_number otherwise complains during the build
+{% set version = environ.get('GIT_DESCRIBE_TAG')|string %}
+{% set build_number = (environ.get('GIT_DESCRIBE_NUMBER')|int + 1000)|string %}
+{% set build_string = "master_" + build_number %}
 
 package:
-  name: {{ name }}
-  version: "{{ environ.get('GIT_DESCRIBE_TAG') }}"
+  name: polygon
+  version: {{ version }}
 
 source:
   git_url: {{ environ.get('FEEDSTOCK_ROOT', '..') }}
 
-# TODO: run_exports & split outputs once this is a library
-
 build:
-  # conda-smithy assumes that the build number is >= 1000 when building with the new anaconda compilers,
-  # this probably is not important but make_build_number otherwise complains during the build
-  number: {{ environ.get('GIT_DESCRIBE_NUMBER')|int + 1000 }}
-  string: master_{{ environ.get('GIT_DESCRIBE_NUMBER')|int + 1000 }}
-  skip: true        # [win]
+  number: {{ build_number }}
+  string: {{ build_string }}
+  skip: true    # [win]
 
 requirements:
   build:
@@ -26,13 +26,28 @@ requirements:
     - ntl
     - boost-cpp
 
-test:
-  source_files:
-    - test/
-  commands:
-    - test/run.sh            # [linux]
-    # Tests on macOS fail at the moment. It's unclear whether that's a problem, see https://github.com/polygon-tbd/polygon/pull/5
-    - test/run.sh || true    # [osx]
+outputs:
+  - name: libpolygon
+    build:
+      run_exports:
+        - {{ pin_subpackage("libpolygon", exact=True) }}
+    files:
+      - lib/*.dylib    # [osx]
+      - lib/*.so*      # [linux]
+      - include/libpolygon/*.h
+  - name: polygon
+    requirements:
+      run:
+        - {{ pin_subpackage('libpolygon', exact=True) }}
+    files:
+      - bin/polygon
+    test:
+      source_files:
+        - test/
+      commands:
+        - test/run.sh            # [linux]
+        # Tests on macOS fail at the moment. It's unclear whether that's a problem, see https://github.com/polygon-tbd/polygon/pull/5
+        - test/run.sh || true    # [osx]
 
 about:
   home: https://github.com/polygon-tbd/polygon

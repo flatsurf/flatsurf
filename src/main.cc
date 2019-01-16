@@ -1,5 +1,5 @@
-#include "two_complex.h"
-#include "getopt.h"
+#include "libpolygon/two_complex.h"
+#include <getopt.h>
 #include <unistd.h>
 
 #ifdef USE_MPI

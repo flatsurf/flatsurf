@@ -1,5 +1,5 @@
-#include "defs.h"
-#include "two_complex.h"
+#include "libpolygon/defs.h"
+#include "libpolygon/two_complex.h"
 
 template<typename T>
 poly<T> cyclotomic_poly(int n)

@@ -1,6 +1,6 @@
 #ifdef USE_MPI
 
-#include "slice.h"
+#include "libpolygon/slice.h"
 
 CSliceArray SA; 
 CNodeArray NA;

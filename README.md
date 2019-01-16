@@ -11,6 +11,7 @@ experimental. There are no stable releases yet.
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
 | [![Nightly Build](https://img.shields.io/badge/experimental-polygon-green.svg)](https://anaconda.org/saraedum/polygon) | [![Conda Downloads](https://img.shields.io/conda/dn/saraedum/polygon.svg)](https://anaconda.org/saraedum/polygon) | [![Conda Version](https://img.shields.io/conda/vn/saraedum/polygon.svg)](https://anaconda.org/saraedum/polygon) | [![Conda Platforms](https://img.shields.io/conda/pn/saraedum/polygon.svg)](https://anaconda.org/saraedum/polygon) |
+| [![Nightly Build](https://img.shields.io/badge/experimental-libpolygon-green.svg)](https://anaconda.org/saraedum/libpolygon) | [![Conda Downloads](https://img.shields.io/conda/dn/saraedum/libpolygon.svg)](https://anaconda.org/saraedum/libpolygon) | [![Conda Version](https://img.shields.io/conda/vn/saraedum/libpolygon.svg)](https://anaconda.org/saraedum/libpolygon) | [![Conda Platforms](https://img.shields.io/conda/pn/saraedum/libpolygon.svg)](https://anaconda.org/saraedum/libpolygon) |
 
 ## Install with Conda
 

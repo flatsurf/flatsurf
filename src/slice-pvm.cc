@@ -1,6 +1,6 @@
 #ifdef USE_PVM
 
-#include "slice-pvm.h"
+#include "libpolygon/slice-pvm.h"
 #include <string.h>
 
 const char* tagname[] = {

@@ -7,7 +7,7 @@ polygon_LDADD = libpolygon.la
 lib_LTLIBRARIES = libpolygon.la
 
 libpolygon_la_SOURCES = \
-	algebraic.cc     \
+    algebraic.cc     \
     alg_misc.cc      \
     alg_t.cc         \
     dir.cc           \
@@ -30,13 +30,14 @@ libpolygon_la_SOURCES = \
 
 libpolygon_la_LDFLAGS = -version-info $(libpolygon_version_info)
 
-include_HEADERS =    \
-    algebraic.h \
-    alg_t.h \
-    config.h \
-    defs.h \
-    psimplex.h \
-    saddleconf.h \
-    slice.h \
-    slice-pvm.h \
-    two_complex.h
+libpolygonincludedir = $(includedir)/libpolygon
+libpolygoninclude_HEADERS =    \
+    libpolygon/algebraic.h \
+    libpolygon/alg_t.h \
+    libpolygon/config.h \
+    libpolygon/defs.h \
+    libpolygon/psimplex.h \
+    libpolygon/saddleconf.h \
+    libpolygon/slice.h \
+    libpolygon/slice-pvm.h \
+    libpolygon/two_complex.h
