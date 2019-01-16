@@ -26,7 +26,7 @@ conda install -c saraedum polygon
 We are following a standard autoconf setup, i.e., you can create the executable `src/polygon` with the following:
 
 ```
-git clone https://github.com/saraedum/polygon.git
+git clone https://github.com/polygon-tbd/polygon.git
 cd polygon
 ./bootstrap
 ./configure
