@@ -35,6 +35,7 @@
 
 ### Autotools Generated Files
 /.deps
+/.libs
 /.dirstamp
 /config.h
 /config.h.in
