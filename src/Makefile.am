@@ -34,7 +34,6 @@ libpolygonincludedir = $(includedir)/libpolygon
 libpolygoninclude_HEADERS =    \
     libpolygon/algebraic.h \
     libpolygon/alg_t.h \
-    libpolygon/config.h \
     libpolygon/defs.h \
     libpolygon/psimplex.h \
     libpolygon/saddleconf.h \
