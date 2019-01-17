@@ -46,5 +46,5 @@ dnl We use boost (e.g., to work with MPFR)
 AC_CHECK_HEADERS([boost/numeric/ublas/matrix.hpp], , AC_MSG_ERROR([Boost BLAS headers not found]))
 
 AC_CONFIG_HEADERS([src/config.h])
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile src/libpolygon/cling.h])
 AC_OUTPUT

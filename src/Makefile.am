@@ -39,4 +39,5 @@ libpolygoninclude_HEADERS =    \
     libpolygon/saddleconf.h \
     libpolygon/slice.h \
     libpolygon/slice-pvm.h \
-    libpolygon/two_complex.h
+    libpolygon/two_complex.h \
+    libpolygon/cling.h
