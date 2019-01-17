@@ -1,6 +1,6 @@
 #include <cassert>
-#include "algebraic.h"
-#include "defs.h"
+#include "libpolygon/algebraic.h"
+#include "libpolygon/defs.h"
 #include <boost/lexical_cast.hpp>
 
 // gcd_extended: a and b inputs, x and y outputs.

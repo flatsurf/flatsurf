@@ -1,13 +1,18 @@
 bin_PROGRAMS = polygon
 
-polygon_SOURCES =    \
+polygon_SOURCES = main.cc
+
+polygon_LDADD = libpolygon.la
+
+lib_LTLIBRARIES = libpolygon.la
+
+libpolygon_la_SOURCES = \
     algebraic.cc     \
     alg_misc.cc      \
     alg_t.cc         \
     dir.cc           \
     face.cc          \
     input.cc         \
-    main.cc          \
     math.cc          \
     misc.cc          \
     oedge.cc         \
@@ -23,13 +28,15 @@ polygon_SOURCES =    \
     uedge.cc         \
     vertex.cc 
 
-include_HEADERS =    \
-    algebraic.h \
-    alg_t.h \
-    config.h \
-    defs.h \
-    psimplex.h \
-    saddleconf.h \
-    slice.h \
-    slice-pvm.h \
-    two_complex.h
+libpolygon_la_LDFLAGS = -version-info $(libpolygon_version_info)
+
+libpolygonincludedir = $(includedir)/libpolygon
+libpolygoninclude_HEADERS =    \
+    libpolygon/algebraic.h \
+    libpolygon/alg_t.h \
+    libpolygon/defs.h \
+    libpolygon/psimplex.h \
+    libpolygon/saddleconf.h \
+    libpolygon/slice.h \
+    libpolygon/slice-pvm.h \
+    libpolygon/two_complex.h

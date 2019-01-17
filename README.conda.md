@@ -27,6 +27,7 @@ Current release info
 
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-libpolygon-green.svg)](https://anaconda.org/saraedum/libpolygon) | [![Conda Downloads](https://img.shields.io/conda/dn/saraedum/libpolygon.svg)](https://anaconda.org/saraedum/libpolygon) | [![Conda Version](https://img.shields.io/conda/vn/saraedum/libpolygon.svg)](https://anaconda.org/saraedum/libpolygon) | [![Conda Platforms](https://img.shields.io/conda/pn/saraedum/libpolygon.svg)](https://anaconda.org/saraedum/libpolygon) |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-polygon-green.svg)](https://anaconda.org/saraedum/polygon) | [![Conda Downloads](https://img.shields.io/conda/dn/saraedum/polygon.svg)](https://anaconda.org/saraedum/polygon) | [![Conda Version](https://img.shields.io/conda/vn/saraedum/polygon.svg)](https://anaconda.org/saraedum/polygon) | [![Conda Platforms](https://img.shields.io/conda/pn/saraedum/polygon.svg)](https://anaconda.org/saraedum/polygon) |
 
 Installing polygon
@@ -38,16 +39,16 @@ Installing `polygon` from the `saraedum` channel can be achieved by adding `sara
 conda config --add channels saraedum
 ```
 
-Once the `saraedum` channel has been enabled, `polygon` can be installed with:
+Once the `saraedum` channel has been enabled, `libpolygon, polygon` can be installed with:
 
 ```
-conda install polygon
+conda install libpolygon polygon
 ```
 
-It is possible to list all of the versions of `polygon` available on your platform with:
+It is possible to list all of the versions of `libpolygon` available on your platform with:
 
 ```
-conda search polygon --channel saraedum
+conda search libpolygon --channel saraedum
 ```
 
 

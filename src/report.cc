@@ -3,15 +3,15 @@
 //above used to decide if two saddles have the same length
 
 
-#include "two_complex.h"
+#include "libpolygon/two_complex.h"
 #include <assert.h>
 
 #ifdef USE_PVM
-#include "slice-pvm.h"
+#include "libpolygon/slice-pvm.h"
 #endif
 
 #ifdef USE_MPI
-#include "slice.h"
+#include "libpolygon/slice.h"
 #endif
 
 /* and add max_vertex_degree to Check */
