@@ -33,6 +33,33 @@ cd polygon
 ./configure
 make
 ```
+
+## Build from the Source Code Repository with Conda
+
+The conda recipe in `recipe/` is built automatically as part of our Continuous
+Integration. If you want to build the recipe manually, something like the
+following should work:
+
+```
+git clone https://github.com/polygon-tbd/polygon.git
+cd polygon
+source activate root
+conda config --add channels conda-forge
+conda install conda-build conda-forge-ci-setup=2
+export FEEDSTOCK_ROOT=`pwd`
+export RECIPE_ROOT=${FEEDSTOCK_ROOT}/recipe
+export CI_SUPPORT=${FEEDSTOCK_ROOT}/.ci_support
+export CONFIG=linux_
+make_build_number "${FEEDSTOCK_ROOT}" "${RECIPE_ROOT}" "${CI_SUPPORT}/${CONFIG}.yaml"
+conda build "${RECIPE_ROOT}" -m "${CI_SUPPORT}/${CONFIG}.yaml" --clobber-file "${CI_SUPPORT}/clobber_${CONFIG}.yaml"
+```
+
+You can then try out the package that you just built with:
+```
+conda create -n polygon-test --use-local polygon
+source activate polygon-test
+```
+
 ## Maintainers
 
 * [@saraedum](https://github.com/saraedum)
