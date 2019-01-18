@@ -3,7 +3,7 @@
 
 #ifdef __CLING__
 
-#pragma cling add_library_path("@libdir@")
+#pragma cling add_library_path("/usr/local/lib")
 #pragma cling load("libpolygon")
 
 #endif // __CLING__

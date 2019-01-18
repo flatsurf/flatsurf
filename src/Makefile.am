@@ -41,3 +41,6 @@ libpolygoninclude_HEADERS =    \
     libpolygon/slice-pvm.h \
     libpolygon/two_complex.h \
     libpolygon/cling.h
+
+libpolygon/cling.h: libpolygon/cling.h.in Makefile
+	sed -e 's,[@]libdir[@],$(libdir),g' < $< > $@
