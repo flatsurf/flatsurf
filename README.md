@@ -2,6 +2,7 @@
 [![OSX](https://img.shields.io/travis/polygon-tbd/polygon/master.svg?label=macOS)](https://travis-ci.org/polygon-tbd/polygon)
 ![Windows disabled](https://img.shields.io/badge/Windows-disabled-lightgrey.svg)
 [![Coverage Status](https://coveralls.io/repos/github/polygon-tbd/polygon/badge.svg?branch=master)](https://coveralls.io/github/polygon-tbd/polygon?branch=master)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/polygon-tbd/polygon/master?filepath=binder%2FSample.ipynb)
 
 ## Current Release Info
 
@@ -21,6 +22,11 @@ You can install this package with conda. Download and install [Miniconda](https:
 conda config --add channels conda-forge
 conda install -c saraedum polygon
 ```
+
+## Run with binder in the Cloud
+
+You can try out this library in a very limited environment online by clicking
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/polygon-tbd/polygon/master?filepath=binder%2FSample.ipynb)
 
 ## Build from the Source Code Repository
 
