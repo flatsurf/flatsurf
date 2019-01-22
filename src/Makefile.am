@@ -26,20 +26,22 @@ libpolygon_la_SOURCES = \
     triang.cc        \
     two_complex.cc   \
     uedge.cc         \
-    vertex.cc 
+    vertex.cc        \
+	globals.cc
 
 libpolygon_la_LDFLAGS = -version-info $(libpolygon_version_info)
 
 libpolygonincludedir = $(includedir)/libpolygon
-libpolygoninclude_HEADERS =    \
-    libpolygon/algebraic.h \
-    libpolygon/alg_t.h \
-    libpolygon/defs.h \
-    libpolygon/psimplex.h \
-    libpolygon/saddleconf.h \
-    libpolygon/slice.h \
-    libpolygon/slice-pvm.h \
+libpolygoninclude_HEADERS =  \
+    libpolygon/algebraic.h   \
+    libpolygon/alg_t.h       \
+    libpolygon/defs.h        \
+    libpolygon/psimplex.h    \
+    libpolygon/saddleconf.h  \
+    libpolygon/slice.h       \
+    libpolygon/slice-pvm.h   \
     libpolygon/two_complex.h \
+	libpolygon/globals.h     \
     libpolygon/cling.h
 
 libpolygon/cling.h: libpolygon/cling.h.in Makefile
