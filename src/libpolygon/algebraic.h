@@ -1,5 +1,5 @@
-#ifndef ALGEBRAIC_H
-#define ALGEBRAIC_H
+#ifndef LIBPOLYGON_ALGEBRAIC_H
+#define LIBPOLYGON_ALGEBRAIC_H
 
 #include "libpolygon.h"
 
@@ -316,4 +316,4 @@ inline algebraic<bigrat> to_rational(const algebraic<int64_t> &p) //only works w
 
 
 
-#endif  // ALGEBRAIC_H
+#endif  // LIBPOLYGON_ALGEBRAIC_H

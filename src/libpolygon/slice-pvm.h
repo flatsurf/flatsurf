@@ -1,3 +1,6 @@
+#ifndef LIBPOLYGON_SLICE_PVM_H
+#define LIBPOLYGON_SLICE_PVM_H
+
 #include "libpolygon.h"
 #include "two_complex.h"
 #include <time.h>
@@ -153,3 +156,5 @@ private:
 
 extern CSliceArray SA; 
 extern CNodeArray NA; 
+
+#endif // LIBPOLYGON_SLICE_PVM_H

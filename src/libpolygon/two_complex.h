@@ -1,5 +1,5 @@
-#ifndef TWOCOMPLEX_H
-#define TWOCOMPLEX_H
+#ifndef LIBPOLYGON_TWOCOMPLEX_H
+#define LIBPOLYGON_TWOCOMPLEX_H
 
 #include "libpolygon.h"
 
@@ -653,5 +653,5 @@ struct vert_bad_angle{
     }
 };
 
-#endif // TWOCOMPLEX_H
+#endif // LIBPOLYGON_TWOCOMPLEX_H
 

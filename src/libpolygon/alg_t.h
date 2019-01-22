@@ -1,5 +1,5 @@
-#ifndef ALG_T_H
-#define ALG_T_H
+#ifndef LIBPOLYGON_ALG_T_H
+#define LIBPOLYGON_ALG_T_H
 
 #include "libpolygon.h"
 #include "defs.h"
@@ -203,4 +203,4 @@ extern bool is_alg_quotient(const alg_tI &p1, const alg_tI &p2,algebraicQ &r);
 
 
 
-#endif //ALG_T_H
+#endif // LIBPOLYGON_ALG_T_H

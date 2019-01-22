@@ -1,5 +1,5 @@
-#ifndef PSIMPLEX_H
-#define PSIMPLEX_H
+#ifndef LIBPOLYGON_PSIMPLEX_H
+#define LIBPOLYGON_PSIMPLEX_H
 
 #include "libpolygon.h"
 
@@ -84,4 +84,4 @@ typedef PVertex *PVertexPtr;
 typedef PUEdge *PUEdgePtr;
 typedef PFace *PFacePtr;
 
-#endif // PSIMPLEX_H
+#endif // LIBPOLYGON_PSIMPLEX_H
