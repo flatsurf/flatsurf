@@ -1,5 +1,5 @@
-#ifndef DEFS_H
-#define DEFS_H
+#ifndef LIBPOLYGON_DEFS_H
+#define LIBPOLYGON_DEFS_H
 
 #include "libpolygon.h"
 #include <complex>
@@ -72,4 +72,4 @@ extern "C" {
 void ERR_RET(const std::string &s);
 void ERR_RET2(const std::string &s,int t);
 
-#endif    // DEFS_H
+#endif // LIBPOLYGON_DEFS_H

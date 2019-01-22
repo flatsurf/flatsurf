@@ -1,5 +1,5 @@
-#ifndef SADDLECONF_H
-#define SADDLECONF_H
+#ifndef LIBPOLYGON_SADDLECONF_H
+#define LIBPOLYGON_SADDLECONF_H
 
 #include "libpolygon.h"
 
@@ -240,4 +240,4 @@ typedef list<SaddleConf>::iterator SaddleConfIter;
 
 
 
-#endif // SADDLECONF_H
+#endif // LIBPOLYGON_SADDLECONF_H
