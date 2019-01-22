@@ -1,6 +1,8 @@
 #ifndef PSIMPLEX_H
 #define PSIMPLEX_H
 
+#include "libpolygon.h"
+
 class my_ostream {
 
 public:

@@ -1,6 +1,7 @@
 #ifndef ALG_T_H
 #define ALG_T_H
 
+#include "libpolygon.h"
 #include "defs.h"
 #include "algebraic.h"
 

@@ -1,6 +1,7 @@
 #ifndef DEFS_H
 #define DEFS_H
 
+#include "libpolygon.h"
 #include <complex>
 #include <string>
 

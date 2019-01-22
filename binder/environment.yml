@@ -1,0 +1,12 @@
+name: binder
+channels:
+  - saraedum
+  - conda-forge
+  - defaults
+  - conda-forge/label/broken
+dependencies:
+  - polygon
+  - boost-cpp
+  - notebook
+  # https://github.com/QuantStack/xeus-cling/issues/194#issuecomment-456547091
+  - xeus-cling=0.4.10=he860b03_1000
