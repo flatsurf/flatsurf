@@ -1,6 +1,7 @@
 #ifndef SADDLECONF_H
 #define SADDLECONF_H
 
+#include "libpolygon.h"
 
 //this file is included from two_complex.h
 

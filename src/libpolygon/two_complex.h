@@ -1,6 +1,7 @@
 #ifndef TWOCOMPLEX_H
 #define TWOCOMPLEX_H
 
+#include "libpolygon.h"
 
 #include <ostream>
 #include <istream>

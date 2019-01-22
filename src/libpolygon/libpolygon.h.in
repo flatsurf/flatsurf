@@ -1,0 +1,17 @@
+/*
+ * This file is included by all headers that are shipped with this library.
+ * It should therefore contain global definitions but only those that can
+ * be safely shipped to the client, i.e., not the ones in config.h
+ */
+
+#ifndef LIBPOLYGON_LIBPOLYGON_H
+#define LIBPOLYGON_LIBPOLYGON_H
+
+#ifdef __CLING__
+
+#pragma cling add_library_path("@libdir@")
+#pragma cling load("libpolygon")
+
+#endif // __CLING__
+
+#endif // LIBPOLYGON_LIBPOLYGON_H

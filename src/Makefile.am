@@ -1,6 +1,7 @@
 bin_PROGRAMS = polygon
 
 polygon_SOURCES = main.cc
+polygon: libpolygon/libpolygon.h
 
 polygon_LDADD = libpolygon.la
 
@@ -27,7 +28,7 @@ libpolygon_la_SOURCES = \
     two_complex.cc   \
     uedge.cc         \
     vertex.cc        \
-	globals.cc
+    globals.cc
 
 libpolygon_la_LDFLAGS = -version-info $(libpolygon_version_info)
 
@@ -41,8 +42,8 @@ libpolygoninclude_HEADERS =  \
     libpolygon/slice.h       \
     libpolygon/slice-pvm.h   \
     libpolygon/two_complex.h \
-	libpolygon/globals.h     \
-    libpolygon/cling.h
+    libpolygon/globals.h     \
+    libpolygon/libpolygon.h
 
-libpolygon/cling.h: libpolygon/cling.h.in Makefile
+libpolygon/libpolygon.h: libpolygon/libpolygon.h.in Makefile
 	sed -e 's,[@]libdir[@],$(libdir),g' < $< > $@

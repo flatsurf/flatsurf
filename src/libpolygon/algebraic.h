@@ -1,6 +1,8 @@
 #ifndef ALGEBRAIC_H
 #define ALGEBRAIC_H
 
+#include "libpolygon.h"
+
 #include "defs.h"
 
 #include<gmpxx.h>

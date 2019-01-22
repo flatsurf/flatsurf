@@ -1,6 +1,8 @@
 #ifndef LIBPOLYGON_GLOBALS_H
 #define LIBPOLYGON_GLOBALS_H
 
+#include "libpolygon.h"
+
 /*
  * This file contains global variables that are set by the command line
  * interface. Eventually this file should be empty. There should be no
