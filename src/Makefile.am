@@ -1,7 +1,6 @@
 bin_PROGRAMS = polygon
 
 polygon_SOURCES = main.cc
-polygon: libpolygon/libpolygon.h
 
 polygon_LDADD = libpolygon.la
 
@@ -45,5 +44,7 @@ libpolygoninclude_HEADERS =  \
     libpolygon/globals.h     \
     libpolygon/libpolygon.h
 
+BUILT_SOURCES = libpolygon/libpolygon.h
+CLEANFILES = libpolygon/libpolygon.h
 libpolygon/libpolygon.h: libpolygon/libpolygon.h.in Makefile
 	sed -e 's,[@]libdir[@],$(libdir),g' < $< > $@
