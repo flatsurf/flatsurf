@@ -25,6 +25,13 @@ requirements:
     - gmp
     - ntl
     - boost-cpp
+test:
+  source_files:
+    - test/
+  commands:
+    - test/run.sh            # [linux]
+    # Tests on macOS fail at the moment. It's unclear whether that's a problem, see https://github.com/polygon-tbd/polygon/pull/5
+    - test/run.sh || true    # [osx]
 
 outputs:
   - name: libpolygon
@@ -41,13 +48,6 @@ outputs:
         - {{ pin_subpackage('libpolygon', exact=True) }}
     files:
       - bin/polygon
-    test:
-      source_files:
-        - test/
-      commands:
-        - test/run.sh            # [linux]
-        # Tests on macOS fail at the moment. It's unclear whether that's a problem, see https://github.com/polygon-tbd/polygon/pull/5
-        - test/run.sh || true    # [osx]
 
 about:
   home: https://github.com/polygon-tbd/polygon
