@@ -42,8 +42,10 @@ VertPattern::VertPattern()
 {
 
     base.v = NULL;
+    v_id = -1;
     for( int i = 0; i < MAX_SADDLES; i++ ) {
-	at[i] = 0;
+	  at[i] = 0;
+      length[i] = -1;
     }
 }
 
@@ -102,13 +104,11 @@ void VertPattern::clear()
 
 void VertPattern::add(Dir<Point>& d, saddle_t id) 
 {
-    int i, j;
-
     if ( this->is_empty() ) {
 
 	base = d;
 	v_id = d.v->id();
-	for( i = 0; i < d.v->int_angle; i++ ) {
+	for( int i = 0; i < d.v->int_angle; i++ ) {
 	    at[i] = 0;
 	}
 	if( d.v->int_angle >= MAX_SADDLES ) {
@@ -125,7 +125,7 @@ void VertPattern::add(Dir<Point>& d, saddle_t id)
 	}
 
 	COORD a = base.AngleF(d);
-	j = round_to_int(a/MY_PI);
+	int j = round_to_int(a/MY_PI);
 	if ( abs(j*MY_PI - a) > EPSILON ) {
 	  smry.bad_angle_count++;
 //	  std::cout << "angle = " << abs(angle(d.vec, base.vec)) -MY_PI << " " 
@@ -286,57 +286,25 @@ int VertPattern::nbr_same()
     return(count/2); 
 }
 
-int VertPattern::nbr_at_pi()
-{
-    int count=0;
-    int next_i; 
-
-    for( int i = 0; i < base.v->int_angle; i++ ) {
-	if( at[i] == 0 ) {
-	    continue;
-	}
-	if( i == base.v->int_angle-1 ) {
-	    next_i = 0; 
-	} else {
-	    next_i = i+1; 
-	}
-	if( at[i] == -at[next_i] ) {
-	    count++;
-	}
-    }
-    return(count); 
-}
-
-int VertPattern::nbr_different()
-{
-    return(len() - 2*nbr_same());
-} 
-
-void VertPattern::simple_print(ostream &output_stream)
-{
-
-    output_stream << nbr_different() << "," << nbr_same() << "," 
-		  << nbr_at_pi(); 
-}
-
 void VertPattern::normalize()
 {
     base.v = S->GetVertex(v_id);
 }
 
 
-SaddleConf::SaddleConf() {
+SaddleConf::SaddleConf():
+    shortest_occurence(-1.0),
+    shortest_cyl_occurence(-1.0),
+    longest_occurence(-1.0),
+    smallest_total_area(-1.0),
+    largest_total_area(-1.0),
+    original_min_cylinder_length(-1.0),
+    original_shortest_length(-1.0)
+{
     n_vp = 0;
     next_id = 1;
     count = 0;
 
-    original_shortest_length = -1.0;
-    shortest_occurence = -1.0;
-    longest_occurence = -1.0;
-    original_min_cylinder_length = -1.0;
-    shortest_cyl_occurence = -1.0;
-    largest_total_area = -1.0;
-    smallest_total_area = -1.0;
 
     //added later
     for( int i = 0; i < MAX_VERTICES; i++) {
@@ -757,9 +725,9 @@ void SaddleConf::calculate_cylinders()
 
     COORD min_length = -1; 
 
-    for( int i = 0; i < n_cyl; i++ ) {
-	if ( min_length < 0 || cyl[i].length < min_length ) {
-	    min_length = cyl[i].length;
+    for( int ii = 0; ii < n_cyl; ii++ ) {
+	if ( min_length < 0 || cyl[ii].length < min_length ) {
+	    min_length = cyl[ii].length;
 	}
     }
 
@@ -899,6 +867,7 @@ void SaddleConf::output_cylinders(FILE *fp){
 
 }
 
+// cppcheck-suppress unusedFunction
 void SaddleConf::CheckCrossSaddles()
 {
     for(int i = 0; i < n_cyl; i++ ) {
@@ -1119,12 +1088,12 @@ bool SaddleConf::isom(SaddleConf& sc, int* s_matched)
 	  return(false);
       }
       
-	for ( int i=0; i < n_cyl; i++ ) {
-	     if( abs( this->cyl[i].length - sc.cyl[i].length) > 
+	for ( int ii=0; ii < n_cyl; ii++ ) {
+	     if( abs( this->cyl[ii].length - sc.cyl[ii].length) > 
 		                     LENGTH_THRESHOLD){
 		  return(false);
 	     }
-	     if( show_moduli && abs( this->cyl[i].modulus - sc.cyl[i].modulus) > 
+	     if( show_moduli && abs( this->cyl[ii].modulus - sc.cyl[ii].modulus) > 
 		                     LENGTH_THRESHOLD){
 		  return(false);
 	     }
@@ -1381,9 +1350,9 @@ void Summary::print(ostream& output_stream, COORD part_total,
 	    output_stream << " tag #"<<scf[i].tag;
 	    output_stream << "\n";
 	    if ( show_length_list ) {
-		for(set<COORD>::iterator j = scf[i].lengths_set.begin();
-		    j!= scf[i].lengths_set.end(); j++ ) {
-		    output_stream << *j << " ";
+		for(set<COORD>::iterator jj = scf[i].lengths_set.begin();
+		    jj!= scf[i].lengths_set.end(); ++jj ) {
+		    output_stream << *jj << " ";
 		}
 		output_stream << "\n";
 	    }
@@ -1483,11 +1452,11 @@ int Summary::add_new_conf(SaddleConf& sc)
 
      
 
-     char filename[100];
 
      if ( closure ) {
+      char filename[100];
 	  /* open file here */
-	  sprintf(filename,"closure.%lu",scf.size());
+	  sprintf(filename,"closure.%zu",scf.size());
 
       ofstream output_stream(filename);
 	  S->StatPrint(output_stream);
@@ -1683,8 +1652,8 @@ mpi_merge_smry(void* sm1, void* sm2, int* len, MPI_Datatype* mpi_smry_type)
 	ERR_RET("merge: *len not 1"); 
     }
     
-    Summary* summary1 = (Summary *)sm1; 
-    Summary* summary2 = (Summary *)sm2;
+    Summary* summary1 = static_cast<Summary *>(sm1); 
+    Summary* summary2 = static_cast<Summary *>(sm2);
     
     fprintf(out_f,"-------------------------------------In merge:\n");
  

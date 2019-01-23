@@ -21,15 +21,12 @@
 
 #include "libpolygon/two_complex.h"
 
-TwoComplex:: TwoComplex() 
+TwoComplex:: TwoComplex() : area(-1.0), scale_factor(1.0)
 {
     cur_vertex_id = 0;
     cur_face_id = 0;
     cur_uedge_id = 0;
     VISIT_ID = 0;
-    area = -1.0;
-    scale_factor = 1.0;
-
 };
 
 
@@ -56,7 +53,7 @@ void TwoComplex::PrintAll(ostream& out) {
     VertexPtrIter i;
 
     out << "# Vertices:";
-    for( i = vertices.begin(); i != vertices.end(); i++ ) {
+    for( i = vertices.begin(); i != vertices.end(); ++i ) {
 	out << " ";
 	(*i)->Print(out);
     }
@@ -65,14 +62,14 @@ void TwoComplex::PrintAll(ostream& out) {
     UEdgePtrIter j;
     
     out << "# UEdges: " << endl;
-    for( j = uedges.begin(); j != uedges.end(); j++ ) {
+    for( j = uedges.begin(); j != uedges.end(); ++j ) {
 	(*j)->Print(out);
 	out << endl;
     }
 
     FacePtrIter k;
     out << "# Faces: " << endl;
-    for( k = faces.begin(); k != faces.end(); k++) {
+    for( k = faces.begin(); k != faces.end(); ++k) {
 	if ( (*k)->deleted() ) {
 	    out << "#"; 
 	}
@@ -82,7 +79,7 @@ void TwoComplex::PrintAll(ostream& out) {
 
     if ( field_arithmetic ) {
 	out << "#UEdges Algebraic " << endl;
-	for( j = uedges.begin(); j != uedges.end(); j++ ) {
+	for( j = uedges.begin(); j != uedges.end(); ++j ) {
 	    out << "#E" << (*j)->id() << ": " << (*j)->ue_vecQ.algt;
 	    out << endl;
     	}
@@ -95,7 +92,7 @@ void TwoComplex::CheckAllFaces()
 {
     FacePtrIter i;
 
-    for( i = faces.begin(); i != faces.end(); i++ ) {
+    for( i = faces.begin(); i != faces.end(); ++i ) {
 	(*i)->Check();
     }
     
@@ -105,7 +102,7 @@ void TwoComplex::CheckAllVertices()
 {
     VertexPtrIter i;
 
-    for( i = vertices.begin(); i != vertices.end(); i++ ) {
+    for( i = vertices.begin(); i != vertices.end(); ++i ) {
 	(*i)->Check();
     }
 
@@ -191,14 +188,14 @@ FacePtr TwoComplex::AddFace(int id, list<OEdge> L)
 void TwoComplex::StatPrint(ostream& out)
 {
 
-    out << "# File = " << filename 
+    out << "# File = " << filename_
 	<< " perturb = " << perturb_magnitude 
 	<< " rescale = " << !norescale << endl; 
 
 
     out << "# vertices: " << nvertices() << endl;
     out << "## ";
-    for(VertexPtrIter i = vertices.begin(); i!= vertices.end(); i++ ) {
+    for(VertexPtrIter i = vertices.begin(); i!= vertices.end(); ++i ) {
 	(*i)->Print(out);
 //	fprintf(out_f,"(%d) (%g PI) ",(*i)->order,(*i)->total_angle()/MY_PI);
 	out << "(" << (*i)->order << ") (" <<(*i)->total_angle()/MY_PI 
@@ -208,7 +205,7 @@ void TwoComplex::StatPrint(ostream& out)
 
     out << "# edges: " << nedges() << endl;
     out << "## ";
-    for(UEdgePtrIter i = uedges.begin(); i!= uedges.end() ; i++ ) {
+    for(UEdgePtrIter i = uedges.begin(); i!= uedges.end() ; ++i ) {
 	(*i)->Simplex::Print(out);
 	if( (*i)->deleted())
 	    out << "(0) ";
@@ -229,8 +226,6 @@ void TwoComplex::AddPFace(FacePtr f, Point q, int pcomplex)
 
     Point r,t;
     PFace* sp;
-    PVertex *vp;
-    PUEdge *ep;
 
     sp = new PFace(f, q, pcomplex);
     dl.insert(dl.end(),sp);
@@ -239,10 +234,12 @@ void TwoComplex::AddPFace(FacePtr f, Point q, int pcomplex)
     r = sp->s->GetOffsetV0();
     r = r + q;
     
-    for (OEdgeIter i = f->oedges.begin(); i != f->oedges.end(); i++ ) {
+    for (OEdgeIter i = f->oedges.begin(); i != f->oedges.end(); ++i ) {
+    PVertex *vp;
 	vp = new PVertex((*i).head(), r, pcomplex);
 	dl.insert(dl.end(),vp);
 
+    PUEdge *ep;
 	ep = new PUEdge((*i), r,pcomplex);
 	dl.insert(dl.end(),ep);
 
@@ -269,7 +266,7 @@ void TwoComplex::MakeDrawListInternal(FacePtr f, Point q)
     AddPFace(f, q, 0);
     f->visit_id = VISIT_ID;
 
-    for( i = f->oedges.begin(); i!= f->oedges.end() ; i++ ) {
+    for( i = f->oedges.begin(); i!= f->oedges.end() ; ++i ) {
 	if ((*i).ue->boundary())
 	    continue;
 
@@ -309,85 +306,11 @@ void TwoComplex::ClearSegmentsToDraw()
 
     FacePtrIter i;
     
-    for ( i = faces.begin(); i!= faces.end(); i++ ) {
+    for ( i = faces.begin(); i!= faces.end(); ++i ) {
 	(*i)->ClearSegmentsToDraw();
     }
 }
 
-
-void TwoComplex::MakeDrawList()
-{
-    // fix later 
-
-    Point q(0.0,0.0);
-
-
-    VISIT_ID++;
-
-    // fix later
-    FacePtrIter i;
-    
-    for ( i = faces.begin(); i!= faces.end(); i++ ) {
-	if (! (*i)->deleted() )
-	    break;
-    }
-    dl.clear();
-
-    MakeDrawListInternal((*i), q);
-
-    return;
-
-}
-
-/*
-void TwoComplex::Draw(ostream& output_stream)
-{
-    COORD max_x, min_x, max_y, min_y, scale_factor;
-    Point mean;
-    Point tmp;
-
-    DrawListIter i;
-    
-    if (dl.empty()) {
-	ERR_RET("twocompex::draw: empty draw list");
-    }
-    max_x = min_x = dl.front()->p.real();
-    max_y = min_y = dl.front()->p.imag();
-
-
-    for( i = dl.begin(); i != dl.end(); i++ ) {
-	if( (*i)->p.real() > max_x ) 
-	    max_x = (*i)->p.real();
-	if( (*i)->p.real() < min_x ) 
-	    min_x = (*i)->p.real();
-	if( (*i)->p.imag() > max_y ) 
-	    max_y = (*i)->p.imag();
-	if( (*i)->p.imag() < min_y ) 
-	    min_y = (*i)->p.imag();
-    }
-
-    scale_factor = 20.0;
-
-    if ( max_x - min_x > max_y - min_y ) 
-	scale_factor = scale_factor/(max_x - min_x);
-    else
-	scale_factor = scale_factor/(max_y - min_y);
-    
-    mean = Point((max_x + min_x)/2, (max_y + min_y)/2);
-
-    fprintf(out_f,"min_x = %lf max_x = %lf min_y = %lf max_y = %lf scale_factor = %lf \n",min_x, max_x, min_y, max_y, scale_factor);
-
-    for( i = dl.begin(); i != dl.end(); i++ ) {
-	tmp = (*i)->p -mean;
-	(*i)->p = tmp*Point(scale_factor,0);
-    }
-
-    for( i = dl.begin(); i != dl.end() ; i++ ) {
-	(*i)->Draw(output_stream, scale_factor);
-    }
-
-}
-*/
 
 
 void TwoComplex::Expunge()
@@ -399,7 +322,7 @@ void TwoComplex::Expunge()
 
     do { 
 	did_something = false;
-	for (VertexPtrIter i= vertices.begin(); i!= vertices.end(); i++ ) {
+	for (VertexPtrIter i= vertices.begin(); i!= vertices.end(); ++i ) {
 	    if ( (*i)->deleted() ) {
 		vertices.erase(i);
 		did_something = true;
@@ -410,7 +333,7 @@ void TwoComplex::Expunge()
 
     do { 
 	did_something = false;
-	for (UEdgePtrIter i= uedges.begin(); i!= uedges.end(); i++ ) {
+	for (UEdgePtrIter i= uedges.begin(); i!= uedges.end(); ++i ) {
 	    if ( (*i)->deleted() ) {
 		uedges.erase(i);
 		did_something = true;
@@ -421,7 +344,7 @@ void TwoComplex::Expunge()
 
     do { 
 	did_something = false;
-	for (FacePtrIter i= faces.begin(); i!= faces.end(); i++ ) {
+	for (FacePtrIter i= faces.begin(); i!= faces.end(); ++i ) {
 	    if ( (*i)->deleted() ) {
 		faces.erase(i);
 		did_something = true;
@@ -441,7 +364,7 @@ void TwoComplex::BuildNeighborLists()
     OEdgeIter ep,ep_first;
 
 
-    for( VertexPtrIter i = vertices.begin(); i != vertices.end(); i++ ) {
+    for( VertexPtrIter i = vertices.begin(); i != vertices.end(); ++i ) {
 
 	if ( (*i)->deleted() ) {
 	    continue;
@@ -494,12 +417,12 @@ void TwoComplex::StoreVertexOffsets()
 
     FacePtr f;
 
-    for( FacePtrIter i = faces.begin(); i != faces.end(); i++ ) {
+    for( FacePtrIter i = faces.begin(); i != faces.end(); ++i ) {
 	f = (*i);
 	if( f->deleted() )
 	    continue;
 	
-	for( OEdgeIter j = f->oedges.begin(); j!= f->oedges.end(); j++ ) {
+	for( OEdgeIter j = f->oedges.begin(); j!= f->oedges.end(); ++j ) {
 	    (*j).next_e = (*j).next_edge();
 	    (*j).pair_e = (*j).pair_edge();
 
@@ -511,7 +434,7 @@ void TwoComplex::StoreVertexOffsets()
 
 	}
     }
-    for (UEdgePtrIter i = uedges.begin(); i != uedges.end(); i++ ) {
+    for (UEdgePtrIter i = uedges.begin(); i != uedges.end(); ++i ) {
 	(*i)->minus_ue_vecQ = -(*i)->ue_vecQ;
 	(*i)->minus_ue_vecI = -(*i)->ue_vecI;
     }
@@ -523,7 +446,7 @@ void TwoComplex::set_area()
 {
 
     COORD s =0.0;
-    for(FacePtrIter i = faces.begin(); i!= faces.end(); i++ ) {
+    for(FacePtrIter i = faces.begin(); i!= faces.end(); ++i ) {
 	s = s + (*i)->volume();
     }
     area = s; 
@@ -574,7 +497,7 @@ UEdgePtr TwoComplex::MaxEdge()
 
     
 
-    for(UEdgePtrIter i = uedges.begin(); i != uedges.end(); i++ ) {
+    for(UEdgePtrIter i = uedges.begin(); i != uedges.end(); ++i ) {
 	if ( (*i)->len() > longest_length ) {
 	    longest_edge = (*i);
 	    longest_length =  (*i)->len();
@@ -583,42 +506,27 @@ UEdgePtr TwoComplex::MaxEdge()
     return(longest_edge);
 }
 
-UEdgePtr TwoComplex::MinEdge()
-{
-
-    UEdgePtr shortest_edge = NULL;
-    COORD shortest_length = 0;
-
-    for( UEdgePtrIter i = uedges.begin(); i != uedges.end(); i++ ) {
-	if ( (*i)->len() > shortest_length ) {
-	    shortest_edge = (*i);
-	    shortest_length =  (*i)->len();
-	}
-    }
-    return(shortest_edge);
-}
-
 COORD TwoComplex::MinSaddle(Dir<Point>& the_shortest)
 {	
 	
 
-    VertexPtr v0;
     Dir<Point> old_dir, new_dir, tmp_dir;
-    COORD TotalAngle;
 
-    COORD depth = MaxEdge()->len() + 0.1;
-    COORD shortest = depth;
+    COORD depth_ = MaxEdge()->len() + 0.1;
+    COORD shortest = depth_;
 
-    for ( VertexPtrIter i = vertices.begin(); i!= vertices.end(); i++ ) {
+    for ( VertexPtrIter i = vertices.begin(); i!= vertices.end(); ++i ) {
 
 
+    VertexPtr v0;
 	v0 = (*i);
 	old_dir = Dir<Point>(v0,Point(1.12, 1.3));
+    COORD TotalAngle;
 	TotalAngle = 0;
 
 	while ( TotalAngle < v0->total_angle() ) {
 
-	    SweepNextLeft(old_dir, new_dir, depth*depth,10);
+	    SweepNextLeft(old_dir, new_dir, depth_*depth_,10);
 	    TotalAngle += true_angle(old_dir.vec, -new_dir.vec);
 
 	    old_dir = old_dir.RotateCCwToVec(-new_dir.vec);
@@ -641,7 +549,7 @@ void TwoComplex::issueFinalReport(Summary& fsm, ostream& out,
 				  double part_done, 
 				  double part_group) {
 
-	    out << "File = " << filename << " depth = " << depth
+	    out << "File = " << filename_ << " depth = " << depth
 			   << " follow_depth = " << follow_depth
 			   << " perturb = " << perturb_magnitude << endl; 
 	
@@ -657,7 +565,7 @@ void TwoComplex::issueFinalReport(Summary& fsm, ostream& out,
 
 void TwoComplex::check_algebraicQ()
 {
-  for(UEdgePtrIter i = uedges.begin(); i!= uedges.end(); i++)
+  for(UEdgePtrIter i = uedges.begin(); i!= uedges.end(); ++i)
     {
 	if( abs((**i).ue_vecQ.cx - (**i).ue_vecQ.algt.tocomplex()) > EPSILON)
 	ERR_RET("ue_vecQ_alg doesn't match ue_vecQ");
@@ -669,7 +577,7 @@ void TwoComplex::check_algebraicQ()
 
 void TwoComplex::check_algebraicI()
 {
-  for(UEdgePtrIter i = uedges.begin(); i!= uedges.end(); i++)
+  for(UEdgePtrIter i = uedges.begin(); i!= uedges.end(); ++i)
     {
 	if( abs((**i).ue_vecI.cx - (**i).ue_vecI.algt.tocomplex()) > EPSILON)
 	ERR_RET("ue_vecI_alg doesn't match ue_vecI");
@@ -685,7 +593,7 @@ int64_t TwoComplex::get_global_denom()
 
     mpz_class d(1);
 
-    for(UEdgePtrIter i = uedges.begin(); i!= uedges.end(); i++) {
+    for(UEdgePtrIter i = uedges.begin(); i!= uedges.end(); ++i) {
 	for(int j=0; j<=Params::nbr_params(); j++ ) {
 	    algebraic<bigrat> a = (*i)->ue_vecQ.algt.get_coeff(j);
 	    vector<bigrat> c = a.get_coords();
@@ -714,7 +622,7 @@ void TwoComplex::ClearDenominators()
     int64_t d = get_global_denom();
 
 
-    for(UEdgePtrIter i = uedges.begin(); i!= uedges.end(); i++) {
+    for(UEdgePtrIter i = uedges.begin(); i!= uedges.end(); ++i) {
 	(*i)->ue_vecQ *= d; 
 	(*i)->ue_vecI.cx = (*i)->ue_vecQ.cx;
 

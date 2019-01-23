@@ -20,19 +20,10 @@
 
 #include "libpolygon/two_complex.h"
 
-OEdge::OEdge() 
-{
-
-    from_edge = NULL_OEdgeIter;
-
-};
-
-
-OEdge::OEdge(UEdgePtr e, int dir) 
+OEdge::OEdge(UEdgePtr e, int dir) :from_edge(NULL_OEdgeIter)
 {
     ue = e;
     direction = dir; 
-    from_edge = NULL_OEdgeIter;
 };
 
 bool OEdge::operator==(OEdge &b)
@@ -113,7 +104,7 @@ OEdgeIter OEdge::this_iter()
     
     f = in_face();
 
-    for( i = f->oedges.begin(); i != f->oedges.end() ; i++ ) {
+    for( i = f->oedges.begin(); i != f->oedges.end() ; ++i ) {
 	if ( (*i) == *this ) {
 	    return(i);
 	}
@@ -130,7 +121,7 @@ OEdgeIter OEdge::pair_edge()
     
     f = other_face();
 
-    for( i = f->oedges.begin(); i != f->oedges.end() ; i++ ) {
+    for( i = f->oedges.begin(); i != f->oedges.end() ; ++i ) {
 	if ( (*i).ue == this->ue  && 
 	        (*i).direction == -this->direction ) {
 	    
@@ -181,13 +172,6 @@ BigPointI& OEdge::_vec<BigPointI>()
 	return( ue->minus_ue_vecI );
     }
 
-}
-
-
-
-BigPointI OEdge::vecI()
-{
-    return( vec<BigPointI>() );
 }
 
 
@@ -302,7 +286,7 @@ OEdgeIter OEdge::next_edge()
     f = in_face();
 
     OEdgeIter i = this_iter();
-    i++;
+    ++i;
 
     if( i == f->oedges.end() ) {
 	i = f->oedges.begin();
@@ -318,7 +302,7 @@ OEdgePtrIter OEdge::this_vert_iter()
     
     v = head();
 
-    for(OEdgePtrIter i = v->out_edges.begin(); i!= v->out_edges.end(); i++ ) {
+    for(OEdgePtrIter i = v->out_edges.begin(); i!= v->out_edges.end(); ++i ) {
 	if ( *(*i) == *this ) {
 	    return(i);
 	}
@@ -337,7 +321,7 @@ Point OEdge::headOffset<Point>()
 //    q = f->GetOffsetV0();
     q = Point(0.0);
     
-    for(OEdgeIter i = f->oedges.begin(); i!= f->oedges.end(); i++ ) {
+    for(OEdgeIter i = f->oedges.begin(); i!= f->oedges.end(); ++i ) {
       if ( (*i) == *this ) {
 	return(q);
       }
@@ -361,7 +345,7 @@ BigPointI OEdge::headOffset<BigPointI>()
     q = BigPointI();
     q.Check();
     
-    for(OEdgeIter i = f->oedges.begin(); i!= f->oedges.end(); i++ ) {
+    for(OEdgeIter i = f->oedges.begin(); i!= f->oedges.end(); ++i ) {
       if ( (*i) == *this ) {
 	return(q);
       }
@@ -385,7 +369,7 @@ Point OEdge::tailOffset<Point>()
     q = Point(0.0);
 
   
-    for(OEdgeIter i = f->oedges.begin(); i!=f->oedges.end(); i++ ) {
+    for(OEdgeIter i = f->oedges.begin(); i!=f->oedges.end(); ++i ) {
 	if ( (*i) == *this ) {
 	    return(q + (*i).vec_cx());
 	}
@@ -407,7 +391,7 @@ BigPointI OEdge::tailOffset<BigPointI>()
     q = BigPointI();
     q.Check();
   
-    for(OEdgeIter i = f->oedges.begin(); i!=f->oedges.end(); i++ ) {
+    for(OEdgeIter i = f->oedges.begin(); i!=f->oedges.end(); ++i ) {
 	if ( (*i) == *this ) {
 	    return(q + (*i).vec<BigPointI>());
 	}

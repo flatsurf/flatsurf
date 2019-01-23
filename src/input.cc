@@ -399,7 +399,7 @@ void TwoComplex::ReadComplex(string filename)
 
     FILE *fp;
     char buf[MAX_LINE];
-    char c;
+    int c;
     int line_number = 1;
 
 
@@ -414,9 +414,9 @@ void TwoComplex::ReadComplex(string filename)
 	ERR_RET("aborting");
     }
     while( (c = fgetc(fp)) != EOF) {
-	ungetc(c,fp);
+	ungetc((char)c,fp);
 
-	switch(c) {
+	switch((char)c) {
 
 	case '#':
 	    fgets(buf,MAX_LINE,fp);
@@ -455,7 +455,7 @@ void TwoComplex::ReadComplex(string filename)
 UEdgePtr TwoComplex::GetUEdge(int id)
 {
 
-    for(UEdgePtrIter i = uedges.begin(); i!= uedges.end(); i++ ) {
+    for(UEdgePtrIter i = uedges.begin(); i!= uedges.end(); ++i ) {
 	if( (*i)->id() == id ) {
 	    return(*i);
 	}
@@ -471,7 +471,7 @@ VertexPtr TwoComplex::GetVertex(int id)
 
 
 
-    for(VertexPtrIter i = vertices.begin(); i!= vertices.end(); i++ ) {
+    for(VertexPtrIter i = vertices.begin(); i!= vertices.end(); ++i ) {
 	if( (*i)->id() == id ) {
 	    return(*i);
 	}
@@ -485,7 +485,7 @@ VertexPtr TwoComplex::GetVertex(int id)
 FacePtr TwoComplex::GetFace(int id)
 {
 
-    for(FacePtrIter i = faces.begin(); i != faces.end(); i++ ) {
+    for(FacePtrIter i = faces.begin(); i != faces.end(); ++i ) {
 	if( (*i)->id() == id ) {
 	    return(*i);
 	}
@@ -518,7 +518,7 @@ char *read_coords(char *s, COORD *p_vec_re, COORD *p_vec_im, int line_number) {
     ERR_RET2("bad coord: can't find )", line_number);
   }
 
-  if( sscanf(s,"%s %s", re, im) != 2 ) {
+  if( sscanf(s,"%999s %999s", re, im) != 2 ) {
     ERR_RET2("bad coord: cant find real and imaginary parts", line_number);
   }
 //  char *junk[0];
@@ -651,8 +651,6 @@ void TwoComplex::read_face_line(FILE *fp,int line_number)
     char *str;
     char c,c1;
     int f_id, e_id, dir=0;
-    UEdgePtr ue;
-    OEdgePtr oe;
     FacePtr f;
     list<OEdge> tmp_oedge_list; 
     /* make sure that is null */
@@ -684,12 +682,14 @@ void TwoComplex::read_face_line(FILE *fp,int line_number)
 	    ERR_RET2("read_face_line: bad sign; line =", line_number);
 	    break;
 	}
+    UEdgePtr ue;
 	ue = GetUEdge(e_id);
 	if( ue == NULL ) {
 	    ue = AddUEdge(e_id, NULL, NULL, Point(0,0));
 	}
 	
 
+    OEdgePtr oe;
 	oe = new OEdge(ue,dir);
 	tmp_oedge_list.insert(tmp_oedge_list.end(),*oe);
 

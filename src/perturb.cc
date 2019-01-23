@@ -61,7 +61,7 @@ void TwoComplex::PerturbConjugates(COORD max_perturb)
 	Params::AddParams(1,&(perturb[count]));
 	n++;
 	count++;
-	for (UEdgePtrIter j = S->uedges.begin(); j!=S->uedges.end(); j++) {
+	for (UEdgePtrIter j = S->uedges.begin(); j!=S->uedges.end(); ++j) {
 
 	    alg_tQ tmp = (*j)->ue_vecQ.algt;
 	    tmp.pad_coeffs(1); //probably not needed
@@ -77,7 +77,7 @@ bool TwoComplex::is_conjugate_deformation(int j,int k)
 {
 
 
-    for (UEdgePtrIter i = S->uedges.begin(); i!=S->uedges.end(); i++) {
+    for (UEdgePtrIter i = S->uedges.begin(); i!=S->uedges.end(); ++i) {
 	if ( (*i)->ue_vecQ.algt.get_coeff(j) != (*i)->ue_vecQ.algt.get_coeff(j).conjugate() ) {
 	    return false;
 	}
@@ -116,13 +116,13 @@ void Vertex::MoveVertex(Point p)
 	tmp[1] = 0.5*p.real()/xi_real - 0.5*p.imag()/xi_imag;
 
 	Params::AddParams(2,tmp);
-	for (UEdgePtrIter i = S->uedges.begin(); i!=S->uedges.end(); i++) {
+	for (UEdgePtrIter i = S->uedges.begin(); i!=S->uedges.end(); ++i) {
 	    (*i)->ue_vecQ.algt.pad_coeffs(2);
 	}
     }
 
 
-    for(OEdgePtrIter i = out_edges.begin(); i!=out_edges.end(); i++ ) {
+    for(OEdgePtrIter i = out_edges.begin(); i!=out_edges.end(); ++i ) {
 	Point q;
 	q = (*i)->vec_cx();
 	q = q + p;
@@ -151,7 +151,7 @@ void TwoComplex::PerturbAll(COORD max_perturb)
     UEdgePtr *uedge_array = new UEdgePtr[uedges.size()+1];
 
 
-    for(UEdgePtrIter j = uedges.begin(); j!=uedges.end(); j++ ) {
+    for(UEdgePtrIter j = uedges.begin(); j!=uedges.end(); ++j ) {
 	uedge_array[i] = (*j);
 	(*j)->index = i;
 
@@ -177,16 +177,16 @@ void TwoComplex::PerturbAll(COORD max_perturb)
    }
 
    i = 1;
-   for(FacePtrIter l = faces.begin(); l!=faces.end() ; l++ ) {
-       for(OEdgeIter j = (*l)->oedges.begin(); j!=(*l)->oedges.end(); j++) {
+   for(FacePtrIter l = faces.begin(); l!=faces.end() ; ++l ) {
+       for(OEdgeIter j = (*l)->oedges.begin(); j!=(*l)->oedges.end(); ++j) {
 	   X(i,(*j).ue->index) += (*j).direction; 
        }
        i++;
    }
    /* triangles assumed here */
-   for(VertexPtrIter l = vertices.begin(); l!=vertices.end() ; l++ ) {
+   for(VertexPtrIter l = vertices.begin(); l!=vertices.end() ; ++l ) {
        for(OEdgePtrIter j = (*l)->out_edges.begin(); j!=(*l)->out_edges.end(); 
-	                               j++ ) {
+	                               ++j ) {
 	   X(i,(*j)->next_edge()->ue->index) += 
 	       (*j)->next_edge()->direction;
        }
@@ -209,7 +209,7 @@ void TwoComplex::PerturbAll(COORD max_perturb)
 
 
    i = vertices.size();
-   for(VertexPtrIter j = vertices.begin(); j!= vertices.end(); j++ ) {
+   for(VertexPtrIter j = vertices.begin(); j!= vertices.end(); ++j ) {
        if( abs((*j)->total_angle() - 2*MY_PI) > EPSILON ) 
 	   --i;
    }

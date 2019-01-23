@@ -20,8 +20,6 @@ libpolygon_la_SOURCES = \
     psimplex.cc      \
     reflect.cc       \
     report.cc        \
-    slice.cc         \
-    slice-pvm.cc     \
     sweep.cc         \
     triang.cc        \
     two_complex.cc   \
@@ -38,8 +36,6 @@ libpolygoninclude_HEADERS =  \
     libpolygon/defs.h        \
     libpolygon/psimplex.h    \
     libpolygon/saddleconf.h  \
-    libpolygon/slice.h       \
-    libpolygon/slice-pvm.h   \
     libpolygon/two_complex.h \
     libpolygon/globals.h     \
     libpolygon/libpolygon.h

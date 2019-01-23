@@ -36,12 +36,11 @@ Dir<PointT>::Dir(OEdgeIter e) {
 
 
 template <typename PointT>
-Dir<PointT>::Dir(VertexPtr vp, const PointT &p) {
+Dir<PointT>::Dir(VertexPtr vp, const PointT &p) :vec(p){
     
     OEdgePtrIter i, j;
 
     v = vp;
-    vec = p;
 
 
     /* still clean up */
@@ -62,7 +61,7 @@ Dir<PointT>::Dir(VertexPtr vp, const PointT &p) {
 	    return;
 	}
 
-	i++;
+	++i;
 	j = next_vert_edge(i);
     }
 

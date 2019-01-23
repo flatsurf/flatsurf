@@ -21,101 +21,17 @@
 
 #include "libpolygon/two_complex.h"
 
-/**
-* Title               : Convert Decimal to Roman Numeral (Convert Decimal to Roman Numeral.cpp)
-* Program Description : Write a C++ program to Convert Decimal Number to Roman Numeral.
-* Author              : robustprogramming.com
-* Interface           : Console
-* IDE                 : Code::Blocks 13.12
-* Operating System    : Windows 8.1
-*/
-
 #include<iostream>
 
 using namespace std;
 
 string roman_numeral(int decimalNumber)
 {
-	int j;   // Counter Variable
-	int m;   // Numerical Value 1000
-	int d;   // Numerical Value 500
-	int c;   // Numerical Value 100
-	int l;   // Numerical Value 50
-	int x;   // Numerical Value 10
-	int ix;  // Numerical Value 9
-	int v;   // Numerical Value 5
-	int iv;  // Numerical Value 4
-	int i;   // Numerical Value 1
-
-	if (decimalNumber == 0 ) {
-	    return("O");
-	}
-
-	
-	if (decimalNumber < 0)
-	{
-	    ERR_RET("roman_numeral: invalid number");
-	}
-	m = decimalNumber / 1000;
-	decimalNumber = decimalNumber % 1000;
-
-	d = decimalNumber / 500;
-	decimalNumber = decimalNumber % 500;
-
-	c = decimalNumber / 100;
-	decimalNumber = decimalNumber % 100;
-
-	l = decimalNumber / 50;
-	decimalNumber = decimalNumber % 50;
-
-	x = decimalNumber / 10;
-	decimalNumber = decimalNumber % 10;
-
-	ix = decimalNumber / 9;
-	decimalNumber = decimalNumber % 9;
-
-	v = decimalNumber / 5;
-	decimalNumber = decimalNumber % 5;
-
-	iv = decimalNumber / 4;
-	decimalNumber = decimalNumber % 4;
-
-	i = decimalNumber;
-
-	std::stringstream ss;
-	
-	for (j = 1; j <= m; j++)
-		ss << "M";
-
-	for (j = 1; j <= d; j++)
-		ss << "D";
-
-	for (j = 1; j <= c; j++)
-		ss << "C";
-
-	for (j = 1; j <= l; j++)
-		ss << "L";
-
-	for (j = 1; j <= x; j++)
-		ss << "X";
-
-	for (j = 1; j <= ix; j++)
-		ss << "IX";
-
-	for (j = 1; j <= v; j++)
-		ss << "V";
-
-	for (j = 1; j <= iv; j++)
-		ss << "IV";
-
-	for (j = 1; j <= i; j++)
-		ss << "I";
-
-	return ss.str();
+    throw std::logic_error("roman_numeral: The implementation of this function had to be removed since we're not sure about  its license");
 }
 
 
-my_ostream::my_ostream(string filename) 
+my_ostream::my_ostream(const string& filename) 
 {
 
     tri_stream.open((filename + ".tri").c_str());
@@ -128,7 +44,7 @@ my_ostream::my_ostream(string filename)
 
 	int count = 1; 
 	for( VertexPtrIter i = S->vertices.begin(); i !=
-		 S->vertices.end(); i++ ) {
+		 S->vertices.end(); ++i ) {
 	    int v_id = (*i)->id();
 	    tex_stream << "\\def\\v" << roman_numeral(v_id) << "color{[white!"
 		       << 20*(count) << "!green]}" << endl;
@@ -167,12 +83,6 @@ void my_ostream::close()
 }
 
 
-PSimplex::PSimplex() 
-{
-
-    ERR_RET("psimplex: empty constructor\n");
-}
-
 PSimplex::~PSimplex() 
 {
      /* empty destructor */
@@ -185,9 +95,8 @@ void PSimplex::Draw(my_ostream& output_stream ,COORD d)
     output_stream.tri() << d; /* this to shut up the warning */
 }
 
-PSimplex::PSimplex(Point p0, int i) 
+PSimplex::PSimplex(Point p0, int i): p(p0)
 {
-    p = p0;
     in_pcomplex = i;
 }
 
@@ -207,7 +116,7 @@ PVertex::PVertex(VertexPtr v0, Point p0, int i) : PSimplex(p0,i)
 
 SimplexPtr PVertex::sp()
 {
-    return( (Simplex *) s);
+    return static_cast<Simplex*>(s);
 }
 
 PUEdge::PUEdge(OEdge& oe, Point p0,int i) : PSimplex(p0,i)
@@ -236,7 +145,7 @@ PUEdge::PUEdge(UEdgePtr e0, Point p0, int i) : PSimplex(p0,i)
 
 SimplexPtr PUEdge::sp()
 {
-    return( (Simplex *) s);
+    return static_cast<Simplex*>(s);
 }
 
 PFace::PFace(FacePtr f0, Point p0, int i) : PSimplex(p0,i)
@@ -248,7 +157,7 @@ PFace::PFace(FacePtr f0, Point p0, int i) : PSimplex(p0,i)
 
 SimplexPtr PFace::sp()
 {
-    return( (Simplex *) s);
+    return static_cast<Simplex*>(s);
 }
 
 void PVertex::Draw(my_ostream& output_stream, COORD d)
@@ -308,7 +217,7 @@ void PFace::Draw(my_ostream& output_stream,COORD scale_factor)
     q = q*scale_factor;
     q = q + p;
 
-    for(OEdgeIter i = s->oedges.begin(); i!= s->oedges.end(); i++ ) {
+    for(OEdgeIter i = s->oedges.begin(); i!= s->oedges.end(); ++i ) {
 	output_stream.tri() <<q.real() << " " << q.imag() << " ";
 	if (tikz_output && (!billiard_mode || s->from_face == NULL) ) {
 	    output_stream.tex() << "(" << q.real() << "," << q.imag()
@@ -331,7 +240,7 @@ void PFace::Draw(my_ostream& output_stream,COORD scale_factor)
     // output_stream << "N" << s->id() <<" "<< p1.real() << " " <<p1.imag() <<" "<< q.real()<< " " <<q.imag() << "\n"; 
 
     /* draw extra segments (for displaying saddle connections ) */
-    for(SegmentListIter i = s->segments_to_draw.begin(); i!=s->segments_to_draw.end(); i++) {
+    for(SegmentListIter i = s->segments_to_draw.begin(); i!=s->segments_to_draw.end(); ++i) {
 	Point q1 = p+(*i).head*scale_factor;
 	Point q2 = p+(*i).tail*scale_factor;
 	output_stream.tri() << "N" << s->id() <<" "<< q1.real() << " " <<q1.imag() <<" "<< q2.real()<< " " <<q2.imag() << "\n";
@@ -370,7 +279,7 @@ typedef list<tFace>::iterator tFaceListIter;
 void tFace::Print(ostream &out)
 {
 
-    for(PointListIter k = verts.begin(); k!= verts.end(); k++) {
+    for(PointListIter k = verts.begin(); k!= verts.end(); ++k) {
 	out << *k;
     }
     out << endl; 
@@ -384,7 +293,7 @@ void tFace::Draw(my_ostream& output_stream,int cyl_nbr)
 	output_stream.tex() << "% cyl #" << cyl_nbr << endl;
 //	output_stream.tex() << "\\fill [red!" << 10*(cyl_nbr) << "!white] ";
 	output_stream.tex() << "\\fill \\c" << roman_numeral(cyl_nbr) << "color ";
-	for(PointListIter k = verts.begin(); k!=verts.end(); k++ ) {
+	for(PointListIter k = verts.begin(); k!=verts.end(); ++k ) {
 	    output_stream.tex() << "(" << k->real() << "," << k->imag()
 				<< ") -- ";
 	}
@@ -456,10 +365,10 @@ PointListIter tFace::FindPoint(Point q)
 
     COORD THRESHOLD=1E-8;
     
-    for( PointListIter k = verts.begin(); k!= verts.end(); k++) {
+    for( PointListIter k = verts.begin(); k!= verts.end(); ++k) {
 	//see if q is in the seqment
 	PointListIter k_next = k;
-	k_next++;
+	++k_next;
 	if ( k_next == verts.end() ) {
 	    k_next = verts.begin();
 	}
@@ -497,7 +406,7 @@ void PFace::DrawCylinders(my_ostream& output_stream,COORD scale_factor)
 
     tmp.verts.clear();
 
-    for(OEdgeIter i = s->oedges.begin(); i!= s->oedges.end(); i++ ) {
+    for(OEdgeIter i = s->oedges.begin(); i!= s->oedges.end(); ++i ) {
 
 	tmp.verts.push_back(q);
 	t = (*i).vec_cx();
@@ -515,7 +424,7 @@ void PFace::DrawCylinders(my_ostream& output_stream,COORD scale_factor)
     
     std::cout << "Segments: ";
     for(SegmentListIter i = s->segments_to_draw.begin();
-	i!=s->segments_to_draw.end(); i++) {
+	i!=s->segments_to_draw.end(); ++i) {
 	Point q1 = p+(*i).head*scale_factor;
 	Point q2 = p+(*i).tail*scale_factor;
 
@@ -525,7 +434,7 @@ void PFace::DrawCylinders(my_ostream& output_stream,COORD scale_factor)
 
     
 
-    for(SegmentListIter i = s->segments_to_draw.begin(); i!=s->segments_to_draw.end(); i++) {
+    for(SegmentListIter i = s->segments_to_draw.begin(); i!=s->segments_to_draw.end(); ++i) {
 	Point q1 = p+(*i).head*scale_factor;
 	Point q2 = p+(*i).tail*scale_factor;
 
@@ -534,7 +443,7 @@ void PFace::DrawCylinders(my_ostream& output_stream,COORD scale_factor)
 	PointListIter k1;
 
 	std::cout << "q1=" << q1 <<endl;
-	for ( j = tFaces.begin(); j!= tFaces.end(); j++) {
+	for ( j = tFaces.begin(); j!= tFaces.end(); ++j) {
 	    k1 = (*j).FindPoint(q1);
 	    if ( k1 != (*j).verts.end() ) {
 		//found q1
@@ -549,7 +458,7 @@ void PFace::DrawCylinders(my_ostream& output_stream,COORD scale_factor)
 	    ERR_RET("DrawCylinders: q1 and q2 not in same tFace");
 	}
 	//swap q1 and q2 if in wrong order
-	for( PointListIter m = (*j).verts.begin(); m!= (*j).verts.end(); m++) {
+	for( PointListIter m = (*j).verts.begin(); m!= (*j).verts.end(); ++m) {
 
 	    if ( m == k1 ) {
 		break;
@@ -569,10 +478,10 @@ void PFace::DrawCylinders(my_ostream& output_stream,COORD scale_factor)
 	ntf[0].verts.clear();
 	ntf[1].verts.clear();
 	int r = 0;
-	for( PointListIter m = (*j).verts.begin(); m!= (*j).verts.end(); m++) {
+	for( PointListIter m = (*j).verts.begin(); m!= (*j).verts.end(); ++m) {
 
 	    PointListIter m_next = m;
-	    m_next++;
+	    ++m_next;
 	    if ( m_next == (*j).verts.end() ) {
 		m_next = (*j).verts.begin();
 	    }
@@ -601,8 +510,8 @@ void PFace::DrawCylinders(my_ostream& output_stream,COORD scale_factor)
 
 	std::cout << "Finished Segment. Current tFaces:" << endl;
 	
-	for (tFaceListIter j = tFaces.begin(); j!= tFaces.end(); j++) {
-	    j->Print(std::cout);
+	for (tFaceListIter jj = tFaces.begin(); jj!= tFaces.end(); ++jj) {
+	    jj->Print(std::cout);
 	}
 
     }
@@ -611,7 +520,7 @@ void PFace::DrawCylinders(my_ostream& output_stream,COORD scale_factor)
 
     std::cout << "Final tFaces: ";
 
-    for (tFaceListIter j = tFaces.begin(); j!= tFaces.end(); j++) {
+    for (tFaceListIter j = tFaces.begin(); j!= tFaces.end(); ++j) {
 	j->Print(std::cout);
     }
     
@@ -620,7 +529,7 @@ void PFace::DrawCylinders(my_ostream& output_stream,COORD scale_factor)
     
     //now draw the  tfaces which belong to the cylinder
     
-    for(SegmentListIter i = s->segments_to_draw.begin(); i!=s->segments_to_draw.end(); i++) {
+    for(SegmentListIter i = s->segments_to_draw.begin(); i!=s->segments_to_draw.end(); ++i) {
 
 	if( i->cyl_on_left <= 0 ) {
 	    continue;
@@ -629,13 +538,11 @@ void PFace::DrawCylinders(my_ostream& output_stream,COORD scale_factor)
 	Point q2 = p+(*i).tail*scale_factor;
 
 
-	COORD THRESHOLD = 1.0E-8;
-	
-	for (tFaceListIter j = tFaces.begin(); j!= tFaces.end(); j++) {
+	for (tFaceListIter j = tFaces.begin(); j!= tFaces.end(); ++j) {
 	    int in_cyl = 0;
-	    for(PointListIter k = j->verts.begin(); k!= j->verts.end(); k++ ) {
+	    for(PointListIter k = j->verts.begin(); k!= j->verts.end(); ++k ) {
 		PointListIter k_next = k;
-		k_next++;
+		++k_next;
 		if (k_next == j->verts.end() ) {
 		    k_next = j->verts.begin();
 		}
@@ -682,7 +589,7 @@ bool Face::intersects( Point pb, Point pv)
 
     Point intersection; 
 
-    for(OEdgeIter k = oedges.begin(); k != oedges.end(); k++ ) {
+    for(OEdgeIter k = oedges.begin(); k != oedges.end(); ++k ) {
 	if ( colinear( pv, (*k).vec_cx() ) ) {
 
 //	    std::cout << "Parallel: " << pb <<"--" << pb+pv << 
@@ -759,7 +666,7 @@ bool Face::intersects(FacePtr f, Point offset)
 //    }
 //    fprintf(out_f,"\n");
 
-    for(OEdgeIter k = f->oedges.begin(); k != f->oedges.end(); k++ ) {
+    for(OEdgeIter k = f->oedges.begin(); k != f->oedges.end(); ++k ) {
 	if( (*k).other_face() == this  ) {
 	    continue;
 	}
@@ -802,7 +709,7 @@ bool Face::contains( Point p)
 
     int count = 0;
 
-    for(OEdgeIter k = oedges.begin(); k!= oedges.end(); k++ ) {
+    for(OEdgeIter k = oedges.begin(); k!= oedges.end(); ++k ) {
 	if ( intersect_segment_interior(p, far_out_vector, 
 			       (*k).headOffset<Point>(),(*k).vec_cx(),
 			       intersection)) {
@@ -825,7 +732,7 @@ COORD Face::perimeter()
     COORD per = 0;
     Point s = Point(0,0);
 
-    for (OEdgeIter k = oedges.begin(); k != oedges.end(); k++ ) {
+    for (OEdgeIter k = oedges.begin(); k != oedges.end(); ++k ) {
 	s += (*k).vec_cx();
 	per += abs(s);
     }
@@ -836,7 +743,7 @@ COORD Face::perimeter()
 PFacePtr TwoComplex::get_pface(FacePtr f)
 {
 
-    for (DrawListIter k = dl.begin(); k!= dl.end(); k++ ) {
+    for (DrawListIter k = dl.begin(); k!= dl.end(); ++k ) {
 	if ( (*k)->sp()->tag == 'F' && (*k)->sp() == f ) {
 	    return((PFacePtr)(*k));
 	}
@@ -877,14 +784,14 @@ bool TwoComplex::can_merge( UEdgePtr ue)
     // 	   ue->f1->id(), pf1->s->id(), pf1->in_pcomplex);
 
 
-    Point offset = pf0->p + oe0->headOffset<Point>() - 
+    Point offset_ = pf0->p + oe0->headOffset<Point>() - 
 	pf1->p - oe1->tailOffset<Point>();
     
-    for (DrawListIter i = dl.begin(); i != dl.end(); i++) {
+    for (DrawListIter i = dl.begin(); i != dl.end(); ++i) {
 	if ( (*i)->in_pcomplex != pf0->in_pcomplex ) {
 	    continue;
 	}
-	for (DrawListIter j = dl.begin(); j != dl.end(); j++) {
+	for (DrawListIter j = dl.begin(); j != dl.end(); ++j) {
 	    if ( (*j)->in_pcomplex != pf1->in_pcomplex ) {
 		continue;
 	    }
@@ -896,7 +803,7 @@ bool TwoComplex::can_merge( UEdgePtr ue)
 	    PFacePtr pfj = (PFacePtr)((*j));
 
 /* don't forget offset */
-	    if ( pfi->s->intersects(pfj->s,offset+pfj->p-pfi->p)) { 
+	    if ( pfi->s->intersects(pfj->s,offset_+pfj->p-pfi->p)) { 
 //		fprintf(out_f,"can't merge \n");
 		return(false);
 	    }
@@ -912,7 +819,7 @@ void TwoComplex::relocate( int i, Point offset)
 {
 
 
-    for (DrawListIter k = dl.begin(); k!=dl.end(); k++ ) {
+    for (DrawListIter k = dl.begin(); k!=dl.end(); ++k ) {
 	if ( (*k)->in_pcomplex == i ) {
 	    (*k)->p += offset;
 	}
@@ -935,13 +842,13 @@ void TwoComplex::merge( UEdgePtr ue)
     int i = pf0->in_pcomplex;
     int j = pf1->in_pcomplex;
 
-    Point offset = pf0->p + oe0->headOffset<Point>() 
+    Point offset_ = pf0->p + oe0->headOffset<Point>() 
 	- pf1->p - oe1->tailOffset<Point>();
 
-    relocate( j, offset);
+    relocate( j, offset_);
 
 
-    for(DrawListIter k = dl.begin(); k!= dl.end(); k++ ) {
+    for(DrawListIter k = dl.begin(); k!= dl.end(); ++k ) {
 	if( (*k)->in_pcomplex == j ) {
 	    (*k)->in_pcomplex = i;
 	}
@@ -974,7 +881,7 @@ void TwoComplex::make_pcomplexes()
 
     dl.clear();
 
-    for( FacePtrIter i = faces.begin(); i!= faces.end(); i++ ) {
+    for( FacePtrIter i = faces.begin(); i!= faces.end(); ++i ) {
 	if( !(*i)->deleted() ) {
 	    AddPFace( (*i), Point(0.0), count++);
 	}
@@ -991,7 +898,7 @@ void TwoComplex::make_pcomplexes()
     for( pr = 0; pr <=max_priority; pr++) {
 	candidates.clear(); 
 
-	for(UEdgePtrIter j = uedges.begin(); j!= uedges.end(); j++ ) {
+	for(UEdgePtrIter j = uedges.begin(); j!= uedges.end(); ++j ) {
 	    if( (*j)->get_priority() != pr ) {
 		continue;
 	    }
@@ -999,7 +906,7 @@ void TwoComplex::make_pcomplexes()
 	}
 	candidates.sort(is_longer);
 	
-	for(UEdgePtrIter j = candidates.begin(); j!= candidates.end(); j++ ) {
+	for(UEdgePtrIter j = candidates.begin(); j!= candidates.end(); ++j ) {
 	
 	    if( can_merge( *j))  {
 		merge(*j);
@@ -1046,7 +953,7 @@ void TwoComplex::NewDraw(my_ostream& output_stream)
 	bool active = false;
 
 
-	for( DrawListIter i = dl.begin(); i != dl.end(); i++ ) {
+	for( DrawListIter i = dl.begin(); i != dl.end(); ++i) {
 	    if( (*i)->sp()->tag == 'V' && (*i)->in_pcomplex == pc ) {
 		if ( ! active ) {
 		    active = true;
@@ -1105,12 +1012,12 @@ void TwoComplex::NewDraw(my_ostream& output_stream)
 //    fprintf(out_f,"%lf %lf %lf %lf %lf \n",global_min_x, global_max_x, 
 //                         global_min_y, global_max_y, scale_factor);
 
-    for(DrawListIter i = dl.begin(); i != dl.end(); i++ ) {
+    for(DrawListIter i = dl.begin(); i != dl.end(); ++i) {
 	tmp = (*i)->p -mean;
 	(*i)->p = tmp*scale_factor;
     }
 
-    for(DrawListIter i = dl.begin(); i != dl.end(); i++ ) {
+    for(DrawListIter i = dl.begin(); i != dl.end(); ++i ) {
 	(*i)->Draw(output_stream, scale_factor);
     }
 

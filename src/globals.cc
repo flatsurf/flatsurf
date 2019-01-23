@@ -38,7 +38,7 @@ Point offset = Point(UNDEFINED,UNDEFINED);
 int verbose = 0;
 COORD DELTA = 1E-9;
 COORD EPSILON = 1E-13;
-char filename[1000];
+char filename_[1000];
 int mc_number = 0;
 bool new_sweep = true;
 int mc_group = 100;

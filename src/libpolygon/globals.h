@@ -40,7 +40,6 @@ extern COORD depth;
 extern int perturb_vertex;
 extern Point offset;
 extern COORD DELTA;
-extern COORD THRESHOLD; 
 extern int mc_number;
 extern bool new_sweep;
 extern int mc_group;
@@ -85,7 +84,7 @@ extern bool too_close_flag;
 extern bool draw_cylinders;
 
 
-extern char filename[];  
+extern char filename_[];  
 extern COORD perturb_magnitude; 
 
 /* to get around compiler changes */

@@ -21,15 +21,17 @@
 
 #include "libpolygon/two_complex.h"
 
-Simplex::Simplex() 
+Simplex::Simplex(): color("#")
 {
     int i;
     char tmp[10];
     string tmp2;
+    visit_id = -1;
+    ID = -1;
+    tag = 0;
 
-    color = "#";
     for ( i = 0; i < 12; i++ ) {
-	sprintf(tmp,"%lx",my_random() %16);
+	sprintf(tmp,"%x",((unsigned int)my_random()) %16);
 	tmp2 = tmp;
 	color += tmp2;
     }
@@ -60,6 +62,8 @@ Vertex::Vertex() :Simplex()
     tag = 'V';
     order = 0;
     euclidean = UNDEFINED;
+    e = 0;
+    int_angle = -1;
 	
 };
 
@@ -93,7 +97,7 @@ void Vertex::Check()
     }
     Point q = Point(0,0);
 
-    for( i = out_edges.begin(); i != out_edges.end(); i++ ) {
+    for( i = out_edges.begin(); i != out_edges.end(); ++i ) {
 	if( (*i)->head() != this ) {
 	    ERR_RET("vertex check: vertex not outgoing");
 	}
@@ -131,14 +135,14 @@ COORD Vertex::total_angle()
 
     
     j = i = out_edges.begin();
-    j++;
+    ++j;
 
     while( j!= out_edges.end() ) {
 	
 	s = s+angle((*i)->vec_cx(), (*j)->vec_cx());
           
-     i++;
-     j++;
+     ++i;
+     ++j;
 
     }
 

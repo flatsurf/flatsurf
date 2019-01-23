@@ -25,15 +25,15 @@ Face::Face() :Simplex()
 { 
     tag = 'F';
     from_face = NULL; 
-
+    parent_face_ID = -1;
 };
 
-Face::Face(list<OEdge> L) :Simplex() 
+Face::Face(const list<OEdge>& L) :Simplex() 
 {
     tag = 'F';
     SetOEdgeList(L);
     from_face = NULL;
-
+    parent_face_ID = -1;
 }
 
 //for billiard mode
@@ -84,7 +84,7 @@ void Face::SetOEdgeList(list<OEdge> L)
     if( L.empty() )
 	return;
 
-    for(OEdgeIter i = L.begin(); i != L.end(); i++ ) {
+    for(OEdgeIter i = L.begin(); i != L.end(); ++i ) {
 	if( (*i).direction == 1) {
 	    (*i).ue->f0 = this;
 	} else 
@@ -98,7 +98,7 @@ void Face::Print(ostream& out)
 {
     Simplex::Print(out);
 
-    for(OEdgeIter i = oedges.begin(); i!= oedges.end(); i++ ) {
+    for(OEdgeIter i = oedges.begin(); i!= oedges.end(); ++i ) {
 	(*i).Print(out);
     };
 }
@@ -137,7 +137,7 @@ Point Face::barycenter()
    Point q(0.0,0.0), r(0.0,0.0),t;
 
 
-    for(OEdgeIter i = oedges.begin(); i!= oedges.end() ; i++ ) {
+    for(OEdgeIter i = oedges.begin(); i!= oedges.end() ; ++i ) {
 	t = (*i).vec_cx();
 	q = q+ t;
 	r = r + q;
@@ -187,7 +187,7 @@ void Face::Check()
     OEdgeIter j;
     BigPointQ q,t,r;
 
-    for(OEdgeIter i = oedges.begin(); i != oedges.end(); i++ ) {
+    for(OEdgeIter i = oedges.begin(); i != oedges.end(); ++i ) {
 
 	if( this != (*i).in_face() ) {
 	    ERR_RET("check face: edge not in face");
@@ -295,20 +295,20 @@ void Face::Check()
 	r= i->vecQ();
 	r-= i->prev_edge()->vecQ();
 
-	OEdgeIter j = orig_f->oedges.begin();
-	t=   j->vecQ();
-	t-= j->prev_edge()->vecQ();
+	OEdgeIter jj = orig_f->oedges.begin();
+	t=   jj->vecQ();
+	t-= jj->prev_edge()->vecQ();
 	
 	transform_to_original(r, q);
 	if( abs(t.cx - q.cx) > EPSILON ) {
             std::cerr << this->id() << " original " << orig_f->id() << endl;
-	    std::cerr <<" i = "<< (*i).id() <<" j = " << (*j).id() << endl;
-	    std::cerr <<" i_prev " << i->prev_edge()->id() << " j_prev = " << j->prev_edge()->id() << endl;
+	    std::cerr <<" i = "<< (*i).id() <<" jj = " << (*jj).id() << endl;
+	    std::cerr <<" i_prev " << i->prev_edge()->id() << " jj_prev = " << jj->prev_edge()->id() << endl;
 	    std::cerr <<" r = " << r.cx << " t = " << t.cx << " q = " << q.cx << endl;
 
-	    std::cerr <<" i->vec " << i->vecQ().cx << " j->vec " << j->vecQ().cx << endl;
+	    std::cerr <<" i->vec " << i->vecQ().cx << " jj->vec " << jj->vecQ().cx << endl;
 	    std::cerr << " i->prev-vec " << i->prev_edge()->vecQ().cx <<
-		" j->prev-vec " << j->prev_edge()->vecQ().cx << endl;
+		" jj->prev-vec " << jj->prev_edge()->vecQ().cx << endl;
 		
 	    ERR_RET("billiard_mode: bad edge match");
 	}
@@ -319,16 +319,15 @@ COORD Face::volume()
 {
 
     VertexPtr v;
-    OEdge e1,e2;
     Point p,q;
 
     if ( order() != 3 )
 	ERR_RET("volume of non-triange");
     
     
-    e1 = oedges.front();
+    OEdge e1 = oedges.front();
     v = e1.tail();
-    e2 = *(e1.next_edge());
+    OEdge e2 = *(e1.next_edge());
     
     if( e2.head() != v)
 	ERR_RET("volume:vertices don't match");
@@ -348,9 +347,9 @@ bool Face::self_intersecting()
     Point intersection; 
 
     Point s1 = Point(0,0);
-    for(OEdgeIter i = oedges.begin(); i!= oedges.end(); i++ ) {
+    for(OEdgeIter i = oedges.begin(); i!= oedges.end(); ++i ) {
 	Point s = Point(0,0);
-	for(OEdgeIter k = oedges.begin(); k!= oedges.end(); k++ ) {
+	for(OEdgeIter k = oedges.begin(); k!= oedges.end(); ++k ) {
 	
 	    if( k != i && intersect_segment_interior(s1, (*i).vec_cx(), 
 					   s, (*k).vec_cx(), intersection)) {

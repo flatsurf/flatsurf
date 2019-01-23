@@ -88,7 +88,6 @@ int main(int argc, char **argv)
 
 
 
-    int c;
 //    int digit_optind = 0;
 
     while (1) {
@@ -147,6 +146,7 @@ int main(int argc, char **argv)
 	    {0, 0, 0, 0}
 	};
 
+    int c;
 	c = getopt_long (argc, argv, "f:s:e:d:v::lp::o:ti",
 			 long_options, &option_index);
 	if (c == -1)
@@ -328,8 +328,8 @@ int main(int argc, char **argv)
 
 	case 'f':
 	    if( optarg ) {
-		strncpy(filename,optarg,999);
-		filename[999] = '\0';
+		strncpy(filename_,optarg,999);
+		filename_[999] = '\0';
 		file_arg = true;
 	    } else {
 		ERR_RET("file: bad arg");
@@ -490,7 +490,7 @@ int main(int argc, char **argv)
 	    S->BuildQuad(a1,a2,a3,a4); 
 	}
     } else {
-	S->ReadComplex(filename);
+	S->ReadComplex(filename_);
     }
     poly<bigrat> minimal_polynomial = NumberField<bigrat>::F->min_poly();
     std::cout << "Number field: min poly " << minimal_polynomial << endl;
@@ -507,7 +507,7 @@ int main(int argc, char **argv)
 
     char buf[1000];
 
-    for ( FacePtrIter f = S->faces.begin(); f!=S->faces.end(); f++ ) { 
+    for ( FacePtrIter f = S->faces.begin(); f!=S->faces.end(); ++f ) { 
 	sprintf(buf,"face%d",(*f)->id());
 	my_ostream* face_stream = new my_ostream(buf);
 	S->make_pface(*f);
@@ -564,7 +564,7 @@ int main(int argc, char **argv)
     }
 
     if ( retriangulate ) {
-	for(UEdgePtrIter i = S->uedges.begin(); i != S->uedges.end(); i++ ) {
+	for(UEdgePtrIter i = S->uedges.begin(); i != S->uedges.end(); ++i ) {
 	    (*i)->internal = false;
 	    (*i)->from_triang = false;
 	}
@@ -595,7 +595,7 @@ int main(int argc, char **argv)
     VertexPtrIter i;
 
     if ( perturb_euclidean ) { 
-	for ( i = S->vertices.begin(); i != S->vertices.end(); i++) {
+	for ( i = S->vertices.begin(); i != S->vertices.end(); ++i) {
 	    if ( (*i)->euclidean ) {
 		tmp_offset = Point(mv*my_random()/RANDOM_MAX, 
 				     mv*my_random()/RANDOM_MAX);
@@ -611,7 +611,7 @@ int main(int argc, char **argv)
 	if ( offset == Point(UNDEFINED,UNDEFINED)) {
 	    offset = Point(mv*my_random()/RANDOM_MAX, mv*my_random()/RANDOM_MAX);
 	}
-	for ( i = S->vertices.begin(); i != S->vertices.end(); i++ ) {
+	for ( i = S->vertices.begin(); i != S->vertices.end(); ++i ) {
 	    if ( (*i)->id() == perturb_vertex ) {
                 std::cout << "Moving: "; (*i)->Print(std::cout);
                 std::cout << " offset " << offset << "\n";
@@ -707,7 +707,7 @@ int main(int argc, char **argv)
     
 
 
-    for ( i = S->vertices.begin(); i != S->vertices.end() ; i++ ) {
+    for ( i = S->vertices.begin(); i != S->vertices.end() ; ++i) {
 	if( start_vertex != UNDEFINED && (*i)->id()==start_vertex ) {
 	    break;
 	}

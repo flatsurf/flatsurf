@@ -234,7 +234,7 @@ COORD angle(Point p, Point q)
    return(acos(x));
 }
 
-COORD angle(BigPointI p, BigPointI q)
+COORD angle(const BigPointI& p, const BigPointI& q)
 {
 
     ERR_RET("angle called on BigPointI arguments");
@@ -604,44 +604,3 @@ COORD area(const Point &p, const Point &q){
 
      return(p.real()*q.imag()-q.real()*p.imag());
 }
-
-
-
-COORD det3(const vector<COORD> &x, const vector<COORD> &y, const vector<COORD> &z)
-{
-
-    return x[0]*(y[1]*z[2]-y[2]*z[1]) -y[0]*(x[1]*z[2]-x[2]*z[1]) 
-	+ z[0]*(x[1]*y[2]-y[2]*z[1]); 
-
-
-}
-
-bool in_circle(Point a,Point b,Point c, Point d)
-{
-    // is d inside the circle passing through a,b,c?
-    // see wikipedia page on delaunay triangulation
-
-    assert( CCW3(a,b,c) );
-
-    vector<COORD> x;
-    vector<COORD> y;
-    vector<COORD> z;
-
-    x.push_back(a.real()-d.real());
-    x.push_back(b.real()-d.real());
-    x.push_back(c.real()-d.real());
-
-    y.push_back(a.imag()-d.imag());
-    y.push_back(b.imag()-d.imag());
-    y.push_back(c.imag()-d.imag());
-
-    z.push_back(norm(a) - norm(d));
-    z.push_back(norm(b) - norm(d));
-    z.push_back(norm(c) - norm(d));
-
-    if( det3(x,y,z) > 0 ) {
-	return true;
-    }
-    return false;
-}
-

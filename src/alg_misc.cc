@@ -33,12 +33,6 @@ int Params::nbr_params()
 }
 
 
-void Params::ClearParams()
-{
-    params.clear();
-    n_params = 0;
-}
-
 void Params::AddParams(int n, COORD prms[])
 {
 
@@ -64,17 +58,17 @@ void Params::print(ostream &out)
 
 
 
-algebraic<bigrat> operator /(algebraic<bigrat> a, int n)
+algebraic<bigrat> operator /(const algebraic<bigrat>& a, int n)
 {
   return a * bigrat(1, n);
 }
 
-algebraic<bigrat> operator *(algebraic<bigrat> r, int n)
+algebraic<bigrat> operator *(const algebraic<bigrat>& r, int n)
 {
   return r * bigrat(n, 1);
 }
 
-algebraic<bigrat> operator *(int n , algebraic<bigrat> r)
+algebraic<bigrat> operator *(int n , const algebraic<bigrat> &r)
 {
   return r * bigrat(n, 1);
 }
