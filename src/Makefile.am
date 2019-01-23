@@ -29,6 +29,7 @@ libpolygon_la_SOURCES = \
     uedge.cc         \
     vertex.cc        \
     globals.cc
+EXTRA_libpolygon_DEPENDENCIES: libpolygon/libpolygon.h
 
 libpolygon_la_LDFLAGS = -version-info $(libpolygon_version_info)
 
