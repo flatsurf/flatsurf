@@ -44,7 +44,16 @@ libpolygoninclude_HEADERS =  \
     libpolygon/globals.h     \
     libpolygon/libpolygon.h
 
-BUILT_SOURCES = libpolygon/libpolygon.h
-CLEANFILES = libpolygon/libpolygon.h
-libpolygon/libpolygon.h: libpolygon/libpolygon.h.in Makefile
+$(builddir)/libpolygon/libpolygon.h: $(srcdir)/libpolygon/libpolygon.h.in Makefile
+	mkdir -p $(builddir)/libpolygon
 	sed -e 's,[@]libdir[@],$(libdir),g' < $< > $@
+
+# Since we generate libpolygon.h, we need to search $(builddir) during out-of-tree builds aka VPATH builds
+VPATH = $(srcdir) $(builddir)
+# Generate libpolygon.h before performing any compilation
+BUILT_SOURCES = libpolygon/libpolygon.h
+# Distribute libpolygon.h.in as part of the tarball, but not libpolygon.h
+EXTRA_DIST = libpolygon/libpolygon.h.in
+nodist_libpolygon_la_SOURCES = libpolygon/libpolygon.h
+
+CLEANFILES = libpolygon/libpolygon.h
