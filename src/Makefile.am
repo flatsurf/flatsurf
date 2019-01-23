@@ -1,7 +1,7 @@
 bin_PROGRAMS = polygon
 
 polygon_SOURCES = main.cc
-polygon: libpolygon/libpolygon.h
+EXTRA_polygon_DEPENDENCIES: libpolygon/libpolygon.h
 
 polygon_LDADD = libpolygon.la
 
