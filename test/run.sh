@@ -7,7 +7,7 @@ set -exo pipefail
 # Go to the test directory, so the path names are correct
 cd -P -- "$(dirname -- "$0")"
 
-polygon 2 3 4 --depth=10 --follow-depth=50 --show_cyls --show_moduli --quiet
+polygon 2 3 4 --depth=10 --follow_depth=50 --show_cyls --show_moduli --quiet
 
 for output in *.sample.out; do
     diff <(polygon `basename "$output" .sample.out`) "$output";
