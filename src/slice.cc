@@ -61,7 +61,7 @@ CSliceArray::CSliceArray()
 {
 }
 
-void CSliceArray::init() 
+void CSliceArray::init() {
     for(int i = 0; i < n_slices; i++ ) {
 	slice[i].status = S_UNASSIGNED; 
 	unassigned.push_back(i);

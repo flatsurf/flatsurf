@@ -24,11 +24,11 @@
 #include <unistd.h>
 
 #ifdef USE_MPI
-#include "slice.h"
+#include "libpolygon/slice.h"
 #endif
 
 #ifdef USE_PVM
-#include "slice-pvm.h"
+#include "libpolygon/slice-pvm.h"
 #endif
 
 bool randomize = false;
