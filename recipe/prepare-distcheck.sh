@@ -1,4 +1,4 @@
-unset BINSTAR_TOKEN
+export UPLOAD_PACKAGES="False"
 patch ./recipe/build.sh <<"PATCH"
 diff --git a/recipe/build.sh b/recipe/build.sh
 index f6c029e..78de1df 100644
