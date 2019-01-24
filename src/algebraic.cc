@@ -169,7 +169,7 @@ poly<T> operator-(poly<T> p, const poly<T> &q)
 template<class T>
 poly<T>& poly<T>::operator*=(T r)
 {
-  for(typename vector<T>::iterator i = coefficients.begin(); i != coefficients.end(); i++)
+  for(typename vector<T>::iterator i = coefficients.begin(); i != coefficients.end(); ++i)
     *i = r * (*i);
   reduce();
   return *this;
@@ -273,7 +273,7 @@ ostream& operator <<(ostream& outputStream, const poly<T>& p)
 {
   typename vector<T>::const_iterator i;
   outputStream << "(";
-  for(i=p.coefficients.begin(); i!=p.coefficients.end()-1; i++)
+  for(i=p.coefficients.begin(); i!=p.coefficients.end()-1; ++i)
     outputStream << *i << " ";
   outputStream << *(p.coefficients.end()-1) << ")"; 
   return outputStream;
@@ -469,7 +469,7 @@ algebraic<T>& algebraic<T>::operator *=(T q)
 {
 
   typename vector<T>::iterator i;
-  for(i=coords.begin(); i!=coords.end(); i++) {
+  for(i=coords.begin(); i!=coords.end(); ++i) {
       (*i) *= q;
   }
   return(*this);
@@ -481,7 +481,7 @@ algebraic<T>& algebraic<T>::operator /=(T q)
 {
 
   typename vector<T>::iterator i;
-  for(i=coords.begin(); i!=coords.end(); i++) {
+  for(i=coords.begin(); i!=coords.end(); ++i) {
       (*i) /= q;
   }
   return(*this);
@@ -590,7 +590,7 @@ algebraic<T> operator -(const algebraic<T> &r)
 {
   typename vector<T>::const_iterator i;
   vector<T> s;
-  for(i=r.coords.begin(); i!=r.coords.end(); i++)
+  for(i=r.coords.begin(); i!=r.coords.end(); ++i)
     s.push_back(-(*i));
   return algebraic<T>(s, r.in_field);
 }
@@ -621,7 +621,7 @@ ostream& operator <<(ostream& outputStream, const algebraic<T>& num)
     typename vector<T>::iterator i;
     outputStream << "(";
     algebraic<T> tmp = num; 
-    for(i=tmp.coords.begin(); i!=tmp.coords.end()-1; i++)
+    for(i=tmp.coords.begin(); i!=tmp.coords.end()-1; ++i)
 	outputStream << *i << " ";
     outputStream << *(tmp.coords.end()-1) << ")"; 
     return outputStream;
@@ -666,7 +666,7 @@ template<class T>
 vector<T> operator*(T v, vector<T> w)
 {
   vector<T> u;
-  for(typename vector<T>::iterator i = w.begin(); i!= w.end(); i++)
+  for(typename vector<T>::iterator i = w.begin(); i!= w.end(); ++i)
     u.push_back(v * *i);
   return u;
 }
@@ -676,9 +676,9 @@ void NumberField<T>::print_mt()
 {
   typename vector<vector<T> >::iterator i;
   typename vector<T>::iterator j;
-  for(i=multiplication_table.begin(); i!=multiplication_table.end(); i++)
+  for(i=multiplication_table.begin(); i!=multiplication_table.end(); ++i)
     {
-      for(j= (*i).begin(); j!= (*i).end(); j++)
+      for(j= (*i).begin(); j!= (*i).end(); ++j)
 	cout << *j << " ";
       cout << "\n";
     }

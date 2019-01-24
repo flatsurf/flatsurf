@@ -70,7 +70,7 @@ class poly
 {
 public:
     poly();  //zero 
-    poly(vector<T> a);  //a_0 + a_1 x + ... + a_n x^n
+    explicit poly(vector<T> a);  //a_0 + a_1 x + ... + a_n x^n
     poly(T coefficients[], int degree);
     int degree() const;  
     T leading_coefficient() const;
@@ -140,7 +140,7 @@ class algebraic
 {
 public:
     algebraic();
-    algebraic(NumberField<T>*);  //zero element of NumberField
+    explicit algebraic(NumberField<T>*);  //zero element of NumberField
 
     algebraic(int n, NumberField<T>*); //standard basis element e_n in NumberField
     algebraic(vector<T> coords, NumberField<T>*);  //vector with coeffients coords in NumberField
@@ -193,9 +193,9 @@ template<typename T>
 algebraic<T> operator /(algebraic<T>, const algebraic<T>&);
 
 // what are the next 3 for?
-algebraic<bigrat> operator /(algebraic<bigrat>, int);
-algebraic<bigrat> operator *(algebraic<bigrat>, int);
-algebraic<bigrat> operator *(int, algebraic<bigrat>);
+algebraic<bigrat> operator /(const algebraic<bigrat>&, int);
+algebraic<bigrat> operator *(const algebraic<bigrat>&, int);
+algebraic<bigrat> operator *(int, const algebraic<bigrat>&);
 
 template<typename T>
 algebraic<T> operator *(algebraic<T>, const algebraic<T>&);

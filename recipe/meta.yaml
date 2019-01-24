@@ -26,6 +26,17 @@ requirements:
     - ntl
     - boost-cpp
 
+# Currently, conda-build does not run the test section when it is output-specific
+# Of course, this should go to the polygon output only. Likely this is going to work
+# again with a newer version of conda-build.
+test:
+  source_files:
+    - test/
+  commands:
+    - test/run.sh            # [linux]
+    # Tests on macOS fail at the moment. It's unclear whether that's a problem, see https://github.com/polygon-tbd/polygon/pull/5
+    - test/run.sh || true    # [osx]
+
 outputs:
   - name: libpolygon
     build:
@@ -41,13 +52,6 @@ outputs:
         - {{ pin_subpackage('libpolygon', exact=True) }}
     files:
       - bin/polygon
-    test:
-      source_files:
-        - test/
-      commands:
-        - test/run.sh            # [linux]
-        # Tests on macOS fail at the moment. It's unclear whether that's a problem, see https://github.com/polygon-tbd/polygon/pull/5
-        - test/run.sh || true    # [osx]
 
 about:
   home: https://github.com/polygon-tbd/polygon

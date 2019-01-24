@@ -194,7 +194,7 @@ alg_t<T>& alg_t<T>::operator*=(const algebraic<T> &r)
 {
 
   for(typename vector<algebraic<T> >::iterator i = coeffs.begin(); 
-      i != coeffs.end(); i++)
+      i != coeffs.end(); ++i)
     *i *= r;
   return *this;
 }
@@ -204,7 +204,7 @@ alg_t<T>& alg_t<T>::operator*=(int r)
 {
 
   for(typename vector<algebraic<T> >::iterator i = coeffs.begin(); 
-      i != coeffs.end(); i++)
+      i != coeffs.end(); ++i)
     *i *= r;
   return *this;
 }
@@ -214,7 +214,7 @@ alg_t<T>& alg_t<T>::operator/=(const algebraic<T> &r)
 {
 
   for(typename vector<algebraic<T> >::iterator i = coeffs.begin(); 
-      i != coeffs.end(); i++)
+      i != coeffs.end(); ++i)
       *i /= r;
   return *this;
 }
@@ -224,14 +224,14 @@ alg_t<T>& alg_t<T>::operator/=(int r)
 {
 
   for(typename vector<algebraic<T> >::iterator 
-	  i = coeffs.begin(); i != coeffs.end(); i++)
+	  i = coeffs.begin(); i != coeffs.end(); ++i)
       *i /= r;
   return *this;
 }
 
 
 template<typename T>
-alg_t<T> operator*(const algebraic<T> p, alg_t<T> &q)
+alg_t<T> operator*(const algebraic<T>& p, alg_t<T> &q)
 {
 //    alg_t<T> r = q;
     return q*=p;
@@ -504,14 +504,14 @@ BigPoint<T>& BigPoint<T>::operator/=(int r)
 
 
 template<typename T>
-BigPoint<T> operator*(algebraic<T> p, BigPoint<T> q)
+BigPoint<T> operator*(const algebraic<T>& p, BigPoint<T> q)
 {
     BigPoint<T> r = q;
     return r*=p;
 }
 
 template<typename T>
-BigPoint<T> operator*(BigPoint<T> q, const algebraic<T> p)
+BigPoint<T> operator*(BigPoint<T> q, const algebraic<T>& p)
 {
 //    BigPoint<T> r = q;
     return q*=p;
@@ -532,7 +532,7 @@ BigPoint<T> operator*(BigPoint<T> q, int p)
 }
 
 template<typename T>
-BigPoint<T> operator/(BigPoint<T> q, const algebraic<T> p)
+BigPoint<T> operator/(BigPoint<T> q, const algebraic<T>& p)
 {
 //    BigPoint<T> r = q;
     return q/=p;
@@ -609,7 +609,7 @@ template poly<bigrat> cyclotomic_poly(int n);
 template NumberField<bigrat>* InitCyclotomic(int n);
 template alg_t<bigrat> operator+(alg_t<bigrat> p, const alg_t<bigrat> &q);
 template alg_t<bigrat> operator-(alg_t<bigrat> p, const alg_t<bigrat> &q);
-template alg_t<bigrat> operator*(const algebraic<bigrat> p, alg_t<bigrat> &q);
+template alg_t<bigrat> operator*(const algebraic<bigrat>& p, alg_t<bigrat> &q);
 template alg_t<bigrat> operator*(alg_t<bigrat> q, const algebraic<bigrat> &p);
 template alg_t<bigrat> operator*(int p, alg_t<bigrat> &q);
 template alg_t<bigrat> operator*(alg_t<bigrat> &q, int p);
@@ -622,11 +622,11 @@ template ostream& operator <<(ostream& outputStream, const alg_t<bigrat>& u);
   
 template BigPoint<bigrat> operator+(BigPoint<bigrat> p, const BigPoint<bigrat> &q);
 template BigPoint<bigrat> operator-(BigPoint<bigrat> p, const BigPoint<bigrat> &q);
-template BigPoint<bigrat> operator*(algebraic<bigrat> p, BigPoint<bigrat> q);
-template BigPoint<bigrat> operator*(BigPoint<bigrat> q, algebraic<bigrat> p);
+template BigPoint<bigrat> operator*(const algebraic<bigrat>& p, BigPoint<bigrat> q);
+template BigPoint<bigrat> operator*(BigPoint<bigrat> q, const algebraic<bigrat>& p);
 template BigPoint<bigrat> operator*(int p, BigPoint<bigrat> q);
 template BigPoint<bigrat> operator*(BigPoint<bigrat> q, int p);
-template BigPoint<bigrat> operator/(BigPoint<bigrat> q, algebraic<bigrat> p);
+template BigPoint<bigrat> operator/(BigPoint<bigrat> q, const algebraic<bigrat>& p);
 template BigPoint<bigrat> operator/(BigPoint<bigrat> q, int p);
 template bool operator==(const BigPoint<bigrat> &p, const BigPoint<bigrat> &q);
 template ostream& operator <<(ostream& outputStream, const BigPoint<bigrat>& p);
@@ -635,7 +635,7 @@ template poly<int64_t> cyclotomic_poly(int n);
 template NumberField<int64_t>* InitCyclotomic(int n);
 template alg_t<int64_t> operator+(alg_t<int64_t> p, const alg_t<int64_t> &q);
 template alg_t<int64_t> operator-(alg_t<int64_t> p, const alg_t<int64_t> &q);
-template alg_t<int64_t> operator*(const algebraic<int64_t> p, alg_t<int64_t> &q);
+template alg_t<int64_t> operator*(const algebraic<int64_t>& p, alg_t<int64_t> &q);
 template alg_t<int64_t> operator*(alg_t<int64_t> q, const algebraic<int64_t> &p);
 template alg_t<int64_t> operator*(int p, alg_t<int64_t> &q);
 template alg_t<int64_t> operator*(alg_t<int64_t> &q, int p);
@@ -648,11 +648,11 @@ template ostream& operator <<(ostream& outputStream, const alg_t<int64_t>& u);
   
 template BigPoint<int64_t> operator+(BigPoint<int64_t> p, const BigPoint<int64_t> &q);
 template BigPoint<int64_t> operator-(BigPoint<int64_t> p, const BigPoint<int64_t> &q);
-template BigPoint<int64_t> operator*(algebraic<int64_t> p, BigPoint<int64_t> q);
-template BigPoint<int64_t> operator*(BigPoint<int64_t> q, algebraic<int64_t> p);
+template BigPoint<int64_t> operator*(const algebraic<int64_t>& p, BigPoint<int64_t> q);
+template BigPoint<int64_t> operator*(BigPoint<int64_t> q, const algebraic<int64_t>& p);
 template BigPoint<int64_t> operator*(int p, BigPoint<int64_t> q);
 template BigPoint<int64_t> operator*(BigPoint<int64_t> q, int p);
-template BigPoint<int64_t> operator/(BigPoint<int64_t> q, algebraic<int64_t> p);
+template BigPoint<int64_t> operator/(BigPoint<int64_t> q, const algebraic<int64_t>& p);
 template BigPoint<int64_t> operator/(BigPoint<int64_t> q, int p);
 template bool operator==(const BigPoint<int64_t> &p,const BigPoint<int64_t> &q);
 template ostream& operator <<(ostream& outputStream, const BigPoint<int64_t>& p);

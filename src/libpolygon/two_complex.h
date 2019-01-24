@@ -199,8 +199,6 @@ class OEdge {             //oriented edge.
     friend class TwoComplex;
 
 public:
-
-    OEdge();
     OEdge(UEdgePtr, int);
 
     int id();
@@ -294,7 +292,7 @@ class Face: public Simplex {
 
 public:
     Face();
-    Face( list<OEdge> L);  //sets oedges=L
+    explicit Face( const list<OEdge>& L);  //sets oedges=L
 
     void SetOEdgeList( list<OEdge>);
 
@@ -365,7 +363,7 @@ inline OEdgeIter prev_edge(OEdgeIter i)
     if( i == f->oedges.begin() ) {
 	i = f->oedges.end();
     }
-    i--;
+    --i;
     return(i);
 }
 
@@ -393,7 +391,7 @@ inline OEdgePtrIter prev_vert_edge(OEdgePtrIter i)
     if( i == v->out_edges.begin() ) {
 	i = v->out_edges.end();
     }
-    i--;
+    --i;
     return(i);
 }
 
@@ -441,7 +439,7 @@ public:
     void BuildNeighborLists();  //Assign the list of outgoing UEdges vertex.e (whose head is vertex) and vertex.euclidean for each vertex.  
     void PerturbAll(COORD max_perturb);
     void PerturbConjugates(COORD max_perturb);
-    bool is_conjugate_deformation(int i, int j);
+    bool is_conjugate_deformation(int j, int k);
 
     UEdgePtr MaxEdge();  //returns pointer to longest edge
     UEdgePtr MinEdge();
@@ -490,7 +488,7 @@ public:
 
     FacePtr  ReflectFace(UEdgePtr e, FacePtr f);
     UEdgePtr     IdentifyEdges(UEdgePtr e1, UEdgePtr e2);
-    VertexPtr IdentifyVertices(VertexPtr v1, VertexPtr v2); //any UEdge pointing to v2 now points to v1.  v2 is deleted.
+    VertexPtr IdentifyVertices(VertexPtr v0, VertexPtr v1); //any UEdge pointing to v1 now points to v0.  v1 is deleted.
     UEdgePtr FindMatchingEdge(UEdgePtr e);
 
     VertexPtr AddVertex(int id);   //creates new vertex with ID=cur_vertex_id if id=UNDEFINED or ID=id otherwise.  
@@ -562,7 +560,7 @@ public:
 
 
     Dir(); 
-    Dir(OEdgeIter e);
+    explicit Dir(OEdgeIter e);
     Dir(VertexPtr vp, const PointT &p);
     void Check();
     Point vec_cx();
@@ -588,7 +586,7 @@ extern void reflect_point(const Point &p, const Point &base, const Point &vec,
 extern int test_congruent(OEdgeIter e0, OEdgeIter e1);
 //extern COORD Dist(Point, Point);
 extern COORD angle(Point, Point);
-extern COORD angle(BigPointI, BigPointI);
+extern COORD angle(const BigPointI&, const BigPointI&);
 extern COORD true_angle(Point, Point);
 extern bool intersect_segment( Point pb, Point pv, Point qb, Point qv,Point
 		                                              &intersection);
@@ -668,9 +666,7 @@ inline COORD Dot ( Point p, Point q)
 struct vert_index_taken{};
 struct vert_bad_angle{
     COORD x;
-    vert_bad_angle(COORD q) {
-	x = q;
-    }
+    explicit vert_bad_angle(COORD q): x(q) { }
 };
 
 #endif // LIBPOLYGON_TWOCOMPLEX_H

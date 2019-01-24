@@ -31,7 +31,7 @@ void TwoComplex::TriangulateAll()
     
 	did_something = false;
 
-	for(FacePtrIter i = faces.begin(); i != faces.end(); i++ ) {
+	for(FacePtrIter i = faces.begin(); i != faces.end(); ++i ) {
 
 	    if ( (!(*i)->deleted()) && (*i)->order() != 3 ) {
 		TriangulateFace(*i);
@@ -72,9 +72,9 @@ void TwoComplex::TriangulateFace( FacePtr f )
 	ERR_RET( "TriangulateFace: face already deleted");
     }
     
-    for(OEdgeIter i = f->oedges.begin(); i!=f->oedges.end() ; i++ ) {
+    for(OEdgeIter i = f->oedges.begin(); i!=f->oedges.end() ; ++i ) {
 	Point bs = (*i).vec_cx();
-	for (OEdgeIter j = i; j != f->oedges.end(); j++ ) {
+	for (OEdgeIter j = i; j != f->oedges.end(); ++j ) {
 	    if ( i == j ) {
 		continue;
 	    }
@@ -94,7 +94,11 @@ void TwoComplex::TriangulateFace( FacePtr f )
     // 	    // 	true_angle((*j).vec_cx(), -(*j).prev_edge()->vec_cx());
 	    
 
+#ifdef USE_LONG_DOUBLE
+    	    printf("F%d V%d(E%d) V%d(E%d) a=%Lg, can_bisect=%d\n", f->id(),
+#else
     	    printf("F%d V%d(E%d) V%d(E%d) a=%g, can_bisect=%d\n", f->id(),
+#endif
     		   (*i).head()->id(), (*i).id(),
     		   (*j).head()->id(), (*j).id(),
     		   a, f->can_bisect(i,j));
@@ -109,7 +113,11 @@ void TwoComplex::TriangulateFace( FacePtr f )
     	}
     }
 
+#ifdef USE_LONG_DOUBLE
+    printf("F%d best_angle = %Lg\n",f->id(), best_angle);
+#else
     printf("F%d best_angle = %g\n",f->id(), best_angle);
+#endif
 
 
 //	sprintf(buf,"dbg_bisect");
@@ -122,7 +130,11 @@ void TwoComplex::TriangulateFace( FacePtr f )
     
     
     if( best_angle == 0 || (! f->can_bisect(Candidate1, Candidate2 ))) {
+#ifdef USE_LONG_DOUBLE
+	printf("F%d: Parent Face: F%d best_angle=%Lg",f->id(),
+#else
 	printf("F%d: Parent Face: F%d best_angle=%g",f->id(),
+#endif
 	       f->parent_face_ID,best_angle);
 	if (Candidate1!=NULL_OEdgeIter && Candidate2!=NULL_OEdgeIter) {
 	    printf(" Candidate1=E%d Candidate2=E%d",  Candidate1->id(), Candidate2->id());
@@ -130,7 +142,7 @@ void TwoComplex::TriangulateFace( FacePtr f )
 	printf("\n");
 	f->Print(cout);
 	printf("\n");
-	for(OEdgeIter i1=f->oedges.begin(); i1!=f->oedges.end(); i1++) {
+	for(OEdgeIter i1=f->oedges.begin(); i1!=f->oedges.end(); ++i1) {
 	    (*i1).ue->Print(cout);
 	    printf("\n");
 	}
@@ -205,7 +217,7 @@ OEdgeIter TwoComplex::BisectFace(FacePtr f, OEdgeIter e1_iter,OEdgeIter e2_iter)
 	bs += (*i).vecQ();
 
 	/* clean up */
-	i++;
+	++i;
 	if ( i == f->oedges.end() ) {
 	    i = f->oedges.begin();
 	}
@@ -229,7 +241,7 @@ OEdgeIter TwoComplex::BisectFace(FacePtr f, OEdgeIter e1_iter,OEdgeIter e2_iter)
 	bs += (*i).vecQ();
 
 	/* clean up */
-	i++;
+	++i;
 	if ( i == f->oedges.end() ) {
 	    i = f->oedges.begin();
 	}
@@ -311,7 +323,7 @@ bool Face::can_bisect(OEdgeIter i, OEdgeIter j)
     COORD diameter = 0; 
 
 
-    for (OEdgeIter k = oedges.begin(); k != oedges.end(); k++ ) {
+    for (OEdgeIter k = oedges.begin(); k != oedges.end(); ++k ) {
 	if ( k == i ) {
 	    v1_offset = s;
 	    i_found = true;
@@ -338,7 +350,7 @@ bool Face::can_bisect(OEdgeIter i, OEdgeIter j)
     s = Point(0,0);
 
 /* Check for intersecting edges */
-    for(OEdgeIter k = oedges.begin(); k!= oedges.end(); k++ ) {
+    for(OEdgeIter k = oedges.begin(); k!= oedges.end(); ++k ) {
 	
 	if( k != i && k != j && k != prev_edge(i) && k != prev_edge(j) &&
 	    intersect_segment_interior(v1_offset, v2_offset-v1_offset, 
@@ -377,6 +389,7 @@ bool Face::can_bisect(OEdgeIter i, OEdgeIter j)
 
 
 /* for debugging */
+// cppcheck-suppress unusedFunction
 void TwoComplex::AddSteinerPoint(FacePtr f)
 {
     if ( f->order() != 3 ) {
@@ -466,7 +479,7 @@ bool Vertex::CanRemove()
 	return(false);
     }
 
-    for( OEdgePtrIter i = out_edges.begin(); i!= out_edges.end(); i++ ) {
+    for( OEdgePtrIter i = out_edges.begin(); i!= out_edges.end(); ++i ) {
 	if( (*i)->tail()->id() == id() ) {
 	    return(false);
 	}
@@ -485,13 +498,13 @@ FacePtr TwoComplex::RemoveVertex(VertexPtr v0)
     }
     list<OEdge> tmp_oedge_list;
 
-    for(OEdgePtrIter i = v0->out_edges.begin(); i!= v0->out_edges.end(); i++){
+    for(OEdgePtrIter i = v0->out_edges.begin(); i!= v0->out_edges.end(); ++i){
 	tmp_oedge_list.insert(tmp_oedge_list.end(), *((*i)->next_edge()));
 	(*i)->tail()->e = (*i)->next_edge()->ue;
     }
     FacePtr f = AddFace(UNDEFINED, tmp_oedge_list);
 
-    for(OEdgePtrIter i = v0->out_edges.begin(); i!= v0->out_edges.end(); i++){
+    for(OEdgePtrIter i = v0->out_edges.begin(); i!= v0->out_edges.end(); ++i){
 	(*i)->tail()->order = (*i)->tail()->order - 1;
 	if( (*i)->tail()->e == (*i)->ue ) {
 	    ERR_RET("RemoveVertex: ->e illegal");
@@ -513,15 +526,14 @@ void TwoComplex::RetriangulateSurface()
 
     VertexPtrIter i;
     UEdgePtrIter j;
-    bool did_something;
-
 
     fprintf(out_f,"In RetriangulateSurface\n");
 
-    do {
-	did_something = false;	
-	
-	for( j = uedges.begin(); j!= uedges.end(); j++ ) {
+    bool did_something = true;
+
+    while(did_something) {
+    did_something = false;	
+	for( j = uedges.begin(); j!= uedges.end(); ++j ) {
 	    if( (*j)->deleted() ) {
 		continue;
 	    }
@@ -544,17 +556,12 @@ void TwoComplex::RetriangulateSurface()
 		    movie_stream->close();
 		    delete movie_stream;
 		}
-
-
-
-
-
-		did_something = true;
+        did_something = true;
 		break;
 	    }
 	}
 
-	for( i = vertices.begin(); i!= vertices.end(); i++ ) {
+	for( i = vertices.begin(); i!= vertices.end(); ++i ) {
 	    if( (*i)->deleted() ) {
 		continue;
 	    }
@@ -564,10 +571,11 @@ void TwoComplex::RetriangulateSurface()
 	}
 	if( i == vertices.end() ) { /* no euclidean vertex found */
 	    continue;
-	}
+	} else {
+        did_something = true;
+    }
 	fprintf(out_f,"Removing V%d\n",(*i)->id());
 	FacePtr f = RemoveVertex(*i);
-	did_something = true;
 
 	if ( verbose >= 1 ) {
 	    nbr++;
@@ -601,7 +609,7 @@ void TwoComplex::RetriangulateSurface()
 	}
 
 
-    } while( did_something );
+    }
 
     BuildNeighborLists();
     StoreVertexOffsets();
@@ -684,44 +692,6 @@ UEdgePtr TwoComplex::FlipEdge(UEdgePtr u)
 
 }
 
-Point TwoComplex::OpposingDiagonal(UEdgePtr u)
-{
-
-/*           vt
-            / |\
-           / u| \ 
-          /   |  \
-       w0  f0 |   w1
-          \   |f1/
-           \  | /
-            \ |/
-             vh
-
-*/
-
-
-
-    FacePtr f0 = u->f0;
-//    FacePtr f1 = u->f1;
-
-    OEdgeIter oe = u->this_edge(f0);
-
-//    VertexPtr vh = oe->head();
-//    VertexPtr vt = oe->tail();
-
-//    OEdgeIter vt_w0 = oe->next_edge();
-    OEdgeIter w0_vh = oe->prev_edge();
-
-    OEdgeIter vh_w1 = oe->pair_edge()->next_edge();
-//    OEdgeIter w1_vt = oe->pair_edge()->prev_edge();
-
-//    VertexPtr w0 = vt_w0->tail();
-//    VertexPtr w1 = vh_w1->tail();
-    
-    return(w0_vh->vec_cx()+vh_w1->vec_cx()); 
-
-}
-
 bool TwoComplex::shouldFlip(UEdgePtr u)
 {
 
@@ -796,7 +766,7 @@ void TwoComplex::doExtraFlips()
 
     do { 
 	did_something = false;
-	for (UEdgePtrIter i= uedges.begin(); i!= uedges.end(); i++ ) {
+	for (UEdgePtrIter i= uedges.begin(); i!= uedges.end(); ++i ) {
 	    if ( shouldFlip((*i)) ) {
 
 //		PrintAll(std::cout);

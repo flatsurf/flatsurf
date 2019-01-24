@@ -69,7 +69,7 @@ class alg_t
  public:
  
     alg_t();   //initialize to 0
-    alg_t(vector<algebraic<T> > coeffs);
+    explicit alg_t(vector<algebraic<T> > coeffs);
 //    alg_t(algebraic<T> coeffs[]);
 
     void pad_coeffs(int n);  // need to call this when increasing nbr_params
@@ -162,7 +162,7 @@ class BigPoint
  
     BigPoint();   //initialize to 0
     BigPoint(int, int); //only works if int's are 0; initialized to 0.
-    BigPoint(alg_t<T> p_alg_t);
+    explicit BigPoint(alg_t<T> p_alg_t);
 
     BigPoint<T> operator -();
     BigPoint<T>& operator +=(const BigPoint<T>&);

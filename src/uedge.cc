@@ -136,14 +136,15 @@ void UEdge::Print(ostream& out)
     
 //    out_s << ue_vecQ;
 
-    char tmp[1000];
 
 #ifdef USE_QUAD
     out << "(" << ue_vecQ.cx.real().str(24) << "," << ue_vecQ.cx.imag().str(24) << ")";
 #elif defined USE_LONG_DOUBLE
+    char tmp[1000];
     sprintf(tmp,"(%.24Lf,%.24Lf)",ue_vecQ.cx.real(),ue_vecQ.cx.imag());
     out << tmp;
 #else
+    char tmp[1000];
     sprintf(tmp,"(%.24f,%.24f)",ue_vecQ.cx.real(),ue_vecQ.cx.imag());
     out << tmp;
 #endif
@@ -178,7 +179,7 @@ OEdgeIter UEdge::this_edge(FacePtr f)
 {
 
     
-    for(OEdgeIter i = f->oedges.begin(); i!= f->oedges.end(); i++ ) {
+    for(OEdgeIter i = f->oedges.begin(); i!= f->oedges.end(); ++i ) {
 	if ( (*i).ue == this )
 	    return(i);
     }

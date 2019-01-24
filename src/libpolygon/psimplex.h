@@ -27,7 +27,7 @@ class my_ostream {
 
 public:
 
-    my_ostream(string filename);
+    explicit my_ostream(const string& filename);
     ofstream& tri();
     ofstream& tex();
     void close();
@@ -44,7 +44,6 @@ private:
 class PSimplex {
 
 public:
-    PSimplex();
     PSimplex(Point, int);
 
     Point p;
@@ -66,9 +65,9 @@ class PVertex:  public PSimplex {
 public: 
     PVertex(VertexPtr, Point, int);
 
-    virtual void Draw(my_ostream&, COORD d);
+    void Draw(my_ostream&, COORD d) override;
 
-    virtual SimplexPtr sp();
+    SimplexPtr sp() override;
     VertexPtr s;
 
 };
@@ -79,10 +78,10 @@ public:
     PUEdge(UEdgePtr,Point,int);
     PUEdge(OEdge&, Point,int);
 
-    virtual void Draw(my_ostream& ,COORD);
+    void Draw(my_ostream& ,COORD) override;
     
     UEdgePtr s;
-    virtual SimplexPtr sp();
+    SimplexPtr sp() override;
 
 };
 
@@ -92,9 +91,9 @@ public:
     PFace(FacePtr, Point, int);
 
 
-    virtual void Draw(my_ostream& ,COORD);
+    void Draw(my_ostream& ,COORD) override;
 
-    virtual SimplexPtr sp();
+    SimplexPtr sp() override;
     FacePtr s;
     void DrawCylinders(my_ostream&, COORD);
 
