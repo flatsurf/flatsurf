@@ -1,6 +1,6 @@
 /**********************************************************************
  *  This file is part of Polygon.
- * 
+ *
  *        Copyright (C) 2018 Alex Eskin
  *        Copyright (C) 2019 Julian Rüth
  *
@@ -8,214 +8,163 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Polygon is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
 #include "libpolygon/two_complex.h"
 
-OEdge::OEdge(UEdgePtr e, int dir) :from_edge(NULL_OEdgeIter)
-{
-    ue = e;
-    direction = dir; 
+OEdge::OEdge(UEdgePtr e, int dir) : from_edge(NULL_OEdgeIter) {
+  ue = e;
+  direction = dir;
 };
 
-bool OEdge::operator==(OEdge &b)
-{
-    if( this->ue == b.ue && this->direction == b.direction) {
-	return(true);
+bool OEdge::operator==(OEdge& b) {
+  if (this->ue == b.ue && this->direction == b.direction) {
+    return (true);
+  }
+  return (false);
+}
+
+int OEdge::id() { return (ue->id()); }
+
+void OEdge::Print(ostream& out) {
+  if (direction == 1)
+    out << " +";
+  else
+    out << " -";
+
+  //    out << (direction == 1) ? '+' : '-';
+  //    fprintf(out_f,"%c", (direction == 1) ? '+' : '-');
+  ue->Simplex::Print(out);
+}
+
+VertexPtr OEdge::head() {
+  if (direction == 1) {
+    return (ue->v0);
+  }
+  return (ue->v1);
+}
+
+VertexPtr OEdge::tail() {
+  if (direction == 1) {
+    return (ue->v1);
+  }
+  return (ue->v0);
+}
+
+FacePtr OEdge::in_face() {
+  if (direction == 1) {
+    return (ue->f0);
+  }
+  return (ue->f1);
+}
+
+FacePtr OEdge::other_face() {
+  if (direction == 1) {
+    return (ue->f1);
+  }
+  return (ue->f0);
+}
+
+bool OEdge::deleted() { return (ue->deleted()); }
+
+void OEdge::Delete() { ue->Delete(); }
+
+OEdgeIter OEdge::this_iter() {
+  OEdgeIter i;
+  FacePtr f;
+
+  f = in_face();
+
+  for (i = f->oedges.begin(); i != f->oedges.end(); ++i) {
+    if ((*i) == *this) {
+      return (i);
     }
-    return(false);
+  }
+  ERR_RET("this_iter: not found");
+  return (NULL_OEdgeIter);
 }
 
+OEdgeIter OEdge::pair_edge() {
+  OEdgeIter i;
+  FacePtr f;
 
-int OEdge::id()
-{
-    return (ue->id());
-}
+  f = other_face();
 
-void OEdge::Print(ostream& out)
-{
-    if( direction == 1) 
-	out << " +";
-    else
-	out << " -";
-
-//    out << (direction == 1) ? '+' : '-'; 
-//    fprintf(out_f,"%c", (direction == 1) ? '+' : '-');
-    ue->Simplex::Print(out);
-}
-
-VertexPtr OEdge::head()
-{
-    if( direction == 1) {
-	return(ue->v0);
-    } 
-    return(ue->v1);
-}
-
-VertexPtr OEdge::tail()
-{
-    if( direction == 1) {
-	return(ue->v1);
-    } 
-    return(ue->v0);
-}
-
-FacePtr OEdge::in_face()
-{
-    if( direction == 1) {
-	return(ue->f0);
+  for (i = f->oedges.begin(); i != f->oedges.end(); ++i) {
+    if ((*i).ue == this->ue && (*i).direction == -this->direction) {
+      return (i);
     }
-    return(ue->f1);
-}
-
-FacePtr OEdge::other_face()
-{
-    if( direction == 1) {
-	return(ue->f1);
-    }
-    return(ue->f0);
-}
-
-bool OEdge::deleted()
-{
-    return(ue->deleted());
-}
-
-void OEdge::Delete()
-{
-
-    ue->Delete();
-
-}
-
-
-OEdgeIter OEdge::this_iter()
-{
-    OEdgeIter i;
-    FacePtr f;
-    
-    f = in_face();
-
-    for( i = f->oedges.begin(); i != f->oedges.end() ; ++i ) {
-	if ( (*i) == *this ) {
-	    return(i);
-	}
-    }
-    ERR_RET("this_iter: not found");
-    return(NULL_OEdgeIter);
-}
-
-OEdgeIter OEdge::pair_edge()
-{
-
-    OEdgeIter i;
-    FacePtr f;
-    
-    f = other_face();
-
-    for( i = f->oedges.begin(); i != f->oedges.end() ; ++i ) {
-	if ( (*i).ue == this->ue  && 
-	        (*i).direction == -this->direction ) {
-	    
-	    return(i);
-	}
-    }
-    ERR_RET("PairEdge: not found");
-    return(NULL_OEdgeIter);
+  }
+  ERR_RET("PairEdge: not found");
+  return (NULL_OEdgeIter);
 }
 
 template <>
-BigPointQ OEdge::vec<BigPointQ>()
-{
-
-   if( direction == 1 ) {
-	return( ue->ue_vecQ );
-    } else {
-	return( -ue->ue_vecQ );
-    }
-
+BigPointQ OEdge::vec<BigPointQ>() {
+  if (direction == 1) {
+    return (ue->ue_vecQ);
+  } else {
+    return (-ue->ue_vecQ);
+  }
 }
 
-BigPointQ OEdge::vecQ()
-{
-    return( vec<BigPointQ>() );
-}
-
+BigPointQ OEdge::vecQ() { return (vec<BigPointQ>()); }
 
 template <>
-BigPointI OEdge::vec<BigPointI>()
-{
-
-   if( direction == 1 ) {
-	return( ue->ue_vecI );
-    } else {
-	return( -ue->ue_vecI );
-    }
-
+BigPointI OEdge::vec<BigPointI>() {
+  if (direction == 1) {
+    return (ue->ue_vecI);
+  } else {
+    return (-ue->ue_vecI);
+  }
 }
 
 template <>
-BigPointI& OEdge::_vec<BigPointI>()
-{
-
-   if( direction == 1 ) {
-	return( ue->ue_vecI );
-    } else {
-	return( ue->minus_ue_vecI );
-    }
-
-}
-
-
-template <>
-Point OEdge::vec<Point>()
-{
-
-   if( direction == 1 ) {
-	return( ue->ue_vecQ.cx );
-    } else {
-	return( -ue->ue_vecQ.cx );
-    }
-
+BigPointI& OEdge::_vec<BigPointI>() {
+  if (direction == 1) {
+    return (ue->ue_vecI);
+  } else {
+    return (ue->minus_ue_vecI);
+  }
 }
 
 template <>
-Point& OEdge::_vec<Point>()
-{
-
-   if( direction == 1 ) {
-	return( ue->ue_vecQ.cx );
-    } else {
-	return( ue->minus_ue_vecQ.cx );
-    }
-
+Point OEdge::vec<Point>() {
+  if (direction == 1) {
+    return (ue->ue_vecQ.cx);
+  } else {
+    return (-ue->ue_vecQ.cx);
+  }
 }
 
-
-Point OEdge::vec_cx()
-{
-    return( vec<Point>() );
+template <>
+Point& OEdge::_vec<Point>() {
+  if (direction == 1) {
+    return (ue->ue_vecQ.cx);
+  } else {
+    return (ue->minus_ue_vecQ.cx);
+  }
 }
 
+Point OEdge::vec_cx() { return (vec<Point>()); }
 
-
-/*	       
+/*
 BigPointQ OEdge::vecQ()
 {
     BigPointQ q;
 
     if( direction == 1 ) {
-	return( ue->ue_vecQ );
+        return( ue->ue_vecQ );
     } else {
-	return( -ue->ue_vecQ );
+        return( -ue->ue_vecQ );
     }
 }
 */
@@ -229,181 +178,151 @@ BigPointQ OEdge::vecQ()
 //     }
 // }
 
-
-
-
-alg_tQ OEdge::vec_algt()
-{
-    if( direction == 1 ) {
-	return( ue->ue_vecQ.algt );
-    } else {
-	return( -ue->ue_vecQ.algt );
-    }
+alg_tQ OEdge::vec_algt() {
+  if (direction == 1) {
+    return (ue->ue_vecQ.algt);
+  } else {
+    return (-ue->ue_vecQ.algt);
+  }
 }
 
-
-void OEdge::set_vec_cx(Point p)
-{
-
-    p *= direction;
-    ue->ue_vecQ.cx = p; 
-
+void OEdge::set_vec_cx(Point p) {
+  p *= direction;
+  ue->ue_vecQ.cx = p;
 }
 
-void OEdge::set_vec_algt(alg_tQ p)
-{
-
-    p *= direction;
-    ue->ue_vecQ.algt = p; 
-
+void OEdge::set_vec_algt(alg_tQ p) {
+  p *= direction;
+  ue->ue_vecQ.algt = p;
 }
-
-
 
 /* the next function is stupid */
-OEdgeIter OEdge::prev_edge()
-{
-    OEdgeIter i;
-    FacePtr f;
+OEdgeIter OEdge::prev_edge() {
+  OEdgeIter i;
+  FacePtr f;
 
-    f = in_face();
+  f = in_face();
 
-    i = this_iter();
+  i = this_iter();
 
-    if( i == f->oedges.begin() ) {
-	i = f->oedges.end();
-    }
-    --i;
-    return(i);
+  if (i == f->oedges.begin()) {
+    i = f->oedges.end();
+  }
+  --i;
+  return (i);
 }
 
 /* this is also stupid */
-OEdgeIter OEdge::next_edge()
-{
+OEdgeIter OEdge::next_edge() {
+  FacePtr f;
 
-    FacePtr f;
+  f = in_face();
 
-    f = in_face();
+  OEdgeIter i = this_iter();
+  ++i;
 
-    OEdgeIter i = this_iter();
-    ++i;
+  if (i == f->oedges.end()) {
+    i = f->oedges.begin();
+  }
+  return (i);
+}
 
-    if( i == f->oedges.end() ) {
-	i = f->oedges.begin();
+OEdgePtrIter OEdge::this_vert_iter() {
+  VertexPtr v;
+
+  v = head();
+
+  for (OEdgePtrIter i = v->out_edges.begin(); i != v->out_edges.end(); ++i) {
+    if (*(*i) == *this) {
+      return (i);
     }
-    return(i);
+  }
+  return (NULL_OEdgePtrIter);
 }
 
+template <>
+Point OEdge::headOffset<Point>() {
+  Point q, t;
 
-OEdgePtrIter OEdge::this_vert_iter()
-{
-    
-    VertexPtr v;
-    
-    v = head();
+  FacePtr f = in_face();
 
-    for(OEdgePtrIter i = v->out_edges.begin(); i!= v->out_edges.end(); ++i ) {
-	if ( *(*i) == *this ) {
-	    return(i);
-	}
+  //    q = f->GetOffsetV0();
+  q = Point(0.0);
+
+  for (OEdgeIter i = f->oedges.begin(); i != f->oedges.end(); ++i) {
+    if ((*i) == *this) {
+      return (q);
     }
-    return(NULL_OEdgePtrIter);
+    t = (*i).vec_cx();
+    q = q + t;
+  };
+  ERR_RET("headOffset: oedge not found");
+  // unreachable
+  return (q);
 }
 
 template <>
-Point OEdge::headOffset<Point>()
-{
-    Point q,t;
+BigPointI OEdge::headOffset<BigPointI>() {
+  BigPointI q, t;
 
+  FacePtr f = in_face();
 
-    FacePtr f = in_face();
+  //    q = f->GetOffsetV0();
+  q = BigPointI();
+  q.Check();
 
-//    q = f->GetOffsetV0();
-    q = Point(0.0);
-    
-    for(OEdgeIter i = f->oedges.begin(); i!= f->oedges.end(); ++i ) {
-      if ( (*i) == *this ) {
-	return(q);
-      }
-      t = (*i).vec_cx();
-      q = q + t;
-    };
-    ERR_RET("headOffset: oedge not found");
-    // unreachable
-    return(q);
+  for (OEdgeIter i = f->oedges.begin(); i != f->oedges.end(); ++i) {
+    if ((*i) == *this) {
+      return (q);
+    }
+    t = (*i).vec<BigPointI>();
+    q = q + t;
+  };
+  ERR_RET("headOffset: oedge not found");
+  // unreachable
+  return (q);
 }
 
 template <>
-BigPointI OEdge::headOffset<BigPointI>()
-{
-    BigPointI q,t;
+Point OEdge::tailOffset<Point>() {
+  Point q, t;
 
+  FacePtr f = in_face();
+  //    q = f->GetOffsetV0();
+  q = Point(0.0);
 
-    FacePtr f = in_face();
-
-//    q = f->GetOffsetV0();
-    q = BigPointI();
-    q.Check();
-    
-    for(OEdgeIter i = f->oedges.begin(); i!= f->oedges.end(); ++i ) {
-      if ( (*i) == *this ) {
-	return(q);
-      }
-      t = (*i).vec<BigPointI>();
-      q = q + t;
-    };
-    ERR_RET("headOffset: oedge not found");
-    // unreachable
-    return(q);
-}
-
-
-
-template <>
-Point OEdge::tailOffset<Point>()
-{
-    Point q,t;
-
-    FacePtr f = in_face();
-//    q = f->GetOffsetV0();
-    q = Point(0.0);
-
-  
-    for(OEdgeIter i = f->oedges.begin(); i!=f->oedges.end(); ++i ) {
-	if ( (*i) == *this ) {
-	    return(q + (*i).vec_cx());
-	}
-	t = (*i).vec_cx();
-	q = q + t;
-    };
-    ERR_RET("tailOffset: oedge not found");
-    // unreachable
-    return(q);
+  for (OEdgeIter i = f->oedges.begin(); i != f->oedges.end(); ++i) {
+    if ((*i) == *this) {
+      return (q + (*i).vec_cx());
+    }
+    t = (*i).vec_cx();
+    q = q + t;
+  };
+  ERR_RET("tailOffset: oedge not found");
+  // unreachable
+  return (q);
 }
 
 template <>
-BigPointI OEdge::tailOffset<BigPointI>()
-{
-    BigPointI q,t;
+BigPointI OEdge::tailOffset<BigPointI>() {
+  BigPointI q, t;
 
-    FacePtr f = in_face();
-//    q = f->GetOffsetV0();
-    q = BigPointI();
-    q.Check();
-  
-    for(OEdgeIter i = f->oedges.begin(); i!=f->oedges.end(); ++i ) {
-	if ( (*i) == *this ) {
-	    return(q + (*i).vec<BigPointI>());
-	}
-	t = (*i).vec<BigPointI>();
-	q = q + t;
-    };
-    ERR_RET("tailOffset: oedge not found");
-    // unreachable
-    return(q);
+  FacePtr f = in_face();
+  //    q = f->GetOffsetV0();
+  q = BigPointI();
+  q.Check();
+
+  for (OEdgeIter i = f->oedges.begin(); i != f->oedges.end(); ++i) {
+    if ((*i) == *this) {
+      return (q + (*i).vec<BigPointI>());
+    }
+    t = (*i).vec<BigPointI>();
+    q = q + t;
+  };
+  ERR_RET("tailOffset: oedge not found");
+  // unreachable
+  return (q);
 }
-
-
 
 /*
 algebraic OEdge::headOffset_alg()
@@ -414,14 +333,14 @@ algebraic OEdge::headOffset_alg()
     FacePtr f = in_face();
 
     q = f->GetOffsetV0_alg();
-    
-   
+
+
     for(OEdgeIter i = f->oedges.begin(); i!= f->oedges.end(); i++ ) {
-	if ( (*i) == *this ) {
-	  return(q);
-	}
-	t = (*i).vec_alg();
-	q = q + t;
+        if ( (*i) == *this ) {
+          return(q);
+        }
+        t = (*i).vec_alg();
+        q = q + t;
     };
     ERR_RET("headOffset: oedge not found");
     // unreachable
@@ -438,11 +357,11 @@ algebraic OEdge::tailOffset_alg()
     q = f->GetOffsetV0_alg();
 
     for(OEdgeIter i = f->oedges.begin(); i!=f->oedges.end(); i++ ) {
-	if ( (*i) == *this ) {
-	    return(q + (*i).vec_alg());
-	}
-	t = (*i).vec_alg();
-	q = q + t;
+        if ( (*i) == *this ) {
+            return(q + (*i).vec_alg());
+        }
+        t = (*i).vec_alg();
+        q = q + t;
     };
     ERR_RET("tailOffset: oedge not found");
     // unreachable
@@ -450,35 +369,25 @@ algebraic OEdge::tailOffset_alg()
 }
 */
 
-
 template <>
-Point& OEdge::_head_offset<Point>()
-{
-    return head_offst;
+Point& OEdge::_head_offset<Point>() {
+  return head_offst;
 }
 
 template <>
-BigPointI& OEdge::_head_offset<BigPointI>()
-{
-    return head_offstI;
-}
-
-
-
-template <>
-Point& OEdge::_tail_offset<Point>()
-{
-    return tail_offst;
+BigPointI& OEdge::_head_offset<BigPointI>() {
+  return head_offstI;
 }
 
 template <>
-BigPointI& OEdge::_tail_offset<BigPointI>()
-{
-    return tail_offstI;
+Point& OEdge::_tail_offset<Point>() {
+  return tail_offst;
 }
 
-
-
+template <>
+BigPointI& OEdge::_tail_offset<BigPointI>() {
+  return tail_offstI;
+}
 
 template Point OEdge::headOffset<Point>();
 template Point OEdge::tailOffset<Point>();
@@ -491,8 +400,3 @@ template Point& OEdge::_tail_offset<Point>();
 
 template BigPointI& OEdge::_head_offset<BigPointI>();
 template BigPointI& OEdge::_tail_offset<BigPointI>();
-
-
-
-
-

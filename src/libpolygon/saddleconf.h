@@ -1,6 +1,6 @@
 /**********************************************************************
  *  This file is part of Polygon.
- * 
+ *
  *        Copyright (C) 2018 Alex Eskin
  *        Copyright (C) 2019 Julian Rüth
  *
@@ -8,12 +8,12 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Polygon is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
@@ -23,8 +23,7 @@
 
 #include "libpolygon.h"
 
-//this file is included from two_complex.h
-
+// this file is included from two_complex.h
 
 typedef int saddle_t;
 typedef int vp_index;
@@ -32,232 +31,198 @@ typedef int vp_index;
 class Cylinder;
 
 class VertPattern {
+  friend class SaddleConf;
 
-    friend class SaddleConf;
+ public:
+  VertPattern();
 
-public:
+  void add(Dir<Point>& start_or_end, saddle_t id);
+  // - id is incoming, + id outgoing
 
-    VertPattern();
+  void clear();
 
-    void add(Dir<Point>& start_or_end, saddle_t id);
-// - id is incoming, + id outgoing 
+  void print(ostream& output_stream, SaddleConf& sc);
 
-    void clear();
+  int len(); /* number of saddles attached */
 
-    void print(ostream& output_stream, SaddleConf &sc);
+  bool is_empty();        /* i.e. base does not exist */
+  saddle_t get_id(int i); /* returns the id of the
+                          saddle connection at base+MY_PI*i */
 
-    int len(); /* number of saddles attached */
+  COORD get_length(int i); /* returns the length of the
+                          saddle connection at base+MY_PI*i */
 
-    bool is_empty(); /* i.e. base does not exist */
-    saddle_t get_id(int i); /* returns the id of the 
-			    saddle connection at base+MY_PI*i */
+  int shortest_saddle_id(); /*id of shortest saddle */
 
-    COORD get_length(int i); /* returns the length of the 
-			    saddle connection at base+MY_PI*i */
+  void divide_lengths(COORD factor); /* divide all lengths by factor */
 
-    int shortest_saddle_id(); /*id of shortest saddle */
-                                  
-    void divide_lengths(COORD factor); /* divide all lengths by factor */
+  VertexPtr get_v(); /* returns the vertex this is a pattern for */
 
+  int nbr_same();      /* number saddles returning to same vertex */
+  int nbr_different(); /* number of saddles going to different vertices */
+  int nbr_at_pi();     /* number of saddles returning at \pm \pi */
+  void simple_print(ostream& output_steam);
 
-    VertexPtr get_v();  /* returns the vertex this is a pattern for */
+  void normalize();
+  void pack();
+  void unpack();
 
-    int nbr_same(); /* number saddles returning to same vertex */
-    int nbr_different(); /* number of saddles going to different vertices */
-    int nbr_at_pi(); /* number of saddles returning at \pm \pi */
-    void simple_print(ostream &output_steam); 
+ private:
+  Dir<Point> base;
+  //	base.v is null if empty
 
-    void normalize(); 
-    void pack(); 
-    void unpack(); 
+  //    Dir<BigPointI> baseI;            //finish later
 
-private:
+  int v_id;
+  // this is supposed to be the id of base.v
+  // it may get out of sync when structure is passed
+  // the normalize() function will make sure that it is back in sync....
 
-    Dir<Point> base;
-//	base.v is null if empty
+  saddle_t at[MAX_SADDLES];
 
-//    Dir<BigPointI> baseI;            //finish later
-
-    int v_id;  
-// this is supposed to be the id of base.v
-// it may get out of sync when structure is passed
-// the normalize() function will make sure that it is back in sync....
-
-
-
-
-    saddle_t at[MAX_SADDLES];
-
-    COORD length[MAX_SADDLES]; //used only for --show_lengths
-    Point vec[MAX_SADDLES]; //used only for --closure
-//    BigPointI vecI[MAX_SADDLES];
-
+  COORD length[MAX_SADDLES];  // used only for --show_lengths
+  Point vec[MAX_SADDLES];     // used only for --closure
+  //    BigPointI vecI[MAX_SADDLES];
 };
-
 
 class Cylinder {
+ public:
+  /*
+      COORD cyl_lengths[MAX_SADDLES];
+      Point cyl_vecs[MAX_SADDLES];
+      Dir<Point> cyl_cross_saddles[MAX_SADDLES];
+      COORD cyl_moduli[MAX_SADDLES];
+  */
 
-public:
-
-/*
-    COORD cyl_lengths[MAX_SADDLES];
-    Point cyl_vecs[MAX_SADDLES];
-    Dir<Point> cyl_cross_saddles[MAX_SADDLES];
-    COORD cyl_moduli[MAX_SADDLES];
-*/  
-
-    COORD length;
-    Point vec;
-    Dir<Point> cross_saddle;
-    COORD modulus;
-    int random_saddle_on_left; //for drawing cylinders
-
+  COORD length;
+  Point vec;
+  Dir<Point> cross_saddle;
+  COORD modulus;
+  int random_saddle_on_left;  // for drawing cylinders
 };
-    
-
-
-
-
 
 class SaddleConf {
+  friend class VertPattern;
 
-    friend class VertPattern;
+ public:
+  /* WARNING: check renumber_saddles before adding fields to this
+     class */
 
-public:
+  SaddleConf();
+  void clear();
+  saddle_t add_saddle(Dir<Point> start, Dir<Point> end, alg_tI& algt);
+  bool isom(SaddleConf& sc, int* s_matched);
+  void print(ostream& output_stream);
+  int n_saddles();
+  int find_vert(VertexPtr v); /* the index of the vert */
 
-     /* WARNING: check renumber_saddles before adding fields to this 
-        class */
+  VertPattern vp[MAX_VERTICES]; /* add to check */
+  int n_vp;                     /* nbr of vertex patterns this saddleconf */
 
-    SaddleConf();
-    void clear();
-    saddle_t add_saddle(Dir<Point> start, Dir<Point> end, alg_tI &algt);
-    bool isom(SaddleConf& sc, int *s_matched);
-    void print(ostream& output_stream);
-    int n_saddles();
-    int find_vert(VertexPtr v); /* the index of the vert */
+  int count;       /* number of occurences of this conf */
+  int group_count; /* number of occurences in of conf in this group */
 
-    VertPattern vp[MAX_VERTICES]; /* add to check */
-    int n_vp; /* nbr of vertex patterns this saddleconf */
+  void normalize();
+  void pack();
+  void unpack();
 
-    int count; /* number of occurences of this conf */
-    int group_count; /* number of occurences in of conf in this group */
+  void renorm_lengths();  // for --show_lengths
+  COORD get_orig_min_saddle_length();
+  void renumber_saddles(int* s_matched);  // for --closure
 
-    void normalize();
-    void pack();
-    void unpack(); 
+  Cylinder cyl[MAX_SADDLES];
 
+  // for calculating cylinders
+  int n_cyl;
+  void calculate_cylinders();
+  void renorm_cylinders();
+  COORD get_orig_min_cyl_length();
 
-    void renorm_lengths(); //for --show_lengths
-    COORD get_orig_min_saddle_length();
-    void renumber_saddles(int *s_matched); //for --closure
+  int shortest_saddle_id(); /*id of shortest saddle */
+  void get_saddle_by_id(int id, int& in_vp_index, int& in_at, int& out_vp_index,
+                        int& out_at);
 
+  COORD get_length_by_id(int id);
+  //    int follow_right(int i);
+  int follow_left(int i);
+  void output_cylinders(FILE* fp);
 
-    Cylinder cyl[MAX_SADDLES];
+  void check_cross_saddle(COORD cyl_len, Dir<Point> cross_saddle_Dir);
+  void CheckCrossSaddles();
 
-    //for calculating cylinders
-    int n_cyl;
-     void calculate_cylinders();
-    void renorm_cylinders();
-    COORD get_orig_min_cyl_length();
+  // for long and short
+  COORD shortest_occurence;
+  COORD shortest_cyl_occurence;
+  COORD longest_occurence;
 
+  COORD smallest_total_area;
+  COORD largest_total_area;
 
-    int shortest_saddle_id(); /*id of shortest saddle */
-    void get_saddle_by_id(int id, int& in_vp_index, int& in_at,  
-			  int &out_vp_index, int& out_at);
+  // for heights_and_twists
+  COORD total_area_of_cyls;
+  Dir<Point> get_Dir_by_id(int id);
 
-    COORD get_length_by_id(int id);
-//    int follow_right(int i);
-    int follow_left(int i);
-    void output_cylinders(FILE *fp);
+  // for closure
+  FILE* output_f;
 
-    void check_cross_saddle(COORD cyl_len, Dir<Point> cross_saddle_Dir);
-    void CheckCrossSaddles();
+  // for sorting
+  bool operator<(const SaddleConf& scf) const { return (count > scf.count); };
 
+  // for visualization
+  int tag;
+  void DrawSaddles();
+  void DrawCylinders();
 
-    
-    // for long and short
-    COORD shortest_occurence;
-    COORD shortest_cyl_occurence;
-    COORD longest_occurence;
+  set<COORD> lengths_set;
 
-    COORD smallest_total_area;
-    COORD largest_total_area; 
+ private:
+  COORD original_min_cylinder_length;
+  COORD original_shortest_length; /*original length of shortest saddle,
+                                      before dividing */
+  alg_tI original_shortest_algt;  /* the same as above, but algebraically */
 
-    //for heights_and_twists
-    COORD total_area_of_cyls;    
-    Dir<Point> get_Dir_by_id(int id);
-
-    //for closure
-    FILE *output_f;
-
-    // for sorting
-    bool operator < (const SaddleConf& scf) const
-    {
-        return (count > scf.count);
-    };
-
-    //for visualization
-    int tag; 
-    void DrawSaddles();
-    void DrawCylinders();
-
-    set<COORD> lengths_set;
-    
-
-private:
-    COORD original_min_cylinder_length;
-    COORD original_shortest_length; /*original length of shortest saddle, 
-					before dividing */
-    alg_tI original_shortest_algt; /* the same as above, but algebraically */
-
-    saddle_t next_id; /* id of next saddle connection */
-    bool isomInternal(SaddleConf&sc, int n_matched, 
-		     int* v_match, saddle_t* s_match);
-    Dir<Point> start_Dir[MAX_SADDLES];
-    alg_tI start_algt[MAX_SADDLES];
+  saddle_t next_id; /* id of next saddle connection */
+  bool isomInternal(SaddleConf& sc, int n_matched, int* v_match,
+                    saddle_t* s_match);
+  Dir<Point> start_Dir[MAX_SADDLES];
+  alg_tI start_algt[MAX_SADDLES];
 };
-
 
 typedef SaddleConf* SaddleConfPtr;
 
 class Summary {
+ public:
+  Summary();
+  void print(ostream& output_stream, COORD part_total, COORD part_group,
+             COORD volume, COORD depth);
 
-public:
-    Summary();
-    void print(ostream& output_stream, COORD part_total, 
-		    COORD part_group, COORD volume, COORD depth);
+  int add_new_conf(SaddleConf& sc);
+  int add_one_conf(SaddleConf& sc);
 
-    int add_new_conf(SaddleConf& sc); 
-    int add_one_conf(SaddleConf& sc); 
+  void clear_group();
+  int bad_angle_count;
+  int weird_count;
+  int close_count;
+  int reject_count;
 
-    void clear_group();
-    int bad_angle_count;
-    int weird_count;
-    int close_count;
-    int reject_count;
+  void normalize();
+  void define_mpi_type();
 
-    void normalize(); 
-    void define_mpi_type(); 
+  void merge(Summary& s2);
+  void clear();
 
-    void merge(Summary &s2); 
-    void clear();
+  void pack();
+  void unpack();
 
-    void pack(); 
-    void unpack(); 
+  bool scf_compare(int i, int j);
 
-    bool scf_compare(int i, int j);
+  int tag_count;
 
-    int tag_count;
+  // private:
 
-//private:
-
-    vector<SaddleConf> scf;
+  vector<SaddleConf> scf;
 };
 
 typedef list<SaddleConf>::iterator SaddleConfIter;
 
-
-
-
-
-#endif // LIBPOLYGON_SADDLECONF_H
+#endif  // LIBPOLYGON_SADDLECONF_H
