@@ -18,32 +18,47 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBPOLYGON_PSIMPLEX_H
-#define LIBPOLYGON_PSIMPLEX_H
+#ifndef LIBPOLYGON_SUMMARY_H
+#define LIBPOLYGON_SUMMARY_H
+
+#include <ostream>
 
 #include "defs.h"
-#include "my_ostream.h"
+#include "saddleconf.h"
 
 namespace polygon {
-class Simplex;
-class Vertex;
-class UEdge;
-
-class PSimplex {
+class Summary {
  public:
-  PSimplex(Point, int);
+  Summary();
+  void print(std::ostream& output_stream, COORD part_total, COORD part_group,
+             COORD volume, COORD depth);
 
-  Point p;
-  int in_pcomplex;
+  int add_new_conf(SaddleConf& sc);
+  int add_one_conf(SaddleConf& sc);
 
-  virtual Simplex* sp();
-  virtual void Draw(my_ostream&, COORD);
-  virtual ~PSimplex();
+  void clear_group();
+  int bad_angle_count;
+  int weird_count;
+  int close_count;
+  int reject_count;
 
- private:
-  PSimplex(PSimplex&);
+  void normalize();
+  void define_mpi_type();
+
+  void merge(Summary& s2);
+  void clear();
+
+  void pack();
+  void unpack();
+
+  bool scf_compare(int i, int j);
+
+  int tag_count;
+
+  // private:
+
+  std::vector<SaddleConf> scf;
 };
-
 }  // namespace polygon
 
-#endif  // LIBPOLYGON_PSIMPLEX_H
+#endif  // LIBPOLYGON_SUMMARY_H

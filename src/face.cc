@@ -19,13 +19,29 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "libpolygon/two_complex.h"
+#include <list>
+#include <ostream>
+#include <vector>
 
+#include "libpolygon/elementary_geometry.h"
+#include "libpolygon/face.h"
+#include "libpolygon/globals.h"
+#include "libpolygon/number_field.h"
+#include "libpolygon/params.h"
+#include "libpolygon/two_complex.h"
+#include "libpolygon/uedge.h"
+
+using std::endl;
+using std::list;
+using std::ostream;
+using std::vector;
+
+namespace polygon {
 Face::Face() : Simplex() {
   tag = 'F';
   from_face = NULL;
   parent_face_ID = -1;
-};
+}
 
 Face::Face(const list<OEdge>& L) : Simplex() {
   tag = 'F';
@@ -35,8 +51,8 @@ Face::Face(const list<OEdge>& L) : Simplex() {
 }
 
 // for billiard mode
-FacePtr Face::transform_to_original(BigPointQ v, BigPointQ& v_orig) {
-  FacePtr f = this;
+Face* Face::transform_to_original(BigPointQ v, BigPointQ& v_orig) {
+  Face* f = this;
   v_orig = v;
 
   while (f->from_face != NULL) {
@@ -74,18 +90,18 @@ void Face::SetOEdgeList(list<OEdge> L) {
 
   if (L.empty()) return;
 
-  for (OEdgeIter i = L.begin(); i != L.end(); ++i) {
+  for (auto i = L.begin(); i != L.end(); ++i) {
     if ((*i).direction == 1) {
       (*i).ue->f0 = this;
     } else
       (*i).ue->f1 = this;
   }
-};
+}
 
 void Face::Print(ostream& out) {
   Simplex::Print(out);
 
-  for (OEdgeIter i = oedges.begin(); i != oedges.end(); ++i) {
+  for (auto i = oedges.begin(); i != oedges.end(); ++i) {
     (*i).Print(out);
   };
 }
@@ -116,7 +132,7 @@ int Face::order() { return (oedges.size()); }
 Point Face::barycenter() {
   Point q(0.0, 0.0), r(0.0, 0.0), t;
 
-  for (OEdgeIter i = oedges.begin(); i != oedges.end(); ++i) {
+  for (auto i = oedges.begin(); i != oedges.end(); ++i) {
     t = (*i).vec_cx();
     q = q + t;
     r = r + q;
@@ -128,17 +144,17 @@ Point Face::barycenter() {
 
 Point Face::GetOffsetV0() {
   /*
-      Point q(0.0,0.0), r(0.0,0.0),t;
+                  Point q(0.0,0.0), r(0.0,0.0),t;
 
 
-      for(OEdgeIter i = oedges.begin(); i!= oedges.end() ; i++ ) {
-          t = (*i).vec_cx();
-          q = q+ t;
-          r = r + q;
-      }
-      r = r/Point(order());
+                  for(OEdgeIter i = oedges.begin(); i!= oedges.end() ; i++ ) {
+                                  t = (*i).vec_cx();
+                                  q = q+ t;
+                                  r = r + q;
+                  }
+                  r = r/Point(order());
 
-      return(-r);
+                  return(-r);
   */
   return (Point(0.0, 0.0));
 }
@@ -152,10 +168,10 @@ bool Face::deleted() {
 void Face::Delete() { oedges.clear(); }
 
 void Face::Check() {
-  OEdgeIter j;
+  list<OEdge>::iterator j;
   BigPointQ q, t, r;
 
-  for (OEdgeIter i = oedges.begin(); i != oedges.end(); ++i) {
+  for (auto i = oedges.begin(); i != oedges.end(); ++i) {
     if (this != (*i).in_face()) {
       ERR_RET("check face: edge not in face");
     }
@@ -248,13 +264,13 @@ void Face::Check() {
     ERR_RET("check_face: total algt_vec nonzero");
   }
   if (billiard_mode) {
-    FacePtr orig_f = transform_to_original(q, r);
+    Face* orig_f = transform_to_original(q, r);
 
-    OEdgeIter i = oedges.begin();
+    auto i = oedges.begin();
     r = i->vecQ();
     r -= i->prev_edge()->vecQ();
 
-    OEdgeIter jj = orig_f->oedges.begin();
+    auto jj = orig_f->oedges.begin();
     t = jj->vecQ();
     t -= jj->prev_edge()->vecQ();
 
@@ -278,7 +294,7 @@ void Face::Check() {
 }
 
 COORD Face::volume() {
-  VertexPtr v;
+  Vertex* v;
   Point p, q;
 
   if (order() != 3) ERR_RET("volume of non-triange");
@@ -299,9 +315,9 @@ bool Face::self_intersecting() {
   Point intersection;
 
   Point s1 = Point(0, 0);
-  for (OEdgeIter i = oedges.begin(); i != oedges.end(); ++i) {
+  for (auto i = oedges.begin(); i != oedges.end(); ++i) {
     Point s = Point(0, 0);
-    for (OEdgeIter k = oedges.begin(); k != oedges.end(); ++k) {
+    for (auto k = oedges.begin(); k != oedges.end(); ++k) {
       if (k != i && intersect_segment_interior(s1, (*i).vec_cx(), s,
                                                (*k).vec_cx(), intersection)) {
         Simplex::Print(std::cout);
@@ -327,3 +343,4 @@ void Face::AddSegmentToDraw(Segment segment) {
 }
 
 void Face::ClearSegmentsToDraw() { segments_to_draw.clear(); }
+}  // namespace polygon

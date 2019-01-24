@@ -23,17 +23,30 @@
 
 // above used to decide if two saddles have the same length
 
-#include <assert.h>
+#include <algorithm>
+#include <cassert>
+#include <fstream>
+#include <ostream>
+
+#include "libpolygon/cylinder.h"
+#include "libpolygon/defs.h"
+#include "libpolygon/elementary_geometry.h"
+#include "libpolygon/elementary_math.h"
+#include "libpolygon/globals.h"
+#include "libpolygon/number_field.h"
+#include "libpolygon/saddleconf.h"
+#include "libpolygon/summary.h"
 #include "libpolygon/two_complex.h"
+#include "libpolygon/vert_pattern.h"
 
-#ifdef USE_PVM
-#include "libpolygon/slice-pvm.h"
-#endif
+using std::abs;
+using std::endl;
+using std::flush;
+using std::ofstream;
+using std::ostream;
+using std::sort;
 
-#ifdef USE_MPI
-#include "libpolygon/slice.h"
-#endif
-
+namespace polygon {
 /* and add max_vertex_degree to Check */
 
 VertPattern::VertPattern() {
@@ -52,9 +65,9 @@ bool VertPattern::is_empty() {
   return (false);
 }
 
-VertexPtr VertPattern::get_v() { return (base.v); }
+Vertex* VertPattern::get_v() { return (base.v); }
 
-saddle_t VertPattern::get_id(int j) {
+int VertPattern::get_id(int j) {
   if (is_empty()) {
     ERR_RET("get_id: empty vertpattern");
   }
@@ -87,7 +100,7 @@ void VertPattern::clear() {
   /* later remove above loop for speed */
 }
 
-void VertPattern::add(Dir<Point>& d, saddle_t id) {
+void VertPattern::add(Dir<Point>& d, int id) {
   if (this->is_empty()) {
     base = d;
     v_id = d.v->id();
@@ -146,7 +159,7 @@ void VertPattern::add(Dir<Point>& d, saddle_t id) {
     }
     vec[j] = d.vec;
   }
-};
+}
 
 void VertPattern::print(ostream& output_stream, SaddleConf& sc) {
   algebraicQ ratio(NumberField<bigrat>::F);
@@ -201,14 +214,14 @@ int VertPattern::len() {
 COORD VertPattern::shortest_length()
 {
 
-    COORD min_length = -1;
-    for( int i = 0; i < base.v->int_angle; i++ ) {
-        if ( at[i] != 0 && (min_length < 0 || length[i] < min_length )) {
-            min_length = length[i];
-        }
-    }
+                COORD min_length = -1;
+                for( int i = 0; i < base.v->int_angle; i++ ) {
+                                if ( at[i] != 0 && (min_length < 0 || length[i]
+< min_length )) { min_length = length[i];
+                                }
+                }
 
-    return(min_length);
+                return(min_length);
 }
 */
 
@@ -294,8 +307,8 @@ void SaddleConf::clear() {
 
 /* returns the index of the vertex in this saddleconf */
 /* returns -1 if vertex is not found */
-vp_index SaddleConf::find_vert(VertexPtr v) {
-  vp_index i;
+int SaddleConf::find_vert(Vertex* v) {
+  int i;
   for (i = 0; i < n_vp; i++) {
     if (vp[i].get_v() == v) {
       return (i);
@@ -305,7 +318,7 @@ vp_index SaddleConf::find_vert(VertexPtr v) {
 }
 
 void SaddleConf::normalize() {
-  vp_index i;
+  int i;
   for (i = 0; i < n_vp; i++) {
     vp[i].normalize();
   }
@@ -378,8 +391,9 @@ void SaddleConf::renorm_cylinders() {
     }
   }
   if (n_cyl && original_min_cylinder_length < 0) {
-    if (get_orig_min_saddle_length() < 0) { /* saddles were not renormed:
-                                           FIXME */
+    if (get_orig_min_saddle_length() <
+        0) { /* saddles were not renormed:
+                                                                                                                              FIXME */
       original_min_cylinder_length = min_length;
     } else { /* rescale by the original minimal length of a saddle */
       original_min_cylinder_length = min_length * get_orig_min_saddle_length();
@@ -419,24 +433,20 @@ int SaddleConf::follow_right(int i)
 
 // follow with cylinder on right (may actually be left)
 
-    int in_vp, in_at, out_vp, out_at;
+                int in_vp, in_at, out_vp, out_at;
 
 
-    if ( i > 0 ) {
-        get_saddle_by_id(i, in_vp, in_at, out_vp, out_at );
-        in_at--;
-        if (in_at < 0) {
-            in_at = vp[in_vp].base.v->int_angle -1;
-        }
-        return( vp[in_vp].at[in_at] );
-    } else {
-        get_saddle_by_id(-i, in_vp, in_at, out_vp, out_at );
-        out_at--;
-        if (out_at < 0) {
-            out_at = vp[out_vp].base.v->int_angle -1;
-        }
-        return( vp[out_vp].at[out_at] );
-    }
+                if ( i > 0 ) {
+                                get_saddle_by_id(i, in_vp, in_at, out_vp, out_at
+); in_at--; if (in_at < 0) { in_at = vp[in_vp].base.v->int_angle -1;
+                                }
+                                return( vp[in_vp].at[in_at] );
+                } else {
+                                get_saddle_by_id(-i, in_vp, in_at, out_vp,
+out_at ); out_at--; if (out_at < 0) { out_at = vp[out_vp].base.v->int_angle -1;
+                                }
+                                return( vp[out_vp].at[out_at] );
+                }
 }
 */
 
@@ -473,18 +483,18 @@ bool operator<(Cylinder cyl1, Cylinder cyl2) {
 int cyl_compare(const void *ap, const void *bp)
 {
 
-    COORD a = *(const COORD*)ap;
-    COORD b = *(const COORD*)bp;
+                COORD a = *(const COORD*)ap;
+                COORD b = *(const COORD*)bp;
 
 //     printf("%Lg %Lg\n",a,b);
 
-     if( abs(a - b ) < LENGTH_THRESHOLD ) {
-          return 0;
-     } else if ( a > b ) {
-          return(1);
-     } else {
-          return(-1);
-     }
+                 if( abs(a - b ) < LENGTH_THRESHOLD ) {
+                                        return 0;
+                 } else if ( a > b ) {
+                                        return(1);
+                 } else {
+                                        return(-1);
+                 }
 }
 */
 
@@ -553,7 +563,7 @@ void SaddleConf::calculate_cylinders() {
       used[i] = true;
 
       //	    cout << "i = " << i << " get_length_by_id(i) " <<
-      //get_length_by_id(i) << " ::sqrt(norm(get_Dir_by_id(i).vec)) " <<
+      // get_length_by_id(i) << " ::sqrt(norm(get_Dir_by_id(i).vec)) " <<
       //::sqrt(norm(get_Dir_by_id(i).vec)) << "\n";
 
       cyl_len += get_length_by_id(i); /* fix ...*/
@@ -613,16 +623,17 @@ void SaddleConf::calculate_cylinders() {
   if (heights_and_twists || show_moduli) {
     for (i = 0; i < n_cyl; i++) {
       /*
-               cout << "cyl_vec: " << cyl[i].vec << " cross: " <<
-                    -cyl_cross_saddles[i] << " area " <<
-         area(cyl[i].vec,-cyl_cross_saddles[i]) << "\n";
+                                       cout << "cyl_vec: " << cyl[i].vec << "
+         cross: " << -cyl_cross_saddles[i] << " area " <<
+               area(cyl[i].vec,-cyl_cross_saddles[i]) << "\n";
       */
 
       total_area_of_cyls +=
           abs(area(cyl[i].vec, cyl[i].cross_saddle.vec)) / S->get_area();
     }
     /*
-             cout << "\n" << "Area: " << total_area_of_cyls << "\n";
+                                     cout << "\n" << "Area: " <<
+       total_area_of_cyls << "\n";
     */
   }
 
@@ -816,12 +827,12 @@ void SaddleConf::check_cross_saddle(COORD cyl_len,
   }
   while (1) {
     //	    cout << "i = " << i << " get_length_by_id(i) " <<
-    //get_length_by_id(i) << " ::sqrt(norm(get_Dir_by_id(i).vec)) " <<
+    // get_length_by_id(i) << " ::sqrt(norm(get_Dir_by_id(i).vec)) " <<
     //::sqrt(norm(get_Dir_by_id(i).vec)) << "\n";
 
     new_cyl_len += get_length_by_id(-i); /* fix ...*/
     //	std::cout << "In CheckCrossSaddle, i = " << i << " new_cyl_len = " <<
-    //new_cyl_len << endl;
+    // new_cyl_len << endl;
 
     i = follow_left(i);
     if (i > 0) {
@@ -849,8 +860,7 @@ void SaddleConf::check_cross_saddle(COORD cyl_len,
   return;
 }
 
-saddle_t SaddleConf::add_saddle(Dir<Point> start, Dir<Point> end,
-                                alg_tI& algt) {
+int SaddleConf::add_saddle(Dir<Point> start, Dir<Point> end, alg_tI& algt) {
   start_Dir[next_id] = start;
   start_algt[next_id] = algt;
   int i = find_vert(start.v);
@@ -917,7 +927,7 @@ bool SaddleConf::isom(SaddleConf& sc, int* s_matched) {
   }
 
   //    int s_matched[MAX_SADDLES];
-  saddle_t i;
+  int i;
 
   /* saddle id's go from 1 to sc->len */
   for (i = 1; i <= sc.n_saddles(); i++) {
@@ -938,12 +948,12 @@ bool SaddleConf::isom(SaddleConf& sc, int* s_matched) {
 
     if (this->n_cyl != sc.n_cyl) {
       /*
-        printf("*******ruled out by number of cyls***\n");
-        printf("*********%d %d\n",this->n_cyl,sc.n_cyl);
-        this->print(std::cout);
-        std::cout << " n_cyl:" << this->n_cyl << "\n";
-        sc.print(std::cout);
-        std::cout << " n_cyl:" << sc.n_cyl << "\n";
+              printf("*******ruled out by number of cyls***\n");
+              printf("*********%d %d\n",this->n_cyl,sc.n_cyl);
+              this->print(std::cout);
+              std::cout << " n_cyl:" << this->n_cyl << "\n";
+              sc.print(std::cout);
+              std::cout << " n_cyl:" << sc.n_cyl << "\n";
       */
 
       return (false);
@@ -969,17 +979,13 @@ bool SaddleConf::isom(SaddleConf& sc, int* s_matched) {
 }
 
 bool SaddleConf::isomInternal(SaddleConf& sc, int next_vp, int* v_matched,
-                              saddle_t* s_matched) {
+                              int* s_matched) {
   if (next_vp >= sc.n_vp) {
     return (true);
   }
-  int old_v_matched[MAX_VERTICES];
   int old_s_matched[MAX_SADDLES];
   int j;
   /* backup the matching table */
-  for (j = 0; j < sc.n_vp; j++) {
-    old_v_matched[j] = v_matched[j];
-  }
   for (int i = 1; i <= sc.n_saddles(); i++) {
     old_s_matched[i] = s_matched[i];
   }
@@ -1010,7 +1016,7 @@ bool SaddleConf::isomInternal(SaddleConf& sc, int next_vp, int* v_matched,
 
       /* reset the saddle matching table */
       //	    int s_matched[MAX_SADDLES];
-      saddle_t i;
+      int i;
 
       /* saddle id's go from 1 to sc->len */
       for (i = 1; i <= sc.n_saddles(); i++) {
@@ -1032,8 +1038,8 @@ bool SaddleConf::isomInternal(SaddleConf& sc, int next_vp, int* v_matched,
         if (m >= cur_deg) {
           m = m - cur_deg;
         } /* m is the index corresponding to k in the 2nd vp */
-        saddle_t s1 = current->get_id(k);
-        saddle_t s2 = candidate->get_id(m);
+        int s1 = current->get_id(k);
+        int s2 = candidate->get_id(m);
 
         if (show_lengths && abs(current->get_length(k) -
                                 candidate->get_length(m)) > LENGTH_THRESHOLD) {
@@ -1136,9 +1142,9 @@ void Summary::print(ostream& output_stream, COORD part_total, COORD part_group,
   int count_unusual = 0;
   /*    int threshold = total_count/100000;
   for(unsigned int i = 0; i < scf.size() ; i++ ) {
-      if( scf[i].count <= threshold ) {
-          count_unusual += scf[i].count;
-      }
+                  if( scf[i].count <= threshold ) {
+                                  count_unusual += scf[i].count;
+                  }
   }
   */
   // FOR DEBUGGING:::
@@ -1190,7 +1196,7 @@ void Summary::print(ostream& output_stream, COORD part_total, COORD part_group,
       output_stream << " tag #" << scf[i].tag;
       output_stream << "\n";
       if (show_length_list) {
-        for (set<COORD>::iterator jj = scf[i].lengths_set.begin();
+        for (auto jj = scf[i].lengths_set.begin();
              jj != scf[i].lengths_set.end(); ++jj) {
           output_stream << *jj << " ";
         }
@@ -1238,17 +1244,17 @@ int Summary::add_new_conf(SaddleConf& sc) {
 
   /*
 
-       //move this to add_one_conf, but calculate cylinders first
+                   //move this to add_one_conf, but calculate cylinders first
 
 
   //     std::cout << sc.get_orig_min_cyl_length() <<endl;
 
   //     if( abs(sc.get_orig_min_cyl_length() -4.35978) < 0.01 ) {
-       if( abs(sc.get_orig_min_cyl_length() -9.04971) < 0.01 ) {
-           // DEBUGGING TOOL
+                   if( abs(sc.get_orig_min_cyl_length() -9.04971) < 0.01 ) {
+                                   // DEBUGGING TOOL
 
-           std::cout << "Found it: n_saddles = " << sc.n_saddles() << endl;
-           std::cout << "Drawing Saddles" << endl;
+                                   std::cout << "Found it: n_saddles = " <<
+  sc.n_saddles() << endl; std::cout << "Drawing Saddles" << endl;
 
 
   //	 sc.DrawSaddles();
@@ -1258,18 +1264,18 @@ int Summary::add_new_conf(SaddleConf& sc) {
   //	 S->NewDraw(saddle_stream);
   //	 saddle_stream.close();
 
-           sc.DrawCylinders();
+                                   sc.DrawCylinders();
 
-           S->make_pcomplexes();
-           my_ostream saddle_stream("cylinders");
-           S->NewDraw(saddle_stream);
-           saddle_stream.close();
-
-
+                                   S->make_pcomplexes();
+                                   my_ostream saddle_stream("cylinders");
+                                   S->NewDraw(saddle_stream);
+                                   saddle_stream.close();
 
 
-           exit(0);
-       }
+
+
+                                   exit(0);
+                   }
 
   */
 
@@ -1545,3 +1551,4 @@ void Summary::unpack() {
   normalize();
 };
 #endif
+}  // namespace polygon

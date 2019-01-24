@@ -18,32 +18,24 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBPOLYGON_PSIMPLEX_H
-#define LIBPOLYGON_PSIMPLEX_H
+#ifndef LIBPOLYGON_PVERTEX_H
+#define LIBPOLYGON_PVERTEX_H
 
 #include "defs.h"
-#include "my_ostream.h"
+#include "psimplex.h"
 
 namespace polygon {
-class Simplex;
 class Vertex;
-class UEdge;
 
-class PSimplex {
+class PVertex : public PSimplex {
  public:
-  PSimplex(Point, int);
+  PVertex(Vertex*, Point, int);
 
-  Point p;
-  int in_pcomplex;
+  void Draw(my_ostream&, COORD d) override;
 
-  virtual Simplex* sp();
-  virtual void Draw(my_ostream&, COORD);
-  virtual ~PSimplex();
-
- private:
-  PSimplex(PSimplex&);
+  Simplex* sp() override;
+  Vertex* s;
 };
-
 }  // namespace polygon
 
-#endif  // LIBPOLYGON_PSIMPLEX_H
+#endif  // LIBPOLYGON_PVERTEX_H

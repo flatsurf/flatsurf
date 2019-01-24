@@ -18,32 +18,27 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBPOLYGON_PSIMPLEX_H
-#define LIBPOLYGON_PSIMPLEX_H
+#ifndef LIBPOLYGON_MATH_H
+#define LIBPOLYGON_MATH_H
+
+#include <complex>
 
 #include "defs.h"
-#include "my_ostream.h"
 
 namespace polygon {
-class Simplex;
-class Vertex;
-class UEdge;
+std::complex<COORD> exp(std::complex<COORD>, int);
 
-class PSimplex {
- public:
-  PSimplex(Point, int);
-
-  Point p;
-  int in_pcomplex;
-
-  virtual Simplex* sp();
-  virtual void Draw(my_ostream&, COORD);
-  virtual ~PSimplex();
-
- private:
-  PSimplex(PSimplex&);
-};
+#ifdef USE_QUAD
+inline int round_to_int(float128 v) {
+  v = v + v.sign() / 2.0;
+  return floor(v).convert_to<int>();
+}
+#elif defined USE_LONG_DOUBLE
+inline int round_to_int(long double v) { return (int)rint(v); }
+#else
+inline int round_to_int(double v) { return (int)rint(v); }
+#endif
 
 }  // namespace polygon
 
-#endif  // LIBPOLYGON_PSIMPLEX_H
+#endif

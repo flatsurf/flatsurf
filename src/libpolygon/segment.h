@@ -18,32 +18,20 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBPOLYGON_PSIMPLEX_H
-#define LIBPOLYGON_PSIMPLEX_H
+#ifndef LIBPOLYGON_SEGMENT_H
+#define LIBPOLYGON_SEGMENT_H
 
 #include "defs.h"
-#include "my_ostream.h"
 
 namespace polygon {
-class Simplex;
-class Vertex;
-class UEdge;
-
-class PSimplex {
+/* for drawing saddle connections */
+class Segment {
  public:
-  PSimplex(Point, int);
-
-  Point p;
-  int in_pcomplex;
-
-  virtual Simplex* sp();
-  virtual void Draw(my_ostream&, COORD);
-  virtual ~PSimplex();
-
- private:
-  PSimplex(PSimplex&);
+  Point head;
+  Point tail;
+  int cyl_on_left;
+  COORD cyl_on_left_length;
 };
-
 }  // namespace polygon
 
-#endif  // LIBPOLYGON_PSIMPLEX_H
+#endif  // LIBPOLYGON_SEGMENT_H

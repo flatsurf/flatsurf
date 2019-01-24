@@ -19,8 +19,24 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "libpolygon/two_complex.h"
+#include <iostream>
+#include <list>
+#include <ostream>
+#include <string>
 
+#include "libpolygon/elementary_geometry.h"
+#include "libpolygon/globals.h"
+#include "libpolygon/simplex.h"
+#include "libpolygon/two_complex.h"
+#include "libpolygon/vertex.h"
+
+using std::abs;
+using std::endl;
+using std::list;
+using std::ostream;
+using std::string;
+
+namespace polygon {
 Simplex::Simplex() : color("#") {
   int i;
   char tmp[10];
@@ -34,14 +50,14 @@ Simplex::Simplex() : color("#") {
     tmp2 = tmp;
     color += tmp2;
   }
-};
+}
 
 int Simplex::id() { return ID; }
 
 void Simplex::Print(ostream& out) {
   //    fprintf(out_f,"%c%d ",tag,id());
   out << tag << id();
-};
+}
 
 //
 //    simplex(color_t c) {
@@ -55,7 +71,7 @@ Vertex::Vertex() : Simplex() {
   euclidean = UNDEFINED;
   e = 0;
   int_angle = -1;
-};
+}
 
 bool Vertex::deleted() {
   if (order == 0) return (true);
@@ -66,7 +82,7 @@ bool Vertex::deleted() {
 void Vertex::Delete() { order = 0; }
 
 void Vertex::Check() {
-  OEdgePtrIter i, j;
+  list<list<OEdge>::iterator>::iterator i, j;
 
   if (deleted()) return;
 
@@ -100,7 +116,7 @@ void Vertex::Check() {
 }
 
 COORD Vertex::total_angle() {
-  OEdgePtrIter i, j;
+  list<list<OEdge>::iterator>::iterator i, j;
   COORD s = 0;
 
   if (deleted()) return (0);
@@ -140,3 +156,4 @@ int Vertex::total_angle_over_pi() {
   }
   return (j);
 }
+}  // namespace polygon

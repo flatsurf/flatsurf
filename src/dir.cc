@@ -19,21 +19,32 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "libpolygon/two_complex.h"
+#include <iostream>
+#include <list>
 
+#include "libpolygon/dir.h"
+#include "libpolygon/elementary_geometry.h"
+#include "libpolygon/vertex.h"
+
+using std::abs;
+using std::endl;
+using std::flush;
+using std::list;
+
+namespace polygon {
 template <typename PointT>
 Dir<PointT>::Dir() {}
 
 template <typename PointT>
-Dir<PointT>::Dir(OEdgeIter e) {
+Dir<PointT>::Dir(list<OEdge>::iterator e) {
   v = e->head();
   vec = e->vec<PointT>();
   ep = e->this_vert_iter();
 }
 
 template <typename PointT>
-Dir<PointT>::Dir(VertexPtr vp, const PointT& p) : vec(p) {
-  OEdgePtrIter i, j;
+Dir<PointT>::Dir(Vertex* vp, const PointT& p) : vec(p) {
+  list<list<OEdge>::iterator>::iterator i, j;
 
   v = vp;
 
@@ -60,19 +71,20 @@ Dir<PointT>::Dir(VertexPtr vp, const PointT& p) : vec(p) {
 
 template <typename PointT>
 void Dir<PointT>::Check() {
-  OEdgePtrIter i = ep;
+  auto i = ep;
 
-  if ((!aligned((*i)->vec<PointT>(), vec)) && CCW(vec, (*i)->vec<PointT>())) {
+  if ((!aligned((*i)->template vec<PointT>(), vec)) &&
+      CCW(vec, (*i)->template vec<PointT>())) {
     ERR_RET("dir_check: bottom range");
   }
 
   i = next_vert_edge(i);
 
-  if (aligned((*i)->vec<PointT>(), vec)) {
+  if (aligned((*i)->template vec<PointT>(), vec)) {
     ERR_RET("dir_check: aligned top range");
   }
 
-  if (CCW((*i)->vec<PointT>(), vec)) {
+  if (CCW((*i)->template vec<PointT>(), vec)) {
     ERR_RET("dir_check: top range");
   }
 }
@@ -104,7 +116,7 @@ COORD Dir<Point>::AngleF(Dir<Point>& d2) {
     ERR_RET("Angle: vertices unequal");
   }
 
-  OEdgePtrIter i, j;
+  list<list<OEdge>::iterator>::iterator i, j;
 
   COORD rotated = 0;
 
@@ -202,7 +214,7 @@ template <typename PointT>
 Dir<PointT> Dir<PointT>::RotateCCwToVec(PointT p) {
   Dir n;
 
-  OEdgePtrIter i, j;
+  list<list<OEdge>::iterator>::iterator i, j;
 
   n.v = v;
   n.vec = p;
@@ -230,7 +242,7 @@ Dir<PointT> Dir<PointT>::RotateCCwToVec(PointT p) {
 template <typename PointT>
 Dir<PointT> Dir<PointT>::RotateCwToVec(PointT p) {
   Dir n;
-  OEdgePtrIter i, j;
+  list<list<OEdge>::iterator>::iterator i, j;
 
   n.v = v;
   n.vec = p;
@@ -262,3 +274,4 @@ Dir<PointT> Dir<PointT>::RotateCwToVec(PointT p) {
 
 template class Dir<Point>;
 template class Dir<BigPointI>;
+}  // namespace polygon

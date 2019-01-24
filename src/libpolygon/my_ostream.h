@@ -18,32 +18,26 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBPOLYGON_PSIMPLEX_H
-#define LIBPOLYGON_PSIMPLEX_H
+#ifndef LIBPOLYGON_MY_OSTREAM
+#define LIBPOLYGON_MY_OSTREAM
 
-#include "defs.h"
-#include "my_ostream.h"
+#include <fstream>
+#include <string>
+
+#include "libpolygon.h"
 
 namespace polygon {
-class Simplex;
-class Vertex;
-class UEdge;
-
-class PSimplex {
+class my_ostream {
  public:
-  PSimplex(Point, int);
-
-  Point p;
-  int in_pcomplex;
-
-  virtual Simplex* sp();
-  virtual void Draw(my_ostream&, COORD);
-  virtual ~PSimplex();
+  explicit my_ostream(const std::string& filename);
+  std::ofstream& tri();
+  std::ofstream& tex();
+  void close();
 
  private:
-  PSimplex(PSimplex&);
+  std::ofstream tri_stream;
+  std::ofstream tex_stream;
 };
-
 }  // namespace polygon
 
-#endif  // LIBPOLYGON_PSIMPLEX_H
+#endif  // LIBPOLYGON_MY_OSTREAM

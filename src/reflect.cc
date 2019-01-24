@@ -19,15 +19,27 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "libpolygon/two_complex.h"
+#include <list>
 
+#include "libpolygon/elementary_geometry.h"
+#include "libpolygon/face.h"
+#include "libpolygon/globals.h"
+#include "libpolygon/my_ostream.h"
+#include "libpolygon/two_complex.h"
+#include "libpolygon/uedge.h"
+
+using std::endl;
+using std::flush;
+using std::list;
+
+namespace polygon {
 extern bool closure;
 
 void TwoComplex::SetupReflect() {
   int k;
 
-  for (FacePtrIter i = faces.begin(); i != faces.end(); ++i) {
-    for (OEdgeIter j = (*i)->oedges.begin(); j != (*i)->oedges.end(); ++j) {
+  for (auto i = faces.begin(); i != faces.end(); ++i) {
+    for (auto j = (*i)->oedges.begin(); j != (*i)->oedges.end(); ++j) {
       if (!(*j).ue->boundary()) {
         (*j).ue->internal = true;
         (*j).from_edge = (*j).pair_edge();
@@ -36,15 +48,15 @@ void TwoComplex::SetupReflect() {
   }
 
   k = 0;
-  for (UEdgePtrIter i = uedges.begin(); i != uedges.end(); ++i) {
+  for (auto i = uedges.begin(); i != uedges.end(); ++i) {
     (*i)->label = k++;
   }
 }
 
-FacePtr TwoComplex::ReflectFace(UEdgePtr e, FacePtr f) {
-  FacePtr new_f;
-  VertexPtr new_v, first_v, last_v;
-  UEdgePtr tmp;
+Face* TwoComplex::ReflectFace(UEdge* e, Face* f) {
+  Face* new_f;
+  Vertex *new_v, *first_v, *last_v;
+  UEdge* tmp;
   BigPointQ tmp_vec;
   list<OEdge> tmp_edge_list;
 
@@ -69,7 +81,7 @@ FacePtr TwoComplex::ReflectFace(UEdgePtr e, FacePtr f) {
     tmp = AddUEdge(UNDEFINED, last_v, new_v, -tmp_vec);
     tmp->label = (*i).ue->label;
 
-    OEdgePtr new_edge = new OEdge(tmp, 1);
+    OEdge* new_edge = new OEdge(tmp, 1);
 
     if ((*i).ue->internal) {
       new_edge->ue->internal = true;
@@ -82,7 +94,7 @@ FacePtr TwoComplex::ReflectFace(UEdgePtr e, FacePtr f) {
   new_f = AddFace(UNDEFINED, tmp_edge_list);
   reflect_vector(f->vec, e->ue_vecQ, new_f->vec);
 
-  for (OEdgeIter i = new_f->oedges.begin(); i != new_f->oedges.end(); ++i) {
+  for (auto i = new_f->oedges.begin(); i != new_f->oedges.end(); ++i) {
     tmp = FindMatchingEdge((*i).ue);
     if (tmp != NULL) {
       IdentifyEdges(tmp, (*i).ue);
@@ -97,11 +109,10 @@ FacePtr TwoComplex::ReflectFace(UEdgePtr e, FacePtr f) {
   return (new_f);
 }
 
-UEdgePtr TwoComplex::IdentifyEdges(UEdgePtr ue0, UEdgePtr ue1) {
+UEdge* TwoComplex::IdentifyEdges(UEdge* ue0, UEdge* ue1) {
   int r;
-  //    FacePtr f0;
-  FacePtr f1;
-  OEdgeIter e0, e1;
+  Face* f1;
+  list<OEdge>::iterator e0, e1;
 
   if (ue0 == ue1) ERR_RET("identify_edges: same edge");
 
@@ -134,7 +145,7 @@ UEdgePtr TwoComplex::IdentifyEdges(UEdgePtr ue0, UEdgePtr ue1) {
 
   /* make all the pointers pointing at e1 point at e0 */
 
-  for (VertexPtrIter i = vertices.begin(); i != vertices.end(); ++i) {
+  for (auto i = vertices.begin(); i != vertices.end(); ++i) {
     if ((*i)->e == ue1) {
       (*i)->e = ue0;
     }
@@ -149,10 +160,10 @@ UEdgePtr TwoComplex::IdentifyEdges(UEdgePtr ue0, UEdgePtr ue1) {
   return (ue0);
 }
 
-VertexPtr TwoComplex::IdentifyVertices(VertexPtr v0, VertexPtr v1) {
+Vertex* TwoComplex::IdentifyVertices(Vertex* v0, Vertex* v1) {
   if (v0 == v1) return (v0);
 
-  for (UEdgePtrIter j = uedges.begin(); j != uedges.end(); ++j) {
+  for (auto j = uedges.begin(); j != uedges.end(); ++j) {
     if ((*j)->v0 == v1) (*j)->v0 = v0;
 
     if ((*j)->v1 == v1) (*j)->v1 = v0;
@@ -164,23 +175,23 @@ VertexPtr TwoComplex::IdentifyVertices(VertexPtr v0, VertexPtr v1) {
   return (v0);
 }
 
-UEdgePtr TwoComplex::FindMatchingEdge(UEdgePtr ue) {
-  UEdgePtr candidate;
-  OEdgeIter e, oc;
-  FacePtr f;
+UEdge* TwoComplex::FindMatchingEdge(UEdge* ue) {
+  UEdge* candidate;
+  list<OEdge>::iterator e, oc;
+  Face* f;
   BigPointQ tmp;
 
   f = ue->boundary_face();
   e = ue->boundary_edge();
 
   /*
-     S->PrintAll(std::cout);
+           S->PrintAll(std::cout);
 
-     std::cout << endl;
+           std::cout << endl;
 
-     f->Print(std::cout); std::cout << endl;
-     e->Print(std::cout); std::cout << " " << endl;
-     e->vec().Check();
+           f->Print(std::cout); std::cout << endl;
+           e->Print(std::cout); std::cout << " " << endl;
+           e->vec().Check();
   */
 
   /* fix later */
@@ -188,7 +199,7 @@ UEdgePtr TwoComplex::FindMatchingEdge(UEdgePtr ue) {
   if (!ue->internal) {
     reflect_vector(f->vec, e->vecQ(), tmp);
   }
-  for (UEdgePtrIter i = uedges.begin(); i != uedges.end(); ++i) {
+  for (auto i = uedges.begin(); i != uedges.end(); ++i) {
     candidate = (*i);
 
     if (candidate->label != ue->label) continue;
@@ -219,7 +230,7 @@ UEdgePtr TwoComplex::FindMatchingEdge(UEdgePtr ue) {
 }
 
 void TwoComplex::CompleteSurface() {
-  UEdgePtrIter i;
+  list<UEdge*>::iterator i;
 
   if (verbose >= 1) {
     std::cout << "In CompleteSurface" << endl;
@@ -251,8 +262,8 @@ void TwoComplex::CompleteSurface() {
 }
 
 void TwoComplex::SetInternalEdges() {
-  for (FacePtrIter i = faces.begin(); i != faces.end(); ++i) {
-    for (OEdgeIter k = (*i)->oedges.begin(); k != (*i)->oedges.end(); ++k) {
+  for (auto i = faces.begin(); i != faces.end(); ++i) {
+    for (auto k = (*i)->oedges.begin(); k != (*i)->oedges.end(); ++k) {
       if ((*k).ue->internal) {
         (*k).from_edge = (*k).pair_edge();
       }
@@ -260,8 +271,8 @@ void TwoComplex::SetInternalEdges() {
   }
 }
 
-void TwoComplex::CompleteInternal(UEdgePtr e) {
-  UEdgePtrIter k;
+void TwoComplex::CompleteInternal(UEdge* e) {
+  list<UEdge*>::iterator k;
 
   int j = 0;
 
@@ -280,7 +291,7 @@ void TwoComplex::CompleteInternal(UEdgePtr e) {
 
     j++;
     sprintf(buf, "movie%d", j);
-    my_ostream *movie_stream;
+    my_ostream* movie_stream;
     movie_stream = new my_ostream(buf);
     dl.clear();
     make_pcomplexes();
@@ -294,3 +305,4 @@ void TwoComplex::CompleteInternal(UEdgePtr e) {
   }
   SetInternalEdges();
 }
+}  // namespace polygon

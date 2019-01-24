@@ -21,15 +21,23 @@
 
 #include <getopt.h>
 #include <unistd.h>
+#include <fstream>
+#include <iostream>
+
+#include "libpolygon/globals.h"
+#include "libpolygon/my_ostream.h"
+#include "libpolygon/number_field.h"
 #include "libpolygon/two_complex.h"
+#include "libpolygon/uedge.h"
 
-#ifdef USE_MPI
-#include "libpolygon/slice.h"
-#endif
+using namespace polygon;
 
-#ifdef USE_PVM
-#include "libpolygon/slice-pvm.h"
-#endif
+using std::cout;
+using std::endl;
+using std::list;
+using std::max;
+using std::min;
+using std::ofstream;
 
 bool randomize = false;
 char hostname[MAX_HOSTNAME];
@@ -472,7 +480,7 @@ int main(int argc, char** argv) {
 
   char buf[1000];
 
-  for (FacePtrIter f = S->faces.begin(); f != S->faces.end(); ++f) {
+  for (auto f = S->faces.begin(); f != S->faces.end(); ++f) {
     sprintf(buf, "face%d", (*f)->id());
     my_ostream* face_stream = new my_ostream(buf);
     S->make_pface(*f);
@@ -488,12 +496,6 @@ int main(int argc, char** argv) {
   S->NewDraw(debug_stream);
   debug_stream.close();
 
-  /*
-      S->make_pcomplexes();
-      my_ostream test_stream("test");
-      S->NewDraw(test_stream);
-      test_stream.close();
-  */
   S->Expunge();
   S->CheckAllFaces();
 
@@ -525,7 +527,7 @@ int main(int argc, char** argv) {
   }
 
   if (retriangulate) {
-    for (UEdgePtrIter i = S->uedges.begin(); i != S->uedges.end(); ++i) {
+    for (auto i = S->uedges.begin(); i != S->uedges.end(); ++i) {
       (*i)->internal = false;
       (*i)->from_triang = false;
     }
@@ -544,10 +546,9 @@ int main(int argc, char** argv) {
   COORD mv = min(0.1, shortest / 2);
 
   Point tmp_offset;
-  VertexPtrIter i;
 
   if (perturb_euclidean) {
-    for (i = S->vertices.begin(); i != S->vertices.end(); ++i) {
+    for (auto i = S->vertices.begin(); i != S->vertices.end(); ++i) {
       if ((*i)->euclidean) {
         tmp_offset =
             Point(mv * my_random() / RANDOM_MAX, mv * my_random() / RANDOM_MAX);
@@ -564,7 +565,7 @@ int main(int argc, char** argv) {
       offset =
           Point(mv * my_random() / RANDOM_MAX, mv * my_random() / RANDOM_MAX);
     }
-    for (i = S->vertices.begin(); i != S->vertices.end(); ++i) {
+    for (auto i = S->vertices.begin(); i != S->vertices.end(); ++i) {
       if ((*i)->id() == perturb_vertex) {
         std::cout << "Moving: ";
         (*i)->Print(std::cout);
@@ -592,14 +593,12 @@ int main(int argc, char** argv) {
     S->PerturbAll(perturb_magnitude);
     fprintf(out_f, "done\n");
   }
-  //    sleep(3);
 
   S->make_pcomplexes();
   my_ostream perturbed_stream("perturbed");
   S->NewDraw(perturbed_stream);
   perturbed_stream.close();
 
-  //    S->PrintAll(std::cout);
   S->CheckAllFaces();
   S->CheckAllVertices();
   if (field_arithmetic) S->check_algebraicQ();
@@ -619,21 +618,12 @@ int main(int argc, char** argv) {
 
   S->set_area();
 
-  //    S->PrintAll(std::cout);
   S->StatPrint(std::cout);
 
   ofstream fout("the_surface.dat");
   S->StatPrint(fout);
   S->PrintAll(fout);
   fout.close();
-
-  /*
-      S->make_pcomplexes();
-      //    S->MakeDrawList();
-      my_ostream output_stream ("data");
-      S->NewDraw(output_stream);
-      output_stream.close();
-  */
 
   if (!norescale) {
     S->set_scale_factor(S->get_scale_factor() / sqrt(S->get_area()));
@@ -646,7 +636,9 @@ int main(int argc, char** argv) {
   // EPSILON /= S->get_scale_factor();
   // DELTA /= S->get_scale_factor();
 
-  for (i = S->vertices.begin(); i != S->vertices.end(); ++i) {
+  auto i = S->vertices.begin();
+
+  for (; i != S->vertices.end(); ++i) {
     if (start_vertex != UNDEFINED && (*i)->id() == start_vertex) {
       break;
     }
@@ -681,8 +673,7 @@ int main(int argc, char** argv) {
     }
 
 #else
-    std::cout << "sweeping start V" << (*i)->id() << " depth = " << depth
-              << endl;
+    cout << "sweeping start V" << (*i)->id() << " depth = " << depth << endl;
 
     COORD GoalTotalAngle = (*i)->total_angle();
 
@@ -690,7 +681,7 @@ int main(int argc, char** argv) {
       Dir<Point> start_dir = Dir<Point>(*i, Point(1, 0.0000123));
       S->SweepNew<Point>(depth, start_dir, GoalTotalAngle);
     } else {
-      OEdgeIter first_edge = *((*i)->out_edges.begin());
+      auto first_edge = *((*i)->out_edges.begin());
       Dir<BigPointI> start_dir = Dir<BigPointI>(first_edge);
       S->SweepNew<BigPointI>(depth, start_dir, GoalTotalAngle);
     }
@@ -707,18 +698,7 @@ int main(int argc, char** argv) {
   if (mc_number) {
     fprintf(out_f, "Using groups of size %d\n", mc_group);
     S->RandomShoot((*i), depth, mc_number);
-    //	fprintf(out_f,"Final Results:\n");
-    //	s1 = (*i)->total_angle()*mc_number/ta;
-    //	fprintf(out_f,"%g %g (", s1*S->volume()*MY_PI/(6*depth*depth),
-    //	       s1*S->volume()/(MY_PI*depth*depth));
-
-    //	fprintf(out_f,") raw = %g\n", s1);
   }
 
-  /* old code (before slice)
-  #ifdef USE_MPI
-      MPI_Finalize();
-  #endif
-  */
   exit(0);
-};
+}

@@ -18,11 +18,27 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "libpolygon/algebraic.h"
 #include <boost/lexical_cast.hpp>
-#include <cassert>
-#include "libpolygon/defs.h"
+#include <complex>
+#include <ostream>
+#include <vector>
 
+#include "libpolygon/algebraic.h"
+#include "libpolygon/defs.h"
+#include "libpolygon/elementary_math.h"
+#include "libpolygon/number_field.h"
+#include "libpolygon/poly.h"
+#include "libpolygon/vector.h"
+
+using namespace polygon;
+using std::complex;
+using std::cout;
+using std::endl;
+using std::max;
+using std::ostream;
+using std::vector;
+
+namespace polygon {
 // gcd_extended: a and b inputs, x and y outputs.
 template <class T>
 void gcd_extended(poly<T> &x, poly<T> &y, const poly<T> &a, const poly<T> &b) {
@@ -243,13 +259,6 @@ ostream &operator<<(ostream &outputStream, const poly<T> &p) {
   return outputStream;
 }
 
-inline int max(int a, int b) {
-  if (a >= b)
-    return a;
-  else
-    return b;
-}
-
 template <class T>
 NumberField<T>::NumberField() {}
 
@@ -437,30 +446,6 @@ algebraic<T> operator/(algebraic<T> a, T b) {
   return (a /= b);
 }
 
-// template<class T>
-// algebraic<T> operator *(T q, algebraic<T> r)
-// {
-//   vector<T> c;
-//   typename vector<T>::iterator i;
-//   for(i=r.coords.begin(); i!=r.coords.end(); i++)
-//     c.push_back(q * *i);
-//   return algebraic<T>(c, r.in_field);
-// }
-
-// template<class T>
-// algebraic<T> operator *(algebraic<T> r, T q)
-// {
-//   vector<T> c;
-//   typename vector<T>::iterator i;
-//   for(i=r.coords.begin(); i!=r.coords.end(); i++)
-//     c.push_back(q * *i);
-//   return algebraic<T>(c, r.in_field);
-// }
-
-extern algebraic<bigrat> operator/(algebraic<bigrat> a, int n);
-extern algebraic<bigrat> operator*(algebraic<bigrat> r, int n);
-extern algebraic<bigrat> operator*(int n, algebraic<bigrat> r);
-
 template <class T>
 algebraic<T> &algebraic<T>::operator+=(const algebraic<T> &a) {
   for (unsigned int i = 0; i < coords.size(); i++) coords[i] += a.coords[i];
@@ -546,8 +531,6 @@ complex<COORD> algebraic<T>::tocomplex() const {
   return z;
 }
 
-extern complex<COORD> exp(complex<COORD> z, int n);
-
 template <class T>
 vector<T> &operator+=(vector<T> &v, vector<T> w) {
   for (unsigned int i = 0; i < v.size(); i++) v[i] += w[i];
@@ -579,7 +562,7 @@ void NumberField<T>::print_mt() {
   }
 }
 
-template <typename T>
+template <class T>
 void NumberField<T>::print(ostream &out) {
   out << "#Field Degree=" << NumberField<T>::F->degree;
   out << " minimal polynomial=" << NumberField<T>::F->min_poly() << endl;
@@ -636,43 +619,6 @@ algebraic<T> cross_product(const algebraic<T> &u, const algebraic<T> &v) {
   return q;
 }
 
-/*
-complex<long double> tolongdouble(complex<double> z)
-{
-  return complex<long double>(static_cast<long double>(z.real()), static_cast<l\
-ong double>(z.imag()));
-}
-
-complex<boost::multiprecision::float128> tofloat128(complex<double> z)
-{
-  return
-complex<boost::multiprecision::float128>(static_cast<boost::multiprecision::float128>(z.real()),
-static_cast<boost::multiprecision::float128>(z.imag()));
-}
-*/
-
-/*
-inline algebraic<bigrat> to_rational(const algebraic<int64_t> &p) //only works
-with given F
-{
-
-    assert( p.in_field == NumberField<int64_t>::F );
-
-    vector<bigrat> new_coords;
-    for(int i=0; i < p.in_field->degree; i++) {
-        bigrat r = bigrat(p.coords[i],1);
-        new_coords.push_back(r);
-    }
-
-
-    algebraic<bigrat> q = algebraic<bigrat>(new_coords,
-                                             NumberField<bigrat>::F);
-
-    return q;
-
-};
-*/
-
 template <typename T>
 void NumberField<T>::build_cross_product_table() {
   int d = degree;
@@ -701,6 +647,43 @@ void NumberField<T>::build_cross_product_table() {
   }
 }
 
+algebraic<bigrat> to_rational(
+    const algebraic<int64_t> &p)  // only works with given F
+{
+  assert(p.in_field == NumberField<int64_t>::F);
+
+  vector<bigrat> new_coords;
+  for (int i = 0; i < p.in_field->degree; i++) {
+    static_assert(
+        std::is_convertible<int64_t, long>::value,
+        "mpz does not implement conversion from long long, so we can only "
+        "initialize like this if long and int64_t have the same size; note "
+        "that they might not the same type as long == long long and only one "
+        "of the two can be aliased to int64_t");
+    bigrat r = bigrat((long)p.coords[i], 1);
+    new_coords.push_back(r);
+  }
+
+  algebraic<bigrat> q = algebraic<bigrat>(new_coords, NumberField<bigrat>::F);
+
+  return q;
+}
+
+algebraic<bigrat> operator/(const algebraic<bigrat> &a, int n) {
+  return a * bigrat(1, n);
+}
+
+algebraic<bigrat> operator*(const algebraic<bigrat> &r, int n) {
+  return r * bigrat(n, 1);
+}
+
+algebraic<bigrat> operator*(int n, const algebraic<bigrat> &r) {
+  return r * bigrat(n, 1);
+}
+}  // namespace polygon
+
+// Explicit template instantiations for mpq
+namespace polygon {
 template class NumberField<bigrat>;
 template class algebraic<bigrat>;
 template class poly<bigrat>;
@@ -744,7 +727,10 @@ template vector<bigrat> operator+(vector<bigrat> v, vector<bigrat> w);
 template vector<bigrat> operator*(bigrat v, vector<bigrat> w);
 template algebraic<bigrat> cross_product(const algebraic<bigrat> &u,
                                          const algebraic<bigrat> &v);
+}  // namespace polygon
 
+// Explicit template instantiations for int64
+namespace polygon {
 template void gcd_extended(poly<int64_t> &x, poly<int64_t> &y,
                            const poly<int64_t> &a, const poly<int64_t> &b);
 template poly<int64_t> operator*(poly<int64_t> p, const poly<int64_t> &q);
@@ -780,3 +766,5 @@ template vector<int64_t> operator+(vector<int64_t> v, vector<int64_t> w);
 template vector<int64_t> operator*(int64_t v, vector<int64_t> w);
 template algebraic<int64_t> cross_product(const algebraic<int64_t> &u,
                                           const algebraic<int64_t> &v);
+
+}  // namespace polygon

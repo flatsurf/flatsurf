@@ -20,65 +20,11 @@
 
 #include <boost/lexical_cast.hpp>
 #include <cassert>
+#include "libpolygon/number_field.h"
+#include "libpolygon/params.h"
 #include "libpolygon/two_complex.h"
 
-int Params::n_params = 0;
-vector<COORD> Params::params;
-
-int Params::nbr_params() { return n_params; }
-
-void Params::AddParams(int n, COORD prms[]) {
-  for (int i = 0; i < n; i++) {
-    params.push_back(prms[i]);
-    //	out_s << "Param: t" << n_params+1+i<<" = "<< prms[i] << endl;
-  }
-  n_params += n;
-}
-
-void Params::print(ostream &out) {
-  out << "#Params:" << nbr_params() << endl;
-  for (int i = 0; i < nbr_params(); i++) {
-    out << "#t" << i + 1 << "=";
-    out << boost::lexical_cast<std::string>(params[i]) << endl;
-  }
-}
-
-algebraic<bigrat> operator/(const algebraic<bigrat> &a, int n) {
-  return a * bigrat(1, n);
-}
-
-algebraic<bigrat> operator*(const algebraic<bigrat> &r, int n) {
-  return r * bigrat(n, 1);
-}
-
-algebraic<bigrat> operator*(int n, const algebraic<bigrat> &r) {
-  return r * bigrat(n, 1);
-}
-
-alg_tI convert_to_algtI(alg_tQ p) {
-  vector<algebraicI> new_coeffs;
-  new_coeffs.clear();
-  for (int i = 0; i <= Params::nbr_params(); i++) {
-    vector<int64_t> new_coords;
-    new_coords.clear();
-    algebraicQ a = p.get_coeff(i);
-    vector<bigrat> c = a.get_coords();
-
-    for (unsigned int j = 0; j < c.size(); j++) {
-      //`	    bigrat r = c[j];
-      assert(c[j].get_den() == mpz_class(1));
-      mpz_class tmp = c[j].get_num();
-      if (!tmp.fits_slong_p()) {
-        ERR_RET("cannot convert alg_tQ to alg_tI");
-      }
-
-      new_coords.push_back(tmp.get_si());
-    }
-    new_coeffs.push_back(algebraicI(new_coords, NumberField<int64_t>::F));
-  }
-  return (alg_tI(new_coeffs));
-}
-
+namespace polygon {
 bool is_alg_quotient(const alg_t<int64_t> &p1, const alg_t<int64_t> &p2,
                      algebraicQ &ratio)  // if p1/p2 is algebraic, return true
                                          // and put it in ratio.
@@ -119,3 +65,4 @@ bool is_alg_quotient(const alg_t<int64_t> &p1, const alg_t<int64_t> &p2,
   //    out_s << "ratio = " << endl ;
   return (true);
 }
+}  // namespace polygon

@@ -18,32 +18,20 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBPOLYGON_PSIMPLEX_H
-#define LIBPOLYGON_PSIMPLEX_H
+#ifndef LIBPOLYGON_CYLINDER_H
+#define LIBPOLYGON_CYLINDER_H
 
 #include "defs.h"
-#include "my_ostream.h"
+#include "dir.h"
 
 namespace polygon {
-class Simplex;
-class Vertex;
-class UEdge;
-
-class PSimplex {
+class Cylinder {
  public:
-  PSimplex(Point, int);
-
-  Point p;
-  int in_pcomplex;
-
-  virtual Simplex* sp();
-  virtual void Draw(my_ostream&, COORD);
-  virtual ~PSimplex();
-
- private:
-  PSimplex(PSimplex&);
+  COORD length;
+  Point vec;
+  Dir<Point> cross_saddle;
+  COORD modulus;
+  int random_saddle_on_left;  // for drawing cylinders
 };
-
 }  // namespace polygon
-
-#endif  // LIBPOLYGON_PSIMPLEX_H
+#endif  // LIBPOLYGON_CYLINDER_H
