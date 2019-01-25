@@ -18,32 +18,41 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBPOLYGON_PSIMPLEX_H
-#define LIBPOLYGON_PSIMPLEX_H
+#ifndef LIBPOLYGON_DIR_H
+#define LIBPOLYGON_DIR_H
 
+#include <list>
+
+#include "alg_t.h"
 #include "defs.h"
-#include "my_ostream.h"
+#include "oedge.h"
 
 namespace polygon {
-class Simplex;
 class Vertex;
-class UEdge;
 
-class PSimplex {
+template <typename PointT>
+class Dir {
  public:
-  PSimplex(Point, int);
+  PointT vec;
+  Vertex *v;
+  std::list<std::list<OEdge>::iterator>::iterator ep;
 
-  Point p;
-  int in_pcomplex;
+  Dir();
+  explicit Dir(std::list<OEdge>::iterator e);
+  Dir(Vertex *vp, const PointT &p);
+  void Check();
+  Point vec_cx();
+  alg_tI vec_algtI();
 
-  virtual Simplex* sp();
-  virtual void Draw(my_ostream&, COORD);
-  virtual ~PSimplex();
+  Dir RotateCwToVec(PointT p);
+  Dir RotateCCwToVec(PointT p);
 
- private:
-  PSimplex(PSimplex&);
+  Dir RotateF(COORD theta);
+  Dir RotateF_general(COORD theta);
+  Dir RotateI(COORD theta);
+  COORD AngleF(Dir &d2);
+  int AngleI(Dir &d1, Dir &d2); /* returns angle over pi */
 };
-
 }  // namespace polygon
 
-#endif  // LIBPOLYGON_PSIMPLEX_H
+#endif  // LIBPOLYGON_DIR_H

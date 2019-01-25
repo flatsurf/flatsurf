@@ -19,8 +19,23 @@
  *********************************************************************/
 
 #include <cassert>
+#include <complex>
+#include <list>
+
+#include "libpolygon/defs.h"
+#include "libpolygon/elementary_geometry.h"
+#include "libpolygon/elementary_math.h"
+#include "libpolygon/globals.h"
+#include "libpolygon/oedge.h"
 #include "libpolygon/two_complex.h"
 
+using namespace polygon;
+
+using std::abs;
+using std::complex;
+using std::list;
+
+namespace polygon {
 /* square of distance from point to line */
 COORD d_point_line2(const Point &u, const Point &v) {
   COORD p = Dot(u, v) / Dot(v, v);
@@ -113,9 +128,9 @@ void reflect_vector(BigPointQ p, BigPointQ vec, BigPointQ &reflection) {
     }
 
     /* z . w = (1/4)(z+\bar{z})(w+\bar{w}) -(1/4)(z-\bar{z})(w - \bar{w}) =
-       = (1/4)(z w + \bar{z}w + z \bar{w} +\bar{z} \bar{w} -
-               -z w +\bar{z} w + z \bar{w} -\bar{z} \bar{w}) =
-       = (1/2) ( z \bar{w} + \bar{z} w ).
+             = (1/4)(z w + \bar{z}w + z \bar{w} +\bar{z} \bar{w} -
+                                             -z w +\bar{z} w + z \bar{w}
+       -\bar{z} \bar{w}) = = (1/2) ( z \bar{w} + \bar{z} w ).
     */
 
     alg_tQ p_a = p.algt;
@@ -135,37 +150,7 @@ void reflect_vector(BigPointQ p, BigPointQ vec, BigPointQ &reflection) {
   }
 }
 
-// void reflect_vector_algebraic(Point p, algebraic p_alg, Point vec, algebraic
-// vec_alg, Point &reflection, algebraic &reflection_alg)
-// {
-//   COORD ratio;
-//   algebraic ratio_alg;
-
-//   /* reflection = 2 (p . vec)/(vec.vec)) vec - p */
-//   ratio = 2.0*(p.real()*vec.real()+p.imag()*vec.imag())/(norm(vec));
-//   ratio_alg =  (p_alg * vec_alg.conjugate() + p_alg.conjugate() *
-//   vec_alg)/(vec_alg * vec_alg.conjugate()); reflection = ratio*vec - p;
-//   reflection_alg = ratio_alg * vec_alg - p_alg;
-// }
-
-/* reflect p through the line in the direction of vec through base */
-
-/*
-void reflect_point(Point p, Point base, Point vec, Point &reflection)
-{
-  Point tmp;
-
-  tmp = p  - base;
-
-  reflect_vector(tmp,vec,reflection);
-
-  reflection = reflection + base;
-
-}
-
-*/
-
-int test_congruent(OEdgeIter e0, OEdgeIter e1) {
+int test_congruent(list<OEdge>::iterator e0, list<OEdge>::iterator e1) {
   Point vec0, vec1;
 
   vec0 = e0->vec_cx();
@@ -362,9 +347,9 @@ bool aligned(const Point &p, const Point &q) {
     return (false);
   }
   /*
-      if ( angle(p,q) > 0.5*MY_PI ) {
-          return(false);
-      }
+                  if ( angle(p,q) > 0.5*MY_PI ) {
+                                  return(false);
+                  }
   */
 
   if (Dot(p, q) < 0) {
@@ -396,9 +381,9 @@ bool CCW(const Point &u,
   COORD s = -u.imag() * v.real() + u.real() * v.imag();
 
   /*
-      if ( verbose >= 5 && abs(s) < 0.01 ) {
-          out_s << "\nCCW: s = " << s << endl;
-      }
+                  if ( verbose >= 5 && abs(s) < 0.01 ) {
+                                  out_s << "\nCCW: s = " << s << endl;
+                  }
   */
 
   if (s > 0) {
@@ -498,3 +483,4 @@ bool CCW3(const BigPointI &p, const BigPointI &q, const BigPointI &r) {
 COORD area(const Point &p, const Point &q) {
   return (p.real() * q.imag() - q.real() * p.imag());
 }
+}  // namespace polygon

@@ -18,7 +18,13 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "libpolygon/two_complex.h"
+#include <fstream>
+#include <list>
+
+#include "libpolygon/globals.h"
+
+using std::list;
+using std::ofstream;
 
 /*
  * This file contains global variables that are set by the command line
@@ -26,6 +32,7 @@
  * global state.
  */
 
+namespace polygon {
 int start_vertex = UNDEFINED;
 int end_vertex = UNDEFINED;
 bool perturb_euclidean = true;
@@ -76,22 +83,24 @@ TwoComplex *S;
 int random_seed;
 FILE *out_f;
 
-ostdiostream out_stream;
+ofstream out_stream;
 
 /* more global vars to get around compiler changes */
 list<OEdge> stupid_OEdge_list;
-list<OEdgeIter> stupid_OEdgePtr_list;
-list<VertexPtr> stupid_VertexPtr_list;
-list<UEdgePtr> stupid_UEdgePtr_list;
-list<FacePtr> stupid_FacePtr_list;
+list<list<OEdge>::iterator> stupid_OEdgePtr_list;
+list<Vertex *> stupid_VertexPtr_list;
+list<UEdge *> stupid_UEdgePtr_list;
+list<Face *> stupid_FacePtr_list;
 
-OEdgeIter NULL_OEdgeIter = stupid_OEdge_list.end();
-OEdgePtrIter NULL_OEdgePtrIter = stupid_OEdgePtr_list.end();
-VertexPtrIter NULL_VertexPtrIter = stupid_VertexPtr_list.end();
-UEdgePtrIter NULL_UEdgePtrIter = stupid_UEdgePtr_list.end();
-FacePtrIter NULL_FacePtrIter = stupid_FacePtr_list.end();
+list<OEdge>::iterator NULL_OEdgeIter = stupid_OEdge_list.end();
+list<list<OEdge>::iterator>::iterator NULL_OEdgePtrIter =
+    stupid_OEdgePtr_list.end();
+list<Vertex *>::iterator NULL_VertexPtrIter = stupid_VertexPtr_list.end();
+list<UEdge *>::iterator NULL_UEdgePtrIter = stupid_UEdgePtr_list.end();
+list<Face *>::iterator NULL_FacePtrIter = stupid_FacePtr_list.end();
 
 #ifdef USE_PARALLEL
 int numprocs;
 int my_id;
 #endif
+}  // namespace polygon

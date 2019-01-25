@@ -19,7 +19,20 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <iostream>
+#include <list>
+
+#include "libpolygon/dmap.h"
+#include "libpolygon/elementary_geometry.h"
+#include "libpolygon/globals.h"
+#include "libpolygon/my_ostream.h"
 #include "libpolygon/two_complex.h"
+#include "libpolygon/uedge.h"
+
+using std::abs;
+using std::cout;
+using std::endl;
+using std::list;
 
 /*   generic I 	  	       	 are_passing           *   starting
 |\     	       	       	     |\                        |\
@@ -75,56 +88,11 @@
       * is vert_pos();
  */
 
-template <typename PointT>
-class DMap  // developing map class
-{
- public:
-  explicit DMap(const Dir<PointT>& dir);
-  Dir<PointT>& _start();  // this is the Dir we are following
-
-  OEdgeIter&
-  _next_edge();    // next face will be on the edge on the other side of this
-  void advance();  // go to the next face (following DMap._start() )
-  FacePtr current_face();    // the face containing the current edge
-  OEdgeIter current_edge();  // the current edge cut by the line we are
-                             // following. Always oriented to that the head of
-                             // the edge is CCW from the line.
-
-  PointT& _current_vert_pos();  // the position of the vertex at the head of
-                                // current_edge, where base of start is (0,0)
-                                // this is our candidate
-
-  bool going_to_hit();  // are we about to hit a vertex along _start()?
-  Dir<PointT>& _vertex_to_hit();  // if yes, this is the vertex we will hit
-
-  Dir<PointT> current_vert_Dir();  // the Dir whose vec is -vert_pos(), oriented
-                                   // from vert_pos towards the base of start;
-
-  PointT& _get_cf_offset();  // will eventually remove this
-
- private:
-  void setup();
-  Dir<PointT> strt;
-  OEdgeIter c_edge;
-  PointT cf_offset;  // offset of current face, i.e c_edge.in_face();
-
-  bool m_going_to_hit;
-  Dir<PointT> m_vertex_to_hit;
-
-  OEdgeIter m_next_edge;
-
-  PointT m_current_vert_pos;
-  Dir<PointT> m_current_vert_Dir;
-
-  PointT m_next_candidate;  // internal use by setup() only
-
-  //    bool are_passing; //are we currently passing on the left
-};
-
+namespace polygon {
 template <typename PointT>
 DMap<PointT>::DMap(const Dir<PointT>& dir)
     : strt(dir), c_edge((*dir.ep)->prev_edge()) {
-  cf_offset = -c_edge->_tail_offset<PointT>();
+  cf_offset = -c_edge->template _tail_offset<PointT>();
   setup();
 }
 
@@ -139,7 +107,7 @@ void DMap<PointT>::setup()  // compute cached variables
   // }
 
   m_going_to_hit = false;
-  OEdgeIter ne = c_edge->next_e;
+  auto ne = c_edge->next_e;
   m_next_candidate = cf_offset;
   m_next_candidate += ne->_tail_offset<PointT>();
 
@@ -170,7 +138,7 @@ Dir<PointT>& DMap<PointT>::_vertex_to_hit() {
 }
 
 template <typename PointT>
-OEdgeIter& DMap<PointT>::_next_edge() {
+list<OEdge>::iterator& DMap<PointT>::_next_edge() {
   return (m_next_edge);
 }
 
@@ -201,12 +169,12 @@ Dir<PointT>& DMap<PointT>::_start() {
 }
 
 template <typename PointT>
-OEdgeIter DMap<PointT>::current_edge() {
+list<OEdge>::iterator DMap<PointT>::current_edge() {
   return c_edge;
 }
 
 template <typename PointT>
-FacePtr DMap<PointT>::current_face() {
+Face* DMap<PointT>::current_face() {
   return c_edge->in_face();
 }
 
@@ -217,12 +185,11 @@ PointT& DMap<PointT>::_current_vert_pos() {
 }
 
 template <typename PointT>
-VertexPtr TwoComplex::SweepNextLeft(const Dir<PointT>& strt,
-                                    Dir<PointT>& end_Dir, COORD len2,
-                                    COORD threshold) {
+Vertex* TwoComplex::SweepNextLeft(const Dir<PointT>& strt, Dir<PointT>& end_Dir,
+                                  COORD len2, COORD threshold) {
   DMap<PointT> D(strt);
 
-  VertexPtr return_vertex = NULL;
+  Vertex* return_vertex = NULL;
 
   if (D.going_to_hit() && norm(D._vertex_to_hit().vec) < len2 &&
       D._vertex_to_hit().v->relevant()) {
@@ -432,7 +399,7 @@ void TwoComplex::DrawSaddle<Point>(const Dir<Point>& strt, COORD len2, int id,
       if (!billiard_mode) {
         D.current_face()->AddSegmentToDraw(s);
       } else {  // billiard mode
-        FacePtr f_orig;
+        Face* f_orig;
         BigPointQ tmp, tmp2;
         tmp2.cx = s.head;
         f_orig = D.current_face()->transform_to_original(tmp2, tmp);
@@ -463,7 +430,6 @@ Summary smry; /* global variable */
 template <typename PointT>
 int TwoComplex::SweepNew(COORD depth, Dir<PointT> start_dir,
                          COORD GoalTotalAngle) {
-  //    VertexPtr v0 = start_dir.v;
   Dir<PointT> old_dir = start_dir;
   int count = 0;
   COORD TotalAngle = 0;
@@ -487,7 +453,7 @@ int TwoComplex::SweepNew(COORD depth, Dir<PointT> start_dir,
   COORD threshold = 2 * (2 * depth * longest + longest * longest + 1);
 
   while (TotalAngle < GoalTotalAngle) {
-    VertexPtr c;
+    Vertex* c;
     c = SweepNextLeft<PointT>(old_dir, new_dir, depth * depth, threshold);
 
     if (verbose >= 2) {
@@ -536,23 +502,25 @@ int TwoComplex::SweepNew(COORD depth, Dir<PointT> start_dir,
       // debugging
 
       /*
-                  if( abs(sc.get_orig_min_saddle_length() - 21.6226 ) < 0.0001 )
-      { std::cout << "Found Bad Pattern\n"; sc.print(std::cout); std::cout <<
-      endl;
+                                                      if(
+      abs(sc.get_orig_min_saddle_length() - 21.6226 ) < 0.0001 ) { std::cout <<
+      "Found Bad Pattern\n"; sc.print(std::cout); std::cout << endl;
 
-                      SaddleConf sc2;
+                                                                      SaddleConf
+      sc2;
 
-                      verbose = 5;
+                                                                      verbose =
+      5;
 
 
-                      InvestigateVec(pending_vec[i], follow_depth*follow_depth,
-                                     sc2, *sm);
+                                                                      InvestigateVec(pending_vec[i],
+      follow_depth*follow_depth, sc2, *sm);
 
-                      exit(0);
+                                                                      exit(0);
 
       //		verbose = 0;
 
-                  }
+                                                      }
       */
 
       if (too_close_flag) {
@@ -568,8 +536,8 @@ int TwoComplex::SweepNew(COORD depth, Dir<PointT> start_dir,
 
         // draw if needed
         //		std::cout << "sc.get_orig_min_saddle_length = " <<
-        //sc.get_orig_min_saddle_length() << " draw_saddle_length = " <<
-        //draw_saddle_length << endl; 		std::cout << "tag = " << tag
+        // sc.get_orig_min_saddle_length() << " draw_saddle_length = " <<
+        // draw_saddle_length << endl; 		std::cout << "tag = " << tag
         //		    << " draw_tag = " << draw_tag << endl;
 
         if (abs(sc.get_orig_min_saddle_length() - draw_saddle_length) /
@@ -625,6 +593,8 @@ bool Vertex::relevant() {
   return (false);
 }
 
+Point to_cx(Point& cx) { return cx; }
+
 template <typename PointT>
 void TwoComplex::InvestigateVec(PointT vec, COORD len2, SaddleConf& sc,
                                 Summary& smry) {
@@ -644,7 +614,7 @@ void TwoComplex::InvestigateVec(PointT vec, COORD len2, SaddleConf& sc,
     std::cout << " " << real << " " << imag << endl;
   }
 
-  for (VertexPtrIter i = vertices.begin(); i != vertices.end(); ++i) {
+  for (auto i = vertices.begin(); i != vertices.end(); ++i) {
     if ((*i)->deleted() || (!(*i)->relevant())) {
       continue;
     }
@@ -666,17 +636,19 @@ void TwoComplex::InvestigateVec(PointT vec, COORD len2, SaddleConf& sc,
 
       bool c = NewFollowDir(start, end, len2);
       /*
-                  if ( verbose >= 5 ) {
-                      char buf[1000];
+                                                      if ( verbose >= 5 ) {
+                                                                      char
+         buf[1000];
 
-                      sprintf(buf,"saddle%d.tri",j);
-                      ofstream* saddle_stream = new ofstream(buf);
-                      make_pcomplexes();
-                      NewDraw(*saddle_stream);
-                      saddle_stream->close();
-                      delete saddle_stream;
+                                                                      sprintf(buf,"saddle%d.tri",j);
+                                                                      ofstream*
+         saddle_stream = new ofstream(buf); make_pcomplexes();
+                                                                      NewDraw(*saddle_stream);
+                                                                      saddle_stream->close();
+                                                                      delete
+         saddle_stream;
 
-                  }
+                                                      }
       */
       if (c) {
         if (verbose >= 2) {
@@ -725,18 +697,18 @@ void TwoComplex::InvestigateVec(PointT vec, COORD len2, SaddleConf& sc,
   }
 
   /*
-      if ( verbose >= 1 || individual ) {
-          //debugging hack
-          int tmp_verbose = verbose;
-          verbose = 0;
+                  if ( verbose >= 1 || individual ) {
+                                  //debugging hack
+                                  int tmp_verbose = verbose;
+                                  verbose = 0;
 
-          sc.print(std::cout);
-          std::cout << "\n";
+                                  sc.print(std::cout);
+                                  std::cout << "\n";
 
-          //debugging hack
-          verbose = tmp_verbose;
+                                  //debugging hack
+                                  verbose = tmp_verbose;
 
-      }
+                  }
   */
 
   if (show_lengths || show_cyls) {
@@ -786,7 +758,7 @@ COORD TwoComplex::GetSaddles(Dir<Point>& start, COORD len2, int N) {
   return (TotalAngle * count_same / number);
 }
 
-COORD TwoComplex::RandomShoot(VertexPtr v0, COORD depth, int M) {
+COORD TwoComplex::RandomShoot(Vertex* v0, COORD depth, int M) {
   COORD TotalAngle = 0.0;
   Dir<Point> old_dir(v0, Point(1, 0));
   Dir<Point> new_dir;
@@ -828,3 +800,4 @@ template void TwoComplex::FindCrossSaddle<BigPointI>(
 
 template void TwoComplex::FindCrossSaddle<Point>(const Dir<Point>& strt,
                                                  Dir<Point>& cross_saddle);
+}  // namespace polygon

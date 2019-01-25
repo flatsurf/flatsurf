@@ -19,9 +19,20 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <complex>
+#include <ostream>
+#include <vector>
+
 #include "libpolygon/defs.h"
+#include "libpolygon/number_field.h"
+#include "libpolygon/params.h"
 #include "libpolygon/two_complex.h"
 
+using std::complex;
+using std::ostream;
+using std::vector;
+
+namespace polygon {
 template <typename T>
 poly<T> cyclotomic_poly(int n) {
   vector<T> coeffs;
@@ -85,9 +96,10 @@ alg_t<T>::alg_t() {
   coeffs.assign(Params::nbr_params() + 1, NumberField<T>::F_zero);
 
   /*
-      for (int i = 0; i <= Params::nbr_params(); i++ ) {
-          coeffs.push_back(algebraic<T>(NumberField<T>::F));//set coeffs to 0
-      }
+                  for (int i = 0; i <= Params::nbr_params(); i++ ) {
+                                  coeffs.push_back(algebraic<T>(NumberField<T>::F));//set
+     coeffs to 0
+                  }
   */
 }
 
@@ -108,10 +120,10 @@ alg_t<T>::alg_t(vector<algebraic<T> > c) : coeffs(c) {
 /*
 alg_t<T>::alg_t(algebraic<T> c[])
 {
-  vector<algebraic<T> > v;
-  for(int i=0; i<=n_params; i++)
-    v.push_back(c[i]);
-  coeffs = v;
+        vector<algebraic<T> > v;
+        for(int i=0; i<=n_params; i++)
+                v.push_back(c[i]);
+        coeffs = v;
 }
 */
 
@@ -210,7 +222,7 @@ alg_t<T> operator/(alg_t<T> &q, const algebraic<T> &p) {
 }
 
 template <typename T>
-alg_t<T> operator/(alg_t<T> q, int p) {
+alg_t<T> operator/(alg_t<T> &q, int p) {
   //    alg_t<T> r = q;
   return q /= p;
 }
@@ -464,12 +476,12 @@ ostream &operator<<(ostream &outputStream, const BigPoint<T> &p) {
   outputStream << p.cx << "=" << p.algt;
   return outputStream;
 }
+}  // namespace polygon
 
-/********************************************************************/
-template class alg_t<bigrat>;
-template class alg_t<int64_t>;
+// Explicit template instantiations for mpq
+namespace polygon {
 template class BigPoint<bigrat>;
-template class BigPoint<int64_t>;
+template class alg_t<bigrat>;
 
 template poly<bigrat> cyclotomic_poly(int n);
 template NumberField<bigrat> *InitCyclotomic(int n);
@@ -480,7 +492,7 @@ template alg_t<bigrat> operator*(alg_t<bigrat> q, const algebraic<bigrat> &p);
 template alg_t<bigrat> operator*(int p, alg_t<bigrat> &q);
 template alg_t<bigrat> operator*(alg_t<bigrat> &q, int p);
 template alg_t<bigrat> operator/(alg_t<bigrat> &q, const algebraic<bigrat> &p);
-template alg_t<bigrat> operator/(alg_t<bigrat> q, int p);
+template alg_t<bigrat> operator/(alg_t<bigrat> &q, int p);
 template bool operator==(const alg_t<bigrat> &p, const alg_t<bigrat> &q);
 template bool operator!=(const alg_t<bigrat> &p, const alg_t<bigrat> &q);
 template bool colinear(const alg_t<bigrat> &p1, const alg_t<bigrat> &p2);
@@ -501,6 +513,12 @@ template BigPoint<bigrat> operator/(BigPoint<bigrat> q,
 template BigPoint<bigrat> operator/(BigPoint<bigrat> q, int p);
 template bool operator==(const BigPoint<bigrat> &p, const BigPoint<bigrat> &q);
 template ostream &operator<<(ostream &outputStream, const BigPoint<bigrat> &p);
+}  // namespace polygon
+
+// Explicit template instantiations for int64
+namespace polygon {
+template class BigPoint<int64_t>;
+template class alg_t<int64_t>;
 
 template poly<int64_t> cyclotomic_poly(int n);
 template NumberField<int64_t> *InitCyclotomic(int n);
@@ -514,7 +532,7 @@ template alg_t<int64_t> operator*(int p, alg_t<int64_t> &q);
 template alg_t<int64_t> operator*(alg_t<int64_t> &q, int p);
 template alg_t<int64_t> operator/(alg_t<int64_t> &q,
                                   const algebraic<int64_t> &p);
-template alg_t<int64_t> operator/(alg_t<int64_t> q, int p);
+template alg_t<int64_t> operator/(alg_t<int64_t> &q, int p);
 template bool operator==(const alg_t<int64_t> &p, const alg_t<int64_t> &q);
 template bool operator!=(const alg_t<int64_t> &p, const alg_t<int64_t> &q);
 template bool colinear(const alg_t<int64_t> &p1, const alg_t<int64_t> &p2);
@@ -536,3 +554,4 @@ template BigPoint<int64_t> operator/(BigPoint<int64_t> q, int p);
 template bool operator==(const BigPoint<int64_t> &p,
                          const BigPoint<int64_t> &q);
 template ostream &operator<<(ostream &outputStream, const BigPoint<int64_t> &p);
+}  // namespace polygon

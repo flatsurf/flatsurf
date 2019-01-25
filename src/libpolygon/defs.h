@@ -18,9 +18,14 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+// TODO: This is an assorted list of defines that should be controlled by
+// autoconf. The actual defines should probably not be included by the other
+// header files or at least be namespaced with a LIBPOLYGON prefix.
+
 #ifndef LIBPOLYGON_DEFS_H
 #define LIBPOLYGON_DEFS_H
 
+#include <gmpxx.h>
 #include <complex>
 #include <string>
 #include "libpolygon.h"
@@ -87,5 +92,23 @@ extern "C" {
 
 void ERR_RET(const std::string &s);
 void ERR_RET2(const std::string &s, int t);
+
+typedef mpq_class bigrat;
+
+#define CONG_SAME 0
+#define CONG_REVERSE 1
+#define CONG_FALSE 2
+
+#define MAX_VERTEX_DEGREE 50
+#define MAX_SADDLES 102
+#define MAX_VERTICES 10
+#define MAX_SADDLECONFS 100
+
+#define MAX_HOSTNAME 50
+
+#define UNDEFINED -1000
+
+#define NOT_HIT 0
+#define HIT_RELEVANT 1
 
 #endif  // LIBPOLYGON_DEFS_H

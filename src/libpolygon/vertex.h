@@ -18,32 +18,40 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBPOLYGON_PSIMPLEX_H
-#define LIBPOLYGON_PSIMPLEX_H
+#ifndef LIBPOLYGON_VERTEX_H
+#define LIBPOLYGON_VERTEX_H
+
+#include <list>
 
 #include "defs.h"
-#include "my_ostream.h"
+#include "simplex.h"
 
 namespace polygon {
-class Simplex;
-class Vertex;
 class UEdge;
+class OEdge;
 
-class PSimplex {
+class Vertex : public Simplex {
  public:
-  PSimplex(Point, int);
+  Vertex();
 
-  Point p;
-  int in_pcomplex;
+  UEdge* e;
+  int order;  // number of incident edges? Default value 0.
+  bool euclidean;
+  int int_angle; /* for speed: total_angle_over_pi() */
+                 /* Stored by BuildNeighborLists */
+  void Check();
+  bool boundary();
+  bool deleted();
+  COORD total_angle();
+  int total_angle_over_pi();
+  void MoveVertex(Point p);
+  bool relevant();
 
-  virtual Simplex* sp();
-  virtual void Draw(my_ostream&, COORD);
-  virtual ~PSimplex();
+  bool CanRemove();
+  void Delete();
 
- private:
-  PSimplex(PSimplex&);
+  std::list<std::list<OEdge>::iterator> out_edges;
 };
-
 }  // namespace polygon
 
-#endif  // LIBPOLYGON_PSIMPLEX_H
+#endif  // LIBPOLYGON_PVERTEX_H

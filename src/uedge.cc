@@ -18,29 +18,30 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "libpolygon/two_complex.h"
+#include <list>
+#include <ostream>
 
-// UEdge::UEdge()
-// {
-//    tag = 'E';
-//    v0 = v1 = NULL;
-//    f0 = f1  = NULL;
+#include "libpolygon/big_point.h"
+#include "libpolygon/globals.h"
+#include "libpolygon/uedge.h"
+#include "libpolygon/vertex.h"
 
-// };
+using std::list;
+using std::ostream;
 
-UEdge::UEdge(VertexPtr a, VertexPtr b, BigPointQ vec) : Simplex() {
+namespace polygon {
+UEdge::UEdge(Vertex* a, Vertex* b, BigPointQ vec) : Simplex(), ue_vecQ(vec) {
   tag = 'E';
   v0 = a;
   v1 = b;
   f0 = f1 = NULL;
-  ue_vecQ = vec;
   internal = false;
   from_triang = false;
 
   vec.Check();
-};
+}
 
-UEdge::UEdge(VertexPtr a, VertexPtr b, Point vec_cx) : Simplex() {
+UEdge::UEdge(Vertex* a, Vertex* b, Point vec_cx) : Simplex() {
   if (field_arithmetic) {
     ERR_RET("UEdge constructor called without alg part");
   }
@@ -52,14 +53,14 @@ UEdge::UEdge(VertexPtr a, VertexPtr b, Point vec_cx) : Simplex() {
   //    ue_vecQ_algt = algt_vec;
   internal = false;
   from_triang = false;
-};
+}
 
 bool UEdge::deleted() {
   if (f0 == NULL && f1 == NULL) {
     return (true);
   }
   return (false);
-};
+}
 
 void UEdge::Delete() {
   /* warning: does not take care of case where some vertices e ptr */
@@ -78,9 +79,9 @@ bool UEdge::boundary() {
     return (true);
   }
   return (false);
-};
+}
 
-COORD UEdge::len() { return (abs(ue_vecQ.cx)); };
+COORD UEdge::len() { return (abs(ue_vecQ.cx)); }
 
 void UEdge::Print(ostream& out) {
   Simplex::Print(out);
@@ -127,9 +128,9 @@ void UEdge::Print(ostream& out) {
   sprintf(tmp, "(%.24f,%.24f)", ue_vecQ.cx.real(), ue_vecQ.cx.imag());
   out << tmp;
 #endif
-};
+}
 
-FacePtr UEdge::boundary_face() {
+Face* UEdge::boundary_face() {
   if (!(this->boundary())) ERR_RET("boundary_face: not boundary");
 
   if (f0 == NULL) return (f1);
@@ -140,15 +141,15 @@ FacePtr UEdge::boundary_face() {
   return (NULL);
 }
 
-OEdgeIter UEdge::boundary_edge() {
-  FacePtr f;
+list<OEdge>::iterator UEdge::boundary_edge() {
+  Face* f;
 
   f = boundary_face();
   return (this_edge(f));
 }
 
-OEdgeIter UEdge::this_edge(FacePtr f) {
-  for (OEdgeIter i = f->oedges.begin(); i != f->oedges.end(); ++i) {
+list<OEdge>::iterator UEdge::this_edge(Face* f) {
+  for (auto i = f->oedges.begin(); i != f->oedges.end(); ++i) {
     if ((*i).ue == this) return (i);
   }
 
@@ -156,7 +157,7 @@ OEdgeIter UEdge::this_edge(FacePtr f) {
   return (NULL_OEdgeIter);
 }
 
-void UEdge::set_null_face(FacePtr f) {
+void UEdge::set_null_face(Face* f) {
   if (!(this->boundary())) ERR_RET("set_null_face: not boundary edge");
 
   if (f0 == NULL) {
@@ -166,3 +167,4 @@ void UEdge::set_null_face(FacePtr f) {
   } else
     ERR_RET("set_null_face: deleted edge");
 }
+}  // namespace polygon

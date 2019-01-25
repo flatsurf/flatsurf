@@ -21,9 +21,23 @@
 
 #include <NTL/LLL.h>
 #include <NTL/mat_ZZ.h>
-#include "libpolygon/two_complex.h"
-using namespace NTL;
+#include <iostream>
+#include <vector>
 
+#include "libpolygon/globals.h"
+#include "libpolygon/number_field.h"
+#include "libpolygon/oedge.h"
+#include "libpolygon/params.h"
+#include "libpolygon/two_complex.h"
+#include "libpolygon/uedge.h"
+
+using namespace NTL;
+using std::abs;
+using std::cout;
+using std::endl;
+using std::vector;
+
+namespace polygon {
 void TwoComplex::PerturbConjugates(COORD max_perturb) {
   int n = Params::nbr_params();
 
@@ -59,7 +73,7 @@ void TwoComplex::PerturbConjugates(COORD max_perturb) {
     Params::AddParams(1, &(perturb[count]));
     n++;
     count++;
-    for (UEdgePtrIter j = S->uedges.begin(); j != S->uedges.end(); ++j) {
+    for (auto j = S->uedges.begin(); j != S->uedges.end(); ++j) {
       alg_tQ tmp = (*j)->ue_vecQ.algt;
       tmp.pad_coeffs(1);  // probably not needed
       algebraicQ tmp2 = tmp.get_coeff(i);
@@ -71,7 +85,7 @@ void TwoComplex::PerturbConjugates(COORD max_perturb) {
 }
 
 bool TwoComplex::is_conjugate_deformation(int j, int k) {
-  for (UEdgePtrIter i = S->uedges.begin(); i != S->uedges.end(); ++i) {
+  for (auto i = S->uedges.begin(); i != S->uedges.end(); ++i) {
     if ((*i)->ue_vecQ.algt.get_coeff(j) !=
         (*i)->ue_vecQ.algt.get_coeff(j).conjugate()) {
       return false;
@@ -106,12 +120,12 @@ void Vertex::MoveVertex(Point p) {
     tmp[1] = 0.5 * p.real() / xi_real - 0.5 * p.imag() / xi_imag;
 
     Params::AddParams(2, tmp);
-    for (UEdgePtrIter i = S->uedges.begin(); i != S->uedges.end(); ++i) {
+    for (auto i = S->uedges.begin(); i != S->uedges.end(); ++i) {
       (*i)->ue_vecQ.algt.pad_coeffs(2);
     }
   }
 
-  for (OEdgePtrIter i = out_edges.begin(); i != out_edges.end(); ++i) {
+  for (auto i = out_edges.begin(); i != out_edges.end(); ++i) {
     Point q;
     q = (*i)->vec_cx();
     q = q + p;
@@ -133,9 +147,9 @@ void TwoComplex::PerturbAll(COORD max_perturb) {
   long i = 1;
   long k;
 
-  UEdgePtr *uedge_array = new UEdgePtr[uedges.size() + 1];
+  UEdge **uedge_array = new UEdge *[uedges.size() + 1];
 
-  for (UEdgePtrIter j = uedges.begin(); j != uedges.end(); ++j) {
+  for (auto j = uedges.begin(); j != uedges.end(); ++j) {
     uedge_array[i] = (*j);
     (*j)->index = i;
 
@@ -161,16 +175,15 @@ void TwoComplex::PerturbAll(COORD max_perturb) {
   }
 
   i = 1;
-  for (FacePtrIter l = faces.begin(); l != faces.end(); ++l) {
-    for (OEdgeIter j = (*l)->oedges.begin(); j != (*l)->oedges.end(); ++j) {
+  for (auto l = faces.begin(); l != faces.end(); ++l) {
+    for (auto j = (*l)->oedges.begin(); j != (*l)->oedges.end(); ++j) {
       X(i, (*j).ue->index) += (*j).direction;
     }
     i++;
   }
   /* triangles assumed here */
-  for (VertexPtrIter l = vertices.begin(); l != vertices.end(); ++l) {
-    for (OEdgePtrIter j = (*l)->out_edges.begin(); j != (*l)->out_edges.end();
-         ++j) {
+  for (auto l = vertices.begin(); l != vertices.end(); ++l) {
+    for (auto j = (*l)->out_edges.begin(); j != (*l)->out_edges.end(); ++j) {
       X(i, (*j)->next_edge()->ue->index) += (*j)->next_edge()->direction;
     }
     i++;
@@ -190,7 +203,7 @@ void TwoComplex::PerturbAll(COORD max_perturb) {
   long r = LLL(det2, Y, U);
 
   i = vertices.size();
-  for (VertexPtrIter j = vertices.begin(); j != vertices.end(); ++j) {
+  for (auto j = vertices.begin(); j != vertices.end(); ++j) {
     if (abs((*j)->total_angle() - 2 * MY_PI) > EPSILON) --i;
   }
   fprintf(out_f, "rank = %d #of parameters %d\n", (int)r, (int)(N - r - i));
@@ -234,3 +247,4 @@ void TwoComplex::PerturbAll(COORD max_perturb) {
 
   return;
 }  // main
+}  // namespace polygon

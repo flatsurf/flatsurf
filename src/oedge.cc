@@ -18,12 +18,22 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "libpolygon/two_complex.h"
+#include <list>
+#include <ostream>
 
-OEdge::OEdge(UEdgePtr e, int dir) : from_edge(NULL_OEdgeIter) {
+#include "libpolygon/face.h"
+#include "libpolygon/globals.h"
+#include "libpolygon/two_complex.h"
+#include "libpolygon/uedge.h"
+
+using std::list;
+using std::ostream;
+
+namespace polygon {
+OEdge::OEdge(UEdge* e, int dir) : from_edge(NULL_OEdgeIter) {
   ue = e;
   direction = dir;
-};
+}
 
 bool OEdge::operator==(OEdge& b) {
   if (this->ue == b.ue && this->direction == b.direction) {
@@ -45,28 +55,28 @@ void OEdge::Print(ostream& out) {
   ue->Simplex::Print(out);
 }
 
-VertexPtr OEdge::head() {
+Vertex* OEdge::head() {
   if (direction == 1) {
     return (ue->v0);
   }
   return (ue->v1);
 }
 
-VertexPtr OEdge::tail() {
+Vertex* OEdge::tail() {
   if (direction == 1) {
     return (ue->v1);
   }
   return (ue->v0);
 }
 
-FacePtr OEdge::in_face() {
+Face* OEdge::in_face() {
   if (direction == 1) {
     return (ue->f0);
   }
   return (ue->f1);
 }
 
-FacePtr OEdge::other_face() {
+Face* OEdge::other_face() {
   if (direction == 1) {
     return (ue->f1);
   }
@@ -77,13 +87,12 @@ bool OEdge::deleted() { return (ue->deleted()); }
 
 void OEdge::Delete() { ue->Delete(); }
 
-OEdgeIter OEdge::this_iter() {
-  OEdgeIter i;
-  FacePtr f;
+list<OEdge>::iterator OEdge::this_iter() {
+  Face* f;
 
   f = in_face();
 
-  for (i = f->oedges.begin(); i != f->oedges.end(); ++i) {
+  for (auto i = f->oedges.begin(); i != f->oedges.end(); ++i) {
     if ((*i) == *this) {
       return (i);
     }
@@ -92,13 +101,12 @@ OEdgeIter OEdge::this_iter() {
   return (NULL_OEdgeIter);
 }
 
-OEdgeIter OEdge::pair_edge() {
-  OEdgeIter i;
-  FacePtr f;
+list<OEdge>::iterator OEdge::pair_edge() {
+  Face* f;
 
   f = other_face();
 
-  for (i = f->oedges.begin(); i != f->oedges.end(); ++i) {
+  for (auto i = f->oedges.begin(); i != f->oedges.end(); ++i) {
     if ((*i).ue == this->ue && (*i).direction == -this->direction) {
       return (i);
     }
@@ -159,13 +167,13 @@ Point OEdge::vec_cx() { return (vec<Point>()); }
 /*
 BigPointQ OEdge::vecQ()
 {
-    BigPointQ q;
+                BigPointQ q;
 
-    if( direction == 1 ) {
-        return( ue->ue_vecQ );
-    } else {
-        return( -ue->ue_vecQ );
-    }
+                if( direction == 1 ) {
+                                return( ue->ue_vecQ );
+                } else {
+                                return( -ue->ue_vecQ );
+                }
 }
 */
 
@@ -197,9 +205,9 @@ void OEdge::set_vec_algt(alg_tQ p) {
 }
 
 /* the next function is stupid */
-OEdgeIter OEdge::prev_edge() {
-  OEdgeIter i;
-  FacePtr f;
+list<OEdge>::iterator OEdge::prev_edge() {
+  list<OEdge>::iterator i;
+  Face* f;
 
   f = in_face();
 
@@ -213,12 +221,12 @@ OEdgeIter OEdge::prev_edge() {
 }
 
 /* this is also stupid */
-OEdgeIter OEdge::next_edge() {
-  FacePtr f;
+list<OEdge>::iterator OEdge::next_edge() {
+  Face* f;
 
   f = in_face();
 
-  OEdgeIter i = this_iter();
+  auto i = this_iter();
   ++i;
 
   if (i == f->oedges.end()) {
@@ -227,12 +235,12 @@ OEdgeIter OEdge::next_edge() {
   return (i);
 }
 
-OEdgePtrIter OEdge::this_vert_iter() {
-  VertexPtr v;
+list<list<OEdge>::iterator>::iterator OEdge::this_vert_iter() {
+  Vertex* v;
 
   v = head();
 
-  for (OEdgePtrIter i = v->out_edges.begin(); i != v->out_edges.end(); ++i) {
+  for (auto i = v->out_edges.begin(); i != v->out_edges.end(); ++i) {
     if (*(*i) == *this) {
       return (i);
     }
@@ -244,12 +252,12 @@ template <>
 Point OEdge::headOffset<Point>() {
   Point q, t;
 
-  FacePtr f = in_face();
+  Face* f = in_face();
 
   //    q = f->GetOffsetV0();
   q = Point(0.0);
 
-  for (OEdgeIter i = f->oedges.begin(); i != f->oedges.end(); ++i) {
+  for (auto i = f->oedges.begin(); i != f->oedges.end(); ++i) {
     if ((*i) == *this) {
       return (q);
     }
@@ -265,13 +273,13 @@ template <>
 BigPointI OEdge::headOffset<BigPointI>() {
   BigPointI q, t;
 
-  FacePtr f = in_face();
+  Face* f = in_face();
 
   //    q = f->GetOffsetV0();
   q = BigPointI();
   q.Check();
 
-  for (OEdgeIter i = f->oedges.begin(); i != f->oedges.end(); ++i) {
+  for (auto i = f->oedges.begin(); i != f->oedges.end(); ++i) {
     if ((*i) == *this) {
       return (q);
     }
@@ -287,11 +295,11 @@ template <>
 Point OEdge::tailOffset<Point>() {
   Point q, t;
 
-  FacePtr f = in_face();
+  Face* f = in_face();
   //    q = f->GetOffsetV0();
   q = Point(0.0);
 
-  for (OEdgeIter i = f->oedges.begin(); i != f->oedges.end(); ++i) {
+  for (auto i = f->oedges.begin(); i != f->oedges.end(); ++i) {
     if ((*i) == *this) {
       return (q + (*i).vec_cx());
     }
@@ -307,12 +315,12 @@ template <>
 BigPointI OEdge::tailOffset<BigPointI>() {
   BigPointI q, t;
 
-  FacePtr f = in_face();
+  Face* f = in_face();
   //    q = f->GetOffsetV0();
   q = BigPointI();
   q.Check();
 
-  for (OEdgeIter i = f->oedges.begin(); i != f->oedges.end(); ++i) {
+  for (auto i = f->oedges.begin(); i != f->oedges.end(); ++i) {
     if ((*i) == *this) {
       return (q + (*i).vec<BigPointI>());
     }
@@ -323,51 +331,6 @@ BigPointI OEdge::tailOffset<BigPointI>() {
   // unreachable
   return (q);
 }
-
-/*
-algebraic OEdge::headOffset_alg()
-{
-    algebraic q,t;
-
-
-    FacePtr f = in_face();
-
-    q = f->GetOffsetV0_alg();
-
-
-    for(OEdgeIter i = f->oedges.begin(); i!= f->oedges.end(); i++ ) {
-        if ( (*i) == *this ) {
-          return(q);
-        }
-        t = (*i).vec_alg();
-        q = q + t;
-    };
-    ERR_RET("headOffset: oedge not found");
-    // unreachable
-    return(q);
-}
-*/
-
-/*
-algebraic OEdge::tailOffset_alg()
-{
-    algebraic q,t;
-
-    FacePtr f = in_face();
-    q = f->GetOffsetV0_alg();
-
-    for(OEdgeIter i = f->oedges.begin(); i!=f->oedges.end(); i++ ) {
-        if ( (*i) == *this ) {
-            return(q + (*i).vec_alg());
-        }
-        t = (*i).vec_alg();
-        q = q + t;
-    };
-    ERR_RET("tailOffset: oedge not found");
-    // unreachable
-    return(q);
-}
-*/
 
 template <>
 Point& OEdge::_head_offset<Point>() {
@@ -388,15 +351,4 @@ template <>
 BigPointI& OEdge::_tail_offset<BigPointI>() {
   return tail_offstI;
 }
-
-template Point OEdge::headOffset<Point>();
-template Point OEdge::tailOffset<Point>();
-
-template BigPointI OEdge::headOffset<BigPointI>();
-template BigPointI OEdge::tailOffset<BigPointI>();
-
-template Point& OEdge::_head_offset<Point>();
-template Point& OEdge::_tail_offset<Point>();
-
-template BigPointI& OEdge::_head_offset<BigPointI>();
-template BigPointI& OEdge::_tail_offset<BigPointI>();
+}  // namespace polygon

@@ -21,13 +21,25 @@
 #ifndef LIBPOLYGON_GLOBALS_H
 #define LIBPOLYGON_GLOBALS_H
 
-#include "libpolygon.h"
+#include <fstream>
+#include <list>
+
+#include "defs.h"
+#include "oedge.h"
 
 /*
  * This file contains global variables that are set by the command line
  * interface. Eventually this file should be empty. There should be no
  * global state.
  */
+
+namespace polygon {
+class TwoComplex;
+class Summary;
+class OEdge;
+class UEdge;
+class Vertex;
+class Face;
 
 /* command line options */
 
@@ -77,8 +89,8 @@ extern Summary smry;
 extern TwoComplex* S;
 extern int random_seed;
 extern FILE* out_f;
-extern ostdiostream out_stream;
-extern ostdiostream out_s;
+extern std::ofstream out_stream;
+extern std::ofstream out_s;
 extern bool too_close_flag;
 extern bool draw_cylinders;
 
@@ -87,17 +99,17 @@ extern COORD perturb_magnitude;
 
 /* to get around compiler changes */
 /* setting iterators to NULL no longer allowed, so have to do this */
-extern list<OEdge> stupid_OEdge_list;
-extern list<OEdgeIter> stupid_OEdgePtr_list;
-extern list<VertexPtr> stupid_VertexPtr_list;
-extern list<UEdgePtr> stupid_UEdgePtr_list;
-extern list<FacePtr> stupid_FacePtr_list;
+extern std::list<OEdge> stupid_OEdge_list;
+extern std::list<typename std::list<OEdge>::iterator> stupid_OEdgePtr_list;
+extern std::list<Vertex*> stupid_VertexPtr_list;
+extern std::list<UEdge*> stupid_UEdgePtr_list;
+extern std::list<Face*> stupid_FacePtr_list;
 
-extern OEdgeIter NULL_OEdgeIter;
-extern OEdgePtrIter NULL_OEdgePtrIter;
-extern VertexPtrIter NULL_VertexPtrIter;
-extern UEdgePtrIter NULL_UEdgePtrIter;
-extern FacePtrIter NULL_FacePtrIter;
+extern std::list<OEdge>::iterator NULL_OEdgeIter;
+extern std::list<std::list<OEdge>::iterator>::iterator NULL_OEdgePtrIter;
+extern std::list<Vertex*>::iterator NULL_VertexPtrIter;
+extern std::list<UEdge*>::iterator NULL_UEdgePtrIter;
+extern std::list<Face*>::iterator NULL_FacePtrIter;
 
 #ifdef USE_PARALLEL
 extern int numprocs;
@@ -109,5 +121,6 @@ extern void my_mpi_init();
 extern MPI_Datatype mpi_smry_type;
 extern MPI_Op mpi_merge;
 #endif
+}  // namespace polygon
 
 #endif  // LIBPOLYGON_GLOBALS_H

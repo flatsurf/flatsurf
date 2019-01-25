@@ -18,32 +18,32 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBPOLYGON_PSIMPLEX_H
-#define LIBPOLYGON_PSIMPLEX_H
+#ifndef LIBPOLYGON_SIMPLEX_H
+#define LIBPOLYGON_SIMPLEX_H
+
+#include <ostream>
+#include <string>
 
 #include "defs.h"
-#include "my_ostream.h"
 
 namespace polygon {
-class Simplex;
-class Vertex;
-class UEdge;
-
-class PSimplex {
+class Simplex {
  public:
-  PSimplex(Point, int);
+  Simplex();
+  void SetColor();
+  void Print(std::ostream &);
+  int id();
 
-  Point p;
-  int in_pcomplex;
+  std::string color;
 
-  virtual Simplex* sp();
-  virtual void Draw(my_ostream&, COORD);
-  virtual ~PSimplex();
+  int visit_id;
+
+  int ID;
+  char tag;
 
  private:
-  PSimplex(PSimplex&);
+  Simplex(Simplex &);
 };
-
 }  // namespace polygon
 
-#endif  // LIBPOLYGON_PSIMPLEX_H
+#endif  // LIBPOLYGON_SIMPLEX_H
