@@ -186,9 +186,11 @@ int main(int argc, char** argv) {
 
       case 'r':
         if (optarg) {
-					random_engine = std::default_random_engine{static_cast<long unsigned int>(atoll(optarg))};
+          random_engine = std::default_random_engine{
+              static_cast<unsigned int>(atoll(optarg))};
         } else {
-					random_engine = std::default_random_engine{static_cast<long unsigned int>(time(nullptr))};
+          random_engine = std::default_random_engine{
+              static_cast<unsigned int>(time(nullptr))};
         }
         break;
 

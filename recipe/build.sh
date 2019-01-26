@@ -1,6 +1,12 @@
 set -ex
 shopt -s extglob
-export CPPFLAGS="-I${BUILD_PREFIX}/include $CPPFLAGS"
+
+# Sanitize conda's flags to treat the prefix as system headers (and don't report compiler warnings there.)
+export CFLAGS=`echo $CFLAGS | sed 's/ -I/ -isystem/'`
+export CPPFLAGS=`echo $CPPFLAGS | sed 's/ -I/ -isystem/'`
+export CXXFLAGS=`echo $CXXFLAGS | sed 's/ -I/ -isystem/'`
+
+export CPPFLAGS="-isystem ${BUILD_PREFIX}/include $CPPFLAGS"
 export CXXFLAGS="-O2 -g $CXXFLAGS $EXTRA_CXXFLAGS"
 case `$CXX --version` in
     *GCC*|*gnu-c++*)
