@@ -8,5 +8,5 @@ set -exo pipefail
 cd -P -- "$(dirname -- "$0")"
 
 for output in *.sample.out; do
-    diff <(polygon `basename "$output" .sample.out`) "$output";
+    diff <(polygon `basename "$output" .sample.out` | tail -n +2) <(tail -n +2 "$output");
 done
