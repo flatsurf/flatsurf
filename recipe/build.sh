@@ -1,3 +1,4 @@
+#!/bin/bash
 set -ex
 shopt -s extglob
 
