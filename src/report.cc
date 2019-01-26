@@ -29,6 +29,7 @@
 #include <ostream>
 #include <boost/math/constants/constants.hpp>
 #include <boost/math/special_functions/round.hpp>
+#include <boost/numeric/conversion/cast.hpp>
 
 #include "libpolygon/cylinder.h"
 #include "libpolygon/defs.h"
@@ -49,12 +50,13 @@ using std::sort;
 using boost::math::constants::pi;
 using boost::math::round;
 using boost::math::iround;
+using boost::numeric_cast;
 
 namespace polygon {
 /* and add max_vertex_degree to Check */
 
 VertPattern::VertPattern() {
-  base.v = NULL;
+  base.v = nullptr;
   v_id = -1;
   for (int i = 0; i < MAX_SADDLES; i++) {
     at[i] = 0;
@@ -63,7 +65,7 @@ VertPattern::VertPattern() {
 }
 
 bool VertPattern::is_empty() {
-  if (base.v == NULL) {
+  if (base.v == nullptr) {
     return (true);
   }
   return (false);
@@ -96,7 +98,7 @@ COORD VertPattern::get_length(int j) {
 }
 
 void VertPattern::clear() {
-  base.v = NULL;
+  base.v = nullptr;
   for (int i = 0; i < MAX_SADDLES; i++) {
     at[i] = 0;
     length[i] = 0.0;
@@ -128,16 +130,6 @@ void VertPattern::add(Dir<Point>& d, int id) {
     int j = iround(a / pi<COORD>());
     if (abs(j * pi<COORD>() - a) > EPSILON) {
       smry.bad_angle_count++;
-      //	  std::cout << "angle = " << abs(angle(d.vec, base.vec)) -MY_PI
-      //<< " "
-      //		<< abs(a - j*MY_PI) << " at V" << base.v->id();
-
-      //	  fprintf(out_f,"angle = %lg %lg at V%d ",
-      //		  abs(angle(d.vec, base.vec)) -MY_PI,
-      //		  abs(a - j*MY_PI),base.v->id());
-      //	    std::cout << " " << base.vec <<"\n";
-      //	    throw vert_bad_angle(abs(j*MY_PI-a));
-      //	    ERR_RET("VertPattern::add: bad angle");
     }
 
     if (j == d.v->int_angle) {
@@ -285,7 +277,7 @@ SaddleConf::SaddleConf()
   for (int i = 0; i < MAX_VERTICES; i++) {
     vp[i].clear();
   }
-  output_f = NULL;
+  output_f = nullptr;
 }
 
 void SaddleConf::clear() {
@@ -680,7 +672,6 @@ void SaddleConf::DrawCylinders() {
       }
       if (i == 0) {
         ERR_RET("DrawCylinders: bad cylinder");
-        break;
       }
       if (i == init_saddle) {
         /* found cylinder */
@@ -726,7 +717,6 @@ void SaddleConf::DrawCylinders() {
         ERR_RET(
             "DrawCylinder:CheckCrossSaddle: Did not find other end of "
             "cylinder");
-        break;
       }
       if (_count++ > MAX_SADDLES) {
         ERR_RET("DrawCylinder:CheckCrossSaddle: Infinite Loop");
@@ -845,7 +835,6 @@ void SaddleConf::check_cross_saddle(COORD cyl_len,
     if (i == 0) {
       /* no cylinder */
       ERR_RET("CheckCrossSaddle: Did not find other end of cylinder");
-      break;
     }
     if (_count++ > MAX_SADDLES) {
       ERR_RET("CheckCrossSaddle: Infinite Loop");
@@ -1165,9 +1154,9 @@ void Summary::print(ostream& output_stream, COORD part_total, COORD part_group,
   output_stream << "\n";
 
   for (unsigned int i = 0; i < scf.size(); i++) {
-    if (final_report && closure && scf[i].output_f != NULL) {
+    if (final_report && closure && scf[i].output_f != nullptr) {
       fclose(scf[i].output_f);
-      scf[i].output_f = NULL;
+      scf[i].output_f = nullptr;
     }
 
     if (final_report) {
@@ -1377,7 +1366,7 @@ size_t Summary::add_one_conf(SaddleConf& sc) {
 
       scf[i].count++;
       scf[i].group_count++;
-      return scf[i].tag;
+      return numeric_cast<size_t>(scf[i].tag);
     } else {
       //   std::cout << "not isom" << "\n";
     }
@@ -1385,14 +1374,14 @@ size_t Summary::add_one_conf(SaddleConf& sc) {
 
   sc.count = 1;
   sc.group_count = 1;
-  sc.tag = tag_count++;
+  sc.tag = numeric_cast<int>(tag_count++);
 
   // if ( show_length_list ) {
   // 	sc.lengths_set.insert(sc.get_orig_min_saddle_length());
   // }
   add_new_conf(sc);
 
-  return sc.tag;
+  return numeric_cast<size_t>(sc.tag);
 }
 
 #ifdef USE_PARALLEL

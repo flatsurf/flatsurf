@@ -43,14 +43,14 @@ using boost::numeric_cast;
 namespace polygon {
 Face::Face() : Simplex() {
   tag = 'F';
-  from_face = NULL;
+  from_face = nullptr;
   parent_face_ID = -1;
 }
 
 Face::Face(const list<OEdge>& L) : Simplex() {
   tag = 'F';
   SetOEdgeList(L);
-  from_face = NULL;
+  from_face = nullptr;
   parent_face_ID = -1;
 }
 
@@ -59,7 +59,7 @@ Face* Face::transform_to_original(BigPointQ v, BigPointQ& v_orig) {
   Face* f = this;
   v_orig = v;
 
-  while (f->from_face != NULL) {
+  while (f->from_face != nullptr) {
     reflect_vector(v, f->reflection_vector, v_orig);
     f = f->from_face;
     v = v_orig;

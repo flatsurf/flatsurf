@@ -85,16 +85,14 @@ void my_ostream::close() {
 PSimplex::~PSimplex() { /* empty destructor */
 }
 
-void PSimplex::Draw(my_ostream& output_stream, COORD d) {
+void PSimplex::Draw(__attribute__((unused)) my_ostream& output_stream, __attribute__((unused)) COORD d) {
   ERR_RET("call to PSimplex::Draw");
-  output_stream.tri() << d; /* this to shut up the warning */
 }
 
 PSimplex::PSimplex(Point p0, size_t i) : p(p0) { in_pcomplex = i; }
 
 Simplex* PSimplex::sp() {
   ERR_RET("call to Psimplex::sp()");
-  return (NULL);
 }
 
 PVertex::PVertex(Vertex* v0, Point p0, size_t i) : PSimplex(p0, i) { s = v0; }
@@ -161,7 +159,7 @@ void PFace::Draw(my_ostream& output_stream, COORD scale_factor) {
   Point q(0.0, 0.0), t;
 
   output_stream.tri() << s->tag << s->id() << " " << s->color << " ";
-  if (tikz_output && (!billiard_mode || s->from_face == NULL)) {
+  if (tikz_output && (!billiard_mode || s->from_face == nullptr)) {
     output_stream.tex() << "%" << s->tag << s->id() << endl;
     output_stream.tex() << "\\fill[blue!20!white] ";
   }
@@ -172,7 +170,7 @@ void PFace::Draw(my_ostream& output_stream, COORD scale_factor) {
 
   for (auto i = s->oedges.begin(); i != s->oedges.end(); ++i) {
     output_stream.tri() << q.real() << " " << q.imag() << " ";
-    if (tikz_output && (!billiard_mode || s->from_face == NULL)) {
+    if (tikz_output && (!billiard_mode || s->from_face == nullptr)) {
       output_stream.tex() << "(" << q.real() << "," << q.imag() << ") -- ";
     }
     t = (*i).vec_cx();
@@ -180,7 +178,7 @@ void PFace::Draw(my_ostream& output_stream, COORD scale_factor) {
     q = q + t;
   }
   output_stream.tri() << "\n";
-  if (tikz_output && (!billiard_mode || s->from_face == NULL)) {
+  if (tikz_output && (!billiard_mode || s->from_face == nullptr)) {
     output_stream.tex() << "cycle;" << endl;
   }
 
@@ -634,7 +632,6 @@ PFace* TwoComplex::get_pface(Face* f) {
     }
   }
   ERR_RET("get_pface: not found");
-  return (NULL);
 }
 
 bool TwoComplex::can_merge(UEdge* ue) {
@@ -728,7 +725,7 @@ void TwoComplex::make_pface(Face* f) {
 }
 
 void TwoComplex::make_pcomplexes() {
-  int count = 0;
+  size_t count = 0;
   int pr;
 
   dl.clear();

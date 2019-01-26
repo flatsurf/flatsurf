@@ -82,6 +82,7 @@ extern bool draw_saddles;
 extern int draw_tag;
 extern COORD draw_saddle_length;
 extern bool billiard_mode;
+extern COORD EPSILON;
 
 /* global variables */
 extern bool field_arithmetic;

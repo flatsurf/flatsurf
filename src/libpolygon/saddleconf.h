@@ -98,10 +98,10 @@ class SaddleConf {
   FILE* output_f;
 
   // for sorting
-  bool operator<(const SaddleConf& scf) const { return (count > scf.count); };
+  bool operator<(const SaddleConf& scf) const { return (count > scf.count); }
 
   // for visualization
-  size_t tag;
+  int tag; // -1 if uninitialezd
   void DrawSaddles();
   void DrawCylinders();
 

@@ -44,7 +44,6 @@ namespace polygon {
 	}
 	COORD d_point_line2(__attribute__((unused)) const BigPointI &u, __attribute__((unused)) const BigPointI &v) {
 		ERR_RET("Call to d_point_line2 (BigPointI, BigPointI)");
-		return (0.0);
 	}
 
 	/* fix this function */
@@ -160,7 +159,6 @@ namespace polygon {
 
 	COORD angle(__attribute__((unused)) const BigPointI &p, __attribute__((unused)) const BigPointI &q) {
 		ERR_RET("angle called on BigPointI arguments");
-		return (0.0);
 	}
 
 	/* following function works for angles > \pi */
@@ -280,8 +278,6 @@ namespace polygon {
 		if (norm(p1 - p2) < DELTA * DELTA || norm(p1 + p2) < DELTA * DELTA) {
 			too_close_flag = true;
 			smry.weird_count++;
-			//	out_s << "warning: almost colinear " << abs(p1-p2) << " " << abs(p1+p2)
-			//<< endl;
 		}
 		return (false);
 	}
@@ -400,8 +396,6 @@ namespace polygon {
 			// we can't be sure of return. Set flag.
 			too_close_flag = true;
 			smry.weird_count++;
-			//	out_s << "warning: almost colinear " << abs(p1-p2) << " " << abs(p1+p2)
-			//<< endl;
 		}
 
 		if (s > 0) {

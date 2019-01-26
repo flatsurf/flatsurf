@@ -96,7 +96,7 @@ Face* TwoComplex::ReflectFace(UEdge* e, Face* f) {
 
   for (auto i = new_f->oedges.begin(); i != new_f->oedges.end(); ++i) {
     tmp = FindMatchingEdge((*i).ue);
-    if (tmp != NULL) {
+    if (tmp != nullptr) {
       IdentifyEdges(tmp, (*i).ue);
     }
   }
@@ -154,8 +154,8 @@ UEdge* TwoComplex::IdentifyEdges(UEdge* ue0, UEdge* ue1) {
   ue1->v0->order--; /*idenify vertices adds orders... */
   ue1->v1->order--;
 
-  ue1->f0 = NULL;
-  ue1->f1 = NULL;
+  ue1->f0 = nullptr;
+  ue1->f1 = nullptr;
 
   return (ue0);
 }
@@ -226,7 +226,7 @@ UEdge* TwoComplex::FindMatchingEdge(UEdge* ue) {
 
     return (candidate);
   }
-  return (NULL);
+  return nullptr;
 }
 
 void TwoComplex::CompleteSurface() {

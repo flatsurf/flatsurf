@@ -388,7 +388,6 @@ COORD TwoComplex::get_area() {
     return (area);
   } else {
     ERR_RET("TwoComplex::get_area called before area was set");
-    return (0.0);
   }
 }
 
@@ -397,7 +396,7 @@ COORD TwoComplex::get_scale_factor() { return scale_factor; }
 void TwoComplex::set_scale_factor(COORD scale) { scale_factor = scale; }
 
 UEdge* TwoComplex::MaxEdge() {
-  UEdge* longest_edge = NULL;
+  UEdge* longest_edge = nullptr;
   COORD longest_length = 0;
 
   for (auto i = uedges.begin(); i != uedges.end(); ++i) {

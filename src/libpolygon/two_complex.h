@@ -32,7 +32,6 @@
 
 namespace polygon {
 extern bool field_arithmetic;
-extern COORD EPSILON;
 
 class my_ostream;
 class Face;

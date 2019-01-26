@@ -194,7 +194,7 @@ Vertex* TwoComplex::SweepNextLeft(const Dir<PointT>& strt, Dir<PointT>& end_Dir,
                                   COORD len2, COORD threshold) {
   DMap<PointT> D(strt);
 
-  Vertex* return_vertex = NULL;
+  Vertex* return_vertex = nullptr;
 
   if (D.going_to_hit() && norm(D._vertex_to_hit().vec) < len2 &&
       D._vertex_to_hit().v->relevant()) {
@@ -471,7 +471,7 @@ int TwoComplex::SweepNew(COORD depth_, Dir<PointT> start_dir,
       std::cout << angle(old_dir.vec, -new_dir.vec) << "\n";
     }
 
-    if (c != NULL && investigated_last == 0 &&
+    if (c != nullptr && investigated_last == 0 &&
         norm(old_dir.vec_cx()) < depth_ * depth_) {
       if (c == old_dir.v) {
         count_same++;
@@ -681,12 +681,12 @@ void TwoComplex::InvestigateVec(PointT vec, COORD len2, SaddleConf& sc,
 
           sc.add_saddle(tmp_start, tmp_end, tmp_algt);
 
-        } catch (vert_bad_angle& error) {
+        } catch (vert_bad_angle&) {
           if (verbose >= 2) {
             fprintf(out_f, "bad angle exception\n");
           }
           smry_.bad_angle_count++;
-        } catch (vert_index_taken& error) {
+        } catch (vert_index_taken&) {
           if (verbose >= 2) {
             fprintf(out_f, "..vert index taken\n");
           }

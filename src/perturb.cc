@@ -238,14 +238,14 @@ void TwoComplex::PerturbAll(COORD max_perturb) {
 
   for (long k = 1; k <= static_cast<long>(N) - r; k++) {
     for (size_t i = 1; i <= N; i++) {
-      norms[k] += static_cast<COORD>((1.0L) * to_long(U(k, i)) * to_long(U(k, i)));
+      norms[k] += static_cast<COORD>((1.0L) * to_long(U(k, static_cast<long>(i))) * to_long(U(k, static_cast<long>(i))));
     }
   }
 
   for (long k = 1; k <= static_cast<long>(N) - r; k++) {
     for (size_t i = 1; i <= N; i++) {
       delta_array[i] +=
-          perturb_array[k] * Point(numeric_cast<double>(to_long(U(k, i)))) / sqrt(norms[k]);
+          perturb_array[k] * Point(numeric_cast<double>(to_long(U(k, static_cast<long>(i))))) / sqrt(norms[k]);
     }
   }
 

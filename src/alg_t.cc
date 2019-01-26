@@ -29,6 +29,8 @@
 #include "libpolygon/number_field.h"
 #include "libpolygon/params.h"
 #include "libpolygon/two_complex.h"
+#include "libpolygon/algebraic.h"
+#include "libpolygon/globals.h"
 
 using std::complex;
 using std::ostream;

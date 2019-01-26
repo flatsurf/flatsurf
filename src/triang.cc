@@ -54,9 +54,9 @@ void TwoComplex::TriangulateAll() {
   } while (did_something);
 }
 
-int nbr = 0;
-my_ostream *movie_stream, *dbg_stream;
-char buf[1000];
+static int nbr = 0;
+static my_ostream *movie_stream, *dbg_stream;
+static char buf[1000];
 
 void TwoComplex::TriangulateFace(Face* f) {
   list<OEdge>::iterator Candidate1 = NULL_OEdgeIter;
@@ -128,7 +128,8 @@ void TwoComplex::TriangulateFace(Face* f) {
   //	dbg_stream->close();
   //	delete dbg_stream;
 
-  if (best_angle == 0 || (!f->can_bisect(Candidate1, Candidate2))) {
+	// checking best_angle == 0 in a way that the compiler is not unhappy about
+  if (std::abs(best_angle) <= 0 || (!f->can_bisect(Candidate1, Candidate2))) {
 #ifdef USE_LONG_DOUBLE
     printf("F%d: Parent Face: F%d best_angle=%Lg", f->id(),
 #else

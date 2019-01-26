@@ -220,7 +220,7 @@ inline bool is_unit(const poly<int64_t> &p) {
 
 inline bool is_unit(const poly<bigrat> &p) {
   bigrat q = p.leading_coefficient();
-  if (q != bigrat(0, 1)) {
+  if (q != bigrat(0)) {
     return true;
   }
   return false;

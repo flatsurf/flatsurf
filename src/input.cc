@@ -384,7 +384,7 @@ void TwoComplex::ReadComplex(string filename) {
   NumberField<bigrat>::F = InitCyclotomic<bigrat>(4);
 
   fp = fopen(filename.c_str(), "r");
-  if (fp == NULL) {
+  if (fp == nullptr) {
     sprintf(buf, "Error opening file %s", filename.c_str());
     perror(buf);
     ERR_RET("aborting");
@@ -423,7 +423,6 @@ void TwoComplex::ReadComplex(string filename) {
 					ERR_RET("Unexpected EOF");
 				}
         ERR_RET(buf);
-        break;
     }
   }
 }
@@ -434,7 +433,7 @@ UEdge* TwoComplex::GetUEdge(int id) {
       return (*i);
     }
   }
-  return (NULL);
+  return nullptr;
 }
 
 Vertex* TwoComplex::GetVertex(int id) {
@@ -443,7 +442,7 @@ Vertex* TwoComplex::GetVertex(int id) {
       return (*i);
     }
   }
-  return (NULL);
+  return nullptr;
 }
 
 Face* TwoComplex::GetFace(int id) {
@@ -452,11 +451,11 @@ Face* TwoComplex::GetFace(int id) {
       return (*i);
     }
   }
-  return (NULL);
+  return nullptr;
 }
 
 char* read_coords(char* s, COORD* p_vec_re, COORD* p_vec_im, int line_number) {
-  char* q = NULL;
+  char* q = nullptr;
   char re[MAX_LINE];
   char im[MAX_LINE];
 
@@ -470,7 +469,7 @@ char* read_coords(char* s, COORD* p_vec_re, COORD* p_vec_im, int line_number) {
       *p = ' ';
     }
   }
-  if (q == NULL) {
+  if (q == nullptr) {
     ERR_RET2("bad coord: can't find )", line_number);
   }
 
@@ -485,8 +484,8 @@ char* read_coords(char* s, COORD* p_vec_re, COORD* p_vec_im, int line_number) {
   *p_vec_re = strtold(re, (char**)0);
   *p_vec_im = strtold(im, (char**)0);
 #else
-  *p_vec_re = strtod(re, NULL);
-  *p_vec_im = strtod(im, NULL);
+  *p_vec_re = strtod(re, nullptr);
+  *p_vec_im = strtod(im, nullptr);
 #endif
 
   //  printf("s=%s re=%s im=%s\n", s, re, im);
@@ -523,7 +522,7 @@ void TwoComplex::read_edge_line(FILE* fp, int line_number) {
 		ERR_RET("Unexpected EOF");
 	}
   s = strchr(buf, ')');
-  if (s == NULL) {
+  if (s == nullptr) {
     ERR_RET2("bad edge line: no )", line_number);
   }
   s++;
@@ -546,40 +545,39 @@ void TwoComplex::read_edge_line(FILE* fp, int line_number) {
     read_coords(s, &vec_re, &vec_im, line_number);
   } else {
     ERR_RET2("bad edge line: cant find coords", line_number);
-		throw; // impossible to happen (silence vec_re is uninitialized warning)
   }
 
   v0 = GetVertex(v0_id);
-  if (v0 == NULL) {
+  if (v0 == nullptr) {
     v0 = AddVertex(v0_id);
   }
 
   v1 = GetVertex(v1_id);
-  if (v1 == NULL) {
+  if (v1 == nullptr) {
     v1 = AddVertex(v1_id);
   }
 
   if (f0_id < 0)
-    f0 = NULL;
+    f0 = nullptr;
   else {
     f0 = GetFace(f0_id);
-    if (f0 == NULL) {
+    if (f0 == nullptr) {
       f0 = AddFace(f0_id, tmp_oedge_list);
     }
   }
 
   if (f1_id < 0)
-    f1 = NULL;
+    f1 = nullptr;
   else {
     f1 = GetFace(f1_id);
-    if (f1 == NULL) {
+    if (f1 == nullptr) {
       f1 = AddFace(f1_id, tmp_oedge_list);
     }
   }
   vec = Point(vec_re, vec_im);
 
   ue = GetUEdge(ue_id);
-  if (ue == NULL) {
+  if (ue == nullptr) {
     ue = AddUEdge(ue_id, v0, v1, vec);
   }
   ue->f0 = f0;
@@ -609,7 +607,7 @@ void TwoComplex::read_face_line(FILE* fp, int line_number) {
 	}
 
   str = strtok(buf, " \n");
-  while (str != NULL) {
+  while (str != nullptr) {
     if (sscanf(str, "%c%c%d", &c, &c1, &e_id) != 3) {
       ERR_RET2("read_face_line: bad edge; line =", line_number);
     }
@@ -625,24 +623,23 @@ void TwoComplex::read_face_line(FILE* fp, int line_number) {
         break;
       default:
         ERR_RET2("read_face_line: bad sign; line =", line_number);
-        break;
     }
     UEdge* ue;
     ue = GetUEdge(e_id);
-    if (ue == NULL) {
-      ue = AddUEdge(e_id, NULL, NULL, Point(0, 0));
+    if (ue == nullptr) {
+      ue = AddUEdge(e_id, nullptr, nullptr, Point(0, 0));
     }
 
     OEdge* oe;
     oe = new OEdge(ue, dir);
     tmp_oedge_list.insert(tmp_oedge_list.end(), *oe);
 
-    str = strtok(NULL, " \n");
+    str = strtok(nullptr, " \n");
   }
 
   f = GetFace(f_id);
 
-  if (f == NULL) {
+  if (f == nullptr) {
     f = AddFace(f_id, tmp_oedge_list);
   } else {
     f->SetOEdgeList(tmp_oedge_list);

@@ -74,7 +74,7 @@ Vertex::Vertex() : Simplex() {
   tag = 'V';
   order = 0;
   euclidean = UNDEFINED;
-  e = 0;
+  e = nullptr;
   int_angle = -1;
 }
 
