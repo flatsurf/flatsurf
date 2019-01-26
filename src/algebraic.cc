@@ -585,17 +585,21 @@ void NumberField<T>::print(ostream &out) {
 
 template <class T>
 algebraic<T> algebraic<T>::pow(int n) const {
-  algebraic<T> s(0ul, in_field);
-
   if (n < 0) {
     return (this->reciprocal().pow(-n));
   }
 
-  int i;
-  for (i = 1; i <= n; i++) {
-    s = s * (*this);
+  if (n == 0){
+    return algebraic<T>(0ul, in_field);
   }
-  return s;
+
+  if (n%2){
+    return (*this) * this->pow(n-1);
+  }
+
+  auto s = this->pow(n/2);
+
+  return (s*s);
 }
 
 template <class T>
