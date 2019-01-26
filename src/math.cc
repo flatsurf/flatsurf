@@ -99,10 +99,7 @@ COORD my_mpq_get_d(int64_t op) { return static_cast<COORD>(op); }
 COORD my_mpq_get_d(int op) { return static_cast<COORD>(op); }
 
 complex<COORD> exp(complex<COORD> z, int n) {
-  complex<COORD> w(1);
-  int i;
-  for (i = 0; i < n; i++) w *= z;
-  return w;
+  return std::pow(z, n);
 }
 
 void reflect_vector(BigPointQ p, BigPointQ vec, BigPointQ &reflection) {
