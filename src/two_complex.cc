@@ -22,6 +22,7 @@
 #include <list>
 #include <ostream>
 #include <vector>
+#include <boost/math/constants/constants.hpp>
 
 #include "libpolygon/elementary_geometry.h"
 #include "libpolygon/globals.h"
@@ -39,6 +40,7 @@ using std::flush;
 using std::list;
 using std::ostream;
 using std::vector;
+using boost::math::constants::pi;
 
 namespace polygon {
 TwoComplex::TwoComplex() : area(-1.0), scale_factor(1.0) {
@@ -48,11 +50,11 @@ TwoComplex::TwoComplex() : area(-1.0), scale_factor(1.0) {
   VISIT_ID = 0;
 }
 
-int TwoComplex::nedges() { return (uedges.size()); }
+size_t TwoComplex::nedges() { return (uedges.size()); }
 
-int TwoComplex::nfaces() { return (faces.size()); }
+size_t TwoComplex::nfaces() { return (faces.size()); }
 
-int TwoComplex::nvertices() { return (vertices.size()); }
+size_t TwoComplex::nvertices() { return (vertices.size()); }
 
 void TwoComplex::PrintAll(ostream& out) {
   if (field_arithmetic) {
@@ -181,8 +183,7 @@ void TwoComplex::StatPrint(ostream& out) {
   out << "## ";
   for (auto i = vertices.begin(); i != vertices.end(); ++i) {
     (*i)->Print(out);
-    //	fprintf(out_f,"(%d) (%g PI) ",(*i)->order,(*i)->total_angle()/MY_PI);
-    out << "(" << (*i)->order << ") (" << (*i)->total_angle() / MY_PI
+    out << "(" << (*i)->order << ") (" << (*i)->total_angle() / pi<COORD>()
         << " PI) ";
   }
   out << endl;
@@ -205,7 +206,7 @@ void TwoComplex::StatPrint(ostream& out) {
   out << "# area: " << get_area() << endl;
 }
 
-void TwoComplex::AddPFace(Face* f, Point q, int pcomplex) {
+void TwoComplex::AddPFace(Face* f, Point q, size_t pcomplex) {
   Point r, t;
   PFace* sp;
 
@@ -468,7 +469,7 @@ int64_t TwoComplex::get_global_denom() {
   mpz_class d(1);
 
   for (auto i = uedges.begin(); i != uedges.end(); ++i) {
-    for (int j = 0; j <= Params::nbr_params(); j++) {
+    for (size_t j = 0; j <= Params::nbr_params(); j++) {
       algebraic<bigrat> a = (*i)->ue_vecQ.algt.get_coeff(j);
       vector<bigrat> c = a.get_coords();
       for (unsigned int k = 0; k < c.size(); k++) {
@@ -484,13 +485,13 @@ int64_t TwoComplex::get_global_denom() {
   if (!d.fits_sint_p()) {
     ERR_RET("Denominator too large");
   }
-  return (int)(d.get_si());
+  return static_cast<int>(d.get_si());
 }
 
 alg_tI convert_to_algtI(alg_tQ p) {
   vector<algebraicI> new_coeffs;
   new_coeffs.clear();
-  for (int i = 0; i <= Params::nbr_params(); i++) {
+  for (size_t i = 0; i <= Params::nbr_params(); i++) {
     vector<int64_t> new_coords;
     new_coords.clear();
     algebraicQ a = p.get_coeff(i);
@@ -515,11 +516,11 @@ void TwoComplex::ClearDenominators() {
   int64_t d = get_global_denom();
 
   for (auto i = uedges.begin(); i != uedges.end(); ++i) {
-    (*i)->ue_vecQ *= d;
+    (*i)->ue_vecQ *= boost::numeric_cast<int>(d);
     (*i)->ue_vecI.cx = (*i)->ue_vecQ.cx;
 
     (*i)->ue_vecI.algt = convert_to_algtI((*i)->ue_vecQ.algt);
   }
-  set_scale_factor(d * get_scale_factor());
+  set_scale_factor(static_cast<double>(d) * get_scale_factor());
 }
 }  // namespace polygon

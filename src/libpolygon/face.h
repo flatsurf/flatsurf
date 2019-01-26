@@ -39,7 +39,7 @@ class Face : public Simplex {
 
   void SetOEdgeList(std::list<OEdge>);
 
-  int order();
+  size_t order();
   bool deleted();
   void Delete();
   void Print(std::ostream&);

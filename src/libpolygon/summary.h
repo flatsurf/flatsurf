@@ -33,8 +33,8 @@ class Summary {
   void print(std::ostream& output_stream, COORD part_total, COORD part_group,
              COORD volume, COORD depth);
 
-  int add_new_conf(SaddleConf& sc);
-  int add_one_conf(SaddleConf& sc);
+  size_t add_new_conf(SaddleConf& sc);
+  size_t add_one_conf(SaddleConf& sc);
 
   void clear_group();
   int bad_angle_count;
@@ -53,7 +53,7 @@ class Summary {
 
   bool scf_compare(int i, int j);
 
-  int tag_count;
+  size_t tag_count;
 
   // private:
 

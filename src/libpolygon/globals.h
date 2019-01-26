@@ -23,6 +23,7 @@
 
 #include <fstream>
 #include <list>
+#include <random>
 
 #include "defs.h"
 #include "oedge.h"
@@ -63,7 +64,7 @@ extern bool retriangulate;
 extern bool norescale;
 extern bool individual;
 extern bool norescale;
-extern int random_seed;
+extern unsigned int random_seed;
 extern int nice_inc;
 extern int n_slices;
 extern bool show_lengths;
@@ -87,7 +88,6 @@ extern bool field_arithmetic;
 extern bool int_field_arithmetic;
 extern Summary smry;
 extern TwoComplex* S;
-extern int random_seed;
 extern FILE* out_f;
 extern std::ofstream out_stream;
 extern std::ofstream out_s;

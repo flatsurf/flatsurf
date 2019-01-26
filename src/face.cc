@@ -22,6 +22,8 @@
 #include <list>
 #include <ostream>
 #include <vector>
+#include <boost/math/constants/constants.hpp>
+#include <boost/numeric/conversion/cast.hpp>
 
 #include "libpolygon/elementary_geometry.h"
 #include "libpolygon/face.h"
@@ -35,6 +37,8 @@ using std::endl;
 using std::list;
 using std::ostream;
 using std::vector;
+using boost::math::constants::pi;
+using boost::numeric_cast;
 
 namespace polygon {
 Face::Face() : Simplex() {
@@ -71,11 +75,11 @@ void Face::SetOEdgeList(list<OEdge> L) {
   if (field_arithmetic) {
     algebraicQ zeta = algebraicQ(1, NumberField<bigrat>::F);
     algebraicQ zero_F = algebraicQ(NumberField<bigrat>::F);
-    algebraicQ one_F = algebraicQ(0, NumberField<bigrat>::F);
+    algebraicQ one_F = algebraicQ(0ul, NumberField<bigrat>::F);
     algebraicQ junk = zeta / 100;
     vector<algebraicQ> tmp2;
     tmp2.push_back(one_F + junk);
-    for (int i = 1; i <= Params::nbr_params(); i++) {
+    for (size_t i = 1; i <= Params::nbr_params(); i++) {
       tmp2.push_back(zero_F);
     }
 
@@ -85,7 +89,7 @@ void Face::SetOEdgeList(list<OEdge> L) {
   }
 
   if (!field_arithmetic) {
-    vec.cx = Point(MY_PI, 1);
+    vec.cx = Point(pi<COORD>(), 1);
   }
 
   if (L.empty()) return;
@@ -106,28 +110,7 @@ void Face::Print(ostream& out) {
   };
 }
 
-// /* this one should be combined with others */
-// OEdgeIter Face::next_iter(OEdgeIter i)
-// {
-
-//   i++;
-//   if( i == oedges.end() ) {
-// 	return(oedges.begin());
-//   }
-//   return(i);
-// }
-
-// /* this one also */
-// OEdgeIter Face::prev_iter(OEdgeIter i)
-// {
-//     if( i == oedges.begin() ) {
-// 	i = oedges.end();
-//     }
-//     --i;
-//     return(i);
-// }
-
-int Face::order() { return (oedges.size()); }
+size_t Face::order() { return (oedges.size()); }
 
 Point Face::barycenter() {
   Point q(0.0, 0.0), r(0.0, 0.0), t;
@@ -137,7 +120,7 @@ Point Face::barycenter() {
     q = q + t;
     r = r + q;
   }
-  r = r / Point(order());
+  r = r / Point(numeric_cast<double>(order()));
 
   return (r);
 }

@@ -40,7 +40,6 @@ libpolygoninclude_HEADERS =             \
     libpolygon/dir.h                    \
     libpolygon/dmap.h                   \
     libpolygon/elementary_geometry.h    \
-    libpolygon/elementary_math.h        \
     libpolygon/face.h                   \
     libpolygon/globals.h                \
     libpolygon/libpolygon.h             \

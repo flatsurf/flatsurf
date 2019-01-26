@@ -29,8 +29,8 @@
 namespace polygon {
 class PUEdge : public PSimplex {
  public:
-  PUEdge(UEdge*, Point, int);
-  PUEdge(OEdge&, Point, int);
+  PUEdge(UEdge*, Point, size_t);
+  PUEdge(OEdge&, Point, size_t);
 
   void Draw(my_ostream&, COORD) override;
 

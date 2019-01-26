@@ -1,7 +1,6 @@
 /**********************************************************************
  *  This file is part of Polygon.
  *
- *        Copyright (C) 2018 Alex Eskin
  *        Copyright (C) 2019 Julian Rüth
  *
  *  Polygon is free software: you can redistribute it and/or modify
@@ -18,27 +17,19 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBPOLYGON_MATH_H
-#define LIBPOLYGON_MATH_H
+#ifndef LIBPOLYGON_SHARED_H
+#define LIBPOLYGON_SHARED_H
 
-#include <complex>
+/*
+ * Declarations of private but shared global variables.
+ */
 
-#include "defs.h"
+#include <random>
+
 
 namespace polygon {
-std::complex<COORD> exp(std::complex<COORD>, int);
-
-#ifdef USE_QUAD
-inline int round_to_int(float128 v) {
-  v = v + v.sign() / 2.0;
-  return floor(v).convert_to<int>();
+	// A shared random number generator.
+	extern std::default_random_engine random_engine;
 }
-#elif defined USE_LONG_DOUBLE
-inline int round_to_int(long double v) { return (int)rint(v); }
-#else
-inline int round_to_int(double v) { return (int)rint(v); }
-#endif
 
-}  // namespace polygon
-
-#endif
+#endif // LIBPOLYGON_SHARED_H

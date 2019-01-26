@@ -21,6 +21,7 @@
 
 #include <iostream>
 #include <list>
+#include <boost/math/constants/constants.hpp>
 
 #include "libpolygon/dir.h"
 #include "libpolygon/elementary_geometry.h"
@@ -30,6 +31,7 @@ using std::abs;
 using std::endl;
 using std::flush;
 using std::list;
+using boost::math::constants::pi;
 
 namespace polygon {
 template <typename PointT>
@@ -147,7 +149,7 @@ Dir<Point> Dir<Point>::RotateF(COORD theta) {
     ERR_RET("rotateF: negative angle");
   }
 
-  if (theta >= MY_PI) {
+  if (theta >= pi<COORD>()) {
     ERR_RET("RotateF: angle greater then PI");
   }
 
@@ -184,17 +186,17 @@ Dir<Point> Dir<Point>::RotateF_general(COORD theta) {
   n = *this;
 
 #ifdef USE_QUAD
-  int count = floor(2.0 * theta / MY_PI).convert_to<int>();
+  int count = floor(2.0 * theta / pi<COORD>()).convert_to<int>();
 #else
-  int count = static_cast<int>(floor(2.0 * theta / MY_PI));
+  int count = static_cast<int>(floor(2.0 * theta / pi<COORD>()));
 #endif
 
   std::cout << "RotateF: count = " << count << endl << flush;
   for (int j = 0; j < count; j++) {
     //	tmp = n;
     //	tmp.RotateF(0.5*MY_PI,n);
-    n = n.RotateF(0.5 * MY_PI);
-    theta = theta - 0.5 * MY_PI;
+    n = n.RotateF(0.5 * pi<COORD>());
+    theta = theta - 0.5 * pi<COORD>();
   }
   if (theta >= 0) {
     //	tmp = n;

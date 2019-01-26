@@ -23,18 +23,23 @@
 #include <list>
 #include <ostream>
 #include <string>
+#include <boost/math/special_functions/round.hpp>
+#include <boost/math/constants/constants.hpp>
 
 #include "libpolygon/elementary_geometry.h"
 #include "libpolygon/globals.h"
 #include "libpolygon/simplex.h"
 #include "libpolygon/two_complex.h"
 #include "libpolygon/vertex.h"
+#include "libpolygon/shared.h"
 
 using std::abs;
 using std::endl;
 using std::list;
 using std::ostream;
 using std::string;
+using boost::math::iround;
+using boost::math::constants::pi;
 
 namespace polygon {
 Simplex::Simplex() : color("#") {
@@ -46,7 +51,7 @@ Simplex::Simplex() : color("#") {
   tag = 0;
 
   for (i = 0; i < 12; i++) {
-    sprintf(tmp, "%x", ((unsigned int)my_random()) % 16);
+    sprintf(tmp, "%x", std::uniform_int_distribution<int>(0,15)(random_engine));
     tmp2 = tmp;
     color += tmp2;
   }
@@ -86,7 +91,7 @@ void Vertex::Check() {
 
   if (deleted()) return;
 
-  if ((int)out_edges.size() != order) {
+  if (out_edges.size() != order) {
     std::cout << "V" << ID << ":"
               << "out_edges.size = " << out_edges.size() << " order = " << order
               << endl;
@@ -139,21 +144,12 @@ COORD Vertex::total_angle() {
 int Vertex::total_angle_over_pi() {
   COORD a = total_angle();
 
-#ifdef USE_QUAD
-  int j = round_to_int(a / MY_PI);
-#else
-  int j = (int)rint(a / MY_PI);
-#endif
+	int j = iround(a / pi<COORD>());
 
-  /*
-  cout << " a= " << a;
-  cout << " j= " << j << endl;
-  */
-
-  if (abs(j * MY_PI - a) > 10 * EPSILON) {
-    std::cerr << abs(j * MY_PI - a) << endl;
+  if (abs(j * pi<COORD>() - a) > 10 * EPSILON) {
+    std::cerr << abs(j * pi<COORD>() - a) << endl;
     ERR_RET("total_angle_over_pi: bad angle");
   }
-  return (j);
+  return j;
 }
 }  // namespace polygon

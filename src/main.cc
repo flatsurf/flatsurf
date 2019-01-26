@@ -23,8 +23,10 @@
 #include <unistd.h>
 #include <fstream>
 #include <iostream>
+#include <boost/numeric/conversion/cast.hpp>
 
 #include "libpolygon/globals.h"
+#include "libpolygon/shared.h"
 #include "libpolygon/my_ostream.h"
 #include "libpolygon/number_field.h"
 #include "libpolygon/two_complex.h"
@@ -38,8 +40,8 @@ using std::list;
 using std::max;
 using std::min;
 using std::ofstream;
+using boost::numeric_cast;
 
-bool randomize = false;
 char hostname[MAX_HOSTNAME];
 bool file_arg = false;
 
@@ -189,11 +191,10 @@ int main(int argc, char** argv) {
         break;
 
       case 'r':
-        randomize = true;
         if (optarg) {
-          random_seed = atoi(optarg);
+					random_engine = std::default_random_engine{static_cast<long unsigned int>(atoll(optarg))};
         } else {
-          random_seed = getpid();
+					random_engine = std::default_random_engine{static_cast<long unsigned int>(time(0))};
         }
         break;
 
@@ -410,7 +411,10 @@ int main(int argc, char** argv) {
   }
 
   if (nice_inc) {
-    nice(nice_inc);
+    if (nice(nice_inc) == -1) {
+      perror("failed to renice");
+      abort();
+    }
   }
 
   if (mc_number == 0 && new_sweep == 0) {
@@ -419,13 +423,6 @@ int main(int argc, char** argv) {
 
   if (follow_depth < 0.0) {
     follow_depth = depth + 5; /* FIX ME */
-  }
-
-  if (randomize) {
-#ifdef USE_MPI
-    MPI_Bcast(&random_seed, 1, MPI_INT, 0, MPI_COMM_WORLD);
-#endif
-    srandom(random_seed);
   }
 
   if (closure) {
@@ -551,7 +548,7 @@ int main(int argc, char** argv) {
     for (auto i = S->vertices.begin(); i != S->vertices.end(); ++i) {
       if ((*i)->euclidean) {
         tmp_offset =
-            Point(mv * my_random() / RANDOM_MAX, mv * my_random() / RANDOM_MAX);
+            Point(mv * std::uniform_real_distribution<double>(0, 1)(random_engine), mv * std::uniform_real_distribution<double>(0, 1)(random_engine));
         std::cout << "Moving: ";
         (*i)->Print(std::cout);
         std::cout << " offset " << tmp_offset << "\n";
@@ -563,7 +560,7 @@ int main(int argc, char** argv) {
   if (perturb_vertex != UNDEFINED) {
     if (offset == Point(UNDEFINED, UNDEFINED)) {
       offset =
-          Point(mv * my_random() / RANDOM_MAX, mv * my_random() / RANDOM_MAX);
+          Point(mv * std::uniform_real_distribution<double>(0, 1)(random_engine), mv * std::uniform_real_distribution<double>(0, 1)(random_engine));
     }
     for (auto i = S->vertices.begin(); i != S->vertices.end(); ++i) {
       if ((*i)->id() == perturb_vertex) {

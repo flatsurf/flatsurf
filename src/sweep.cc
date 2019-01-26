@@ -21,6 +21,8 @@
 
 #include <iostream>
 #include <list>
+#include <boost/numeric/conversion/cast.hpp>
+#include <boost/math/constants/constants.hpp>
 
 #include "libpolygon/dmap.h"
 #include "libpolygon/elementary_geometry.h"
@@ -28,11 +30,14 @@
 #include "libpolygon/my_ostream.h"
 #include "libpolygon/two_complex.h"
 #include "libpolygon/uedge.h"
+#include "libpolygon/shared.h"
 
 using std::abs;
 using std::cout;
 using std::endl;
 using std::list;
+using std::uniform_real_distribution;
+using boost::math::constants::pi;
 
 /*   generic I 	  	       	 are_passing           *   starting
 |\     	       	       	     |\                        |\
@@ -428,7 +433,7 @@ void TwoComplex::DrawSaddle<Point>(const Dir<Point>& strt, COORD len2, int id,
 Summary smry; /* global variable */
 
 template <typename PointT>
-int TwoComplex::SweepNew(COORD depth, Dir<PointT> start_dir,
+int TwoComplex::SweepNew(COORD depth_, Dir<PointT> start_dir,
                          COORD GoalTotalAngle) {
   Dir<PointT> old_dir = start_dir;
   int count = 0;
@@ -450,11 +455,11 @@ int TwoComplex::SweepNew(COORD depth, Dir<PointT> start_dir,
   int investigated_last = false;
 
   COORD longest = MaxEdge()->len();
-  COORD threshold = 2 * (2 * depth * longest + longest * longest + 1);
+  COORD threshold = 2 * (2 * depth_ * longest + longest * longest + 1);
 
   while (TotalAngle < GoalTotalAngle) {
     Vertex* c;
-    c = SweepNextLeft<PointT>(old_dir, new_dir, depth * depth, threshold);
+    c = SweepNextLeft<PointT>(old_dir, new_dir, depth_ * depth_, threshold);
 
     if (verbose >= 2) {
       std::cout << "c: " << c << "  " << old_dir.vec << " " << -new_dir.vec;
@@ -467,7 +472,7 @@ int TwoComplex::SweepNew(COORD depth, Dir<PointT> start_dir,
     }
 
     if (c != NULL && investigated_last == 0 &&
-        norm(old_dir.vec_cx()) < depth * depth) {
+        norm(old_dir.vec_cx()) < depth_ * depth_) {
       if (c == old_dir.v) {
         count_same++;
       }
@@ -484,7 +489,7 @@ int TwoComplex::SweepNew(COORD depth, Dir<PointT> start_dir,
     group_angle += a;
 
     if (new_dir.v->relevant() && TotalAngle < GoalTotalAngle &&
-        norm(new_dir.vec_cx()) < depth * depth) {
+        norm(new_dir.vec_cx()) < depth_ * depth_) {
       if (new_dir.v == old_dir.v) {
         count_same++;
       }
@@ -532,7 +537,7 @@ int TwoComplex::SweepNew(COORD depth, Dir<PointT> start_dir,
 
       if (sc.n_saddles() > 0) {
         /* add sc to the summary */
-        int tag = smry.add_one_conf(sc);
+        size_t tag = smry.add_one_conf(sc);
 
         // draw if needed
         //		std::cout << "sc.get_orig_min_saddle_length = " <<
@@ -543,7 +548,7 @@ int TwoComplex::SweepNew(COORD depth, Dir<PointT> start_dir,
         if (abs(sc.get_orig_min_saddle_length() - draw_saddle_length) /
                     draw_saddle_length <
                 0.001 &&
-            (draw_tag < 0 || tag == draw_tag)) {
+            (draw_tag < 0 || tag == static_cast<size_t>(draw_tag))) {
           std::cout << "Found it: n_saddles = " << sc.n_saddles() << endl;
           if (draw_saddles) {
             std::cout << "Drawing Saddles" << endl;
@@ -571,7 +576,7 @@ int TwoComplex::SweepNew(COORD depth, Dir<PointT> start_dir,
         if (!quiet && !individual) {
           /* issue running total report */
           sm->print(std::cout, TotalAngle / (GoalTotalAngle * n_slices),
-                    TotalAngle / GoalTotalAngle, get_area(), depth);
+                    TotalAngle / GoalTotalAngle, get_area(), depth_);
         }
         /* clean up */
         group_count = 0;
@@ -597,7 +602,7 @@ Point to_cx(Point& cx) { return cx; }
 
 template <typename PointT>
 void TwoComplex::InvestigateVec(PointT vec, COORD len2, SaddleConf& sc,
-                                Summary& smry) {
+                                Summary& smry_) {
   Dir<PointT> start, end, tmp;
 
   sc.clear();
@@ -680,12 +685,12 @@ void TwoComplex::InvestigateVec(PointT vec, COORD len2, SaddleConf& sc,
           if (verbose >= 2) {
             fprintf(out_f, "bad angle exception\n");
           }
-          smry.bad_angle_count++;
+          smry_.bad_angle_count++;
         } catch (vert_index_taken& error) {
           if (verbose >= 2) {
             fprintf(out_f, "..vert index taken\n");
           }
-          smry.weird_count++;
+          smry_.weird_count++;
         }
       }
       //	    start.RotateCCwToVec(-vec, tmp);
@@ -758,7 +763,7 @@ COORD TwoComplex::GetSaddles(Dir<Point>& start, COORD len2, int N) {
   return (TotalAngle * count_same / number);
 }
 
-COORD TwoComplex::RandomShoot(Vertex* v0, COORD depth, int M) {
+COORD TwoComplex::RandomShoot(Vertex* v0, COORD depth_, int M) {
   COORD TotalAngle = 0.0;
   Dir<Point> old_dir(v0, Point(1, 0));
   Dir<Point> new_dir;
@@ -766,20 +771,19 @@ COORD TwoComplex::RandomShoot(Vertex* v0, COORD depth, int M) {
 
   while (count < 1.0 * M / mc_group) {
     COORD theta;
-    theta = v0->total_angle() * my_random() / RANDOM_MAX;
-    //	std::cout << "theta: " << theta << "\n";
+    theta = v0->total_angle() * std::uniform_real_distribution<double>(0, 1)(random_engine);
     new_dir = old_dir.RotateF(theta);
     old_dir = new_dir;
 
     fprintf(out_f, "group %3d:  ", count + 1);
 
     COORD ta;
-    ta = GetSaddles(old_dir, depth * depth, mc_group);
+    ta = GetSaddles(old_dir, depth_ * depth_, mc_group);
     TotalAngle = TotalAngle + ta;
 
     COORD s1 = v0->total_angle() * mc_group / ta;
-    std::cout << s1 * get_area() * MY_PI / (6 * depth * depth) << " ( "
-              << s1 * get_area() / (MY_PI * depth * depth);
+    std::cout << s1 * get_area() *  pi<COORD>() / (6 * depth_ * depth_) << " ( "
+              << s1 * get_area() / (pi<COORD>() * depth_ * depth_);
 
     std::cout << ") raw = " << s1 << endl;
 

@@ -29,12 +29,12 @@
 namespace polygon {
 class Params {
  public:
-  static void AddParams(int n, COORD parameters[]);
+  static void AddParams(size_t n, COORD parameters[]);
   static void ClearParams();
-  static int nbr_params();
+  static size_t nbr_params();
   static void print(std::ostream&);
 
-  static int n_params;
+  static size_t n_params;
   static std::vector<COORD> params;
 };
 }  // namespace polygon

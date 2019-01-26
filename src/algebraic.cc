@@ -18,14 +18,14 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <boost/lexical_cast.hpp>
 #include <complex>
 #include <ostream>
 #include <vector>
+#include <boost/numeric/conversion/cast.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include "libpolygon/algebraic.h"
 #include "libpolygon/defs.h"
-#include "libpolygon/elementary_math.h"
 #include "libpolygon/number_field.h"
 #include "libpolygon/poly.h"
 #include "libpolygon/vector.h"
@@ -37,6 +37,8 @@ using std::endl;
 using std::max;
 using std::ostream;
 using std::vector;
+using std::pow;
+using boost::numeric_cast;
 
 namespace polygon {
 // gcd_extended: a and b inputs, x and y outputs.
@@ -72,9 +74,10 @@ poly<T>::poly(vector<T> c) : coefficients(c) {
 }
 
 template <class T>
-poly<T>::poly(T c[], int degree) {
+poly<T>::poly(T c[], int deg) {
+	assert(deg >= -1);
   vector<T> v;
-  for (int i = 0; i <= degree; i++) v.push_back(c[i]);
+  for (int i = 0; i <= deg; i++) v.push_back(c[i]);
   coefficients = v;
 }
 
@@ -92,12 +95,12 @@ void poly<T>::reduce() {
 template <class T>
 int poly<T>::degree() const {
   //  reduce();
-  return coefficients.size() - 1;
+  return numeric_cast<int>(coefficients.size()) - 1;
 }
 
 template <class T>
 void poly<T>::fill_back(int n) {
-  while (coefficients.size() <= (unsigned int)n) coefficients.push_back(T(0));
+  while (coefficients.size() <= numeric_cast<unsigned int>(n)) coefficients.push_back(T(0));
 }
 
 template <class T>
@@ -107,20 +110,26 @@ void poly<T>::print() {
 
 template <class T>
 poly<T> &poly<T>::operator+=(const poly<T> &p) {
+	if (p.degree() < 0) {
+		return *this;
+	}
   int m = max(degree(), p.degree());
   fill_back(m);
-  //  p.fill_back(m);
-  for (int i = 0; i <= p.degree(); i++) coefficients[i] += p.coefficients[i];
+  for (size_t i = 0; i <= numeric_cast<size_t>(p.degree()); i++)
+	  coefficients[i] += p.coefficients[i];
   reduce();
   return *this;
 }
 
 template <class T>
 poly<T> &poly<T>::operator-=(const poly<T> &p) {
+	if (p.degree() < 0){
+		return *this;
+	}
   int m = max(degree(), p.degree());
   fill_back(m);
-  // p.fill_back(m);
-  for (int i = 0; i <= p.degree(); i++) coefficients[i] -= p.coefficients[i];
+  for (size_t i = 0; i <= numeric_cast<size_t>(p.degree()); i++)
+		coefficients[i] -= p.coefficients[i];
   reduce();
   return *this;
 }
@@ -128,24 +137,26 @@ poly<T> &poly<T>::operator-=(const poly<T> &p) {
 // fix this later
 template <class T>
 poly<T> operator*(poly<T> p, const poly<T> &q) {
+	if (p.degree() < 0 || q.degree() < 0){
+		return poly<T>();
+	}
   vector<T> c;
   T temp;
-  int m = p.degree(), n = q.degree();
-  for (int i = 0; i <= m + n; i++) {
+  size_t m = numeric_cast<size_t>(p.degree());
+	size_t n = numeric_cast<size_t>(q.degree());
+  for (size_t i = 0; i <= m + n; i++) {
     temp = 0;
-    for (int k = max(0, i - n); k <= m && k <= i; k++)
+    for (size_t k = n > i ? 0 : i - n; k <= m && k <= i; k++)
       temp += p.coefficients[k] * q.coefficients[i - k];
     c.push_back(temp);
   }
   p = poly<T>(c);
   p.reduce();
   return p;
-  //  return poly<T>(c);
 }
 
 template <class T>
 poly<T> operator+(poly<T> p, const poly<T> &q) {
-  //  poly<T> r = p;
   p += q;
   p.reduce();
   return p;
@@ -153,7 +164,6 @@ poly<T> operator+(poly<T> p, const poly<T> &q) {
 
 template <class T>
 poly<T> operator-(poly<T> p, const poly<T> &q) {
-  //  poly<T> r = p;
   p -= q;
   p.reduce();
   return p;
@@ -192,12 +202,16 @@ bool operator!=(const poly<T> &p, const poly<T> &q) {
 template <class T>
 algebraic<T> poly<T>::operator()(const algebraic<T> &a) {
   algebraic<T> b(a.field());
-  for (int i = 0; i <= degree(); i++) b += coefficients[i] * a.pow(i);
+	if (degree() < 0){
+		return b;
+	}
+  for (size_t i = 0; i <= numeric_cast<size_t>(degree()); i++)
+		b += coefficients[i] * a.pow(i);
   return b;
 }
 
 inline bool is_unit(const poly<int64_t> &p) {
-  int n = p.leading_coefficient();
+  long n = p.leading_coefficient();
   if (n == 1 || n == -1) {
     return true;
   }
@@ -228,12 +242,13 @@ void divide(poly<T> &quotient, poly<T> &remainder, const poly<T> &f,
   }
 
   poly<T> h = f;
-  vector<T> c(m - n + 1);
+	size_t out_degree = numeric_cast<size_t>(m - n);
+  vector<T> c(out_degree + 1);
 
-  for (int i = 0; i <= m - n; i++) {
-    c[m - n - i] = h.coefficients[m - i] / g.coefficients.back();
-    for (int j = 0; j <= n; j++)
-      h.coefficients[m - n - i + j] -= c[m - n - i] * g.coefficients[j];
+  for (size_t i = 0; i <= out_degree; i++) {
+    c[out_degree - i] = h.coefficients[numeric_cast<size_t>(m) - i] / g.coefficients.back();
+    for (size_t j = 0; j <= numeric_cast<size_t>(n); j++)
+      h.coefficients[out_degree - i + j] -= c[out_degree - i] * g.coefficients[j];
   }
   h.reduce();
   remainder = h;
@@ -263,26 +278,24 @@ template <class T>
 NumberField<T>::NumberField() {}
 
 template <typename T>
-NumberField<T>::NumberField(T p[], int degree) : degree(degree) {
-  int i;
+NumberField<T>::NumberField(T p[], size_t deg) : degree(deg) {
   vector<T> coefficients;
-  for (i = 0; i <= degree; i++) coefficients.push_back(p[i]);
+  for (size_t i = 0; i <= degree; i++) coefficients.push_back(p[i]);
   minimal_poly = poly<T>(coefficients);
   F_zero = algebraic<T>(this);
-  F_one = algebraic<T>(0, this);
+  F_one = algebraic<T>(0ul, this);
   build_multiplication_table();
   cross_product_table.resize(degree, degree);
 }
 
 template <class T>
-NumberField<T>::NumberField(T p[], int degree, complex<COORD> embedding)
-    : embedding(embedding), degree(degree) {
-  int i;
+NumberField<T>::NumberField(T p[], size_t deg, complex<COORD> emb)
+    : embedding(emb), degree(deg) {
   vector<T> coefficients;
-  for (i = 0; i <= degree; i++) coefficients.push_back(p[i]);
+  for (size_t i = 0; i <= degree; i++) coefficients.push_back(p[i]);
   minimal_poly = poly<T>(coefficients);
   F_zero = algebraic<T>(this);
-  F_one = algebraic<T>(0, this);
+  F_one = algebraic<T>(0ul, this);
   build_multiplication_table();
   cross_product_table.resize(degree, degree);
 }
@@ -292,7 +305,7 @@ void NumberField<T>::build_multiplication_table() {
   vector<T> xtothen, dummy(degree);
   T v;
 
-  for (int j = 0; j < minimal_poly.degree(); j++)
+  for (size_t j = 0; j < degree; j++)
     xtothen.push_back(-minimal_poly.coefficients[j] /
                       minimal_poly.leading_coefficient());
 
@@ -300,13 +313,13 @@ void NumberField<T>::build_multiplication_table() {
 
   // dummy[0] = T(1,1);
 
-  for (int i = 0; i < degree; i++) {
+  for (size_t i = 0; i < degree; i++) {
     multiplication_table.push_back(dummy);
     dummy.insert(dummy.begin(), T(0));
     dummy.erase(dummy.end() - 1);
   }
 
-  for (int i = degree; i <= 2 * degree - 2; i++) {
+  for (size_t i = degree; i <= 2 * degree - 2; i++) {
     dummy = multiplication_table[i - 1];
     dummy.insert(dummy.begin(), T(0));
     v = *(dummy.end() - 1);
@@ -324,7 +337,7 @@ template <class T>
 void NumberField<T>::store_conjugate(algebraic<T> a) {
   conjugate = a;
   conjugate_table.push_back(this->F_one);
-  for (int i = 1; i < degree; i++) {
+  for (size_t i = 1; i < degree; i++) {
     conjugate_table.push_back(a.pow(i));
   }
   build_cross_product_table();
@@ -340,7 +353,7 @@ algebraic<T>::algebraic(NumberField<T> *field) : in_field(field) {
 }
 
 template <class T>
-algebraic<T>::algebraic(int n, NumberField<T> *field) {
+algebraic<T>::algebraic(size_t n, NumberField<T> *field) {
   vector<T> v(field->degree);
   v[n] = 1;
   coords = v;
@@ -354,7 +367,7 @@ algebraic<T>::algebraic(vector<T> newcoords, NumberField<T> *field)
 template <class T>
 algebraic<T>::algebraic(T newcoords[], NumberField<T> *field)
     : in_field(field) {
-  for (int i = 0; i < field->degree; i++) coords.push_back(newcoords[i]);
+  for (size_t i = 0; i < field->degree; i++) coords.push_back(newcoords[i]);
 }
 
 template <class T>
@@ -390,13 +403,10 @@ algebraic<T> operator/(algebraic<T> a, const algebraic<T> &b) {
 
 template <class T>
 algebraic<T> &algebraic<T>::operator*=(const algebraic<T> &s) {
-  int i, j;
   vector<T> newcoords(in_field->degree);
 
-  //  cout << *this << s << endl;
-
-  for (i = 0; i < in_field->degree; i++) {
-    for (j = 0; j < in_field->degree; j++) {
+  for (size_t i = 0; i < in_field->degree; i++) {
+    for (size_t j = 0; j < in_field->degree; j++) {
       T tmp = coords[i] * s.coords[j];
       newcoords += tmp * in_field->multiplication_table[i + j];
       //	  newcoords +=
@@ -521,14 +531,14 @@ ostream &operator<<(ostream &outputStream, const algebraic<T> &num) {
 
 extern COORD my_mpq_get_d(bigrat op);
 extern COORD my_mpq_get_d(int op);
+extern COORD my_mpq_get_d(int64_t op);
 
 template <class T>
 complex<COORD> algebraic<T>::tocomplex() const {
-  int i;
-  complex<COORD> z(0, 0);
-  for (i = 0; i <= in_field->degree - 1; i++)
-    z += my_mpq_get_d(coords[i]) * (exp(in_field->embedding, i));
-  return z;
+  complex<COORD> zz(0, 0);
+  for (size_t i = 0; i <= in_field->degree - 1; i++)
+    zz += my_mpq_get_d(coords[i]) * std::pow(in_field->embedding, i);
+  return zz;
 }
 
 template <class T>
@@ -575,7 +585,7 @@ void NumberField<T>::print(ostream &out) {
 
 template <class T>
 algebraic<T> algebraic<T>::pow(int n) const {
-  algebraic<T> s(0, in_field);
+  algebraic<T> s(0ul, in_field);
 
   if (n < 0) {
     return (this->reciprocal().pow(-n));
@@ -591,8 +601,7 @@ algebraic<T> algebraic<T>::pow(int n) const {
 template <class T>
 algebraic<T> algebraic<T>::conjugate() const {
   algebraic<T> conj(in_field);
-  for (int i = 0; i < in_field->degree; i++)
-    //    conj += (coords[i] * (in_field->conjugate).pow(i));
+  for (size_t i = 0; i < in_field->degree; i++)
     conj += (coords[i] * (in_field->conjugate_table)[i]);
   return conj;
 }
@@ -608,8 +617,8 @@ algebraic<T> cross_product(const algebraic<T> &u, const algebraic<T> &v) {
   algebraic<T> q(u.in_field);  // set to 0
   T tmp;
 
-  for (int i = 0; i < u.in_field->degree; i++) {
-    for (int j = i + 1; j < u.in_field->degree; j++) {
+  for (size_t i = 0; i < u.in_field->degree; i++) {
+    for (size_t j = i + 1; j < u.in_field->degree; j++) {
       tmp = u.coords[i] * v.coords[j] - u.coords[j] * v.coords[i];
       q += u.in_field->cross_product_table(i, j) * tmp;
     }
@@ -621,7 +630,6 @@ algebraic<T> cross_product(const algebraic<T> &u, const algebraic<T> &v) {
 
 template <typename T>
 void NumberField<T>::build_cross_product_table() {
-  int d = degree;
   algebraic<T> xi = algebraic<T>(1, this);
 
   //    std::vector< boost::array<algebraic<T>, d> > vecs;
@@ -634,10 +642,10 @@ void NumberField<T>::build_cross_product_table() {
 
   //    vector< vector< algebraic<T > > >table(d, vector<algebraic<T> >(d));
 
-  for (int i = 0; i < d; i++) {
+  for (size_t i = 0; i < degree; i++) {
     //	vector<algebraic<T> > row;
     //	row.clear();
-    for (int j = 0; j < d; j++) {  // check sign here
+    for (size_t j = 0; j < degree; j++) {  // check sign here
       cross_product_table(i, j) =
           xi.pow(i) * xi.pow(j).conjugate() - xi.pow(j) * xi.pow(i).conjugate();
       //     row.push_back(xi.pow(i)*xi.pow(j).conjugate()
@@ -653,14 +661,14 @@ algebraic<bigrat> to_rational(
   assert(p.in_field == NumberField<int64_t>::F);
 
   vector<bigrat> new_coords;
-  for (int i = 0; i < p.in_field->degree; i++) {
+  for (size_t i = 0; i < p.in_field->degree; i++) {
     static_assert(
         std::is_convertible<int64_t, long>::value,
         "mpz does not implement conversion from long long, so we can only "
         "initialize like this if long and int64_t have the same size; note "
         "that they might not the same type as long == long long and only one "
         "of the two can be aliased to int64_t");
-    bigrat r = bigrat((long)p.coords[i], 1);
+    bigrat r = bigrat(static_cast<long>(p.coords[i]), 1);
     new_coords.push_back(r);
   }
 

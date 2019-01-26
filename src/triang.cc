@@ -22,6 +22,7 @@
 #include <cassert>
 #include <iostream>
 #include <list>
+#include <boost/math/constants/constants.hpp>
 
 #include "libpolygon/elementary_geometry.h"
 #include "libpolygon/globals.h"
@@ -33,6 +34,7 @@ using std::abs;
 using std::cout;
 using std::list;
 using std::min;
+using boost::math::constants::pi;
 
 namespace polygon {
 void TwoComplex::TriangulateAll() {
@@ -657,7 +659,7 @@ bool TwoComplex::shouldFlip(UEdge* u) {
 
   if (angle(-vt_w0->vec_cx(), w0_vh->vec_cx()) +
           angle(-vh_w1->vec_cx(), w1_vt->vec_cx()) <
-      MY_PI + 100 * EPSILON) {
+      pi<COORD>() + 100 * EPSILON) {
     return (false);
   }
 
@@ -667,13 +669,13 @@ bool TwoComplex::shouldFlip(UEdge* u) {
 
   if (abs(angle(-w0_vh->vec_cx(), oe->vec_cx())) +
           abs(angle(oe->vec_cx(), vh_w1->vec_cx())) >=
-      MY_PI) {
+      pi<COORD>()) {
     return (false);
   }
 
   if (abs(angle(-w1_vt->vec_cx(), -oe->vec_cx())) +
           abs(angle(-oe->vec_cx(), vt_w0->vec_cx())) >=
-      MY_PI) {
+      pi<COORD>()) {
     return (false);
   }
 

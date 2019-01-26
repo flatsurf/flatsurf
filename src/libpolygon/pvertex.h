@@ -29,7 +29,7 @@ class Vertex;
 
 class PVertex : public PSimplex {
  public:
-  PVertex(Vertex*, Point, int);
+  PVertex(Vertex*, Point, size_t);
 
   void Draw(my_ostream&, COORD d) override;
 

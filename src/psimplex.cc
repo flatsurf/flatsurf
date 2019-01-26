@@ -40,7 +40,7 @@ using std::ostream;
 using std::string;
 
 namespace polygon {
-string roman_numeral(int decimalNumber) {
+string roman_numeral(__attribute__((unused)) int decimalNumber) {
   throw std::logic_error(
       "roman_numeral: The implementation of this function had to be removed "
       "since we're not sure about  its license");
@@ -90,18 +90,18 @@ void PSimplex::Draw(my_ostream& output_stream, COORD d) {
   output_stream.tri() << d; /* this to shut up the warning */
 }
 
-PSimplex::PSimplex(Point p0, int i) : p(p0) { in_pcomplex = i; }
+PSimplex::PSimplex(Point p0, size_t i) : p(p0) { in_pcomplex = i; }
 
 Simplex* PSimplex::sp() {
   ERR_RET("call to Psimplex::sp()");
   return (NULL);
 }
 
-PVertex::PVertex(Vertex* v0, Point p0, int i) : PSimplex(p0, i) { s = v0; }
+PVertex::PVertex(Vertex* v0, Point p0, size_t i) : PSimplex(p0, i) { s = v0; }
 
 Simplex* PVertex::sp() { return static_cast<Simplex*>(s); }
 
-PUEdge::PUEdge(OEdge& oe, Point p0, int i) : PSimplex(p0, i) {
+PUEdge::PUEdge(OEdge& oe, Point p0, size_t i) : PSimplex(p0, i) {
   Point t;
 
   //  p has to be position of v0
@@ -115,15 +115,15 @@ PUEdge::PUEdge(OEdge& oe, Point p0, int i) : PSimplex(p0, i) {
   }
 }
 
-PUEdge::PUEdge(UEdge* e0, Point p0, int i) : PSimplex(p0, i) { s = e0; }
+PUEdge::PUEdge(UEdge* e0, Point p0, size_t i) : PSimplex(p0, i) { s = e0; }
 
 Simplex* PUEdge::sp() { return static_cast<Simplex*>(s); }
 
-PFace::PFace(Face* f0, Point p0, int i) : PSimplex(p0, i) { s = f0; }
+PFace::PFace(Face* f0, Point p0, size_t i) : PSimplex(p0, i) { s = f0; }
 
 Simplex* PFace::sp() { return static_cast<Simplex*>(s); }
 
-void PVertex::Draw(my_ostream& output_stream, COORD d) {
+void PVertex::Draw(my_ostream& output_stream, __attribute__((unused)) COORD d) {
   output_stream.tri() << s->tag << s->id() << " " << s->color << " ";
   output_stream.tri() << p.real() << " " << p.imag() << "\n";
 
@@ -552,7 +552,7 @@ bool Face::intersects(Point pb, Point pv) {
   return (false);
 }
 
-bool Face::intersects(Face* f, Point offset) {
+bool Face::intersects(Face* f, Point offset_) {
   //    fprintf(out_f,"Face F%d: ",this->id());
   //    for ( OEdgeIter k = oedges.begin(); k!= oedges.end(); k++ ) {
   //	std::cout << (*k).headOffset<Point>() << " ";
@@ -569,7 +569,7 @@ bool Face::intersects(Face* f, Point offset) {
     if ((*k).other_face() == this) {
       continue;
     }
-    if (this->intersects((*k).headOffset<Point>() + offset, (*k).vec_cx())) {
+    if (this->intersects((*k).headOffset<Point>() + offset_, (*k).vec_cx())) {
       //	    fprintf(out_f,"Intersects: F%d F%d because of E%d",
       //		   this->id(), f->id(), (*k).id());
       //	    std::cout << " Offset: " << offset;
@@ -578,12 +578,12 @@ bool Face::intersects(Face* f, Point offset) {
       return (true);
     }
   }
-  if (this->contains(offset + f->barycenter())) {
+  if (this->contains(offset_ + f->barycenter())) {
     //	fprintf(out_f,"F%d contains F%d", this->id(), f->id());
     //	std::cout << " Offset " << offset <<"\n";
     return (true);
   }
-  if (f->contains(-offset + this->barycenter())) {
+  if (f->contains(-offset_ + this->barycenter())) {
     //	fprintf(out_f,"F%d contains F%d", f->id(), this->id());
     //	std::cout << " (-)Offset " << offset <<"\n";
     return (true);
@@ -630,7 +630,7 @@ COORD Face::perimeter() {
 PFace* TwoComplex::get_pface(Face* f) {
   for (auto k = dl.begin(); k != dl.end(); ++k) {
     if ((*k)->sp()->tag == 'F' && (*k)->sp() == f) {
-      return ((PFace*)(*k));
+      return static_cast<PFace*>(*k);
     }
   }
   ERR_RET("get_pface: not found");
@@ -674,8 +674,8 @@ bool TwoComplex::can_merge(UEdge* ue) {
       if ((*i)->sp()->tag != 'F' || (*j)->sp()->tag != 'F') {
         continue;
       }
-      PFace* pfi = (PFace*)((*i));
-      PFace* pfj = (PFace*)((*j));
+      PFace* pfi = static_cast<PFace*>(*i);
+      PFace* pfj = static_cast<PFace*>(*j);
 
       /* don't forget offset */
       if (pfi->s->intersects(pfj->s, offset_ + pfj->p - pfi->p)) {
@@ -688,10 +688,10 @@ bool TwoComplex::can_merge(UEdge* ue) {
   return (true);
 }
 
-void TwoComplex::relocate(int i, Point offset) {
+void TwoComplex::relocate(size_t i, Point offset_) {
   for (auto k = dl.begin(); k != dl.end(); ++k) {
     if ((*k)->in_pcomplex == i) {
-      (*k)->p += offset;
+      (*k)->p += offset_;
     }
   }
 }
@@ -704,8 +704,8 @@ void TwoComplex::merge(UEdge* ue) {
   auto oe0 = ue->this_edge(ue->f0); /* ue in f0 */
   auto oe1 = ue->this_edge(ue->f1); /* ue in f1 */
 
-  int i = pf0->in_pcomplex;
-  int j = pf1->in_pcomplex;
+  size_t i = pf0->in_pcomplex;
+  size_t j = pf1->in_pcomplex;
 
   Point offset_ =
       pf0->p + oe0->headOffset<Point>() - pf1->p - oe1->tailOffset<Point>();
@@ -779,7 +779,7 @@ void TwoComplex::NewDraw(my_ostream& output_stream) {
 #define DIM 16.0
   /* coordinates will go from -DIM to DIM */
 
-  COORD scale_factor;
+  COORD scale_factor_;
   Point mean;
   Point tmp;
 
@@ -787,7 +787,7 @@ void TwoComplex::NewDraw(my_ostream& output_stream) {
     ERR_RET("twocompex::draw: empty draw list");
   }
 
-  for (int pc = 0; pc < nfaces(); pc++) {
+  for (size_t pc = 0; pc < nfaces(); pc++) {
     bool active = false;
 
     for (auto i = dl.begin(); i != dl.end(); ++i) {
@@ -833,9 +833,9 @@ void TwoComplex::NewDraw(my_ostream& output_stream) {
   COORD SCALE_HACK = 1;
 
   if (global_max_x - global_min_x > global_max_y - global_min_y)
-    scale_factor = SCALE_HACK * DIM * 2.0 / (global_max_x - global_min_x);
+    scale_factor_ = SCALE_HACK * DIM * 2.0 / (global_max_x - global_min_x);
   else
-    scale_factor = SCALE_HACK * DIM * 2.0 / (global_max_y - global_min_y);
+    scale_factor_ = SCALE_HACK * DIM * 2.0 / (global_max_y - global_min_y);
 
   mean = Point((global_max_x + global_min_x) / 2,
                (global_max_y + global_min_y) / 2);
@@ -845,11 +845,11 @@ void TwoComplex::NewDraw(my_ostream& output_stream) {
 
   for (auto i = dl.begin(); i != dl.end(); ++i) {
     tmp = (*i)->p - mean;
-    (*i)->p = tmp * scale_factor;
+    (*i)->p = tmp * scale_factor_;
   }
 
   for (auto i = dl.begin(); i != dl.end(); ++i) {
-    (*i)->Draw(output_stream, scale_factor);
+    (*i)->Draw(output_stream, scale_factor_);
   }
 }
 }  // namespace polygon

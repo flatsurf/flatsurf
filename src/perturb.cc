@@ -23,8 +23,10 @@
 #include <NTL/mat_ZZ.h>
 #include <iostream>
 #include <vector>
+#include <boost/math/constants/constants.hpp>
 
 #include "libpolygon/globals.h"
+#include "libpolygon/shared.h"
 #include "libpolygon/number_field.h"
 #include "libpolygon/oedge.h"
 #include "libpolygon/params.h"
@@ -36,29 +38,32 @@ using std::abs;
 using std::cout;
 using std::endl;
 using std::vector;
+using boost::math::constants::pi;
+using boost::numeric_cast;
+using std::uniform_real_distribution;
 
 namespace polygon {
 void TwoComplex::PerturbConjugates(COORD max_perturb) {
-  int n = Params::nbr_params();
+  size_t n = Params::nbr_params();
 
   std::cout << "max_perturb = " << max_perturb << endl;
 
   vector<COORD> perturb;
 
-  COORD base = 3.1 / MY_PI;
+  COORD base = 3.1 / pi<COORD>();
 
   COORD current = base;
-  for (int i = 0; i < 2 * n; i++) {
+  for (size_t i = 0; i < 2 * n; i++) {
     perturb.push_back(current * max_perturb);  // hack
     current *= base;
   }
-  int count = 0;
-  int n_orig = n;
+  size_t count = 0;
+  size_t n_orig = n;
 
-  for (int i = 1; i <= n_orig; i++) {
+  for (size_t i = 1; i <= n_orig; i++) {
     // want to add conjugate of ith deformation
     bool already_have_conjugate = false;
-    for (int j = i + 1; j <= n_orig; j++) {
+    for (size_t j = i + 1; j <= n_orig; j++) {
       if (is_conjugate_deformation(i, j)) {
         already_have_conjugate = true;
         break;
@@ -70,7 +75,7 @@ void TwoComplex::PerturbConjugates(COORD max_perturb) {
 
     std::cout << perturb[0];
 
-    Params::AddParams(1, &(perturb[count]));
+    Params::AddParams(1u, &(perturb[count]));
     n++;
     count++;
     for (auto j = S->uedges.begin(); j != S->uedges.end(); ++j) {
@@ -84,10 +89,10 @@ void TwoComplex::PerturbConjugates(COORD max_perturb) {
   }
 }
 
-bool TwoComplex::is_conjugate_deformation(int j, int k) {
+bool TwoComplex::is_conjugate_deformation(size_t j, size_t k) {
   for (auto i = S->uedges.begin(); i != S->uedges.end(); ++i) {
     if ((*i)->ue_vecQ.algt.get_coeff(j) !=
-        (*i)->ue_vecQ.algt.get_coeff(j).conjugate()) {
+        (*i)->ue_vecQ.algt.get_coeff(k).conjugate()) {
       return false;
     }
   }
@@ -95,7 +100,7 @@ bool TwoComplex::is_conjugate_deformation(int j, int k) {
 }
 
 void Vertex::MoveVertex(Point p) {
-  int n = Params::nbr_params();
+  size_t n = Params::nbr_params();
 
   if (field_arithmetic) {
     COORD tmp[2];
@@ -144,107 +149,109 @@ void Vertex::MoveVertex(Point p) {
 }
 
 void TwoComplex::PerturbAll(COORD max_perturb) {
-  long i = 1;
-  long k;
-
   UEdge **uedge_array = new UEdge *[uedges.size() + 1];
 
-  for (auto j = uedges.begin(); j != uedges.end(); ++j) {
-    uedge_array[i] = (*j);
-    (*j)->index = i;
+	{
+		size_t i = 1;
+		for (auto j = uedges.begin(); j != uedges.end(); ++j) {
+			uedge_array[i] = (*j);
+			(*j)->index = numeric_cast<int>(i);
 
-    i++;
-  }
+			i++;
+		}
+	}
 
-  long M, N;
+  size_t M, N;
 
   M = faces.size() + vertices.size();
   N = uedges.size();
 
   mat_ZZ X;
-  X.SetDims(M, N);
+  X.SetDims(static_cast<long>(M), static_cast<long>(N));
   mat_ZZ Y;
-  Y.SetDims(N, M);
+  Y.SetDims(static_cast<long>(N), static_cast<long>(M));
 
   //,u,v,w;
 
-  for (i = 1; i <= M; i++) {
-    for (k = 1; k <= N; k++) {
-      X(i, k) = 0;
+  for (size_t i = 1; i <= M; i++) {
+    for (size_t k = 1; k <= N; k++) {
+      X(static_cast<long>(i), static_cast<long>(k)) = 0;
     }
   }
 
-  i = 1;
-  for (auto l = faces.begin(); l != faces.end(); ++l) {
-    for (auto j = (*l)->oedges.begin(); j != (*l)->oedges.end(); ++j) {
-      X(i, (*j).ue->index) += (*j).direction;
-    }
-    i++;
-  }
-  /* triangles assumed here */
-  for (auto l = vertices.begin(); l != vertices.end(); ++l) {
-    for (auto j = (*l)->out_edges.begin(); j != (*l)->out_edges.end(); ++j) {
-      X(i, (*j)->next_edge()->ue->index) += (*j)->next_edge()->direction;
-    }
-    i++;
-  }
+	{
+		size_t i = 1;
+		for (auto l = faces.begin(); l != faces.end(); ++l) {
+			for (auto j = (*l)->oedges.begin(); j != (*l)->oedges.end(); ++j) {
+				X(static_cast<long>(i), (*j).ue->index) += (*j).direction;
+			}
+			i++;
+		}
+		/* triangles assumed here */
+		for (auto l = vertices.begin(); l != vertices.end(); ++l) {
+			for (auto j = (*l)->out_edges.begin(); j != (*l)->out_edges.end(); ++j) {
+				X(static_cast<long>(i), (*j)->next_edge()->ue->index) += (*j)->next_edge()->direction;
+			}
+			i++;
+		}
+	}
 
-  //   std::cout <<    X;
-
-  for (i = 1; i <= M; i++) {
-    for (k = 1; k <= N; k++) {
-      Y(k, i) = X(i, k);
-    }
-  }
+	{
+		for (size_t i = 1; i <= M; i++) {
+			for (size_t k = 1; k <= N; k++) {
+				Y(static_cast<long>(k), static_cast<long>(i)) = X(static_cast<long>(i), static_cast<long>(k));
+			}
+		}
+	}
 
   ZZ det2;
   mat_ZZ U;
-  U.SetDims(N, N);
+  U.SetDims(static_cast<long>(N), static_cast<long>(N));
   long r = LLL(det2, Y, U);
 
-  i = vertices.size();
-  for (auto j = vertices.begin(); j != vertices.end(); ++j) {
-    if (abs((*j)->total_angle() - 2 * MY_PI) > EPSILON) --i;
-  }
-  fprintf(out_f, "rank = %d #of parameters %d\n", (int)r, (int)(N - r - i));
+	{
+		long i = static_cast<long>(vertices.size());
+		for (auto j = vertices.begin(); j != vertices.end(); ++j) {
+			if (abs((*j)->total_angle() - 2 * pi<COORD>()) > EPSILON) --i;
+		}
+		fprintf(out_f, "rank = %lu #of parameters %ld\n", r, numeric_cast<long>(N) - r - i);
+	}
 
   Point *perturb_array = new Point[N + 1];
   Point *delta_array = new Point[N + 1];
 
   COORD *norms = new COORD[N + 1];
 
-  for (i = 1; i <= N; i++) {
+  for (size_t i = 1; i <= N; i++) {
     norms[i] = 0.0;
   }
 
-  for (i = 1; i <= N; i++) {
+  for (size_t i = 1; i <= N; i++) {
     delta_array[i] = 0.0;
   }
 
-  for (i = 1; i <= N; i++) {
-    perturb_array[i] = Point(max_perturb * my_random() / RANDOM_MAX,
-                             max_perturb * my_random() / RANDOM_MAX);
+  for (size_t i = 1; i <= N; i++) {
+    perturb_array[i] = Point(max_perturb * std::uniform_real_distribution<double>(0, 1)(random_engine),
+                             max_perturb * std::uniform_real_distribution<double>(0, 1)(random_engine));
     ;
   }
 
-  for (k = 1; k <= N - r; k++) {
-    for (i = 1; i <= N; i++) {
-      norms[k] += (1.0L) * to_long(U(k, i)) * to_long(U(k, i));
+  for (long k = 1; k <= static_cast<long>(N) - r; k++) {
+    for (size_t i = 1; i <= N; i++) {
+      norms[k] += static_cast<COORD>((1.0L) * to_long(U(k, i)) * to_long(U(k, i)));
     }
   }
 
-  for (k = 1; k <= N - r; k++) {
-    for (i = 1; i <= N; i++) {
+  for (long k = 1; k <= static_cast<long>(N) - r; k++) {
+    for (size_t i = 1; i <= N; i++) {
       delta_array[i] +=
-          perturb_array[k] * Point(to_long(U(k, i))) / sqrt(norms[k]);
+          perturb_array[k] * Point(numeric_cast<double>(to_long(U(k, i)))) / sqrt(norms[k]);
     }
   }
 
-  for (i = 1; i <= N; i++) {
+  for (size_t i = 1; i <= N; i++) {
     std::cout << "Edge " << i << " moving by " << delta_array[i] << "\n";
     uedge_array[i]->ue_vecQ.cx += delta_array[i];
   }
-
-  return;
 }  // main
 }  // namespace polygon

@@ -101,7 +101,7 @@ class SaddleConf {
   bool operator<(const SaddleConf& scf) const { return (count > scf.count); };
 
   // for visualization
-  int tag;
+  size_t tag;
   void DrawSaddles();
   void DrawCylinders();
 
