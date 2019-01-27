@@ -34,7 +34,7 @@ UEdge::UEdge(Vertex* a, Vertex* b, BigPointQ vec) : Simplex(), ue_vecQ(vec) {
   tag = 'E';
   v0 = a;
   v1 = b;
-  f0 = f1 = NULL;
+  f0 = f1 = nullptr;
   internal = false;
   from_triang = false;
 
@@ -48,7 +48,7 @@ UEdge::UEdge(Vertex* a, Vertex* b, Point vec_cx) : Simplex() {
   tag = 'E';
   v0 = a;
   v1 = b;
-  f0 = f1 = NULL;
+  f0 = f1 = nullptr;
   ue_vecQ.cx = vec_cx;
   //    ue_vecQ_algt = algt_vec;
   internal = false;
@@ -56,7 +56,7 @@ UEdge::UEdge(Vertex* a, Vertex* b, Point vec_cx) : Simplex() {
 }
 
 bool UEdge::deleted() {
-  if (f0 == NULL && f1 == NULL) {
+  if (f0 == nullptr && f1 == nullptr) {
     return (true);
   }
   return (false);
@@ -68,14 +68,14 @@ void UEdge::Delete() {
 
   if (deleted()) return;
 
-  f0 = NULL;
-  f1 = NULL;
+  f0 = nullptr;
+  f1 = nullptr;
 }
 
 bool UEdge::boundary() {
   if (deleted()) return (false);
 
-  if (f0 == NULL || f1 == NULL) {
+  if (f0 == nullptr || f1 == nullptr) {
     return (true);
   }
   return (false);
@@ -86,28 +86,28 @@ COORD UEdge::len() { return (abs(ue_vecQ.cx)); }
 void UEdge::Print(ostream& out) {
   Simplex::Print(out);
   out << " ( ";
-  if (v0 != NULL) {
+  if (v0 != nullptr) {
     v0->Print(out);
   } else {
     out << "NULL";
   };
 
   out << " ";
-  if (v1 != NULL) {
+  if (v1 != nullptr) {
     v1->Print(out);
   } else {
     out << "NULL";
   };
 
   out << " ";
-  if (f0 != NULL) {
+  if (f0 != nullptr) {
     f0->Simplex::Print(out);
   } else {
     out << "NULL";
   };
 
   out << " ";
-  if (f1 != NULL) {
+  if (f1 != nullptr) {
     f1->Simplex::Print(out);
   } else {
     out << "NULL";
@@ -133,12 +133,11 @@ void UEdge::Print(ostream& out) {
 Face* UEdge::boundary_face() {
   if (!(this->boundary())) ERR_RET("boundary_face: not boundary");
 
-  if (f0 == NULL) return (f1);
+  if (f0 == nullptr) return (f1);
 
-  if (f1 == NULL) return (f0);
+  if (f1 == nullptr) return (f0);
 
   ERR_RET("boundary_face:deleted edge");
-  return (NULL);
 }
 
 list<OEdge>::iterator UEdge::boundary_edge() {
@@ -154,15 +153,14 @@ list<OEdge>::iterator UEdge::this_edge(Face* f) {
   }
 
   ERR_RET("this_edge: edge not found");
-  return (NULL_OEdgeIter);
 }
 
 void UEdge::set_null_face(Face* f) {
   if (!(this->boundary())) ERR_RET("set_null_face: not boundary edge");
 
-  if (f0 == NULL) {
+  if (f0 == nullptr) {
     f0 = f;
-  } else if (f1 == NULL) {
+  } else if (f1 == nullptr) {
     f1 = f;
   } else
     ERR_RET("set_null_face: deleted edge");

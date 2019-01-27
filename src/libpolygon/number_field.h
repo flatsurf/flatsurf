@@ -33,8 +33,9 @@ template <typename T>
 class NumberField {
  public:
   NumberField<T>();
-  NumberField<T>(T minimal_poly[], int degree);
-  NumberField<T>(T minimal_poly[], int degree, std::complex<COORD> embedding);
+  NumberField<T>(T minimal_poly[], size_t degree);
+  NumberField<T>(T minimal_poly[], size_t degree,
+                 std::complex<COORD> embedding);
 
   void store_conjugate(algebraic<T>);
 
@@ -69,7 +70,7 @@ class NumberField {
   poly<T> minimal_poly;  // minimal polynomial of field.  {a_0, ..., a_n}
                          // represents a_0 + ... + a_n x^n
   std::vector<std::vector<T> > multiplication_table;
-  int degree;
+  size_t degree;
   std::vector<algebraic<T> > conjugate_table;
   boost::numeric::ublas::matrix<algebraic<T> > cross_product_table;
 };

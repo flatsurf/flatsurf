@@ -24,6 +24,9 @@
 // above used to decide if two saddles have the same length
 
 #include <algorithm>
+#include <boost/math/constants/constants.hpp>
+#include <boost/math/special_functions/round.hpp>
+#include <boost/numeric/conversion/cast.hpp>
 #include <cassert>
 #include <fstream>
 #include <ostream>
@@ -31,7 +34,6 @@
 #include "libpolygon/cylinder.h"
 #include "libpolygon/defs.h"
 #include "libpolygon/elementary_geometry.h"
-#include "libpolygon/elementary_math.h"
 #include "libpolygon/globals.h"
 #include "libpolygon/number_field.h"
 #include "libpolygon/saddleconf.h"
@@ -39,6 +41,10 @@
 #include "libpolygon/two_complex.h"
 #include "libpolygon/vert_pattern.h"
 
+using boost::numeric_cast;
+using boost::math::iround;
+using boost::math::round;
+using boost::math::constants::pi;
 using std::abs;
 using std::endl;
 using std::flush;
@@ -50,7 +56,7 @@ namespace polygon {
 /* and add max_vertex_degree to Check */
 
 VertPattern::VertPattern() {
-  base.v = NULL;
+  base.v = nullptr;
   v_id = -1;
   for (int i = 0; i < MAX_SADDLES; i++) {
     at[i] = 0;
@@ -59,7 +65,7 @@ VertPattern::VertPattern() {
 }
 
 bool VertPattern::is_empty() {
-  if (base.v == NULL) {
+  if (base.v == nullptr) {
     return (true);
   }
   return (false);
@@ -92,7 +98,7 @@ COORD VertPattern::get_length(int j) {
 }
 
 void VertPattern::clear() {
-  base.v = NULL;
+  base.v = nullptr;
   for (int i = 0; i < MAX_SADDLES; i++) {
     at[i] = 0;
     length[i] = 0.0;
@@ -121,19 +127,9 @@ void VertPattern::add(Dir<Point>& d, int id) {
     }
 
     COORD a = base.AngleF(d);
-    int j = round_to_int(a / MY_PI);
-    if (abs(j * MY_PI - a) > EPSILON) {
+    int j = iround(a / pi<COORD>());
+    if (abs(j * pi<COORD>() - a) > EPSILON) {
       smry.bad_angle_count++;
-      //	  std::cout << "angle = " << abs(angle(d.vec, base.vec)) -MY_PI
-      //<< " "
-      //		<< abs(a - j*MY_PI) << " at V" << base.v->id();
-
-      //	  fprintf(out_f,"angle = %lg %lg at V%d ",
-      //		  abs(angle(d.vec, base.vec)) -MY_PI,
-      //		  abs(a - j*MY_PI),base.v->id());
-      //	    std::cout << " " << base.vec <<"\n";
-      //	    throw vert_bad_angle(abs(j*MY_PI-a));
-      //	    ERR_RET("VertPattern::add: bad angle");
     }
 
     if (j == d.v->int_angle) {
@@ -143,7 +139,7 @@ void VertPattern::add(Dir<Point>& d, int id) {
 
     if (j >= d.v->int_angle) {
       std::cout << "a = " << a << " j = " << j
-                << " diff = " << abs(j * MY_PI - a) << " V" << d.v->id()
+                << " diff = " << abs(j * pi<COORD>() - a) << " V" << d.v->id()
                 << " int angle = " << d.v->int_angle << endl
                 << flush;
 
@@ -168,9 +164,9 @@ void VertPattern::print(ostream& output_stream, SaddleConf& sc) {
     if (at[i] == 0) {
       output_stream << "X";
     } else if (at[i] > 0) {
-      output_stream << (char)(abs(at[i]) - 1 + 'A');
+      output_stream << static_cast<char>(abs(at[i]) - 1 + 'A');
     } else { /* at[i] < 0 */
-      output_stream << (char)(abs(at[i]) - 1 + 'a');
+      output_stream << static_cast<char>(abs(at[i]) - 1 + 'a');
     }
   }
   if (show_lengths) {
@@ -281,7 +277,7 @@ SaddleConf::SaddleConf()
   for (int i = 0; i < MAX_VERTICES; i++) {
     vp[i].clear();
   }
-  output_f = NULL;
+  output_f = nullptr;
 }
 
 void SaddleConf::clear() {
@@ -676,7 +672,6 @@ void SaddleConf::DrawCylinders() {
       }
       if (i == 0) {
         ERR_RET("DrawCylinders: bad cylinder");
-        break;
       }
       if (i == init_saddle) {
         /* found cylinder */
@@ -694,9 +689,9 @@ void SaddleConf::DrawCylinders() {
     //    std::cout << "a/MY_PI = " << a/MY_PI << endl;
 
 #ifdef USE_QUAD
-    int j = floor(a / MY_PI).convert_to<int>();
+    int j = floor(a / pi<COORD>()).convert_to<int>();
 #else
-    int j = static_cast<int>(floor(a / MY_PI));
+    int j = static_cast<int>(floor(a / pi<COORD>()));
 #endif
 
     //    std::cout << "j = " << j << endl;
@@ -706,7 +701,7 @@ void SaddleConf::DrawCylinders() {
     }
     i = vp[vert].at[j];
     init_saddle = i;
-    int count = 0;
+    int _count = 0;
 
     if (i >= 0) {
       ERR_RET("DrawCylinder: bad initial cross_saddle");
@@ -722,9 +717,8 @@ void SaddleConf::DrawCylinders() {
         ERR_RET(
             "DrawCylinder:CheckCrossSaddle: Did not find other end of "
             "cylinder");
-        break;
       }
-      if (count++ > MAX_SADDLES) {
+      if (_count++ > MAX_SADDLES) {
         ERR_RET("DrawCylinder:CheckCrossSaddle: Infinite Loop");
       }
       if (i == init_saddle) {
@@ -775,13 +769,13 @@ void SaddleConf::check_cross_saddle(COORD cyl_len,
   //    std::cout << "a/MY_PI = " << a/MY_PI << endl;
 
 #ifdef USE_QUAD
-  int j = floor(a / MY_PI).convert_to<int>();
+  int j = floor(a / pi < COORDE()).convert_to<int>();
 #else
-  int j = static_cast<int>(floor(a / MY_PI));
+  int j = static_cast<int>(floor(a / pi<COORD>()));
 #endif
   //    std::cout << "j = " << j << endl;
 
-  if (abs(j * MY_PI - a) > EPSILON) {
+  if (abs(j * pi<COORD>() - a) > EPSILON) {
     smry.bad_angle_count++;
     //	  std::cout << "angle = " << abs(angle(d.vec, base.vec)) -MY_PI << " "
     //		<< abs(a - j*MY_PI) << " at V" << base.v->id();
@@ -795,8 +789,9 @@ void SaddleConf::check_cross_saddle(COORD cyl_len,
   }
 
   if (j >= vp[vert].base.v->int_angle) {
-    std::cout << "a = " << a << " j = " << j << " diff = " << abs(j * MY_PI - a)
-              << " V" << vp[vert].base.v->id()
+    std::cout << "a = " << a << " j = " << j
+              << " diff = " << abs(j * pi<COORD>() - a) << " V"
+              << vp[vert].base.v->id()
               << " int angle = " << vp[vert].base.v->int_angle << endl
               << flush;
 
@@ -805,11 +800,12 @@ void SaddleConf::check_cross_saddle(COORD cyl_len,
   COORD new_cyl_len = 0;
   int i = vp[vert].at[j];
   int init_saddle = i;
-  int count = 0;
+  int _count = 0;
 
   if (i >= 0) {
-    std::cout << "a = " << a << " j = " << j << " diff = " << abs(j * MY_PI - a)
-              << " V" << vp[vert].base.v->id()
+    std::cout << "a = " << a << " j = " << j
+              << " diff = " << abs(j * pi<COORD>() - a) << " V"
+              << vp[vert].base.v->id()
               << " int angle = " << vp[vert].base.v->int_angle << endl
               << flush;
 
@@ -820,7 +816,7 @@ void SaddleConf::check_cross_saddle(COORD cyl_len,
     }
     std::cout << endl;
 
-    std::cout << "a/MY_PI = " << a / MY_PI << endl;
+    std::cout << "a/MY_PI = " << a / pi<COORD>() << endl;
     std::cout << "j = " << j << endl;
     std::cout << "id = " << i << endl;
     ERR_RET("CheckCrossSaddle: bad initial saddle");
@@ -841,9 +837,8 @@ void SaddleConf::check_cross_saddle(COORD cyl_len,
     if (i == 0) {
       /* no cylinder */
       ERR_RET("CheckCrossSaddle: Did not find other end of cylinder");
-      break;
     }
-    if (count++ > MAX_SADDLES) {
+    if (_count++ > MAX_SADDLES) {
       ERR_RET("CheckCrossSaddle: Infinite Loop");
     }
     if (i == init_saddle) {
@@ -851,7 +846,8 @@ void SaddleConf::check_cross_saddle(COORD cyl_len,
       break;
     }
   }
-  if (COORD c = abs(new_cyl_len - cyl_len) > LENGTH_THRESHOLD) {
+  COORD c = abs(new_cyl_len - cyl_len);
+  if (c > LENGTH_THRESHOLD) {
     vp[vert].print(std::cout, *this);
     std::cout << "i = " << i << endl;
     std::cout << c << endl;
@@ -1113,7 +1109,7 @@ void Summary::normalize() {
 }
 
 void Summary::print(ostream& output_stream, COORD part_total, COORD part_group,
-                    COORD volume, COORD depth) {
+                    COORD volume, COORD depth_) {
   int symmetry_factor;
 
   bool final_report = false;
@@ -1150,7 +1146,7 @@ void Summary::print(ostream& output_stream, COORD part_total, COORD part_group,
   // FOR DEBUGGING:::
   // threshold = -1;
 
-  output_stream << "\n part done:" << round_to_int(100 * part_group) << "%";
+  output_stream << "\n part done:" << round(100 * part_group) << "%";
   output_stream << " weird " << weird_count;
   output_stream << " bad_angle " << bad_angle_count;
   output_stream << " unusual " << count_unusual;
@@ -1160,16 +1156,16 @@ void Summary::print(ostream& output_stream, COORD part_total, COORD part_group,
   output_stream << "\n";
 
   for (unsigned int i = 0; i < scf.size(); i++) {
-    if (final_report && closure && scf[i].output_f != NULL) {
+    if (final_report && closure && scf[i].output_f != nullptr) {
       fclose(scf[i].output_f);
-      scf[i].output_f = NULL;
+      scf[i].output_f = nullptr;
     }
 
     if (final_report) {
       if (cyls_only && scf[i].n_cyl <= 0) {
         continue;
       }
-      if ((!allow_long_cyls) && scf[i].shortest_cyl_occurence > depth) {
+      if ((!allow_long_cyls) && scf[i].shortest_cyl_occurence > depth_) {
         continue;
       }
 
@@ -1180,11 +1176,12 @@ void Summary::print(ostream& output_stream, COORD part_total, COORD part_group,
         symmetry_factor = 1;
       }
       output_stream << "\n    total: "
-                    << scf[i].count * volume * MY_PI /
-                           (6.0 * depth * depth * part_total * symmetry_factor)
+                    << scf[i].count * volume * pi<COORD>() /
+                           (6.0 * depth_ * depth_ * part_total *
+                            symmetry_factor)
                     << " "
                     << scf[i].count * volume /
-                           (MY_PI * depth * depth * part_total *
+                           (pi<COORD>() * depth_ * depth_ * part_total *
                             symmetry_factor);
       output_stream << " sym = " << symmetry_factor << endl;
       output_stream << "    raw = " << scf[i].count
@@ -1206,10 +1203,11 @@ void Summary::print(ostream& output_stream, COORD part_total, COORD part_group,
   }
   if (show_cyls) {
     output_stream << "\ntotal cylinders: "
-                  << cyl_count * volume * MY_PI /
-                         (6.0 * depth * depth * part_total)
+                  << cyl_count * volume * pi<COORD>() /
+                         (6.0 * depth_ * depth_ * part_total)
                   << " "
-                  << cyl_count * volume / (MY_PI * depth * depth * part_total);
+                  << cyl_count * volume /
+                         (pi<COORD>() * depth_ * depth_ * part_total);
     output_stream << " raw = " << cyl_count << " rejected = " << reject_count
                   << "\n";
   }
@@ -1222,7 +1220,7 @@ void Summary::clear_group() {
 }
 
 /* following function assumes that sc is not already present in summary */
-int Summary::add_new_conf(SaddleConf& sc) {
+size_t Summary::add_new_conf(SaddleConf& sc) {
   //    if( (unsigned int)scf.size() >= scf.capacity() ) {
   //	scf.reserve(2*scf.capacity());
   //    }
@@ -1308,7 +1306,7 @@ int Summary::add_new_conf(SaddleConf& sc) {
   return (scf.size());
 }
 
-int Summary::add_one_conf(SaddleConf& sc) {
+size_t Summary::add_one_conf(SaddleConf& sc) {
   int s_matched[MAX_SADDLES];
 
   //    assert( scf.size() == scf.size() );
@@ -1372,7 +1370,7 @@ int Summary::add_one_conf(SaddleConf& sc) {
 
       scf[i].count++;
       scf[i].group_count++;
-      return (scf[i].tag);
+      return numeric_cast<size_t>(scf[i].tag);
     } else {
       //   std::cout << "not isom" << "\n";
     }
@@ -1380,14 +1378,14 @@ int Summary::add_one_conf(SaddleConf& sc) {
 
   sc.count = 1;
   sc.group_count = 1;
-  sc.tag = tag_count++;
+  sc.tag = numeric_cast<int>(tag_count++);
 
   // if ( show_length_list ) {
   // 	sc.lengths_set.insert(sc.get_orig_min_saddle_length());
   // }
   add_new_conf(sc);
 
-  return (sc.tag);
+  return numeric_cast<size_t>(sc.tag);
 }
 
 #ifdef USE_PARALLEL

@@ -18,19 +18,20 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <boost/math/constants/constants.hpp>
 #include <cassert>
 #include <complex>
 #include <list>
 
 #include "libpolygon/defs.h"
 #include "libpolygon/elementary_geometry.h"
-#include "libpolygon/elementary_math.h"
 #include "libpolygon/globals.h"
 #include "libpolygon/oedge.h"
 #include "libpolygon/two_complex.h"
 
 using namespace polygon;
 
+using boost::math::constants::pi;
 using std::abs;
 using std::complex;
 using std::list;
@@ -41,27 +42,12 @@ COORD d_point_line2(const Point &u, const Point &v) {
   COORD p = Dot(u, v) / Dot(v, v);
   return (Dist2(u, p * v));
 }
-COORD d_point_line2(const BigPointI &u, const BigPointI &v) {
+COORD d_point_line2(__attribute__((unused)) const BigPointI &u,
+                    __attribute__((unused)) const BigPointI &v) {
   ERR_RET("Call to d_point_line2 (BigPointI, BigPointI)");
-  return (0.0);
-}
-
-int gcd(int a, int b) {
-  if (a == 0) return (b);
-  if (b == 0) return (a);
-  if (a < 0) a = -a;
-  if (b < 0) b = -b;
-  if (a == 1 || b == 1) return (1);
-  if (a == b) return (a);
-  if (a > b) {
-    return (gcd(b, a % b));
-  } else {
-    return (gcd(a, b % a));
-  }
 }
 
 /* fix this function */
-
 #if defined(USE_LONG_DOUBLE) || defined(USE_QUAD)
 #include <boost/multiprecision/mpfr.hpp>
 COORD my_mpq_get_d(bigrat op) {
@@ -94,13 +80,9 @@ COORD my_mpq_get_d(bigrat op) {
 COORD my_mpq_get_d(bigrat op) { return op.get_d(); }
 #endif
 
-COORD my_mpq_get_d(int64_t op) { return static_cast<COORD>(op); }
-
 COORD my_mpq_get_d(int op) { return static_cast<COORD>(op); }
 
-complex<COORD> exp(complex<COORD> z, int n) {
-  return std::pow(z, n);
-}
+COORD my_mpq_get_d(int64_t op) { return static_cast<COORD>(op); }
 
 void reflect_vector(BigPointQ p, BigPointQ vec, BigPointQ &reflection) {
   COORD ratio;
@@ -125,9 +107,9 @@ void reflect_vector(BigPointQ p, BigPointQ vec, BigPointQ &reflection) {
     }
 
     /* z . w = (1/4)(z+\bar{z})(w+\bar{w}) -(1/4)(z-\bar{z})(w - \bar{w}) =
-             = (1/4)(z w + \bar{z}w + z \bar{w} +\bar{z} \bar{w} -
-                                             -z w +\bar{z} w + z \bar{w}
-       -\bar{z} \bar{w}) = = (1/2) ( z \bar{w} + \bar{z} w ).
+                                     = (1/4)(z w + \bar{z}w + z \bar{w} +\bar{z}
+       \bar{w} - -z w +\bar{z} w + z \bar{w}
+             -\bar{z} \bar{w}) = = (1/2) ( z \bar{w} + \bar{z} w ).
     */
 
     alg_tQ p_a = p.algt;
@@ -176,9 +158,9 @@ COORD angle(Point p, Point q) {
   return (acos(x));
 }
 
-COORD angle(const BigPointI &p, const BigPointI &q) {
+COORD angle(__attribute__((unused)) const BigPointI &p,
+            __attribute__((unused)) const BigPointI &q) {
   ERR_RET("angle called on BigPointI arguments");
-  return (0.0);
 }
 
 /* following function works for angles > \pi */
@@ -187,7 +169,7 @@ COORD true_angle(Point p, Point q) {
     if (aligned(p, q)) {
       return (0);
     } else {
-      return (MY_PI);
+      return pi<COORD>();
     }
   }
 
@@ -196,7 +178,7 @@ COORD true_angle(Point p, Point q) {
   if (CCW(p, q))
     return a;
   else
-    return 2 * MY_PI - a;
+    return 2 * pi<COORD>() - a;
 }
 
 bool intersect_segment(Point pb, Point pv, Point qb, Point qv,
@@ -298,8 +280,6 @@ bool colinear_slow(Point p, Point q) {
   if (norm(p1 - p2) < DELTA * DELTA || norm(p1 + p2) < DELTA * DELTA) {
     too_close_flag = true;
     smry.weird_count++;
-    //	out_s << "warning: almost colinear " << abs(p1-p2) << " " << abs(p1+p2)
-    //<< endl;
   }
   return (false);
 }
@@ -344,9 +324,9 @@ bool aligned(const Point &p, const Point &q) {
     return (false);
   }
   /*
-                  if ( angle(p,q) > 0.5*MY_PI ) {
-                                  return(false);
-                  }
+                                                                  if (
+     angle(p,q) > 0.5*MY_PI ) { return(false);
+                                                                  }
   */
 
   if (Dot(p, q) < 0) {
@@ -378,9 +358,9 @@ bool CCW(const Point &u,
   COORD s = -u.imag() * v.real() + u.real() * v.imag();
 
   /*
-                  if ( verbose >= 5 && abs(s) < 0.01 ) {
-                                  out_s << "\nCCW: s = " << s << endl;
-                  }
+                                                                  if ( verbose
+     >= 5 && abs(s) < 0.01 ) { out_s << "\nCCW: s = " << s << endl;
+                                                                  }
   */
 
   if (s > 0) {
@@ -418,8 +398,6 @@ bool CCW(const BigPointI &bu, const BigPointI &bv) {
     // we can't be sure of return. Set flag.
     too_close_flag = true;
     smry.weird_count++;
-    //	out_s << "warning: almost colinear " << abs(p1-p2) << " " << abs(p1+p2)
-    //<< endl;
   }
 
   if (s > 0) {

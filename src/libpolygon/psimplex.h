@@ -31,10 +31,10 @@ class UEdge;
 
 class PSimplex {
  public:
-  PSimplex(Point, int);
+  PSimplex(Point, size_t);
 
   Point p;
-  int in_pcomplex;
+  size_t in_pcomplex;
 
   virtual Simplex* sp();
   virtual void Draw(my_ostream&, COORD);

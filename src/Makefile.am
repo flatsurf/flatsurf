@@ -40,7 +40,6 @@ libpolygoninclude_HEADERS =             \
     libpolygon/dir.h                    \
     libpolygon/dmap.h                   \
     libpolygon/elementary_geometry.h    \
-    libpolygon/elementary_math.h        \
     libpolygon/face.h                   \
     libpolygon/globals.h                \
     libpolygon/libpolygon.h             \
@@ -61,6 +60,7 @@ libpolygoninclude_HEADERS =             \
     libpolygon/uedge.h                  \
     libpolygon/vector.h                 \
     libpolygon/vertex.h                 \
+    libpolygon/shared.h                 \
     libpolygon/vert_pattern.h
 
 $(builddir)/libpolygon/libpolygon.h: $(srcdir)/libpolygon/libpolygon.h.in Makefile

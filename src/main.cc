@@ -21,17 +21,20 @@
 
 #include <getopt.h>
 #include <unistd.h>
+#include <boost/numeric/conversion/cast.hpp>
 #include <fstream>
 #include <iostream>
 
 #include "libpolygon/globals.h"
 #include "libpolygon/my_ostream.h"
 #include "libpolygon/number_field.h"
+#include "libpolygon/shared.h"
 #include "libpolygon/two_complex.h"
 #include "libpolygon/uedge.h"
 
 using namespace polygon;
 
+using boost::numeric_cast;
 using std::cout;
 using std::endl;
 using std::list;
@@ -39,16 +42,12 @@ using std::max;
 using std::min;
 using std::ofstream;
 
-bool randomize = false;
-char hostname[MAX_HOSTNAME];
-bool file_arg = false;
-
 int main(int argc, char** argv) {
+  bool file_arg = false;
+
   S = new TwoComplex();
 
   COORD t1, t2;
-
-  gethostname(hostname, MAX_HOSTNAME - 1);
 
 #ifdef USE_MPI
   MPI_Init(&argc, &argv);
@@ -81,9 +80,6 @@ int main(int argc, char** argv) {
   n_slices = 1;
 #endif
 
-  // Do not display the hostname, to make runs more reproducible on CI
-  // std::cout << "hostname = " << hostname << endl;
-
   for (int i = 0; i < argc; i++) {
     std::cout << argv[i] << " ";
   }
@@ -95,53 +91,53 @@ int main(int argc, char** argv) {
     //	int this_option_optind = optind ? optind : 1;
     int option_index = 0;
     static struct option long_options[] = {
-        {"delta", required_argument, NULL, 'a'},
-        {"retriangulate", no_argument, NULL, 'b'},
-        {"move_vertex", required_argument, NULL, 'c'},
-        {"depth", required_argument, NULL, 'd'},
-        {"end_vertex", required_argument, NULL, 'e'},
-        {"file", required_argument, NULL, 'f'},
-        {"group", required_argument, NULL, 'g'},
+        {"delta", required_argument, nullptr, 'a'},
+        {"retriangulate", no_argument, nullptr, 'b'},
+        {"move_vertex", required_argument, nullptr, 'c'},
+        {"depth", required_argument, nullptr, 'd'},
+        {"end_vertex", required_argument, nullptr, 'e'},
+        {"file", required_argument, nullptr, 'f'},
+        {"group", required_argument, nullptr, 'g'},
 
-        {"lock", no_argument, NULL, 'l'},
-        {"max_priority", required_argument, NULL, 'm'},
-        {"number", required_argument, NULL, 'n'},
-        {"offset", required_argument, NULL, 'o'},
-        {"perturb", optional_argument, NULL, 'p'},
-        {"quiet", no_argument, NULL, 'q'},
-        {"randomize", no_argument, NULL, 'r'},
-        {"start_vertex", required_argument, NULL, 's'},
-        {"show_moduli", no_argument, NULL, 't'},
-        {"cyls_only", no_argument, NULL, 'u'},
-        {"verbose", optional_argument, NULL, 'v'},
-        {"new_sweep", no_argument, NULL, 'w'},
-        {"perturb_conjugate", optional_argument, NULL, 'x'},
+        {"lock", no_argument, nullptr, 'l'},
+        {"max_priority", required_argument, nullptr, 'm'},
+        {"number", required_argument, nullptr, 'n'},
+        {"offset", required_argument, nullptr, 'o'},
+        {"perturb", optional_argument, nullptr, 'p'},
+        {"quiet", no_argument, nullptr, 'q'},
+        {"randomize", no_argument, nullptr, 'r'},
+        {"start_vertex", required_argument, nullptr, 's'},
+        {"show_moduli", no_argument, nullptr, 't'},
+        {"cyls_only", no_argument, nullptr, 'u'},
+        {"verbose", optional_argument, nullptr, 'v'},
+        {"new_sweep", no_argument, nullptr, 'w'},
+        {"perturb_conjugate", optional_argument, nullptr, 'x'},
 
-        {"follow_depth", required_argument, NULL, 'z'},
-        {"no_field_arithmetic", no_argument, NULL, 'A'},
-        {"no_retriang", no_argument, NULL, 'B'},
-        {"closure", no_argument, NULL, 'C'},
-        {"allow_long_cyls", no_argument, NULL, 'D'},
-        {"epsilon", required_argument, NULL, 'E'},
-        {"show_length_list", no_argument, NULL, 'F'},
-        {"draw_saddles", required_argument, NULL, 'G'},
-        {"draw_cylinders", required_argument, NULL, 'H'},
+        {"follow_depth", required_argument, nullptr, 'z'},
+        {"no_field_arithmetic", no_argument, nullptr, 'A'},
+        {"no_retriang", no_argument, nullptr, 'B'},
+        {"closure", no_argument, nullptr, 'C'},
+        {"allow_long_cyls", no_argument, nullptr, 'D'},
+        {"epsilon", required_argument, nullptr, 'E'},
+        {"show_length_list", no_argument, nullptr, 'F'},
+        {"draw_saddles", required_argument, nullptr, 'G'},
+        {"draw_cylinders", required_argument, nullptr, 'H'},
 
-        {"individual", no_argument, NULL, 'I'},
+        {"individual", no_argument, nullptr, 'I'},
 
-        {"tag", required_argument, NULL, 'J'},
-        {"billiard_mode", no_argument, NULL, 'K'},
-        {"show_lengths", no_argument, NULL, 'L'},
+        {"tag", required_argument, nullptr, 'J'},
+        {"billiard_mode", no_argument, nullptr, 'K'},
+        {"show_lengths", no_argument, nullptr, 'L'},
 
-        {"nice", required_argument, NULL, 'N'},
-        {"tikz_output", no_argument, NULL, 'P'},
+        {"nice", required_argument, nullptr, 'N'},
+        {"tikz_output", no_argument, nullptr, 'P'},
 
-        {"norescale", no_argument, NULL, 'R'},
-        {"slices", required_argument, NULL, 'S'},
+        {"norescale", no_argument, nullptr, 'R'},
+        {"slices", required_argument, nullptr, 'S'},
 
-        {"show_cyls", no_argument, NULL, 'Y'},
-        {"heights_and_twists", no_argument, NULL, 'Z'},
-        {0, 0, 0, 0}};
+        {"show_cyls", no_argument, nullptr, 'Y'},
+        {"heights_and_twists", no_argument, nullptr, 'Z'},
+        {nullptr, 0, nullptr, 0}};
 
     int c;
     c = getopt_long(argc, argv, "f:s:e:d:v::lp::o:ti", long_options,
@@ -189,11 +185,12 @@ int main(int argc, char** argv) {
         break;
 
       case 'r':
-        randomize = true;
         if (optarg) {
-          random_seed = atoi(optarg);
+          random_engine = std::default_random_engine{
+              static_cast<unsigned int>(atoll(optarg))};
         } else {
-          random_seed = getpid();
+          random_engine = std::default_random_engine{
+              static_cast<unsigned int>(time(nullptr))};
         }
         break;
 
@@ -396,7 +393,6 @@ int main(int argc, char** argv) {
 
       case '?':
         ERR_RET("bad option");
-        break;
 
       default:
         printf("?? getopt returned character code 0%o ??\n", c);
@@ -410,7 +406,10 @@ int main(int argc, char** argv) {
   }
 
   if (nice_inc) {
-    nice(nice_inc);
+    if (nice(nice_inc) == -1) {
+      perror("failed to renice");
+      abort();
+    }
   }
 
   if (mc_number == 0 && new_sweep == 0) {
@@ -419,13 +418,6 @@ int main(int argc, char** argv) {
 
   if (follow_depth < 0.0) {
     follow_depth = depth + 5; /* FIX ME */
-  }
-
-  if (randomize) {
-#ifdef USE_MPI
-    MPI_Bcast(&random_seed, 1, MPI_INT, 0, MPI_COMM_WORLD);
-#endif
-    srandom(random_seed);
   }
 
   if (closure) {
@@ -550,8 +542,9 @@ int main(int argc, char** argv) {
   if (perturb_euclidean) {
     for (auto i = S->vertices.begin(); i != S->vertices.end(); ++i) {
       if ((*i)->euclidean) {
-        tmp_offset =
-            Point(mv * my_random() / RANDOM_MAX, mv * my_random() / RANDOM_MAX);
+        tmp_offset = Point(
+            mv * std::uniform_real_distribution<double>(0, 1)(random_engine),
+            mv * std::uniform_real_distribution<double>(0, 1)(random_engine));
         std::cout << "Moving: ";
         (*i)->Print(std::cout);
         std::cout << " offset " << tmp_offset << "\n";
@@ -562,8 +555,9 @@ int main(int argc, char** argv) {
 
   if (perturb_vertex != UNDEFINED) {
     if (offset == Point(UNDEFINED, UNDEFINED)) {
-      offset =
-          Point(mv * my_random() / RANDOM_MAX, mv * my_random() / RANDOM_MAX);
+      offset = Point(
+          mv * std::uniform_real_distribution<double>(0, 1)(random_engine),
+          mv * std::uniform_real_distribution<double>(0, 1)(random_engine));
     }
     for (auto i = S->vertices.begin(); i != S->vertices.end(); ++i) {
       if ((*i)->id() == perturb_vertex) {

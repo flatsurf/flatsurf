@@ -20,11 +20,14 @@
 
 #include <fstream>
 #include <list>
+#include <random>
 
 #include "libpolygon/globals.h"
+#include "libpolygon/shared.h"
 
 using std::list;
 using std::ofstream;
+using std::uniform_real_distribution;
 
 /*
  * This file contains global variables that are set by the command line
@@ -33,6 +36,8 @@ using std::ofstream;
  */
 
 namespace polygon {
+std::default_random_engine random_engine;
+
 int start_vertex = UNDEFINED;
 int end_vertex = UNDEFINED;
 bool perturb_euclidean = true;
@@ -80,7 +85,6 @@ bool too_close_flag = false;
 // bool draw_cylinders = false;
 
 TwoComplex *S;
-int random_seed;
 FILE *out_f;
 
 ofstream out_stream;
@@ -103,4 +107,5 @@ list<Face *>::iterator NULL_FacePtrIter = stupid_FacePtr_list.end();
 int numprocs;
 int my_id;
 #endif
+
 }  // namespace polygon

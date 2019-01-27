@@ -35,7 +35,7 @@ class Vertex : public Simplex {
   Vertex();
 
   UEdge* e;
-  int order;  // number of incident edges? Default value 0.
+  size_t order;  // number of incident edges? Default value 0.
   bool euclidean;
   int int_angle; /* for speed: total_angle_over_pi() */
                  /* Stored by BuildNeighborLists */

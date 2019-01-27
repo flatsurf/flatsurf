@@ -56,7 +56,6 @@ extern COORD area(const Point &p, const Point &q);
 extern COORD d_point_line2(const Point &p, const Point &line);
 extern COORD d_point_line2(const BigPointI &p, const BigPointI &line);
 
-extern int gcd(int a, int b);
 extern COORD det3(const std::vector<COORD> &x, const std::vector<COORD> &y,
                   const std::vector<COORD> &z);
 extern bool in_circle(Point a, Point b, Point c, Point d);

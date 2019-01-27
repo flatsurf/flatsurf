@@ -65,8 +65,8 @@ class alg_t {
   explicit alg_t(std::vector<algebraic<T> > coeffs);
 
   void pad_coeffs(int n);  // need to call this when increasing nbr_params
-  algebraic<T> get_coeff(int n);
-  void set_coeff(int n, const algebraic<T>& a);
+  algebraic<T> get_coeff(size_t n);
+  void set_coeff(size_t n, const algebraic<T>& a);
 
   alg_t<T> operator-() const;
   alg_t<T>& operator+=(const alg_t<T>&);

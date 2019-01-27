@@ -31,7 +31,7 @@ class Face;
 
 class PFace : public PSimplex {
  public:
-  PFace(Face*, Point, int);
+  PFace(Face*, Point, size_t);
 
   void Draw(my_ostream&, COORD) override;
 

@@ -19,15 +19,20 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <boost/math/constants/constants.hpp>
+#include <boost/numeric/conversion/cast.hpp>
 #include <complex>
 #include <ostream>
 #include <vector>
 
+#include "libpolygon/algebraic.h"
 #include "libpolygon/defs.h"
+#include "libpolygon/globals.h"
 #include "libpolygon/number_field.h"
 #include "libpolygon/params.h"
 #include "libpolygon/two_complex.h"
 
+using boost::numeric_cast;
 using std::complex;
 using std::ostream;
 using std::vector;
@@ -71,36 +76,31 @@ NumberField<T> *InitCyclotomic(int n) {
 
   NumberField<T> *F;
 
-  complex<COORD> nth_rootofunity(cos((COORD)(2 * MY_PI / n)),
-                                 sin((COORD)(2 * MY_PI / n)));
+  complex<COORD> nth_rootofunity(
+      cos(2 * boost::math::constants::pi<COORD>() / n),
+      sin(2 * boost::math::constants::pi<COORD>() / n));
   poly<T> cyc = cyclotomic_poly<T>(n);
   vector<T> coeffs = cyc.coefficients;
-  F = new NumberField<T>(&coeffs[0], cyc.degree(), nth_rootofunity);
+  F = new NumberField<T>(&coeffs[0], numeric_cast<size_t>(cyc.degree()),
+                         nth_rootofunity);
   F->store_conjugate(algebraic<T>(1, F).pow(n - 1));
 
   return (F);
 }
 
 template <typename T>
-algebraic<T> alg_t<T>::get_coeff(int i) {
-  return (coeffs[i]);
+algebraic<T> alg_t<T>::get_coeff(size_t i) {
+  return coeffs[i];
 }
 
 template <typename T>
-void alg_t<T>::set_coeff(int i, const algebraic<T> &a) {
+void alg_t<T>::set_coeff(size_t i, const algebraic<T> &a) {
   coeffs[i] = a;
 }
 
 template <typename T>
 alg_t<T>::alg_t() {
   coeffs.assign(Params::nbr_params() + 1, NumberField<T>::F_zero);
-
-  /*
-                  for (int i = 0; i <= Params::nbr_params(); i++ ) {
-                                  coeffs.push_back(algebraic<T>(NumberField<T>::F));//set
-     coeffs to 0
-                  }
-  */
 }
 
 template <typename T>
@@ -112,38 +112,28 @@ void alg_t<T>::pad_coeffs(int n) {
 
 template <typename T>
 alg_t<T>::alg_t(vector<algebraic<T> > c) : coeffs(c) {
-  if (c.size() != (unsigned int)Params::nbr_params() + 1) {
+  if (c.size() != Params::nbr_params() + 1) {
     ERR_RET("alg_t: initialization with wrong length vector");
   }
 }
-
-/*
-alg_t<T>::alg_t(algebraic<T> c[])
-{
-        vector<algebraic<T> > v;
-        for(int i=0; i<=n_params; i++)
-                v.push_back(c[i]);
-        coeffs = v;
-}
-*/
 
 template <typename T>
 alg_t<T> alg_t<T>::operator-() const {
   alg_t<T> r(*this);
 
-  for (int i = 0; i <= Params::nbr_params(); i++) r.coeffs[i] = -(coeffs[i]);
+  for (size_t i = 0; i <= Params::nbr_params(); i++) r.coeffs[i] = -(coeffs[i]);
   return r;
 }
 
 template <typename T>
 alg_t<T> &alg_t<T>::operator+=(const alg_t<T> &p) {
-  for (int i = 0; i <= Params::nbr_params(); i++) coeffs[i] += p.coeffs[i];
+  for (size_t i = 0; i <= Params::nbr_params(); i++) coeffs[i] += p.coeffs[i];
   return *this;
 }
 
 template <typename T>
 alg_t<T> &alg_t<T>::operator-=(const alg_t<T> &p) {
-  for (int i = 0; i <= Params::nbr_params(); i++) coeffs[i] -= p.coeffs[i];
+  for (size_t i = 0; i <= Params::nbr_params(); i++) coeffs[i] -= p.coeffs[i];
   return *this;
 }
 
@@ -243,7 +233,7 @@ bool operator!=(const alg_t<T> &p, const alg_t<T> &q) {
 template <typename T>
 Point alg_t<T>::tocomplex() const {
   Point b = coeffs[0].tocomplex();
-  for (int i = 1; i <= Params::nbr_params(); i++)
+  for (size_t i = 1; i <= Params::nbr_params(); i++)
     b += coeffs[i].tocomplex() * Params::params[i - 1];
   return b;
 }
@@ -252,15 +242,15 @@ template <typename T>
 bool alg_t<T>::get_direction(algebraic<T> &direction) {
   algebraic<T> q;
   algebraic<T> zero_F = algebraic<T>(coeffs[0].field());
-  for (int i = 0; i <= Params::nbr_params(); i++) {
-    for (int j = i + 1; j <= Params::nbr_params(); j++) {
+  for (size_t i = 0; i <= Params::nbr_params(); i++) {
+    for (size_t j = i + 1; j <= Params::nbr_params(); j++) {
       q = coeffs[i] * coeffs[j].conjugate() - coeffs[j] * coeffs[i].conjugate();
       if (q != zero_F) {  // q != 0
         return (false);
       }
     }
   }
-  for (int i = 0; i <= Params::nbr_params(); i++) {
+  for (size_t i = 0; i <= Params::nbr_params(); i++) {
     q = coeffs[i];
     if (q != zero_F) {
       break;
@@ -280,8 +270,8 @@ bool colinear(const alg_t<T> &p1, const alg_t<T> &p2) {
 
   //    cout << "In colinear alg_t, p1 = " << p1 << " p2 = " << p2 << endl;
 
-  for (int i = 0; i <= Params::nbr_params(); i++) {
-    for (int j = i; j <= Params::nbr_params(); j++) {
+  for (size_t i = 0; i <= Params::nbr_params(); i++) {
+    for (size_t j = i; j <= Params::nbr_params(); j++) {
       q = cross_product(p1.coeffs[i], p2.coeffs[j]);
 
       //	    q =p1.coeffs[i]*p2.coeffs[j].conjugate()
@@ -303,7 +293,7 @@ bool colinear(const alg_t<T> &p1, const alg_t<T> &p2) {
 template <typename T>
 ostream &operator<<(ostream &outputStream, const alg_t<T> &u) {
   outputStream << u.coeffs[0];
-  for (int i = 1; i <= Params::nbr_params(); i++) {
+  for (size_t i = 1; i <= Params::nbr_params(); i++) {
     outputStream << "+" << u.coeffs[i] << "t" << i;
   }
   return outputStream;
@@ -398,7 +388,7 @@ BigPoint<T> &BigPoint<T>::operator/=(const algebraic<T> &r) {
 template <typename T>
 BigPoint<T> &BigPoint<T>::operator/=(int r) {
   cx /= (1.0 * r);
-  algt /= (1.0 * r);
+  algt /= r;
   return *this;
 }
 
@@ -465,7 +455,7 @@ bool operator==(const BigPoint<T> &p, const BigPoint<T> &q) {
 template <typename T>
 alg_t<T> alg_t<T>::conjugate() const {
   alg_t<T> conj;
-  for (int i = 0; i <= Params::nbr_params(); i++) {
+  for (size_t i = 0; i <= Params::nbr_params(); i++) {
     conj.coeffs[i] = coeffs[i].conjugate();
   }
   return conj;

@@ -98,7 +98,6 @@ list<OEdge>::iterator OEdge::this_iter() {
     }
   }
   ERR_RET("this_iter: not found");
-  return (NULL_OEdgeIter);
 }
 
 list<OEdge>::iterator OEdge::pair_edge() {
@@ -112,7 +111,6 @@ list<OEdge>::iterator OEdge::pair_edge() {
     }
   }
   ERR_RET("PairEdge: not found");
-  return (NULL_OEdgeIter);
 }
 
 template <>
@@ -265,8 +263,6 @@ Point OEdge::headOffset<Point>() {
     q = q + t;
   };
   ERR_RET("headOffset: oedge not found");
-  // unreachable
-  return (q);
 }
 
 template <>
@@ -287,8 +283,6 @@ BigPointI OEdge::headOffset<BigPointI>() {
     q = q + t;
   };
   ERR_RET("headOffset: oedge not found");
-  // unreachable
-  return (q);
 }
 
 template <>
@@ -307,8 +301,6 @@ Point OEdge::tailOffset<Point>() {
     q = q + t;
   };
   ERR_RET("tailOffset: oedge not found");
-  // unreachable
-  return (q);
 }
 
 template <>
@@ -328,8 +320,6 @@ BigPointI OEdge::tailOffset<BigPointI>() {
     q = q + t;
   };
   ERR_RET("tailOffset: oedge not found");
-  // unreachable
-  return (q);
 }
 
 template <>

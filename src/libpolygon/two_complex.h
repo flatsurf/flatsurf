@@ -32,7 +32,6 @@
 
 namespace polygon {
 extern bool field_arithmetic;
-extern COORD EPSILON;
 
 class my_ostream;
 class Face;
@@ -44,9 +43,9 @@ class PSimplex;
 class TwoComplex {
  public:
   TwoComplex();
-  int nedges();
-  int nfaces();
-  int nvertices();
+  size_t nedges();
+  size_t nfaces();
+  size_t nvertices();
   void set_area();
   COORD get_area();
   COORD get_scale_factor();
@@ -73,7 +72,7 @@ class TwoComplex {
   void StatPrint(std::ostream&);
   void MakeDrawList();
   void ClearSegmentsToDraw();
-  void AddPFace(Face*, Point, int);
+  void AddPFace(Face*, Point, size_t);
   void NewDraw(my_ostream&);
   void Expunge();
   void BuildNeighborLists();  // Assign the list of outgoing UEdges vertex.e
@@ -81,7 +80,7 @@ class TwoComplex {
                               // each vertex.
   void PerturbAll(COORD max_perturb);
   void PerturbConjugates(COORD max_perturb);
-  bool is_conjugate_deformation(int j, int k);
+  bool is_conjugate_deformation(size_t j, size_t k);
 
   UEdge* MaxEdge();  // returns pointer to longest edge
   UEdge* MinEdge();
@@ -148,7 +147,7 @@ class TwoComplex {
 
   PFace* get_pface(Face* f);
   bool can_merge(UEdge* ue);
-  void relocate(int i, Point offset);
+  void relocate(size_t i, Point offset);
   void merge(UEdge* ue);
   void make_pcomplexes();
   void make_pface(Face* f);

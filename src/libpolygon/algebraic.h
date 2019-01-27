@@ -26,13 +26,12 @@
 #include <iostream>
 #include <vector>
 
+#include <boost/numeric/conversion/cast.hpp>
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 
 #include "defs.h"
 #include "poly.h"
-
-using namespace polygon;
 
 namespace polygon {
 template <typename T>
@@ -63,7 +62,7 @@ class algebraic {
   algebraic();
   explicit algebraic(NumberField<T> *);  // zero element of NumberField
 
-  algebraic(int n,
+  algebraic(size_t n,
             NumberField<T> *);  // standard basis element e_n in NumberField
   algebraic(std::vector<T> coords,
             NumberField<T> *);  // vector with coeffients coords in NumberField
@@ -74,6 +73,9 @@ class algebraic {
       const;  // just the number times its complex conjugate, not the real norm
 
   algebraic<T> pow(int n) const;  // nth power
+  inline algebraic<T> pow(size_t n) const {
+    return pow(boost::numeric_cast<int>(n));
+  }  // nth power
 
   algebraic<T> &operator+=(const algebraic<T> &);
   algebraic<T> &operator*=(const algebraic<T> &);
@@ -100,7 +102,7 @@ class algebraic {
   friend class NumberField<T>;
   NumberField<T> *field() const;
 
-  std::vector<T> get_coords() { return coords; };
+  std::vector<T> get_coords() { return coords; }
 
  private:
   std::vector<T> coords;

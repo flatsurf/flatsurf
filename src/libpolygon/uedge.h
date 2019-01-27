@@ -39,7 +39,6 @@ class UEdge : public Simplex {  // unoriented edge
   friend class TwoComplex;
 
  public:
-  //    UEdge();
   UEdge(Vertex* a, Vertex* b,
         Point vec);  // Edge begining at vertex a, ending at b with holonomy vec
   UEdge(Vertex* a, Vertex* b, BigPointQ vec);

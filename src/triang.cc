@@ -19,6 +19,7 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <boost/math/constants/constants.hpp>
 #include <cassert>
 #include <iostream>
 #include <list>
@@ -29,6 +30,7 @@
 #include "libpolygon/two_complex.h"
 #include "libpolygon/uedge.h"
 
+using boost::math::constants::pi;
 using std::abs;
 using std::cout;
 using std::list;
@@ -52,9 +54,9 @@ void TwoComplex::TriangulateAll() {
   } while (did_something);
 }
 
-int nbr = 0;
-my_ostream *movie_stream, *dbg_stream;
-char buf[1000];
+static int nbr = 0;
+static my_ostream *movie_stream, *dbg_stream;
+static char buf[1000];
 
 void TwoComplex::TriangulateFace(Face* f) {
   list<OEdge>::iterator Candidate1 = NULL_OEdgeIter;
@@ -126,7 +128,8 @@ void TwoComplex::TriangulateFace(Face* f) {
   //	dbg_stream->close();
   //	delete dbg_stream;
 
-  if (best_angle == 0 || (!f->can_bisect(Candidate1, Candidate2))) {
+  // checking best_angle == 0 in a way that the compiler is not unhappy about
+  if (std::abs(best_angle) <= 0 || (!f->can_bisect(Candidate1, Candidate2))) {
 #ifdef USE_LONG_DOUBLE
     printf("F%d: Parent Face: F%d best_angle=%Lg", f->id(),
 #else
@@ -657,7 +660,7 @@ bool TwoComplex::shouldFlip(UEdge* u) {
 
   if (angle(-vt_w0->vec_cx(), w0_vh->vec_cx()) +
           angle(-vh_w1->vec_cx(), w1_vt->vec_cx()) <
-      MY_PI + 100 * EPSILON) {
+      pi<COORD>() + 100 * EPSILON) {
     return (false);
   }
 
@@ -667,13 +670,13 @@ bool TwoComplex::shouldFlip(UEdge* u) {
 
   if (abs(angle(-w0_vh->vec_cx(), oe->vec_cx())) +
           abs(angle(oe->vec_cx(), vh_w1->vec_cx())) >=
-      MY_PI) {
+      pi<COORD>()) {
     return (false);
   }
 
   if (abs(angle(-w1_vt->vec_cx(), -oe->vec_cx())) +
           abs(angle(-oe->vec_cx(), vt_w0->vec_cx())) >=
-      MY_PI) {
+      pi<COORD>()) {
     return (false);
   }
 

@@ -1,17 +1,30 @@
+#!/bin/bash
+set -ex
+
 export UPLOAD_PACKAGES="False"
 patch ./recipe/build.sh <<"PATCH"
 diff --git a/recipe/build.sh b/recipe/build.sh
-index f6c029e..78de1df 100644
+index 1582523..d46516e 100644
 --- a/recipe/build.sh
 +++ b/recipe/build.sh
-@@ -9,5 +9,7 @@ fi
+@@ -11,10 +11,8 @@ export CPPFLAGS="-isystem ${BUILD_PREFIX}/include $CPPFLAGS"
+ export CXXFLAGS="-O2 -g $CXXFLAGS $EXTRA_CXXFLAGS"
+ case `$CXX --version` in
+     *GCC*|*gnu-c++*)
+-        export WARN_CXXFLAGS="-Werror -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-promo -Wstrict-null-sentinel -Wundef -fdiagnostics-show-option -Wconversion"
+         ;;
+     *clang*)
+-        export WARN_CXXFLAGS="-Werror -Weverything -Wno-padded -Wno-exit-time-destructors -Wno-undefined-func-template -Wno-global-constructors -Wno-c++98-compat -Wno-missing-prototypes"
+         ;;
+     *)
+         $CXX --version
+@@ -28,5 +26,6 @@ fi
 
  ./bootstrap
  ./configure --prefix="$PREFIX" CXXFLAGS="$CXXFLAGS" CXX=$CXX || (cat config.log; exit 1)
-
--make -j$CPU_COUNT
+-make -j$CPU_COUNT CXXFLAGS="$CXXFLAGS $WARN_CXXFLAGS"
 -make install
-+conda install -y --quiet clang
++conda install -y --quiet clangdev
 +clang-format -i --style=Google src/*.cc src/libpolygon/*.h
 +git diff --exit-code
 PATCH

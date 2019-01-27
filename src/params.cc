@@ -29,13 +29,13 @@ using std::ostream;
 using std::vector;
 
 namespace polygon {
-int Params::n_params = 0;
+size_t Params::n_params = 0;
 vector<COORD> Params::params;
 
-int Params::nbr_params() { return n_params; }
+size_t Params::nbr_params() { return n_params; }
 
-void Params::AddParams(int n, COORD prms[]) {
-  for (int i = 0; i < n; i++) {
+void Params::AddParams(size_t n, COORD prms[]) {
+  for (size_t i = 0; i < n; i++) {
     params.push_back(prms[i]);
   }
   n_params += n;
@@ -43,7 +43,7 @@ void Params::AddParams(int n, COORD prms[]) {
 
 void Params::print(ostream &out) {
   out << "#Params:" << nbr_params() << endl;
-  for (int i = 0; i < nbr_params(); i++) {
+  for (size_t i = 0; i < nbr_params(); i++) {
     out << "#t" << i + 1 << "=";
     out << boost::lexical_cast<std::string>(params[i]) << endl;
   }

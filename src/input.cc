@@ -19,6 +19,7 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <boost/math/constants/constants.hpp>
 #include <cassert>
 #include <iostream>
 #include <list>
@@ -34,6 +35,7 @@
 #include "libpolygon/uedge.h"
 
 using namespace polygon;
+using boost::math::constants::pi;
 using std::cout;
 using std::endl;
 using std::list;
@@ -70,7 +72,8 @@ void TwoComplex::BuildTriangle(int alpha, int beta, int gamma) {
   algebraicQ zeta =
       algebraicQ(1, NumberField<bigrat>::F); /* zeta = exp(2*pi*i/denom) */
 
-  algebraicQ one_F = algebraicQ(0, NumberField<bigrat>::F); /* this is 1 in F */
+  algebraicQ one_F =
+      algebraicQ(0ul, NumberField<bigrat>::F); /* this is 1 in F */
   cout << "zeta = " << zeta << " one_F = " << one_F << endl;
   cout << "zeta.cx = " << zeta.tocomplex()
        << " one_F.cx = " << one_F.tocomplex() << endl;
@@ -94,8 +97,8 @@ void TwoComplex::BuildTriangle(int alpha, int beta, int gamma) {
 
   COORD a, b;
 
-  a = MY_PI * alpha / denom;
-  b = MY_PI * beta / denom;
+  a = pi<COORD>() * alpha / denom;
+  b = pi<COORD>() * beta / denom;
 
   //    COORD c = MY_PI - a - b;
 
@@ -176,25 +179,25 @@ void MakeRealQuad(int int_angles[], Point& p, Point& q, Point& r) {
 
   int denom = int_angles[0] + int_angles[1] + int_angles[2] + int_angles[3];
 
-  COORD a = 2 * MY_PI * int_angles[0] / denom;
-  COORD b = 2 * MY_PI * int_angles[1] / denom;
-  COORD c = 2 * MY_PI * int_angles[2] / denom;
-  COORD d = 2 * MY_PI - a - b - c;
+  COORD a = 2 * pi<COORD>() * int_angles[0] / denom;
+  COORD b = 2 * pi<COORD>() * int_angles[1] / denom;
+  COORD c = 2 * pi<COORD>() * int_angles[2] / denom;
+  COORD d = 2 * pi<COORD>() - a - b - c;
 
   std::cout << "a =  " << a << " b = " << b << " c= " << c << " d=" << d
             << endl;
 
-  COORD a1_max = MY_PI - b;
-  COORD a2_max = MY_PI - d;
+  COORD a1_max = pi<COORD>() - b;
+  COORD a2_max = pi<COORD>() - d;
   COORD a1_min = a - a2_max;
 
   std::cout << "a1_min = " << a1_min << " a1_max = " << a1_max << endl;
 
-  COORD a1 = a1_min / MY_PI + a1_max * (1.0 - 1 / MY_PI); /*hack*/
+  COORD a1 = a1_min / pi<COORD>() + a1_max * (1.0 - 1 / pi<COORD>()); /*hack*/
   std::cout << "a1 = " << a1 << endl;
   COORD a2 = a - a1;
 
-  COORD c1 = MY_PI - a1 - b;
+  COORD c1 = pi<COORD>() - a1 - b;
   COORD c2 = c - c1;
   /*
   std::cout << "check a: " << cos(a)*cos(a) + sin(a)*sin(a) - 1 << endl;
@@ -286,7 +289,8 @@ void TwoComplex::BuildQuad(int alpha, int beta, int gamma, int delta) {
   InitCyclotomicField(denom); /*F is cyclotomic field */
   algebraicQ zeta =
       algebraicQ(1, NumberField<bigrat>::F); /* zeta = exp(2*pi*i/denom) */
-  algebraicQ one_F = algebraicQ(0, NumberField<bigrat>::F); /* this is 1 in F */
+  algebraicQ one_F =
+      algebraicQ(0ul, NumberField<bigrat>::F); /* this is 1 in F */
   algebraicQ zero_F = algebraicQ(NumberField<bigrat>::F);
 
   Point t_cx = r * zeta.pow(-alpha).tocomplex();
@@ -382,17 +386,19 @@ void TwoComplex::ReadComplex(string filename) {
   NumberField<bigrat>::F = InitCyclotomic<bigrat>(4);
 
   fp = fopen(filename.c_str(), "r");
-  if (fp == NULL) {
+  if (fp == nullptr) {
     sprintf(buf, "Error opening file %s", filename.c_str());
     perror(buf);
     ERR_RET("aborting");
   }
   while ((c = fgetc(fp)) != EOF) {
-    ungetc((char)c, fp);
+    ungetc(c, fp);
 
-    switch ((char)c) {
+    switch (static_cast<char>(c)) {
       case '#':
-        fgets(buf, MAX_LINE, fp);
+        if (fgets(buf, MAX_LINE, fp) == nullptr) {
+          ERR_RET("Unexpected EOF");
+        }
         line_number++;
 
         break;
@@ -408,14 +414,17 @@ void TwoComplex::ReadComplex(string filename) {
         break;
 
       case '\n':
-        fgets(buf, MAX_LINE, fp);
+        if (fgets(buf, MAX_LINE, fp) == nullptr) {
+          ERR_RET("Unexpected EOF");
+        }
         break;
 
       default:
         fprintf(out_f, "bad line: %d\n", line_number);
-        fgets(buf, MAX_LINE, fp);
+        if (fgets(buf, MAX_LINE, fp)) {
+          ERR_RET("Unexpected EOF");
+        }
         ERR_RET(buf);
-        break;
     }
   }
 }
@@ -426,7 +435,7 @@ UEdge* TwoComplex::GetUEdge(int id) {
       return (*i);
     }
   }
-  return (NULL);
+  return nullptr;
 }
 
 Vertex* TwoComplex::GetVertex(int id) {
@@ -435,7 +444,7 @@ Vertex* TwoComplex::GetVertex(int id) {
       return (*i);
     }
   }
-  return (NULL);
+  return nullptr;
 }
 
 Face* TwoComplex::GetFace(int id) {
@@ -444,11 +453,11 @@ Face* TwoComplex::GetFace(int id) {
       return (*i);
     }
   }
-  return (NULL);
+  return nullptr;
 }
 
 char* read_coords(char* s, COORD* p_vec_re, COORD* p_vec_im, int line_number) {
-  char* q = NULL;
+  char* q = nullptr;
   char re[MAX_LINE];
   char im[MAX_LINE];
 
@@ -462,7 +471,7 @@ char* read_coords(char* s, COORD* p_vec_re, COORD* p_vec_im, int line_number) {
       *p = ' ';
     }
   }
-  if (q == NULL) {
+  if (q == nullptr) {
     ERR_RET2("bad coord: can't find )", line_number);
   }
 
@@ -477,8 +486,8 @@ char* read_coords(char* s, COORD* p_vec_re, COORD* p_vec_im, int line_number) {
   *p_vec_re = strtold(re, (char**)0);
   *p_vec_im = strtold(im, (char**)0);
 #else
-  *p_vec_re = strtod(re, (char**)0);
-  *p_vec_im = strtod(im, (char**)0);
+  *p_vec_re = strtod(re, nullptr);
+  *p_vec_im = strtod(im, nullptr);
 #endif
 
   //  printf("s=%s re=%s im=%s\n", s, re, im);
@@ -511,9 +520,11 @@ void TwoComplex::read_edge_line(FILE* fp, int line_number) {
 
   char* s;
 
-  fgets(buf, MAX_LINE, fp);
+  if (fgets(buf, MAX_LINE, fp) == nullptr) {
+    ERR_RET("Unexpected EOF");
+  }
   s = strchr(buf, ')');
-  if (s == NULL) {
+  if (s == nullptr) {
     ERR_RET2("bad edge line: no )", line_number);
   }
   s++;
@@ -532,46 +543,43 @@ void TwoComplex::read_edge_line(FILE* fp, int line_number) {
     s++;
   }
 
-  //    char* q;
-
   if (*s == '(') {
-    //      q = read_coords(s, &vec_re, &vec_im,line_number);
     read_coords(s, &vec_re, &vec_im, line_number);
   } else {
     ERR_RET2("bad edge line: cant find coords", line_number);
   }
 
   v0 = GetVertex(v0_id);
-  if (v0 == NULL) {
+  if (v0 == nullptr) {
     v0 = AddVertex(v0_id);
   }
 
   v1 = GetVertex(v1_id);
-  if (v1 == NULL) {
+  if (v1 == nullptr) {
     v1 = AddVertex(v1_id);
   }
 
   if (f0_id < 0)
-    f0 = NULL;
+    f0 = nullptr;
   else {
     f0 = GetFace(f0_id);
-    if (f0 == NULL) {
+    if (f0 == nullptr) {
       f0 = AddFace(f0_id, tmp_oedge_list);
     }
   }
 
   if (f1_id < 0)
-    f1 = NULL;
+    f1 = nullptr;
   else {
     f1 = GetFace(f1_id);
-    if (f1 == NULL) {
+    if (f1 == nullptr) {
       f1 = AddFace(f1_id, tmp_oedge_list);
     }
   }
   vec = Point(vec_re, vec_im);
 
   ue = GetUEdge(ue_id);
-  if (ue == NULL) {
+  if (ue == nullptr) {
     ue = AddUEdge(ue_id, v0, v1, vec);
   }
   ue->f0 = f0;
@@ -596,10 +604,12 @@ void TwoComplex::read_face_line(FILE* fp, int line_number) {
   if (c != 'F') {
     ERR_RET2("read_face_line: illegal format; line =", line_number);
   }
-  fgets(buf, MAX_LINE, fp);
+  if (fgets(buf, MAX_LINE, fp) == nullptr) {
+    ERR_RET("Unexpected EOF");
+  }
 
   str = strtok(buf, " \n");
-  while (str != NULL) {
+  while (str != nullptr) {
     if (sscanf(str, "%c%c%d", &c, &c1, &e_id) != 3) {
       ERR_RET2("read_face_line: bad edge; line =", line_number);
     }
@@ -615,24 +625,23 @@ void TwoComplex::read_face_line(FILE* fp, int line_number) {
         break;
       default:
         ERR_RET2("read_face_line: bad sign; line =", line_number);
-        break;
     }
     UEdge* ue;
     ue = GetUEdge(e_id);
-    if (ue == NULL) {
-      ue = AddUEdge(e_id, NULL, NULL, Point(0, 0));
+    if (ue == nullptr) {
+      ue = AddUEdge(e_id, nullptr, nullptr, Point(0, 0));
     }
 
     OEdge* oe;
     oe = new OEdge(ue, dir);
     tmp_oedge_list.insert(tmp_oedge_list.end(), *oe);
 
-    str = strtok(NULL, " \n");
+    str = strtok(nullptr, " \n");
   }
 
   f = GetFace(f_id);
 
-  if (f == NULL) {
+  if (f == nullptr) {
     f = AddFace(f_id, tmp_oedge_list);
   } else {
     f->SetOEdgeList(tmp_oedge_list);
