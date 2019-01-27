@@ -3,7 +3,6 @@ channels:
   - saraedum
   - conda-forge
   - defaults
-  - conda-forge/label/broken
 dependencies:
   - polygon
   - boost-cpp
