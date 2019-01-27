@@ -24,7 +24,7 @@ index 1582523..d46516e 100644
  ./configure --prefix="$PREFIX" CXXFLAGS="$CXXFLAGS" CXX=$CXX || (cat config.log; exit 1)
 -make -j$CPU_COUNT CXXFLAGS="$CXXFLAGS $WARN_CXXFLAGS"
 -make install
-+conda install -y --quiet clang
++conda install -y --quiet clangdev
 +clang-format -i --style=Google src/*.cc src/libpolygon/*.h
 +git diff --exit-code
 PATCH
