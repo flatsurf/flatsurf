@@ -216,7 +216,7 @@ void TwoComplex::PerturbAll(COORD max_perturb) {
     for (auto j = vertices.begin(); j != vertices.end(); ++j) {
       if (abs((*j)->total_angle() - 2 * pi<COORD>()) > EPSILON) --i;
     }
-    fprintf(out_f, "rank = %lu #of parameters %ld\n", r,
+    fprintf(out_f, "rank = %ld #of parameters %ld\n", r,
             numeric_cast<long>(N) - r - i);
   }
 
