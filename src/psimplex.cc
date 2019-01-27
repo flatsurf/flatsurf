@@ -718,6 +718,7 @@ void TwoComplex::merge(UEdge* ue) {
 bool is_longer(UEdge* a, UEdge* b) { return (a->len() > b->len()); }
 
 void TwoComplex::make_pface(Face* f) {
+  for (auto d : dl) delete d;
   dl.clear();
 
   AddPFace(f, Point(0, 0), 0);
@@ -727,6 +728,7 @@ void TwoComplex::make_pcomplexes() {
   size_t count = 0;
   int pr;
 
+  for (auto d : dl) delete d;
   dl.clear();
 
   for (auto i = faces.begin(); i != faces.end(); ++i) {

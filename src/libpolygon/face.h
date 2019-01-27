@@ -35,6 +35,7 @@ class OEdge;
 class Face : public Simplex {
  public:
   Face();
+  virtual ~Face();
   explicit Face(const std::list<OEdge>& L);  // sets oedges=L
 
   void SetOEdgeList(std::list<OEdge>);

@@ -50,6 +50,12 @@ TwoComplex::TwoComplex() : area(-1.0), scale_factor(1.0) {
   VISIT_ID = 0;
 }
 
+TwoComplex::~TwoComplex() {
+  for (auto d : dl) {
+    delete d;
+  }
+}
+
 size_t TwoComplex::nedges() { return (uedges.size()); }
 
 size_t TwoComplex::nfaces() { return (faces.size()); }
@@ -279,6 +285,7 @@ void TwoComplex::Expunge() {
     did_something = false;
     for (auto i = vertices.begin(); i != vertices.end(); ++i) {
       if ((*i)->deleted()) {
+        delete *i;
         vertices.erase(i);
         did_something = true;
         break;
@@ -290,6 +297,7 @@ void TwoComplex::Expunge() {
     did_something = false;
     for (auto i = uedges.begin(); i != uedges.end(); ++i) {
       if ((*i)->deleted()) {
+        delete *i;
         uedges.erase(i);
         did_something = true;
         break;
@@ -301,6 +309,7 @@ void TwoComplex::Expunge() {
     did_something = false;
     for (auto i = faces.begin(); i != faces.end(); ++i) {
       if ((*i)->deleted()) {
+        delete *i;
         faces.erase(i);
         did_something = true;
         break;
