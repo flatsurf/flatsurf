@@ -25,6 +25,7 @@
 #include "libpolygon/face.h"
 #include "libpolygon/globals.h"
 #include "libpolygon/my_ostream.h"
+#include "libpolygon/psimplex.h"
 #include "libpolygon/two_complex.h"
 #include "libpolygon/uedge.h"
 
@@ -88,6 +89,7 @@ Face* TwoComplex::ReflectFace(UEdge* e, Face* f) {
       new_edge->from_edge = (*i).from_edge;
     }
     tmp_edge_list.insert(tmp_edge_list.end(), *new_edge);
+    delete new_edge;
     last_v = new_v;
   }
 
@@ -293,6 +295,7 @@ void TwoComplex::CompleteInternal(UEdge* e) {
     sprintf(buf, "movie%d", j);
     my_ostream* movie_stream;
     movie_stream = new my_ostream(buf);
+    for (auto d : dl) delete d;
     dl.clear();
     make_pcomplexes();
     NewDraw(*movie_stream);

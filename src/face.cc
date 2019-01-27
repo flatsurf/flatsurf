@@ -46,6 +46,7 @@ Face::Face() : Simplex() {
   from_face = nullptr;
   parent_face_ID = -1;
 }
+Face::~Face() {}
 
 Face::Face(const list<OEdge>& L) : Simplex() {
   tag = 'F';

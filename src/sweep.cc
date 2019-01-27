@@ -28,6 +28,7 @@
 #include "libpolygon/elementary_geometry.h"
 #include "libpolygon/globals.h"
 #include "libpolygon/my_ostream.h"
+#include "libpolygon/psimplex.h"
 #include "libpolygon/shared.h"
 #include "libpolygon/two_complex.h"
 #include "libpolygon/uedge.h"
@@ -632,6 +633,7 @@ void TwoComplex::InvestigateVec(PointT vec, COORD len2, SaddleConf& sc,
       }
       if (verbose >= 5) {
         ClearSegmentsToDraw();
+        for (auto d : dl) delete d;
         dl.clear();
       }
 

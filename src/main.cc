@@ -694,5 +694,7 @@ int main(int argc, char** argv) {
     S->RandomShoot((*i), depth, mc_number);
   }
 
+  delete S;
+
   exit(0);
 }

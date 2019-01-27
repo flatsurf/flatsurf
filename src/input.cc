@@ -355,21 +355,25 @@ void TwoComplex::BuildQuad(int alpha, int beta, int gamma, int delta) {
   oe = new OEdge(ue, 1);
   ue->label = 1;
   tmp_oedge_list.insert(tmp_oedge_list.end(), *oe);
+  delete oe;
 
   ue = AddUEdge(UNDEFINED, v1, v2, bq - bp);
   oe = new OEdge(ue, 1);
   ue->label = 2;
   tmp_oedge_list.insert(tmp_oedge_list.end(), *oe);
+  delete oe;
 
   ue = AddUEdge(UNDEFINED, v2, v3, br - bq);
   oe = new OEdge(ue, 1);
   ue->label = 3;
   tmp_oedge_list.insert(tmp_oedge_list.end(), *oe);
+  delete oe;
 
   ue = AddUEdge(UNDEFINED, v3, v0, -br);
   oe = new OEdge(ue, 1);
   ue->label = 4;
   tmp_oedge_list.insert(tmp_oedge_list.end(), *oe);
+  delete oe;
 
   AddFace(UNDEFINED, tmp_oedge_list);
 }

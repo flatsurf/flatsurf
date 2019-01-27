@@ -286,7 +286,10 @@ list<OEdge>::iterator TwoComplex::BisectFace(Face* f,
   f->Delete(); /* this deletes the old face f */
                /* it will be expunged later */
 
-  return (new_oedge1->this_iter());
+  delete new_oedge2;
+  auto ret = new_oedge1->this_iter();
+  delete new_oedge1;
+  return ret;
 }
 
 bool Face::can_bisect(list<OEdge>::iterator i, list<OEdge>::iterator j) {

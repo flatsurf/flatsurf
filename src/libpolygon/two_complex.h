@@ -43,6 +43,7 @@ class PSimplex;
 class TwoComplex {
  public:
   TwoComplex();
+  virtual ~TwoComplex();
   size_t nedges();
   size_t nfaces();
   size_t nvertices();
