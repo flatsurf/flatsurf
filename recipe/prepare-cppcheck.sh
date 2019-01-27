@@ -1,7 +1,6 @@
 #!/bin/bash
 set -ex
 
-export UPLOAD_PACKAGES="False"
 patch ./recipe/build.sh <<"PATCH"
 diff --git a/recipe/build.sh b/recipe/build.sh
 index 979e451..f667099 100644

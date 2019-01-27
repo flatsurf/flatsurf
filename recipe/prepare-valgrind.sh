@@ -1,7 +1,6 @@
 #!/bin/bash
 set -ex
 
-export UPLOAD_PACKAGES="False"
 patch ./test/run.sh <<"PATCH"
 diff --git a/test/run.sh b/test/run.sh
 index ae6f789..b7162ea 100755
