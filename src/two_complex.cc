@@ -19,10 +19,10 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <boost/math/constants/constants.hpp>
 #include <list>
 #include <ostream>
 #include <vector>
-#include <boost/math/constants/constants.hpp>
 
 #include "libpolygon/elementary_geometry.h"
 #include "libpolygon/globals.h"
@@ -35,12 +35,12 @@
 #include "libpolygon/uedge.h"
 #include "libpolygon/vertex.h"
 
+using boost::math::constants::pi;
 using std::endl;
 using std::flush;
 using std::list;
 using std::ostream;
 using std::vector;
-using boost::math::constants::pi;
 
 namespace polygon {
 TwoComplex::TwoComplex() : area(-1.0), scale_factor(1.0) {

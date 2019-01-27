@@ -19,25 +19,25 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <boost/math/constants/constants.hpp>
+#include <boost/numeric/conversion/cast.hpp>
 #include <iostream>
 #include <list>
-#include <boost/numeric/conversion/cast.hpp>
-#include <boost/math/constants/constants.hpp>
 
 #include "libpolygon/dmap.h"
 #include "libpolygon/elementary_geometry.h"
 #include "libpolygon/globals.h"
 #include "libpolygon/my_ostream.h"
+#include "libpolygon/shared.h"
 #include "libpolygon/two_complex.h"
 #include "libpolygon/uedge.h"
-#include "libpolygon/shared.h"
 
+using boost::math::constants::pi;
 using std::abs;
 using std::cout;
 using std::endl;
 using std::list;
 using std::uniform_real_distribution;
-using boost::math::constants::pi;
 
 /*   generic I 	  	       	 are_passing           *   starting
 |\     	       	       	     |\                        |\
@@ -771,7 +771,8 @@ COORD TwoComplex::RandomShoot(Vertex* v0, COORD depth_, int M) {
 
   while (count < 1.0 * M / mc_group) {
     COORD theta;
-    theta = v0->total_angle() * std::uniform_real_distribution<double>(0, 1)(random_engine);
+    theta = v0->total_angle() *
+            std::uniform_real_distribution<double>(0, 1)(random_engine);
     new_dir = old_dir.RotateF(theta);
     old_dir = new_dir;
 
@@ -782,7 +783,7 @@ COORD TwoComplex::RandomShoot(Vertex* v0, COORD depth_, int M) {
     TotalAngle = TotalAngle + ta;
 
     COORD s1 = v0->total_angle() * mc_group / ta;
-    std::cout << s1 * get_area() *  pi<COORD>() / (6 * depth_ * depth_) << " ( "
+    std::cout << s1 * get_area() * pi<COORD>() / (6 * depth_ * depth_) << " ( "
               << s1 * get_area() / (pi<COORD>() * depth_ * depth_);
 
     std::cout << ") raw = " << s1 << endl;

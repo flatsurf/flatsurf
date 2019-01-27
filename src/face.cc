@@ -19,11 +19,11 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <boost/math/constants/constants.hpp>
+#include <boost/numeric/conversion/cast.hpp>
 #include <list>
 #include <ostream>
 #include <vector>
-#include <boost/math/constants/constants.hpp>
-#include <boost/numeric/conversion/cast.hpp>
 
 #include "libpolygon/elementary_geometry.h"
 #include "libpolygon/face.h"
@@ -33,12 +33,12 @@
 #include "libpolygon/two_complex.h"
 #include "libpolygon/uedge.h"
 
+using boost::numeric_cast;
+using boost::math::constants::pi;
 using std::endl;
 using std::list;
 using std::ostream;
 using std::vector;
-using boost::math::constants::pi;
-using boost::numeric_cast;
 
 namespace polygon {
 Face::Face() : Simplex() {

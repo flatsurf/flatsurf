@@ -25,37 +25,37 @@
 #include "libpolygon/two_complex.h"
 
 namespace polygon {
-	bool is_alg_quotient(const alg_t<int64_t> &p1, const alg_t<int64_t> &p2,
-											 algebraicQ &ratio)  // if p1/p2 is algebraic, return true
-																					 // and put it in ratio.
-	{
-		size_t i;
-		algebraicI q(p1.coeffs[0].field());
+bool is_alg_quotient(const alg_t<int64_t> &p1, const alg_t<int64_t> &p2,
+                     algebraicQ &ratio)  // if p1/p2 is algebraic, return true
+                                         // and put it in ratio.
+{
+  size_t i;
+  algebraicI q(p1.coeffs[0].field());
 
-		for (i = 0; i <= Params::nbr_params(); i++) {
-			q = p2.coeffs[i];
-			if (q != NumberField<int64_t>::F_zero) {
-				break;
-			}
-		}
+  for (i = 0; i <= Params::nbr_params(); i++) {
+    q = p2.coeffs[i];
+    if (q != NumberField<int64_t>::F_zero) {
+      break;
+    }
+  }
 
-		if (q == NumberField<int64_t>::F_zero) {
-			ERR_RET("alg_t: division by 0");
-		}
+  if (q == NumberField<int64_t>::F_zero) {
+    ERR_RET("alg_t: division by 0");
+  }
 
-		algebraicQ num(to_rational(p1.coeffs[i]));
-		algebraicQ denom(to_rational(p2.coeffs[i]));
+  algebraicQ num(to_rational(p1.coeffs[i]));
+  algebraicQ denom(to_rational(p2.coeffs[i]));
 
-		ratio = num / denom;
+  ratio = num / denom;
 
-		for (i = 0; i <= Params::nbr_params(); i++) {
-			algebraicQ denom_i = to_rational(p2.coeffs[i]);
-			algebraicQ num_i = to_rational(p1.coeffs[i]);
+  for (i = 0; i <= Params::nbr_params(); i++) {
+    algebraicQ denom_i = to_rational(p2.coeffs[i]);
+    algebraicQ num_i = to_rational(p1.coeffs[i]);
 
-			if (ratio * denom_i != num_i) {
-				return (false);
-			}
-		}
-		return (true);
-	}
+    if (ratio * denom_i != num_i) {
+      return (false);
+    }
+  }
+  return (true);
 }
+}  // namespace polygon

@@ -26,8 +26,8 @@
 #include <iostream>
 #include <vector>
 
-#include <boost/numeric/ublas/io.hpp>
 #include <boost/numeric/conversion/cast.hpp>
+#include <boost/numeric/ublas/io.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 
 #include "defs.h"
@@ -73,7 +73,9 @@ class algebraic {
       const;  // just the number times its complex conjugate, not the real norm
 
   algebraic<T> pow(int n) const;  // nth power
-  inline algebraic<T> pow(size_t n) const { return pow(boost::numeric_cast<int>(n)); } // nth power
+  inline algebraic<T> pow(size_t n) const {
+    return pow(boost::numeric_cast<int>(n));
+  }  // nth power
 
   algebraic<T> &operator+=(const algebraic<T> &);
   algebraic<T> &operator*=(const algebraic<T> &);

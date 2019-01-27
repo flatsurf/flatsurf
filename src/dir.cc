@@ -19,19 +19,19 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <boost/math/constants/constants.hpp>
 #include <iostream>
 #include <list>
-#include <boost/math/constants/constants.hpp>
 
 #include "libpolygon/dir.h"
 #include "libpolygon/elementary_geometry.h"
 #include "libpolygon/vertex.h"
 
+using boost::math::constants::pi;
 using std::abs;
 using std::endl;
 using std::flush;
 using std::list;
-using boost::math::constants::pi;
 
 namespace polygon {
 template <typename PointT>

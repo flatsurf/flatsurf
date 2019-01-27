@@ -24,12 +24,12 @@
 // above used to decide if two saddles have the same length
 
 #include <algorithm>
-#include <cassert>
-#include <fstream>
-#include <ostream>
 #include <boost/math/constants/constants.hpp>
 #include <boost/math/special_functions/round.hpp>
 #include <boost/numeric/conversion/cast.hpp>
+#include <cassert>
+#include <fstream>
+#include <ostream>
 
 #include "libpolygon/cylinder.h"
 #include "libpolygon/defs.h"
@@ -41,16 +41,16 @@
 #include "libpolygon/two_complex.h"
 #include "libpolygon/vert_pattern.h"
 
+using boost::numeric_cast;
+using boost::math::iround;
+using boost::math::round;
+using boost::math::constants::pi;
 using std::abs;
 using std::endl;
 using std::flush;
 using std::ofstream;
 using std::ostream;
 using std::sort;
-using boost::math::constants::pi;
-using boost::math::round;
-using boost::math::iround;
-using boost::numeric_cast;
 
 namespace polygon {
 /* and add max_vertex_degree to Check */
@@ -769,7 +769,7 @@ void SaddleConf::check_cross_saddle(COORD cyl_len,
   //    std::cout << "a/MY_PI = " << a/MY_PI << endl;
 
 #ifdef USE_QUAD
-  int j = floor(a / pi<COORDE()).convert_to<int>();
+  int j = floor(a / pi < COORDE()).convert_to<int>();
 #else
   int j = static_cast<int>(floor(a / pi<COORD>()));
 #endif
@@ -789,8 +789,9 @@ void SaddleConf::check_cross_saddle(COORD cyl_len,
   }
 
   if (j >= vp[vert].base.v->int_angle) {
-    std::cout << "a = " << a << " j = " << j << " diff = " << abs(j * pi<COORD>() - a)
-              << " V" << vp[vert].base.v->id()
+    std::cout << "a = " << a << " j = " << j
+              << " diff = " << abs(j * pi<COORD>() - a) << " V"
+              << vp[vert].base.v->id()
               << " int angle = " << vp[vert].base.v->int_angle << endl
               << flush;
 
@@ -802,8 +803,9 @@ void SaddleConf::check_cross_saddle(COORD cyl_len,
   int _count = 0;
 
   if (i >= 0) {
-    std::cout << "a = " << a << " j = " << j << " diff = " << abs(j * pi<COORD>() - a)
-              << " V" << vp[vert].base.v->id()
+    std::cout << "a = " << a << " j = " << j
+              << " diff = " << abs(j * pi<COORD>() - a) << " V"
+              << vp[vert].base.v->id()
               << " int angle = " << vp[vert].base.v->int_angle << endl
               << flush;
 
@@ -844,7 +846,7 @@ void SaddleConf::check_cross_saddle(COORD cyl_len,
       break;
     }
   }
-	COORD c = abs(new_cyl_len - cyl_len);
+  COORD c = abs(new_cyl_len - cyl_len);
   if (c > LENGTH_THRESHOLD) {
     vp[vert].print(std::cout, *this);
     std::cout << "i = " << i << endl;
@@ -1175,7 +1177,8 @@ void Summary::print(ostream& output_stream, COORD part_total, COORD part_group,
       }
       output_stream << "\n    total: "
                     << scf[i].count * volume * pi<COORD>() /
-                           (6.0 * depth_ * depth_ * part_total * symmetry_factor)
+                           (6.0 * depth_ * depth_ * part_total *
+                            symmetry_factor)
                     << " "
                     << scf[i].count * volume /
                            (pi<COORD>() * depth_ * depth_ * part_total *
@@ -1203,7 +1206,8 @@ void Summary::print(ostream& output_stream, COORD part_total, COORD part_group,
                   << cyl_count * volume * pi<COORD>() /
                          (6.0 * depth_ * depth_ * part_total)
                   << " "
-                  << cyl_count * volume / (pi<COORD>() * depth_ * depth_ * part_total);
+                  << cyl_count * volume /
+                         (pi<COORD>() * depth_ * depth_ * part_total);
     output_stream << " raw = " << cyl_count << " rejected = " << reject_count
                   << "\n";
   }

@@ -73,10 +73,8 @@ extern "C" {
 }
 #endif
 
-__attribute__((noreturn))
-void ERR_RET(const std::string &s);
-__attribute__((noreturn))
-void ERR_RET2(const std::string &s, int t);
+__attribute__((noreturn)) void ERR_RET(const std::string &s);
+__attribute__((noreturn)) void ERR_RET2(const std::string &s, int t);
 
 typedef mpq_class bigrat;
 

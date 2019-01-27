@@ -85,15 +85,14 @@ void my_ostream::close() {
 PSimplex::~PSimplex() { /* empty destructor */
 }
 
-void PSimplex::Draw(__attribute__((unused)) my_ostream& output_stream, __attribute__((unused)) COORD d) {
+void PSimplex::Draw(__attribute__((unused)) my_ostream& output_stream,
+                    __attribute__((unused)) COORD d) {
   ERR_RET("call to PSimplex::Draw");
 }
 
 PSimplex::PSimplex(Point p0, size_t i) : p(p0) { in_pcomplex = i; }
 
-Simplex* PSimplex::sp() {
-  ERR_RET("call to Psimplex::sp()");
-}
+Simplex* PSimplex::sp() { ERR_RET("call to Psimplex::sp()"); }
 
 PVertex::PVertex(Vertex* v0, Point p0, size_t i) : PSimplex(p0, i) { s = v0; }
 

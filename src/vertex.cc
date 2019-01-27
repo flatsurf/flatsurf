@@ -19,27 +19,27 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <boost/math/constants/constants.hpp>
+#include <boost/math/special_functions/round.hpp>
 #include <iostream>
 #include <list>
 #include <ostream>
 #include <string>
-#include <boost/math/special_functions/round.hpp>
-#include <boost/math/constants/constants.hpp>
 
 #include "libpolygon/elementary_geometry.h"
 #include "libpolygon/globals.h"
+#include "libpolygon/shared.h"
 #include "libpolygon/simplex.h"
 #include "libpolygon/two_complex.h"
 #include "libpolygon/vertex.h"
-#include "libpolygon/shared.h"
 
+using boost::math::iround;
+using boost::math::constants::pi;
 using std::abs;
 using std::endl;
 using std::list;
 using std::ostream;
 using std::string;
-using boost::math::iround;
-using boost::math::constants::pi;
 
 namespace polygon {
 Simplex::Simplex() : color("#") {
@@ -51,7 +51,8 @@ Simplex::Simplex() : color("#") {
   tag = 0;
 
   for (i = 0; i < 12; i++) {
-    sprintf(tmp, "%x", std::uniform_int_distribution<int>(0,15)(random_engine));
+    sprintf(tmp, "%x",
+            std::uniform_int_distribution<int>(0, 15)(random_engine));
     tmp2 = tmp;
     color += tmp2;
   }
@@ -144,7 +145,7 @@ COORD Vertex::total_angle() {
 int Vertex::total_angle_over_pi() {
   COORD a = total_angle();
 
-	int j = iround(a / pi<COORD>());
+  int j = iround(a / pi<COORD>());
 
   if (abs(j * pi<COORD>() - a) > 10 * EPSILON) {
     std::cerr << abs(j * pi<COORD>() - a) << endl;

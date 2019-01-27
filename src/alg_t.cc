@@ -19,23 +19,23 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <boost/math/constants/constants.hpp>
+#include <boost/numeric/conversion/cast.hpp>
 #include <complex>
 #include <ostream>
 #include <vector>
-#include <boost/math/constants/constants.hpp>
-#include <boost/numeric/conversion/cast.hpp>
 
+#include "libpolygon/algebraic.h"
 #include "libpolygon/defs.h"
+#include "libpolygon/globals.h"
 #include "libpolygon/number_field.h"
 #include "libpolygon/params.h"
 #include "libpolygon/two_complex.h"
-#include "libpolygon/algebraic.h"
-#include "libpolygon/globals.h"
 
+using boost::numeric_cast;
 using std::complex;
 using std::ostream;
 using std::vector;
-using boost::numeric_cast;
 
 namespace polygon {
 template <typename T>
@@ -76,11 +76,13 @@ NumberField<T> *InitCyclotomic(int n) {
 
   NumberField<T> *F;
 
-  complex<COORD> nth_rootofunity(cos(2 * boost::math::constants::pi<COORD>() / n),
-                                 sin(2 * boost::math::constants::pi<COORD>() / n));
+  complex<COORD> nth_rootofunity(
+      cos(2 * boost::math::constants::pi<COORD>() / n),
+      sin(2 * boost::math::constants::pi<COORD>() / n));
   poly<T> cyc = cyclotomic_poly<T>(n);
   vector<T> coeffs = cyc.coefficients;
-  F = new NumberField<T>(&coeffs[0], numeric_cast<size_t>(cyc.degree()), nth_rootofunity);
+  F = new NumberField<T>(&coeffs[0], numeric_cast<size_t>(cyc.degree()),
+                         nth_rootofunity);
   F->store_conjugate(algebraic<T>(1, F).pow(n - 1));
 
   return (F);

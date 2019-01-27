@@ -18,11 +18,11 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <boost/lexical_cast.hpp>
+#include <boost/numeric/conversion/cast.hpp>
 #include <complex>
 #include <ostream>
 #include <vector>
-#include <boost/numeric/conversion/cast.hpp>
-#include <boost/lexical_cast.hpp>
 
 #include "libpolygon/algebraic.h"
 #include "libpolygon/defs.h"
@@ -31,14 +31,14 @@
 #include "libpolygon/vector.h"
 
 using namespace polygon;
+using boost::numeric_cast;
 using std::complex;
 using std::cout;
 using std::endl;
 using std::max;
 using std::ostream;
-using std::vector;
 using std::pow;
-using boost::numeric_cast;
+using std::vector;
 
 namespace polygon {
 // gcd_extended: a and b inputs, x and y outputs.
@@ -75,7 +75,7 @@ poly<T>::poly(vector<T> c) : coefficients(c) {
 
 template <class T>
 poly<T>::poly(T c[], int deg) {
-	assert(deg >= -1);
+  assert(deg >= -1);
   vector<T> v;
   for (int i = 0; i <= deg; i++) v.push_back(c[i]);
   coefficients = v;
@@ -100,7 +100,8 @@ int poly<T>::degree() const {
 
 template <class T>
 void poly<T>::fill_back(int n) {
-  while (coefficients.size() <= numeric_cast<unsigned int>(n)) coefficients.push_back(T(0));
+  while (coefficients.size() <= numeric_cast<unsigned int>(n))
+    coefficients.push_back(T(0));
 }
 
 template <class T>
@@ -110,26 +111,26 @@ void poly<T>::print() {
 
 template <class T>
 poly<T> &poly<T>::operator+=(const poly<T> &p) {
-	if (p.degree() < 0) {
-		return *this;
-	}
+  if (p.degree() < 0) {
+    return *this;
+  }
   int m = max(degree(), p.degree());
   fill_back(m);
   for (size_t i = 0; i <= numeric_cast<size_t>(p.degree()); i++)
-	  coefficients[i] += p.coefficients[i];
+    coefficients[i] += p.coefficients[i];
   reduce();
   return *this;
 }
 
 template <class T>
 poly<T> &poly<T>::operator-=(const poly<T> &p) {
-	if (p.degree() < 0){
-		return *this;
-	}
+  if (p.degree() < 0) {
+    return *this;
+  }
   int m = max(degree(), p.degree());
   fill_back(m);
   for (size_t i = 0; i <= numeric_cast<size_t>(p.degree()); i++)
-		coefficients[i] -= p.coefficients[i];
+    coefficients[i] -= p.coefficients[i];
   reduce();
   return *this;
 }
@@ -137,13 +138,13 @@ poly<T> &poly<T>::operator-=(const poly<T> &p) {
 // fix this later
 template <class T>
 poly<T> operator*(poly<T> p, const poly<T> &q) {
-	if (p.degree() < 0 || q.degree() < 0){
-		return poly<T>();
-	}
+  if (p.degree() < 0 || q.degree() < 0) {
+    return poly<T>();
+  }
   vector<T> c;
   T temp;
   size_t m = numeric_cast<size_t>(p.degree());
-	size_t n = numeric_cast<size_t>(q.degree());
+  size_t n = numeric_cast<size_t>(q.degree());
   for (size_t i = 0; i <= m + n; i++) {
     temp = 0;
     for (size_t k = n > i ? 0 : i - n; k <= m && k <= i; k++)
@@ -202,11 +203,11 @@ bool operator!=(const poly<T> &p, const poly<T> &q) {
 template <class T>
 algebraic<T> poly<T>::operator()(const algebraic<T> &a) {
   algebraic<T> b(a.field());
-	if (degree() < 0){
-		return b;
-	}
+  if (degree() < 0) {
+    return b;
+  }
   for (size_t i = 0; i <= numeric_cast<size_t>(degree()); i++)
-		b += coefficients[i] * a.pow(i);
+    b += coefficients[i] * a.pow(i);
   return b;
 }
 
@@ -242,13 +243,15 @@ void divide(poly<T> &quotient, poly<T> &remainder, const poly<T> &f,
   }
 
   poly<T> h = f;
-	size_t out_degree = numeric_cast<size_t>(m - n);
+  size_t out_degree = numeric_cast<size_t>(m - n);
   vector<T> c(out_degree + 1);
 
   for (size_t i = 0; i <= out_degree; i++) {
-    c[out_degree - i] = h.coefficients[numeric_cast<size_t>(m) - i] / g.coefficients.back();
+    c[out_degree - i] =
+        h.coefficients[numeric_cast<size_t>(m) - i] / g.coefficients.back();
     for (size_t j = 0; j <= numeric_cast<size_t>(n); j++)
-      h.coefficients[out_degree - i + j] -= c[out_degree - i] * g.coefficients[j];
+      h.coefficients[out_degree - i + j] -=
+          c[out_degree - i] * g.coefficients[j];
   }
   h.reduce();
   remainder = h;
@@ -589,17 +592,17 @@ algebraic<T> algebraic<T>::pow(int n) const {
     return (this->reciprocal().pow(-n));
   }
 
-  if (n == 0){
+  if (n == 0) {
     return algebraic<T>(0ul, in_field);
   }
 
-  if (n%2){
-    return (*this) * this->pow(n-1);
+  if (n % 2) {
+    return (*this) * this->pow(n - 1);
   }
 
-  auto s = this->pow(n/2);
+  auto s = this->pow(n / 2);
 
-  return (s*s);
+  return (s * s);
 }
 
 template <class T>

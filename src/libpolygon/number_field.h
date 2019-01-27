@@ -34,7 +34,8 @@ class NumberField {
  public:
   NumberField<T>();
   NumberField<T>(T minimal_poly[], size_t degree);
-  NumberField<T>(T minimal_poly[], size_t degree, std::complex<COORD> embedding);
+  NumberField<T>(T minimal_poly[], size_t degree,
+                 std::complex<COORD> embedding);
 
   void store_conjugate(algebraic<T>);
 

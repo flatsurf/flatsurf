@@ -26,10 +26,9 @@
 
 #include <random>
 
-
 namespace polygon {
-	// A shared random number generator.
-	extern std::default_random_engine random_engine;
-}
+// A shared random number generator.
+extern std::default_random_engine random_engine;
+}  // namespace polygon
 
-#endif // LIBPOLYGON_SHARED_H
+#endif  // LIBPOLYGON_SHARED_H

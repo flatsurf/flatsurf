@@ -101,7 +101,7 @@ class SaddleConf {
   bool operator<(const SaddleConf& scf) const { return (count > scf.count); }
 
   // for visualization
-  int tag; // -1 if uninitialezd
+  int tag;  // -1 if uninitialezd
   void DrawSaddles();
   void DrawCylinders();
 
@@ -110,7 +110,7 @@ class SaddleConf {
  private:
   COORD original_min_cylinder_length;
   COORD
-      original_shortest_length;  /*original length of shortest saddle,
+  original_shortest_length;      /*original length of shortest saddle,
                                                                                                                                                  before dividing */
   alg_tI original_shortest_algt; /* the same as above, but algebraically */
 

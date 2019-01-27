@@ -21,26 +21,26 @@
 
 #include <NTL/LLL.h>
 #include <NTL/mat_ZZ.h>
+#include <boost/math/constants/constants.hpp>
 #include <iostream>
 #include <vector>
-#include <boost/math/constants/constants.hpp>
 
 #include "libpolygon/globals.h"
-#include "libpolygon/shared.h"
 #include "libpolygon/number_field.h"
 #include "libpolygon/oedge.h"
 #include "libpolygon/params.h"
+#include "libpolygon/shared.h"
 #include "libpolygon/two_complex.h"
 #include "libpolygon/uedge.h"
 
 using namespace NTL;
+using boost::numeric_cast;
+using boost::math::constants::pi;
 using std::abs;
 using std::cout;
 using std::endl;
-using std::vector;
-using boost::math::constants::pi;
-using boost::numeric_cast;
 using std::uniform_real_distribution;
+using std::vector;
 
 namespace polygon {
 void TwoComplex::PerturbConjugates(COORD max_perturb) {
@@ -151,15 +151,15 @@ void Vertex::MoveVertex(Point p) {
 void TwoComplex::PerturbAll(COORD max_perturb) {
   UEdge **uedge_array = new UEdge *[uedges.size() + 1];
 
-	{
-		size_t i = 1;
-		for (auto j = uedges.begin(); j != uedges.end(); ++j) {
-			uedge_array[i] = (*j);
-			(*j)->index = numeric_cast<int>(i);
+  {
+    size_t i = 1;
+    for (auto j = uedges.begin(); j != uedges.end(); ++j) {
+      uedge_array[i] = (*j);
+      (*j)->index = numeric_cast<int>(i);
 
-			i++;
-		}
-	}
+      i++;
+    }
+  }
 
   size_t M, N;
 
@@ -179,43 +179,46 @@ void TwoComplex::PerturbAll(COORD max_perturb) {
     }
   }
 
-	{
-		size_t i = 1;
-		for (auto l = faces.begin(); l != faces.end(); ++l) {
-			for (auto j = (*l)->oedges.begin(); j != (*l)->oedges.end(); ++j) {
-				X(static_cast<long>(i), (*j).ue->index) += (*j).direction;
-			}
-			i++;
-		}
-		/* triangles assumed here */
-		for (auto l = vertices.begin(); l != vertices.end(); ++l) {
-			for (auto j = (*l)->out_edges.begin(); j != (*l)->out_edges.end(); ++j) {
-				X(static_cast<long>(i), (*j)->next_edge()->ue->index) += (*j)->next_edge()->direction;
-			}
-			i++;
-		}
-	}
+  {
+    size_t i = 1;
+    for (auto l = faces.begin(); l != faces.end(); ++l) {
+      for (auto j = (*l)->oedges.begin(); j != (*l)->oedges.end(); ++j) {
+        X(static_cast<long>(i), (*j).ue->index) += (*j).direction;
+      }
+      i++;
+    }
+    /* triangles assumed here */
+    for (auto l = vertices.begin(); l != vertices.end(); ++l) {
+      for (auto j = (*l)->out_edges.begin(); j != (*l)->out_edges.end(); ++j) {
+        X(static_cast<long>(i), (*j)->next_edge()->ue->index) +=
+            (*j)->next_edge()->direction;
+      }
+      i++;
+    }
+  }
 
-	{
-		for (size_t i = 1; i <= M; i++) {
-			for (size_t k = 1; k <= N; k++) {
-				Y(static_cast<long>(k), static_cast<long>(i)) = X(static_cast<long>(i), static_cast<long>(k));
-			}
-		}
-	}
+  {
+    for (size_t i = 1; i <= M; i++) {
+      for (size_t k = 1; k <= N; k++) {
+        Y(static_cast<long>(k), static_cast<long>(i)) =
+            X(static_cast<long>(i), static_cast<long>(k));
+      }
+    }
+  }
 
   ZZ det2;
   mat_ZZ U;
   U.SetDims(static_cast<long>(N), static_cast<long>(N));
   long r = LLL(det2, Y, U);
 
-	{
-		long i = static_cast<long>(vertices.size());
-		for (auto j = vertices.begin(); j != vertices.end(); ++j) {
-			if (abs((*j)->total_angle() - 2 * pi<COORD>()) > EPSILON) --i;
-		}
-		fprintf(out_f, "rank = %lu #of parameters %ld\n", r, numeric_cast<long>(N) - r - i);
-	}
+  {
+    long i = static_cast<long>(vertices.size());
+    for (auto j = vertices.begin(); j != vertices.end(); ++j) {
+      if (abs((*j)->total_angle() - 2 * pi<COORD>()) > EPSILON) --i;
+    }
+    fprintf(out_f, "rank = %lu #of parameters %ld\n", r,
+            numeric_cast<long>(N) - r - i);
+  }
 
   Point *perturb_array = new Point[N + 1];
   Point *delta_array = new Point[N + 1];
@@ -231,21 +234,28 @@ void TwoComplex::PerturbAll(COORD max_perturb) {
   }
 
   for (size_t i = 1; i <= N; i++) {
-    perturb_array[i] = Point(max_perturb * std::uniform_real_distribution<double>(0, 1)(random_engine),
-                             max_perturb * std::uniform_real_distribution<double>(0, 1)(random_engine));
+    perturb_array[i] =
+        Point(max_perturb *
+                  std::uniform_real_distribution<double>(0, 1)(random_engine),
+              max_perturb *
+                  std::uniform_real_distribution<double>(0, 1)(random_engine));
     ;
   }
 
   for (long k = 1; k <= static_cast<long>(N) - r; k++) {
     for (size_t i = 1; i <= N; i++) {
-      norms[k] += static_cast<COORD>((1.0L) * to_long(U(k, static_cast<long>(i))) * to_long(U(k, static_cast<long>(i))));
+      norms[k] +=
+          static_cast<COORD>((1.0L) * to_long(U(k, static_cast<long>(i))) *
+                             to_long(U(k, static_cast<long>(i))));
     }
   }
 
   for (long k = 1; k <= static_cast<long>(N) - r; k++) {
     for (size_t i = 1; i <= N; i++) {
       delta_array[i] +=
-          perturb_array[k] * Point(numeric_cast<double>(to_long(U(k, static_cast<long>(i))))) / sqrt(norms[k]);
+          perturb_array[k] *
+          Point(numeric_cast<double>(to_long(U(k, static_cast<long>(i))))) /
+          sqrt(norms[k]);
     }
   }
 

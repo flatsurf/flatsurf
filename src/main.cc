@@ -21,29 +21,29 @@
 
 #include <getopt.h>
 #include <unistd.h>
+#include <boost/numeric/conversion/cast.hpp>
 #include <fstream>
 #include <iostream>
-#include <boost/numeric/conversion/cast.hpp>
 
 #include "libpolygon/globals.h"
-#include "libpolygon/shared.h"
 #include "libpolygon/my_ostream.h"
 #include "libpolygon/number_field.h"
+#include "libpolygon/shared.h"
 #include "libpolygon/two_complex.h"
 #include "libpolygon/uedge.h"
 
 using namespace polygon;
 
+using boost::numeric_cast;
 using std::cout;
 using std::endl;
 using std::list;
 using std::max;
 using std::min;
 using std::ofstream;
-using boost::numeric_cast;
 
 int main(int argc, char** argv) {
-	bool file_arg = false;
+  bool file_arg = false;
 
   S = new TwoComplex();
 
@@ -542,8 +542,9 @@ int main(int argc, char** argv) {
   if (perturb_euclidean) {
     for (auto i = S->vertices.begin(); i != S->vertices.end(); ++i) {
       if ((*i)->euclidean) {
-        tmp_offset =
-            Point(mv * std::uniform_real_distribution<double>(0, 1)(random_engine), mv * std::uniform_real_distribution<double>(0, 1)(random_engine));
+        tmp_offset = Point(
+            mv * std::uniform_real_distribution<double>(0, 1)(random_engine),
+            mv * std::uniform_real_distribution<double>(0, 1)(random_engine));
         std::cout << "Moving: ";
         (*i)->Print(std::cout);
         std::cout << " offset " << tmp_offset << "\n";
@@ -554,8 +555,9 @@ int main(int argc, char** argv) {
 
   if (perturb_vertex != UNDEFINED) {
     if (offset == Point(UNDEFINED, UNDEFINED)) {
-      offset =
-          Point(mv * std::uniform_real_distribution<double>(0, 1)(random_engine), mv * std::uniform_real_distribution<double>(0, 1)(random_engine));
+      offset = Point(
+          mv * std::uniform_real_distribution<double>(0, 1)(random_engine),
+          mv * std::uniform_real_distribution<double>(0, 1)(random_engine));
     }
     for (auto i = S->vertices.begin(); i != S->vertices.end(); ++i) {
       if ((*i)->id() == perturb_vertex) {

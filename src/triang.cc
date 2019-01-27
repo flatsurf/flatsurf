@@ -19,10 +19,10 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <boost/math/constants/constants.hpp>
 #include <cassert>
 #include <iostream>
 #include <list>
-#include <boost/math/constants/constants.hpp>
 
 #include "libpolygon/elementary_geometry.h"
 #include "libpolygon/globals.h"
@@ -30,11 +30,11 @@
 #include "libpolygon/two_complex.h"
 #include "libpolygon/uedge.h"
 
+using boost::math::constants::pi;
 using std::abs;
 using std::cout;
 using std::list;
 using std::min;
-using boost::math::constants::pi;
 
 namespace polygon {
 void TwoComplex::TriangulateAll() {
@@ -128,7 +128,7 @@ void TwoComplex::TriangulateFace(Face* f) {
   //	dbg_stream->close();
   //	delete dbg_stream;
 
-	// checking best_angle == 0 in a way that the compiler is not unhappy about
+  // checking best_angle == 0 in a way that the compiler is not unhappy about
   if (std::abs(best_angle) <= 0 || (!f->can_bisect(Candidate1, Candidate2))) {
 #ifdef USE_LONG_DOUBLE
     printf("F%d: Parent Face: F%d best_angle=%Lg", f->id(),
