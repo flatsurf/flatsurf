@@ -14,6 +14,10 @@ index ae6f789..b7162ea 100755
 -for output in *.sample.out; do
 -    diff <(polygon `basename "$output" .sample.out` | tail -n +2) <(tail -n +2 "$output");
 -done
-+conda install valgrind
-+valgrind --leak-check=full polygon 1 1 2 2 --depth=10 --follow_depth=50 --show_cyls --show_moduli --cyls_only --quiet 1
++conda install -y --quiet valgrind
++valgrind --leak-check=full polygon 1 1 2 2 --depth=10 --follow_depth=50 --show_cyls --show_moduli --cyls_only --quiet
 PATCH
+
+git config --global user.email nobody@circleci.com
+git config --global user.name CircleCI
+git commit -am "temporary changes for this flavour"
