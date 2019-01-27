@@ -11,7 +11,7 @@ index 979e451..83b40cd 100644
      *GCC*|*gnu-c++*)
          export EXTRA_CXXFLAGS="-Werror -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-promo -Wstrict-null-sentinel -Wundef -fdiagnostics-show-option -Wconversion"
 +        # Instrument code to detect errors at runtime
-+        export EXTRA_CXXFLAGS="-fsanitize=address -fsanitize=pointer-compare -fsanitize=leak -fsanitize=undefined -static-libasan -static-liblsan -static-libubsan"
++        export EXTRA_CXXFLAGS="-fsanitize=address -fsanitize=leak -fsanitize=undefined -static-libasan -static-liblsan -static-libubsan"
          ;;
      *clang*)
          export EXTRA_CXXFLAGS="-Werror -Weverything -Wno-padded -Wno-exit-time-destructors -Wno-undefined-func-template -Wno-global-constructors -Wno-c++98-compat -Wno-missing-prototypes"
