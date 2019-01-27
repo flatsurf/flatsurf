@@ -37,7 +37,6 @@ using std::cout;
 using std::endl;
 using std::max;
 using std::ostream;
-using std::pow;
 using std::vector;
 
 namespace polygon {
@@ -540,7 +539,10 @@ template <class T>
 complex<COORD> algebraic<T>::tocomplex() const {
   complex<COORD> zz(0, 0);
   for (size_t i = 0; i <= in_field->degree - 1; i++)
-    zz += my_mpq_get_d(coords[i]) * std::pow(in_field->embedding, i);
+    // The cast to int gives more precision. Otherwise, the system is probably
+    // falling back to the generic implementation for complex exponents.
+    zz += my_mpq_get_d(coords[i]) *
+          std::pow(in_field->embedding, static_cast<int>(i));
   return zz;
 }
 
