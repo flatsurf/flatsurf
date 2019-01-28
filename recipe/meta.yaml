@@ -3,6 +3,7 @@
 {% set version = environ.get('GIT_DESCRIBE_TAG')|string %}
 {% set build_number = (environ.get('GIT_DESCRIBE_NUMBER')|int + 1000)|string %}
 {% set build_string = "master_" + build_number %}
+{% set flavour = environ.get('FLAVOUR', 'build')|string %}
 
 package:
   name: polygon
@@ -15,6 +16,8 @@ build:
   number: {{ build_number }}
   string: {{ build_string }}
   skip: true    # [win]
+  script:
+    - ./recipe/build-{{ flavour }}.sh
 
 requirements:
   build:
@@ -33,9 +36,9 @@ test:
   source_files:
     - test/
   commands:
-    - test/run.sh            # [linux]
+    - test/test-{{ flavour }}.sh            # [linux]
     # Tests on macOS fail at the moment. It's unclear whether that's a problem, see https://github.com/polygon-tbd/polygon/pull/5
-    - test/run.sh || true    # [osx]
+    - test/test-{{ flavour }}.sh || true    # [osx]
 
 outputs:
   - name: libpolygon

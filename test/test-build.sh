@@ -4,7 +4,7 @@
 # just run some cases that are fast to see that we did not break anything.
 set -exo pipefail
 
-# Go to the test directory, so the path names are correct
+# Go to the test directory, so we don't have to worry about path names
 cd -P -- "$(dirname -- "$0")"
 
 for output in *.sample.out; do

@@ -46,8 +46,10 @@ docker run ${DOCKER_RUN_ARGS} \
            -v "${RECIPE_ROOT}":/home/conda/recipe_root:ro,z \
            -v "${FEEDSTOCK_ROOT}":/home/conda/feedstock_root:rw,z \
            -e CONFIG \
+           -e FLAVOUR \
            -e BINSTAR_TOKEN \
            -e HOST_USER_ID \
+           -e COVERALLS_REPO_TOKEN \
            -e UPLOAD_PACKAGES \
            $DOCKER_IMAGE \
            bash \

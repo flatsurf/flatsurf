@@ -1,5 +1,5 @@
-#!/bin/bash
-set -ex
+# Source this file to set CFLAGS and friends to typical values
+set -e
 shopt -s extglob
 
 # Sanitize conda's flags to treat the prefix as system headers (and don't report compiler warnings there.)
@@ -28,8 +28,3 @@ case `uname` in
         export EXTRA_CXXFLAGS="$EXTRA_CXXFLAGS -fno-common"
         ;;
 esac
-
-./bootstrap
-./configure --prefix="$PREFIX" CXXFLAGS="$CXXFLAGS" CXX=$CXX || (cat config.log; exit 1)
-make -j$CPU_COUNT CXXFLAGS="$CXXFLAGS $EXTRA_CXXFLAGS"
-make install
