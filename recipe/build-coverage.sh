@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-source ./recipe/cflags.sh
-
 # We build with gcov support enabled so we can report coverage statistics to
 # coveralls.
 export EXTRA_CXXFLAGS="--coverage"

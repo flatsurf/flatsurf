@@ -1,0 +1,20 @@
+{
+    "version": 1,
+    "project": "polygon",
+    "project_url": "https://github.com/polygon-tbd/polygon",
+    "show_commit_url": "https://github.com/polygon-tbd/polygon",
+    "repo": ".",
+    "environment_type": "conda",
+    "matrix": {
+      "plumbum": [""],
+    },
+    "conda_channels": ["conda-forge", "defaults"],
+    // These are not set yet. They should basically build the conda package and (un)install it
+    "build_command": [],
+    "install_command": [],
+    "uninstall_command": [],
+    "benchmark_dir": "test",
+    "env_dir": ".asv/env",
+    "results_dir": ".asv/results",
+    "html_dir": ".asv/html"
+}
