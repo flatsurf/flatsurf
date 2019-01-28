@@ -32,6 +32,21 @@ index 979e451..0c9c143 100644
          export EXTRA_CXXFLAGS="-Werror -Weverything -Wno-padded -Wno-exit-time-destructors -Wno-undefined-func-template -Wno-global-constructors -Wno-c++98-compat -Wno-missing-prototypes"
 PATCH
 
+patch ./.circleci/run_docker_build.sh <<"PATCH"
+diff --git a/.circleci/run_docker_build.sh b/.circleci/run_docker_build.sh
+index 8bb0bda..7ea5282 100755
+--- a/.circleci/run_docker_build.sh
++++ b/.circleci/run_docker_build.sh
+@@ -49,6 +49,7 @@ docker run ${DOCKER_RUN_ARGS} \
+            -e BINSTAR_TOKEN \
+            -e HOST_USER_ID \
+            -e UPLOAD_PACKAGES \
++           -e COVERALLS_REPO_TOKEN \
+            $DOCKER_IMAGE \
+            bash \
+            /home/conda/feedstock_root/${PROVIDER_DIR}/build_steps.sh
+PATCH
+
 patch ./test/run.sh <<"PATCH"
 diff --git a/test/run.sh b/test/run.sh
 index ae6f789..88087aa 100755
