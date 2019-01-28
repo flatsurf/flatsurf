@@ -36,7 +36,3 @@ index ae6f789..9a545a4 100755
      diff <(polygon `basename "$output" .sample.out` | tail -n +2) <(tail -n +2 "$output");
  done
 PATCH
-
-git config --global user.email nobody@circleci.com
-git config --global user.name CircleCI
-git commit -am "temporary changes for this flavour"

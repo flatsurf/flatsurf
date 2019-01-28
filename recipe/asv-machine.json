@@ -1,0 +1,11 @@
+{
+    "circleci": {
+        "arch": "x86_64",
+        "cpu": "Intel(R) Xeon(R) CPU E5-2680 v2 @ 2.80GHz or similar",
+        "machine": "CircleCI",
+        "os": "Linux",
+        "ram": "61830880"
+    },
+    "version": 1
+}
+

@@ -31,11 +31,18 @@ requirements:
 # again with a newer version of conda-build.
 test:
   source_files:
+    - asv.conf.json 
     - test/
+    - recipe/asv-machine.json
   commands:
-    - test/run.sh            # [linux]
+    - cp recipe/asv-machine.json ~/.asv-machine.json
+    - test/run.sh --machine=circleci                # [linux]
     # Tests on macOS fail at the moment. It's unclear whether that's a problem, see https://github.com/polygon-tbd/polygon/pull/5
-    - test/run.sh || true    # [osx]
+    - test/run.sh --machine=circleci || true        # [osx]
+  requires:
+    - asv
+    # can be removed once https://github.com/conda-forge/asv-feedstock/pull/10 has been resolved
+    - setuptools
 
 outputs:
   - name: libpolygon

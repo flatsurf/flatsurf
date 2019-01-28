@@ -9,3 +9,10 @@ appveyor:
   secure:
     BINSTAR_TOKEN: O9RFhjYTxE0/srVKIhat+OeNtTfuIdr1XiSlPcZz9pcsq6okfmgg3Ty1XK7/AJaj
 compiler_stack: comp7
+circle:
+  flavours:
+    - build
+    - check
+    - coverage
+    - valgrind
+    - benchmark

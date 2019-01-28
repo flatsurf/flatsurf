@@ -3,6 +3,7 @@
 ![Windows disabled](https://img.shields.io/badge/Windows-disabled-lightgrey.svg)
 [![Coverage Status](https://coveralls.io/repos/github/polygon-tbd/polygon/badge.svg?branch=master)](https://coveralls.io/github/polygon-tbd/polygon?branch=master)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/polygon-tbd/polygon/master?filepath=binder%2FSample.ipynb)
+[![asv](http://img.shields.io/badge/benchmarked%20by-asv-blue.svg?style=flat)](https://polygon-tbd.github.io/polygon-asv/)
 
 ## Current Release Info
 

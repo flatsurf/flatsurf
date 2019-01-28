@@ -1,0 +1,15 @@
+{
+    "version": 1,
+    "project": "polygon",
+    "project_url": "https://github.com/polygon-tbd/polygon",
+    "repo": ".",
+    "environment_type": "conda",
+    "conda_channels": ["conda-forge", "defaults"],
+    "build_command": [],
+    "install_command": ["conda install --use-local polygon"],
+    "uninstall_command": ["conda remove polygon"],
+    "benchmark_dir": "test",
+    "env_dir": ".asv/env",
+    "results_dir": ".asv/results",
+    "html_dir": ".asv/html"
+}
