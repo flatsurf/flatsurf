@@ -99,6 +99,25 @@ jobs:
           # Run, test and (if we have a BINSTAR_TOKEN) upload the distributions.
           ./recipe/prepare-valgrind.sh
           ./.circleci/run_docker_build.sh
+  coverage_linux_:
+    working_directory: ~/test
+    machine: true
+    environment:
+      - CONFIG: "linux_"
+      - UPLOAD_PACKAGES: "False"
+    steps:
+      - checkout
+      - run:
+          name: Fast finish outdated PRs and merge PRs
+          command: |
+            ./.circleci/fast_finish_ci_pr_build.sh
+            ./.circleci/checkout_merge_commit.sh
+      - run:
+          command: docker pull condaforge/linux-anvil-comp7
+      - run: |
+          # Run, test and (if we have a BINSTAR_TOKEN) upload the distributions.
+          ./recipe/prepare-coverage.sh
+          ./.circleci/run_docker_build.sh
 
 workflows:
   version: 2
@@ -110,3 +129,4 @@ workflows:
       - cppcheck_linux_
       - style_linux_
       - valgrind_linux_
+      - coverage_linux_
