@@ -11,6 +11,7 @@ jobs:
     machine: true
     environment:
       - CONFIG: "linux_"
+      - FLAVOUR: "build"
     steps:
       - checkout
       - run:
@@ -22,69 +23,13 @@ jobs:
           command: docker pull condaforge/linux-anvil-comp7
       - run: |
           # Run, test and (if we have a BINSTAR_TOKEN) upload the distributions.
-          ./.circleci/run_docker_build.sh
-  distcheck_linux_:
-    working_directory: ~/test
-    machine: true
-    environment:
-      - CONFIG: "linux_"
-      - UPLOAD_PACKAGES: "False"
-    steps:
-      - checkout
-      - run:
-          name: Fast finish outdated PRs and merge PRs
-          command: |
-            ./.circleci/fast_finish_ci_pr_build.sh
-            ./.circleci/checkout_merge_commit.sh
-      - run:
-          command: docker pull condaforge/linux-anvil-comp7
-      - run: |
-          # Run, test and (if we have a BINSTAR_TOKEN) upload the distributions.
-          ./recipe/prepare-distcheck.sh
-          ./.circleci/run_docker_build.sh
-  cppcheck_linux_:
-    working_directory: ~/test
-    machine: true
-    environment:
-      - CONFIG: "linux_"
-      - UPLOAD_PACKAGES: "False"
-    steps:
-      - checkout
-      - run:
-          name: Fast finish outdated PRs and merge PRs
-          command: |
-            ./.circleci/fast_finish_ci_pr_build.sh
-            ./.circleci/checkout_merge_commit.sh
-      - run:
-          command: docker pull condaforge/linux-anvil-comp7
-      - run: |
-          # Run, test and (if we have a BINSTAR_TOKEN) upload the distributions.
-          ./recipe/prepare-cppcheck.sh
-          ./.circleci/run_docker_build.sh
-  style_linux_:
-    working_directory: ~/test
-    machine: true
-    environment:
-      - CONFIG: "linux_"
-      - UPLOAD_PACKAGES: "False"
-    steps:
-      - checkout
-      - run:
-          name: Fast finish outdated PRs and merge PRs
-          command: |
-            ./.circleci/fast_finish_ci_pr_build.sh
-            ./.circleci/checkout_merge_commit.sh
-      - run:
-          command: docker pull condaforge/linux-anvil-comp7
-      - run: |
-          # Run, test and (if we have a BINSTAR_TOKEN) upload the distributions.
-          ./recipe/prepare-style.sh
           ./.circleci/run_docker_build.sh
   valgrind_linux_:
     working_directory: ~/test
     machine: true
     environment:
       - CONFIG: "linux_"
+      - FLAVOUR: "valgrind"
       - UPLOAD_PACKAGES: "False"
     steps:
       - checkout
@@ -97,13 +42,13 @@ jobs:
           command: docker pull condaforge/linux-anvil-comp7
       - run: |
           # Run, test and (if we have a BINSTAR_TOKEN) upload the distributions.
-          ./recipe/prepare-valgrind.sh
           ./.circleci/run_docker_build.sh
   coverage_linux_:
     working_directory: ~/test
     machine: true
     environment:
       - CONFIG: "linux_"
+      - FLAVOUR: "coverage"
       - UPLOAD_PACKAGES: "False"
     steps:
       - checkout
@@ -116,7 +61,6 @@ jobs:
           command: docker pull condaforge/linux-anvil-comp7
       - run: |
           # Run, test and (if we have a BINSTAR_TOKEN) upload the distributions.
-          ./recipe/prepare-coverage.sh
           ./.circleci/run_docker_build.sh
 
 workflows:
@@ -125,8 +69,5 @@ workflows:
     jobs:
 
       - build_linux_
-      - distcheck_linux_
-      - cppcheck_linux_
-      - style_linux_
       - valgrind_linux_
       - coverage_linux_
