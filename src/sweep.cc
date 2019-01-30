@@ -437,7 +437,6 @@ template <typename PointT>
 int TwoComplex::SweepNew(COORD depth_, Dir<PointT> start_dir,
                          COORD GoalTotalAngle) {
   Dir<PointT> old_dir = start_dir;
-  int count = 0;
   COORD TotalAngle = 0;
   Summary* sm = &smry;
 
@@ -570,7 +569,6 @@ int TwoComplex::SweepNew(COORD depth_, Dir<PointT> start_dir,
           exit(0);
         }
 
-        count++;
         group_count++;
       }
       if (group_count == mc_group) {
