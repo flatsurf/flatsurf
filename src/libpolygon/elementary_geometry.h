@@ -24,9 +24,9 @@
 #include <list>
 #include <vector>
 
-#include "big_point.h"
-#include "defs.h"
-#include "oedge.h"
+#include "libpolygon/big_point.h"
+#include "libpolygon/defs.h"
+#include "libpolygon/oedge.h"
 
 namespace polygon {
 extern void reflect_vector(BigPointQ p, BigPointQ vec, BigPointQ &reflection);

@@ -21,8 +21,8 @@
 #ifndef LIBPOLYGON_CYLINDER_H
 #define LIBPOLYGON_CYLINDER_H
 
-#include "defs.h"
-#include "dir.h"
+#include "libpolygon/defs.h"
+#include "libpolygon/dir.h"
 
 namespace polygon {
 class Cylinder {

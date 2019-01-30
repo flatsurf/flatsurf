@@ -23,10 +23,10 @@
 
 #include <ostream>
 
-#include "big_point.h"
-#include "defs.h"
-#include "simplex.h"
-#include "vertex.h"
+#include "libpolygon/big_point.h"
+#include "libpolygon/defs.h"
+#include "libpolygon/simplex.h"
+#include "libpolygon/vertex.h"
 
 namespace polygon {
 class Face;

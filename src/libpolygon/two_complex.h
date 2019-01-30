@@ -25,10 +25,10 @@
 #include <ostream>
 #include <string>
 
-#include "defs.h"
-#include "dir.h"
-#include "saddleconf.h"
-#include "summary.h"
+#include "libpolygon/defs.h"
+#include "libpolygon/dir.h"
+#include "libpolygon/saddleconf.h"
+#include "libpolygon/summary.h"
 
 namespace polygon {
 extern bool field_arithmetic;

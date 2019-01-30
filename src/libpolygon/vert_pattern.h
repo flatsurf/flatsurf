@@ -23,8 +23,8 @@
 
 #include <iostream>
 
-#include "defs.h"
-#include "dir.h"
+#include "libpolygon/defs.h"
+#include "libpolygon/dir.h"
 
 namespace polygon {
 class SaddleConf;

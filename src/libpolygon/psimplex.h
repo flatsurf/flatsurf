@@ -21,8 +21,8 @@
 #ifndef LIBPOLYGON_PSIMPLEX_H
 #define LIBPOLYGON_PSIMPLEX_H
 
-#include "defs.h"
-#include "my_ostream.h"
+#include "libpolygon/defs.h"
+#include "libpolygon/my_ostream.h"
 
 namespace polygon {
 class Simplex;

@@ -30,8 +30,7 @@ libpolygon_la_SOURCES =   \
 
 libpolygon_la_LDFLAGS = -version-info $(libpolygon_version_info)
 
-libpolygonincludedir = $(includedir)/libpolygon
-libpolygoninclude_HEADERS =             \
+nobase_include_HEADERS =                \
     libpolygon/algebraic.h              \
     libpolygon/alg_t.h                  \
     libpolygon/big_point.h              \
@@ -42,7 +41,6 @@ libpolygoninclude_HEADERS =             \
     libpolygon/elementary_geometry.h    \
     libpolygon/face.h                   \
     libpolygon/globals.h                \
-    libpolygon/libpolygon.h             \
     libpolygon/my_ostream.h             \
     libpolygon/number_field.h           \
     libpolygon/oedge.h                  \
@@ -73,6 +71,6 @@ VPATH = $(srcdir) $(builddir)
 BUILT_SOURCES = libpolygon/libpolygon.h
 # Distribute libpolygon.h.in as part of the tarball, but not libpolygon.h
 EXTRA_DIST = libpolygon/libpolygon.h.in
-nodist_libpolygon_la_SOURCES = libpolygon/libpolygon.h
+nodist_include_HEADERS = libpolygon/libpolygon.h
 
 CLEANFILES = libpolygon/libpolygon.h

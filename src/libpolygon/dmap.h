@@ -21,7 +21,7 @@
 
 #include <list>
 
-#include "dir.h"
+#include "libpolygon/dir.h"
 
 namespace polygon {
 template <typename PointT>

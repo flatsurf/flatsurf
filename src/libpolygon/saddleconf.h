@@ -24,10 +24,10 @@
 #include <ostream>
 #include <set>
 
-#include "cylinder.h"
-#include "defs.h"
-#include "dir.h"
-#include "vert_pattern.h"
+#include "libpolygon/cylinder.h"
+#include "libpolygon/defs.h"
+#include "libpolygon/dir.h"
+#include "libpolygon/vert_pattern.h"
 
 namespace polygon {
 class Vertex;

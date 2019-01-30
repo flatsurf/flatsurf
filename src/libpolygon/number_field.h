@@ -25,8 +25,8 @@
 #include <ostream>
 #include <vector>
 
-#include "algebraic.h"
-#include "defs.h"
+#include "libpolygon/algebraic.h"
+#include "libpolygon/defs.h"
 
 namespace polygon {
 template <typename T>

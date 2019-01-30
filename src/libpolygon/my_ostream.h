@@ -24,7 +24,7 @@
 #include <fstream>
 #include <string>
 
-#include "libpolygon.h"
+#include "libpolygon/libpolygon.h"
 
 namespace polygon {
 class my_ostream {

@@ -24,11 +24,11 @@
 #include <list>
 #include <ostream>
 
-#include "alg_t.h"
-#include "big_point.h"
-#include "defs.h"
-#include "face.h"
-#include "vertex.h"
+#include "libpolygon/alg_t.h"
+#include "libpolygon/big_point.h"
+#include "libpolygon/defs.h"
+#include "libpolygon/face.h"
+#include "libpolygon/vertex.h"
 
 namespace polygon {
 class UEdge;
