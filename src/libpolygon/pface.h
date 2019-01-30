@@ -21,9 +21,9 @@
 #ifndef LIBPOLYGON_PFACE_H
 #define LIBPOLYGON_PFACE_H
 
-#include "defs.h"
-#include "my_ostream.h"
-#include "psimplex.h"
+#include "libpolygon/defs.h"
+#include "libpolygon/my_ostream.h"
+#include "libpolygon/psimplex.h"
 
 namespace polygon {
 class Simplex;

@@ -23,8 +23,8 @@
 
 #include <list>
 
-#include "defs.h"
-#include "simplex.h"
+#include "libpolygon/defs.h"
+#include "libpolygon/simplex.h"
 
 namespace polygon {
 class UEdge;

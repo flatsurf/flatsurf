@@ -24,10 +24,10 @@
 #include <list>
 #include <ostream>
 
-#include "big_point.h"
-#include "defs.h"
-#include "segment.h"
-#include "simplex.h"
+#include "libpolygon/big_point.h"
+#include "libpolygon/defs.h"
+#include "libpolygon/segment.h"
+#include "libpolygon/simplex.h"
 
 namespace polygon {
 class OEdge;

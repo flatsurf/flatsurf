@@ -23,8 +23,8 @@
 
 #include <ostream>
 
-#include "defs.h"
-#include "saddleconf.h"
+#include "libpolygon/defs.h"
+#include "libpolygon/saddleconf.h"
 
 namespace polygon {
 class Summary {

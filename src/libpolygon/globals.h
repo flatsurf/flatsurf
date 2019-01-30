@@ -25,8 +25,8 @@
 #include <list>
 #include <random>
 
-#include "defs.h"
-#include "oedge.h"
+#include "libpolygon/defs.h"
+#include "libpolygon/oedge.h"
 
 /*
  * This file contains global variables that are set by the command line

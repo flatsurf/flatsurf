@@ -28,7 +28,7 @@
 #include <gmpxx.h>
 #include <complex>
 #include <string>
-#include "libpolygon.h"
+#include "libpolygon/libpolygon.h"
 
 // RETURN HERE
 #ifdef i686

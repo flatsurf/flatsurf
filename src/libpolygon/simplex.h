@@ -24,7 +24,7 @@
 #include <ostream>
 #include <string>
 
-#include "defs.h"
+#include "libpolygon/defs.h"
 
 namespace polygon {
 class Simplex {

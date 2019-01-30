@@ -30,8 +30,8 @@
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 
-#include "defs.h"
-#include "poly.h"
+#include "libpolygon/defs.h"
+#include "libpolygon/poly.h"
 
 namespace polygon {
 template <typename T>

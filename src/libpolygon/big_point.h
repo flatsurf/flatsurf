@@ -23,8 +23,8 @@
 
 #include <ostream>
 
-#include "alg_t.h"
-#include "defs.h"
+#include "libpolygon/alg_t.h"
+#include "libpolygon/defs.h"
 
 namespace polygon {
 template <typename T>

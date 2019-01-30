@@ -21,8 +21,8 @@
 #ifndef LIBPOLYGON_PVERTEX_H
 #define LIBPOLYGON_PVERTEX_H
 
-#include "defs.h"
-#include "psimplex.h"
+#include "libpolygon/defs.h"
+#include "libpolygon/psimplex.h"
 
 namespace polygon {
 class Vertex;

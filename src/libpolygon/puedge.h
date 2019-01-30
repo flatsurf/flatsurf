@@ -21,10 +21,10 @@
 #ifndef LIBPOLYGON_PUEDGE_H
 #define LIBPOLYGON_PUEDGE_H
 
-#include "defs.h"
-#include "oedge.h"
-#include "psimplex.h"
-#include "uedge.h"
+#include "libpolygon/defs.h"
+#include "libpolygon/oedge.h"
+#include "libpolygon/psimplex.h"
+#include "libpolygon/uedge.h"
 
 namespace polygon {
 class PUEdge : public PSimplex {

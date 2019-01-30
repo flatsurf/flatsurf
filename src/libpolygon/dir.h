@@ -23,9 +23,9 @@
 
 #include <list>
 
-#include "alg_t.h"
-#include "defs.h"
-#include "oedge.h"
+#include "libpolygon/alg_t.h"
+#include "libpolygon/defs.h"
+#include "libpolygon/oedge.h"
 
 namespace polygon {
 class Vertex;

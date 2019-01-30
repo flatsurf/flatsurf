@@ -21,7 +21,7 @@
 #ifndef LIBPOLYGON_SEGMENT_H
 #define LIBPOLYGON_SEGMENT_H
 
-#include "defs.h"
+#include "libpolygon/defs.h"
 
 namespace polygon {
 /* for drawing saddle connections */
