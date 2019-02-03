@@ -25,8 +25,9 @@ libpolygon_la_SOURCES =   \
     two_complex.cc        \
     uedge.cc              \
     vertex.cc             \
-	params.cc             \
-    globals.cc
+    params.cc             \
+    globals.cc            \
+    summary.cc
 
 libpolygon_la_LDFLAGS = -version-info $(libpolygon_version_info)
 
