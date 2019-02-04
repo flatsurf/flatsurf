@@ -33,7 +33,7 @@
 
 #include "libpolygon/cylinder.h"
 #include "libpolygon/defs.h"
-#include "libpolygon/elementary_geometry.h"
+#include "libpolygon/geometry.h"
 #include "libpolygon/globals.h"
 #include "libpolygon/number_field.h"
 #include "libpolygon/saddleconf.h"

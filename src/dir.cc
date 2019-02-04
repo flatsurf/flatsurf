@@ -24,7 +24,7 @@
 #include <list>
 
 #include "libpolygon/dir.h"
-#include "libpolygon/elementary_geometry.h"
+#include "libpolygon/geometry.h"
 #include "libpolygon/vertex.h"
 
 using boost::math::constants::pi;

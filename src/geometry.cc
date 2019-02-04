@@ -24,7 +24,7 @@
 #include <list>
 
 #include "libpolygon/defs.h"
-#include "libpolygon/elementary_geometry.h"
+#include "libpolygon/geometry.h"
 #include "libpolygon/globals.h"
 #include "libpolygon/oedge.h"
 #include "libpolygon/two_complex.h"
@@ -46,43 +46,6 @@ COORD d_point_line2(__attribute__((unused)) const BigPointI &u,
                     __attribute__((unused)) const BigPointI &v) {
   ERR_RET("Call to d_point_line2 (BigPointI, BigPointI)");
 }
-
-/* fix this function */
-#if defined(USE_LONG_DOUBLE) || defined(USE_QUAD)
-#include <boost/multiprecision/mpfr.hpp>
-COORD my_mpq_get_d(bigrat op) {
-  mpq_t num, denom;
-
-  mpq_init(num);
-  mpq_init(denom);
-  mpq_set_z(num, op.get_num_mpz_t());
-  mpq_set_z(denom, op.get_den_mpz_t());
-
-  mpq_t tmp2;
-  mpq_init(tmp2);
-  mpq_div(tmp2, num, denom);
-
-  mpfr_t q;
-
-  mpfr_init2(q, 53);
-  mpfr_set_q(q, tmp2, GMP_RNDN);
-
-  boost::multiprecision::mpfr_float_50 s(q);
-
-  COORD ret = s.convert_to<COORD>();
-
-  mpfr_clear(q);
-  mpq_clear(tmp2);
-
-  return ret;
-}
-#else
-COORD my_mpq_get_d(bigrat op) { return op.get_d(); }
-#endif
-
-COORD my_mpq_get_d(int op) { return static_cast<COORD>(op); }
-
-COORD my_mpq_get_d(int64_t op) { return static_cast<COORD>(op); }
 
 void reflect_vector(BigPointQ p, BigPointQ vec, BigPointQ &reflection) {
   COORD ratio;

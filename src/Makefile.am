@@ -13,7 +13,7 @@ libpolygon_la_SOURCES =   \
     dir.cc                \
     face.cc               \
     input.cc              \
-    math.cc               \
+    geometry.cc           \
     misc.cc               \
     oedge.cc              \
     perturb.cc            \
@@ -39,7 +39,7 @@ nobase_include_HEADERS =                \
     libpolygon/defs.h                   \
     libpolygon/dir.h                    \
     libpolygon/dmap.h                   \
-    libpolygon/elementary_geometry.h    \
+    libpolygon/geometry.h               \
     libpolygon/face.h                   \
     libpolygon/globals.h                \
     libpolygon/my_ostream.h             \

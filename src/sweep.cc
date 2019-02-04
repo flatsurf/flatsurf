@@ -25,7 +25,7 @@
 #include <list>
 
 #include "libpolygon/dmap.h"
-#include "libpolygon/elementary_geometry.h"
+#include "libpolygon/geometry.h"
 #include "libpolygon/globals.h"
 #include "libpolygon/my_ostream.h"
 #include "libpolygon/psimplex.h"

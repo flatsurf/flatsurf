@@ -24,7 +24,7 @@
 #include <iostream>
 #include <list>
 
-#include "libpolygon/elementary_geometry.h"
+#include "libpolygon/geometry.h"
 #include "libpolygon/globals.h"
 #include "libpolygon/my_ostream.h"
 #include "libpolygon/two_complex.h"

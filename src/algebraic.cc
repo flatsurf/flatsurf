@@ -531,9 +531,42 @@ ostream &operator<<(ostream &outputStream, const algebraic<T> &num) {
   return outputStream;
 }
 
-extern COORD my_mpq_get_d(bigrat op);
-extern COORD my_mpq_get_d(int op);
-extern COORD my_mpq_get_d(int64_t op);
+/* fix this function */
+#if defined(USE_LONG_DOUBLE) || defined(USE_QUAD)
+#include <boost/multiprecision/mpfr.hpp>
+COORD my_mpq_get_d(bigrat op) {
+  mpq_t num, denom;
+
+  mpq_init(num);
+  mpq_init(denom);
+  mpq_set_z(num, op.get_num_mpz_t());
+  mpq_set_z(denom, op.get_den_mpz_t());
+
+  mpq_t tmp2;
+  mpq_init(tmp2);
+  mpq_div(tmp2, num, denom);
+
+  mpfr_t q;
+
+  mpfr_init2(q, 53);
+  mpfr_set_q(q, tmp2, GMP_RNDN);
+
+  boost::multiprecision::mpfr_float_50 s(q);
+
+  COORD ret = s.convert_to<COORD>();
+
+  mpfr_clear(q);
+  mpq_clear(tmp2);
+
+  return ret;
+}
+#else
+COORD my_mpq_get_d(bigrat op) { return op.get_d(); }
+#endif
+
+COORD my_mpq_get_d(int op) { return static_cast<COORD>(op); }
+
+COORD my_mpq_get_d(int64_t op) { return static_cast<COORD>(op); }
 
 template <class T>
 complex<COORD> algebraic<T>::tocomplex() const {

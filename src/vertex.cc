@@ -26,7 +26,7 @@
 #include <ostream>
 #include <string>
 
-#include "libpolygon/elementary_geometry.h"
+#include "libpolygon/geometry.h"
 #include "libpolygon/globals.h"
 #include "libpolygon/shared.h"
 #include "libpolygon/simplex.h"

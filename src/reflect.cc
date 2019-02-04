@@ -21,8 +21,8 @@
 
 #include <list>
 
-#include "libpolygon/elementary_geometry.h"
 #include "libpolygon/face.h"
+#include "libpolygon/geometry.h"
 #include "libpolygon/globals.h"
 #include "libpolygon/my_ostream.h"
 #include "libpolygon/psimplex.h"

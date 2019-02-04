@@ -25,8 +25,8 @@
 #include <ostream>
 #include <vector>
 
-#include "libpolygon/elementary_geometry.h"
 #include "libpolygon/face.h"
+#include "libpolygon/geometry.h"
 #include "libpolygon/globals.h"
 #include "libpolygon/number_field.h"
 #include "libpolygon/params.h"
