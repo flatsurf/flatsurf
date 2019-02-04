@@ -27,7 +27,8 @@ libpolygon_la_SOURCES =   \
     vertex.cc             \
     params.cc             \
     globals.cc            \
-    summary.cc
+    summary.cc            \
+	log.cc
 
 libpolygon_la_LDFLAGS = -version-info $(libpolygon_version_info)
 

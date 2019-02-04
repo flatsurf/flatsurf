@@ -35,6 +35,7 @@
 #include "libpolygon/defs.h"
 #include "libpolygon/geometry.h"
 #include "libpolygon/globals.h"
+#include "libpolygon/log.h"
 #include "libpolygon/number_field.h"
 #include "libpolygon/saddleconf.h"
 #include "libpolygon/two_complex.h"
@@ -70,7 +71,7 @@ bool VertPattern::is_empty() {
   return (false);
 }
 
-Vertex* VertPattern::get_v() { return (base.v); }
+Vertex* VertPattern::get_v() const { return (base.v); }
 
 int VertPattern::get_id(int j) {
   if (is_empty()) {
@@ -128,7 +129,7 @@ void VertPattern::add(Dir<Point>& d, int id) {
     COORD a = base.AngleF(d);
     int j = iround(a / pi<COORD>());
     if (abs(j * pi<COORD>() - a) > EPSILON) {
-      smry.bad_angle_count++;
+      Log::log.bad_angle_count++;
     }
 
     if (j == d.v->int_angle) {
@@ -156,7 +157,7 @@ void VertPattern::add(Dir<Point>& d, int id) {
   }
 }
 
-void VertPattern::print(ostream& output_stream, SaddleConf& sc) {
+void VertPattern::print(ostream& output_stream, SaddleConf& sc) const {
   algebraicQ ratio(NumberField<bigrat>::F);
 
   for (int i = 0; i < base.v->int_angle; i++) {
@@ -195,7 +196,7 @@ void VertPattern::print(ostream& output_stream, SaddleConf& sc) {
   }
 }
 
-int VertPattern::len() {
+int VertPattern::len() const {
   int count = 0;
   for (int i = 0; i < base.v->int_angle; i++) {
     if (at[i] != 0) {
@@ -302,7 +303,7 @@ void SaddleConf::clear() {
 
 /* returns the index of the vertex in this saddleconf */
 /* returns -1 if vertex is not found */
-int SaddleConf::find_vert(Vertex* v) {
+int SaddleConf::find_vert(Vertex* v) const {
   int i;
   for (i = 0; i < n_vp; i++) {
     if (vp[i].get_v() == v) {
@@ -353,7 +354,7 @@ COORD SaddleConf::get_orig_min_saddle_length() {
 }
 
 void SaddleConf::get_saddle_by_id(int id, int& in_vp_index, int& in_at,
-                                  int& out_vp_index, int& out_at) {
+                                  int& out_vp_index, int& out_at) const {
   bool found_in = false;
   bool found_out = false;
 
@@ -414,13 +415,13 @@ COORD SaddleConf::get_orig_min_cyl_length() {
   return (original_min_cylinder_length);
 }
 
-COORD SaddleConf::get_length_by_id(int id) {
+COORD SaddleConf::get_length_by_id(int id) const {
   int in_vp, in_at, out_vp, out_at;
   get_saddle_by_id(id, in_vp, in_at, out_vp, out_at);
   return (vp[in_vp].length[in_at]);
 }
 
-Dir<Point> SaddleConf::get_Dir_by_id(int id) { return (start_Dir[id]); }
+Dir<Point> SaddleConf::get_Dir_by_id(int id) const { return (start_Dir[id]); }
 
 /*
 int SaddleConf::follow_right(int i)
@@ -775,7 +776,7 @@ void SaddleConf::check_cross_saddle(COORD cyl_len,
   //    std::cout << "j = " << j << endl;
 
   if (abs(j * pi<COORD>() - a) > EPSILON) {
-    smry.bad_angle_count++;
+    Log::log.bad_angle_count++;
     //	  std::cout << "angle = " << abs(angle(d.vec, base.vec)) -MY_PI << " "
     //		<< abs(a - j*MY_PI) << " at V" << base.v->id();
 
@@ -876,7 +877,7 @@ int SaddleConf::add_saddle(Dir<Point> start, Dir<Point> end, alg_tI& algt) {
   return (next_id++);
 }
 
-int SaddleConf::n_saddles() { return (next_id - 1); }
+int SaddleConf::n_saddles() const { return (next_id - 1); }
 
 void SaddleConf::print(ostream& output_stream) {
   for (int i = 0; i < n_vp; i++) {
@@ -1090,121 +1091,4 @@ bool SaddleConf::isomInternal(SaddleConf& sc, int next_vp, int* v_matched,
 
   return (false);
 }
-
-#ifdef USE_MPI
-
-MPI_Datatype mpi_smry_type;
-MPI_Op mpi_merge;
-
-void mpi_merge_smry(void* sm1, void* sm2, int* len,
-                    MPI_Datatype* mpi_smry_type) {
-  if (*len != 1) {
-    ERR_RET("merge: *len not 1");
-  }
-
-  Summary* summary1 = static_cast<Summary*>(sm1);
-  Summary* summary2 = static_cast<Summary*>(sm2);
-
-  fprintf(out_f, "-------------------------------------In merge:\n");
-
-  summary1->normalize();
-  summary2->normalize();
-
-  fprintf(out_f, "merging. summary1:\n");
-  summary1->print(std::cout, 1.0 / n_slices, 1.0, S->volume(), depth);
-  //    std::cout << "summary 1 scf.size() = " << summary1->scf.size() <<endl;
-
-  //    fprintf(out_f,"summary2:\n");
-  //    summary2->print(std::cout, 1.0, 1.0, S->volume(), depth);
-
-  //    std::cout << "summary 2 scf.size() = " << summary2->scf.size() <<endl;;
-
-  for (int i = 0; i < summary1->scf.size(); i++) {
-    int j;
-    for (j = 0; j < summary2->scf.size(); j++) {
-      if (summary1->scf[i].isom(summary2->scf[j])) {
-        summary2->scf[j].count += summary1->scf[i].count;
-
-        break;
-      }
-    }
-    if (j == summary2->scf.size()) { /* new summary not found */
-      summary2->add_new_conf(summary1->scf[i]);
-    }
-  }
-  fprintf(out_f, "merged: ");
-  summary2->print(std::cout, 1.0 * SA.n_finished() / n_slices,
-                  1.0 * SA.n_finished() / n_slices, S->volume(), depth);
-  fprintf(out_f, "-----------------------------------------\n");
-}
-
-// MPI_Type_vector( count, blocklen, stride, oldtype,  &newtype );
-
-void my_mpi_init() {
-  MPI_Type_vector(sizeof(Summary), 1, 1, MPI_CHAR, &mpi_smry_type);
-  MPI_Type_commit(&mpi_smry_type);
-  MPI_Op_create(mpi_merge_smry, true, &mpi_merge);
-}
-#endif
-
-#ifdef USE_PVM
-void VertPattern::pack() {
-  pvm_pkint(&v_id, 1, 1);
-  pvm_pkint(at, MAX_SADDLES, 1);
-}
-
-void VertPattern::unpack() {
-  pvm_upkint(&v_id, 1, 1);
-  pvm_upkint(at, MAX_SADDLES, 1);
-
-  normalize();
-}
-
-void SaddleConf::pack() {
-  pvm_pkint(&n_vp, 1, 1);
-  pvm_pkint(&count, 1, 1);
-  pvm_pkint(&group_count, 1, 1);
-  pvm_pkint(&next_id, 1, 1);
-
-  for (int i = 0; i < MAX_VERTICES; i++) {
-    vp[i].pack();
-  }
-}
-
-void SaddleConf::unpack() {
-  pvm_upkint(&n_vp, 1, 1);
-  pvm_upkint(&count, 1, 1);
-  pvm_upkint(&group_count, 1, 1);
-  pvm_upkint(&next_id, 1, 1);
-
-  for (int i = 0; i < MAX_VERTICES; i++) {
-    vp[i].unpack();
-  }
-}
-
-void Summary::pack() {
-  pvm_pkint(&bad_angle_count, 1, 1);
-  pvm_pkint(&weird_count, 1, 1);
-  pvm_pkint(&close_count, 1, 1);
-  int scf_count = scf.size();
-  pvm_pkint(&scf_count, 1, 1);
-  std::cout << "scf_count = " << scf_count << endl << flush;
-  for (int i = 0; i < scf_count; i++) {
-    scf[i].pack();
-  }
-};
-
-void Summary::unpack() {
-  pvm_upkint(&bad_angle_count, 1, 1);
-  pvm_upkint(&weird_count, 1, 1);
-  pvm_upkint(&close_count, 1, 1);
-  int scf_count;
-  pvm_upkint(&scf_count, 1, 1);
-  scf.resize(scf_count);
-  for (int i = 0; i < scf_count; i++) {
-    scf[i].unpack();
-  }
-  normalize();
-};
-#endif
 }  // namespace polygon

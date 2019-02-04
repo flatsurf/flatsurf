@@ -26,6 +26,7 @@
 
 #include "libpolygon/geometry.h"
 #include "libpolygon/globals.h"
+#include "libpolygon/log.h"
 #include "libpolygon/number_field.h"
 #include "libpolygon/params.h"
 #include "libpolygon/pface.h"
@@ -448,14 +449,14 @@ COORD TwoComplex::MinSaddle(Dir<Point>& the_shortest) {
   return (shortest);
 }
 
-void TwoComplex::issueFinalReport(Summary& fsm, ostream& out, double part_done,
+void TwoComplex::issueFinalReport(ostream& out, double part_done,
                                   double part_group) {
   out << "File = " << filename_ << " depth = " << depth
       << " follow_depth = " << follow_depth
       << " perturb = " << perturb_magnitude << endl;
 
   out << "Final Report:\n";
-  fsm.print(out, part_done, part_group, get_area(), depth);
+  out << smry.to_string(part_done, part_group, get_area(), depth, Log::log);
   out << flush;
 }
 

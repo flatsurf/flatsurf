@@ -1,7 +1,6 @@
 /**********************************************************************
  *  This file is part of Polygon.
  *
- *        Copyright (C) 2018 Alex Eskin
  *        Copyright (C) 2019 Julian Rüth
  *
  *  Polygon is free software: you can redistribute it and/or modify
@@ -18,28 +17,23 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBPOLYGON_SUMMARY_H
-#define LIBPOLYGON_SUMMARY_H
-
-#include <ostream>
-
-#include "libpolygon/defs.h"
-#include "libpolygon/saddleconf.h"
+#ifndef LIBPOLYGON_LOG_H
+#define LIBPOLYGON_LOG_H
 
 namespace polygon {
-class Log;
-class Summary {
+// Encapsulates some things that are mostly of interest for debugging.
+// TODO: This is a global singleton. Do we care about these numbers?
+// Then we should turn them into some thread_local context that we
+// swap in/out whenever we call into this library from Cython or the like.
+class Log {
  public:
-  void add(SaddleConf& sc);
+  static Log log;
 
-  // TODO: This method should be const
-  std::string to_string(COORD part_total, COORD part_group, COORD volume,
-                        COORD depth, const Log& log);
-
- private:
-  std::vector<SaddleConf> scf;
-  void add_new(SaddleConf& sc);
+  int bad_angle_count;
+  int weird_count;
+  int close_count;
+  int reject_count;
 };
 }  // namespace polygon
 
-#endif  // LIBPOLYGON_SUMMARY_H
+#endif  // LIBPOLYGON_LOG_H

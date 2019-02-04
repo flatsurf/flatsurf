@@ -45,8 +45,8 @@ class SaddleConf {
   int add_saddle(Dir<Point> start, Dir<Point> end, alg_tI& algt);
   bool isom(SaddleConf& sc, int* s_matched);
   void print(std::ostream& output_stream);
-  int n_saddles();
-  int find_vert(Vertex* v); /* the index of the vert */
+  int n_saddles() const;
+  int find_vert(Vertex* v) const; /* the index of the vert */
 
   VertPattern vp[MAX_VERTICES]; /* add to check */
   int n_vp;                     /* nbr of vertex patterns this saddleconf */
@@ -55,8 +55,6 @@ class SaddleConf {
   int group_count; /* number of occurences in of conf in this group */
 
   void normalize();
-  void pack();
-  void unpack();
 
   void renorm_lengths();  // for --show_lengths
   COORD get_orig_min_saddle_length();
@@ -72,9 +70,9 @@ class SaddleConf {
 
   int shortest_saddle_id(); /*id of shortest saddle */
   void get_saddle_by_id(int id, int& in_vp_index, int& in_at, int& out_vp_index,
-                        int& out_at);
+                        int& out_at) const;
 
-  COORD get_length_by_id(int id);
+  COORD get_length_by_id(int id) const;
   //    int follow_right(int i);
   int follow_left(int i);
   void output_cylinders(FILE* fp);
@@ -92,7 +90,7 @@ class SaddleConf {
 
   // for heights_and_twists
   COORD total_area_of_cyls;
-  Dir<Point> get_Dir_by_id(int id);
+  Dir<Point> get_Dir_by_id(int id) const;
 
   // for closure
   FILE* output_f;

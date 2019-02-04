@@ -27,6 +27,7 @@
 #include "libpolygon/dmap.h"
 #include "libpolygon/geometry.h"
 #include "libpolygon/globals.h"
+#include "libpolygon/log.h"
 #include "libpolygon/my_ostream.h"
 #include "libpolygon/psimplex.h"
 #include "libpolygon/shared.h"
@@ -431,14 +432,11 @@ void TwoComplex::DrawSaddle<Point>(const Dir<Point>& strt, COORD len2, int id,
   return;
 }
 
-Summary smry; /* global variable */
-
 template <typename PointT>
 int TwoComplex::SweepNew(COORD depth_, Dir<PointT> start_dir,
                          COORD GoalTotalAngle) {
   Dir<PointT> old_dir = start_dir;
   COORD TotalAngle = 0;
-  Summary* sm = &smry;
 
   SaddleConf sc;
 
@@ -502,7 +500,7 @@ int TwoComplex::SweepNew(COORD depth_, Dir<PointT> start_dir,
     for (int i = 0; i < n_pending; i++) {
       too_close_flag = false;
 
-      InvestigateVec(pending_vec[i], follow_depth * follow_depth, sc, *sm);
+      InvestigateVec(pending_vec[i], follow_depth * follow_depth, sc);
 
       // debugging
 
@@ -529,7 +527,7 @@ int TwoComplex::SweepNew(COORD depth_, Dir<PointT> start_dir,
       */
 
       if (too_close_flag) {
-        smry.reject_count++;
+        Log::log.reject_count++;
         too_close_flag = false;
 
         continue;
@@ -537,7 +535,7 @@ int TwoComplex::SweepNew(COORD depth_, Dir<PointT> start_dir,
 
       if (sc.n_saddles() > 0) {
         /* add sc to the summary */
-        size_t tag = smry.add_one_conf(sc);
+        smry.add(sc);
 
         // draw if needed
         //		std::cout << "sc.get_orig_min_saddle_length = " <<
@@ -548,7 +546,7 @@ int TwoComplex::SweepNew(COORD depth_, Dir<PointT> start_dir,
         if (abs(sc.get_orig_min_saddle_length() - draw_saddle_length) /
                     draw_saddle_length <
                 0.001 &&
-            (draw_tag < 0 || tag == static_cast<size_t>(draw_tag))) {
+            (draw_tag < 0 || sc.tag == draw_tag)) {
           std::cout << "Found it: n_saddles = " << sc.n_saddles() << endl;
           if (draw_saddles) {
             std::cout << "Drawing Saddles" << endl;
@@ -574,13 +572,13 @@ int TwoComplex::SweepNew(COORD depth_, Dir<PointT> start_dir,
       if (group_count == mc_group) {
         if (!quiet && !individual) {
           /* issue running total report */
-          sm->print(std::cout, TotalAngle / (GoalTotalAngle * n_slices),
-                    TotalAngle / GoalTotalAngle, get_area(), depth_);
+          std::cout << smry.to_string(TotalAngle / (GoalTotalAngle * n_slices),
+                                      TotalAngle / GoalTotalAngle, get_area(),
+                                      depth_, Log::log);
         }
         /* clean up */
         group_count = 0;
         group_angle = 0;
-        sm->clear_group();
       }
     }
     n_pending = 0;
@@ -600,8 +598,7 @@ bool Vertex::relevant() {
 Point to_cx(Point& cx) { return cx; }
 
 template <typename PointT>
-void TwoComplex::InvestigateVec(PointT vec, COORD len2, SaddleConf& sc,
-                                Summary& smry_) {
+void TwoComplex::InvestigateVec(PointT vec, COORD len2, SaddleConf& sc) {
   Dir<PointT> start, end, tmp;
 
   sc.clear();
@@ -685,12 +682,12 @@ void TwoComplex::InvestigateVec(PointT vec, COORD len2, SaddleConf& sc,
           if (verbose >= 2) {
             fprintf(out_f, "bad angle exception\n");
           }
-          smry_.bad_angle_count++;
+          Log::log.bad_angle_count++;
         } catch (vert_index_taken&) {
           if (verbose >= 2) {
             fprintf(out_f, "..vert index taken\n");
           }
-          smry_.weird_count++;
+          Log::log.weird_count++;
         }
       }
       //	    start.RotateCCwToVec(-vec, tmp);

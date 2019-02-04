@@ -1,7 +1,6 @@
 /**********************************************************************
  *  This file is part of Polygon.
  *
- *        Copyright (C) 2018 Alex Eskin
  *        Copyright (C) 2019 Julian Rüth
  *
  *  Polygon is free software: you can redistribute it and/or modify
@@ -18,28 +17,8 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBPOLYGON_SUMMARY_H
-#define LIBPOLYGON_SUMMARY_H
-
-#include <ostream>
-
-#include "libpolygon/defs.h"
-#include "libpolygon/saddleconf.h"
+#include "libpolygon/log.h"
 
 namespace polygon {
-class Log;
-class Summary {
- public:
-  void add(SaddleConf& sc);
-
-  // TODO: This method should be const
-  std::string to_string(COORD part_total, COORD part_group, COORD volume,
-                        COORD depth, const Log& log);
-
- private:
-  std::vector<SaddleConf> scf;
-  void add_new(SaddleConf& sc);
-};
-}  // namespace polygon
-
-#endif  // LIBPOLYGON_SUMMARY_H
+Log Log::log;
+}

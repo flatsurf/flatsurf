@@ -87,7 +87,6 @@ extern COORD EPSILON;
 /* global variables */
 extern bool field_arithmetic;
 extern bool int_field_arithmetic;
-extern Summary smry;
 extern TwoComplex* S;
 extern FILE* out_f;
 extern std::ofstream out_stream;

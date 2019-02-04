@@ -26,6 +26,7 @@
 #include "libpolygon/defs.h"
 #include "libpolygon/geometry.h"
 #include "libpolygon/globals.h"
+#include "libpolygon/log.h"
 #include "libpolygon/oedge.h"
 #include "libpolygon/two_complex.h"
 
@@ -229,7 +230,7 @@ COORD norm(const BigPointI &p) { return norm(p.cx); }
 /****************************COLINEAR AND ALIGNED *************************/
 
 bool colinear_slow(Point p, Point q) {
-  smry.close_count++;
+  Log::log.close_count++;
 
   Point p1 = p / abs(p);
   Point p2 = q / abs(q);
@@ -242,7 +243,7 @@ bool colinear_slow(Point p, Point q) {
   }
   if (norm(p1 - p2) < DELTA * DELTA || norm(p1 + p2) < DELTA * DELTA) {
     too_close_flag = true;
-    smry.weird_count++;
+    Log::log.weird_count++;
   }
   return (false);
 }
@@ -277,7 +278,7 @@ bool colinear(const BigPointI &p, const BigPointI &q) {
   if (colinear(p.algt, q.algt)) {
     return true;
   } else {
-    smry.close_count++;
+    Log::log.close_count++;
     return false;
   }
 }
@@ -360,7 +361,7 @@ bool CCW(const BigPointI &bu, const BigPointI &bv) {
   if (norm(p1 - p2) < DELTA * DELTA || norm(p1 + p2) < DELTA * DELTA) {
     // we can't be sure of return. Set flag.
     too_close_flag = true;
-    smry.weird_count++;
+    Log::log.weird_count++;
   }
 
   if (s > 0) {

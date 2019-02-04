@@ -23,6 +23,7 @@
 #include <random>
 
 #include "libpolygon/globals.h"
+#include "libpolygon/log.h"
 #include "libpolygon/shared.h"
 
 using std::list;

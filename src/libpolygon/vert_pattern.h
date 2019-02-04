@@ -40,9 +40,9 @@ class VertPattern {
 
   void clear();
 
-  void print(std::ostream& output_stream, SaddleConf& sc);
+  void print(std::ostream& output_stream, SaddleConf& sc) const;
 
-  int len(); /* number of saddles attached */
+  int len() const; /* number of saddles attached */
 
   bool is_empty(); /* i.e. base does not exist */
   int get_id(
@@ -57,7 +57,7 @@ class VertPattern {
 
   void divide_lengths(COORD factor); /* divide all lengths by factor */
 
-  Vertex* get_v(); /* returns the vertex this is a pattern for */
+  Vertex* get_v() const; /* returns the vertex this is a pattern for */
 
   int nbr_same();      /* number saddles returning to same vertex */
   int nbr_different(); /* number of saddles going to different vertices */
@@ -65,8 +65,6 @@ class VertPattern {
   void simple_print(std::ostream& output_steam);
 
   void normalize();
-  void pack();
-  void unpack();
 
  private:
   Dir<Point> base;

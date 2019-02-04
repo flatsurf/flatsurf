@@ -39,11 +39,13 @@ class Vertex;
 class UEdge;
 class PFace;
 class PSimplex;
+class Summary;
 
 class TwoComplex {
  public:
   TwoComplex();
   virtual ~TwoComplex();
+  Summary smry;
   size_t nedges();
   size_t nfaces();
   size_t nvertices();
@@ -106,7 +108,7 @@ class TwoComplex {
 
   template <typename PointT>
   int SweepNew(COORD length, Dir<PointT> start_dir, COORD GoalTotalAngle);
-  void issueFinalReport(Summary& fsm, std::ostream& out, double part_done = 1.0,
+  void issueFinalReport(std::ostream& out, double part_done = 1.0,
                         double part_group = 1.0);
   template <typename PointT>
   Vertex* SweepNextLeft(const Dir<PointT>& start, Dir<PointT>& end, COORD len2,
@@ -119,7 +121,7 @@ class TwoComplex {
   template <typename PointT>
   bool NewFollowDir(const Dir<PointT>& start, Dir<PointT>& end, COORD len2);
   template <typename PointT>
-  void InvestigateVec(PointT vec, COORD len2, SaddleConf& sc, Summary& smry);
+  void InvestigateVec(PointT vec, COORD len2, SaddleConf& sc);
   template <typename PointT>
   void FindCrossSaddle(const Dir<PointT>& start, Dir<PointT>& cross_saddle);
 

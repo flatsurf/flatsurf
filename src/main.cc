@@ -680,10 +680,10 @@ int main(int argc, char** argv) {
       S->SweepNew<BigPointI>(depth, start_dir, GoalTotalAngle);
     }
 
-    S->issueFinalReport(smry, std::cout);
+    S->issueFinalReport(std::cout);
 
     ofstream results_stream("final_results");
-    S->issueFinalReport(smry, results_stream);  // check
+    S->issueFinalReport(results_stream);  // check
     results_stream.close();
 
 #endif
