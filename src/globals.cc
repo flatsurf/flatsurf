@@ -85,7 +85,6 @@ bool int_field_arithmetic = false;
 bool too_close_flag = false;
 // bool draw_cylinders = false;
 
-TwoComplex *S;
 FILE *out_f;
 
 ofstream out_stream;

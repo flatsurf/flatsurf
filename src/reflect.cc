@@ -294,7 +294,7 @@ void TwoComplex::CompleteInternal(UEdge* e) {
     j++;
     sprintf(buf, "movie%d", j);
     my_ostream* movie_stream;
-    movie_stream = new my_ostream(buf);
+    movie_stream = new my_ostream(buf, *this);
     for (auto d : dl) delete d;
     dl.clear();
     make_pcomplexes();

@@ -259,10 +259,13 @@ int VertPattern::nbr_same() {
   return (count / 2);
 }
 
-void VertPattern::normalize() { base.v = S->GetVertex(v_id); }
+void VertPattern::normalize(const std::function<Vertex*(int)>& get_vertex) {
+  base.v = get_vertex(v_id);
+}
 
-SaddleConf::SaddleConf()
-    : shortest_occurence(-1.0),
+SaddleConf::SaddleConf(const TwoComplex& complex)
+    : TwoComplexChild(complex),
+      shortest_occurence(-1.0),
       shortest_cyl_occurence(-1.0),
       longest_occurence(-1.0),
       smallest_total_area(-1.0),
@@ -316,7 +319,7 @@ int SaddleConf::find_vert(Vertex* v) const {
 void SaddleConf::normalize() {
   int i;
   for (i = 0; i < n_vp; i++) {
-    vp[i].normalize();
+    vp[i].normalize([&](int id) { return complex.GetVertex(id); });
   }
 }
 
@@ -523,7 +526,7 @@ void SaddleConf::renumber_saddles(int* s_matched) {
 
 void SaddleConf::DrawSaddles() {
   for (int i = 1; i <= n_saddles(); i++) {
-    S->DrawSaddle(start_Dir[i], 1.0E10, 0, 0.0);
+    complex.DrawSaddle(start_Dir[i], 1.0E10, 0, 0.0);
   }
 }
 
@@ -587,7 +590,7 @@ void SaddleConf::calculate_cylinders() {
       if (heights_and_twists || show_moduli) {
         // FIXME: when drawing cylinders this should be on
 
-        S->FindCrossSaddle(cyl_Dir, cross_saddle_Dir);
+        complex.FindCrossSaddle(cyl_Dir, cross_saddle_Dir);
 
         while (cross_saddle_Dir.v->euclidean) {
           std::cout << "Warining: CrossSaddle Euclidean Vertex" << endl;
@@ -595,7 +598,7 @@ void SaddleConf::calculate_cylinders() {
           Dir<Point> new_cross_saddle_Dir;
 
           Dir<Point> new_Dir = cross_saddle_Dir.RotateCCwToVec(cyl_Dir.vec);
-          S->FindCrossSaddle(new_Dir, new_cross_saddle_Dir);
+          complex.FindCrossSaddle(new_Dir, new_cross_saddle_Dir);
           Point tmp_vec = new_cross_saddle_Dir.vec;
           new_cross_saddle_Dir =
               new_cross_saddle_Dir.RotateCCwToVec(cyl_Dir.vec);
@@ -625,7 +628,7 @@ void SaddleConf::calculate_cylinders() {
       */
 
       total_area_of_cyls +=
-          abs(area(cyl[i].vec, cyl[i].cross_saddle.vec)) / S->get_area();
+          abs(area(cyl[i].vec, cyl[i].cross_saddle.vec)) / complex.get_area();
     }
     /*
                                      cout << "\n" << "Area: " <<
@@ -665,7 +668,7 @@ void SaddleConf::DrawCylinders() {
     int i = init_saddle;
     /* follow possible cylinder containing saddle with id i */
     while (1) {
-      S->DrawSaddle(get_Dir_by_id(i), 1.0E10, k + 1, cyl[k].length);
+      complex.DrawSaddle(get_Dir_by_id(i), 1.0E10, k + 1, cyl[k].length);
       i = follow_left(i);
       if (i < 0) {
         ERR_RET("DrawCylinders: Orientation Problem");
@@ -707,7 +710,7 @@ void SaddleConf::DrawCylinders() {
       ERR_RET("DrawCylinder: bad initial cross_saddle");
     }
     while (1) {
-      S->DrawSaddle(get_Dir_by_id(-i), 1.0E10, -(k + 1), cyl[k].length);
+      complex.DrawSaddle(get_Dir_by_id(-i), 1.0E10, -(k + 1), cyl[k].length);
       i = follow_left(i);
       if (i > 0) {
         ERR_RET("DrawCylinder: Orientation Problem");
@@ -966,8 +969,8 @@ bool SaddleConf::isom(SaddleConf& sc, int* s_matched) {
     }
 
     if (heights_and_twists &&
-        abs(total_area_of_cyls / S->get_area() -
-            sc.total_area_of_cyls / S->get_area()) > LENGTH_THRESHOLD) {
+        abs(total_area_of_cyls / complex.get_area() -
+            sc.total_area_of_cyls / complex.get_area()) > LENGTH_THRESHOLD) {
       return (false);
     }
   }

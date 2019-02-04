@@ -57,11 +57,11 @@ TwoComplex::~TwoComplex() {
   }
 }
 
-size_t TwoComplex::nedges() { return (uedges.size()); }
+size_t TwoComplex::nedges() const { return (uedges.size()); }
 
-size_t TwoComplex::nfaces() { return (faces.size()); }
+size_t TwoComplex::nfaces() const { return (faces.size()); }
 
-size_t TwoComplex::nvertices() { return (vertices.size()); }
+size_t TwoComplex::nvertices() const { return (vertices.size()); }
 
 void TwoComplex::PrintAll(ostream& out) {
   if (field_arithmetic) {
@@ -115,7 +115,7 @@ void TwoComplex::CheckAllVertices() {
 }
 
 Vertex* TwoComplex::AddVertex(int id) {
-  Vertex* v = new Vertex;
+  Vertex* v = new Vertex(*this);
   if (id >= 0) {
     v->ID = id;
     if (id >= cur_vertex_id) {
@@ -129,7 +129,7 @@ Vertex* TwoComplex::AddVertex(int id) {
 }
 
 UEdge* TwoComplex::AddUEdge(int id, Vertex* v0, Vertex* v1, Point vec) {
-  UEdge* ue = new UEdge(v0, v1, vec);
+  UEdge* ue = new UEdge(v0, v1, vec, *this);
   if (id < 0) {
     ue->ID = cur_uedge_id++;
   } else {
@@ -149,7 +149,7 @@ UEdge* TwoComplex::AddUEdge(int id, Vertex* v0, Vertex* v1, Point vec) {
 }
 
 UEdge* TwoComplex::AddUEdge(int id, Vertex* v0, Vertex* v1, BigPointQ vec) {
-  UEdge* ue = new UEdge(v0, v1, vec);
+  UEdge* ue = new UEdge(v0, v1, vec, *this);
   if (id < 0) {
     ue->ID = cur_uedge_id++;
   } else {
@@ -169,7 +169,7 @@ UEdge* TwoComplex::AddUEdge(int id, Vertex* v0, Vertex* v1, BigPointQ vec) {
 }
 
 Face* TwoComplex::AddFace(int id, list<OEdge> L) {
-  Face* f = new Face(L);
+  Face* f = new Face(L, *this);
   if (id >= 0) {
     f->ID = id;
     if (id >= cur_face_id) {
@@ -182,7 +182,7 @@ Face* TwoComplex::AddFace(int id, list<OEdge> L) {
   return (f);
 }
 
-void TwoComplex::StatPrint(ostream& out) {
+void TwoComplex::StatPrint(ostream& out) const {
   out << "# File = " << filename_ << " perturb = " << perturb_magnitude
       << " rescale = " << !norescale << endl;
 
@@ -393,7 +393,7 @@ void TwoComplex::set_area() {
   area = s;
 }
 
-COORD TwoComplex::get_area() {
+COORD TwoComplex::get_area() const {
   if (area > 0) {
     return (area);
   } else {

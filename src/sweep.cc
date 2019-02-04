@@ -281,7 +281,7 @@ bool TwoComplex::NewFollowDir(const Dir<PointT>& strt, Dir<PointT>& end,
 
 template <typename PointT>
 void TwoComplex::FindCrossSaddle(const Dir<PointT>& strt,
-                                 Dir<PointT>& cross_saddle) {
+                                 Dir<PointT>& cross_saddle) const {
   DMap<PointT> D(strt);
   int count = 0;
 
@@ -331,7 +331,7 @@ void TwoComplex::FindCrossSaddle(const Dir<PointT>& strt,
 
 template <>
 void TwoComplex::DrawSaddle<Point>(const Dir<Point>& strt, COORD len2, int id,
-                                   COORD cyl_length) {
+                                   COORD cyl_length) const {
   DMap<Point> D(strt);
 
   while (norm(D._get_cf_offset()) < len2) {
@@ -438,7 +438,7 @@ int TwoComplex::SweepNew(COORD depth_, Dir<PointT> start_dir,
   Dir<PointT> old_dir = start_dir;
   COORD TotalAngle = 0;
 
-  SaddleConf sc;
+  SaddleConf sc(*this);
 
   Dir<PointT> new_dir, tmp_dir;
 
@@ -551,17 +551,17 @@ int TwoComplex::SweepNew(COORD depth_, Dir<PointT> start_dir,
           if (draw_saddles) {
             std::cout << "Drawing Saddles" << endl;
             sc.DrawSaddles();
-            S->make_pcomplexes();
-            my_ostream saddle_stream("saddle");
-            S->NewDraw(saddle_stream);
+            make_pcomplexes();
+            my_ostream saddle_stream("saddle", *this);
+            NewDraw(saddle_stream);
             saddle_stream.close();
           }
           if (draw_cylinders) {
             std::cout << "Drawing Cylinders" << endl;
             sc.DrawCylinders();
-            S->make_pcomplexes();
-            my_ostream saddle_stream("cylinders");
-            S->NewDraw(saddle_stream);
+            make_pcomplexes();
+            my_ostream saddle_stream("cylinders", *this);
+            NewDraw(saddle_stream);
             saddle_stream.close();
           }
           exit(0);
@@ -798,8 +798,8 @@ template int TwoComplex::SweepNew<Point>(COORD depth, Dir<Point> start_dir,
                                          COORD GoalTotalAngle);
 
 template void TwoComplex::FindCrossSaddle<BigPointI>(
-    const Dir<BigPointI>& strt, Dir<BigPointI>& cross_saddle);
+    const Dir<BigPointI>& strt, Dir<BigPointI>& cross_saddle) const;
 
-template void TwoComplex::FindCrossSaddle<Point>(const Dir<Point>& strt,
-                                                 Dir<Point>& cross_saddle);
+template void TwoComplex::FindCrossSaddle<Point>(
+    const Dir<Point>& strt, Dir<Point>& cross_saddle) const;
 }  // namespace polygon

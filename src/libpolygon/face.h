@@ -34,9 +34,9 @@ class OEdge;
 
 class Face : public Simplex {
  public:
-  Face();
+  explicit Face(const TwoComplex& complex);
   virtual ~Face();
-  explicit Face(const std::list<OEdge>& L);  // sets oedges=L
+  Face(const std::list<OEdge>& L, const TwoComplex& complex);  // sets oedges=L
 
   void SetOEdgeList(std::list<OEdge>);
 

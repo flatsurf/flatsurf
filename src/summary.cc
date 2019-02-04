@@ -59,7 +59,7 @@ string Summary::to_string(COORD part_total, COORD part_group, COORD volume,
   int cyl_count = 0;
 
   for (unsigned int i = 0; i < scf.size(); i++) {
-    int j = scf[i].find_vert(S->GetVertex(start_vertex));
+    int j = scf[i].find_vert(scf[i].complex.GetVertex(start_vertex));
     symmetry_factor = scf[i].vp[j].len();
     if (symmetry_factor == 0) {
       symmetry_factor = 1;
@@ -104,7 +104,7 @@ string Summary::to_string(COORD part_total, COORD part_group, COORD volume,
       }
 
       scf[i].print(output_stream);
-      int j = scf[i].find_vert(S->GetVertex(start_vertex));
+      int j = scf[i].find_vert(scf[i].complex.GetVertex(start_vertex));
       symmetry_factor = scf[i].vp[j].len();
       if (symmetry_factor == 0) {
         symmetry_factor = 1;
@@ -168,7 +168,7 @@ void Summary::add_new(SaddleConf& sc) {
     sprintf(filename, "closure.%zu", scf.size());
 
     ofstream output_stream(filename);
-    S->StatPrint(output_stream);
+    sc.complex.StatPrint(output_stream);
     sc.print(output_stream);
     output_stream << endl << "------------------------" << endl;
     output_stream.close();

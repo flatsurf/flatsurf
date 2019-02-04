@@ -21,6 +21,7 @@
 #ifndef LIBPOLYGON_VERTPATTERN_H
 #define LIBPOLYGON_VERTPATTERN_H
 
+#include <functional>
 #include <iostream>
 
 #include "libpolygon/defs.h"
@@ -64,7 +65,7 @@ class VertPattern {
   int nbr_at_pi();     /* number of saddles returning at \pm \pi */
   void simple_print(std::ostream& output_steam);
 
-  void normalize();
+  void normalize(const std::function<Vertex*(int)>& get_vertex);
 
  private:
   Dir<Point> base;

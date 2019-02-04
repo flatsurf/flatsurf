@@ -46,7 +46,8 @@ string roman_numeral(__attribute__((unused)) int decimalNumber) {
       "since we're not sure about  its license");
 }
 
-my_ostream::my_ostream(const string& filename) {
+my_ostream::my_ostream(const string& filename, const TwoComplex& complex)
+    : complex(complex) {
   tri_stream.open((filename + ".tri").c_str());
   if (tikz_output) {
     tex_stream.open((filename + ".tex").c_str());
@@ -56,7 +57,7 @@ my_ostream::my_ostream(const string& filename) {
     tex_stream << "\\begin{tikzpicture}[scale=0.50]" << endl;
 
     int count = 1;
-    for (auto i = S->vertices.begin(); i != S->vertices.end(); ++i) {
+    for (auto i = complex.vertices.begin(); i != complex.vertices.end(); ++i) {
       int v_id = (*i)->id();
       tex_stream << "\\def\\v" << roman_numeral(v_id) << "color{[white!"
                  << 20 * (count) << "!green]}" << endl;

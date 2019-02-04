@@ -35,7 +35,6 @@
  */
 
 namespace polygon {
-class TwoComplex;
 class Summary;
 class OEdge;
 class UEdge;
@@ -87,7 +86,6 @@ extern COORD EPSILON;
 /* global variables */
 extern bool field_arithmetic;
 extern bool int_field_arithmetic;
-extern TwoComplex* S;
 extern FILE* out_f;
 extern std::ofstream out_stream;
 extern std::ofstream out_s;

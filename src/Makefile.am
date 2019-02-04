@@ -57,6 +57,8 @@ nobase_include_HEADERS =                \
     libpolygon/simplex.h                \
     libpolygon/summary.h                \
     libpolygon/two_complex.h            \
+    libpolygon/two_complex_child.h      \
+    libpolygon/log.h                    \
     libpolygon/uedge.h                  \
     libpolygon/vector.h                 \
     libpolygon/vertex.h                 \

@@ -30,7 +30,8 @@ using std::list;
 using std::ostream;
 
 namespace polygon {
-UEdge::UEdge(Vertex* a, Vertex* b, BigPointQ vec) : Simplex(), ue_vecQ(vec) {
+UEdge::UEdge(Vertex* a, Vertex* b, BigPointQ vec, const TwoComplex& complex)
+    : Simplex(complex), ue_vecQ(vec) {
   tag = 'E';
   v0 = a;
   v1 = b;
@@ -41,7 +42,8 @@ UEdge::UEdge(Vertex* a, Vertex* b, BigPointQ vec) : Simplex(), ue_vecQ(vec) {
   vec.Check();
 }
 
-UEdge::UEdge(Vertex* a, Vertex* b, Point vec_cx) : Simplex() {
+UEdge::UEdge(Vertex* a, Vertex* b, Point vec_cx, const TwoComplex& complex)
+    : Simplex(complex) {
   if (field_arithmetic) {
     ERR_RET("UEdge constructor called without alg part");
   }

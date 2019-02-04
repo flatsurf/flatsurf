@@ -32,7 +32,7 @@ class OEdge;
 
 class Vertex : public Simplex {
  public:
-  Vertex();
+  Vertex(const TwoComplex& complex);
 
   UEdge* e;
   size_t order;  // number of incident edges? Default value 0.

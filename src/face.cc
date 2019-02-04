@@ -41,14 +41,14 @@ using std::ostream;
 using std::vector;
 
 namespace polygon {
-Face::Face() : Simplex() {
+Face::Face(const TwoComplex& complex) : Simplex(complex) {
   tag = 'F';
   from_face = nullptr;
   parent_face_ID = -1;
 }
 Face::~Face() {}
 
-Face::Face(const list<OEdge>& L) : Simplex() {
+Face::Face(const list<OEdge>& L, const TwoComplex& complex) : Simplex(complex) {
   tag = 'F';
   SetOEdgeList(L);
   from_face = nullptr;

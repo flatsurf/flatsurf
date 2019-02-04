@@ -27,20 +27,21 @@
 #include "libpolygon/cylinder.h"
 #include "libpolygon/defs.h"
 #include "libpolygon/dir.h"
+#include "libpolygon/two_complex_child.h"
 #include "libpolygon/vert_pattern.h"
 
 namespace polygon {
 class Vertex;
 class SaddleConf;
 
-class SaddleConf {
+class SaddleConf : public TwoComplexChild {
   friend class VertPattern;
 
  public:
   /* WARNING: check renumber_saddles before adding fields to this
            class */
 
-  SaddleConf();
+  explicit SaddleConf(const TwoComplex& complex);
   void clear();
   int add_saddle(Dir<Point> start, Dir<Point> end, alg_tI& algt);
   bool isom(SaddleConf& sc, int* s_matched);

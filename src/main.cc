@@ -45,7 +45,7 @@ using std::ofstream;
 int main(int argc, char** argv) {
   bool file_arg = false;
 
-  S = new TwoComplex();
+  TwoComplex S;
 
   COORD t1, t2;
 
@@ -441,7 +441,7 @@ int main(int argc, char** argv) {
       if (!no_field_arithmetic) {
         field_arithmetic = true;
       }
-      S->BuildTriangle(a1, a2, a3);
+      S.BuildTriangle(a1, a2, a3);
 
     } else { /* optind == argc - 4 */
       int a1, a2, a3, a4;
@@ -453,94 +453,94 @@ int main(int argc, char** argv) {
       if (!no_field_arithmetic) {
         field_arithmetic = true;
       }
-      S->BuildQuad(a1, a2, a3, a4);
+      S.BuildQuad(a1, a2, a3, a4);
     }
   } else {
-    S->ReadComplex(filename_);
+    S.ReadComplex(filename_);
   }
   poly<bigrat> minimal_polynomial = NumberField<bigrat>::F->min_poly();
   std::cout << "Number field: min poly " << minimal_polynomial << endl;
 
-  S->PrintAll(std::cout);
-  S->CheckAllFaces();
-  //    S->CheckAllVertices();
+  S.PrintAll(std::cout);
+  S.CheckAllFaces();
+  //    S.CheckAllVertices();
 
-  S->make_pcomplexes();
-  my_ostream debug_input_stream("input");
-  S->NewDraw(debug_input_stream);
+  S.make_pcomplexes();
+  my_ostream debug_input_stream("input", S);
+  S.NewDraw(debug_input_stream);
   debug_input_stream.close();
 
   char buf[1000];
 
-  for (auto f = S->faces.begin(); f != S->faces.end(); ++f) {
+  for (auto f = S.faces.begin(); f != S.faces.end(); ++f) {
     sprintf(buf, "face%d", (*f)->id());
-    my_ostream* face_stream = new my_ostream(buf);
-    S->make_pface(*f);
-    S->NewDraw(*face_stream);
+    my_ostream* face_stream = new my_ostream(buf, S);
+    S.make_pface(*f);
+    S.NewDraw(*face_stream);
     face_stream->close();
     delete face_stream;
   }
 
-  S->TriangulateAll();
+  S.TriangulateAll();
 
-  S->make_pcomplexes();
-  my_ostream debug_stream("debug");
-  S->NewDraw(debug_stream);
+  S.make_pcomplexes();
+  my_ostream debug_stream("debug", S);
+  S.NewDraw(debug_stream);
   debug_stream.close();
 
-  S->Expunge();
-  S->CheckAllFaces();
+  S.Expunge();
+  S.CheckAllFaces();
 
-  S->CompleteSurface();
-  S->BuildNeighborLists();
-  S->set_area();
+  S.CompleteSurface();
+  S.BuildNeighborLists();
+  S.set_area();
 
-  S->CheckAllFaces();
-  S->CheckAllVertices();
-  S->StoreVertexOffsets();
+  S.CheckAllFaces();
+  S.CheckAllVertices();
+  S.StoreVertexOffsets();
 
-  S->make_pcomplexes();
-  my_ostream surface_stream("surface");
-  S->NewDraw(surface_stream);
+  S.make_pcomplexes();
+  my_ostream surface_stream("surface", S);
+  S.NewDraw(surface_stream);
   surface_stream.close();
 
   if (retriangulate) {
-    S->RetriangulateSurface();
-    S->Expunge();
-    S->CheckAllFaces();
-    S->CheckAllVertices();
-    S->StoreVertexOffsets();
+    S.RetriangulateSurface();
+    S.Expunge();
+    S.CheckAllFaces();
+    S.CheckAllVertices();
+    S.StoreVertexOffsets();
 
-    S->doExtraFlips();
-    S->Expunge();
-    S->CheckAllFaces();
-    S->CheckAllVertices();
-    S->StoreVertexOffsets();
+    S.doExtraFlips();
+    S.Expunge();
+    S.CheckAllFaces();
+    S.CheckAllVertices();
+    S.StoreVertexOffsets();
   }
 
   if (retriangulate) {
-    for (auto i = S->uedges.begin(); i != S->uedges.end(); ++i) {
+    for (auto i = S.uedges.begin(); i != S.uedges.end(); ++i) {
       (*i)->internal = false;
       (*i)->from_triang = false;
     }
   }
 
-  S->make_pcomplexes();
-  my_ostream retriang_stream("retriang");
-  S->NewDraw(retriang_stream);
+  S.make_pcomplexes();
+  my_ostream retriang_stream("retriang", S);
+  S.NewDraw(retriang_stream);
   retriang_stream.close();
 
-  std::cout << "Longest Edge: " << S->MaxEdge()->len() << endl;
+  std::cout << "Longest Edge: " << S.MaxEdge()->len() << endl;
   Dir<Point> shortest_dir;
   std::cout << "Looking for shortest saddle...";
-  COORD shortest = S->MinSaddle(shortest_dir);
+  COORD shortest = S.MinSaddle(shortest_dir);
   std::cout << shortest << endl;
   COORD mv = min(0.1, shortest / 2);
 
   Point tmp_offset;
 
   if (perturb_euclidean) {
-    for (auto i = S->vertices.begin(); i != S->vertices.end(); ++i) {
+    for (auto i = S.vertices.begin(); i != S.vertices.end(); ++i) {
       if ((*i)->euclidean) {
         tmp_offset = Point(
             mv * std::uniform_real_distribution<double>(0, 1)(random_engine),
@@ -559,7 +559,7 @@ int main(int argc, char** argv) {
           mv * std::uniform_real_distribution<double>(0, 1)(random_engine),
           mv * std::uniform_real_distribution<double>(0, 1)(random_engine));
     }
-    for (auto i = S->vertices.begin(); i != S->vertices.end(); ++i) {
+    for (auto i = S.vertices.begin(); i != S.vertices.end(); ++i) {
       if ((*i)->id() == perturb_vertex) {
         std::cout << "Moving: ";
         (*i)->Print(std::cout);
@@ -575,7 +575,7 @@ int main(int argc, char** argv) {
       perturb_magnitude = mv;
     }
 
-    S->PerturbConjugates(perturb_magnitude);
+    S.PerturbConjugates(perturb_magnitude);
     fprintf(out_f, "done\n");
   }
 
@@ -584,55 +584,55 @@ int main(int argc, char** argv) {
     if (perturb_magnitude < EPSILON) {
       perturb_magnitude = 0.5;
     }
-    S->PerturbAll(perturb_magnitude);
+    S.PerturbAll(perturb_magnitude);
     fprintf(out_f, "done\n");
   }
 
-  S->make_pcomplexes();
-  my_ostream perturbed_stream("perturbed");
-  S->NewDraw(perturbed_stream);
+  S.make_pcomplexes();
+  my_ostream perturbed_stream("perturbed", S);
+  S.NewDraw(perturbed_stream);
   perturbed_stream.close();
 
-  S->CheckAllFaces();
-  S->CheckAllVertices();
-  if (field_arithmetic) S->check_algebraicQ();
+  S.CheckAllFaces();
+  S.CheckAllVertices();
+  if (field_arithmetic) S.check_algebraicQ();
 
   if (field_arithmetic) {
-    S->ClearDenominators();  // also rescales
-    S->CheckAllFaces();
-    S->CheckAllVertices();
-    S->check_algebraicQ();
+    S.ClearDenominators();  // also rescales
+    S.CheckAllFaces();
+    S.CheckAllVertices();
+    S.check_algebraicQ();
 
     int_field_arithmetic = true;  // use algebraic integers
-    S->check_algebraicI();
+    S.check_algebraicI();
   }
-  S->PrintAll(std::cout);
+  S.PrintAll(std::cout);
 
-  S->StoreVertexOffsets();
+  S.StoreVertexOffsets();
 
-  S->set_area();
+  S.set_area();
 
-  S->StatPrint(std::cout);
+  S.StatPrint(std::cout);
 
   ofstream fout("the_surface.dat");
-  S->StatPrint(fout);
-  S->PrintAll(fout);
+  S.StatPrint(fout);
+  S.PrintAll(fout);
   fout.close();
 
   if (!norescale) {
-    S->set_scale_factor(S->get_scale_factor() / sqrt(S->get_area()));
+    S.set_scale_factor(S.get_scale_factor() / sqrt(S.get_area()));
   }
 
-  depth /= S->get_scale_factor();
-  follow_depth /= S->get_scale_factor();
+  depth /= S.get_scale_factor();
+  follow_depth /= S.get_scale_factor();
 
   // not so sure about these
-  // EPSILON /= S->get_scale_factor();
-  // DELTA /= S->get_scale_factor();
+  // EPSILON /= S.get_scale_factor();
+  // DELTA /= S.get_scale_factor();
 
-  auto i = S->vertices.begin();
+  auto i = S.vertices.begin();
 
-  for (; i != S->vertices.end(); ++i) {
+  for (; i != S.vertices.end(); ++i) {
     if (start_vertex != UNDEFINED && (*i)->id() == start_vertex) {
       break;
     }
@@ -641,7 +641,7 @@ int main(int argc, char** argv) {
       break;
     }
   }
-  if (i == S->vertices.end()) {
+  if (i == S.vertices.end()) {
     ERR_RET("sweep: genus 1 and no vertex specified");
   }
   start_vertex = (*i)->id();
@@ -656,9 +656,9 @@ int main(int argc, char** argv) {
       NA.init0();
       NA.main_loop0();
 
-      S->issueFinalReport(fsm, std::cout);
+      S.issueFinalReport(fsm, std::cout);
       ofstream results_stream("final_results");
-      S->issueFinalReport(fsm, results_stream);  // check
+      S.issueFinalReport(fsm, results_stream);  // check
       results_stream.close();
 
     } else {
@@ -673,17 +673,17 @@ int main(int argc, char** argv) {
 
     if (!int_field_arithmetic) {
       Dir<Point> start_dir = Dir<Point>(*i, Point(1, 0.0000123));
-      S->SweepNew<Point>(depth, start_dir, GoalTotalAngle);
+      S.SweepNew<Point>(depth, start_dir, GoalTotalAngle);
     } else {
       auto first_edge = *((*i)->out_edges.begin());
       Dir<BigPointI> start_dir = Dir<BigPointI>(first_edge);
-      S->SweepNew<BigPointI>(depth, start_dir, GoalTotalAngle);
+      S.SweepNew<BigPointI>(depth, start_dir, GoalTotalAngle);
     }
 
-    S->issueFinalReport(std::cout);
+    S.issueFinalReport(std::cout);
 
     ofstream results_stream("final_results");
-    S->issueFinalReport(results_stream);  // check
+    S.issueFinalReport(results_stream);  // check
     results_stream.close();
 
 #endif
@@ -691,10 +691,6 @@ int main(int argc, char** argv) {
 
   if (mc_number) {
     fprintf(out_f, "Using groups of size %d\n", mc_group);
-    S->RandomShoot((*i), depth, mc_number);
+    S.RandomShoot((*i), depth, mc_number);
   }
-
-  delete S;
-
-  exit(0);
 }

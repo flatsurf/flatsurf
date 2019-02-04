@@ -1,7 +1,6 @@
 /**********************************************************************
  *  This file is part of Polygon.
  *
- *        Copyright (C) 2018 Alex Eskin
  *        Copyright (C) 2019 Julian Rüth
  *
  *  Polygon is free software: you can redistribute it and/or modify
@@ -18,28 +17,27 @@
  *  along with Polygon. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBPOLYGON_MY_OSTREAM
-#define LIBPOLYGON_MY_OSTREAM
+#ifndef LIBPOLYGON_TWOCOMPLEX_CHILD_H
+#define LIBPOLYGON_TWOCOMPLEX_CHILD_H
 
-#include <fstream>
-#include <string>
-
-#include "libpolygon/libpolygon.h"
+#include <stdexcept>
 
 namespace polygon {
 class TwoComplex;
-class my_ostream {
+// A type that is created for a TwoComplex and holds a reference back to its
+// parent.
+class TwoComplexChild {
  public:
-  explicit my_ostream(const std::string& filename, const TwoComplex& complex);
-  std::ofstream& tri();
-  std::ofstream& tex();
-  void close();
-
- private:
-  std::ofstream tri_stream;
-  std::ofstream tex_stream;
+  explicit TwoComplexChild(const TwoComplex& complex) : complex(complex) {}
+  TwoComplexChild& operator=(const TwoComplexChild& child) {
+    if (&child.complex != &this->complex) {
+      throw new std::logic_error(
+          "assignment must be between children of the same complex");
+    }
+    return *this;
+  }
   const TwoComplex& complex;
 };
 }  // namespace polygon
 
-#endif  // LIBPOLYGON_MY_OSTREAM
+#endif

@@ -42,7 +42,8 @@ using std::ostream;
 using std::string;
 
 namespace polygon {
-Simplex::Simplex() : color("#") {
+Simplex::Simplex(const TwoComplex& complex)
+    : TwoComplexChild(complex), color("#") {
   int i;
   char tmp[10];
   string tmp2;
@@ -71,7 +72,7 @@ void Simplex::Print(ostream& out) {
 //	visit_id = 0;
 //	color = c;
 
-Vertex::Vertex() : Simplex() {
+Vertex::Vertex(const TwoComplex& complex) : Simplex(complex) {
   tag = 'V';
   order = 0;
   euclidean = UNDEFINED;

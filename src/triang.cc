@@ -149,7 +149,7 @@ void TwoComplex::TriangulateFace(Face* f) {
     }
 
     sprintf(buf, "dbg");
-    dbg_stream = new my_ostream(buf);
+    dbg_stream = new my_ostream(buf, *this);
     make_pface(f);
     NewDraw(*dbg_stream);
     dbg_stream->close();
@@ -164,7 +164,7 @@ void TwoComplex::TriangulateFace(Face* f) {
   if (verbose >= 1) {
     nbr++;
     sprintf(buf, "movie_triang%d", nbr);
-    movie_stream = new my_ostream(buf);
+    movie_stream = new my_ostream(buf, *this);
     make_pcomplexes();
     NewDraw(*movie_stream);
     movie_stream->close();
@@ -493,7 +493,7 @@ void TwoComplex::RetriangulateSurface() {
         if (verbose >= 1) {
           nbr++;
           sprintf(buf, "movie_flip%d.tri", nbr);
-          movie_stream = new my_ostream(buf);
+          movie_stream = new my_ostream(buf, *this);
           make_pcomplexes();
           NewDraw(*movie_stream);
           movie_stream->close();
@@ -523,7 +523,7 @@ void TwoComplex::RetriangulateSurface() {
     if (verbose >= 1) {
       nbr++;
       sprintf(buf, "movie_triang%d", nbr);
-      movie_stream = new my_ostream(buf);
+      movie_stream = new my_ostream(buf, *this);
       make_pcomplexes();
       NewDraw(*movie_stream);
       movie_stream->close();
@@ -543,7 +543,7 @@ void TwoComplex::RetriangulateSurface() {
     if (verbose >= 1) {
       nbr++;
       sprintf(buf, "movie_triang%d", nbr);
-      movie_stream = new my_ostream(buf);
+      movie_stream = new my_ostream(buf, *this);
       make_pcomplexes();
       NewDraw(*movie_stream);
       movie_stream->close();

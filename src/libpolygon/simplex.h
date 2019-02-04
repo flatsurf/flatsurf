@@ -25,11 +25,13 @@
 #include <string>
 
 #include "libpolygon/defs.h"
+#include "libpolygon/two_complex_child.h"
 
 namespace polygon {
-class Simplex {
+class TwoComplex;
+class Simplex : public TwoComplexChild {
  public:
-  Simplex();
+  explicit Simplex(const TwoComplex &complex);
   void SetColor();
   void Print(std::ostream &);
   int id();

@@ -442,7 +442,7 @@ UEdge* TwoComplex::GetUEdge(int id) {
   return nullptr;
 }
 
-Vertex* TwoComplex::GetVertex(int id) {
+Vertex* TwoComplex::GetVertex(int id) const {
   for (auto i = vertices.begin(); i != vertices.end(); ++i) {
     if ((*i)->id() == id) {
       return (*i);

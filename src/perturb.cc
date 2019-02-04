@@ -78,7 +78,7 @@ void TwoComplex::PerturbConjugates(COORD max_perturb) {
     Params::AddParams(1u, &(perturb[count]));
     n++;
     count++;
-    for (auto j = S->uedges.begin(); j != S->uedges.end(); ++j) {
+    for (auto j = uedges.begin(); j != uedges.end(); ++j) {
       alg_tQ tmp = (*j)->ue_vecQ.algt;
       tmp.pad_coeffs(1);  // probably not needed
       algebraicQ tmp2 = tmp.get_coeff(i);
@@ -90,7 +90,7 @@ void TwoComplex::PerturbConjugates(COORD max_perturb) {
 }
 
 bool TwoComplex::is_conjugate_deformation(size_t j, size_t k) {
-  for (auto i = S->uedges.begin(); i != S->uedges.end(); ++i) {
+  for (auto i = uedges.begin(); i != uedges.end(); ++i) {
     if ((*i)->ue_vecQ.algt.get_coeff(j) !=
         (*i)->ue_vecQ.algt.get_coeff(k).conjugate()) {
       return false;
@@ -125,7 +125,7 @@ void Vertex::MoveVertex(Point p) {
     tmp[1] = 0.5 * p.real() / xi_real - 0.5 * p.imag() / xi_imag;
 
     Params::AddParams(2, tmp);
-    for (auto i = S->uedges.begin(); i != S->uedges.end(); ++i) {
+    for (auto i = complex.uedges.begin(); i != complex.uedges.end(); ++i) {
       (*i)->ue_vecQ.algt.pad_coeffs(2);
     }
   }

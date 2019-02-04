@@ -46,11 +46,11 @@ class TwoComplex {
   TwoComplex();
   virtual ~TwoComplex();
   Summary smry;
-  size_t nedges();
-  size_t nfaces();
-  size_t nvertices();
+  size_t nedges() const;
+  size_t nfaces() const;
+  size_t nvertices() const;
   void set_area();
-  COORD get_area();
+  COORD get_area() const;
   COORD get_scale_factor();
   void set_scale_factor(COORD scale_factor);
 
@@ -72,7 +72,7 @@ class TwoComplex {
   void PrintAll(std::ostream&);  // Prints data of vertices, edges, and faces
   void CheckAllFaces();
   void CheckAllVertices();
-  void StatPrint(std::ostream&);
+  void StatPrint(std::ostream&) const;
   void MakeDrawList();
   void ClearSegmentsToDraw();
   void AddPFace(Face*, Point, size_t);
@@ -115,7 +115,7 @@ class TwoComplex {
                         COORD threshold);
   template <typename PointT>
   void DrawSaddle(const Dir<PointT>& start, COORD len2, int id,
-                  COORD cyl_length);
+                  COORD cyl_length) const;
   COORD GetSaddles(Dir<Point>& start, COORD depth, int N);  // for RandomShoot
   COORD RandomShoot(Vertex* v0, COORD depth, int M);        // not really used
   template <typename PointT>
@@ -123,7 +123,8 @@ class TwoComplex {
   template <typename PointT>
   void InvestigateVec(PointT vec, COORD len2, SaddleConf& sc);
   template <typename PointT>
-  void FindCrossSaddle(const Dir<PointT>& start, Dir<PointT>& cross_saddle);
+  void FindCrossSaddle(const Dir<PointT>& start,
+                       Dir<PointT>& cross_saddle) const;
 
   Face* ReflectFace(UEdge* e, Face* f);
   UEdge* IdentifyEdges(UEdge* e1, UEdge* e2);
@@ -145,7 +146,7 @@ class TwoComplex {
                 std::list<OEdge>);  // Adds new face with oedges= list<OEdge>
 
   UEdge* GetUEdge(int id);
-  Vertex* GetVertex(int id);
+  Vertex* GetVertex(int id) const;
   Face* GetFace(int id);
 
   PFace* get_pface(Face* f);
