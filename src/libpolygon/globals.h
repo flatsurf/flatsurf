@@ -45,11 +45,7 @@ class Face;
 
 extern int start_vertex;
 extern int end_vertex;
-extern bool perturb_euclidean;
-extern bool perturb_all;
-extern bool perturb_conjugate;
 extern COORD depth;
-extern int perturb_vertex;
 extern Point offset;
 extern COORD DELTA;
 extern int mc_number;
@@ -93,7 +89,6 @@ extern bool too_close_flag;
 extern bool draw_cylinders;
 
 extern char filename_[];
-extern COORD perturb_magnitude;
 
 /* to get around compiler changes */
 /* setting iterators to NULL no longer allowed, so have to do this */

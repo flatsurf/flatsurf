@@ -168,7 +168,7 @@ void Summary::add_new(SaddleConf& sc) {
     sprintf(filename, "closure.%zu", scf.size());
 
     ofstream output_stream(filename);
-    sc.complex.StatPrint(output_stream);
+    // sc.complex.StatPrint(output_stream);
     sc.print(output_stream);
     output_stream << endl << "------------------------" << endl;
     output_stream.close();

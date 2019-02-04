@@ -72,7 +72,6 @@ class TwoComplex {
   void PrintAll(std::ostream&);  // Prints data of vertices, edges, and faces
   void CheckAllFaces();
   void CheckAllVertices();
-  void StatPrint(std::ostream&) const;
   void MakeDrawList();
   void ClearSegmentsToDraw();
   void AddPFace(Face*, Point, size_t);
@@ -108,8 +107,6 @@ class TwoComplex {
 
   template <typename PointT>
   int SweepNew(COORD length, Dir<PointT> start_dir, COORD GoalTotalAngle);
-  void issueFinalReport(std::ostream& out, double part_done = 1.0,
-                        double part_group = 1.0);
   template <typename PointT>
   Vertex* SweepNextLeft(const Dir<PointT>& start, Dir<PointT>& end, COORD len2,
                         COORD threshold);

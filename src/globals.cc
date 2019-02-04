@@ -41,12 +41,7 @@ std::default_random_engine random_engine;
 
 int start_vertex = UNDEFINED;
 int end_vertex = UNDEFINED;
-bool perturb_euclidean = true;
-bool perturb_all = false;
-COORD perturb_magnitude = 0.0;
-bool perturb_conjugate = false;
 COORD depth = 0.0;
-int perturb_vertex = UNDEFINED;
 Point offset = Point(UNDEFINED, UNDEFINED);
 int verbose = 0;
 COORD DELTA = 1E-9;

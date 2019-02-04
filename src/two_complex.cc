@@ -182,37 +182,6 @@ Face* TwoComplex::AddFace(int id, list<OEdge> L) {
   return (f);
 }
 
-void TwoComplex::StatPrint(ostream& out) const {
-  out << "# File = " << filename_ << " perturb = " << perturb_magnitude
-      << " rescale = " << !norescale << endl;
-
-  out << "# vertices: " << nvertices() << endl;
-  out << "## ";
-  for (auto i = vertices.begin(); i != vertices.end(); ++i) {
-    (*i)->Print(out);
-    out << "(" << (*i)->order << ") (" << (*i)->total_angle() / pi<COORD>()
-        << " PI) ";
-  }
-  out << endl;
-
-  out << "# edges: " << nedges() << endl;
-  out << "## ";
-  for (auto i = uedges.begin(); i != uedges.end(); ++i) {
-    (*i)->Simplex::Print(out);
-    if ((*i)->deleted())
-      out << "(0) ";
-    else if ((*i)->boundary())
-      out << "(1) ";
-    else
-      out << "(2) ";
-  }
-  out << endl;
-
-  out << "# faces: " << nfaces() << endl;
-  out << "# genus: " << (2 - nvertices() + nedges() - nfaces()) / 2 << endl;
-  out << "# area: " << get_area() << endl;
-}
-
 void TwoComplex::AddPFace(Face* f, Point q, size_t pcomplex) {
   Point r, t;
   PFace* sp;
@@ -447,17 +416,6 @@ COORD TwoComplex::MinSaddle(Dir<Point>& the_shortest) {
   }
 
   return (shortest);
-}
-
-void TwoComplex::issueFinalReport(ostream& out, double part_done,
-                                  double part_group) {
-  out << "File = " << filename_ << " depth = " << depth
-      << " follow_depth = " << follow_depth
-      << " perturb = " << perturb_magnitude << endl;
-
-  out << "Final Report:\n";
-  out << smry.to_string(part_done, part_group, get_area(), depth, Log::log);
-  out << flush;
 }
 
 void TwoComplex::check_algebraicQ() {

@@ -21,11 +21,13 @@
 
 #include <getopt.h>
 #include <unistd.h>
+#include <boost/math/constants/constants.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include <fstream>
 #include <iostream>
 
 #include "libpolygon/globals.h"
+#include "libpolygon/log.h"
 #include "libpolygon/my_ostream.h"
 #include "libpolygon/number_field.h"
 #include "libpolygon/shared.h"
@@ -35,13 +37,66 @@
 using namespace polygon;
 
 using boost::numeric_cast;
+using boost::math::constants::pi;
 using std::cout;
 using std::endl;
+using std::flush;
 using std::list;
 using std::max;
 using std::min;
 using std::ofstream;
+using std::ostream;
 
+bool perturb_euclidean = true;
+bool perturb_all = false;
+COORD perturb_magnitude = 0.0;
+bool perturb_conjugate = false;
+int perturb_vertex = UNDEFINED;
+
+void issueFinalReport(ostream& out, const TwoComplex& complex,
+                      double part_done = 1.0, double part_group = 1.0) {
+  out << "File = " << filename_ << " depth = " << depth
+      << " follow_depth = " << follow_depth
+      << " perturb = " << perturb_magnitude << endl;
+
+  out << "Final Report:\n";
+  out << const_cast<TwoComplex&>(complex).smry.to_string(
+      part_done, part_group, complex.get_area(), depth, Log::log);
+  out << flush;
+}
+
+void StatPrint(ostream& out, const TwoComplex& complex) {
+  out << "# File = " << filename_ << " perturb = " << perturb_magnitude
+      << " rescale = " << !norescale << endl;
+
+  out << "# vertices: " << complex.nvertices() << endl;
+  out << "## ";
+  for (auto i = complex.vertices.begin(); i != complex.vertices.end(); ++i) {
+    (*i)->Print(out);
+    out << "(" << (*i)->order << ") (" << (*i)->total_angle() / pi<COORD>()
+        << " PI) ";
+  }
+  out << endl;
+
+  out << "# edges: " << complex.nedges() << endl;
+  out << "## ";
+  for (auto i = complex.uedges.begin(); i != complex.uedges.end(); ++i) {
+    (*i)->Simplex::Print(out);
+    if ((*i)->deleted())
+      out << "(0) ";
+    else if ((*i)->boundary())
+      out << "(1) ";
+    else
+      out << "(2) ";
+  }
+  out << endl;
+
+  out << "# faces: " << complex.nfaces() << endl;
+  out << "# genus: "
+      << (2 - complex.nvertices() + complex.nedges() - complex.nfaces()) / 2
+      << endl;
+  out << "# area: " << complex.get_area() << endl;
+}
 int main(int argc, char** argv) {
   bool file_arg = false;
 
@@ -85,10 +140,7 @@ int main(int argc, char** argv) {
   }
   std::cout << endl;
 
-  //    int digit_optind = 0;
-
   while (1) {
-    //	int this_option_optind = optind ? optind : 1;
     int option_index = 0;
     static struct option long_options[] = {
         {"delta", required_argument, nullptr, 'a'},
@@ -612,10 +664,10 @@ int main(int argc, char** argv) {
 
   S.set_area();
 
-  S.StatPrint(std::cout);
+  StatPrint(std::cout, S);
 
   ofstream fout("the_surface.dat");
-  S.StatPrint(fout);
+  StatPrint(fout, S);
   S.PrintAll(fout);
   fout.close();
 
@@ -680,10 +732,10 @@ int main(int argc, char** argv) {
       S.SweepNew<BigPointI>(depth, start_dir, GoalTotalAngle);
     }
 
-    S.issueFinalReport(std::cout);
+    issueFinalReport(std::cout, S);
 
     ofstream results_stream("final_results");
-    S.issueFinalReport(results_stream);  // check
+    issueFinalReport(results_stream, S);  // check
     results_stream.close();
 
 #endif
