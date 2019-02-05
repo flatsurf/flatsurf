@@ -1,0 +1,9 @@
+[submodule "src/libpolygon/external/spimpl"]
+	path = src/libpolygon/external/spimpl
+	url = https://github.com/oliora/samples.git
+[submodule "src/libpolygon/external/boolinq"]
+	path = src/libpolygon/external/boolinq
+	url = https://github.com/k06a/boolinq.git
+[submodule "src/polygon/external/boolinq"]
+	path = src/polygon/external/boolinq
+	url = https://github.com/k06a/boolinq.git

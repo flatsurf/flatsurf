@@ -111,3 +111,10 @@ compile_commands.json
 
 ### ASV Benchmark Tool
 /.asv
+
+### Perf Profiler
+/perf.data
+/perf.data.old
+
+### Cysignals
+/cysignals_crash_logs

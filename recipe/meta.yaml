@@ -15,7 +15,6 @@ source:
 build:
   number: {{ build_number }}
   string: {{ build_string }}
-  skip: true    # [win]
   script:
     - source ./recipe/cflags.sh
     - ./recipe/build-{{ flavour }}.sh
@@ -26,9 +25,10 @@ requirements:
     - automake
     - {{ compiler('cxx') }}
   host:
-    - gmp
-    - ntl
     - boost-cpp
+    - e-antic
+    # conda-forge's NTL package was linking GMP in a strange way in earlier versions
+    - ntl >= 11.3.1
 
 test:
   source_files:
@@ -43,6 +43,7 @@ test:
     - plumbum
     # can be removed once https://github.com/conda-forge/asv-feedstock/pull/10 has been resolved
     - setuptools
+    - pytest
 
 outputs:
   - name: libpolygon
@@ -53,12 +54,18 @@ outputs:
       - lib/*.dylib    # [osx]
       - lib/*.so*      # [linux]
       - include/libpolygon/*.h
+  - name: libpypolygon
+    requirements:
+      run:
+        - {{ pin_subpackage('libpolygon', exact=True) }}
+      files:
+        - todo
   - name: polygon
     requirements:
       run:
         - {{ pin_subpackage('libpolygon', exact=True) }}
-    files:
-      - bin/polygon
+      files:
+        - bin/polygon
 
 about:
   home: https://github.com/polygon-tbd/polygon

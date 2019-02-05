@@ -45,6 +45,8 @@ dnl
 dnl @category C++
 dnl @author Guido U. Draheim
 dnl @vesion 2006-12-18
+dnl @author Julian Rüth
+dnl @version 2019-03-01
 
 AC_DEFUN([AX_CXX_CHECK_LIB],
 [m4_ifval([$3], , [AH_CHECK_LIB([$1])])dnl
@@ -62,7 +64,7 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([
    { public: int `echo "$2" | sed -e "s/.*:://" -e "/(/!s/..*/&()/"`;
    };
  }
-],[`echo "$2" | sed  -e "s/(.*//" -e "s/\\(.*\\)::\\(.*\\)/((\\1*)(0))->\\2/g"`()])],
+],[`echo "$2" | sed  -e "s/(.*//" -e "s/\\(.*\\)::\\(.*\\)/(static_cast<\\1*>(0))->\\2/g"`()])],
 	       [AS_VAR_SET(ac_Lib, yes)],
 	       [AS_VAR_SET(ac_Lib, no)])
 ;; *::*::*)
@@ -82,7 +84,7 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([
  class `echo "$2" | sed -e "s/\\(.*\\)::.*/\\1/" -e "s/(.*//"` 
    { public: int `echo "$2" | sed -e "s/.*:://" -e "/(/!s/..*/&()/"`;
    };
-],[`echo "$2" | sed  -e "s/(.*//" -e "s/\\(.*\\)::\\(.*\\)/((\\1*)(0))->\\2/g"`()])],
+],[`echo "$2" | sed  -e "s/(.*//" -e "s/\\(.*\\)::\\(.*\\)/(static_cast<\\1*>(0))->\\2/g"`()])],
 	       [AS_VAR_SET(ac_Lib, yes)],
 	       [AS_VAR_SET(ac_Lib, no)])
 ;; *::*)

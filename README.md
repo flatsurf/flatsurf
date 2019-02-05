@@ -12,8 +12,8 @@ experimental. There are no stable releases yet.
 
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
-| [![Nightly Build](https://img.shields.io/badge/experimental-polygon-green.svg)](https://anaconda.org/saraedum/polygon) | [![Conda Downloads](https://img.shields.io/conda/dn/saraedum/polygon.svg)](https://anaconda.org/saraedum/polygon) | [![Conda Version](https://img.shields.io/conda/vn/saraedum/polygon.svg)](https://anaconda.org/saraedum/polygon) | [![Conda Platforms](https://img.shields.io/conda/pn/saraedum/polygon.svg)](https://anaconda.org/saraedum/polygon) |
 | [![Nightly Build](https://img.shields.io/badge/experimental-libpolygon-green.svg)](https://anaconda.org/saraedum/libpolygon) | [![Conda Downloads](https://img.shields.io/conda/dn/saraedum/libpolygon.svg)](https://anaconda.org/saraedum/libpolygon) | [![Conda Version](https://img.shields.io/conda/vn/saraedum/libpolygon.svg)](https://anaconda.org/saraedum/libpolygon) | [![Conda Platforms](https://img.shields.io/conda/pn/saraedum/libpolygon.svg)](https://anaconda.org/saraedum/libpolygon) |
+| [![Nightly Build](https://img.shields.io/badge/experimental-libpypolygon-green.svg)](https://anaconda.org/saraedum/libpypolygon) | [![Conda Downloads](https://img.shields.io/conda/dn/saraedum/libpypolygon.svg)](https://anaconda.org/saraedum/libpypolygon) | [![Conda Version](https://img.shields.io/conda/vn/saraedum/libpypolygon.svg)](https://anaconda.org/saraedum/libpypolygon) | [![Conda Platforms](https://img.shields.io/conda/pn/saraedum/libpypolygon.svg)](https://anaconda.org/saraedum/libpypolygon) |
 
 ## Install with Conda
 
@@ -21,7 +21,7 @@ You can install this package with conda. Download and install [Miniconda](https:
 
 ```
 conda config --add channels conda-forge
-conda install -c saraedum polygon
+conda install -c saraedum libpypolygon
 ```
 
 ## Run with binder in the Cloud
@@ -31,7 +31,9 @@ You can try out this library in a very limited environment online by clicking
 
 ## Build from the Source Code Repository
 
-We are following a standard autoconf setup, i.e., you can create the executable `src/polygon` with the following:
+We are following a standard autoconf setup, i.e., you can create the library
+`src/libpolygon` and the corresponding Python wrapper `src/libpypolygon` with
+the following:
 
 ```
 git clone https://github.com/polygon-tbd/polygon.git
@@ -40,6 +42,28 @@ cd polygon
 ./configure
 make
 ```
+
+For best performance run `CXXFLAGS="-O3 -flto" CXX="g++
+-fno-semantic-interposition" ./configure` instead of `./configure` as this code
+greatly benefits from flto inlining. (Unfortunately, libtool filters out
+`-fno-semantic-interposition` as of early 2019 so we can not pass it as part of
+`CXXFLAGS`. If you are using clang, `-fno-semantic-interposition` does not seem
+to be necessary.) You might want to add `-g3` to the `CXXFLAGS` which does not
+hurt performance but gives a better debugging experience. For the best
+debugging experience, you might want to replace `-O3` with `-Og` or even `-O0`
+but the latter results in very poor performance.
+
+Additionally, you might want to run with configure with ` --disable-static`
+which improves the build time.
+
+TODO: Use gtest instead of pytest for the bulk of the testing. I went for pytest originally because it let me use asv easily but I don't think it's worth it.
+
+[perf](https://perf.wiki.kernel.org/index.php/Main_Page) works well to profile
+when you make sure that `CXXFLAGS` contains `-fno-omit-frame-pointer`. You can
+then for example run our test suite with `perf record -g pytest test/`
+Apart from perf itself there are several ways to analyze the output,
+[hotspot](https://github.com/KDAB/hotspot) might be the most convenient one at
+the time of this writing.
 
 ## Build from the Source Code Repository with Conda
 
@@ -63,7 +87,7 @@ conda build "${RECIPE_ROOT}" -m "${CI_SUPPORT}/${CONFIG}.yaml" --clobber-file "$
 
 You can then try out the package that you just built with:
 ```
-conda create -n polygon-test --use-local polygon
+conda create -n polygon-test --use-local libpypolygon
 source activate polygon-test
 ```
 
