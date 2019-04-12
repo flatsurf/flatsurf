@@ -1,5 +1,5 @@
 /**********************************************************************
- *  This file is part of Flatsurf.
+ *  This file is part of flatsurf.
  *
  *        Copyright (C) 2019 Julian Rüth
  *
@@ -14,7 +14,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with Flatsurf. If not, see <https://www.gnu.org/licenses/>.
+ *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
 #ifndef LIBFLATSURF_CCW_HPP
