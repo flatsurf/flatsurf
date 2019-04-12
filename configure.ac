@@ -2,13 +2,13 @@ dnl Process this file with autoconf to produce a configure script.
 
 dnl We need at least autoconf 2.69 for this configure.ac to work.
 AC_PREREQ([2.69])
-AC_INIT([polygon], [0.0.1], [eskin@math.uchicago.edu])
+AC_INIT([flatsurf], [0.0.1], [eskin@math.uchicago.edu])
 
 dnl Version number of the library c:r:a.
 dnl Set to c+1:0:0 on a non-backwards-compatible change.
 dnl Set to c+1:0:a+1 on a backwards-compatible change.
 dnl Set to c:r+1:a if the interface is unchanged.
-AC_SUBST([libpolygon_version_info], [0:0:0])
+AC_SUBST([libflatsurf_version_info], [0:0:0])
 
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([1.14.1])
@@ -33,7 +33,7 @@ AM_PATH_PYTHON()
 
 AC_CHECK_HEADERS([boost/type_traits.hpp], , AC_MSG_ERROR([boost headers not found]))
 
-dnl polygon uses GMP/MPFR directly in a few places
+dnl flatsurf uses GMP/MPFR directly in a few places
 # AC_CHECK_LIB([gmp], [__gmpq_init], , AC_MSG_ERROR([GMP library not found]))
 # AC_CHECK_LIB([mpfr], [mpfr_init], , AC_MSG_ERROR([MPFR library not found]))
 # GMPXX does not contain anything that we can check for with AX_CXX_CHECK_LIB
@@ -48,13 +48,13 @@ AC_CHECK_HEADERS([arb.h], , AC_MSG_ERROR([arb headers not found]))
 AC_CHECK_LIB([eantic], [renf_init], , AC_MSG_ERROR([e-antic library not found]), [-lgmp -lmpfr -lflint])
 AX_CXX_CHECK_LIB([eanticxx], [eantic::renf_elem_class], , AC_MSG_ERROR([E-ANTIC library not found]), [-lgmp -lmpfr -lflint])
 
-dnl polygon uses NTL
+dnl flatsurf uses NTL
 AX_CXX_CHECK_LIB([ntl], [NTL::ZZ::zero()], , AC_MSG_ERROR([NTL library not found]), [-lgmp -lmpfr -lflint])
 AC_CHECK_HEADERS([NTL/LLL.h NTL/mat_ZZ.h], , AC_MSG_ERROR([NTL headers not found]))
 
 AX_CXX_CHECK_LIB([exactreal], [exactreal::RealNumber::random()], , AC_MSG_ERROR([exact-real library not found]), [-lgmp -lmpfr -lflint])
 AC_CHECK_HEADERS([exact-real/real_number.hpp exact-real/module.hpp], , AC_MSG_ERROR([libexactreal headers not found]))
 
-AC_CONFIG_HEADERS([src/libpolygon/libpolygon/config.h])
-AC_CONFIG_FILES([Makefile src/Makefile src/libpolygon/Makefile src/libpypolygon/Makefile src/polygon/Makefile])
+AC_CONFIG_HEADERS([src/libflatsurf/libflatsurf/config.h])
+AC_CONFIG_FILES([Makefile src/Makefile src/libflatsurf/Makefile src/libpyflatsurf/Makefile src/flatsurf/Makefile])
 AC_OUTPUT

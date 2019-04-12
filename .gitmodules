@@ -1,9 +1,9 @@
 [submodule "src/libpolygon/external/spimpl"]
-	path = src/libpolygon/external/spimpl
+	path = src/libflatsurf/external/spimpl
 	url = https://github.com/oliora/samples.git
 [submodule "src/libpolygon/external/boolinq"]
-	path = src/libpolygon/external/boolinq
+	path = src/libflatsurf/external/boolinq
 	url = https://github.com/k06a/boolinq.git
 [submodule "src/polygon/external/boolinq"]
-	path = src/polygon/external/boolinq
+	path = src/flatsurf/external/boolinq
 	url = https://github.com/k06a/boolinq.git

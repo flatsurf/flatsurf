@@ -1,1 +1,1 @@
-SUBDIRS = libpolygon libpypolygon polygon
+SUBDIRS = libflatsurf libpyflatsurf flatsurf
