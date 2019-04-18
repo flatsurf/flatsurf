@@ -32,7 +32,6 @@
 #include <fstream>
 #include <ostream>
 
-#include "../libflatsurf/vertex.hpp"
 #include "./cylinder.h"
 #include "./defs.h"
 #include "./elementary_geometry.h"
@@ -42,6 +41,7 @@
 #include "./summary.h"
 #include "./two_complex.h"
 #include "./vert_pattern.h"
+#include "flatsurf/vertex.hpp"
 
 using boost::numeric_cast;
 using boost::math::iround;

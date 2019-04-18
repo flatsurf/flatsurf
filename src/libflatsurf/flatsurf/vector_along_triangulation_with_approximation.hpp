@@ -24,8 +24,8 @@
 #include <boost/operators.hpp>
 #include "external/spimpl/spimpl.h"
 
-#include "libflatsurf/libflatsurf.hpp"
-#include "libflatsurf/ccw.hpp"
+#include "flatsurf/flatsurf.hpp"
+#include "flatsurf/ccw.hpp"
 
 namespace flatsurf {
 	struct Bound;

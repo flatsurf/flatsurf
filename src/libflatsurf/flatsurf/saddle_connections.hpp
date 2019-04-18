@@ -22,14 +22,13 @@
 
 #include "external/spimpl/spimpl.h"
 
-#include "libflatsurf/libflatsurf.hpp"
-#include "libflatsurf/forward.hpp"
-#include "libflatsurf/saddle_connections_iterator.hpp"
-#include "libflatsurf/half_edge.hpp"
-#include "libflatsurf/bound.hpp"
-#include "libflatsurf/vertex.hpp"
+#include "flatsurf/flatsurf.hpp"
+#include "flatsurf/forward.hpp"
+#include "flatsurf/saddle_connections_iterator.hpp"
+#include "flatsurf/half_edge.hpp"
+#include "flatsurf/bound.hpp"
+#include "flatsurf/vertex.hpp"
 
-// TODO: make this a pimpl
 namespace flatsurf {
 	template<typename Vector, typename VectorAlongTriangulation>
 	struct SaddleConnections {
@@ -38,7 +37,7 @@ namespace flatsurf {
 		// The saddle connections that are starting at the source of sectorBegin
 		// and lie in the sector between sectorBegin and the follow half edge in
 		// counter-clockwise order.
-		SaddleConnections(const Surface&, const Bound searchRadius, const HalfEdge sectorBegin);
+		SaddleConnections(const Surface&, Bound searchRadius, HalfEdge sectorBegin);
 		// The saddle connections that are starting at source and are in the
 		// sector between sectorBegin and sectorEnd; these two must be connected
 		// by a half edge, sectorBoundary.
@@ -49,12 +48,12 @@ namespace flatsurf {
 
 	private:
 		friend struct SaddleConnectionsIterator<Vector, VectorAlongTriangulation>;
-	  const FlatTriangulation<Vector>& surface;
-		const Bound searchRadius;
-		const Vertex source;
-	  const HalfEdge sectorBoundary;
-	  const VectorAlongTriangulation sector[2];
+		struct Implementation;
+		spimpl::impl_ptr<Implementation> impl;
 	};
+
+  template <typename Vector>
+  SaddleConnections(const FlatTriangulation<Vector>&, Bound, HalfEdge) -> SaddleConnections<Vector, typename Vector::AlongTriangulation>;
 }
 
 #endif

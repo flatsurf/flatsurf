@@ -25,11 +25,11 @@
 #include <ostream>
 #include <string>
 
-#include "../libflatsurf/forward.hpp"
 #include "./defs.h"
 #include "./dir.h"
 #include "./saddleconf.h"
 #include "./summary.h"
+#include "flatsurf/forward.hpp"
 
 namespace polygon {
 extern bool field_arithmetic;

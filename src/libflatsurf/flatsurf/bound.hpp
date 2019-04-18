@@ -17,35 +17,17 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_FLAT_TRIANGULATION_HPP
-#define LIBFLATSURF_FLAT_TRIANGULATION_HPP
+#ifndef LIBFLATSURF_BOUND_HPP
+#define LIBFLATSURF_BOUND_HPP
 
-#include <iosfwd>
-#include <vector>
-#include <memory>
-
-#include "libflatsurf/libflatsurf.hpp"
-#include "libflatsurf/forward.hpp"
-#include "libflatsurf/flat_triangulation_combinatorial.hpp"
-#include "external/spimpl/spimpl.h"
+#include "flatsurf/flatsurf.hpp"
 
 namespace flatsurf {
-	template<typename T>
-	struct HalfEdgeMap;
-
-	template<class Vector>
-	struct FlatTriangulation : FlatTriangulationCombinatorial {
-		FlatTriangulation(FlatTriangulationCombinatorial&&, const std::vector<Vector>& vectors);
-		FlatTriangulation(FlatTriangulationCombinatorial&&, const HalfEdgeMap<Vector>& vectors);
-		~FlatTriangulation() = default;
-
-		const Vector& fromEdge(const HalfEdge e) const;
-
-		template<typename W>
-		friend std::ostream& operator<<(std::ostream&, const FlatTriangulation<W>&);
-	 private:
-		struct Implementation;
-		spimpl::unique_impl_ptr<Implementation> impl;
+	// A rough measure for lengths of vectors in R^2.
+	// In a type safe wrapper so we do not mix actual lengths and their squares.
+	struct Bound {
+		explicit Bound(long long lengthSquared);
+		const long long squared;
 	};
 }
 

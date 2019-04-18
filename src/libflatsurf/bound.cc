@@ -17,7 +17,7 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "libflatsurf/bound.hpp"
+#include "flatsurf/bound.hpp"
 
 namespace flatsurf {
 Bound::Bound(long long lengthSquared) : squared(lengthSquared) {}

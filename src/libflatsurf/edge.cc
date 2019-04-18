@@ -17,7 +17,7 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "libflatsurf/edge.hpp"
+#include "flatsurf/edge.hpp"
 
 namespace flatsurf {
 Edge::Edge(size_t id) : id(id) {}

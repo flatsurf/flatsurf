@@ -17,18 +17,36 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_BOUND_HPP
-#define LIBFLATSURF_BOUND_HPP
+#ifndef LIBFLATSURF_EDGE_HPP
+#define LIBFLATSURF_EDGE_HPP
 
-#include "libflatsurf/libflatsurf.hpp"
+#include <vector>
+
+#include "flatsurf/flatsurf.hpp"
+
+#include "flatsurf/half_edge.hpp"
 
 namespace flatsurf {
-	// A rough measure for lengths of vectors in R^2.
-	// In a type safe wrapper so we do not mix actual lengths and their squares.
-	struct Bound {
-		explicit Bound(long long lengthSquared);
-		const long long squared;
+	// An undirected edge in a flatsurf.
+	// This type-safe wrapper should be optimized away completely by the
+	// compiler (at least when compiling with -flto.)
+	// You might find it annoying that you cannot directly create instances of
+	// this class or rather use int everywhere instead. The point is that you
+	// get a lot of compile-time safety by using such a wrapper instead, e.g.,
+	// you cannot add edges but you could add ints which would not make much
+	// sense usually.
+	struct Edge {
+		Edge() = delete;
+
+		static std::vector<Edge> makeEdges(size_t nedges);
+		std::pair<HalfEdge, HalfEdge> halfEdges() const;
+		size_t index() const;
+
+	private:
+		explicit Edge(size_t id);
+		const size_t id;
 	};
 }
 
 #endif
+

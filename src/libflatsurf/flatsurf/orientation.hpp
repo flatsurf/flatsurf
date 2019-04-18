@@ -17,36 +17,22 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_EDGE_HPP
-#define LIBFLATSURF_EDGE_HPP
+#ifndef LIBFLATSURF_ORIENTATION_HPP
+#define LIBFLATSURF_ORIENTATION_HPP
 
-#include <vector>
+#include <boost/operators.hpp>
+#include "external/spimpl/spimpl.h"
 
-#include "libflatsurf/libflatsurf.hpp"
-
-#include "libflatsurf/half_edge.hpp"
+#include "flatsurf/flatsurf.hpp"
 
 namespace flatsurf {
-	// An undirected edge in a flatsurf.
-	// This type-safe wrapper should be optimized away completely by the
-	// compiler (at least when compiling with -flto.)
-	// You might find it annoying that you cannot directly create instances of
-	// this class or rather use int everywhere instead. The point is that you
-	// get a lot of compile-time safety by using such a wrapper instead, e.g.,
-	// you cannot add edges but you could add ints which would not make much
-	// sense usually.
-	struct Edge {
-		Edge() = delete;
+	enum class ORIENTATION {
+		SAME = 1,
+		ORTHOGONAL = 0,
+		OPPOSITE = -1,
+	 };
 
-		static std::vector<Edge> makeEdges(size_t nedges);
-		std::pair<HalfEdge, HalfEdge> halfEdges() const;
-		size_t index() const;
-
-	private:
-		explicit Edge(size_t id);
-		const size_t id;
-	};
+	ORIENTATION operator-(ORIENTATION orientation);
 }
 
 #endif
-

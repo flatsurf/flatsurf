@@ -23,15 +23,16 @@
 #include <boost/iterator/iterator_facade.hpp>
 #include "external/spimpl/spimpl.h"
 
-#include "libflatsurf/libflatsurf.hpp"
-#include "libflatsurf/ccw.hpp"
-#include "libflatsurf/forward.hpp"
-#include "libflatsurf/saddle_connection.hpp"
+#include "flatsurf/flatsurf.hpp"
+#include "flatsurf/ccw.hpp"
+#include "flatsurf/forward.hpp"
+#include "flatsurf/saddle_connection.hpp"
 
 namespace flatsurf {
 	template<typename Vector, typename VectorAlongTriangulation>
-	struct SaddleConnectionsIterator : boost::iterator_facade<SaddleConnectionsIterator<Vector, VectorAlongTriangulation>, SaddleConnection<Vector> const, boost::incrementable_traversal_tag> {
+	struct SaddleConnectionsIterator : boost::iterator_facade<SaddleConnectionsIterator<Vector, VectorAlongTriangulation>, SaddleConnection<Vector> const, boost::single_pass_traversal_tag> {
 		friend class boost::iterator_core_access;
+
 		void increment();
 		bool equal(const SaddleConnectionsIterator<Vector, VectorAlongTriangulation>& other) const;
 		SaddleConnection<Vector, VectorAlongTriangulation>& dereference() const;
@@ -39,11 +40,12 @@ namespace flatsurf {
 		void skipSector(CCW sector);
 	 private:
 		friend struct SaddleConnections<Vector, VectorAlongTriangulation>;
-		explicit SaddleConnectionsIterator();
-		explicit SaddleConnectionsIterator(const SaddleConnections<Vector, VectorAlongTriangulation>& parent);
+		SaddleConnectionsIterator();
+		SaddleConnectionsIterator(const FlatTriangulation<Vector>& surface, const Bound searchRadius, const Vertex& source, const HalfEdge sectorBoundary, const VectorAlongTriangulation& sectorBegin, const VectorAlongTriangulation& sectorEnd);
+
 
 		struct Implementation;
-		spimpl::unique_impl_ptr<Implementation> impl;
+		spimpl::impl_ptr<Implementation> impl;
 	};
 }
 

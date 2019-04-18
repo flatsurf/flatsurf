@@ -24,7 +24,7 @@
 #ifndef LIBFLATSURF_FORWARD_HPP
 #define LIBFLATSURF_FORWARD_HPP
 
-#include "libflatsurf/libflatsurf.hpp"
+#include "flatsurf/flatsurf.hpp"
 
 namespace flatsurf {
   template<typename Vector, typename VectorAlongTriangulation=typename Vector::AlongTriangulation>

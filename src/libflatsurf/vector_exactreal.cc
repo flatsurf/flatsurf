@@ -24,9 +24,9 @@
 #include <ostream>
 #include "external/spimpl/spimpl.h"
 
-#include "libflatsurf/bound.hpp"
-#include "libflatsurf/vector_arb.hpp"
-#include "libflatsurf/vector_exactreal.hpp"
+#include "flatsurf/bound.hpp"
+#include "flatsurf/vector_arb.hpp"
+#include "flatsurf/vector_exactreal.hpp"
 
 using boost::numeric_cast;
 using exactreal::Arb;

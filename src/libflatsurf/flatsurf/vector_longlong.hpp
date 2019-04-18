@@ -23,9 +23,9 @@
 #include <iosfwd>
 #include <boost/operators.hpp>
 
-#include "libflatsurf/libflatsurf.hpp"
-#include "libflatsurf/ccw.hpp"
-#include "libflatsurf/vector_along_triangulation.hpp"
+#include "flatsurf/flatsurf.hpp"
+#include "flatsurf/ccw.hpp"
+#include "flatsurf/vector_along_triangulation.hpp"
 
 namespace flatsurf {
 	struct Bound;

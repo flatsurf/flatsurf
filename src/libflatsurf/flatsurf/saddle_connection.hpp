@@ -22,8 +22,8 @@
 
 #include <iosfwd>
 
-#include "libflatsurf/libflatsurf.hpp"
-#include "libflatsurf/vertex.hpp"
+#include "flatsurf/flatsurf.hpp"
+#include "flatsurf/vertex.hpp"
 
 namespace flatsurf {
 	template<typename Vector>

@@ -24,12 +24,12 @@
 #include <list>
 #include <ostream>
 
-#include "../libflatsurf/forward.hpp"
 #include "./alg_t.h"
 #include "./big_point.h"
 #include "./defs.h"
 #include "./face.h"
 #include "./vertex.h"
+#include "flatsurf/forward.hpp"
 
 namespace polygon {
 class UEdge;

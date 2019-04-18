@@ -17,35 +17,40 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_HALF_EDGE_MAP_HPP
-#define LIBFLATSURF_HALF_EDGE_MAP_HPP
+#ifndef LIBFLATSURF_FLAT_TRIANGULATION_COMBINATORIAL_HPP
+#define LIBFLATSURF_FLAT_TRIANGULATION_COMBINATORIAL_HPP
 
 #include <iosfwd>
 #include <vector>
-#include <functional>
-#include <boost/operators.hpp>
+#include <memory>
+#include "external/spimpl/spimpl.h"
 
-#include "libflatsurf/half_edge.hpp"
+#include "flatsurf/flatsurf.hpp"
+#include "flatsurf/forward.hpp"
 
 namespace flatsurf {
-	struct HalfEdge;
-
 	template<typename T>
-	struct HalfEdgeMap {
-		explicit HalfEdgeMap(const std::vector<T>& data);
+	struct HalfEdgeMap;
 
-		const T& get(const HalfEdge key) const;
-		void set(const HalfEdge key, const T& value);
-		void apply(std::function<void(HalfEdge, const T&)>) const;
+	struct FlatTriangulationCombinatorial {
+		FlatTriangulationCombinatorial(const std::vector<std::vector<int>>& vertices);
+		FlatTriangulationCombinatorial(const Permutation<HalfEdge>& vertices);
+		FlatTriangulationCombinatorial(FlatTriangulationCombinatorial&&);
+		~FlatTriangulationCombinatorial() = default;
 
-		template<typename S>
-		friend std::ostream& operator<<(std::ostream&, const HalfEdgeMap<S>&);
+		HalfEdge nextAtVertex(const HalfEdge e) const;
+		HalfEdge nextInFace(const HalfEdge e) const;
 
-		static size_t index(const HalfEdge);
+		const std::vector<HalfEdge>& edges() const;
+		const std::vector<Vertex>& vertices() const;
 
-		private:
-		mutable std::vector<T> data;
+		friend std::ostream& operator<<(std::ostream&, const FlatTriangulationCombinatorial&);
+		const size_t nedges;
+	 private:
+		struct Implementation;
+		spimpl::unique_impl_ptr<Implementation> impl;
 	};
 }
 
 #endif
+

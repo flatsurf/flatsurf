@@ -21,10 +21,10 @@
 #include <vector>
 #include "external/boolinq/include/boolinq/boolinq.h"
 
-#include "libflatsurf/assert.hpp"
-#include "libflatsurf/flat_triangulation_combinatorial.hpp"
-#include "libflatsurf/half_edge.hpp"
-#include "libflatsurf/permutation.hpp"
+#include "flatsurf/assert.hpp"
+#include "flatsurf/flat_triangulation_combinatorial.hpp"
+#include "flatsurf/half_edge.hpp"
+#include "flatsurf/permutation.hpp"
 
 using boolinq::from;
 using std::ostream;

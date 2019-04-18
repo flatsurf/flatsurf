@@ -17,40 +17,39 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_FLAT_TRIANGULATION_COMBINATORIAL_HPP
-#define LIBFLATSURF_FLAT_TRIANGULATION_COMBINATORIAL_HPP
+#ifndef LIBFLATSURF_FLAT_TRIANGULATION_HPP
+#define LIBFLATSURF_FLAT_TRIANGULATION_HPP
 
 #include <iosfwd>
 #include <vector>
 #include <memory>
-#include "external/spimpl/spimpl.h"
 
-#include "libflatsurf/libflatsurf.hpp"
-#include "libflatsurf/forward.hpp"
+#include "flatsurf/flatsurf.hpp"
+#include "flatsurf/forward.hpp"
+#include "flatsurf/flat_triangulation_combinatorial.hpp"
+#include "external/spimpl/spimpl.h"
 
 namespace flatsurf {
 	template<typename T>
 	struct HalfEdgeMap;
 
-	struct FlatTriangulationCombinatorial {
-		FlatTriangulationCombinatorial(const std::vector<std::vector<int>>& vertices);
-		FlatTriangulationCombinatorial(const Permutation<HalfEdge>& vertices);
-		FlatTriangulationCombinatorial(FlatTriangulationCombinatorial&&);
-		~FlatTriangulationCombinatorial() = default;
+	template<class Vector>
+	struct FlatTriangulation : FlatTriangulationCombinatorial {
+		FlatTriangulation(FlatTriangulationCombinatorial&&, const std::vector<Vector>& vectors);
+		FlatTriangulation(FlatTriangulationCombinatorial&&, const HalfEdgeMap<Vector>& vectors);
+		~FlatTriangulation() = default;
 
-		HalfEdge nextAtVertex(const HalfEdge e) const;
-		HalfEdge nextInFace(const HalfEdge e) const;
+		const Vector& fromEdge(const HalfEdge e) const;
 
-		const std::vector<HalfEdge>& edges() const;
-		const std::vector<Vertex>& vertices() const;
-
-		friend std::ostream& operator<<(std::ostream&, const FlatTriangulationCombinatorial&);
-		const size_t nedges;
+		template<typename W>
+		friend std::ostream& operator<<(std::ostream&, const FlatTriangulation<W>&);
 	 private:
 		struct Implementation;
 		spimpl::unique_impl_ptr<Implementation> impl;
 	};
+
+	template <typename Vector>
+	FlatTriangulation(const std::vector<std::vector<int>>&, const std::vector<Vector>&) -> FlatTriangulation<Vector>;
 }
 
 #endif
-

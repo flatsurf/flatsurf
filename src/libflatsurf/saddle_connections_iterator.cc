@@ -19,12 +19,12 @@
 
 #include <stack>
 
-#include "libflatsurf/assert.hpp"
-#include "libflatsurf/ccw.hpp"
-#include "libflatsurf/flat_triangulation.hpp"
-#include "libflatsurf/half_edge.hpp"
-#include "libflatsurf/saddle_connections.hpp"
-#include "libflatsurf/saddle_connections_iterator.hpp"
+#include "flatsurf/assert.hpp"
+#include "flatsurf/ccw.hpp"
+#include "flatsurf/flat_triangulation.hpp"
+#include "flatsurf/half_edge.hpp"
+#include "flatsurf/saddle_connections.hpp"
+#include "flatsurf/saddle_connections_iterator.hpp"
 
 namespace flatsurf {
 template <typename Vector, typename VectorAlongTriangulation>
@@ -52,18 +52,28 @@ struct SaddleConnectionsIterator<Vector,
     GOTO_PREVIOUS_EDGE,
   };
 
-  explicit Implementation(
-      const SaddleConnections<Vector, VectorAlongTriangulation>& parent)
-      : parent(parent),
-        sector{parent.sector[0], parent.sector[1]},
-        nextEdge(parent.sectorBoundary),
-        nextEdgeEnd(parent.sector[1]),
+  explicit Implementation(const FlatTriangulation<Vector>& surface,
+                          const Bound searchRadius, const Vertex& source,
+                          const HalfEdge sectorBoundary,
+                          const VectorAlongTriangulation& sectorBegin,
+                          const VectorAlongTriangulation& sectorEnd)
+      : surface(&surface),
+        searchRadius(searchRadius),
+        source(source),
+        sector{sectorBegin, sectorEnd},
+        nextEdge(sectorBoundary),
+        nextEdgeEnd(sectorEnd),
         state({State::END, State::START}) {
-    // Since we don't call increment(), we report sector[0] as a saddle
+    // Since we don't call increment(), we report sector[1] as a saddle
     // connection (which is intentional.)
+    if (nextEdgeEnd > searchRadius) {
+      increment();
+    }
   }
 
-  const SaddleConnections<Vector, VectorAlongTriangulation>& parent;
+  FlatTriangulation<Vector> const* surface;
+  Bound searchRadius;
+  Vertex source;
   // The rays that enclose the search sector, in counterclockwise order.
   // They themselves come from saddle connections, starting at base and
   // pointing to a vertex of the flatsurf.
@@ -122,7 +132,7 @@ struct SaddleConnectionsIterator<Vector,
             return false;
           case Classification::SADDLE_CONNECTION:
             state.push(State::SADDLE_CONNECTION_FOUND);
-            if (!(nextEdgeEnd > parent.searchRadius)) {
+            if (!(nextEdgeEnd > searchRadius)) {
               return true;
             } else {
               // If the vertex is beyond the search radius, we do not report
@@ -133,11 +143,11 @@ struct SaddleConnectionsIterator<Vector,
               moves.push_back(Move::GOTO_NEXT_EDGE);
               applyMoves();
               baseIsAlreadyExceedingSearchRadius &=
-                  (nextEdgeEnd > parent.searchRadius);
+                  (nextEdgeEnd > searchRadius);
               moves.push_back(Move::GOTO_NEXT_EDGE);
               applyMoves();
               baseIsAlreadyExceedingSearchRadius &=
-                  (nextEdgeEnd > parent.searchRadius);
+                  (nextEdgeEnd > searchRadius);
               if (baseIsAlreadyExceedingSearchRadius) {
                 // The other vertices of the triangle are outside of the search
                 // radius; abort the search here, i.e., backtrack.
@@ -241,7 +251,7 @@ struct SaddleConnectionsIterator<Vector,
   void apply(const Move m) {
     switch (m) {
       case Move::GOTO_NEXT_EDGE:
-        nextEdge = parent.surface.nextInFace(nextEdge);
+        nextEdge = surface->nextInFace(nextEdge);
         nextEdgeEnd += nextEdge;
         break;
       case Move::GOTO_OTHER_FACE:
@@ -250,7 +260,7 @@ struct SaddleConnectionsIterator<Vector,
         break;
       case Move::GOTO_PREVIOUS_EDGE:
         nextEdgeEnd -= nextEdge;
-        nextEdge = parent.surface.nextAtVertex(nextEdge);
+        nextEdge = surface->nextAtVertex(nextEdge);
         nextEdge = -nextEdge;
         break;
     }
@@ -280,7 +290,7 @@ struct SaddleConnectionsIterator<Vector,
             case Move::GOTO_PREVIOUS_EDGE:
               continue;
             case Move::GOTO_OTHER_FACE:
-              nextEdge = parent.surface.nextInFace(nextEdge);
+              nextEdge = surface->nextInFace(nextEdge);
               nextEdge = -nextEdge;
               continue;
           }
@@ -307,7 +317,7 @@ struct SaddleConnectionsIterator<Vector,
               // fallthrough to the next case intended here
             case Move::GOTO_PREVIOUS_EDGE:
               nextEdge = -nextEdge;
-              nextEdge = parent.surface.nextAtVertex(nextEdge);
+              nextEdge = surface->nextAtVertex(nextEdge);
               nextEdge = -nextEdge;
               continue;
             case Move::GOTO_OTHER_FACE:
@@ -337,14 +347,19 @@ struct SaddleConnectionsIterator<Vector,
 
 template <typename Vector, typename VectorAlongTriangulation>
 SaddleConnectionsIterator<Vector, VectorAlongTriangulation>::
-    SaddleConnectionsIterator(
-        const SaddleConnections<Vector, VectorAlongTriangulation>& parent)
-    : impl(spimpl::make_unique_impl<Implementation>(parent)) {}
+    SaddleConnectionsIterator(const FlatTriangulation<Vector>& surface,
+                              const Bound searchRadius, const Vertex& source,
+                              const HalfEdge sectorBoundary,
+                              const VectorAlongTriangulation& sectorBegin,
+                              const VectorAlongTriangulation& sectorEnd)
+    : impl(spimpl::make_impl<Implementation>(surface, searchRadius, source,
+                                             sectorBoundary, sectorBegin,
+                                             sectorEnd)) {}
 
 template <typename Vector, typename VectorAlongTriangulation>
 SaddleConnectionsIterator<Vector,
                           VectorAlongTriangulation>::SaddleConnectionsIterator()
-    : impl(nullptr, &spimpl::details::default_delete<Implementation>) {}
+    : impl(nullptr) {}
 
 template <typename Vector, typename VectorAlongTriangulation>
 bool SaddleConnectionsIterator<Vector, VectorAlongTriangulation>::equal(
@@ -374,17 +389,17 @@ SaddleConnection<Vector, VectorAlongTriangulation>& SaddleConnectionsIterator<
     Vector, VectorAlongTriangulation>::dereference() const {
   // TODO: Obviously, this is a memory leak.
   return *(new SaddleConnection<Vector, VectorAlongTriangulation>(
-      impl->parent.surface, impl->nextEdgeEnd, impl->parent.source,
-      Vertex::target(impl->nextEdge, impl->parent.surface)));
+      *impl->surface, impl->nextEdgeEnd, impl->source,
+      Vertex::target(impl->nextEdge, *impl->surface)));
 }
 }  // namespace flatsurf
 
 // Instantions of templates so implementations are generated for the linker
 #include <exact-real/number_field_traits.hpp>
 
-#include "libflatsurf/vector_eantic.hpp"
-#include "libflatsurf/vector_exactreal.hpp"
-#include "libflatsurf/vector_longlong.hpp"
+#include "flatsurf/vector_eantic.hpp"
+#include "flatsurf/vector_exactreal.hpp"
+#include "flatsurf/vector_longlong.hpp"
 using namespace flatsurf;
 
 template struct flatsurf::SaddleConnectionsIterator<VectorLongLong>;

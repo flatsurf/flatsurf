@@ -25,7 +25,7 @@
 #include <iosfwd>
 #include <boost/operators.hpp>
 
-#include "libflatsurf/libflatsurf.hpp"
+#include "flatsurf/flatsurf.hpp"
 
 namespace flatsurf {
 	// Similar to Edge this is a wrapper to get type-safe HalfEdges without any

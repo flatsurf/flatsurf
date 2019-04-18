@@ -26,14 +26,14 @@
 #include <ostream>
 #include <string>
 
-#include "../libflatsurf/flat_triangulation_combinatorial.hpp"
-#include "../libflatsurf/vertex.hpp"
 #include "./elementary_geometry.h"
 #include "./globals.h"
 #include "./shared.h"
 #include "./simplex.h"
 #include "./two_complex.h"
 #include "./vertex.h"
+#include "flatsurf/flat_triangulation_combinatorial.hpp"
+#include "flatsurf/vertex.hpp"
 
 using boost::math::iround;
 using boost::math::constants::pi;

@@ -24,10 +24,10 @@
 #include <boost/operators.hpp>
 #include <e-antic/renfxx.h>
 
-#include "libflatsurf/libflatsurf.hpp"
-#include "libflatsurf/ccw.hpp"
-#include "libflatsurf/orientation.hpp"
-#include "libflatsurf/vector_along_triangulation_with_approximation.hpp"
+#include "flatsurf/flatsurf.hpp"
+#include "flatsurf/ccw.hpp"
+#include "flatsurf/orientation.hpp"
+#include "flatsurf/vector_along_triangulation_with_approximation.hpp"
 
 namespace flatsurf {
 	struct Bound;

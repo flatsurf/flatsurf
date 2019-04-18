@@ -22,8 +22,8 @@
 
 #include <boost/operators.hpp>
 
-#include "libflatsurf/half_edge.hpp"
-#include "libflatsurf/forward.hpp"
+#include "flatsurf/half_edge.hpp"
+#include "flatsurf/forward.hpp"
 
 namespace flatsurf {
 // A thin wrapper of a HalfEdge that gives us a notion of

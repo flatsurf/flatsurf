@@ -26,13 +26,13 @@
 #include <fstream>
 #include <iostream>
 
-#include "libflatsurf/ccw.hpp"
-#include "libflatsurf/flat_triangulation.hpp"
-#include "libflatsurf/half_edge.hpp"
-#include "libflatsurf/orientation.hpp"
-#include "libflatsurf/saddle_connections.hpp"
-#include "libflatsurf/vector_arb.hpp"
-#include "libflatsurf/vector_exactreal.hpp"
+#include "flatsurf/ccw.hpp"
+#include "flatsurf/flat_triangulation.hpp"
+#include "flatsurf/half_edge.hpp"
+#include "flatsurf/orientation.hpp"
+#include "flatsurf/saddle_connections.hpp"
+#include "flatsurf/vector_arb.hpp"
+#include "flatsurf/vector_exactreal.hpp"
 
 #include "./globals.h"
 #include "./my_ostream.h"

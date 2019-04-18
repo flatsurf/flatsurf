@@ -17,25 +17,43 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "libflatsurf/flat_triangulation.hpp"
-#include "libflatsurf/half_edge.hpp"
-#include "libflatsurf/saddle_connections.hpp"
+#include "flatsurf/flat_triangulation.hpp"
+#include "flatsurf/half_edge.hpp"
+#include "flatsurf/saddle_connections.hpp"
 
 namespace flatsurf {
+template <typename Vector, typename VectorAlongTriangulation>
+struct SaddleConnections<Vector, VectorAlongTriangulation>::Implementation {
+  Implementation(const Surface& surface, const Bound searchRadius,
+                 const Vertex& source, const HalfEdge sectorBoundary,
+                 const VectorAlongTriangulation& sectorBegin,
+                 const VectorAlongTriangulation& sectorEnd)
+      : surface(&surface),
+        searchRadius(searchRadius),
+        source(source),
+        sectorBoundary(sectorBoundary),
+        sector{sectorBegin, sectorEnd} {
+    assert(static_cast<Vector>(sectorBegin) +
+                   surface.fromEdge(sectorBoundary) ==
+               static_cast<Vector>(sectorEnd) &&
+           "sectorBoundary does not connect sectorBegin and sectorEnd");
+  }
+
+  FlatTriangulation<Vector> const* surface;
+  Bound searchRadius;
+  Vertex source;
+  HalfEdge sectorBoundary;
+  VectorAlongTriangulation sector[2];
+};
+
 template <typename Vector, typename VectorAlongTriangulation>
 SaddleConnections<Vector, VectorAlongTriangulation>::SaddleConnections(
     const Surface& surface, const Bound searchRadius, const Vertex& source,
     const HalfEdge sectorBoundary, const VectorAlongTriangulation& sectorBegin,
     const VectorAlongTriangulation& sectorEnd)
-    : surface(surface),
-      searchRadius(searchRadius),
-      source(source),
-      sectorBoundary(sectorBoundary),
-      sector{sectorBegin, sectorEnd} {
-  assert(static_cast<Vector>(sectorBegin) + surface.fromEdge(sectorBoundary) ==
-             static_cast<Vector>(sectorEnd) &&
-         "sectorBoundary does not connect sectorBegin and sectorEnd");
-}
+    : impl(spimpl::make_impl<Implementation>(surface, searchRadius, source,
+                                             sectorBoundary, sectorBegin,
+                                             sectorEnd)) {}
 
 template <typename Vector, typename VectorAlongTriangulation>
 SaddleConnections<Vector, VectorAlongTriangulation>::SaddleConnections(
@@ -51,7 +69,9 @@ SaddleConnections<Vector, VectorAlongTriangulation>::SaddleConnections(
 template <typename Vector, typename VectorAlongTriangulation>
 SaddleConnectionsIterator<Vector, VectorAlongTriangulation>
 SaddleConnections<Vector, VectorAlongTriangulation>::begin() const {
-  return SaddleConnectionsIterator<Vector, VectorAlongTriangulation>(*this);
+  return SaddleConnectionsIterator<Vector, VectorAlongTriangulation>(
+      *impl->surface, impl->searchRadius, impl->source, impl->sectorBoundary,
+      impl->sector[0], impl->sector[1]);
 }
 
 template <typename Vector, typename VectorAlongTriangulation>
@@ -64,9 +84,9 @@ SaddleConnections<Vector, VectorAlongTriangulation>::end() const {
 // Instantiations of templates so implementations are generated for the linker
 #include <exact-real/number_field_traits.hpp>
 
-#include "libflatsurf/vector_eantic.hpp"
-#include "libflatsurf/vector_exactreal.hpp"
-#include "libflatsurf/vector_longlong.hpp"
+#include "flatsurf/vector_eantic.hpp"
+#include "flatsurf/vector_exactreal.hpp"
+#include "flatsurf/vector_longlong.hpp"
 using namespace flatsurf;
 
 template struct flatsurf::SaddleConnections<VectorLongLong>;

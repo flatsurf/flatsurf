@@ -20,10 +20,10 @@
 #include <ostream>
 #include <vector>
 
-#include "libflatsurf/assert.hpp"
-#include "libflatsurf/flat_triangulation.hpp"
-#include "libflatsurf/half_edge.hpp"
-#include "libflatsurf/half_edge_map.hpp"
+#include "flatsurf/assert.hpp"
+#include "flatsurf/flat_triangulation.hpp"
+#include "flatsurf/half_edge.hpp"
+#include "flatsurf/half_edge_map.hpp"
 
 using std::ostream;
 using std::vector;
@@ -75,9 +75,9 @@ ostream& operator<<(ostream& os, const FlatTriangulation<Vector>& self) {
 
 // Instantiations of templates so implementations are generated for the linker
 #include <exact-real/number_field_traits.hpp>
-#include "libflatsurf/vector_eantic.hpp"
-#include "libflatsurf/vector_exactreal.hpp"
-#include "libflatsurf/vector_longlong.hpp"
+#include "flatsurf/vector_eantic.hpp"
+#include "flatsurf/vector_exactreal.hpp"
+#include "flatsurf/vector_longlong.hpp"
 
 using namespace flatsurf;
 

@@ -23,9 +23,9 @@
 #include <ostream>
 #include <vector>
 
-#include "../libflatsurf/vector_arb.hpp"
 #include "./number_field.h"
 #include "./params.h"
+#include "flatsurf/vector_arb.hpp"
 
 using exactreal::RealNumber;
 using flatsurf::VectorArb;

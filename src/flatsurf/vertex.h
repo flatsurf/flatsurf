@@ -23,9 +23,9 @@
 
 #include <list>
 
-#include "../libflatsurf/forward.hpp"
 #include "./defs.h"
 #include "./simplex.h"
+#include "flatsurf/forward.hpp"
 
 namespace polygon {
 class UEdge;

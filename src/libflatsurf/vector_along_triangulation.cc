@@ -19,12 +19,12 @@
 
 #include <ostream>
 
-#include "libflatsurf/bound.hpp"
-#include "libflatsurf/flat_triangulation.hpp"
-#include "libflatsurf/half_edge.hpp"
-#include "libflatsurf/half_edge_map.hpp"
-#include "libflatsurf/vector_along_triangulation.hpp"
-#include "libflatsurf/vector_eantic.hpp"
+#include "flatsurf/bound.hpp"
+#include "flatsurf/flat_triangulation.hpp"
+#include "flatsurf/half_edge.hpp"
+#include "flatsurf/half_edge_map.hpp"
+#include "flatsurf/vector_along_triangulation.hpp"
+#include "flatsurf/vector_eantic.hpp"
 
 using std::ostream;
 
@@ -105,9 +105,9 @@ ostream& operator<<(ostream& os, const VectorAlongTriangulation<V>& self) {
 
 // Instantiations of templates so implementations are generated for the linker
 #include <exact-real/number_field_traits.hpp>
-#include "libflatsurf/vector_eantic.hpp"
-#include "libflatsurf/vector_exactreal.hpp"
-#include "libflatsurf/vector_longlong.hpp"
+#include "flatsurf/vector_eantic.hpp"
+#include "flatsurf/vector_exactreal.hpp"
+#include "flatsurf/vector_longlong.hpp"
 template struct flatsurf::VectorAlongTriangulation<flatsurf::VectorLongLong>;
 template ostream& flatsurf::operator<<(
     ostream&,

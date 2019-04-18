@@ -19,10 +19,10 @@
 
 #include <ostream>
 
-#include "libflatsurf/bound.hpp"
-#include "libflatsurf/flat_triangulation.hpp"
-#include "libflatsurf/half_edge.hpp"
-#include "libflatsurf/vector_longlong.hpp"
+#include "flatsurf/bound.hpp"
+#include "flatsurf/flat_triangulation.hpp"
+#include "flatsurf/half_edge.hpp"
+#include "flatsurf/vector_longlong.hpp"
 
 using std::ostream;
 

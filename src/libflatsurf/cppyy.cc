@@ -17,7 +17,7 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "libflatsurf/cppyy.hpp"
+#include "flatsurf/cppyy.hpp"
 
 #include <ostream>
 

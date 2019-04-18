@@ -17,36 +17,22 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_PERMUTATION_HPP
-#define LIBFLATSURF_PERMUTATION_HPP
+#ifndef LIBFLATSURF_CCW_HPP
+#define LIBFLATSURF_CCW_HPP
 
-#include <iosfwd>
-#include <vector>
-#include <functional>
+#include <boost/operators.hpp>
+#include "external/spimpl/spimpl.h"
 
-#include "libflatsurf/libflatsurf.hpp"
+#include "flatsurf/flatsurf.hpp"
 
 namespace flatsurf {
-	// A type-safe permutation of items of type T.
-	// There should be no runtime overhead to using a simple T[], at least when
-	// compiled with -flto.
-	template<typename T>
-	struct Permutation {
-		 explicit Permutation(const std::vector<std::vector<T>>& cycles);
-		 explicit Permutation(const std::vector<std::pair<T, T>>& permutation);
-		 T operator()(const T& t) const;
-		 template<typename S>
-		 static Permutation<T> create(const std::vector<std::vector<S>>&, const std::function<T(S)>&);
+	enum class CCW {
+		COUNTERCLOCKWISE = -1,
+		COLLINEAR = 0,
+		CLOCKWISE = 1,
+	 };
 
-		 template<typename S>
-     friend std::ostream& operator<<(std::ostream&, const Permutation<S>&);
-		 size_t size() const;
-		 size_t index(const T&) const;
-		 const std::vector<T>& domain() const;
-	 private:
-		 std::vector<T> data;
-	};
+	CCW operator-(CCW ccw);
 }
 
 #endif
-

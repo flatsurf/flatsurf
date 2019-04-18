@@ -22,7 +22,7 @@
 #include <set>
 #include "external/boolinq/include/boolinq/boolinq.h"
 
-#include "libflatsurf/permutation.hpp"
+#include "flatsurf/permutation.hpp"
 
 using boolinq::from;
 using std::function;
@@ -108,7 +108,7 @@ ostream& operator<<(ostream& os, const Permutation<T>& self) {
 using namespace flatsurf;
 
 // Instantiations of templates so implementations are generated for the linker
-#include "libflatsurf/half_edge.hpp"
+#include "flatsurf/half_edge.hpp"
 template struct flatsurf::Permutation<HalfEdge>;
 template Permutation<HalfEdge> Permutation<HalfEdge>::create<int>(
     const vector<vector<int>>& cycles,

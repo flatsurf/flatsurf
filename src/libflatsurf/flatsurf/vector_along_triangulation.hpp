@@ -23,7 +23,7 @@
 #include <boost/operators.hpp>
 #include "external/spimpl/spimpl.h"
 
-#include "libflatsurf/ccw.hpp"
+#include "flatsurf/ccw.hpp"
 
 namespace flatsurf {
 	template<typename Vector>

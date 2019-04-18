@@ -22,9 +22,9 @@
 #include <ostream>
 #include "external/spimpl/spimpl.h"
 
-#include "libflatsurf/bound.hpp"
-#include "libflatsurf/vector_arb.hpp"
-#include "libflatsurf/vector_eantic.hpp"
+#include "flatsurf/bound.hpp"
+#include "flatsurf/vector_arb.hpp"
+#include "flatsurf/vector_eantic.hpp"
 
 using boost::numeric_cast;
 using eantic::renf_elem_class;

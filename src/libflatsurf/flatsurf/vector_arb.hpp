@@ -25,9 +25,9 @@
 #include <boost/operators.hpp>
 #include <exact-real/arb.hpp>
 
-#include "libflatsurf/libflatsurf.hpp"
-#include "libflatsurf/ccw.hpp"
-#include "libflatsurf/orientation.hpp"
+#include "flatsurf/flatsurf.hpp"
+#include "flatsurf/ccw.hpp"
+#include "flatsurf/orientation.hpp"
 
 namespace flatsurf {
 	struct Bound;

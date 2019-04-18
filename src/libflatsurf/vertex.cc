@@ -20,9 +20,9 @@
 #include <cassert>
 #include <ostream>
 
-#include "libflatsurf/flat_triangulation_combinatorial.hpp"
-#include "libflatsurf/half_edge.hpp"
-#include "libflatsurf/vertex.hpp"
+#include "flatsurf/flat_triangulation_combinatorial.hpp"
+#include "flatsurf/half_edge.hpp"
+#include "flatsurf/vertex.hpp"
 
 using std::ostream;
 

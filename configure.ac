@@ -23,12 +23,19 @@ LT_INIT
 
 AC_CANONICAL_HOST
 
+dnl We run the valgrind test-suite in make check-valgrind
+AX_VALGRIND_DFLT([sgcheck], [off])
+AX_VALGRIND_DFLT([drd], [off])
+AX_VALGRIND_DFLT([helgrind], [off])
+AX_VALGRIND_CHECK()
+
 dnl Check for required libraries
 AC_LANG([C++])
-dnl We use some C++17 features such as std::optional
+
+dnl We use some C++17 features such as if constexpr
 AX_CXX_COMPILE_STDCXX_17()
 
-dnl We provide a Python powered by cppyy
+dnl We provide a Python module powered by cppyy
 AM_PATH_PYTHON()
 
 AC_CHECK_HEADERS([boost/type_traits.hpp], , AC_MSG_ERROR([boost headers not found]))
@@ -55,6 +62,6 @@ AC_CHECK_HEADERS([NTL/LLL.h NTL/mat_ZZ.h], , AC_MSG_ERROR([NTL headers not found
 AX_CXX_CHECK_LIB([exactreal], [exactreal::RealNumber::random()], , AC_MSG_ERROR([exact-real library not found]), [-lgmp -lmpfr -lflint])
 AC_CHECK_HEADERS([exact-real/real_number.hpp exact-real/module.hpp], , AC_MSG_ERROR([libexactreal headers not found]))
 
-AC_CONFIG_HEADERS([src/libflatsurf/libflatsurf/config.h])
-AC_CONFIG_FILES([Makefile src/Makefile src/libflatsurf/Makefile src/libpyflatsurf/Makefile src/flatsurf/Makefile])
+AC_CONFIG_HEADERS([src/libflatsurf/flatsurf/config.h])
+AC_CONFIG_FILES([Makefile src/Makefile src/libflatsurf/Makefile src/libpyflatsurf/Makefile src/flatsurf/Makefile test/Makefile test/flatsurf/Makefile test/libflatsurf/Makefile test/libpyflatsurf/Makefile])
 AC_OUTPUT

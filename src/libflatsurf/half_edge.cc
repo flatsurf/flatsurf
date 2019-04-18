@@ -20,9 +20,9 @@
 #include <cassert>
 #include <ostream>
 
-#include "libflatsurf/half_edge.hpp"
-#include "libflatsurf/half_edge_map.hpp"
-#include "libflatsurf/permutation.hpp"
+#include "flatsurf/half_edge.hpp"
+#include "flatsurf/half_edge_map.hpp"
+#include "flatsurf/permutation.hpp"
 
 using std::ostream;
 

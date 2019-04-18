@@ -22,15 +22,15 @@
 
 #include <iosfwd>
 
-#include "libflatsurf/forward.hpp"
-#include "libflatsurf/flat_triangulation.hpp"
-#include "libflatsurf/saddle_connections.hpp"
-#include "libflatsurf/vector_longlong.hpp"
-#include "libflatsurf/vector_eantic.hpp"
-#include "libflatsurf/vector_arb.hpp"
-#include "libflatsurf/half_edge.hpp"
-#include "libflatsurf/vector_along_triangulation.hpp"
-#include "libflatsurf/vector_along_triangulation_with_approximation.hpp"
+#include "flatsurf/forward.hpp"
+#include "flatsurf/flat_triangulation.hpp"
+#include "flatsurf/saddle_connections.hpp"
+#include "flatsurf/vector_longlong.hpp"
+#include "flatsurf/vector_eantic.hpp"
+#include "flatsurf/vector_arb.hpp"
+#include "flatsurf/half_edge.hpp"
+#include "flatsurf/vector_along_triangulation.hpp"
+#include "flatsurf/vector_along_triangulation_with_approximation.hpp"
 
 // As of early 2019, cppyy does not appear to honour https://en.wikipedia.org/wiki/Argument-dependent_name_lookup for operators.
 // So we need to declare the operator<< in the global namespace, otherwise cppyy is ignoring it in str() unfortunately.

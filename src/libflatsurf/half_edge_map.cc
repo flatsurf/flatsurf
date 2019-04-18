@@ -24,7 +24,7 @@
 #include <ostream>
 #include "external/boolinq/include/boolinq/boolinq.h"
 
-#include "libflatsurf/half_edge_map.hpp"
+#include "flatsurf/half_edge_map.hpp"
 
 using boolinq::from;
 using std::function;
@@ -95,9 +95,9 @@ using namespace flatsurf;
 
 // Instantiations of templates so implementations are generated for the linker
 #include <exact-real/number_field_traits.hpp>
-#include "libflatsurf/vector_eantic.hpp"
-#include "libflatsurf/vector_exactreal.hpp"
-#include "libflatsurf/vector_longlong.hpp"
+#include "flatsurf/vector_eantic.hpp"
+#include "flatsurf/vector_exactreal.hpp"
+#include "flatsurf/vector_longlong.hpp"
 template struct flatsurf::HalfEdgeMap<VectorLongLong>;
 template ostream& flatsurf::operator<<(ostream&,
                                        const HalfEdgeMap<VectorLongLong>&);

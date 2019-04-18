@@ -17,7 +17,7 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "libflatsurf/saddle_connection.hpp"
+#include "flatsurf/saddle_connection.hpp"
 
 namespace flatsurf {
 template <typename Vector, typename AlongTriangulation>
@@ -29,9 +29,9 @@ SaddleConnection<Vector, AlongTriangulation>::SaddleConnection(
 
 // Instantiations of templates so implementations are generated for the linker
 #include <exact-real/number_field_traits.hpp>
-#include "libflatsurf/vector_eantic.hpp"
-#include "libflatsurf/vector_exactreal.hpp"
-#include "libflatsurf/vector_longlong.hpp"
+#include "flatsurf/vector_eantic.hpp"
+#include "flatsurf/vector_exactreal.hpp"
+#include "flatsurf/vector_longlong.hpp"
 using namespace flatsurf;
 
 template struct flatsurf::SaddleConnection<VectorLongLong>;

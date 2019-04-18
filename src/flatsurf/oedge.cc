@@ -21,7 +21,7 @@
 #include <list>
 #include <ostream>
 
-#include "libflatsurf/half_edge.hpp"
+#include "flatsurf/half_edge.hpp"
 
 #include "./face.h"
 #include "./globals.h"

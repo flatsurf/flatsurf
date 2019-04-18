@@ -38,12 +38,12 @@
 #include "./uedge.h"
 #include "./vertex.h"
 
-#include "libflatsurf/flat_triangulation.hpp"
-#include "libflatsurf/half_edge.hpp"
-#include "libflatsurf/half_edge_map.hpp"
-#include "libflatsurf/permutation.hpp"
-#include "libflatsurf/vector_eantic.hpp"
-#include "libflatsurf/vector_exactreal.hpp"
+#include "flatsurf/flat_triangulation.hpp"
+#include "flatsurf/half_edge.hpp"
+#include "flatsurf/half_edge_map.hpp"
+#include "flatsurf/permutation.hpp"
+#include "flatsurf/vector_eantic.hpp"
+#include "flatsurf/vector_exactreal.hpp"
 
 using boolinq::from;
 using boost::math::constants::pi;

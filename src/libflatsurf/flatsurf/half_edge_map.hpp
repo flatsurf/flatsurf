@@ -17,22 +17,35 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_CCW_HPP
-#define LIBFLATSURF_CCW_HPP
+#ifndef LIBFLATSURF_HALF_EDGE_MAP_HPP
+#define LIBFLATSURF_HALF_EDGE_MAP_HPP
 
+#include <iosfwd>
+#include <vector>
+#include <functional>
 #include <boost/operators.hpp>
-#include "external/spimpl/spimpl.h"
 
-#include "libflatsurf/libflatsurf.hpp"
+#include "flatsurf/half_edge.hpp"
 
 namespace flatsurf {
-	enum class CCW {
-		COUNTERCLOCKWISE = -1,
-		COLLINEAR = 0,
-		CLOCKWISE = 1,
-	 };
+	struct HalfEdge;
 
-	CCW operator-(CCW ccw);
+	template<typename T>
+	struct HalfEdgeMap {
+		explicit HalfEdgeMap(const std::vector<T>& data);
+
+		const T& get(const HalfEdge key) const;
+		void set(const HalfEdge key, const T& value);
+		void apply(std::function<void(HalfEdge, const T&)>) const;
+
+		template<typename S>
+		friend std::ostream& operator<<(std::ostream&, const HalfEdgeMap<S>&);
+
+		static size_t index(const HalfEdge);
+
+		private:
+		mutable std::vector<T> data;
+	};
 }
 
 #endif

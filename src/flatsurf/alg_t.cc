@@ -30,13 +30,13 @@
 #include <vector>
 #include "external/boolinq/include/boolinq/boolinq.h"
 
-#include "../libflatsurf/vector_arb.hpp"
 #include "./algebraic.h"
 #include "./defs.h"
 #include "./globals.h"
 #include "./number_field.h"
 #include "./params.h"
 #include "./two_complex.h"
+#include "flatsurf/vector_arb.hpp"
 
 using boolinq::from;
 using boost::lexical_cast;
