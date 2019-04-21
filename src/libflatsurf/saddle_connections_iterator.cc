@@ -385,12 +385,12 @@ void SaddleConnectionsIterator<Vector, VectorAlongTriangulation>::increment() {
 }
 
 template <typename Vector, typename VectorAlongTriangulation>
-SaddleConnection<Vector, VectorAlongTriangulation>& SaddleConnectionsIterator<
-    Vector, VectorAlongTriangulation>::dereference() const {
-  // TODO: Obviously, this is a memory leak.
-  return *(new SaddleConnection<Vector, VectorAlongTriangulation>(
+std::unique_ptr<SaddleConnection<Vector, VectorAlongTriangulation>>
+SaddleConnectionsIterator<Vector, VectorAlongTriangulation>::dereference()
+    const {
+  return std::make_unique<SaddleConnection<Vector, VectorAlongTriangulation>>(
       *impl->surface, impl->nextEdgeEnd, impl->source,
-      Vertex::target(impl->nextEdge, *impl->surface)));
+      Vertex::target(impl->nextEdge, *impl->surface));
 }
 }  // namespace flatsurf
 

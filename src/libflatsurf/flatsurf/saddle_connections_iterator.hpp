@@ -30,12 +30,12 @@
 
 namespace flatsurf {
 	template<typename Vector, typename VectorAlongTriangulation>
-	struct SaddleConnectionsIterator : boost::iterator_facade<SaddleConnectionsIterator<Vector, VectorAlongTriangulation>, SaddleConnection<Vector> const, boost::single_pass_traversal_tag> {
+	struct SaddleConnectionsIterator : boost::iterator_facade<SaddleConnectionsIterator<Vector, VectorAlongTriangulation>, const std::unique_ptr<SaddleConnection<Vector, VectorAlongTriangulation>>, std::forward_iterator_tag, const std::unique_ptr<SaddleConnection<Vector, VectorAlongTriangulation>>> {
 		friend class boost::iterator_core_access;
 
 		void increment();
 		bool equal(const SaddleConnectionsIterator<Vector, VectorAlongTriangulation>& other) const;
-		SaddleConnection<Vector, VectorAlongTriangulation>& dereference() const;
+		std::unique_ptr<SaddleConnection<Vector, VectorAlongTriangulation>> dereference() const;
 
 		void skipSector(CCW sector);
 	 private:

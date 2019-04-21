@@ -618,9 +618,9 @@ int main(int argc, char** argv) {
            SaddleConnections(flat_triangulation,
                              Bound(static_cast<long long>(ceil(depth * depth))),
                              sectorBegin)) {
-        if (!Vertex::from(saddle_connection.source).relevant()) {
+        if (!Vertex::from(saddle_connection->source).relevant()) {
           // It would be good to have a proper notion of marked vertices
-          // instead but currently, we rely on polygon's original concept of
+          // instead, but currently we rely on polygon's original concept of
           // "relevant"
           std::cout << "not relevant" << std::endl;
           continue;
@@ -630,7 +630,7 @@ int main(int argc, char** argv) {
 
         auto direction = static_cast<
             flatsurf::VectorExactReal<exactreal::NumberFieldTraits>>(
-            saddle_connection.vector);
+            saddle_connection->vector);
 
         for (const HalfEdge e : flat_triangulation.edges()) {
           if (flat_triangulation.fromEdge(e).ccw(direction) ==
@@ -659,9 +659,9 @@ int main(int argc, char** argv) {
           for (auto it = saddle_connections_in_same_direction.begin();
                it != saddle_connections_in_same_direction.end(); ++it) {
             auto saddle_connection_in_same_direction = *it;
-            assert(saddle_connection_in_same_direction.source == vertex);
-            auto ccw = saddle_connection_in_same_direction.vector.ccw(
-                saddle_connection.vector);
+            assert(saddle_connection_in_same_direction->source == vertex);
+            auto ccw = saddle_connection_in_same_direction->vector.ccw(
+                saddle_connection->vector);
             if (ccw == flatsurf::CCW::COLLINEAR) {
               Dir<Point> tmp_start, tmp_end;
               alg_tI tmp_algt;
@@ -670,7 +670,7 @@ int main(int argc, char** argv) {
                         << static_cast<flatsurf::VectorArb>(
                                static_cast<flatsurf::VectorExactReal<
                                    exactreal::NumberFieldTraits>>(
-                                   saddle_connection_in_same_direction.vector))
+                                   saddle_connection_in_same_direction->vector))
                         << std::endl;
 
               // TODO: Implement me

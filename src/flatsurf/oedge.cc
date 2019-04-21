@@ -50,8 +50,7 @@ int OEdge::id() { return (ue->id()); }
 OEdge::operator flatsurf::HalfEdge() const {
   // We relabel UEdges from their indexes starting at 0 (but with missing
   // entries) to our indexes 1,2,….
-  // TODO: This is slow, but currently, we've got more important things to worry
-  // about.
+  // This is very slow but did not show up in the profile so far.
   int index = 0;
   for (auto u : S->uedges) {
     index++;
