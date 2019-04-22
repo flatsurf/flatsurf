@@ -46,7 +46,7 @@ string roman_numeral(__attribute__((unused)) int decimalNumber) {
       "since we're not sure about  its license");
 }
 
-my_ostream::my_ostream(const string& filename) {
+my_ostream::my_ostream(const string &filename) {
   tri_stream.open((filename + ".tri").c_str());
   if (tikz_output) {
     tex_stream.open((filename + ".tex").c_str());
@@ -69,9 +69,9 @@ my_ostream::my_ostream(const string& filename) {
   }
 }
 
-ofstream& my_ostream::tri() { return tri_stream; }
+ofstream &my_ostream::tri() { return tri_stream; }
 
-ofstream& my_ostream::tex() { return tex_stream; }
+ofstream &my_ostream::tex() { return tex_stream; }
 
 void my_ostream::close() {
   tri_stream.close();
@@ -85,20 +85,20 @@ void my_ostream::close() {
 PSimplex::~PSimplex() { /* empty destructor */
 }
 
-void PSimplex::Draw(__attribute__((unused)) my_ostream& output_stream,
+void PSimplex::Draw(__attribute__((unused)) my_ostream &output_stream,
                     __attribute__((unused)) COORD d) {
   ERR_RET("call to PSimplex::Draw");
 }
 
 PSimplex::PSimplex(Point p0, size_t i) : p(p0) { in_pcomplex = i; }
 
-Simplex* PSimplex::sp() { ERR_RET("call to Psimplex::sp()"); }
+Simplex *PSimplex::sp() { ERR_RET("call to Psimplex::sp()"); }
 
-PVertex::PVertex(Vertex* v0, Point p0, size_t i) : PSimplex(p0, i) { s = v0; }
+PVertex::PVertex(Vertex *v0, Point p0, size_t i) : PSimplex(p0, i) { s = v0; }
 
-Simplex* PVertex::sp() { return static_cast<Simplex*>(s); }
+Simplex *PVertex::sp() { return static_cast<Simplex *>(s); }
 
-PUEdge::PUEdge(OEdge& oe, Point p0, size_t i) : PSimplex(p0, i) {
+PUEdge::PUEdge(OEdge &oe, Point p0, size_t i) : PSimplex(p0, i) {
   Point t;
 
   //  p has to be position of v0
@@ -112,15 +112,15 @@ PUEdge::PUEdge(OEdge& oe, Point p0, size_t i) : PSimplex(p0, i) {
   }
 }
 
-PUEdge::PUEdge(UEdge* e0, Point p0, size_t i) : PSimplex(p0, i) { s = e0; }
+PUEdge::PUEdge(UEdge *e0, Point p0, size_t i) : PSimplex(p0, i) { s = e0; }
 
-Simplex* PUEdge::sp() { return static_cast<Simplex*>(s); }
+Simplex *PUEdge::sp() { return static_cast<Simplex *>(s); }
 
-PFace::PFace(Face* f0, Point p0, size_t i) : PSimplex(p0, i) { s = f0; }
+PFace::PFace(Face *f0, Point p0, size_t i) : PSimplex(p0, i) { s = f0; }
 
-Simplex* PFace::sp() { return static_cast<Simplex*>(s); }
+Simplex *PFace::sp() { return static_cast<Simplex *>(s); }
 
-void PVertex::Draw(my_ostream& output_stream, __attribute__((unused)) COORD d) {
+void PVertex::Draw(my_ostream &output_stream, __attribute__((unused)) COORD d) {
   output_stream.tri() << s->tag << s->id() << " " << s->color << " ";
   output_stream.tri() << p.real() << " " << p.imag() << "\n";
 
@@ -132,7 +132,7 @@ void PVertex::Draw(my_ostream& output_stream, __attribute__((unused)) COORD d) {
   }
 }
 
-void PUEdge::Draw(my_ostream& output_stream, COORD scale_factor) {
+void PUEdge::Draw(my_ostream &output_stream, COORD scale_factor) {
   Point tmp;
 
   output_stream.tri() << s->tag << s->id() << " " << s->color << " ";
@@ -154,7 +154,7 @@ void PUEdge::Draw(my_ostream& output_stream, COORD scale_factor) {
   }
 }
 
-void PFace::Draw(my_ostream& output_stream, COORD scale_factor) {
+void PFace::Draw(my_ostream &output_stream, COORD scale_factor) {
   Point q(0.0, 0.0), t;
 
   output_stream.tri() << s->tag << s->id() << " " << s->color << " ";
@@ -216,21 +216,21 @@ class tFace {
  public:
   list<Point> verts;
   list<Point>::iterator FindPoint(Point q);
-  void Draw(my_ostream& output_stream, int cyl_nbr);
-  void Print(ostream& out);
+  void Draw(my_ostream &output_stream, int cyl_nbr);
+  void Print(ostream &out);
 };
 
 typedef list<Point>::iterator PointListIter;
 typedef list<tFace>::iterator tFaceListIter;
 
-void tFace::Print(ostream& out) {
+void tFace::Print(ostream &out) {
   for (PointListIter k = verts.begin(); k != verts.end(); ++k) {
     out << *k;
   }
   out << endl;
 }
 
-void tFace::Draw(my_ostream& output_stream, int cyl_nbr) {
+void tFace::Draw(my_ostream &output_stream, int cyl_nbr) {
   if (tikz_output) {
     output_stream.tex() << "% cyl #" << cyl_nbr << endl;
     //	output_stream.tex() << "\\fill [red!" << 10*(cyl_nbr) << "!white] ";
@@ -242,7 +242,7 @@ void tFace::Draw(my_ostream& output_stream, int cyl_nbr) {
   }
 }
 
-bool fake_colinear(const Point& p, const Point& q) {
+bool fake_colinear(const Point &p, const Point &q) {
   COORD threshold = 1E-8;
 
   //    COORD threshold = 1E-2;
@@ -256,7 +256,7 @@ bool fake_colinear(const Point& p, const Point& q) {
   return (true);
 }
 
-bool fake_aligned(const Point& p, const Point& q) {
+bool fake_aligned(const Point &p, const Point &q) {
   if (!fake_colinear(p, q)) {
     return (false);
   }
@@ -311,7 +311,7 @@ PointListIter tFace::FindPoint(Point q) {
   return (verts.end());
 }
 
-void PFace::DrawCylinders(my_ostream& output_stream, COORD scale_factor) {
+void PFace::DrawCylinders(my_ostream &output_stream, COORD scale_factor) {
   COORD THRESHOLD = 1E-8;
 
   if (!tikz_output) {
@@ -549,7 +549,7 @@ bool Face::intersects(Point pb, Point pv) {
   return (false);
 }
 
-bool Face::intersects(Face* f, Point offset_) {
+bool Face::intersects(Face *f, Point offset_) {
   //    fprintf(out_f,"Face F%d: ",this->id());
   //    for ( OEdgeIter k = oedges.begin(); k!= oedges.end(); k++ ) {
   //	std::cout << (*k).headOffset<Point>() << " ";
@@ -624,16 +624,16 @@ COORD Face::perimeter() {
   return (per);
 }
 
-PFace* TwoComplex::get_pface(Face* f) {
+PFace *TwoComplex::get_pface(Face *f) {
   for (auto k = dl.begin(); k != dl.end(); ++k) {
     if ((*k)->sp()->tag == 'F' && (*k)->sp() == f) {
-      return static_cast<PFace*>(*k);
+      return static_cast<PFace *>(*k);
     }
   }
   ERR_RET("get_pface: not found");
 }
 
-bool TwoComplex::can_merge(UEdge* ue) {
+bool TwoComplex::can_merge(UEdge *ue) {
   if (ue->deleted()) {
     return (false);
   }
@@ -642,8 +642,8 @@ bool TwoComplex::can_merge(UEdge* ue) {
     return (false);
   }
 
-  PFace* pf0 = get_pface(ue->f0);
-  PFace* pf1 = get_pface(ue->f1);
+  PFace *pf0 = get_pface(ue->f0);
+  PFace *pf1 = get_pface(ue->f1);
   auto oe0 = ue->this_edge(ue->f0); /* ue in f0 */
   auto oe1 = ue->this_edge(ue->f1); /* ue in f1 */
 
@@ -670,8 +670,8 @@ bool TwoComplex::can_merge(UEdge* ue) {
       if ((*i)->sp()->tag != 'F' || (*j)->sp()->tag != 'F') {
         continue;
       }
-      PFace* pfi = static_cast<PFace*>(*i);
-      PFace* pfj = static_cast<PFace*>(*j);
+      PFace *pfi = static_cast<PFace *>(*i);
+      PFace *pfj = static_cast<PFace *>(*j);
 
       /* don't forget offset */
       if (pfi->s->intersects(pfj->s, offset_ + pfj->p - pfi->p)) {
@@ -692,11 +692,11 @@ void TwoComplex::relocate(size_t i, Point offset_) {
   }
 }
 
-void TwoComplex::merge(UEdge* ue) {
+void TwoComplex::merge(UEdge *ue) {
   /* already assumes can merge */
 
-  PFace* pf0 = get_pface(ue->f0);
-  PFace* pf1 = get_pface(ue->f1);
+  PFace *pf0 = get_pface(ue->f0);
+  PFace *pf1 = get_pface(ue->f1);
   auto oe0 = ue->this_edge(ue->f0); /* ue in f0 */
   auto oe1 = ue->this_edge(ue->f1); /* ue in f1 */
 
@@ -715,9 +715,9 @@ void TwoComplex::merge(UEdge* ue) {
   }
 }
 
-bool is_longer(UEdge* a, UEdge* b) { return (a->len() > b->len()); }
+bool is_longer(UEdge *a, UEdge *b) { return (a->len() > b->len()); }
 
-void TwoComplex::make_pface(Face* f) {
+void TwoComplex::make_pface(Face *f) {
   for (auto d : dl) delete d;
   dl.clear();
 
@@ -737,7 +737,7 @@ void TwoComplex::make_pcomplexes() {
     }
   }
 
-  list<UEdge*> candidates;
+  list<UEdge *> candidates;
 
   /* lower priority better */
 
@@ -762,7 +762,7 @@ void TwoComplex::make_pcomplexes() {
   }
 }
 
-void TwoComplex::NewDraw(my_ostream& output_stream) {
+void TwoComplex::NewDraw(my_ostream &output_stream) {
   COORD global_max_x = 0;
   COORD global_min_x = 0;
   COORD global_max_y = 0;

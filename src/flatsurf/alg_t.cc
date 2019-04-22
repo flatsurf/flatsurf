@@ -44,6 +44,7 @@ using boost::numeric_cast;
 using boost::math::binomial_coefficient;
 using exactreal::Element;
 using exactreal::NumberFieldTraits;
+using flatsurf::VectorExactReal;
 using NTL::Mat;
 using NTL::Vec;
 using NTL::ZZ;
@@ -352,6 +353,27 @@ alg_t<T>::alg_t(vector<algebraic<T>> c) : coeffs(c) {
     ERR_RET("alg_t: initialization with wrong length vector");
   }
 }
+
+namespace {
+template <typename T, typename Ring>
+std::vector<algebraic<T>> to_algebraic_coeffs(const VectorExactReal<Ring> &v) {
+  exactreal::Element<Ring> x = v.x();
+  exactreal::Element<Ring> y = v.y();
+
+  x.promote(y.module());
+  y.promote(x.module());
+  assert(&*x.module() == &*y.module());
+
+  return from(x.module()->gens())
+      .select_i([&](auto, int i) { return algebraic<T>(x[i], y[i]); })
+      .toVector();
+}
+}  // namespace
+
+template <typename T>
+template <typename Ring>
+alg_t<T>::alg_t(const VectorExactReal<Ring> &v)
+    : alg_t(to_algebraic_coeffs<T, Ring>(v)) {}
 
 template <typename T>
 alg_t<T> alg_t<T>::operator-() const {
@@ -747,6 +769,7 @@ template class alg_t<int64_t>;
 
 template poly<int64_t> cyclotomic_poly(int n);
 template NumberField<int64_t> *InitCyclotomic(int n);
+template alg_t<int64_t>::alg_t(const VectorExactReal<NumberFieldTraits> &);
 template alg_t<int64_t> operator+(alg_t<int64_t> p, const alg_t<int64_t> &q);
 template alg_t<int64_t> operator-(alg_t<int64_t> p, const alg_t<int64_t> &q);
 template alg_t<int64_t> operator*(const algebraic<int64_t> &p,

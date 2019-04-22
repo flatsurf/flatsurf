@@ -30,7 +30,7 @@ using std::list;
 using std::ostream;
 
 namespace polygon {
-UEdge::UEdge(Vertex* a, Vertex* b, BigPointQ vec) : Simplex(), ue_vecQ(vec) {
+UEdge::UEdge(Vertex *a, Vertex *b, BigPointQ vec) : Simplex(), ue_vecQ(vec) {
   tag = 'E';
   v0 = a;
   v1 = b;
@@ -41,7 +41,7 @@ UEdge::UEdge(Vertex* a, Vertex* b, BigPointQ vec) : Simplex(), ue_vecQ(vec) {
   vec.Check();
 }
 
-UEdge::UEdge(Vertex* a, Vertex* b, Point vec_cx) : Simplex() {
+UEdge::UEdge(Vertex *a, Vertex *b, Point vec_cx) : Simplex() {
   if (field_arithmetic) {
     ERR_RET("UEdge constructor called without alg part");
   }
@@ -83,7 +83,7 @@ bool UEdge::boundary() {
 
 COORD UEdge::len() { return (abs(ue_vecQ.cx)); }
 
-void UEdge::Print(ostream& out) {
+void UEdge::Print(ostream &out) {
   Simplex::Print(out);
   out << " ( ";
   if (v0 != nullptr) {
@@ -130,7 +130,7 @@ void UEdge::Print(ostream& out) {
 #endif
 }
 
-Face* UEdge::boundary_face() {
+Face *UEdge::boundary_face() {
   if (!(this->boundary())) ERR_RET("boundary_face: not boundary");
 
   if (f0 == nullptr) return (f1);
@@ -141,13 +141,13 @@ Face* UEdge::boundary_face() {
 }
 
 list<OEdge>::iterator UEdge::boundary_edge() {
-  Face* f;
+  Face *f;
 
   f = boundary_face();
   return (this_edge(f));
 }
 
-list<OEdge>::iterator UEdge::this_edge(Face* f) {
+list<OEdge>::iterator UEdge::this_edge(Face *f) {
   for (auto i = f->oedges.begin(); i != f->oedges.end(); ++i) {
     if ((*i).ue == this) return (i);
   }
@@ -155,7 +155,7 @@ list<OEdge>::iterator UEdge::this_edge(Face* f) {
   ERR_RET("this_edge: edge not found");
 }
 
-void UEdge::set_null_face(Face* f) {
+void UEdge::set_null_face(Face *f) {
   if (!(this->boundary())) ERR_RET("set_null_face: not boundary edge");
 
   if (f0 == nullptr) {

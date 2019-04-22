@@ -23,12 +23,12 @@
 #include "flatsurf/flatsurf.hpp"
 
 namespace flatsurf {
-	// A rough measure for lengths of vectors in R^2.
-	// In a type safe wrapper so we do not mix actual lengths and their squares.
-	struct Bound {
-		explicit Bound(long long lengthSquared);
-		const long long squared;
-	};
-}
+// A rough measure for lengths of vectors in R^2.
+// In a type safe wrapper so we do not mix actual lengths and their squares.
+struct Bound {
+  explicit Bound(long long lengthSquared);
+  const long long squared;
+};
+} // namespace flatsurf
 
 #endif

@@ -24,13 +24,12 @@
 namespace flatsurf {
 template <typename Vector, typename VectorAlongTriangulation>
 struct SaddleConnections<Vector, VectorAlongTriangulation>::Implementation {
-  Implementation(const Surface& surface, const Bound searchRadius,
-                 const Vertex& source, const HalfEdge sectorBoundary,
-                 const VectorAlongTriangulation& sectorBegin,
-                 const VectorAlongTriangulation& sectorEnd)
+  Implementation(const Surface &surface, const Bound searchRadius,
+                 const HalfEdge sectorBoundary,
+                 const VectorAlongTriangulation &sectorBegin,
+                 const VectorAlongTriangulation &sectorEnd)
       : surface(&surface),
         searchRadius(searchRadius),
-        source(source),
         sectorBoundary(sectorBoundary),
         sector{sectorBegin, sectorEnd} {
     assert(static_cast<Vector>(sectorBegin) +
@@ -39,29 +38,26 @@ struct SaddleConnections<Vector, VectorAlongTriangulation>::Implementation {
            "sectorBoundary does not connect sectorBegin and sectorEnd");
   }
 
-  FlatTriangulation<Vector> const* surface;
+  FlatTriangulation<Vector> const *surface;
   Bound searchRadius;
-  Vertex source;
   HalfEdge sectorBoundary;
   VectorAlongTriangulation sector[2];
 };
 
 template <typename Vector, typename VectorAlongTriangulation>
 SaddleConnections<Vector, VectorAlongTriangulation>::SaddleConnections(
-    const Surface& surface, const Bound searchRadius, const Vertex& source,
-    const HalfEdge sectorBoundary, const VectorAlongTriangulation& sectorBegin,
-    const VectorAlongTriangulation& sectorEnd)
-    : impl(spimpl::make_impl<Implementation>(surface, searchRadius, source,
-                                             sectorBoundary, sectorBegin,
-                                             sectorEnd)) {}
+    const Surface &surface, const Bound searchRadius,
+    const HalfEdge sectorBoundary, const VectorAlongTriangulation &sectorBegin,
+    const VectorAlongTriangulation &sectorEnd)
+    : impl(spimpl::make_impl<Implementation>(
+          surface, searchRadius, sectorBoundary, sectorBegin, sectorEnd)) {}
 
 template <typename Vector, typename VectorAlongTriangulation>
 SaddleConnections<Vector, VectorAlongTriangulation>::SaddleConnections(
-    const Surface& surface, const Bound searchRadius,
+    const Surface &surface, const Bound searchRadius,
     const HalfEdge sectorBegin)
     : SaddleConnections(
-          surface, searchRadius, Vertex::source(sectorBegin, surface),
-          surface.nextInFace(sectorBegin),
+          surface, searchRadius, surface.nextInFace(sectorBegin),
           VectorAlongTriangulation(surface) + sectorBegin,
           VectorAlongTriangulation(surface) -
               surface.nextInFace(surface.nextInFace(sectorBegin))) {}
@@ -70,8 +66,8 @@ template <typename Vector, typename VectorAlongTriangulation>
 SaddleConnectionsIterator<Vector, VectorAlongTriangulation>
 SaddleConnections<Vector, VectorAlongTriangulation>::begin() const {
   return SaddleConnectionsIterator<Vector, VectorAlongTriangulation>(
-      *impl->surface, impl->searchRadius, impl->source, impl->sectorBoundary,
-      impl->sector[0], impl->sector[1]);
+      *impl->surface, impl->searchRadius, impl->sectorBoundary, impl->sector[0],
+      impl->sector[1]);
 }
 
 template <typename Vector, typename VectorAlongTriangulation>

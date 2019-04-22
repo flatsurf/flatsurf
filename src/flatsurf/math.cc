@@ -341,21 +341,13 @@ bool aligned(const BigPointI &p, const BigPointI &q) {
 
 /****************************** CCW ***************************************/
 
-bool CCW_(const Point &u,
-          const Point &v)  // check if u and v are linearly indep. and (u, v) is
-                           // positively oriented
-{
+// Return whether going from u to v is a counterclockwise turn
+bool CCW_(const Point &u, const Point &v) {
   if (colinear(u, v)) {
     ERR_RET("Call to CCW when colinear");
   }
 
   COORD s = -u.imag() * v.real() + u.real() * v.imag();
-
-  /*
-                                                                  if ( verbose
-     >= 5 && abs(s) < 0.01 ) { out_s << "\nCCW: s = " << s << endl;
-                                                                  }
-  */
 
   if (s > 0) {
     return (true);

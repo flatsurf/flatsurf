@@ -20,43 +20,46 @@
 #ifndef LIBFLATSURF_VECTOR_ARB_HPP
 #define LIBFLATSURF_VECTOR_ARB_HPP
 
+#include <boost/operators.hpp>
+#include <complex>
+#include <exact-real/arb.hpp>
 #include <iosfwd>
 #include <optional>
-#include <boost/operators.hpp>
-#include <exact-real/arb.hpp>
 
-#include "flatsurf/flatsurf.hpp"
 #include "flatsurf/ccw.hpp"
+#include "flatsurf/flatsurf.hpp"
 #include "flatsurf/orientation.hpp"
 
 namespace flatsurf {
-	struct Bound;
-	struct VectorEAntic;
+struct Bound;
+struct VectorEAntic;
 
-	struct VectorArb : boost::additive<VectorArb>, boost::multipliable<VectorArb, int> {
-		VectorArb();
-		VectorArb(const exactreal::Arb& x, const exactreal::Arb& y);
+struct VectorArb : boost::additive<VectorArb>,
+                   boost::multipliable<VectorArb, int> {
+  VectorArb();
+  VectorArb(const exactreal::Arb &x, const exactreal::Arb &y);
 
-		std::optional<CCW> ccw(const VectorArb&) const;
-		std::optional<ORIENTATION> orientation(const VectorArb&) const;
-		bool isExact() const;
+  std::optional<CCW> ccw(const VectorArb &) const;
+  std::optional<ORIENTATION> orientation(const VectorArb &) const;
+  bool isExact() const;
 
-		friend std::ostream& operator<<(std::ostream&, const VectorArb&);
-		VectorArb operator-() const;
-		std::optional<bool> operator>(const Bound bound) const;
-		std::optional<bool> operator<(const Bound bound) const;
-		VectorArb& operator+=(const VectorArb& rhs);
-		VectorArb& operator-=(const VectorArb& rhs);
-		VectorArb& operator*=(const int rhs);
+  friend std::ostream &operator<<(std::ostream &, const VectorArb &);
+  VectorArb operator-() const;
+  std::optional<bool> operator>(const Bound bound) const;
+  std::optional<bool> operator<(const Bound bound) const;
+  VectorArb &operator+=(const VectorArb &rhs);
+  VectorArb &operator-=(const VectorArb &rhs);
+  VectorArb &operator*=(const int rhs);
 
-		// TODO: Drop default precision
-		static mp_limb_signed_t prec;
+  explicit operator std::complex<double>() const;
 
-	 private:
-		exactreal::Arb x;
-		exactreal::Arb y;
-	};
-}
+  // TODO: Drop default precision
+  static mp_limb_signed_t prec;
+
+private:
+  exactreal::Arb x;
+  exactreal::Arb y;
+};
+} // namespace flatsurf
 
 #endif
-

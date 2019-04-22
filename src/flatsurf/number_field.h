@@ -59,6 +59,11 @@ class NumberField {
   friend algebraic<bigrat> to_rational(
       const algebraic<int64_t> &p);  // only works with given F
 
+  size_t degree;
+  // The primitive root of unity generating this number field, as its real and
+  // imaginary part expressed in a totally real field.
+  std::complex<eantic::renf_elem_class> gen;
+
  private:
   algebraic<T> conjugate;         // a conjugate of generator of field.  Used by
                                   // algebraic<T>::conjugate().
@@ -66,14 +71,12 @@ class NumberField {
                                   // Used by algebraic<T>::to_complex().
 
   std::unique_ptr<eantic::renf_class> totally_real_field;
-  std::complex<eantic::renf_elem_class> gen;
 
   void build_multiplication_table();
   void build_cross_product_table();
   poly<T> minimal_poly;  // minimal polynomial of field.  {a_0, ..., a_n}
                          // represents a_0 + ... + a_n x^n
   std::vector<std::vector<T> > multiplication_table;
-  size_t degree;
   std::vector<algebraic<T> > conjugate_table;
   boost::numeric::ublas::matrix<algebraic<T> > cross_product_table;
 };

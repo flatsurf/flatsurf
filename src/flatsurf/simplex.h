@@ -33,7 +33,7 @@ class Simplex {
   Simplex();
   void SetColor();
   void Print(std::ostream &);
-  int id();
+  int id() const;
 
   std::string color;
 

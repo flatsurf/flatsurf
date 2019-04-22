@@ -33,7 +33,7 @@ using std::ostream;
 
 namespace flatsurf {
 struct VectorEAntic::Implementation {
-  Implementation(const renf_elem_class& x, const renf_elem_class& y,
+  Implementation(const renf_elem_class &x, const renf_elem_class &y,
                  const mp_limb_signed_t precision)
       : x(x), y(y), precision(precision) {}
 
@@ -50,7 +50,7 @@ struct VectorEAntic::Implementation {
 VectorEAntic::VectorEAntic()
     : VectorEAntic(renf_elem_class(), renf_elem_class()) {}
 
-VectorEAntic::VectorEAntic(const renf_elem_class& x, const renf_elem_class& y)
+VectorEAntic::VectorEAntic(const renf_elem_class &x, const renf_elem_class &y)
     // TODO: What is the correct precision here?
     : impl(spimpl::make_impl<Implementation>(x, y, VectorArb::prec)) {
   impl->refresh();
@@ -60,24 +60,24 @@ VectorEAntic VectorEAntic::operator-() const {
   return VectorEAntic(-impl->x, -impl->y);
 }
 
-VectorEAntic& VectorEAntic::operator+=(const VectorEAntic& rhs) {
+VectorEAntic &VectorEAntic::operator+=(const VectorEAntic &rhs) {
   impl->x += rhs.impl->x;
   impl->y += rhs.impl->y;
   impl->refresh();
   return *this;
 }
 
-VectorEAntic& VectorEAntic::operator-=(const VectorEAntic& rhs) {
+VectorEAntic &VectorEAntic::operator-=(const VectorEAntic &rhs) {
   impl->x -= rhs.impl->x;
   impl->y -= rhs.impl->y;
   return *this;
 }
 
-VectorEAntic::operator const VectorArb&() const { return impl->approximation; }
+VectorEAntic::operator const VectorArb &() const { return impl->approximation; }
 
 VectorEAntic::operator bool() const { return impl->x != 0 || impl->y != 0; }
 
-CCW VectorEAntic::ccw(const VectorEAntic& other) const {
+CCW VectorEAntic::ccw(const VectorEAntic &other) const {
   const auto a = impl->x * other.impl->y;
   const auto b = impl->y * other.impl->x;
 
@@ -90,7 +90,7 @@ CCW VectorEAntic::ccw(const VectorEAntic& other) const {
   }
 }
 
-ORIENTATION VectorEAntic::orientation(const VectorEAntic& rhs) const {
+ORIENTATION VectorEAntic::orientation(const VectorEAntic &rhs) const {
   auto dot = impl->x * rhs.impl->x + impl->y * rhs.impl->y;
   if (dot > 0) {
     return ORIENTATION::SAME;
@@ -113,18 +113,18 @@ bool VectorEAntic::operator>(const Bound bound) const {
          numeric_cast<unsigned long>(bound.squared);
 }
 
-bool VectorEAntic::operator==(const VectorEAntic& rhs) const {
+bool VectorEAntic::operator==(const VectorEAntic &rhs) const {
   return impl->x == rhs.impl->x && impl->y == rhs.impl->y;
 }
 
-VectorEAntic& VectorEAntic::operator*=(const int rhs) {
+VectorEAntic &VectorEAntic::operator*=(const int rhs) {
   impl->x *= rhs;
   impl->y *= rhs;
   impl->refresh();
   return *this;
 }
 
-ostream& operator<<(ostream& os, const VectorEAntic& self) {
+ostream &operator<<(ostream &os, const VectorEAntic &self) {
   return os << "(" << self.impl->x << "," << self.impl->y << ")";
 }
 }  // namespace flatsurf

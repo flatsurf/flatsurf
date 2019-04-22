@@ -27,10 +27,10 @@
 using std::ostream;
 
 namespace flatsurf {
-Vertex::Vertex(const HalfEdge& canonical) : representative(canonical) {}
+Vertex::Vertex(const HalfEdge &canonical) : representative(canonical) {}
 
-Vertex Vertex::source(const HalfEdge& e,
-                      const FlatTriangulationCombinatorial& surface) {
+Vertex Vertex::source(const HalfEdge &e,
+                      const FlatTriangulationCombinatorial &surface) {
   HalfEdge best = e;
   for (HalfEdge test = surface.nextAtVertex(e); test != e;
        test = surface.nextAtVertex(test)) {
@@ -41,16 +41,16 @@ Vertex Vertex::source(const HalfEdge& e,
   return Vertex(best);
 }
 
-Vertex Vertex::target(const HalfEdge& e,
-                      const FlatTriangulationCombinatorial& surface) {
+Vertex Vertex::target(const HalfEdge &e,
+                      const FlatTriangulationCombinatorial &surface) {
   return Vertex::source(-e, surface);
 }
 
-bool Vertex::operator==(const Vertex& v) const {
+bool Vertex::operator==(const Vertex &v) const {
   return v.representative == this->representative;
 }
 
-ostream& operator<<(ostream& os, const Vertex& self) {
+ostream &operator<<(ostream &os, const Vertex &self) {
   return os << "Vertex(" << self.representative << ")";
 }
 }  // namespace flatsurf

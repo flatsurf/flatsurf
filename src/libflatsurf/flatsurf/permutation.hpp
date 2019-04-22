@@ -20,33 +20,33 @@
 #ifndef LIBFLATSURF_PERMUTATION_HPP
 #define LIBFLATSURF_PERMUTATION_HPP
 
+#include <functional>
 #include <iosfwd>
 #include <vector>
-#include <functional>
 
 #include "flatsurf/flatsurf.hpp"
 
 namespace flatsurf {
-	// A type-safe permutation of items of type T.
-	// There should be no runtime overhead to using a simple T[], at least when
-	// compiled with -flto.
-	template<typename T>
-	struct Permutation {
-		 explicit Permutation(const std::vector<std::vector<T>>& cycles);
-		 explicit Permutation(const std::vector<std::pair<T, T>>& permutation);
-		 T operator()(const T& t) const;
-		 template<typename S>
-		 static Permutation<T> create(const std::vector<std::vector<S>>&, const std::function<T(S)>&);
+// A type-safe permutation of items of type T.
+// There should be no runtime overhead to using a simple T[], at least when
+// compiled with -flto.
+template <typename T> struct Permutation {
+  explicit Permutation(const std::vector<std::vector<T>> &cycles);
+  explicit Permutation(const std::vector<std::pair<T, T>> &permutation);
+  T operator()(const T &t) const;
+  template <typename S>
+  static Permutation<T> create(const std::vector<std::vector<S>> &,
+                               const std::function<T(S)> &);
 
-		 template<typename S>
-     friend std::ostream& operator<<(std::ostream&, const Permutation<S>&);
-		 size_t size() const;
-		 size_t index(const T&) const;
-		 const std::vector<T>& domain() const;
-	 private:
-		 std::vector<T> data;
-	};
-}
+  template <typename S>
+  friend std::ostream &operator<<(std::ostream &, const Permutation<S> &);
+  size_t size() const;
+  size_t index(const T &) const;
+  const std::vector<T> &domain() const;
+
+private:
+  std::vector<T> data;
+};
+} // namespace flatsurf
 
 #endif
-

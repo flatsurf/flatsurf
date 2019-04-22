@@ -96,7 +96,7 @@ using std::uniform_real_distribution;
 
 namespace polygon {
 template <typename PointT>
-DMap<PointT>::DMap(const Dir<PointT>& dir)
+DMap<PointT>::DMap(const Dir<PointT> &dir)
     : strt(dir), c_edge((*dir.ep)->prev_edge()) {
   cf_offset = -c_edge->template _tail_offset<PointT>();
   setup();
@@ -132,12 +132,12 @@ bool DMap<PointT>::going_to_hit() {
 }
 
 template <typename PointT>
-Dir<PointT>& DMap<PointT>::_vertex_to_hit() {
+Dir<PointT> &DMap<PointT>::_vertex_to_hit() {
   return (m_vertex_to_hit);
 }
 
 template <typename PointT>
-list<OEdge>::iterator& DMap<PointT>::_next_edge() {
+list<OEdge>::iterator &DMap<PointT>::_next_edge() {
   return (m_next_edge);
 }
 
@@ -158,12 +158,12 @@ Dir<PointT> DMap<PointT>::current_vert_Dir() {
 }
 
 template <typename PointT>
-PointT& DMap<PointT>::_get_cf_offset() {
+PointT &DMap<PointT>::_get_cf_offset() {
   return (cf_offset);
 }
 
 template <typename PointT>
-Dir<PointT>& DMap<PointT>::_start() {
+Dir<PointT> &DMap<PointT>::_start() {
   return strt;
 }
 
@@ -173,21 +173,21 @@ list<OEdge>::iterator DMap<PointT>::current_edge() {
 }
 
 template <typename PointT>
-Face* DMap<PointT>::current_face() {
+Face *DMap<PointT>::current_face() {
   return c_edge->in_face();
 }
 
 template <typename PointT>
-PointT& DMap<PointT>::_current_vert_pos() {
+PointT &DMap<PointT>::_current_vert_pos() {
   return m_current_vert_pos;
 }
 
 template <typename PointT>
-Vertex* TwoComplex::SweepNextLeft(const Dir<PointT>& strt, Dir<PointT>& end_Dir,
+Vertex *TwoComplex::SweepNextLeft(const Dir<PointT> &strt, Dir<PointT> &end_Dir,
                                   COORD len2, COORD threshold) {
   DMap<PointT> D(strt);
 
-  Vertex* return_vertex = nullptr;
+  Vertex *return_vertex = nullptr;
 
   if (D.going_to_hit() && norm(D._vertex_to_hit().vec) < len2 &&
       D._vertex_to_hit().v->relevant()) {
@@ -239,7 +239,7 @@ Vertex* TwoComplex::SweepNextLeft(const Dir<PointT>& strt, Dir<PointT>& end_Dir,
 }
 
 template <typename PointT>
-bool TwoComplex::FollowDir(const Dir<PointT>& strt, Dir<PointT>& end,
+bool TwoComplex::FollowDir(const Dir<PointT> &strt, Dir<PointT> &end,
                            COORD len2) {
   DMap<PointT> D(strt);
 
@@ -258,8 +258,8 @@ bool TwoComplex::FollowDir(const Dir<PointT>& strt, Dir<PointT>& end,
 }
 
 template <typename PointT>
-void TwoComplex::FindCrossSaddle(const Dir<PointT>& strt,
-                                 Dir<PointT>& cross_saddle) {
+void TwoComplex::FindCrossSaddle(const Dir<PointT> &strt,
+                                 Dir<PointT> &cross_saddle) {
   DMap<PointT> D(strt);
   int count = 0;
 
@@ -308,7 +308,7 @@ void TwoComplex::FindCrossSaddle(const Dir<PointT>& strt,
 }
 
 template <>
-void TwoComplex::DrawSaddle<Point>(const Dir<Point>& strt, COORD len2, int id,
+void TwoComplex::DrawSaddle<Point>(const Dir<Point> &strt, COORD len2, int id,
                                    COORD cyl_length) {
   DMap<Point> D(strt);
 
@@ -381,7 +381,7 @@ void TwoComplex::DrawSaddle<Point>(const Dir<Point>& strt, COORD len2, int id,
       if (!billiard_mode) {
         D.current_face()->AddSegmentToDraw(s);
       } else {  // billiard mode
-        Face* f_orig;
+        Face *f_orig;
         BigPointQ tmp, tmp2;
         tmp2.cx = s.head;
         f_orig = D.current_face()->transform_to_original(tmp2, tmp);
@@ -414,7 +414,7 @@ void TwoComplex::Sweep(COORD depth_, Dir<PointT> start_dir,
                        COORD GoalTotalAngle) {
   Dir<PointT> old_dir = start_dir;
   COORD TotalAngle = 0;
-  Summary* sm = &smry;
+  Summary *sm = &smry;
 
   SaddleConf sc;
 
@@ -430,7 +430,7 @@ void TwoComplex::Sweep(COORD depth_, Dir<PointT> start_dir,
   COORD threshold = 2 * (2 * depth_ * longest + longest * longest + 1);
 
   while (TotalAngle < GoalTotalAngle) {
-    Vertex* c;
+    Vertex *c;
     c = SweepNextLeft<PointT>(old_dir, new_dir, depth_ * depth_, threshold);
 
     if (verbose >= 2) {
@@ -508,11 +508,11 @@ void TwoComplex::Sweep(COORD depth_, Dir<PointT> start_dir,
   }
 }
 
-Point to_cx(Point& cx) { return cx; }
+Point to_cx(Point &cx) { return cx; }
 
 template <typename PointT>
-void TwoComplex::InvestigateVec(PointT vec, COORD len2, SaddleConf& sc,
-                                Summary& smry_) {
+void TwoComplex::InvestigateVec(PointT vec, COORD len2, SaddleConf &sc,
+                                Summary &smry_) {
   Dir<PointT> start, end, tmp;
 
   sc.clear();
@@ -545,9 +545,9 @@ void TwoComplex::InvestigateVec(PointT vec, COORD len2, SaddleConf& sc,
 
           sc.add_saddle(tmp_start, tmp_end, tmp_algt);
 
-        } catch (vert_bad_angle&) {
+        } catch (vert_bad_angle &) {
           smry_.bad_angle_count++;
-        } catch (vert_index_taken&) {
+        } catch (vert_index_taken &) {
           smry_.weird_count++;
         }
       }
@@ -562,7 +562,7 @@ void TwoComplex::InvestigateVec(PointT vec, COORD len2, SaddleConf& sc,
   }
 }
 
-COORD TwoComplex::GetSaddles(Dir<Point>& start, COORD len2, int N) {
+COORD TwoComplex::GetSaddles(Dir<Point> &start, COORD len2, int N) {
   COORD TotalAngle = 0;
   int number = 0;
   COORD factor;
@@ -610,8 +610,8 @@ template void TwoComplex::Sweep<Point>(COORD depth, Dir<Point> start_dir,
                                        COORD GoalTotalAngle);
 
 template void TwoComplex::FindCrossSaddle<BigPointI>(
-    const Dir<BigPointI>& strt, Dir<BigPointI>& cross_saddle);
+    const Dir<BigPointI> &strt, Dir<BigPointI> &cross_saddle);
 
-template void TwoComplex::FindCrossSaddle<Point>(const Dir<Point>& strt,
-                                                 Dir<Point>& cross_saddle);
+template void TwoComplex::FindCrossSaddle<Point>(const Dir<Point> &strt,
+                                                 Dir<Point> &cross_saddle);
 }  // namespace polygon

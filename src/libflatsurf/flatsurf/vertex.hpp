@@ -22,8 +22,8 @@
 
 #include <boost/operators.hpp>
 
-#include "flatsurf/half_edge.hpp"
 #include "flatsurf/forward.hpp"
+#include "flatsurf/half_edge.hpp"
 
 namespace flatsurf {
 // A thin wrapper of a HalfEdge that gives us a notion of
@@ -34,21 +34,23 @@ namespace flatsurf {
 // nicer to have a distinct notion. Also this gives us a
 // proper operator== for vertices.
 struct Vertex : boost::equality_comparable<Vertex> {
-	static Vertex source(const HalfEdge&, const FlatTriangulationCombinatorial&);
-	static Vertex target(const HalfEdge&, const FlatTriangulationCombinatorial&);
+  static Vertex source(const HalfEdge &,
+                       const FlatTriangulationCombinatorial &);
+  static Vertex target(const HalfEdge &,
+                       const FlatTriangulationCombinatorial &);
 
-	bool operator==(const Vertex&) const;
+  bool operator==(const Vertex &) const;
 
-	friend std::ostream& operator<<(std::ostream&, const Vertex&);
+  friend std::ostream &operator<<(std::ostream &, const Vertex &);
 
- private:
-	Vertex(const HalfEdge&);
+private:
+  Vertex(const HalfEdge &);
 
-	// The actual vertex is the start of this half edge.
-	// Made a unique representative by taking the half edge with this property
-	// with the smallest id.
-	HalfEdge representative;
+  // The actual vertex is the start of this half edge.
+  // Made a unique representative by taking the half edge with this property
+  // with the smallest id.
+  HalfEdge representative;
 };
-}
+} // namespace flatsurf
 
 #endif

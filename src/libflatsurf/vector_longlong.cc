@@ -35,13 +35,13 @@ VectorLongLong VectorLongLong::operator-() const {
   return VectorLongLong(-x, -y);
 }
 
-VectorLongLong& VectorLongLong::operator+=(const VectorLongLong& rhs) {
+VectorLongLong &VectorLongLong::operator+=(const VectorLongLong &rhs) {
   x += rhs.x;
   y += rhs.y;
   return *this;
 }
 
-VectorLongLong& VectorLongLong::operator-=(const VectorLongLong& rhs) {
+VectorLongLong &VectorLongLong::operator-=(const VectorLongLong &rhs) {
   x -= rhs.x;
   y -= rhs.y;
   return *this;
@@ -53,11 +53,11 @@ bool VectorLongLong::operator<(const Bound bound) const {
   return x * x + y * y < bound.squared;
 }
 
-bool VectorLongLong::operator==(const VectorLongLong& rhs) const {
+bool VectorLongLong::operator==(const VectorLongLong &rhs) const {
   return x == rhs.x && y == rhs.y;
 }
 
-VectorLongLong& VectorLongLong::operator*=(const int rhs) {
+VectorLongLong &VectorLongLong::operator*=(const int rhs) {
   x *= rhs;
   y *= rhs;
   return *this;
@@ -65,7 +65,7 @@ VectorLongLong& VectorLongLong::operator*=(const int rhs) {
 
 VectorLongLong::operator bool() const { return x != 0 || y != 0; }
 
-CCW VectorLongLong::ccw(const VectorLongLong& other) const {
+CCW VectorLongLong::ccw(const VectorLongLong &other) const {
   const auto a = x * other.y;
   const auto b = y * other.x;
 
@@ -77,7 +77,7 @@ CCW VectorLongLong::ccw(const VectorLongLong& other) const {
     return CCW::COLLINEAR;
   }
 }
-ostream& operator<<(ostream& os, const VectorLongLong& self) {
+ostream &operator<<(ostream &os, const VectorLongLong &self) {
   return os << "(" << self.x << "," << self.y << ")";
 }
 }  // namespace flatsurf

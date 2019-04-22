@@ -23,6 +23,7 @@
 
 #include <list>
 
+#include <flatsurf/forward.hpp>
 #include "./alg_t.h"
 #include "./defs.h"
 #include "./oedge.h"
@@ -30,16 +31,28 @@
 namespace polygon {
 class Vertex;
 
+// The vector vec understood as pointing from v in the sector next to ep.
+// Note that two vectors with the same vec and v may not describe the same
+// vector on the surface if the total angle around v exceeds 2π.
 template <typename PointT>
-class Dir {
+class [
+    [deprecated("Use flatsurf::VectorAlongTriangulation or some other vector "
+                "type in flatsurf instead.")]] Dir {
  public:
   PointT vec;
-  Vertex *v;
+  Vertex* v;
   std::list<std::list<OEdge>::iterator>::iterator ep;
 
   Dir();
+  // A Dir corresponding to an edge in the triangulation of the surface.
   explicit Dir(std::list<OEdge>::iterator e);
-  Dir(Vertex *vp, const PointT &p);
+  // Construct a Dir that points from vp in direction p. Note that the input
+  // does not uniquely determine a dir as there are several ep that produce
+  // such a Dir() in a non-equivalent way; see comment at the top.
+  Dir(Vertex * vp, const PointT& p);
+  // Construct the unique Dir that is in the sector counterclockwise next to
+  // e, points from the source of e in direction p.
+  Dir(const flatsurf::HalfEdge& e, const PointT& p);
   void Check();
   Point vec_cx();
   alg_tI vec_algtI();
@@ -50,8 +63,9 @@ class Dir {
   Dir RotateF(COORD theta);
   Dir RotateF_general(COORD theta);
   Dir RotateI(COORD theta);
-  COORD AngleF(Dir &d2);
-  int AngleI(Dir &d1, Dir &d2); /* returns angle over pi */
+  // The angle between this Dir and d2, possibly exceeding 2π.
+  COORD AngleF(Dir & d2);
+  int AngleI(Dir & d1, Dir & d2); /* returns angle over pi */
 };
 }  // namespace polygon
 

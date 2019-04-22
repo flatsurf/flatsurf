@@ -38,41 +38,41 @@ struct VectorAlongTriangulationWithApproximation<
     V, Approximation>::Implementation {
   using Surface = FlatTriangulation<V>;
 
-  explicit Implementation(const Surface& surface)
+  explicit Implementation(const Surface &surface)
       : surface(surface),
         coefficients(vector<int>(surface.nedges)),
         approximation() {}
 
   V exact() const {
     V v = static_cast<V>(VectorAlongTriangulation<V>(surface, coefficients));
-    approximation = static_cast<const Approximation&>(v);
+    approximation = static_cast<const Approximation &>(v);
     return v;
   }
 
-  const Surface& surface;
+  const Surface &surface;
   HalfEdgeMap<int> coefficients;
   mutable Approximation approximation;
 };
 
 template <typename V, typename Approximation>
 VectorAlongTriangulationWithApproximation<V, Approximation>::
-    VectorAlongTriangulationWithApproximation(const Surface& surface)
+    VectorAlongTriangulationWithApproximation(const Surface &surface)
     : impl(spimpl::make_impl<Implementation>(surface)) {}
 
 template <typename V, typename Approximation>
-VectorAlongTriangulationWithApproximation<V, Approximation>&
-VectorAlongTriangulationWithApproximation<V, Approximation>::operator+=(
-    const HalfEdge halfEdge) {
+VectorAlongTriangulationWithApproximation<V, Approximation>
+    &VectorAlongTriangulationWithApproximation<V, Approximation>::operator+=(
+        const HalfEdge halfEdge) {
   impl->coefficients.set(halfEdge, impl->coefficients.get(halfEdge) + 1);
   impl->approximation +=
-      static_cast<const Approximation&>(impl->surface.fromEdge(halfEdge));
+      static_cast<const Approximation &>(impl->surface.fromEdge(halfEdge));
   return *this;
 }
 
 template <typename V, typename Approximation>
-VectorAlongTriangulationWithApproximation<V, Approximation>&
-VectorAlongTriangulationWithApproximation<V, Approximation>::operator-=(
-    const HalfEdge halfEdge) {
+VectorAlongTriangulationWithApproximation<V, Approximation>
+    &VectorAlongTriangulationWithApproximation<V, Approximation>::operator-=(
+        const HalfEdge halfEdge) {
   return this->operator+=(-halfEdge);
 }
 
@@ -90,7 +90,7 @@ bool VectorAlongTriangulationWithApproximation<V, Approximation>::operator>(
 
 template <typename V, typename Approximation>
 CCW VectorAlongTriangulationWithApproximation<V, Approximation>::ccw(
-    const VectorAlongTriangulationWithApproximation<V, Approximation>& rhs)
+    const VectorAlongTriangulationWithApproximation<V, Approximation> &rhs)
     const {
   const optional<CCW> inexact =
       impl->approximation.ccw(rhs.impl->approximation);
@@ -110,10 +110,10 @@ VectorAlongTriangulationWithApproximation<V, Approximation>::operator V()
 }
 
 template <typename V, typename Approximation>
-ostream& operator<<(
-    ostream& os,
-    const flatsurf::VectorAlongTriangulationWithApproximation<V, Approximation>&
-        self) {
+ostream &operator<<(
+    ostream &os,
+    const flatsurf::VectorAlongTriangulationWithApproximation<V, Approximation>
+        &self) {
   return os << self.impl->coefficients << " ~ " << self.impl->approximation;
 }
 
@@ -126,13 +126,13 @@ ostream& operator<<(
 #include "flatsurf/vector_exactreal.hpp"
 template struct flatsurf::VectorAlongTriangulationWithApproximation<
     flatsurf::VectorEAntic, flatsurf::VectorArb>;
-template ostream& flatsurf::operator<<(
-    ostream&, const flatsurf::VectorAlongTriangulationWithApproximation<
-                  flatsurf::VectorEAntic, flatsurf::VectorArb>&);
+template ostream &flatsurf::operator<<(
+    ostream &, const flatsurf::VectorAlongTriangulationWithApproximation<
+                   flatsurf::VectorEAntic, flatsurf::VectorArb> &);
 template struct flatsurf::VectorAlongTriangulationWithApproximation<
     flatsurf::VectorExactReal<exactreal::NumberFieldTraits>,
     flatsurf::VectorArb>;
-template ostream& flatsurf::operator<<(
-    ostream&, const flatsurf::VectorAlongTriangulationWithApproximation<
-                  flatsurf::VectorExactReal<exactreal::NumberFieldTraits>,
-                  flatsurf::VectorArb>&);
+template ostream &flatsurf::operator<<(
+    ostream &, const flatsurf::VectorAlongTriangulationWithApproximation<
+                   flatsurf::VectorExactReal<exactreal::NumberFieldTraits>,
+                   flatsurf::VectorArb> &);

@@ -20,44 +20,58 @@
 #ifndef LIBFLATSURF_VECTOR_ALONG_TRIANGULATION_WITH_APPROXIMATION
 #define LIBFLATSURF_VECTOR_ALONG_TRIANGULATION_WITH_APPROXIMATION
 
-#include <iosfwd>
-#include <boost/operators.hpp>
 #include "external/spimpl/spimpl.h"
+#include <boost/operators.hpp>
+#include <iosfwd>
 
-#include "flatsurf/flatsurf.hpp"
 #include "flatsurf/ccw.hpp"
+#include "flatsurf/flatsurf.hpp"
 
 namespace flatsurf {
-	struct Bound;
-	template<typename V>
-	struct FlatTriangulation;
-	struct HalfEdge;
-	template<typename V>
-	struct VectorAlongTriangulation;
+struct Bound;
+template <typename V> struct FlatTriangulation;
+struct HalfEdge;
+template <typename V> struct VectorAlongTriangulation;
 
-	template<typename V, typename Approximation>
-	struct VectorAlongTriangulationWithApproximation : boost::additive<VectorAlongTriangulationWithApproximation<V, Approximation>>, boost::additive<VectorAlongTriangulationWithApproximation<V, Approximation>, HalfEdge>, boost::less_than_comparable<VectorAlongTriangulationWithApproximation<V, Approximation>, Bound>, boost::equality_comparable<VectorAlongTriangulationWithApproximation<V, Approximation>> {
-		using Surface = FlatTriangulation<V>;
+template <typename V, typename Approximation>
+struct VectorAlongTriangulationWithApproximation
+    : boost::additive<
+          VectorAlongTriangulationWithApproximation<V, Approximation>>,
+      boost::additive<
+          VectorAlongTriangulationWithApproximation<V, Approximation>,
+          HalfEdge>,
+      boost::less_than_comparable<
+          VectorAlongTriangulationWithApproximation<V, Approximation>, Bound>,
+      boost::equality_comparable<
+          VectorAlongTriangulationWithApproximation<V, Approximation>> {
+  using Surface = FlatTriangulation<V>;
 
-		VectorAlongTriangulationWithApproximation(const Surface& surface);
+  VectorAlongTriangulationWithApproximation(const Surface &surface);
 
-		CCW ccw(const VectorAlongTriangulationWithApproximation<V, Approximation>& rhs) const;
+  CCW ccw(const VectorAlongTriangulationWithApproximation<V, Approximation>
+              &rhs) const;
 
-		template<typename W, typename Approx>
-		friend std::ostream& operator<<(std::ostream&, const VectorAlongTriangulationWithApproximation<W, Approx>&);
-		VectorAlongTriangulationWithApproximation<V, Approximation> operator-() const;
-		bool operator>(const Bound) const;
-		bool operator<(const Bound) const;
-	  VectorAlongTriangulationWithApproximation<V, Approximation>& operator+=(const HalfEdge edge);
-		VectorAlongTriangulationWithApproximation<V, Approximation>& operator-=(const HalfEdge edge);
-		bool operator==(const VectorAlongTriangulationWithApproximation<V, Approximation>&) const;
+  template <typename W, typename Approx>
+  friend std::ostream &
+  operator<<(std::ostream &,
+             const VectorAlongTriangulationWithApproximation<W, Approx> &);
+  VectorAlongTriangulationWithApproximation<V, Approximation> operator-() const;
+  bool operator>(const Bound) const;
+  bool operator<(const Bound) const;
+  VectorAlongTriangulationWithApproximation<V, Approximation> &
+  operator+=(const HalfEdge edge);
+  VectorAlongTriangulationWithApproximation<V, Approximation> &
+  operator-=(const HalfEdge edge);
+  bool operator==(
+      const VectorAlongTriangulationWithApproximation<V, Approximation> &)
+      const;
 
-		explicit operator V() const;
+  explicit operator V() const;
 
-		private:
-		 struct Implementation;
-		 spimpl::impl_ptr<Implementation> impl;
-	};
-}
+private:
+  struct Implementation;
+  spimpl::impl_ptr<Implementation> impl;
+};
+} // namespace flatsurf
 
 #endif

@@ -48,7 +48,7 @@ Face::Face() : Simplex() {
 }
 Face::~Face() {}
 
-Face::Face(const list<OEdge>& L) : Simplex() {
+Face::Face(const list<OEdge> &L) : Simplex() {
   tag = 'F';
   SetOEdgeList(L);
   from_face = nullptr;
@@ -56,8 +56,8 @@ Face::Face(const list<OEdge>& L) : Simplex() {
 }
 
 // for billiard mode
-Face* Face::transform_to_original(BigPointQ v, BigPointQ& v_orig) {
-  Face* f = this;
+Face *Face::transform_to_original(BigPointQ v, BigPointQ &v_orig) {
+  Face *f = this;
   v_orig = v;
 
   while (f->from_face != nullptr) {
@@ -103,7 +103,7 @@ void Face::SetOEdgeList(list<OEdge> L) {
   }
 }
 
-void Face::Print(ostream& out) {
+void Face::Print(ostream &out) {
   Simplex::Print(out);
 
   for (auto i = oedges.begin(); i != oedges.end(); ++i) {
@@ -248,7 +248,7 @@ void Face::Check() {
     ERR_RET("check_face: total algt_vec nonzero");
   }
   if (billiard_mode) {
-    Face* orig_f = transform_to_original(q, r);
+    Face *orig_f = transform_to_original(q, r);
 
     auto i = oedges.begin();
     r = i->vecQ();
@@ -278,7 +278,7 @@ void Face::Check() {
 }
 
 COORD Face::volume() {
-  Vertex* v;
+  Vertex *v;
   Point p, q;
 
   if (order() != 3) ERR_RET("volume of non-triange");

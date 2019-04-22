@@ -31,7 +31,7 @@ namespace polygon {
 class UEdge;
 class OEdge;
 
-class Vertex : public Simplex {
+class [[deprecated("Use flatsurf::Vertex instead.")]] Vertex : public Simplex {
  public:
   Vertex();
 

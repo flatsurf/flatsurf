@@ -23,6 +23,7 @@
 #include <complex>
 #include <ostream>
 #include <vector>
+#include "external/eigen/Eigen/Dense"
 
 #include "./algebraic.h"
 #include "./defs.h"
@@ -31,7 +32,9 @@
 #include "./vector.h"
 
 using namespace polygon;
+using boost::lexical_cast;
 using boost::numeric_cast;
+using eantic::renf_elem_class;
 using std::complex;
 using std::cout;
 using std::endl;
@@ -307,7 +310,7 @@ template <class T>
 NumberField<T>::NumberField(
     T p[], size_t deg, complex<COORD> emb,
     std::unique_ptr<eantic::renf_class> totally_real_field,
-    const complex<eantic::renf_elem_class> &&gen)
+    const complex<renf_elem_class> &&gen)
     : embedding(emb),
       totally_real_field(totally_real_field.release()),
       gen(std::move(gen)),
@@ -392,6 +395,82 @@ template <class T>
 algebraic<T>::algebraic(T newcoords[], NumberField<T> *field)
     : in_field(field) {
   for (size_t i = 0; i < field->degree; i++) coords.push_back(newcoords[i]);
+}
+
+namespace {
+template <typename T>
+std::vector<T> to_coords(const renf_elem_class &real,
+                         const renf_elem_class &imag) {
+  using M = Eigen::Matrix<mpq_class, Eigen::Dynamic, Eigen::Dynamic>;
+  using V = Eigen::Matrix<mpq_class, Eigen::Dynamic, 1>;
+
+  // We'll solve a system A·x = b where the non-square A describes the "base
+  // change" from the complex base to the real embedded base.
+  long real_rows = real.parent().degree();
+  long imag_rows = imag.parent().degree();
+  assert(real_rows == imag_rows &&
+         "This code has been written under this assumption. It probably does "
+         "not work when this does not hold.");
+  long rows = real_rows + imag_rows;
+  long cols = numeric_cast<long>(NumberField<T>::F->degree);
+  M A(rows, cols);
+
+  // Construct the base change A
+  std::complex<renf_elem_class> pow(1);
+  for (long i = 0; i < cols; i++) {
+    if (pow.real().is_fmpq()) {
+      A(0, i) = static_cast<mpq_class>(pow.real());
+    } else {
+      for (long j = 0; j < real_rows; j++) {
+        A(j, i) = mpq_class(pow.real().num_vector()[numeric_cast<size_t>(j)],
+                            pow.real().den());
+      }
+    }
+    if (pow.imag().is_fmpq()) {
+      A(real_rows, i) = static_cast<mpq_class>(pow.imag());
+    } else {
+      for (long j = 0; j < imag_rows; j++) {
+        A(real_rows + j, i) = mpq_class(
+            pow.imag().num_vector()[numeric_cast<size_t>(j)], pow.imag().den());
+      }
+    }
+
+    pow *= NumberField<T>::F->gen;
+  }
+
+  V b(rows, 1);
+  for (long j = 0; j < real_rows; j++) {
+    b(j) = mpq_class(real.num_vector()[numeric_cast<size_t>(j)], real.den());
+  }
+  for (long j = 0; j < imag_rows; j++) {
+    b(real_rows + j) =
+        mpq_class(imag.num_vector()[numeric_cast<size_t>(j)], imag.den());
+  }
+
+  V x = A.fullPivLu().solve(b);
+
+  std::vector<T> coefficients;
+  for (long i = 0; i < cols; i++) {
+    auto c = x(i);
+    if constexpr (std::is_same_v<T, long>) {
+      assert(c.get_den() == 1);
+      auto num = c.get_num();
+      assert(num.fits_sint_p());
+      coefficients.push_back(num.get_si());
+    } else {
+      coefficients.push_back(c);
+    }
+  }
+
+  return coefficients;
+}
+}  // namespace
+
+template <class T>
+algebraic<T>::algebraic(const renf_elem_class &re, const renf_elem_class &im)
+    : algebraic(to_coords<T>(re, im), NumberField<T>::F) {
+  assert(re == real());
+  assert(im == imag());
 }
 
 template <class T>
@@ -566,7 +645,7 @@ vector<T> operator*(T v, vector<T> w) {
 
 template <class T>
 void NumberField<T>::print_mt() {
-  typename vector<vector<T> >::iterator i;
+  typename vector<vector<T>>::iterator i;
   typename vector<T>::iterator j;
   for (i = multiplication_table.begin(); i != multiplication_table.end(); ++i) {
     for (j = (*i).begin(); j != (*i).end(); ++j) cout << *j << " ";
@@ -620,9 +699,9 @@ algebraic<T> algebraic<T>::norm() const  // not the real norm, complex conj only
 }
 
 template <class T>
-eantic::renf_elem_class algebraic<T>::real() const {
-  std::complex<eantic::renf_elem_class> pow(1);
-  eantic::renf_elem_class ret;
+renf_elem_class algebraic<T>::real() const {
+  std::complex<renf_elem_class> pow(1);
+  renf_elem_class ret;
   for (const auto &c : coords) {
     ret += c * pow.real();
     pow *= in_field->gen;
@@ -631,9 +710,9 @@ eantic::renf_elem_class algebraic<T>::real() const {
 }
 
 template <class T>
-eantic::renf_elem_class algebraic<T>::imag() const {
-  std::complex<eantic::renf_elem_class> pow(1);
-  eantic::renf_elem_class ret;
+renf_elem_class algebraic<T>::imag() const {
+  std::complex<renf_elem_class> pow(1);
+  renf_elem_class ret;
   for (const auto &c : coords) {
     ret += c * pow.imag();
     pow *= in_field->gen;
@@ -709,10 +788,6 @@ template class NumberField<bigrat>;
 template class algebraic<bigrat>;
 template class poly<bigrat>;
 
-template class NumberField<int64_t>;
-template class algebraic<int64_t>;
-template class poly<int64_t>;
-
 template void gcd_extended(poly<bigrat> &x, poly<bigrat> &y,
                            const poly<bigrat> &a, const poly<bigrat> &b);
 template poly<bigrat> operator*(poly<bigrat> p, const poly<bigrat> &q);
@@ -752,6 +827,10 @@ template algebraic<bigrat> cross_product(const algebraic<bigrat> &u,
 
 // Explicit template instantiations for int64
 namespace polygon {
+template class NumberField<int64_t>;
+template class algebraic<int64_t>;
+template class poly<int64_t>;
+
 template void gcd_extended(poly<int64_t> &x, poly<int64_t> &y,
                            const poly<int64_t> &a, const poly<int64_t> &b);
 template poly<int64_t> operator*(poly<int64_t> p, const poly<int64_t> &q);

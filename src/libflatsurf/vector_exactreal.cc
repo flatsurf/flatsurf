@@ -36,21 +36,21 @@ using std::ostream;
 namespace flatsurf {
 template <typename Ring>
 struct VectorExactReal<Ring>::Implementation {
-  Implementation(const Element<Ring>& x, const Element<Ring>& y,
+  Implementation(const Element<Ring> &x, const Element<Ring> &y,
                  // TODO: Is this a good precision?
                  const mp_limb_signed_t precision = VectorArb::prec)
       : x(x), y(y), precision(precision) {}
 
-  Implementation(const Implementation& rhs)
+  Implementation(const Implementation &rhs)
       : x(rhs.x),
         y(rhs.y),
         precision(rhs.precision),
         approximation(rhs.approximation) {}
 
-  Implementation(const Implementation&& rhs) = delete;
+  Implementation(const Implementation &&rhs) = delete;
 
-  Implementation& operator=(const Implementation&) = delete;
-  Implementation& operator=(const Implementation&&) = delete;
+  Implementation &operator=(const Implementation &) = delete;
+  Implementation &operator=(const Implementation &&) = delete;
 
   void refresh() {
     approximation = VectorArb(x.arb(precision), y.arb(precision));
@@ -70,8 +70,8 @@ VectorExactReal<Ring>::VectorExactReal()
 }
 
 template <typename Ring>
-VectorExactReal<Ring>::VectorExactReal(const Element<Ring>& x,
-                                       const Element<Ring>& y)
+VectorExactReal<Ring>::VectorExactReal(const Element<Ring> &x,
+                                       const Element<Ring> &y)
     : impl(spimpl::make_impl<Implementation>(x, y)) {
   impl->refresh();
 }
@@ -82,8 +82,8 @@ VectorExactReal<Ring> VectorExactReal<Ring>::operator-() const {
 }
 
 template <typename Ring>
-VectorExactReal<Ring>& VectorExactReal<Ring>::operator+=(
-    const VectorExactReal<Ring>& rhs) {
+VectorExactReal<Ring> &VectorExactReal<Ring>::operator+=(
+    const VectorExactReal<Ring> &rhs) {
   impl->x += rhs.impl->x;
   impl->y += rhs.impl->y;
   impl->approximation += rhs.impl->approximation;
@@ -91,16 +91,26 @@ VectorExactReal<Ring>& VectorExactReal<Ring>::operator+=(
 }
 
 template <typename Ring>
-VectorExactReal<Ring>& VectorExactReal<Ring>::operator-=(
-    const VectorExactReal<Ring>& rhs) {
+VectorExactReal<Ring> &VectorExactReal<Ring>::operator-=(
+    const VectorExactReal<Ring> &rhs) {
   impl->x -= rhs.impl->x;
   impl->y -= rhs.impl->y;
   return *this;
 }
 
 template <typename Ring>
-VectorExactReal<Ring>::operator const VectorArb&() const {
+VectorExactReal<Ring>::operator const VectorArb &() const {
   return impl->approximation;
+}
+
+template <typename Ring>
+const exactreal::Element<Ring> &VectorExactReal<Ring>::x() const {
+  return impl->x;
+}
+
+template <typename Ring>
+const exactreal::Element<Ring> &VectorExactReal<Ring>::y() const {
+  return impl->y;
 }
 
 template <typename Ring>
@@ -109,7 +119,7 @@ VectorExactReal<Ring>::operator bool() const {
 }
 
 template <typename Ring>
-CCW VectorExactReal<Ring>::ccw(const VectorExactReal<Ring>& other) const {
+CCW VectorExactReal<Ring>::ccw(const VectorExactReal<Ring> &other) const {
   // The only tricky part is to find out whether x*other.y == y*other.x.
   // Since all four are elements of the same submodule of R, this can only
   // happen, if already in the field of scalars: x/other.x == y/other.y or
@@ -155,7 +165,7 @@ CCW VectorExactReal<Ring>::ccw(const VectorExactReal<Ring>& other) const {
 
 template <typename Ring>
 ORIENTATION VectorExactReal<Ring>::orientation(
-    const VectorExactReal<Ring>& other) const {
+    const VectorExactReal<Ring> &other) const {
   // We need to compute the dot product of this vector and other to decide their
   // orientation. The same discussion as for ccw also applies here, i.e.,
   // x*other.x == -y*other.y can only happen if there is already a relation in
@@ -226,12 +236,12 @@ bool VectorExactReal<Ring>::operator>(const Bound bound) const {
 }
 
 template <typename Ring>
-bool VectorExactReal<Ring>::operator==(const VectorExactReal<Ring>& rhs) const {
+bool VectorExactReal<Ring>::operator==(const VectorExactReal<Ring> &rhs) const {
   return impl->x == rhs.impl->x && impl->y == rhs.impl->y;
 }
 
 template <typename Ring>
-VectorExactReal<Ring>& VectorExactReal<Ring>::operator*=(const int rhs) {
+VectorExactReal<Ring> &VectorExactReal<Ring>::operator*=(const int rhs) {
   impl->x *= rhs;
   impl->y *= rhs;
   impl->approximation *= rhs;
@@ -239,7 +249,7 @@ VectorExactReal<Ring>& VectorExactReal<Ring>::operator*=(const int rhs) {
 }
 
 template <typename Ring>
-ostream& operator<<(ostream& os, const VectorExactReal<Ring>& self) {
+ostream &operator<<(ostream &os, const VectorExactReal<Ring> &self) {
   return os << "(" << self.impl->x << "," << self.impl->y << ")";
 }
 }  // namespace flatsurf
@@ -249,5 +259,5 @@ using namespace flatsurf;
 // Instantiations of templates so implementations are generated for the linker
 #include <exact-real/number_field_traits.hpp>
 template struct flatsurf::VectorExactReal<exactreal::NumberFieldTraits>;
-template ostream& flatsurf::operator<<<exactreal::NumberFieldTraits>(
-    ostream&, const VectorExactReal<exactreal::NumberFieldTraits>&);
+template ostream &flatsurf::operator<<<exactreal::NumberFieldTraits>(
+    ostream &, const VectorExactReal<exactreal::NumberFieldTraits> &);

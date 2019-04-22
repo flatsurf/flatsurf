@@ -31,27 +31,27 @@ using std::vector;
 namespace flatsurf {
 template <typename Vector>
 struct FlatTriangulation<Vector>::Implementation {
-  Implementation(const HalfEdgeMap<Vector>& vectors) : vectors(vectors) {}
+  Implementation(const HalfEdgeMap<Vector> &vectors) : vectors(vectors) {}
 
   const HalfEdgeMap<Vector> vectors;
 };
 
 template <typename Vector>
-const Vector& FlatTriangulation<Vector>::fromEdge(const HalfEdge e) const {
+const Vector &FlatTriangulation<Vector>::fromEdge(const HalfEdge e) const {
   return impl->vectors.get(e);
 }
 
 template <typename Vector>
 FlatTriangulation<Vector>::FlatTriangulation(
-    FlatTriangulationCombinatorial&& combinatorial,
-    const vector<Vector>& vectors)
+    FlatTriangulationCombinatorial &&combinatorial,
+    const vector<Vector> &vectors)
     : FlatTriangulation(std::move(combinatorial),
                         HalfEdgeMap<Vector>(vectors)) {}
 
 template <typename Vector>
 FlatTriangulation<Vector>::FlatTriangulation(
-    FlatTriangulationCombinatorial&& combinatorial,
-    const HalfEdgeMap<Vector>& vectors)
+    FlatTriangulationCombinatorial &&combinatorial,
+    const HalfEdgeMap<Vector> &vectors)
     : FlatTriangulationCombinatorial(std::move(combinatorial)),
       impl(spimpl::make_unique_impl<Implementation>(vectors)) {
   // check that faces are closed
@@ -67,8 +67,8 @@ FlatTriangulation<Vector>::FlatTriangulation(
 }
 
 template <typename Vector>
-ostream& operator<<(ostream& os, const FlatTriangulation<Vector>& self) {
-  return os << static_cast<const FlatTriangulationCombinatorial&>(self)
+ostream &operator<<(ostream &os, const FlatTriangulation<Vector> &self) {
+  return os << static_cast<const FlatTriangulationCombinatorial &>(self)
             << " with vectors " << self.impl->vectors;
 }
 }  // namespace flatsurf
@@ -82,13 +82,13 @@ ostream& operator<<(ostream& os, const FlatTriangulation<Vector>& self) {
 using namespace flatsurf;
 
 template struct flatsurf::FlatTriangulation<VectorLongLong>;
-template ostream& flatsurf::operator<<(
-    ostream&, const FlatTriangulation<VectorLongLong>&);
+template ostream &flatsurf::operator<<(
+    ostream &, const FlatTriangulation<VectorLongLong> &);
 template struct flatsurf::FlatTriangulation<VectorEAntic>;
-template ostream& flatsurf::operator<<(ostream&,
-                                       const FlatTriangulation<VectorEAntic>&);
+template ostream &flatsurf::operator<<(ostream &,
+                                       const FlatTriangulation<VectorEAntic> &);
 template struct flatsurf::FlatTriangulation<
     VectorExactReal<exactreal::NumberFieldTraits>>;
-template ostream& flatsurf::operator<<(
-    ostream&,
-    const FlatTriangulation<VectorExactReal<exactreal::NumberFieldTraits>>&);
+template ostream &flatsurf::operator<<(
+    ostream &,
+    const FlatTriangulation<VectorExactReal<exactreal::NumberFieldTraits>> &);

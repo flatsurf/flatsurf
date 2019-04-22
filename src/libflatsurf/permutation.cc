@@ -34,9 +34,9 @@ using std::vector;
 namespace flatsurf {
 
 template <typename T>
-Permutation<T>::Permutation(const vector<vector<T>>& cycles)
+Permutation<T>::Permutation(const vector<vector<T>> &cycles)
     : data(from(cycles).sum(
-          [](const vector<T>& cycle) { return cycle.size(); })) {
+          [](const vector<T> &cycle) { return cycle.size(); })) {
   for (const auto cycle : cycles) {
     for (auto i = 0u; i < cycle.size(); i++) {
       data[index(cycle[i])] = cycle[(i + 1) % cycle.size()];
@@ -45,7 +45,7 @@ Permutation<T>::Permutation(const vector<vector<T>>& cycles)
 }
 
 template <typename T>
-Permutation<T>::Permutation(const vector<pair<T, T>>& permutation)
+Permutation<T>::Permutation(const vector<pair<T, T>> &permutation)
     : data(permutation.size()) {
   for (auto ab : permutation) {
     data[index(ab.first)] = ab.second;
@@ -53,7 +53,7 @@ Permutation<T>::Permutation(const vector<pair<T, T>>& permutation)
 }
 
 template <typename T>
-T Permutation<T>::operator()(const T& t) const {
+T Permutation<T>::operator()(const T &t) const {
   return data[index(t)];
 }
 
@@ -63,16 +63,16 @@ size_t Permutation<T>::size() const {
 }
 
 template <typename T>
-const vector<T>& Permutation<T>::domain() const {
+const vector<T> &Permutation<T>::domain() const {
   return data;
 }
 
 template <typename T>
 template <typename S>
-Permutation<T> Permutation<T>::create(const vector<vector<S>>& cycles,
-                                      const function<T(S)>& converter) {
+Permutation<T> Permutation<T>::create(const vector<vector<S>> &cycles,
+                                      const function<T(S)> &converter) {
   return Permutation(from(cycles)
-                         .select([&](const vector<S>& cycle) {
+                         .select([&](const vector<S> &cycle) {
                            return from(cycle)
                                .select([&](const S s) { return converter(s); })
                                .toVector();
@@ -81,7 +81,7 @@ Permutation<T> Permutation<T>::create(const vector<vector<S>>& cycles,
 }
 
 template <typename T>
-ostream& operator<<(ostream& os, const Permutation<T>& self) {
+ostream &operator<<(ostream &os, const Permutation<T> &self) {
   set<T> remaining;
   for (auto t : self.data) {
     remaining.insert(t);
@@ -111,7 +111,7 @@ using namespace flatsurf;
 #include "flatsurf/half_edge.hpp"
 template struct flatsurf::Permutation<HalfEdge>;
 template Permutation<HalfEdge> Permutation<HalfEdge>::create<int>(
-    const vector<vector<int>>& cycles,
-    const function<HalfEdge(int)>& converter);
-template ostream& flatsurf::operator<<(ostream& os,
-                                       const Permutation<HalfEdge>& self);
+    const vector<vector<int>> &cycles,
+    const function<HalfEdge(int)> &converter);
+template ostream &flatsurf::operator<<(ostream &os,
+                                       const Permutation<HalfEdge> &self);

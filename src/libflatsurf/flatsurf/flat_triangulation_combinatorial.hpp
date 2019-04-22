@@ -20,37 +20,37 @@
 #ifndef LIBFLATSURF_FLAT_TRIANGULATION_COMBINATORIAL_HPP
 #define LIBFLATSURF_FLAT_TRIANGULATION_COMBINATORIAL_HPP
 
-#include <iosfwd>
-#include <vector>
-#include <memory>
 #include "external/spimpl/spimpl.h"
+#include <iosfwd>
+#include <memory>
+#include <vector>
 
 #include "flatsurf/flatsurf.hpp"
 #include "flatsurf/forward.hpp"
 
 namespace flatsurf {
-	template<typename T>
-	struct HalfEdgeMap;
+template <typename T> struct HalfEdgeMap;
 
-	struct FlatTriangulationCombinatorial {
-		FlatTriangulationCombinatorial(const std::vector<std::vector<int>>& vertices);
-		FlatTriangulationCombinatorial(const Permutation<HalfEdge>& vertices);
-		FlatTriangulationCombinatorial(FlatTriangulationCombinatorial&&);
-		~FlatTriangulationCombinatorial() = default;
+struct FlatTriangulationCombinatorial {
+  FlatTriangulationCombinatorial(const std::vector<std::vector<int>> &vertices);
+  FlatTriangulationCombinatorial(const Permutation<HalfEdge> &vertices);
+  FlatTriangulationCombinatorial(FlatTriangulationCombinatorial &&);
+  ~FlatTriangulationCombinatorial() = default;
 
-		HalfEdge nextAtVertex(const HalfEdge e) const;
-		HalfEdge nextInFace(const HalfEdge e) const;
+  HalfEdge nextAtVertex(const HalfEdge e) const;
+  HalfEdge nextInFace(const HalfEdge e) const;
 
-		const std::vector<HalfEdge>& edges() const;
-		const std::vector<Vertex>& vertices() const;
+  const std::vector<HalfEdge> &edges() const;
+  const std::vector<Vertex> &vertices() const;
 
-		friend std::ostream& operator<<(std::ostream&, const FlatTriangulationCombinatorial&);
-		const size_t nedges;
-	 private:
-		struct Implementation;
-		spimpl::unique_impl_ptr<Implementation> impl;
-	};
-}
+  friend std::ostream &operator<<(std::ostream &,
+                                  const FlatTriangulationCombinatorial &);
+  const size_t nedges;
+
+private:
+  struct Implementation;
+  spimpl::unique_impl_ptr<Implementation> impl;
+};
+} // namespace flatsurf
 
 #endif
-

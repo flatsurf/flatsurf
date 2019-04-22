@@ -20,19 +20,19 @@
 #ifndef LIBFLATSURF_CCW_HPP
 #define LIBFLATSURF_CCW_HPP
 
-#include <boost/operators.hpp>
 #include "external/spimpl/spimpl.h"
+#include <boost/operators.hpp>
 
 #include "flatsurf/flatsurf.hpp"
 
 namespace flatsurf {
-	enum class CCW {
-		COUNTERCLOCKWISE = -1,
-		COLLINEAR = 0,
-		CLOCKWISE = 1,
-	 };
+enum class CCW {
+  COUNTERCLOCKWISE = -1,
+  COLLINEAR = 0,
+  CLOCKWISE = 1,
+};
 
-	CCW operator-(CCW ccw);
-}
+CCW operator-(CCW ccw);
+} // namespace flatsurf
 
 #endif

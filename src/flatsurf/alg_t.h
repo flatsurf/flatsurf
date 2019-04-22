@@ -23,6 +23,7 @@
 
 #include <exact-real/element.hpp>
 #include <exact-real/number_field_traits.hpp>
+#include <flatsurf/vector_exactreal.hpp>
 #include <ostream>
 #include <vector>
 
@@ -60,10 +61,12 @@ template <typename T>
 bool operator!=(const alg_t<T>&, const alg_t<T>&);
 
 template <typename T>
-class alg_t {
+class [[deprecated("Use flatsurf VectorExactReal instead.")]] alg_t {
  public:
   alg_t();  // initialize to 0
   explicit alg_t(std::vector<algebraic<T> > coeffs);
+  template <typename Ring>
+  alg_t(const flatsurf::VectorExactReal<Ring>& v);
 
   void pad_coeffs(int n);  // need to call this when increasing nbr_params
   algebraic<T> get_coeff(size_t n);
@@ -95,9 +98,10 @@ class alg_t {
                               algebraic<bigrat>& ratio);
 
   bool get_direction(
-      algebraic<T>& direction);  // is direction in C independent of parameters?
-                                 // If yes, return true, and return the
-                                 // direction in direction. If no, return false
+      algebraic<T> &
+      direction);  // is direction in C independent of parameters?
+                   // If yes, return true, and return the
+                   // direction in direction. If no, return false
 
  private:
   std::vector<algebraic<T> > coeffs;

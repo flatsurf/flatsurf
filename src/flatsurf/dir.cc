@@ -45,7 +45,22 @@ Dir<PointT>::Dir(list<OEdge>::iterator e) {
 }
 
 template <typename PointT>
-Dir<PointT>::Dir(Vertex* vp, const PointT& p) : vec(p) {
+Dir<PointT>::Dir(const flatsurf::HalfEdge &e, const PointT &p)
+    : vec(p), v(OEdge(e).head()) {
+  for (ep = v->out_edges.begin();
+       ep != v->out_edges.end() && !(**ep == OEdge(e)); ++ep)
+    ;
+  assert(ep != v->out_edges.end());
+  auto next_ep = next_vert_edge(ep);
+  // Sectors are normalized differently in polygon and libflatsurf.
+  if (aligned((*next_ep)->template vec<PointT>(), vec)) {
+    ep = next_ep;
+  }
+  Check();
+}
+
+template <typename PointT>
+Dir<PointT>::Dir(Vertex *vp, const PointT &p) : vec(p) {
   list<list<OEdge>::iterator>::iterator i, j;
 
   v = vp;
@@ -77,17 +92,21 @@ void Dir<PointT>::Check() {
 
   if ((!aligned((*i)->template vec<PointT>(), vec)) &&
       CCW_(vec, (*i)->template vec<PointT>())) {
-    ERR_RET("dir_check: bottom range");
+    ERR_RET("vec is not counterclockwise from ep");
   }
 
   i = next_vert_edge(i);
 
   if (aligned((*i)->template vec<PointT>(), vec)) {
-    ERR_RET("dir_check: aligned top range");
+    ERR_RET(
+        "vec collinear with the edge following ep; so that one should have "
+        "been used instead of ep");
   }
 
   if (CCW_((*i)->template vec<PointT>(), vec)) {
-    ERR_RET("dir_check: top range");
+    ERR_RET(
+        "vec counterclockwise from the edge following ep; so that one "
+        "should have been used instead of ep");
   }
 }
 
@@ -112,7 +131,7 @@ alg_tI Dir<BigPointI>::vec_algtI() {
 }
 
 template <>
-COORD Dir<Point>::AngleF(Dir<Point>& d2) {
+COORD Dir<Point>::AngleF(Dir<Point> &d2) {
   Dir<Point> d1 = *this;
   if (d1.v != d2.v) {
     ERR_RET("Angle: vertices unequal");
@@ -182,7 +201,6 @@ Dir<Point> Dir<Point>::RotateF_general(COORD theta) {
   Dir<Point> bak = *this;
   COORD theta_bak = theta;
 
-  //    Dir<Point> tmp =*this;
   n = *this;
 
 #ifdef USE_QUAD
@@ -193,13 +211,10 @@ Dir<Point> Dir<Point>::RotateF_general(COORD theta) {
 
   std::cout << "RotateF: count = " << count << endl << flush;
   for (int j = 0; j < count; j++) {
-    //	tmp = n;
-    //	tmp.RotateF(0.5*MY_PI,n);
     n = n.RotateF(0.5 * pi<COORD>());
     theta = theta - 0.5 * pi<COORD>();
   }
   if (theta >= 0) {
-    //	tmp = n;
     n = n.RotateF(theta);
   }
   std::cout << "ending edge: E" << (*(n.ep))->id() << endl << flush;
@@ -231,12 +246,6 @@ Dir<PointT> Dir<PointT>::RotateCCwToVec(PointT p) {
   n.ep = i;
 
   n.Check();
-  //    if( AngleF(n) < -0.0001 || AngleF(n) > 2*MY_PI + 0.0001 ) {
-  //	ERR_RET("Error in RotateCCwToVec");
-  //    }
-  //    if( AngleF(n) > MY_PI + 0.0001 ) {
-  //	std::cerr << "*****WARNING: ROTATE CCW " << AngleF(n) << endl << flush;
-  //    }
 
   return (n);
 }
@@ -264,12 +273,6 @@ Dir<PointT> Dir<PointT>::RotateCwToVec(PointT p) {
   }
   n.ep = i;
   n.Check();
-  //    if( n.AngleF(*this) < -0.0001 || n.AngleF(*this) > 2*MY_PI + 0.0001 ) {
-  //	ERR_RET("Error in RotateCwToVec");
-  //   }
-  //    if( n.AngleF(*this) > MY_PI + 0.0001 ) {
-  //	std::cerr << "*****WARNING: ROTATE CW " << n.AngleF(*this)<<endl<<flush;
-  //    }
 
   return (n);
 }

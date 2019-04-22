@@ -31,29 +31,31 @@ using std::string;
 using std::vector;
 
 class AbortBenchmarksOnError : public ::testing::EmptyTestEventListener {
-  virtual void OnTestPartResult(const ::testing::TestPartResult& test_part_result) {
+  virtual void
+  OnTestPartResult(const ::testing::TestPartResult &test_part_result) {
     if (test_part_result.failed()) {
       throw std::logic_error("Benchmark aborted due to failing assertion.");
     }
   }
 };
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   vector<string> args;
   for (int i = 0; i < argc; i++) {
     args.push_back(argv[i]);
   }
 
-  char* env_argv = std::getenv("FLATSURF_CHECK");
+  char *env_argv = std::getenv("FLATSURF_CHECK");
   if (env_argv != nullptr) {
     auto iss = istringstream(env_argv);
-    copy(istream_iterator<string>(iss), istream_iterator<string>(), back_inserter(args));
+    copy(istream_iterator<string>(iss), istream_iterator<string>(),
+         back_inserter(args));
   }
 
   argc = int(args.size());
-  argv = new char*[argc];
+  argv = new char *[argc];
   for (int i = 0; i < argc; i++) {
-    const char* arg = args[i].c_str();
+    const char *arg = args[i].c_str();
     argv[i] = new char[strlen(arg) + 1];
     strcpy(argv[i], arg);
   }
@@ -66,7 +68,8 @@ int main(int argc, char** argv) {
     return result;
   }
 
-  testing::TestEventListeners& listeners = testing::UnitTest::GetInstance()->listeners();
+  testing::TestEventListeners &listeners =
+      testing::UnitTest::GetInstance()->listeners();
   listeners.Append(new AbortBenchmarksOnError);
 
   benchmark::Initialize(&argc, argv);
@@ -74,4 +77,3 @@ int main(int argc, char** argv) {
 
   return result;
 }
-

@@ -36,24 +36,24 @@ HalfEdge HalfEdge::operator-() const {
   return HalfEdge(-id);
 }
 
-HalfEdge& HalfEdge::operator=(const HalfEdge& rhs) {
+HalfEdge &HalfEdge::operator=(const HalfEdge &rhs) {
   this->id = rhs.id;
   assert(id != 0);
   return *this;
 }
 
-bool HalfEdge::operator==(const HalfEdge& rhs) const {
+bool HalfEdge::operator==(const HalfEdge &rhs) const {
   return this->id == rhs.id;
 }
 
-bool HalfEdge::operator<(const HalfEdge& rhs) const {
+bool HalfEdge::operator<(const HalfEdge &rhs) const {
   return this->id < rhs.id;
 }
 
-ostream& operator<<(ostream& os, const HalfEdge& self) { return os << self.id; }
+ostream &operator<<(ostream &os, const HalfEdge &self) { return os << self.id; }
 
 template <>
-size_t Permutation<HalfEdge>::index(const HalfEdge& e) const {
+size_t Permutation<HalfEdge>::index(const HalfEdge &e) const {
   return HalfEdgeMap<int>::index(e);
 }
 }  // namespace flatsurf

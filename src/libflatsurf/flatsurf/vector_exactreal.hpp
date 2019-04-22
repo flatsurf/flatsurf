@@ -22,48 +22,58 @@
 
 #include <exact-real/element.hpp>
 
-#include "flatsurf/flatsurf.hpp"
 #include "flatsurf/ccw.hpp"
+#include "flatsurf/flatsurf.hpp"
 #include "flatsurf/orientation.hpp"
 #include "flatsurf/vector_along_triangulation_with_approximation.hpp"
 
 namespace flatsurf {
-	struct Bound;
-	template<typename V>
-	struct VectorArbAlongTriangulation;
-	struct VectorArb;
+struct Bound;
+template <typename V> struct VectorArbAlongTriangulation;
+struct VectorArb;
 
-	template <typename Ring>
-	struct VectorExactReal : boost::additive<VectorExactReal<Ring>>, boost::multipliable<VectorExactReal<Ring>, int>, boost::equality_comparable<VectorExactReal<Ring>> {
-		using V = VectorExactReal;
-		friend struct VectorArb;
+template <typename Ring>
+struct VectorExactReal : boost::additive<VectorExactReal<Ring>>,
+                         boost::multipliable<VectorExactReal<Ring>, int>,
+                         boost::equality_comparable<VectorExactReal<Ring>> {
+  using V = VectorExactReal;
+  friend struct VectorArb;
 
-    VectorExactReal();
-		VectorExactReal(const exactreal::Element<Ring>& x, const exactreal::Element<Ring>& y);
+  VectorExactReal();
+  VectorExactReal(const exactreal::Element<Ring> &x,
+                  const exactreal::Element<Ring> &y);
 
-		CCW ccw(const V&) const;
-		ORIENTATION orientation(const V&) const;
+  CCW ccw(const V &) const;
+  ORIENTATION orientation(const V &) const;
 
-		template<typename R>
-		friend std::ostream& operator<<(std::ostream& os, const VectorExactReal<R>&);
-		V operator-() const;
-		bool operator<(const Bound bound) const;
-		bool operator>(const Bound bound) const;
-		bool operator==(const VectorExactReal<Ring>&) const;
-		explicit operator bool() const;
-		V& operator+=(const VectorExactReal<Ring>& rhs);
-		V& operator-=(const VectorExactReal<Ring>& rhs);
-		V& operator*=(const int rhs);
-		// Note that the returned VectorArb is only valid as long as this element
-		// is unchanged.
-		operator const VectorArb&() const;
+  template <typename R>
+  friend std::ostream &operator<<(std::ostream &os, const VectorExactReal<R> &);
+  V operator-() const;
+  bool operator<(const Bound bound) const;
+  bool operator>(const Bound bound) const;
+  bool operator==(const VectorExactReal<Ring> &) const;
+  explicit operator bool() const;
+  V &operator+=(const VectorExactReal<Ring> &rhs);
+  V &operator-=(const VectorExactReal<Ring> &rhs);
+  V &operator*=(const int rhs);
+  // Note that the returned VectorArb is only valid as long as this element
+  // is unchanged.
+  operator const VectorArb &() const;
+  // Note that the returned coordinate is only valid as long as this
+  // element is unchanged.
+  const exactreal::Element<Ring> &x() const;
+  // Note that the returned coordinate is only valid as long as this
+  // element is unchanged.
+  const exactreal::Element<Ring> &y() const;
 
-		using AlongTriangulation = VectorAlongTriangulationWithApproximation<VectorExactReal<Ring>, VectorArb>;
+  using AlongTriangulation =
+      VectorAlongTriangulationWithApproximation<VectorExactReal<Ring>,
+                                                VectorArb>;
 
-		private:
-		 struct Implementation;
-		 spimpl::impl_ptr<Implementation> impl;
-	};
-}
+private:
+  struct Implementation;
+  spimpl::impl_ptr<Implementation> impl;
+};
+} // namespace flatsurf
 
 #endif

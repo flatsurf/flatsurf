@@ -42,7 +42,7 @@ class SaddleConf {
 
   SaddleConf();
   void clear();
-  int add_saddle(Dir<Point> start, Dir<Point> end, alg_tI& algt);
+  int add_saddle(Dir<Point> start, Dir<Point> end, const alg_tI& algt);
   bool isom(SaddleConf& sc, int* s_matched);
   void print(std::ostream& output_stream);
   int n_saddles();

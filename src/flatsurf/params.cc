@@ -56,16 +56,16 @@ void Params::AddParams(size_t n, COORD prms[]) {
   n_params += n;
   vector<shared_ptr<RealNumber>> basis;
   basis.push_back(RealNumber::rational(1));
-  for (const auto& b : reals) {
+  for (const auto &b : reals) {
     basis.push_back(b);
   }
   // TODO: Should I fix a prec here?
   mod = std::make_shared<const Module<NumberFieldTraits>>(
-      basis, static_cast<const eantic::renf_class&>(*NumberField<bigrat>::F),
+      basis, static_cast<const eantic::renf_class &>(*NumberField<bigrat>::F),
       VectorArb::prec);
 }
 
-void Params::print(ostream& out) {
+void Params::print(ostream &out) {
   out << "Transcendental Parameters:";
   for (size_t i = 0; i < nbr_params(); i++) {
     out << " " << *reals[i];

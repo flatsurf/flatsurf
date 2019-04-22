@@ -20,37 +20,38 @@
 #ifndef LIBFLATSURF_HALF_EDGE_HPP
 #define LIBFLATSURF_HALF_EDGE_HPP
 
+#include <boost/operators.hpp>
+#include <iosfwd>
 #include <stddef.h>
 #include <string>
-#include <iosfwd>
-#include <boost/operators.hpp>
 
 #include "flatsurf/flatsurf.hpp"
 
 namespace flatsurf {
-	// Similar to Edge this is a wrapper to get type-safe HalfEdges without any
-	// runtime overhead (at least when compiling with -flto.)
-	struct HalfEdge : boost::equality_comparable<HalfEdge>, boost::less_than_comparable<HalfEdge> {
-		friend struct Edge;
-		template<typename T>
-		friend struct HalfEdgeMap;
-		friend struct FlatTriangulationCombinatorial;
-		friend struct Vertex;
+// Similar to Edge this is a wrapper to get type-safe HalfEdges without any
+// runtime overhead (at least when compiling with -flto.)
+struct HalfEdge : boost::equality_comparable<HalfEdge>,
+                  boost::less_than_comparable<HalfEdge> {
+  friend struct Edge;
+  template <typename T> friend struct HalfEdgeMap;
+  friend struct FlatTriangulationCombinatorial;
+  friend struct Vertex;
 
-		HalfEdge();
-		HalfEdge(const HalfEdge& edge) = default;
-		explicit HalfEdge(const int id);
-		struct Edge;
+  HalfEdge();
+  HalfEdge(const HalfEdge &edge) = default;
+  explicit HalfEdge(const int id);
+  struct Edge;
 
-		HalfEdge operator-() const;
-		HalfEdge& operator=(const HalfEdge& other);
-		bool operator==(const HalfEdge& other) const;
-		bool operator<(const HalfEdge& other) const;
-		friend std::ostream& operator<<(std::ostream&, const HalfEdge&);
-		Edge edge() const;
-	private:
-		int id;
-	};
-}
+  HalfEdge operator-() const;
+  HalfEdge &operator=(const HalfEdge &other);
+  bool operator==(const HalfEdge &other) const;
+  bool operator<(const HalfEdge &other) const;
+  friend std::ostream &operator<<(std::ostream &, const HalfEdge &);
+  Edge edge() const;
+
+private:
+  int id;
+};
+} // namespace flatsurf
 
 #endif

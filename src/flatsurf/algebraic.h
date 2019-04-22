@@ -58,7 +58,7 @@ template <class T>
 algebraic<T> cross_product(const algebraic<T> &u, const algebraic<T> &v);
 
 template <typename T>
-class algebraic {
+class [[deprecated("Use renf_elem_class instead.")]] algebraic {
  public:
   algebraic();
   explicit algebraic(NumberField<T> *);  // zero element of NumberField
@@ -68,6 +68,8 @@ class algebraic {
   algebraic(std::vector<T> coords,
             NumberField<T> *);  // vector with coeffients coords in NumberField
   algebraic(T coords[], NumberField<T> *);
+  algebraic(const eantic::renf_elem_class &re,
+            const eantic::renf_elem_class &im);
   std::complex<COORD> tocomplex() const;
   algebraic<T> conjugate() const;  // the complex conjugate
   algebraic<T> norm()

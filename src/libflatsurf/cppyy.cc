@@ -24,54 +24,54 @@
 using namespace flatsurf;
 
 namespace flatsurf {
-std::ostream& operator<<(std::ostream& os, const HalfEdge& self);
-std::ostream& operator<<(std::ostream& os, const VectorLongLong& self);
-std::ostream& operator<<(std::ostream& os, const VectorEAntic& self);
-std::ostream& operator<<(std::ostream& os, const VectorArb& self);
+std::ostream &operator<<(std::ostream &os, const HalfEdge &self);
+std::ostream &operator<<(std::ostream &os, const VectorLongLong &self);
+std::ostream &operator<<(std::ostream &os, const VectorEAntic &self);
+std::ostream &operator<<(std::ostream &os, const VectorArb &self);
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const Permutation<T>& self);
+std::ostream &operator<<(std::ostream &os, const Permutation<T> &self);
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const HalfEdgeMap<T>& self);
+std::ostream &operator<<(std::ostream &os, const HalfEdgeMap<T> &self);
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const FlatTriangulation<T>& self);
+std::ostream &operator<<(std::ostream &os, const FlatTriangulation<T> &self);
 }  // namespace flatsurf
 
 template <typename T>
-std::ostream& print(std::ostream& os, const T& self) {
+std::ostream &print(std::ostream &os, const T &self) {
   return flatsurf::operator<<(os, self);
 }
 
-std::ostream& operator<<(std::ostream& os, const HalfEdge& self) {
+std::ostream &operator<<(std::ostream &os, const HalfEdge &self) {
   return print(os, self);
 }
-std::ostream& operator<<(std::ostream& os, const VectorLongLong& self) {
+std::ostream &operator<<(std::ostream &os, const VectorLongLong &self) {
   return print(os, self);
 }
-std::ostream& operator<<(std::ostream& os, const VectorEAntic& self) {
+std::ostream &operator<<(std::ostream &os, const VectorEAntic &self) {
   return print(os, self);
 }
-std::ostream& operator<<(std::ostream& os, const VectorArb& self) {
+std::ostream &operator<<(std::ostream &os, const VectorArb &self) {
   return print(os, self);
 }
-std::ostream& operator<<(std::ostream& os, const Permutation<HalfEdge>& self) {
+std::ostream &operator<<(std::ostream &os, const Permutation<HalfEdge> &self) {
   return print(os, self);
 }
-std::ostream& operator<<(std::ostream& os,
-                         const HalfEdgeMap<VectorLongLong>& self) {
+std::ostream &operator<<(std::ostream &os,
+                         const HalfEdgeMap<VectorLongLong> &self) {
   return print(os, self);
 }
-std::ostream& operator<<(std::ostream& os,
-                         const HalfEdgeMap<VectorEAntic>& self) {
+std::ostream &operator<<(std::ostream &os,
+                         const HalfEdgeMap<VectorEAntic> &self) {
   return print(os, self);
 }
-std::ostream& operator<<(std::ostream& os, const HalfEdgeMap<int>& self) {
+std::ostream &operator<<(std::ostream &os, const HalfEdgeMap<int> &self) {
   return print(os, self);
 }
-std::ostream& operator<<(std::ostream& os,
-                         const FlatTriangulation<VectorLongLong>& self) {
+std::ostream &operator<<(std::ostream &os,
+                         const FlatTriangulation<VectorLongLong> &self) {
   return print(os, self);
 }
-std::ostream& operator<<(std::ostream& os,
-                         const FlatTriangulation<VectorEAntic>& self) {
+std::ostream &operator<<(std::ostream &os,
+                         const FlatTriangulation<VectorEAntic> &self) {
   return print(os, self);
 }

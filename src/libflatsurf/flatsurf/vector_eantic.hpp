@@ -20,50 +20,53 @@
 #ifndef LIBFLATSURF_VECTOR_EANTIC
 #define LIBFLATSURF_VECTOR_EANTIC
 
-#include <iosfwd>
 #include <boost/operators.hpp>
 #include <e-antic/renfxx.h>
+#include <iosfwd>
 
-#include "flatsurf/flatsurf.hpp"
 #include "flatsurf/ccw.hpp"
+#include "flatsurf/flatsurf.hpp"
 #include "flatsurf/orientation.hpp"
 #include "flatsurf/vector_along_triangulation_with_approximation.hpp"
 
 namespace flatsurf {
-	struct Bound;
-	template<typename V>
-	struct VectorArbAlongTriangulation;
-	struct VectorArb;
+struct Bound;
+template <typename V> struct VectorArbAlongTriangulation;
+struct VectorArb;
 
-	struct VectorEAntic : boost::additive<VectorEAntic>, boost::multipliable<VectorEAntic, int>, boost::equality_comparable<VectorEAntic> {
-		using V = VectorEAntic;
-		friend struct VectorArb;
+struct VectorEAntic : boost::additive<VectorEAntic>,
+                      boost::multipliable<VectorEAntic, int>,
+                      boost::equality_comparable<VectorEAntic> {
+  using V = VectorEAntic;
+  friend struct VectorArb;
 
-		VectorEAntic();
-		VectorEAntic(const eantic::renf_elem_class& x, const eantic::renf_elem_class& y);
+  VectorEAntic();
+  VectorEAntic(const eantic::renf_elem_class &x,
+               const eantic::renf_elem_class &y);
 
-		CCW ccw(const V&) const;
-		ORIENTATION orientation(const V&) const;
+  CCW ccw(const V &) const;
+  ORIENTATION orientation(const V &) const;
 
-		friend std::ostream& operator<<(std::ostream& os, const VectorEAntic&);
-		V operator-() const;
-		bool operator<(const Bound bound) const;
-		bool operator>(const Bound bound) const;
-		bool operator==(const VectorEAntic&) const;
-		explicit operator bool() const;
-		V& operator+=(const VectorEAntic& rhs);
-		V& operator-=(const VectorEAntic& rhs);
-		V& operator*=(const int rhs);
-		// Note that the returned VectorArb is only valid as long as this element
-		// is unchanged.
-		operator const VectorArb&() const;
+  friend std::ostream &operator<<(std::ostream &os, const VectorEAntic &);
+  V operator-() const;
+  bool operator<(const Bound bound) const;
+  bool operator>(const Bound bound) const;
+  bool operator==(const VectorEAntic &) const;
+  explicit operator bool() const;
+  V &operator+=(const VectorEAntic &rhs);
+  V &operator-=(const VectorEAntic &rhs);
+  V &operator*=(const int rhs);
+  // Note that the returned VectorArb is only valid as long as this element
+  // is unchanged.
+  operator const VectorArb &() const;
 
-		using AlongTriangulation = VectorAlongTriangulationWithApproximation<VectorEAntic, VectorArb>;
+  using AlongTriangulation =
+      VectorAlongTriangulationWithApproximation<VectorEAntic, VectorArb>;
 
-		private:
-		 struct Implementation;
-		 spimpl::impl_ptr<Implementation> impl;
-	};
-}
+private:
+  struct Implementation;
+  spimpl::impl_ptr<Implementation> impl;
+};
+} // namespace flatsurf
 
 #endif

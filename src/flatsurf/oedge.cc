@@ -33,19 +33,33 @@ using std::list;
 using std::ostream;
 
 namespace polygon {
-OEdge::OEdge(UEdge* e, int dir) : from_edge(NULL_OEdgeIter) {
+OEdge::OEdge(UEdge *e, int dir) : from_edge(NULL_OEdgeIter) {
+  assert(dir == -1 || dir == 1);
   ue = e;
   direction = dir;
 }
 
-bool OEdge::operator==(OEdge& b) {
-  if (this->ue == b.ue && this->direction == b.direction) {
-    return (true);
-  }
-  return (false);
+bool OEdge::operator==(const OEdge &b) {
+  return this->ue == b.ue && this->direction == b.direction;
 }
 
 int OEdge::id() { return (ue->id()); }
+
+OEdge::OEdge(const flatsurf::HalfEdge &he) : from_edge(NULL_OEdgeIter) {
+  for (auto ue : S->uedges) {
+    if (static_cast<flatsurf::HalfEdge>(OEdge(ue, 1)) == he) {
+      this->ue = ue;
+      this->direction = 1;
+      return;
+    }
+    if (static_cast<flatsurf::HalfEdge>(OEdge(ue, -1)) == he) {
+      this->ue = ue;
+      this->direction = -1;
+      return;
+    }
+  }
+  throw std::logic_error("HalfEdge not present in triangulation");
+}
 
 OEdge::operator flatsurf::HalfEdge() const {
   // We relabel UEdges from their indexes starting at 0 (but with missing
@@ -61,7 +75,7 @@ OEdge::operator flatsurf::HalfEdge() const {
   throw new std::logic_error("oriented edge not present in this triangulation");
 }
 
-ostream& operator<<(ostream& out, const OEdge& e) {
+ostream &operator<<(ostream &out, const OEdge &e) {
   if (e.direction == 1)
     out << " +";
   else
@@ -72,28 +86,28 @@ ostream& operator<<(ostream& out, const OEdge& e) {
   return out;
 }
 
-Vertex* OEdge::head() {
+Vertex *OEdge::head() {
   if (direction == 1) {
     return (ue->v0);
   }
   return (ue->v1);
 }
 
-Vertex* OEdge::tail() {
+Vertex *OEdge::tail() {
   if (direction == 1) {
     return (ue->v1);
   }
   return (ue->v0);
 }
 
-Face* OEdge::in_face() {
+Face *OEdge::in_face() {
   if (direction == 1) {
     return (ue->f0);
   }
   return (ue->f1);
 }
 
-Face* OEdge::other_face() {
+Face *OEdge::other_face() {
   if (direction == 1) {
     return (ue->f1);
   }
@@ -105,7 +119,7 @@ bool OEdge::deleted() { return (ue->deleted()); }
 void OEdge::Delete() { ue->Delete(); }
 
 list<OEdge>::iterator OEdge::this_iter() {
-  Face* f;
+  Face *f;
 
   f = in_face();
 
@@ -118,7 +132,7 @@ list<OEdge>::iterator OEdge::this_iter() {
 }
 
 list<OEdge>::iterator OEdge::pair_edge() {
-  Face* f;
+  Face *f;
 
   f = other_face();
 
@@ -151,7 +165,7 @@ BigPointI OEdge::vec<BigPointI>() {
 }
 
 template <>
-BigPointI& OEdge::_vec<BigPointI>() {
+BigPointI &OEdge::_vec<BigPointI>() {
   if (direction == 1) {
     return (ue->ue_vecI);
   } else {
@@ -169,7 +183,7 @@ Point OEdge::vec<Point>() {
 }
 
 template <>
-Point& OEdge::_vec<Point>() {
+Point &OEdge::_vec<Point>() {
   if (direction == 1) {
     return (ue->ue_vecQ.cx);
   } else {
@@ -178,28 +192,6 @@ Point& OEdge::_vec<Point>() {
 }
 
 Point OEdge::vec_cx() { return (vec<Point>()); }
-
-/*
-BigPointQ OEdge::vecQ()
-{
-                BigPointQ q;
-
-                if( direction == 1 ) {
-                                return( ue->ue_vecQ );
-                } else {
-                                return( -ue->ue_vecQ );
-                }
-}
-*/
-
-// Point OEdge::vec_cx()
-// {
-//     if( direction == 1 ) {
-// 	return( ue->ue_vecQ.cx );
-//     } else {
-// 	return( -ue->ue_vecQ.cx );
-//     }
-// }
 
 alg_tQ OEdge::vec_algt() {
   if (direction == 1) {
@@ -222,7 +214,7 @@ void OEdge::set_vec_algt(alg_tQ p) {
 /* the next function is stupid */
 list<OEdge>::iterator OEdge::prev_edge() {
   list<OEdge>::iterator i;
-  Face* f;
+  Face *f;
 
   f = in_face();
 
@@ -237,7 +229,7 @@ list<OEdge>::iterator OEdge::prev_edge() {
 
 /* this is also stupid */
 list<OEdge>::iterator OEdge::next_edge() {
-  Face* f;
+  Face *f;
 
   f = in_face();
 
@@ -251,7 +243,7 @@ list<OEdge>::iterator OEdge::next_edge() {
 }
 
 list<list<OEdge>::iterator>::iterator OEdge::this_vert_iter() {
-  Vertex* v;
+  Vertex *v;
 
   v = head();
 
@@ -267,7 +259,7 @@ template <>
 Point OEdge::headOffset<Point>() {
   Point q, t;
 
-  Face* f = in_face();
+  Face *f = in_face();
 
   //    q = f->GetOffsetV0();
   q = Point(0.0);
@@ -286,7 +278,7 @@ template <>
 BigPointI OEdge::headOffset<BigPointI>() {
   BigPointI q, t;
 
-  Face* f = in_face();
+  Face *f = in_face();
 
   //    q = f->GetOffsetV0();
   q = BigPointI();
@@ -306,7 +298,7 @@ template <>
 Point OEdge::tailOffset<Point>() {
   Point q, t;
 
-  Face* f = in_face();
+  Face *f = in_face();
   //    q = f->GetOffsetV0();
   q = Point(0.0);
 
@@ -324,7 +316,7 @@ template <>
 BigPointI OEdge::tailOffset<BigPointI>() {
   BigPointI q, t;
 
-  Face* f = in_face();
+  Face *f = in_face();
   //    q = f->GetOffsetV0();
   q = BigPointI();
   q.Check();
@@ -340,22 +332,22 @@ BigPointI OEdge::tailOffset<BigPointI>() {
 }
 
 template <>
-Point& OEdge::_head_offset<Point>() {
+Point &OEdge::_head_offset<Point>() {
   return head_offst;
 }
 
 template <>
-BigPointI& OEdge::_head_offset<BigPointI>() {
+BigPointI &OEdge::_head_offset<BigPointI>() {
   return head_offstI;
 }
 
 template <>
-Point& OEdge::_tail_offset<Point>() {
+Point &OEdge::_tail_offset<Point>() {
   return tail_offst;
 }
 
 template <>
-BigPointI& OEdge::_tail_offset<BigPointI>() {
+BigPointI &OEdge::_tail_offset<BigPointI>() {
   return tail_offstI;
 }
 }  // namespace polygon

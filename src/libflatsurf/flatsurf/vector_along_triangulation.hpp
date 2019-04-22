@@ -19,43 +19,49 @@
 #ifndef LIBFLATSURF_VECTOR_ALONG_TRIANGULATION
 #define LIBFLATSURF_VECTOR_ALONG_TRIANGULATION
 
-#include <iosfwd>
-#include <boost/operators.hpp>
 #include "external/spimpl/spimpl.h"
+#include <boost/operators.hpp>
+#include <iosfwd>
 
 #include "flatsurf/ccw.hpp"
 
 namespace flatsurf {
-	template<typename Vector>
-	struct FlatTriangulation;
-	struct HalfEdge;
-	struct Bound;
-	template<typename T>
-	struct HalfEdgeMap;
+template <typename Vector> struct FlatTriangulation;
+struct HalfEdge;
+struct Bound;
+template <typename T> struct HalfEdgeMap;
 
-	// A generic implementation of a vector in ℝ² that is a sum of half edges of a flat triangulation.
-	template<typename V>
-	struct VectorAlongTriangulation : boost::additive<VectorAlongTriangulation<V>>, boost::additive<VectorAlongTriangulation<V>, HalfEdge>, boost::less_than_comparable<VectorAlongTriangulation<V>, Bound>, boost::equality_comparable<VectorAlongTriangulation<V>> {
-			using Surface = FlatTriangulation<V>;
+// A generic implementation of a vector in ℝ² that is a sum of half edges of a
+// flat triangulation.
+template <typename V>
+struct VectorAlongTriangulation
+    : boost::additive<VectorAlongTriangulation<V>>,
+      boost::additive<VectorAlongTriangulation<V>, HalfEdge>,
+      boost::less_than_comparable<VectorAlongTriangulation<V>, Bound>,
+      boost::equality_comparable<VectorAlongTriangulation<V>> {
+  using Surface = FlatTriangulation<V>;
 
-			explicit VectorAlongTriangulation(const Surface& surface);
-			VectorAlongTriangulation(const Surface& surface, const HalfEdgeMap<int>& coefficients);
+  explicit VectorAlongTriangulation(const Surface &surface);
+  VectorAlongTriangulation(const Surface &surface,
+                           const HalfEdgeMap<int> &coefficients);
 
-			CCW ccw(const VectorAlongTriangulation<V>& rhs) const;
+  CCW ccw(const VectorAlongTriangulation<V> &rhs) const;
 
-		  template<typename W>
-			friend std::ostream& operator<<(std::ostream&, const VectorAlongTriangulation<W>&);
-			bool operator>(const Bound bound) const;
-			bool operator<(const Bound bound) const;
-			VectorAlongTriangulation<V>& operator+=(const HalfEdge);
-			VectorAlongTriangulation<V>& operator-=(const HalfEdge);
-			VectorAlongTriangulation<V>& iadd(const HalfEdge, const int);
-			bool operator==(const VectorAlongTriangulation<V>&);
-			operator V() const;
-		 private:
-		  struct Implementation;
-		  spimpl::impl_ptr<Implementation> impl;
-		};
-}
+  template <typename W>
+  friend std::ostream &operator<<(std::ostream &,
+                                  const VectorAlongTriangulation<W> &);
+  bool operator>(const Bound bound) const;
+  bool operator<(const Bound bound) const;
+  VectorAlongTriangulation<V> &operator+=(const HalfEdge);
+  VectorAlongTriangulation<V> &operator-=(const HalfEdge);
+  VectorAlongTriangulation<V> &iadd(const HalfEdge, const int);
+  bool operator==(const VectorAlongTriangulation<V> &);
+  operator V() const;
+
+private:
+  struct Implementation;
+  spimpl::impl_ptr<Implementation> impl;
+};
+} // namespace flatsurf
 
 #endif

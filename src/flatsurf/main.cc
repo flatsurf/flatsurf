@@ -49,6 +49,7 @@ using flatsurf::Bound;
 using flatsurf::FlatTriangulation;
 using flatsurf::HalfEdge;
 using flatsurf::SaddleConnections;
+using flatsurf::VectorArb;
 using flatsurf::VectorExactReal;
 using std::cout;
 using std::endl;
@@ -57,7 +58,7 @@ using std::max;
 using std::min;
 using std::ofstream;
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   bool file_arg = false;
 
   S = new TwoComplex();
@@ -431,7 +432,7 @@ int main(int argc, char** argv) {
 
   for (auto f = S->faces.begin(); f != S->faces.end(); ++f) {
     sprintf(buf, "face%d", (*f)->id());
-    my_ostream* face_stream = new my_ostream(buf);
+    my_ostream *face_stream = new my_ostream(buf);
     S->make_pface(*f);
     S->NewDraw(*face_stream);
     face_stream->close();
@@ -618,19 +619,20 @@ int main(int argc, char** argv) {
            SaddleConnections(flat_triangulation,
                              Bound(static_cast<long long>(ceil(depth * depth))),
                              sectorBegin)) {
-        if (!Vertex::from(saddle_connection->source).relevant()) {
+        if (!Vertex::from(flatsurf::Vertex::source(saddle_connection->source,
+                                                   flat_triangulation))
+                 .relevant()) {
           // It would be good to have a proper notion of marked vertices
           // instead, but currently we rely on polygon's original concept of
           // "relevant"
-          std::cout << "not relevant" << std::endl;
           continue;
         }
 
         sc.clear();
 
-        auto direction = static_cast<
-            flatsurf::VectorExactReal<exactreal::NumberFieldTraits>>(
-            saddle_connection->vector);
+        auto direction =
+            static_cast<VectorExactReal<exactreal::NumberFieldTraits>>(
+                saddle_connection->vector);
 
         for (const HalfEdge e : flat_triangulation.edges()) {
           if (flat_triangulation.fromEdge(e).ccw(direction) ==
@@ -646,11 +648,10 @@ int main(int argc, char** argv) {
             continue;
           }
 
-          const flatsurf::Vertex vertex =
-              flatsurf::Vertex::source(e, flat_triangulation);
-          const Vertex& _vertex(Vertex::from(vertex));
-          if (!_vertex.relevant()) continue;
-          if (_vertex.deleted()) continue;
+          const Vertex &source =
+              Vertex::from(flatsurf::Vertex::source(e, flat_triangulation));
+          if (!source.relevant()) continue;
+          if (source.deleted()) continue;
 
           auto saddle_connections_in_same_direction = SaddleConnections(
               flat_triangulation,
@@ -659,23 +660,30 @@ int main(int argc, char** argv) {
           for (auto it = saddle_connections_in_same_direction.begin();
                it != saddle_connections_in_same_direction.end(); ++it) {
             auto saddle_connection_in_same_direction = *it;
-            assert(saddle_connection_in_same_direction->source == vertex);
+
+            const Vertex &target = Vertex::from(flatsurf::Vertex::target(
+                saddle_connection_in_same_direction->target,
+                flat_triangulation));
+
+            if (!target.relevant()) continue;
+            if (target.deleted()) continue;
+
             auto ccw = saddle_connection_in_same_direction->vector.ccw(
                 saddle_connection->vector);
             if (ccw == flatsurf::CCW::COLLINEAR) {
-              Dir<Point> tmp_start, tmp_end;
-              alg_tI tmp_algt;
-
-              std::cout << "add_saddle: " << vertex << " "
-                        << static_cast<flatsurf::VectorArb>(
-                               static_cast<flatsurf::VectorExactReal<
-                                   exactreal::NumberFieldTraits>>(
-                                   saddle_connection_in_same_direction->vector))
-                        << std::endl;
-
-              // TODO: Implement me
-              // sc.add_saddle(tmp_start, tmp_end, tmp_algt);
-
+              auto vector = static_cast<VectorExactReal<NumberFieldTraits>>(
+                  saddle_connection_in_same_direction->vector);
+              assert(flat_triangulation.fromEdge(e).ccw(vector) ==
+                     flatsurf::CCW::COUNTERCLOCKWISE);
+              auto dvector = static_cast<Point>(static_cast<VectorArb>(vector));
+              auto start = Dir(e, dvector);
+              assert(start.v->id() == source.id());
+              // end points back to start from the target vertex
+              auto end = Dir(flat_triangulation.nextInFace(
+                                 saddle_connection_in_same_direction->target),
+                             -dvector);
+              assert(end.v->id() == target.id());
+              sc.add_saddle(start, end, vector);
               break;
             } else {
               it.skipSector(-ccw);
@@ -685,19 +693,22 @@ int main(int argc, char** argv) {
         if (show_lengths || show_cyls) {
           sc.renorm_lengths();
         }
+
+        if (sc.n_saddles() > 0) {
+          smry.add_one_conf(sc);
+        }
       }
       sectorBegin = flat_triangulation.nextAtVertex(sectorBegin);
     } while (sectorBegin != firstEdge);
   } else {
-    Dir<BigPointI> start_dir = Dir<BigPointI>(first_edge);
-    S->Sweep<BigPointI>(depth, start_dir, GoalTotalAngle);
-
-    S->issueFinalReport(smry, std::cout, (*i)->id());
-
-    ofstream results_stream("final_results");
-    S->issueFinalReport(smry, results_stream, (*i)->id());  // check
-    results_stream.close();
+    S->Sweep<BigPointI>(depth, Dir<BigPointI>(first_edge), GoalTotalAngle);
   }
+
+  S->issueFinalReport(smry, std::cout, (*i)->id());
+
+  ofstream results_stream("final_results");
+  S->issueFinalReport(smry, results_stream, (*i)->id());  // check
+  results_stream.close();
 
   delete S;
 

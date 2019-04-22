@@ -58,7 +58,7 @@ static int nbr = 0;
 static my_ostream *movie_stream, *dbg_stream;
 static char buf[1000];
 
-void TwoComplex::TriangulateFace(Face* f) {
+void TwoComplex::TriangulateFace(Face *f) {
   list<OEdge>::iterator Candidate1 = NULL_OEdgeIter;
   list<OEdge>::iterator Candidate2 = NULL_OEdgeIter;
 
@@ -178,7 +178,7 @@ void TwoComplex::TriangulateFace(Face* f) {
   TriangulateFace(new_edge->in_face());
 }
 
-list<OEdge>::iterator TwoComplex::BisectFace(Face* f,
+list<OEdge>::iterator TwoComplex::BisectFace(Face *f,
                                              list<OEdge>::iterator e1_iter,
                                              list<OEdge>::iterator e2_iter) {
   /* head of e1 to head of e2 */
@@ -190,8 +190,8 @@ list<OEdge>::iterator TwoComplex::BisectFace(Face* f,
   BigPointQ bp;
   BigPointQ bs;
 
-  Vertex* v1 = (*e1_iter).head();
-  Vertex* v2 = (*e2_iter).head();
+  Vertex *v1 = (*e1_iter).head();
+  Vertex *v2 = (*e2_iter).head();
 
   if (f->order() <= 3) {
     ERR_RET("Bisect Face: order of face at most 3");
@@ -253,9 +253,9 @@ list<OEdge>::iterator TwoComplex::BisectFace(Face* f,
     ERR_RET("Bisect Face: total vec_algt not zero");
   }
 
-  UEdge* new_uedge = AddUEdge(UNDEFINED, v1, v2, bp);
-  OEdge* new_oedge1 = new OEdge(new_uedge, -1);
-  OEdge* new_oedge2 = new OEdge(new_uedge, 1);
+  UEdge *new_uedge = AddUEdge(UNDEFINED, v1, v2, bp);
+  OEdge *new_oedge1 = new OEdge(new_uedge, -1);
+  OEdge *new_oedge2 = new OEdge(new_uedge, 1);
 
   new_face1_oedge_list.insert(new_face1_oedge_list.end(), *new_oedge1);
   new_face2_oedge_list.insert(new_face2_oedge_list.end(), *new_oedge2);
@@ -351,15 +351,15 @@ bool Face::can_bisect(list<OEdge>::iterator i, list<OEdge>::iterator j) {
 
 /* for debugging */
 // cppcheck-suppress unusedFunction
-void TwoComplex::AddSteinerPoint(Face* f) {
+void TwoComplex::AddSteinerPoint(Face *f) {
   if (f->order() != 3) {
     ERR_RET("AddSteinerPoint: not triangle");
   }
 
   auto i = f->oedges.begin();
-  OEdge* edge01 = &(*i++);
-  OEdge* edge12 = &(*i++);
-  OEdge* edge20 = &(*i++);
+  OEdge *edge01 = &(*i++);
+  OEdge *edge12 = &(*i++);
+  OEdge *edge20 = &(*i++);
   if (i != f->oedges.end()) {
     ERR_RET("AddSteinerPoint: error");
   }
@@ -373,24 +373,24 @@ void TwoComplex::AddSteinerPoint(Face* f) {
 
   std::cout << v0_pos << v1_pos << v2_pos << p_steiner << "\n";
 
-  Vertex* v0 = edge01->head();
-  Vertex* v1 = edge12->head();
-  Vertex* v2 = edge20->head();
+  Vertex *v0 = edge01->head();
+  Vertex *v1 = edge12->head();
+  Vertex *v2 = edge20->head();
 
-  Vertex* v_steiner = AddVertex(UNDEFINED);
-  UEdge* new_uedge0 = AddUEdge(UNDEFINED, v0, v_steiner, p_steiner);
-  UEdge* new_uedge1 =
+  Vertex *v_steiner = AddVertex(UNDEFINED);
+  UEdge *new_uedge0 = AddUEdge(UNDEFINED, v0, v_steiner, p_steiner);
+  UEdge *new_uedge1 =
       AddUEdge(UNDEFINED, v1, v_steiner, p_steiner - edge01->vec_cx());
-  UEdge* new_uedge2 = AddUEdge(UNDEFINED, v2, v_steiner,
+  UEdge *new_uedge2 = AddUEdge(UNDEFINED, v2, v_steiner,
                                p_steiner - edge01->vec_cx() - edge12->vec_cx());
 
   list<OEdge> tmp_oedge_list;
-  OEdge* e0_in = new OEdge(new_uedge0, 1);
-  OEdge* e0_out = new OEdge(new_uedge0, -1);
-  OEdge* e1_in = new OEdge(new_uedge1, 1);
-  OEdge* e1_out = new OEdge(new_uedge1, -1);
-  OEdge* e2_in = new OEdge(new_uedge2, 1);
-  OEdge* e2_out = new OEdge(new_uedge2, -1);
+  OEdge *e0_in = new OEdge(new_uedge0, 1);
+  OEdge *e0_out = new OEdge(new_uedge0, -1);
+  OEdge *e1_in = new OEdge(new_uedge1, 1);
+  OEdge *e1_out = new OEdge(new_uedge1, -1);
+  OEdge *e2_in = new OEdge(new_uedge2, 1);
+  OEdge *e2_out = new OEdge(new_uedge2, -1);
 
   tmp_oedge_list.clear();
   tmp_oedge_list.insert(tmp_oedge_list.end(), *edge01);
@@ -439,7 +439,7 @@ bool Vertex::CanRemove() {
   return (true);
 }
 
-Face* TwoComplex::RemoveVertex(Vertex* v0) {
+Face *TwoComplex::RemoveVertex(Vertex *v0) {
   if (!v0->euclidean) {
     ERR_RET("Remove Vertex: not euclidean");
   }
@@ -449,7 +449,7 @@ Face* TwoComplex::RemoveVertex(Vertex* v0) {
     tmp_oedge_list.insert(tmp_oedge_list.end(), *((*i)->next_edge()));
     (*i)->tail()->e = (*i)->next_edge()->ue;
   }
-  Face* f = AddFace(UNDEFINED, tmp_oedge_list);
+  Face *f = AddFace(UNDEFINED, tmp_oedge_list);
 
   for (auto i = v0->out_edges.begin(); i != v0->out_edges.end(); ++i) {
     (*i)->tail()->order = (*i)->tail()->order - 1;
@@ -457,7 +457,7 @@ Face* TwoComplex::RemoveVertex(Vertex* v0) {
       ERR_RET("RemoveVertex: ->e illegal");
     }
 
-    Face* tmp = (*i)->in_face();
+    Face *tmp = (*i)->in_face();
     (*i)->Delete();
     tmp->Delete();
   }
@@ -466,8 +466,8 @@ Face* TwoComplex::RemoveVertex(Vertex* v0) {
 }
 
 void TwoComplex::RetriangulateSurface() {
-  list<Vertex*>::iterator i;
-  list<UEdge*>::iterator j;
+  list<Vertex *>::iterator i;
+  list<UEdge *>::iterator j;
 
   fprintf(out_f, "In RetriangulateSurface\n");
 
@@ -516,7 +516,7 @@ void TwoComplex::RetriangulateSurface() {
       did_something = true;
     }
     fprintf(out_f, "Removing V%d\n", (*i)->id());
-    Face* f = RemoveVertex(*i);
+    Face *f = RemoveVertex(*i);
 
     if (verbose >= 1) {
       nbr++;
@@ -552,7 +552,7 @@ void TwoComplex::RetriangulateSurface() {
   StoreVertexOffsets();
 }
 
-UEdge* TwoComplex::FlipEdge(UEdge* u) {
+UEdge *TwoComplex::FlipEdge(UEdge *u) {
   /*           vt
                                                   / |\
                                            / u| \
@@ -565,13 +565,13 @@ UEdge* TwoComplex::FlipEdge(UEdge* u) {
 
   */
 
-  Face* f0 = u->f0;
-  Face* f1 = u->f1;
+  Face *f0 = u->f0;
+  Face *f1 = u->f1;
 
   auto oe = u->this_edge(f0);
 
-  Vertex* vh = oe->head();
-  Vertex* vt = oe->tail();
+  Vertex *vh = oe->head();
+  Vertex *vt = oe->tail();
 
   auto vt_w0 = oe->next_edge();
   auto w0_vh = oe->prev_edge();
@@ -579,18 +579,18 @@ UEdge* TwoComplex::FlipEdge(UEdge* u) {
   auto vh_w1 = oe->pair_edge()->next_edge();
   auto w1_vt = oe->pair_edge()->prev_edge();
 
-  Vertex* w0 = vt_w0->tail();
-  Vertex* w1 = vh_w1->tail();
+  Vertex *w0 = vt_w0->tail();
+  Vertex *w1 = vh_w1->tail();
 
   BigPointQ w0_w1_p = w0_vh->vecQ() + vh_w1->vecQ();
   if (field_arithmetic) {
     w0_w1_p.SetCxFromAlgebraic();
   }
-  UEdge* new_u = AddUEdge(UNDEFINED, w0, w1, w0_w1_p);
+  UEdge *new_u = AddUEdge(UNDEFINED, w0, w1, w0_w1_p);
   u->internal = true;
 
-  OEdge* w0_w1 = new OEdge(new_u, 1);
-  OEdge* w1_w0 = new OEdge(new_u, -1);
+  OEdge *w0_w1 = new OEdge(new_u, 1);
+  OEdge *w1_w0 = new OEdge(new_u, -1);
 
   list<OEdge> tmp_oedge_list;
 
@@ -622,7 +622,7 @@ UEdge* TwoComplex::FlipEdge(UEdge* u) {
   return (new_u);
 }
 
-bool TwoComplex::shouldFlip(UEdge* u) {
+bool TwoComplex::shouldFlip(UEdge *u) {
   /*           vt
                                                   / |\
                                            / u| \
@@ -639,7 +639,7 @@ bool TwoComplex::shouldFlip(UEdge* u) {
     return (false);
   }
 
-  Face* f0 = u->f0;
+  Face *f0 = u->f0;
   //    Face* f1 = u->f1;
 
   auto oe = u->this_edge(f0);

@@ -46,7 +46,11 @@ class OEdge {  // oriented edge.
 
   int id();
   explicit operator flatsurf::HalfEdge() const;
+  // The source of this oriented edge, i.e., the vertex where this edge
+  // starts. More commonly, people refer to this as a vector's tail.
   Vertex* head();
+  // The target of this oriented edge, i.e., the vertex where this edge
+  // ends. More commonly, people refer to this as a vector's head.
   Vertex* tail();
   Face* in_face();     // face to right of OEdge
   Face* other_face();  // face to left of OEdge
@@ -86,7 +90,7 @@ class OEdge {  // oriented edge.
   friend std::ostream& operator<<(std::ostream&, const OEdge&);
   void Check();
 
-  bool operator==(OEdge&);
+  bool operator==(const OEdge&);
 
   /* next 5 for speed: assigned in StoreVertexOffsets */
   template <typename PointT>

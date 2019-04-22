@@ -33,40 +33,40 @@ template <typename V>
 struct VectorAlongTriangulation<V>::Implementation {
   using Surface = FlatTriangulation<V>;
 
-  explicit Implementation(const Surface& surface) : surface(surface), impl() {}
+  explicit Implementation(const Surface &surface) : surface(surface), impl() {}
 
-  const Surface& surface;
+  const Surface &surface;
   V impl;
 };
 
 template <typename V>
-VectorAlongTriangulation<V>::VectorAlongTriangulation(const Surface& surface)
+VectorAlongTriangulation<V>::VectorAlongTriangulation(const Surface &surface)
     : impl(spimpl::make_impl<Implementation>(surface)) {}
 
 template <typename V>
 VectorAlongTriangulation<V>::VectorAlongTriangulation(
-    const Surface& surface, const HalfEdgeMap<int>& coefficients)
+    const Surface &surface, const HalfEdgeMap<int> &coefficients)
     : VectorAlongTriangulation(surface) {
   coefficients.apply(
       [&](const HalfEdge e, const int coeff) { this->iadd(e, coeff); });
 }
 
 template <typename V>
-VectorAlongTriangulation<V>& VectorAlongTriangulation<V>::operator+=(
+VectorAlongTriangulation<V> &VectorAlongTriangulation<V>::operator+=(
     const HalfEdge halfEdge) {
   this->iadd(halfEdge, 1);
   return *this;
 }
 
 template <typename V>
-VectorAlongTriangulation<V>& VectorAlongTriangulation<V>::operator-=(
+VectorAlongTriangulation<V> &VectorAlongTriangulation<V>::operator-=(
     const HalfEdge halfEdge) {
   this->iadd(halfEdge, -1);
   return *this;
 }
 
 template <typename V>
-VectorAlongTriangulation<V>& VectorAlongTriangulation<V>::iadd(
+VectorAlongTriangulation<V> &VectorAlongTriangulation<V>::iadd(
     const HalfEdge halfEdge, const int c) {
   if (c != 0) {
     auto v = c * impl->surface.fromEdge(halfEdge);
@@ -77,7 +77,7 @@ VectorAlongTriangulation<V>& VectorAlongTriangulation<V>::iadd(
 
 template <typename V>
 CCW VectorAlongTriangulation<V>::ccw(
-    const VectorAlongTriangulation<V>& other) const {
+    const VectorAlongTriangulation<V> &other) const {
   return impl->impl.ccw(other.impl->impl);
 }
 
@@ -97,7 +97,7 @@ VectorAlongTriangulation<V>::operator V() const {
 }
 
 template <typename V>
-ostream& operator<<(ostream& os, const VectorAlongTriangulation<V>& self) {
+ostream &operator<<(ostream &os, const VectorAlongTriangulation<V> &self) {
   return os << self.impl->impl;
 }
 
@@ -109,15 +109,15 @@ ostream& operator<<(ostream& os, const VectorAlongTriangulation<V>& self) {
 #include "flatsurf/vector_exactreal.hpp"
 #include "flatsurf/vector_longlong.hpp"
 template struct flatsurf::VectorAlongTriangulation<flatsurf::VectorLongLong>;
-template ostream& flatsurf::operator<<(
-    ostream&,
-    const flatsurf::VectorAlongTriangulation<flatsurf::VectorLongLong>&);
+template ostream &flatsurf::operator<<(
+    ostream &,
+    const flatsurf::VectorAlongTriangulation<flatsurf::VectorLongLong> &);
 template struct flatsurf::VectorAlongTriangulation<flatsurf::VectorEAntic>;
-template ostream& flatsurf::operator<<(
-    ostream&,
-    const flatsurf::VectorAlongTriangulation<flatsurf::VectorEAntic>&);
+template ostream &flatsurf::operator<<(
+    ostream &,
+    const flatsurf::VectorAlongTriangulation<flatsurf::VectorEAntic> &);
 template struct flatsurf::VectorAlongTriangulation<
     flatsurf::VectorExactReal<exactreal::NumberFieldTraits>>;
-template ostream& flatsurf::operator<<(
-    ostream&, const flatsurf::VectorAlongTriangulation<
-                  flatsurf::VectorExactReal<exactreal::NumberFieldTraits>>&);
+template ostream &flatsurf::operator<<(
+    ostream &, const flatsurf::VectorAlongTriangulation<
+                   flatsurf::VectorExactReal<exactreal::NumberFieldTraits>> &);

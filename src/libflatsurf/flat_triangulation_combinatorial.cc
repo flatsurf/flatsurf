@@ -33,12 +33,12 @@ using std::vector;
 
 namespace flatsurf {
 struct FlatTriangulationCombinatorial::Implementation {
-  Implementation(const Permutation<HalfEdge>& vertices)
+  Implementation(const Permutation<HalfEdge> &vertices)
       : vertices(vertices),
         // In the triangulation, the order in which half edges are attached to a
         // vertex defines the faces, so we reconstruct the faces here.
         faces(from(vertices.domain())
-                  .select([&](const HalfEdge& e) {
+                  .select([&](const HalfEdge &e) {
                     return pair<HalfEdge, HalfEdge>(-vertices(e), e);
                   })
                   .toVector()) {}
@@ -55,17 +55,17 @@ HalfEdge FlatTriangulationCombinatorial::nextAtVertex(const HalfEdge e) const {
   return impl->vertices(e);
 }
 
-const vector<HalfEdge>& FlatTriangulationCombinatorial::edges() const {
+const vector<HalfEdge> &FlatTriangulationCombinatorial::edges() const {
   return impl->vertices.domain();
 }
 
 FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(
-    const vector<vector<int>>& vertices)
+    const vector<vector<int>> &vertices)
     : FlatTriangulationCombinatorial(Permutation<HalfEdge>::create<int>(
           vertices, [](int e) { return HalfEdge(e); })) {}
 
 FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(
-    const Permutation<HalfEdge>& vertices)
+    const Permutation<HalfEdge> &vertices)
     : nedges(vertices.size() / 2),
       impl(spimpl::make_unique_impl<Implementation>(vertices)) {
   CHECK_ARGUMENT(vertices.size() % 2 == 0, "half edges must come in pairs");
@@ -77,10 +77,10 @@ FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(
 }
 
 FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(
-    FlatTriangulationCombinatorial&& rhs)
+    FlatTriangulationCombinatorial &&rhs)
     : nedges(rhs.impl->vertices.size() / 2), impl(std::move(rhs.impl)) {}
 
-ostream& operator<<(ostream& os, const FlatTriangulationCombinatorial& self) {
+ostream &operator<<(ostream &os, const FlatTriangulationCombinatorial &self) {
   return os << "FlatTriangulationCombinatorial(vertices = "
             << self.impl->vertices << ", faces = " << self.impl->faces << ")";
 }

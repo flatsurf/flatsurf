@@ -54,10 +54,10 @@ void TwoComplex::SetupReflect() {
   }
 }
 
-Face* TwoComplex::ReflectFace(UEdge* e, Face* f) {
-  Face* new_f;
+Face *TwoComplex::ReflectFace(UEdge *e, Face *f) {
+  Face *new_f;
   Vertex *new_v, *first_v, *last_v;
-  UEdge* tmp;
+  UEdge *tmp;
   BigPointQ tmp_vec;
   list<OEdge> tmp_edge_list;
 
@@ -82,7 +82,7 @@ Face* TwoComplex::ReflectFace(UEdge* e, Face* f) {
     tmp = AddUEdge(UNDEFINED, last_v, new_v, -tmp_vec);
     tmp->label = (*i).ue->label;
 
-    OEdge* new_edge = new OEdge(tmp, 1);
+    OEdge *new_edge = new OEdge(tmp, 1);
 
     if ((*i).ue->internal) {
       new_edge->ue->internal = true;
@@ -111,9 +111,9 @@ Face* TwoComplex::ReflectFace(UEdge* e, Face* f) {
   return (new_f);
 }
 
-UEdge* TwoComplex::IdentifyEdges(UEdge* ue0, UEdge* ue1) {
+UEdge *TwoComplex::IdentifyEdges(UEdge *ue0, UEdge *ue1) {
   int r;
-  Face* f1;
+  Face *f1;
   list<OEdge>::iterator e0, e1;
 
   if (ue0 == ue1) ERR_RET("identify_edges: same edge");
@@ -162,7 +162,7 @@ UEdge* TwoComplex::IdentifyEdges(UEdge* ue0, UEdge* ue1) {
   return (ue0);
 }
 
-Vertex* TwoComplex::IdentifyVertices(Vertex* v0, Vertex* v1) {
+Vertex *TwoComplex::IdentifyVertices(Vertex *v0, Vertex *v1) {
   if (v0 == v1) return (v0);
 
   for (auto j = uedges.begin(); j != uedges.end(); ++j) {
@@ -177,10 +177,10 @@ Vertex* TwoComplex::IdentifyVertices(Vertex* v0, Vertex* v1) {
   return (v0);
 }
 
-UEdge* TwoComplex::FindMatchingEdge(UEdge* ue) {
-  UEdge* candidate;
+UEdge *TwoComplex::FindMatchingEdge(UEdge *ue) {
+  UEdge *candidate;
   list<OEdge>::iterator e, oc;
-  Face* f;
+  Face *f;
   BigPointQ tmp;
 
   f = ue->boundary_face();
@@ -222,7 +222,7 @@ UEdge* TwoComplex::FindMatchingEdge(UEdge* ue) {
 }
 
 void TwoComplex::CompleteSurface() {
-  list<UEdge*>::iterator i;
+  list<UEdge *>::iterator i;
 
   if (verbose >= 1) {
     std::cout << "In CompleteSurface" << endl;
@@ -263,8 +263,8 @@ void TwoComplex::SetInternalEdges() {
   }
 }
 
-void TwoComplex::CompleteInternal(UEdge* e) {
-  list<UEdge*>::iterator k;
+void TwoComplex::CompleteInternal(UEdge *e) {
+  list<UEdge *>::iterator k;
 
   int j = 0;
 
@@ -283,7 +283,7 @@ void TwoComplex::CompleteInternal(UEdge* e) {
 
     j++;
     sprintf(buf, "movie%d", j);
-    my_ostream* movie_stream;
+    my_ostream *movie_stream;
     movie_stream = new my_ostream(buf);
     for (auto d : dl) delete d;
     dl.clear();

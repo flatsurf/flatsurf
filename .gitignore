@@ -64,8 +64,13 @@ Session.vim
 # Temporary
 .netrwhist
 *~
+#
+### neovim plugins
+.ccls-cache/
+
 # Auto-generated tag files
 tags
+
 # Persistent undo
 [._]*.un~
 
@@ -118,3 +123,6 @@ compile_commands.json
 
 ### Cysignals
 /cysignals_crash_logs
+
+### GDB
+/.gdb_history

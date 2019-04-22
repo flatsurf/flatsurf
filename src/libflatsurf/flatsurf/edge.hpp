@@ -27,26 +27,25 @@
 #include "flatsurf/half_edge.hpp"
 
 namespace flatsurf {
-	// An undirected edge in a flatsurf.
-	// This type-safe wrapper should be optimized away completely by the
-	// compiler (at least when compiling with -flto.)
-	// You might find it annoying that you cannot directly create instances of
-	// this class or rather use int everywhere instead. The point is that you
-	// get a lot of compile-time safety by using such a wrapper instead, e.g.,
-	// you cannot add edges but you could add ints which would not make much
-	// sense usually.
-	struct Edge {
-		Edge() = delete;
+// An undirected edge in a flatsurf.
+// This type-safe wrapper should be optimized away completely by the
+// compiler (at least when compiling with -flto.)
+// You might find it annoying that you cannot directly create instances of
+// this class or rather use int everywhere instead. The point is that you
+// get a lot of compile-time safety by using such a wrapper instead, e.g.,
+// you cannot add edges but you could add ints which would not make much
+// sense usually.
+struct Edge {
+  Edge() = delete;
 
-		static std::vector<Edge> makeEdges(size_t nedges);
-		std::pair<HalfEdge, HalfEdge> halfEdges() const;
-		size_t index() const;
+  static std::vector<Edge> makeEdges(size_t nedges);
+  std::pair<HalfEdge, HalfEdge> halfEdges() const;
+  size_t index() const;
 
-	private:
-		explicit Edge(size_t id);
-		const size_t id;
-	};
-}
+private:
+  explicit Edge(size_t id);
+  const size_t id;
+};
+} // namespace flatsurf
 
 #endif
-

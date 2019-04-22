@@ -22,38 +22,42 @@
 
 #include "external/spimpl/spimpl.h"
 
+#include "flatsurf/bound.hpp"
 #include "flatsurf/flatsurf.hpp"
 #include "flatsurf/forward.hpp"
-#include "flatsurf/saddle_connections_iterator.hpp"
 #include "flatsurf/half_edge.hpp"
-#include "flatsurf/bound.hpp"
+#include "flatsurf/saddle_connections_iterator.hpp"
 #include "flatsurf/vertex.hpp"
 
 namespace flatsurf {
-	template<typename Vector, typename VectorAlongTriangulation>
-	struct SaddleConnections {
-		using Surface = FlatTriangulation<Vector>;
+template <typename Vector, typename VectorAlongTriangulation>
+struct SaddleConnections {
+  using Surface = FlatTriangulation<Vector>;
 
-		// The saddle connections that are starting at the source of sectorBegin
-		// and lie in the sector between sectorBegin and the follow half edge in
-		// counter-clockwise order.
-		SaddleConnections(const Surface&, Bound searchRadius, HalfEdge sectorBegin);
-		// The saddle connections that are starting at source and are in the
-		// sector between sectorBegin and sectorEnd; these two must be connected
-		// by a half edge, sectorBoundary.
-		SaddleConnections(const Surface& surface, const Bound searchRadius, const Vertex& source, const HalfEdge sectorBoundary, const VectorAlongTriangulation& sectorBegin, const VectorAlongTriangulation& sectorEnd);
+  // The saddle connections that are starting at the source of sectorBegin
+  // and lie in the sector between sectorBegin and the follow half edge in
+  // counter-clockwise order.
+  SaddleConnections(const Surface &, Bound searchRadius, HalfEdge sectorBegin);
+  // The saddle connections that are crossing sectorBoundary and are in the
+  // sector between sectorBegin and sectorEnd; these two must be connected
+  // by a half edge, sectorBoundary.
+  SaddleConnections(const Surface &surface, const Bound searchRadius,
+                    const HalfEdge sectorBoundary,
+                    const VectorAlongTriangulation &sectorBegin,
+                    const VectorAlongTriangulation &sectorEnd);
 
-		SaddleConnectionsIterator<Vector, VectorAlongTriangulation> begin() const;
-		SaddleConnectionsIterator<Vector, VectorAlongTriangulation> end() const;
+  SaddleConnectionsIterator<Vector, VectorAlongTriangulation> begin() const;
+  SaddleConnectionsIterator<Vector, VectorAlongTriangulation> end() const;
 
-	private:
-		friend struct SaddleConnectionsIterator<Vector, VectorAlongTriangulation>;
-		struct Implementation;
-		spimpl::impl_ptr<Implementation> impl;
-	};
+private:
+  friend struct SaddleConnectionsIterator<Vector, VectorAlongTriangulation>;
+  struct Implementation;
+  spimpl::impl_ptr<Implementation> impl;
+};
 
-  template <typename Vector>
-  SaddleConnections(const FlatTriangulation<Vector>&, Bound, HalfEdge) -> SaddleConnections<Vector, typename Vector::AlongTriangulation>;
-}
+template <typename Vector>
+SaddleConnections(const FlatTriangulation<Vector> &, Bound, HalfEdge)
+    ->SaddleConnections<Vector, typename Vector::AlongTriangulation>;
+} // namespace flatsurf
 
 #endif

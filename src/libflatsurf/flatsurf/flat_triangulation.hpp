@@ -21,35 +21,39 @@
 #define LIBFLATSURF_FLAT_TRIANGULATION_HPP
 
 #include <iosfwd>
-#include <vector>
 #include <memory>
+#include <vector>
 
+#include "external/spimpl/spimpl.h"
+#include "flatsurf/flat_triangulation_combinatorial.hpp"
 #include "flatsurf/flatsurf.hpp"
 #include "flatsurf/forward.hpp"
-#include "flatsurf/flat_triangulation_combinatorial.hpp"
-#include "external/spimpl/spimpl.h"
 
 namespace flatsurf {
-	template<typename T>
-	struct HalfEdgeMap;
+template <typename T> struct HalfEdgeMap;
 
-	template<class Vector>
-	struct FlatTriangulation : FlatTriangulationCombinatorial {
-		FlatTriangulation(FlatTriangulationCombinatorial&&, const std::vector<Vector>& vectors);
-		FlatTriangulation(FlatTriangulationCombinatorial&&, const HalfEdgeMap<Vector>& vectors);
-		~FlatTriangulation() = default;
+template <class Vector>
+struct FlatTriangulation : FlatTriangulationCombinatorial {
+  FlatTriangulation(FlatTriangulationCombinatorial &&,
+                    const std::vector<Vector> &vectors);
+  FlatTriangulation(FlatTriangulationCombinatorial &&,
+                    const HalfEdgeMap<Vector> &vectors);
+  ~FlatTriangulation() = default;
 
-		const Vector& fromEdge(const HalfEdge e) const;
+  const Vector &fromEdge(const HalfEdge e) const;
 
-		template<typename W>
-		friend std::ostream& operator<<(std::ostream&, const FlatTriangulation<W>&);
-	 private:
-		struct Implementation;
-		spimpl::unique_impl_ptr<Implementation> impl;
-	};
+  template <typename W>
+  friend std::ostream &operator<<(std::ostream &, const FlatTriangulation<W> &);
 
-	template <typename Vector>
-	FlatTriangulation(const std::vector<std::vector<int>>&, const std::vector<Vector>&) -> FlatTriangulation<Vector>;
-}
+private:
+  struct Implementation;
+  spimpl::unique_impl_ptr<Implementation> impl;
+};
+
+template <typename Vector>
+FlatTriangulation(const std::vector<std::vector<int>> &,
+                  const std::vector<Vector> &)
+    ->FlatTriangulation<Vector>;
+} // namespace flatsurf
 
 #endif

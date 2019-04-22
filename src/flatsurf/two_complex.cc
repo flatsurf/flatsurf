@@ -104,13 +104,6 @@ TwoComplex::operator FlatTriangulationCombinatorial() const {
           .toVector());
 
   return {permutation};
-  /*
-  std::cout<<"Translation:"<<std::endl;
-  for (auto uedge: uedges) {
-          std::cout<<OEdge(uedge, 1)<<" → "<<static_cast<HalfEdge>(OEdge(uedge,
-  1))<<std::endl;
-  }
-  */
 }
 
 size_t TwoComplex::nedges() { return (uedges.size()); }
@@ -119,13 +112,13 @@ size_t TwoComplex::nfaces() { return (faces.size()); }
 
 size_t TwoComplex::nvertices() { return (vertices.size()); }
 
-void TwoComplex::PrintAll(ostream& out) {
+void TwoComplex::PrintAll(ostream &out) {
   if (field_arithmetic) {
     NumberField<bigrat>::F->print(out);
     Params::print(out);
   }
 
-  std::list<Vertex*>::iterator i;
+  std::list<Vertex *>::iterator i;
 
   out << "# Vertices:";
   for (i = vertices.begin(); i != vertices.end(); ++i) {
@@ -170,8 +163,8 @@ void TwoComplex::CheckAllVertices() {
   }
 }
 
-Vertex* TwoComplex::AddVertex(int id) {
-  Vertex* v = new Vertex;
+Vertex *TwoComplex::AddVertex(int id) {
+  Vertex *v = new Vertex;
   if (id >= 0) {
     v->ID = id;
     if (id >= cur_vertex_id) {
@@ -184,8 +177,8 @@ Vertex* TwoComplex::AddVertex(int id) {
   return (v);
 }
 
-UEdge* TwoComplex::AddUEdge(int id, Vertex* v0, Vertex* v1, Point vec) {
-  UEdge* ue = new UEdge(v0, v1, vec);
+UEdge *TwoComplex::AddUEdge(int id, Vertex *v0, Vertex *v1, Point vec) {
+  UEdge *ue = new UEdge(v0, v1, vec);
   if (id < 0) {
     ue->ID = cur_uedge_id++;
   } else {
@@ -204,8 +197,8 @@ UEdge* TwoComplex::AddUEdge(int id, Vertex* v0, Vertex* v1, Point vec) {
   return (ue);
 }
 
-UEdge* TwoComplex::AddUEdge(int id, Vertex* v0, Vertex* v1, BigPointQ vec) {
-  UEdge* ue = new UEdge(v0, v1, vec);
+UEdge *TwoComplex::AddUEdge(int id, Vertex *v0, Vertex *v1, BigPointQ vec) {
+  UEdge *ue = new UEdge(v0, v1, vec);
   if (id < 0) {
     ue->ID = cur_uedge_id++;
   } else {
@@ -224,8 +217,8 @@ UEdge* TwoComplex::AddUEdge(int id, Vertex* v0, Vertex* v1, BigPointQ vec) {
   return (ue);
 }
 
-Face* TwoComplex::AddFace(int id, list<OEdge> L) {
-  Face* f = new Face(L);
+Face *TwoComplex::AddFace(int id, list<OEdge> L) {
+  Face *f = new Face(L);
   if (id >= 0) {
     f->ID = id;
     if (id >= cur_face_id) {
@@ -238,7 +231,7 @@ Face* TwoComplex::AddFace(int id, list<OEdge> L) {
   return (f);
 }
 
-void TwoComplex::StatPrint(ostream& out) {
+void TwoComplex::StatPrint(ostream &out) {
   out << "# File = " << filename_ << " perturb = " << perturb_magnitude
       << " rescale = " << !norescale << endl;
 
@@ -269,9 +262,9 @@ void TwoComplex::StatPrint(ostream& out) {
   out << "# area: " << get_area() << endl;
 }
 
-void TwoComplex::AddPFace(Face* f, Point q, size_t pcomplex) {
+void TwoComplex::AddPFace(Face *f, Point q, size_t pcomplex) {
   Point r, t;
-  PFace* sp;
+  PFace *sp;
 
   sp = new PFace(f, q, pcomplex);
   dl.insert(dl.end(), sp);
@@ -280,11 +273,11 @@ void TwoComplex::AddPFace(Face* f, Point q, size_t pcomplex) {
   r = r + q;
 
   for (auto i = f->oedges.begin(); i != f->oedges.end(); ++i) {
-    PVertex* vp;
+    PVertex *vp;
     vp = new PVertex((*i).head(), r, pcomplex);
     dl.insert(dl.end(), vp);
 
-    PUEdge* ep;
+    PUEdge *ep;
     ep = new PUEdge((*i), r, pcomplex);
     dl.insert(dl.end(), ep);
 
@@ -293,10 +286,10 @@ void TwoComplex::AddPFace(Face* f, Point q, size_t pcomplex) {
   }
 }
 
-void TwoComplex::MakeDrawListInternal(Face* f, Point q) {
+void TwoComplex::MakeDrawListInternal(Face *f, Point q) {
   list<OEdge>::iterator i, j;
-  Face* candidate;
-  Vertex* v;
+  Face *candidate;
+  Vertex *v;
   Point t;
 
   if (f->deleted()) return;
@@ -417,7 +410,7 @@ void TwoComplex::BuildNeighborLists() {
 }
 
 void TwoComplex::StoreVertexOffsets() {
-  Face* f;
+  Face *f;
 
   for (auto i = faces.begin(); i != faces.end(); ++i) {
     f = (*i);
@@ -461,8 +454,8 @@ COORD TwoComplex::get_scale_factor() { return scale_factor; }
 
 void TwoComplex::set_scale_factor(COORD scale) { scale_factor = scale; }
 
-UEdge* TwoComplex::MaxEdge() {
-  UEdge* longest_edge = nullptr;
+UEdge *TwoComplex::MaxEdge() {
+  UEdge *longest_edge = nullptr;
   COORD longest_length = 0;
 
   for (auto i = uedges.begin(); i != uedges.end(); ++i) {
@@ -474,14 +467,14 @@ UEdge* TwoComplex::MaxEdge() {
   return (longest_edge);
 }
 
-COORD TwoComplex::MinSaddle(Dir<Point>& the_shortest) {
+COORD TwoComplex::MinSaddle(Dir<Point> &the_shortest) {
   Dir<Point> old_dir, new_dir, tmp_dir;
 
   COORD depth_ = MaxEdge()->len() + 0.1;
   COORD shortest = depth_;
 
   for (auto i = vertices.begin(); i != vertices.end(); ++i) {
-    Vertex* v0;
+    Vertex *v0;
     v0 = (*i);
     old_dir = Dir<Point>(v0, Point(1.12, 1.3));
     COORD TotalAngle;
@@ -505,7 +498,7 @@ COORD TwoComplex::MinSaddle(Dir<Point>& the_shortest) {
   return (shortest);
 }
 
-void TwoComplex::issueFinalReport(Summary& fsm, ostream& out, int start_vertex,
+void TwoComplex::issueFinalReport(Summary &fsm, ostream &out, int start_vertex,
                                   double part_done, double part_group) {
   out << "File = " << filename_ << " depth = " << depth
       << " follow_depth = " << follow_depth

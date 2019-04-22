@@ -61,8 +61,8 @@ void TwoComplex::InitCyclotomicField(int n) {
 
 void TwoComplex::BuildTriangle(int alpha, int beta, int gamma) {
   list<OEdge> tmp_oedge_list;
-  UEdge* ue;
-  OEdge* oe;
+  UEdge *ue;
+  OEdge *oe;
 
   int denom;
 
@@ -144,9 +144,9 @@ void TwoComplex::BuildTriangle(int alpha, int beta, int gamma) {
 
   std::cout << "Checking " << bq.cx - q << " " << bp.cx - p << endl;
 
-  Vertex* v0 = AddVertex(UNDEFINED);
-  Vertex* v1 = AddVertex(UNDEFINED);
-  Vertex* v2 = AddVertex(UNDEFINED);
+  Vertex *v0 = AddVertex(UNDEFINED);
+  Vertex *v1 = AddVertex(UNDEFINED);
+  Vertex *v2 = AddVertex(UNDEFINED);
 
   ue = AddUEdge(UNDEFINED, v0, v1, bp);
   oe = new OEdge(ue, 1);
@@ -166,7 +166,7 @@ void TwoComplex::BuildTriangle(int alpha, int beta, int gamma) {
   AddFace(UNDEFINED, tmp_oedge_list);
 }
 
-void MakeRealQuad(int int_angles[], Point& p, Point& q, Point& r) {
+void MakeRealQuad(int int_angles[], Point &p, Point &q, Point &r) {
   /* Calculate the coordinates of a quadrilateral with angles
     adds a quadrilateral with angles  2*pi*a/(a+b+c+d), 2*pi*b/(a+b+c+d),
   2*pi*c/(a+b+c+d), 2*pi*d/(a+b+c+d), where a,b,c,d are the entries of
@@ -246,8 +246,8 @@ void MakeRealQuad(int int_angles[], Point& p, Point& q, Point& r) {
 
 void TwoComplex::BuildQuad(int alpha, int beta, int gamma, int delta) {
   list<OEdge> tmp_oedge_list;
-  UEdge* ue;
-  OEdge* oe;
+  UEdge *ue;
+  OEdge *oe;
   int denom = alpha + beta + gamma + delta;
 
   /* find biggest angle */
@@ -346,10 +346,10 @@ void TwoComplex::BuildQuad(int alpha, int beta, int gamma, int delta) {
   std::cout << "Checking q_algt " << bq.cx - q << endl;
   std::cout << "Checking r_algt " << br.cx - r << endl;
 
-  Vertex* v0 = AddVertex(UNDEFINED);
-  Vertex* v1 = AddVertex(UNDEFINED);
-  Vertex* v2 = AddVertex(UNDEFINED);
-  Vertex* v3 = AddVertex(UNDEFINED);
+  Vertex *v0 = AddVertex(UNDEFINED);
+  Vertex *v1 = AddVertex(UNDEFINED);
+  Vertex *v2 = AddVertex(UNDEFINED);
+  Vertex *v3 = AddVertex(UNDEFINED);
 
   ue = AddUEdge(UNDEFINED, v0, v1, bp);
   oe = new OEdge(ue, 1);
@@ -381,7 +381,7 @@ void TwoComplex::BuildQuad(int alpha, int beta, int gamma, int delta) {
 #define MAX_LINE 1000
 
 void TwoComplex::ReadComplex(string filename) {
-  FILE* fp;
+  FILE *fp;
   char buf[MAX_LINE];
   int c;
   int line_number = 1;
@@ -433,7 +433,7 @@ void TwoComplex::ReadComplex(string filename) {
   }
 }
 
-UEdge* TwoComplex::GetUEdge(int id) {
+UEdge *TwoComplex::GetUEdge(int id) {
   for (auto i = uedges.begin(); i != uedges.end(); ++i) {
     if ((*i)->id() == id) {
       return (*i);
@@ -442,7 +442,7 @@ UEdge* TwoComplex::GetUEdge(int id) {
   return nullptr;
 }
 
-Vertex* TwoComplex::GetVertex(int id) {
+Vertex *TwoComplex::GetVertex(int id) {
   for (auto i = vertices.begin(); i != vertices.end(); ++i) {
     if ((*i)->id() == id) {
       return (*i);
@@ -451,7 +451,7 @@ Vertex* TwoComplex::GetVertex(int id) {
   return nullptr;
 }
 
-Face* TwoComplex::GetFace(int id) {
+Face *TwoComplex::GetFace(int id) {
   for (auto i = faces.begin(); i != faces.end(); ++i) {
     if ((*i)->id() == id) {
       return (*i);
@@ -460,14 +460,14 @@ Face* TwoComplex::GetFace(int id) {
   return nullptr;
 }
 
-char* read_coords(char* s, COORD* p_vec_re, COORD* p_vec_im, int line_number) {
-  char* q = nullptr;
+char *read_coords(char *s, COORD *p_vec_re, COORD *p_vec_im, int line_number) {
+  char *q = nullptr;
   char re[MAX_LINE];
   char im[MAX_LINE];
 
   //  printf("read coords, s = %s\n", s);
 
-  for (char* p = s; *p != '\0'; p++) {
+  for (char *p = s; *p != '\0'; p++) {
     if (*p == ')') {
       q = p;
     }
@@ -487,8 +487,8 @@ char* read_coords(char* s, COORD* p_vec_re, COORD* p_vec_im, int line_number) {
   //  printf("s=%s re=%s im=%s\n", s, re, im);
 
 #ifdef USE_LONG_DOUBLE
-  *p_vec_re = strtold(re, (char**)0);
-  *p_vec_im = strtold(im, (char**)0);
+  *p_vec_re = strtold(re, (char **)0);
+  *p_vec_im = strtold(im, (char **)0);
 #else
   *p_vec_re = strtod(re, nullptr);
   *p_vec_im = strtod(im, nullptr);
@@ -511,18 +511,18 @@ F%d F%d ) (%lg,%lg)", &ue_id, &v0_id, &v1_id, &f0_id, &f1_id, &vec_re, &vec_im)
   */
 }
 
-void TwoComplex::read_edge_line(FILE* fp, int line_number) {
+void TwoComplex::read_edge_line(FILE *fp, int line_number) {
   int ue_id, v0_id, v1_id, f0_id, f1_id;
   COORD vec_re, vec_im;
   Point vec;
 
   Vertex *v0, *v1;
-  UEdge* ue;
+  UEdge *ue;
   Face *f0, *f1;
   list<OEdge> tmp_oedge_list;
   char buf[MAX_LINE];
 
-  char* s;
+  char *s;
 
   if (fgets(buf, MAX_LINE, fp) == nullptr) {
     ERR_RET("Unexpected EOF");
@@ -593,12 +593,12 @@ void TwoComplex::read_edge_line(FILE* fp, int line_number) {
   ue->ue_vecQ.cx = Point(vec_re, vec_im);
 }
 
-void TwoComplex::read_face_line(FILE* fp, int line_number) {
+void TwoComplex::read_face_line(FILE *fp, int line_number) {
   char buf[MAX_LINE];
-  char* str;
+  char *str;
   char c, c1;
   int f_id, e_id, dir = 0;
-  Face* f;
+  Face *f;
   list<OEdge> tmp_oedge_list;
   /* make sure that is null */
 
@@ -630,13 +630,13 @@ void TwoComplex::read_face_line(FILE* fp, int line_number) {
       default:
         ERR_RET2("read_face_line: bad sign; line =", line_number);
     }
-    UEdge* ue;
+    UEdge *ue;
     ue = GetUEdge(e_id);
     if (ue == nullptr) {
       ue = AddUEdge(e_id, nullptr, nullptr, Point(0, 0));
     }
 
-    OEdge* oe;
+    OEdge *oe;
     oe = new OEdge(ue, dir);
     tmp_oedge_list.insert(tmp_oedge_list.end(), *oe);
 

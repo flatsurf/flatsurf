@@ -23,33 +23,34 @@
 #include <iosfwd>
 
 #include "flatsurf/flatsurf.hpp"
-#include "flatsurf/vertex.hpp"
+#include "flatsurf/half_edge.hpp"
 
 namespace flatsurf {
-	template<typename Vector>
-	struct FlatTriangulation;
+template <typename Vector> struct FlatTriangulation;
 
-	struct Vertex;
+struct Vertex;
 
-	// TODO: Maybe this should be a pimpl? But this only makes sense if it's
-	// constructor is accepting the underlying pimpl. But then the calling code
-	// would need to know the pimpl…, i.e., we would have to move the
-	// implementation inside saddle_connections_iterator.cc. That makes sense but
-	// is breaking a bit with our conventions here. So we might want to include
-	// saddle_conection.tcc from saddle_connection_iterator.cc.
-	template<typename Vector, typename AlongTriangulation>
-	struct SaddleConnection {
-		SaddleConnection(const FlatTriangulation<Vector>&, const AlongTriangulation&, const Vertex& source, const Vertex& target);
+// TODO: Maybe this should be a pimpl? But this only makes sense if it's
+// constructor is accepting the underlying pimpl. But then the calling code
+// would need to know the pimpl…, i.e., we would have to move the
+// implementation inside saddle_connections_iterator.cc. That makes sense but
+// is breaking a bit with our conventions here. So we might want to include
+// saddle_conection.tcc from saddle_connection_iterator.cc.
+template <typename Vector, typename AlongTriangulation>
+struct SaddleConnection {
+  SaddleConnection(const FlatTriangulation<Vector> &,
+                   const AlongTriangulation &, const HalfEdge &source,
+                   const HalfEdge &target);
 
-		template <typename V, typename A>
-		friend std::ostream& operator<<(std::ostream&, const SaddleConnection<V, A>&);
+  template <typename V, typename A>
+  friend std::ostream &operator<<(std::ostream &,
+                                  const SaddleConnection<V, A> &);
 
-		const FlatTriangulation<Vector>& surface;
-		const AlongTriangulation vector;
-		const Vertex source;
-		const Vertex target;
-	};
-}
+  const FlatTriangulation<Vector> &surface;
+  const AlongTriangulation vector;
+  const HalfEdge source;
+  const HalfEdge target;
+};
+} // namespace flatsurf
 
 #endif
-

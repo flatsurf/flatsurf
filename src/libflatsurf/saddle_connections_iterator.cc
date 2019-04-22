@@ -52,14 +52,14 @@ struct SaddleConnectionsIterator<Vector,
     GOTO_PREVIOUS_EDGE,
   };
 
-  explicit Implementation(const FlatTriangulation<Vector>& surface,
-                          const Bound searchRadius, const Vertex& source,
+  explicit Implementation(const FlatTriangulation<Vector> &surface,
+                          const Bound searchRadius,
                           const HalfEdge sectorBoundary,
-                          const VectorAlongTriangulation& sectorBegin,
-                          const VectorAlongTriangulation& sectorEnd)
+                          const VectorAlongTriangulation &sectorBegin,
+                          const VectorAlongTriangulation &sectorEnd)
       : surface(&surface),
         searchRadius(searchRadius),
-        source(source),
+        source(-surface.nextAtVertex(sectorBoundary)),
         sector{sectorBegin, sectorEnd},
         nextEdge(sectorBoundary),
         nextEdgeEnd(sectorEnd),
@@ -71,9 +71,9 @@ struct SaddleConnectionsIterator<Vector,
     }
   }
 
-  FlatTriangulation<Vector> const* surface;
+  FlatTriangulation<Vector> const *surface;
   Bound searchRadius;
-  Vertex source;
+  HalfEdge source;
   // The rays that enclose the search sector, in counterclockwise order.
   // They themselves come from saddle connections, starting at base and
   // pointing to a vertex of the flatsurf.
@@ -347,14 +347,13 @@ struct SaddleConnectionsIterator<Vector,
 
 template <typename Vector, typename VectorAlongTriangulation>
 SaddleConnectionsIterator<Vector, VectorAlongTriangulation>::
-    SaddleConnectionsIterator(const FlatTriangulation<Vector>& surface,
-                              const Bound searchRadius, const Vertex& source,
+    SaddleConnectionsIterator(const FlatTriangulation<Vector> &surface,
+                              const Bound searchRadius,
                               const HalfEdge sectorBoundary,
-                              const VectorAlongTriangulation& sectorBegin,
-                              const VectorAlongTriangulation& sectorEnd)
-    : impl(spimpl::make_impl<Implementation>(surface, searchRadius, source,
-                                             sectorBoundary, sectorBegin,
-                                             sectorEnd)) {}
+                              const VectorAlongTriangulation &sectorBegin,
+                              const VectorAlongTriangulation &sectorEnd)
+    : impl(spimpl::make_impl<Implementation>(
+          surface, searchRadius, sectorBoundary, sectorBegin, sectorEnd)) {}
 
 template <typename Vector, typename VectorAlongTriangulation>
 SaddleConnectionsIterator<Vector,
@@ -363,7 +362,7 @@ SaddleConnectionsIterator<Vector,
 
 template <typename Vector, typename VectorAlongTriangulation>
 bool SaddleConnectionsIterator<Vector, VectorAlongTriangulation>::equal(
-    const SaddleConnectionsIterator<Vector, VectorAlongTriangulation>& other)
+    const SaddleConnectionsIterator<Vector, VectorAlongTriangulation> &other)
     const {
   if (!impl || impl->atEnd()) {
     return !other.impl || other.impl->atEnd();
@@ -389,8 +388,7 @@ std::unique_ptr<SaddleConnection<Vector, VectorAlongTriangulation>>
 SaddleConnectionsIterator<Vector, VectorAlongTriangulation>::dereference()
     const {
   return std::make_unique<SaddleConnection<Vector, VectorAlongTriangulation>>(
-      *impl->surface, impl->nextEdgeEnd, impl->source,
-      Vertex::target(impl->nextEdge, *impl->surface));
+      *impl->surface, impl->nextEdgeEnd, impl->source, impl->nextEdge);
 }
 }  // namespace flatsurf
 

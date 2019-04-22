@@ -31,18 +31,18 @@ using std::ostream;
 namespace flatsurf {
 VectorArb::VectorArb() {}
 
-VectorArb::VectorArb(const Arb& x, const Arb& y) : x(x), y(y) {}
+VectorArb::VectorArb(const Arb &x, const Arb &y) : x(x), y(y) {}
 
 bool VectorArb::isExact() const { return x.is_exact() && y.is_exact(); }
 
-VectorArb& VectorArb::operator+=(const VectorArb& rhs) {
+VectorArb &VectorArb::operator+=(const VectorArb &rhs) {
   // TODO: Should we really fix a precision here?
   x += (rhs.x)(ARF_PREC_EXACT);
   y += (rhs.y)(ARF_PREC_EXACT);
   return *this;
 }
 
-VectorArb& VectorArb::operator*=(const int rhs) {
+VectorArb &VectorArb::operator*=(const int rhs) {
   // TODO: Should we really fix a precision here?
   arb_mul_si(x.arb_t(), x.arb_t(), rhs, ARF_PREC_EXACT);
   arb_mul_si(y.arb_t(), y.arb_t(), rhs, ARF_PREC_EXACT);
@@ -61,7 +61,11 @@ optional<bool> VectorArb::operator>(const Bound bound) const {
   return size > bound.squared;
 }
 
-optional<CCW> VectorArb::ccw(const VectorArb& rhs) const {
+VectorArb::operator std::complex<double>() const {
+  return std::complex(static_cast<double>(x), static_cast<double>(y));
+}
+
+optional<CCW> VectorArb::ccw(const VectorArb &rhs) const {
   // TODO: Should we really fix a precision here? No.
   const Arb a = (x * rhs.y)(ARF_PREC_EXACT);
   const Arb b = (rhs.x * y)(ARF_PREC_EXACT);
@@ -85,7 +89,7 @@ optional<CCW> VectorArb::ccw(const VectorArb& rhs) const {
   }
 }
 
-optional<ORIENTATION> VectorArb::orientation(const VectorArb& rhs) const {
+optional<ORIENTATION> VectorArb::orientation(const VectorArb &rhs) const {
   // TODO: Should we really fix a precision here?
   // TODO: Arb also has a dot product. In such a low dimension it probably does
   // not make a difference.
@@ -108,7 +112,7 @@ optional<ORIENTATION> VectorArb::orientation(const VectorArb& rhs) const {
   return {};
 }
 
-ostream& operator<<(ostream& os, const VectorArb& self) {
+ostream &operator<<(ostream &os, const VectorArb &self) {
   return os << "(" << self.x << ", " << self.y << ")";
 }
 

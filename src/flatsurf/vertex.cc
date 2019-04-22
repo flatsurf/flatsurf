@@ -60,9 +60,9 @@ Simplex::Simplex() : color("#") {
   }
 }
 
-int Simplex::id() { return ID; }
+int Simplex::id() const { return ID; }
 
-void Simplex::Print(ostream& out) { out << tag << id(); }
+void Simplex::Print(ostream &out) { out << tag << id(); }
 
 Vertex::Vertex() : Simplex() {
   tag = 'V';
@@ -113,8 +113,8 @@ void Vertex::Check() {
   }
 }
 
-Vertex& Vertex::from(const flatsurf::Vertex& v) {
-  for (Vertex* w : S->vertices) {
+Vertex &Vertex::from(const flatsurf::Vertex &v) {
+  for (Vertex *w : S->vertices) {
     if (static_cast<flatsurf::Vertex>(*w) == v) {
       return *w;
     }

@@ -33,7 +33,7 @@ using std::vector;
 
 namespace flatsurf {
 template <typename T>
-HalfEdgeMap<T>::HalfEdgeMap(const vector<T>& data) {
+HalfEdgeMap<T>::HalfEdgeMap(const vector<T> &data) {
   for (size_t i = 0; i < data.size(); i++) {
     this->data.emplace_back(data[i]);
     this->data.emplace_back(-data[i]);
@@ -41,12 +41,12 @@ HalfEdgeMap<T>::HalfEdgeMap(const vector<T>& data) {
 }
 
 template <typename T>
-const T& HalfEdgeMap<T>::get(const HalfEdge key) const {
+const T &HalfEdgeMap<T>::get(const HalfEdge key) const {
   return data.at(index(key));
 }
 
 template <typename T>
-void HalfEdgeMap<T>::apply(function<void(HalfEdge, const T&)> callback) const {
+void HalfEdgeMap<T>::apply(function<void(HalfEdge, const T &)> callback) const {
   for (int i = 1; i <= static_cast<int>(data.size()) / 2; i++) {
     const HalfEdge e(i);
     callback(e, get(e));
@@ -54,7 +54,7 @@ void HalfEdgeMap<T>::apply(function<void(HalfEdge, const T&)> callback) const {
 }
 
 template <typename T>
-void HalfEdgeMap<T>::set(const HalfEdge key, const T& value) {
+void HalfEdgeMap<T>::set(const HalfEdge key, const T &value) {
   data.at(index(key)) = value;
   data.at(index(-key)) = -value;
 }
@@ -71,11 +71,11 @@ size_t HalfEdgeMap<T>::index(const HalfEdge e) {
 }
 
 template <typename T>
-ostream& operator<<(ostream& os, const flatsurf::HalfEdgeMap<T>& self) {
+ostream &operator<<(ostream &os, const flatsurf::HalfEdgeMap<T> &self) {
   return os << boost::algorithm::join(
              from(self.data)
                  .select_i([](const T t, const int i) {
-                   return (i % 2 ? "" : "-") +
+                   return (i % 2 ? "-" : "") +
                           boost::lexical_cast<std::string>(i / 2 + 1) + ": " +
                           boost::lexical_cast<std::string>(t);
                  })
@@ -83,7 +83,7 @@ ostream& operator<<(ostream& os, const flatsurf::HalfEdgeMap<T>& self) {
                    // TODO: This is a hack. However, we cannot use a where_i
                    // further up because VectorExactReal has no default
                    // constructor.
-                   return (i % 2 == 1) &&
+                   return (i % 2 == 0) &&
                           !boost::algorithm::ends_with(t, ": 0");
                  })
                  .toVector(),
@@ -99,15 +99,15 @@ using namespace flatsurf;
 #include "flatsurf/vector_exactreal.hpp"
 #include "flatsurf/vector_longlong.hpp"
 template struct flatsurf::HalfEdgeMap<VectorLongLong>;
-template ostream& flatsurf::operator<<(ostream&,
-                                       const HalfEdgeMap<VectorLongLong>&);
+template ostream &flatsurf::operator<<(ostream &,
+                                       const HalfEdgeMap<VectorLongLong> &);
 template struct flatsurf::HalfEdgeMap<
     VectorExactReal<exactreal::NumberFieldTraits>>;
-template ostream& flatsurf::operator<<(
-    ostream&,
-    const HalfEdgeMap<VectorExactReal<exactreal::NumberFieldTraits>>&);
+template ostream &flatsurf::operator<<(
+    ostream &,
+    const HalfEdgeMap<VectorExactReal<exactreal::NumberFieldTraits>> &);
 template struct flatsurf::HalfEdgeMap<VectorEAntic>;
-template ostream& flatsurf::operator<<(ostream&,
-                                       const HalfEdgeMap<VectorEAntic>&);
+template ostream &flatsurf::operator<<(ostream &,
+                                       const HalfEdgeMap<VectorEAntic> &);
 template struct flatsurf::HalfEdgeMap<int>;
-template ostream& flatsurf::operator<<(ostream&, const HalfEdgeMap<int>&);
+template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<int> &);
