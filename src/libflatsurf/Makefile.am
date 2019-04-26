@@ -45,7 +45,8 @@ nobase_include_HEADERS =                              \
     flatsurf/vector_eantic.hpp                                 \
     flatsurf/vector_exactreal.hpp                              \
     flatsurf/vector_longlong.hpp                               \
-    flatsurf/vertex.hpp
+    flatsurf/vertex.hpp                                        \
+    external/spimpl/spimpl.h
 
 libflatsurf_la_LDFLAGS = -version-info $(libflatsurf_version_info)
 

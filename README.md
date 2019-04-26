@@ -10,6 +10,12 @@
 We build and release this package with every push to the master branch. These releases are considered unstable and highly
 experimental. There are no stable releases yet.
 
+This repository contains three related projects:
+
+* **libflatsurf** a C++ library
+* **pyflatsurf** a Python wrapper for **libflatsurf**
+* **flatsurf** a binary that builds upon **libflatsurf**
+
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
 | [![Nightly Build](https://img.shields.io/badge/experimental-libpolygon-green.svg)](https://anaconda.org/saraedum/libpolygon) | [![Conda Downloads](https://img.shields.io/conda/dn/saraedum/libpolygon.svg)](https://anaconda.org/saraedum/libpolygon) | [![Conda Version](https://img.shields.io/conda/vn/saraedum/libpolygon.svg)](https://anaconda.org/saraedum/libpolygon) | [![Conda Platforms](https://img.shields.io/conda/pn/saraedum/libpolygon.svg)](https://anaconda.org/saraedum/libpolygon) |
@@ -20,14 +26,17 @@ experimental. There are no stable releases yet.
 You can install this package with conda. Download and install [Miniconda](https://conda.io/miniconda.html), then run
 
 ```
-conda config --add channels conda-forge
-conda install -c saraedum libpypolygon
+conda config --add channels flatsurf conda-forge
+conda install -c saraedum pyflatsurf flatsurf
 ```
 
 ## Run with binder in the Cloud
 
-You can try out this library in a very limited environment online by clicking
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/polygon-tbd/polygon/master?filepath=binder%2FSample.ipynb)
+You can try out the projects in this repository in a very limited environment online by clicking the following links:
+
+* **libflatsurf** [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/polygon-tbd/polygon/master?filepath=binder%2FSample.libflatsurf.ipynb)
+* **pyflatsurf** [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/polygon-tbd/polygon/master?filepath=binder%2FSample.pyflatsurf.ipynb)
+* **flatsurf** [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/polygon-tbd/polygon/master?filepath=binder%2FSample.flatsurf.ipynb)
 
 ## Build from the Source Code Repository
 

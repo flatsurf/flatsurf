@@ -42,7 +42,7 @@ cppyy.py.add_pythonization(make_iterable, "flatsurf")
 if 'PYFLATSURF_INCLUDE' in os.environ:
     cppyy.add_include_path(os.environ['PYFLATSURF_INCLUDE'])
 
-cppyy.include("libflatsurf/cppyy.hpp")
+cppyy.include("flatsurf/cppyy.hpp")
 cppyy.include("e-antic/renfxx.h")
 
 from cppyy.gbl import flatsurf
