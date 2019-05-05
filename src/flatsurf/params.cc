@@ -39,7 +39,7 @@ vector<shared_ptr<RealNumber>> reals;
 // TODO: Should I fix a prec here?
 auto mod = std::make_shared<const Module<NumberFieldTraits>>(
     std::vector<std::shared_ptr<RealNumber>>{RealNumber::rational(1)},
-    eantic::renf_class(), VectorArb::prec);
+    eantic::renf_class());
 }  // namespace
 
 namespace polygon {
@@ -61,8 +61,7 @@ void Params::AddParams(size_t n, COORD prms[]) {
   }
   // TODO: Should I fix a prec here?
   mod = std::make_shared<const Module<NumberFieldTraits>>(
-      basis, static_cast<const eantic::renf_class &>(*NumberField<bigrat>::F),
-      VectorArb::prec);
+      basis, static_cast<const eantic::renf_class &>(*NumberField<bigrat>::F));
 }
 
 void Params::print(ostream &out) {

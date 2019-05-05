@@ -133,7 +133,7 @@ T(NTL::conv<long>(c)); }).toVector());
 // Return the smallest totally real field which contains Re(ξ) and Im(ξ) where
 // ξ is a primitive n-th root of unity; together with the elements Re(ξ) and
 // Im(ξ).
-std::tuple<std::unique_ptr<eantic::renf_class>, eantic::renf_elem_class,
+std::tuple<std::shared_ptr<eantic::renf_class>, eantic::renf_elem_class,
            eantic::renf_elem_class>
 real_cyclotomic_field(size_t n) {
   /*
@@ -267,10 +267,9 @@ im.change_ring(M).roots(multiplicities=False))
   }
 
   // TODO: What is the correct precision here?
-  std::unique_ptr<eantic::renf_class> totally_real_field =
-      std::make_unique<eantic::renf_class>(
-          totally_real_data[n][0], "x",
-          totally_real_data[n][1] + " +/- 0.00001", flatsurf::VectorArb::prec);
+  auto totally_real_field = std::make_shared<eantic::renf_class>(
+      totally_real_data[n][0], "x", totally_real_data[n][1] + " +/- 0.00001",
+      flatsurf::VectorArb::prec);
   auto re =
       eantic::renf_elem_class(*totally_real_field, totally_real_data[n][2]);
   auto im =

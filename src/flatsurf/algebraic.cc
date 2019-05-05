@@ -309,10 +309,10 @@ NumberField<T>::NumberField() {}
 template <class T>
 NumberField<T>::NumberField(
     T p[], size_t deg, complex<COORD> emb,
-    std::unique_ptr<eantic::renf_class> totally_real_field,
+    std::shared_ptr<eantic::renf_class> totally_real_field,
     const complex<renf_elem_class> &&gen)
     : embedding(emb),
-      totally_real_field(totally_real_field.release()),
+      totally_real_field(totally_real_field),
       gen(std::move(gen)),
       degree(deg) {
   vector<T> coefficients;
