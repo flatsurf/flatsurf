@@ -20,6 +20,7 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTIONS_ITERATOR_HPP
 #define LIBFLATSURF_SADDLE_CONNECTIONS_ITERATOR_HPP
 
+#include <optional>
 #include "external/spimpl/spimpl.h"
 #include <boost/iterator/iterator_facade.hpp>
 
@@ -33,16 +34,19 @@ template <typename Vector, typename VectorAlongTriangulation>
 struct SaddleConnectionsIterator
     : boost::iterator_facade<
           SaddleConnectionsIterator<Vector, VectorAlongTriangulation>,
-          const std::unique_ptr<
-              SaddleConnection<Vector, VectorAlongTriangulation>>,
+          const std::unique_ptr<SaddleConnection<Vector, VectorAlongTriangulation>>,
           std::forward_iterator_tag,
-          const std::unique_ptr<
-              SaddleConnection<Vector, VectorAlongTriangulation>>> {
+          const std::unique_ptr<SaddleConnection<Vector, VectorAlongTriangulation>>> {
   friend class boost::iterator_core_access;
 
+  // Advance the iterator to the next saddle connection.
   void increment();
-  bool equal(const SaddleConnectionsIterator<Vector, VectorAlongTriangulation>
-                 &other) const;
+  // Advance the iterator to the next saddle connection or until a HalfEdge is
+  // being crossed during the search (in forward direction.) This can be useful
+  // if information about the exact path in the surface for a saddle connection
+  // needs to be reconstructed.
+  std::optional<HalfEdge> incrementWithCrossings();
+  bool equal(const SaddleConnectionsIterator<Vector, VectorAlongTriangulation> &other) const;
   std::unique_ptr<SaddleConnection<Vector, VectorAlongTriangulation>>
   dereference() const;
 

@@ -17,9 +17,12 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <climits>
 #include <ostream>
 
+#include "flatsurf/bound.hpp"
 #include "flatsurf/saddle_connection.hpp"
+#include "flatsurf/saddle_connections.hpp"
 
 using std::ostream;
 
@@ -33,8 +36,42 @@ SaddleConnection<Vector, AlongTriangulation>::SaddleConnection(
 template <typename Vector, typename AlongTriangulation>
 ostream &operator<<(ostream &os,
                     const SaddleConnection<Vector, AlongTriangulation> &self) {
-  return os << "SaddleConnection(" << self.source << "→" << self.target << ": "
-            << self.vector << ")";
+  os << "SaddleConnection(" << self.source << " -> " << self.target
+     << " in direction " << self.vector << " crossing";
+
+  // We reconstruct the sequence of half edges that this saddle connection
+  // crossed. This is expensive (but cheap in terms of the output size.) This
+  // information seems to be essential to properly plot a saddle connection.
+  auto reconstruction = SaddleConnections<Vector, AlongTriangulation>(
+      self.surface, Bound(LLONG_MAX), self.source);
+  auto it = reconstruction.begin();
+  while (**it != self) {
+    auto ccw = (*it)->vector.ccw(self.vector);
+    assert(ccw != CCW::COLLINEAR &&
+           "There cannot be another saddle connection in exactly the same "
+           "direction.");
+    it.skipSector(-ccw);
+    while (true) {
+      auto crossing = it.incrementWithCrossings();
+      if (crossing.has_value()) {
+        os << " " << *crossing;
+      } else {
+        break;
+      }
+    }
+  }
+
+  return os << ")";
+}
+
+template <typename Vector, typename AlongTriangulation>
+bool SaddleConnection<Vector, AlongTriangulation>::operator==(
+    const SaddleConnection<Vector, AlongTriangulation> &rhs) const {
+  bool ret = &surface == &rhs.surface &&
+             static_cast<Vector>(vector) == static_cast<Vector>(rhs.vector) &&
+             source == rhs.source;
+  assert(!ret || target == rhs.target);
+  return ret;
 }
 }  // namespace flatsurf
 

@@ -133,6 +133,7 @@ struct SaddleConnectionsIterator<Vector,
           case Classification::SADDLE_CONNECTION:
             state.push(State::SADDLE_CONNECTION_FOUND);
             if (!(nextEdgeEnd > searchRadius)) {
+              // Report this saddle connection.
               return true;
             } else {
               // If the vertex is beyond the search radius, we do not report
@@ -381,6 +382,24 @@ template <typename Vector, typename VectorAlongTriangulation>
 void SaddleConnectionsIterator<Vector, VectorAlongTriangulation>::increment() {
   while (!impl->increment())
     ;
+}
+
+template <typename Vector, typename VectorAlongTriangulation>
+std::optional<HalfEdge> SaddleConnectionsIterator<
+    Vector, VectorAlongTriangulation>::incrementWithCrossings() {
+  while (true) {
+    if (impl->state.top() == Implementation::State::START) {
+      impl->applyMoves();
+      auto ret = impl->nextEdge;
+      impl->increment();
+      return ret;
+    } else if (impl->state.top() ==
+               Implementation::State::SADDLE_CONNECTION_FOUND) {
+      return {};
+    } else {
+      impl->increment();
+    }
+  }
 }
 
 template <typename Vector, typename VectorAlongTriangulation>
