@@ -453,6 +453,7 @@ std::vector<T> to_coords(const renf_elem_class &real,
   for (long i = 0; i < cols; i++) {
     auto c = x(i);
     if constexpr (std::is_same_v<T, long>) {
+      c.canonicalize();
       assert(c.get_den() == 1);
       auto num = c.get_num();
       assert(num.fits_sint_p());
