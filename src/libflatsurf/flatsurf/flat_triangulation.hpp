@@ -30,15 +30,10 @@
 #include "flatsurf/forward.hpp"
 
 namespace flatsurf {
-template <typename T> struct HalfEdgeMap;
-
 template <class Vector>
 struct FlatTriangulation : FlatTriangulationCombinatorial {
-  FlatTriangulation(FlatTriangulationCombinatorial &&,
-                    const std::vector<Vector> &vectors);
-  FlatTriangulation(FlatTriangulationCombinatorial &&,
-                    const HalfEdgeMap<Vector> &vectors);
-  ~FlatTriangulation() = default;
+  FlatTriangulation(FlatTriangulationCombinatorial &&, const std::vector<Vector> &vectors);
+  FlatTriangulation(FlatTriangulationCombinatorial &&, HalfEdgeMap<Vector> &&vectors);
 
   const Vector &fromEdge(const HalfEdge e) const;
 
@@ -51,9 +46,7 @@ private:
 };
 
 template <typename Vector>
-FlatTriangulation(const std::vector<std::vector<int>> &,
-                  const std::vector<Vector> &)
-    ->FlatTriangulation<Vector>;
+FlatTriangulation(const std::vector<std::vector<int>> &, const std::vector<Vector> &) ->FlatTriangulation<Vector>;
 } // namespace flatsurf
 
 #endif

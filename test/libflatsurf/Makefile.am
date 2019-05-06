@@ -1,8 +1,9 @@
-check_PROGRAMS = saddle_connections
+check_PROGRAMS = saddle_connections flip
 
 TESTS = $(check_PROGRAMS)
 
-saddle_connections_SOURCES = saddle_connections.test.cc main.hpp
+saddle_connections_SOURCES = saddle_connections.test.cc main.hpp surfaces.hpp
+flip_SOURCES = flip.test.cc main.hpp surfaces.hpp
 
 @VALGRIND_CHECK_RULES@
 

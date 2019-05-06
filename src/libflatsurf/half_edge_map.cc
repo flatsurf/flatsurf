@@ -24,6 +24,7 @@
 #include <ostream>
 #include "external/boolinq/include/boolinq/boolinq.h"
 
+#include "flatsurf/flat_triangulation_combinatorial.hpp"
 #include "flatsurf/half_edge_map.hpp"
 
 using boolinq::from;
@@ -33,21 +34,60 @@ using std::vector;
 
 namespace flatsurf {
 template <typename T>
-HalfEdgeMap<T>::HalfEdgeMap(const vector<T> &data) {
-  for (size_t i = 0; i < data.size(); i++) {
-    this->data.emplace_back(data[i]);
-    this->data.emplace_back(-data[i]);
+HalfEdgeMap<T>::HalfEdgeMap(const FlatTriangulationCombinatorial &parent,
+                            const vector<T> &values,
+                            const FlipHandler &updateAfterFlip)
+    : parent(&parent), updateAfterFlip(updateAfterFlip) {
+  assert(values.size() == parent.nedges &&
+         "values must contain one entry for each pair of half edges");
+  for (size_t i = 0; i < values.size(); i++) {
+    this->values.emplace_back(values[i]);
+    this->values.emplace_back(-values[i]);
+  }
+
+  parent.registerMap(*this);
+}
+
+template <typename T>
+HalfEdgeMap<T>::HalfEdgeMap(const HalfEdgeMap &rhs)
+    : parent(rhs.parent),
+      values(rhs.values),
+      // Note that we silently assume that updateAfterFlip has no weird side
+      // effects so that it's fine to run it twice when there are two copies.
+      updateAfterFlip(rhs.updateAfterFlip) {
+  if (parent != nullptr) {
+    parent->registerMap(*this);
+  }
+}
+
+template <typename T>
+HalfEdgeMap<T>::HalfEdgeMap(HalfEdgeMap &&rhs)
+    : parent(rhs.parent),
+      values(std::move(rhs.values)),
+      updateAfterFlip(rhs.updateAfterFlip) {
+  if (parent != nullptr) {
+    parent->registerMap(*this);
+  }
+}
+
+template <typename T>
+HalfEdgeMap<T>::~HalfEdgeMap() {
+  // When the parent gets destructed, it sets the parent pointer in every
+  // HalfEdgeMap to null. That's fine, since we only need that information when
+  // performing a flip which then cannot happen anymore.
+  if (parent != nullptr) {
+    parent->deregisterMap(*this);
   }
 }
 
 template <typename T>
 const T &HalfEdgeMap<T>::get(const HalfEdge key) const {
-  return data.at(index(key));
+  return values.at(index(key));
 }
 
 template <typename T>
 void HalfEdgeMap<T>::apply(function<void(HalfEdge, const T &)> callback) const {
-  for (int i = 1; i <= static_cast<int>(data.size()) / 2; i++) {
+  for (int i = 1; i <= static_cast<int>(values.size()) / 2; i++) {
     const HalfEdge e(i);
     callback(e, get(e));
   }
@@ -55,8 +95,8 @@ void HalfEdgeMap<T>::apply(function<void(HalfEdge, const T &)> callback) const {
 
 template <typename T>
 void HalfEdgeMap<T>::set(const HalfEdge key, const T &value) {
-  data.at(index(key)) = value;
-  data.at(index(-key)) = -value;
+  values.at(index(key)) = value;
+  values.at(index(-key)) = -value;
 }
 
 template <typename T>
@@ -73,7 +113,7 @@ size_t HalfEdgeMap<T>::index(const HalfEdge e) {
 template <typename T>
 ostream &operator<<(ostream &os, const flatsurf::HalfEdgeMap<T> &self) {
   return os << boost::algorithm::join(
-             from(self.data)
+             from(self.values)
                  .select_i([](const T t, const int i) {
                    return (i % 2 ? "-" : "") +
                           boost::lexical_cast<std::string>(i / 2 + 1) + ": " +

@@ -29,9 +29,18 @@ using std::ostream;
 using std::vector;
 
 namespace flatsurf {
+namespace {
+template <typename T>
+void updateAfterFlip(HalfEdgeMap<T> &map, HalfEdge halfEdge,
+                     const FlatTriangulationCombinatorial &parent) {
+  map.set(halfEdge, map.get(-parent.nextInFace(halfEdge)) +
+                        map.get(parent.nextAtVertex(halfEdge)));
+}
+}  // namespace
+
 template <typename Vector>
 struct FlatTriangulation<Vector>::Implementation {
-  Implementation(const HalfEdgeMap<Vector> &vectors) : vectors(vectors) {}
+  Implementation(HalfEdgeMap<Vector> &&vectors) : vectors(std::move(vectors)) {}
 
   const HalfEdgeMap<Vector> vectors;
 };
@@ -46,14 +55,15 @@ FlatTriangulation<Vector>::FlatTriangulation(
     FlatTriangulationCombinatorial &&combinatorial,
     const vector<Vector> &vectors)
     : FlatTriangulation(std::move(combinatorial),
-                        HalfEdgeMap<Vector>(vectors)) {}
+                        HalfEdgeMap<Vector>(combinatorial, vectors,
+                                            updateAfterFlip<Vector>)) {}
 
 template <typename Vector>
 FlatTriangulation<Vector>::FlatTriangulation(
     FlatTriangulationCombinatorial &&combinatorial,
-    const HalfEdgeMap<Vector> &vectors)
+    HalfEdgeMap<Vector> &&vectors)
     : FlatTriangulationCombinatorial(std::move(combinatorial)),
-      impl(spimpl::make_unique_impl<Implementation>(vectors)) {
+      impl(spimpl::make_unique_impl<Implementation>(std::move(vectors))) {
   // check that faces are closed
   for (size_t e = 0; e < nedges; e++) {
     HalfEdge edge(static_cast<int>(e + 1));

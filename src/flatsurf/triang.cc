@@ -554,14 +554,14 @@ void TwoComplex::RetriangulateSurface() {
 
 UEdge *TwoComplex::FlipEdge(UEdge *u) {
   /*           vt
-                                                  / |\
-                                           / u| \
-                                          /   |  \
-                           w0  f0 |   w1
-                                          \   |f1/
-                                           \  | /
-                                                  \ |/
-                                                   vh
+              / |\
+             / u| \
+            /   |  \
+         w0  f0 |   w1
+            \   |f1/
+             \  | /
+              \ |/
+               vh
 
   */
 
@@ -611,7 +611,7 @@ UEdge *TwoComplex::FlipEdge(UEdge *u) {
   vh->e = vh_w1->ue;
   vt->e = vt_w0->ue;
 
-  /* really out to be part of Delete */
+  /* really ought to be part of Delete */
   vh->order--;
   vt->order--;
 
@@ -624,14 +624,14 @@ UEdge *TwoComplex::FlipEdge(UEdge *u) {
 
 bool TwoComplex::shouldFlip(UEdge *u) {
   /*           vt
-                                                  / |\
-                                           / u| \
-                                          /   |  \
-                           w0  f0 |   w1
-                                          \   |f1/
-                                           \  | /
-                                                  \ |/
-                                                   vh
+              / |\
+             / u| \
+            /   |  \
+         w0  f0 |   w1
+            \   |f1/
+             \  | /
+              \ |/
+               vh
 
   */
 
@@ -640,21 +640,14 @@ bool TwoComplex::shouldFlip(UEdge *u) {
   }
 
   Face *f0 = u->f0;
-  //    Face* f1 = u->f1;
 
   auto oe = u->this_edge(f0);
-
-  //    Vertex* vh = oe->head();
-  //    Vertex* vt = oe->tail();
 
   auto vt_w0 = oe->next_edge();
   auto w0_vh = oe->prev_edge();
 
   auto vh_w1 = oe->pair_edge()->next_edge();
   auto w1_vt = oe->pair_edge()->prev_edge();
-
-  //    Vertex* w0 = vt_w0->tail();
-  //    Vertex* w1 = vh_w1->tail();
 
   // the delaunay condition. Eventually will replace by in_circle() (in math.cc)
 

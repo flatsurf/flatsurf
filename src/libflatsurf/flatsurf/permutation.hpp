@@ -30,13 +30,17 @@ namespace flatsurf {
 // A type-safe permutation of items of type T.
 // There should be no runtime overhead to using a simple T[], at least when
 // compiled with -flto.
-template <typename T> struct Permutation {
+template <typename T>
+struct Permutation {
   explicit Permutation(const std::vector<std::vector<T>> &cycles);
   explicit Permutation(const std::vector<std::pair<T, T>> &permutation);
-  T operator()(const T &t) const;
   template <typename S>
-  static Permutation<T> create(const std::vector<std::vector<S>> &,
-                               const std::function<T(S)> &);
+  static Permutation<T> create(const std::vector<std::vector<S>> &, const std::function<T(S)> &);
+
+  T operator()(const T &t) const;
+
+  template <typename S>
+  friend Permutation<S>& operator*=(const std::vector<S>& cycle, Permutation<S>&);
 
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const Permutation<S> &);

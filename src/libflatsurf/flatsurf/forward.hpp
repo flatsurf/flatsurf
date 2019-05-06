@@ -40,9 +40,12 @@ template <typename Vector, typename VectorAlongTriangulation =
                                typename Vector::AlongTriangulation>
 struct SaddleConnection;
 
-template <typename Vector> struct FlatTriangulation;
+template <typename Vector>struct FlatTriangulation;
 
 struct HalfEdge;
+
+template <typename T>
+struct HalfEdgeMap;
 
 struct Edge;
 

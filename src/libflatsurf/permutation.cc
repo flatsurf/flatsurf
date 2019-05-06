@@ -81,6 +81,19 @@ Permutation<T> Permutation<T>::create(const vector<vector<S>> &cycles,
 }
 
 template <typename T>
+Permutation<T> &operator*=(const vector<T> &cycle, Permutation<T> &self) {
+  if (cycle.size() == 0) return self;
+
+  T tmp = self(cycle[0]);
+  for (auto it = cycle.begin() + 1; it != cycle.end(); it++) {
+    self.data[self.index(*(it - 1))] = self(*it);
+  }
+  self.data[self.index(cycle[cycle.size() - 1])] = tmp;
+
+  return self;
+}
+
+template <typename T>
 ostream &operator<<(ostream &os, const Permutation<T> &self) {
   set<T> remaining;
   for (auto t : self.data) {
@@ -109,9 +122,12 @@ using namespace flatsurf;
 
 // Instantiations of templates so implementations are generated for the linker
 #include "flatsurf/half_edge.hpp"
+
 template struct flatsurf::Permutation<HalfEdge>;
 template Permutation<HalfEdge> Permutation<HalfEdge>::create<int>(
     const vector<vector<int>> &cycles,
     const function<HalfEdge(int)> &converter);
 template ostream &flatsurf::operator<<(ostream &os,
                                        const Permutation<HalfEdge> &self);
+template Permutation<HalfEdge> &flatsurf::operator*=(const vector<HalfEdge> &,
+                                                     Permutation<HalfEdge> &);

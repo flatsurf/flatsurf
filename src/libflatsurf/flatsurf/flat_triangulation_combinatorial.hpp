@@ -29,27 +29,34 @@
 #include "flatsurf/forward.hpp"
 
 namespace flatsurf {
-template <typename T> struct HalfEdgeMap;
-
 struct FlatTriangulationCombinatorial {
   FlatTriangulationCombinatorial(const std::vector<std::vector<int>> &vertices);
   FlatTriangulationCombinatorial(const Permutation<HalfEdge> &vertices);
   FlatTriangulationCombinatorial(FlatTriangulationCombinatorial &&);
-  ~FlatTriangulationCombinatorial() = default;
+  virtual ~FlatTriangulationCombinatorial();
 
-  HalfEdge nextAtVertex(const HalfEdge e) const;
-  HalfEdge nextInFace(const HalfEdge e) const;
+  HalfEdge nextAtVertex(HalfEdge e) const;
+  HalfEdge nextInFace(HalfEdge e) const;
 
   const std::vector<HalfEdge> &edges() const;
   const std::vector<Vertex> &vertices() const;
 
-  friend std::ostream &operator<<(std::ostream &,
-                                  const FlatTriangulationCombinatorial &);
+  void flip(HalfEdge);
+
+  friend std::ostream &operator<<(std::ostream &, const FlatTriangulationCombinatorial &);
   const size_t nedges;
 
 private:
   struct Implementation;
   spimpl::unique_impl_ptr<Implementation> impl;
+
+  template <typename T>
+  friend struct HalfEdgeMap;
+
+  template <typename T>
+  void registerMap(const HalfEdgeMap<T>&) const;
+  template <typename T>
+  void deregisterMap(const HalfEdgeMap<T>&) const;
 };
 } // namespace flatsurf
 

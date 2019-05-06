@@ -17,34 +17,50 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <cstdint>
 #include <ostream>
+#include <unordered_map>
 #include <vector>
 #include "external/boolinq/include/boolinq/boolinq.h"
 
 #include "flatsurf/assert.hpp"
 #include "flatsurf/flat_triangulation_combinatorial.hpp"
 #include "flatsurf/half_edge.hpp"
+#include "flatsurf/half_edge_map.hpp"
 #include "flatsurf/permutation.hpp"
 
+using namespace flatsurf;
 using boolinq::from;
+using std::function;
 using std::ostream;
 using std::pair;
+using std::uintptr_t;
+using std::unordered_map;
 using std::vector;
 
 namespace flatsurf {
+namespace {
+struct HalfEdgeMapProxy {
+  function<void(HalfEdge, const FlatTriangulationCombinatorial&)> flip;
+  function<void(FlatTriangulationCombinatorial const*)> relink;
+};
+}  // namespace
+
 struct FlatTriangulationCombinatorial::Implementation {
-  Implementation(const Permutation<HalfEdge> &vertices)
+  Implementation(const Permutation<HalfEdge>& vertices)
       : vertices(vertices),
         // In the triangulation, the order in which half edges are attached to a
         // vertex defines the faces, so we reconstruct the faces here.
         faces(from(vertices.domain())
-                  .select([&](const HalfEdge &e) {
+                  .select([&](const HalfEdge& e) {
                     return pair<HalfEdge, HalfEdge>(-vertices(e), e);
                   })
-                  .toVector()) {}
+                  .toVector()),
+        halfEdgeMaps() {}
 
-  const Permutation<HalfEdge> vertices;
-  const Permutation<HalfEdge> faces;
+  Permutation<HalfEdge> vertices;
+  Permutation<HalfEdge> faces;
+  mutable unordered_map<uintptr_t, HalfEdgeMapProxy> halfEdgeMaps;
 };
 
 HalfEdge FlatTriangulationCombinatorial::nextInFace(const HalfEdge e) const {
@@ -55,17 +71,17 @@ HalfEdge FlatTriangulationCombinatorial::nextAtVertex(const HalfEdge e) const {
   return impl->vertices(e);
 }
 
-const vector<HalfEdge> &FlatTriangulationCombinatorial::edges() const {
+const vector<HalfEdge>& FlatTriangulationCombinatorial::edges() const {
   return impl->vertices.domain();
 }
 
 FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(
-    const vector<vector<int>> &vertices)
+    const vector<vector<int>>& vertices)
     : FlatTriangulationCombinatorial(Permutation<HalfEdge>::create<int>(
           vertices, [](int e) { return HalfEdge(e); })) {}
 
 FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(
-    const Permutation<HalfEdge> &vertices)
+    const Permutation<HalfEdge>& vertices)
     : nedges(vertices.size() / 2),
       impl(spimpl::make_unique_impl<Implementation>(vertices)) {
   CHECK_ARGUMENT(vertices.size() % 2 == 0, "half edges must come in pairs");
@@ -77,11 +93,98 @@ FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(
 }
 
 FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(
-    FlatTriangulationCombinatorial &&rhs)
-    : nedges(rhs.impl->vertices.size() / 2), impl(std::move(rhs.impl)) {}
+    FlatTriangulationCombinatorial&& rhs)
+    : nedges(rhs.impl->vertices.size() / 2), impl(std::move(rhs.impl)) {
+  for (const auto& map : impl->halfEdgeMaps) map.second.relink(this);
+}
 
-ostream &operator<<(ostream &os, const FlatTriangulationCombinatorial &self) {
+FlatTriangulationCombinatorial::~FlatTriangulationCombinatorial() {
+  if (impl) {
+    for (const auto& map : impl->halfEdgeMaps) map.second.relink(nullptr);
+  }
+}
+
+void FlatTriangulationCombinatorial::flip(HalfEdge e) {
+  // Let (e a b) and (-e c d) be the faces containing e and -e before the flip.
+  const HalfEdge a = nextInFace(e);
+  const HalfEdge b = nextInFace(a);
+  const HalfEdge c = nextInFace(-e);
+  const HalfEdge d = nextInFace(c);
+
+  using cycle = vector<HalfEdge>;
+  // flip e in "vertices"
+  // (... b -a ...)(... a -e -d ...) -> (... b -e -a ...)(... a -d ...) so we
+  // multiply vertices with (b a -e)
+  // (... d -c ...)(... c e -b ...) -> (... d e -c ...)(... c -b ...) so we
+  // multiply vertices with (d c e)
+  cycle{b, a, -e} *= impl->vertices;
+  cycle{d, c, e} *= impl->vertices;
+
+  // flip e in "faces"
+  // (a b e)(c d -e) -> (a -e d)(c e b), i.e., multiply with (a d e)(c b -e)
+  cycle{a, d, e} *= impl->faces;
+  cycle{c, b, -e} *= impl->faces;
+
+  assert(impl->halfEdgeMaps.size());
+
+  // notify the half edge maps about this flip
+  for (const auto& map : impl->halfEdgeMaps) map.second.flip(e, *this);
+}
+
+template <typename T>
+void FlatTriangulationCombinatorial::registerMap(
+    const HalfEdgeMap<T>& map) const {
+  impl->halfEdgeMaps[reinterpret_cast<uintptr_t>(&map)] = HalfEdgeMapProxy{
+      std::bind(
+          [](const HalfEdgeMap<T>& self, HalfEdge halfEdge,
+             const FlatTriangulationCombinatorial& parent) {
+            self.updateAfterFlip(const_cast<HalfEdgeMap<T>&>(self), halfEdge,
+                                 parent);
+          },
+          std::cref(map), std::placeholders::_1, std::placeholders::_2),
+      std::bind(
+          [](const HalfEdgeMap<T>& self,
+             FlatTriangulationCombinatorial const* parent) {
+            self.parent = parent;
+          },
+          std::cref(map), std::placeholders::_1)};
+}
+
+template <typename T>
+void FlatTriangulationCombinatorial::deregisterMap(
+    const HalfEdgeMap<T>& map) const {
+  uintptr_t key = reinterpret_cast<uintptr_t>(&map);
+  assert(impl->halfEdgeMaps.find(key) != impl->halfEdgeMaps.end());
+  impl->halfEdgeMaps.erase(key);
+}
+
+ostream& operator<<(ostream& os, const FlatTriangulationCombinatorial& self) {
   return os << "FlatTriangulationCombinatorial(vertices = "
             << self.impl->vertices << ", faces = " << self.impl->faces << ")";
 }
 }  // namespace flatsurf
+
+using namespace flatsurf;
+
+// Instantiations of templates so implementations are generated for the linker
+#include <exact-real/number_field_traits.hpp>
+#include "flatsurf/vector_eantic.hpp"
+#include "flatsurf/vector_exactreal.hpp"
+#include "flatsurf/vector_longlong.hpp"
+
+template void flatsurf::FlatTriangulationCombinatorial::registerMap(
+    const HalfEdgeMap<VectorEAntic>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::registerMap(
+    const HalfEdgeMap<VectorExactReal<exactreal::NumberFieldTraits>>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::registerMap(
+    const HalfEdgeMap<VectorLongLong>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::registerMap(
+    const HalfEdgeMap<int>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(
+    const HalfEdgeMap<VectorEAntic>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(
+    const HalfEdgeMap<VectorExactReal<exactreal::NumberFieldTraits>>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(
+    const HalfEdgeMap<VectorLongLong>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(
+    const HalfEdgeMap<int>&) const;

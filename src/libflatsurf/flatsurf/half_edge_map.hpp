@@ -26,24 +26,42 @@
 #include <vector>
 
 #include "flatsurf/half_edge.hpp"
+#include "flatsurf/forward.hpp"
 
 namespace flatsurf {
-struct HalfEdge;
+// A map HalfEdge -> T such that map[-edge] == -map[edge] always holds
+// automatically. Also, instances are automatically updated when an edge is
+// flipped.
+template <typename T>
+struct HalfEdgeMap final {
+  using FlipHandler = std::function<void(HalfEdgeMap&, HalfEdge, const FlatTriangulationCombinatorial&)>;
+  HalfEdgeMap(const FlatTriangulationCombinatorial& parent, const std::vector<T> &values, const FlipHandler& updateAfterFlip);
+  HalfEdgeMap(const HalfEdgeMap&);
+  HalfEdgeMap(HalfEdgeMap&&);
+  ~HalfEdgeMap();
 
-template <typename T> struct HalfEdgeMap {
-  explicit HalfEdgeMap(const std::vector<T> &data);
-
-  const T &get(const HalfEdge key) const;
-  void set(const HalfEdge key, const T &value);
+  const T &get(HalfEdge key) const;
+  void set(HalfEdge key, const T &value);
   void apply(std::function<void(HalfEdge, const T &)>) const;
 
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const HalfEdgeMap<S> &);
 
+  HalfEdgeMap& operator=(const HalfEdgeMap&);
+  HalfEdgeMap& operator=(HalfEdgeMap&&);
+
   static size_t index(const HalfEdge);
 
 private:
-  mutable std::vector<T> data;
+  friend FlatTriangulationCombinatorial;
+
+  // We keep a reference to the triangulation that we were created with so that
+  // we can notify it on costruction that we do not need to be informed about
+  // future flips anymore.
+  mutable FlatTriangulationCombinatorial const* parent;
+
+  mutable std::vector<T> values;
+  const FlipHandler updateAfterFlip;
 };
 } // namespace flatsurf
 

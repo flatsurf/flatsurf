@@ -61,6 +61,8 @@ using std::list;
 using std::ostream;
 using std::vector;
 
+namespace {}
+
 namespace polygon {
 TwoComplex::TwoComplex() : area(-1.0), scale_factor(1.0) {
   cur_vertex_id = 0;
@@ -80,8 +82,15 @@ TwoComplex::operator FlatTriangulation<
   VectorExactReal<NumberFieldTraits> zero{alg_t<bigrat>().real(),
                                           alg_t<bigrat>().imag()};
 
-  HalfEdgeMap<VectorExactReal<NumberFieldTraits>> vectors(
-      vector<VectorExactReal<NumberFieldTraits>>(uedges.size(), zero));
+  auto combinatorial = static_cast<FlatTriangulationCombinatorial>(*this);
+  auto vectors = HalfEdgeMap<VectorExactReal<NumberFieldTraits>>(
+      combinatorial,
+      vector<VectorExactReal<NumberFieldTraits>>(uedges.size(), zero),
+      [](HalfEdgeMap<VectorExactReal<NumberFieldTraits>> &map,
+         HalfEdge halfEdge, const FlatTriangulationCombinatorial &parent) {
+        map.set(halfEdge, map.get(-parent.nextInFace(halfEdge)) +
+                              map.get(parent.nextAtVertex(halfEdge)));
+      });
 
   for (auto uedge : uedges) {
     auto oedge = OEdge(uedge, 1);
@@ -90,7 +99,7 @@ TwoComplex::operator FlatTriangulation<
     vectors.set(static_cast<HalfEdge>(oedge), {x, y});
   }
 
-  return {static_cast<FlatTriangulationCombinatorial>(*this), vectors};
+  return {std::move(combinatorial), std::move(vectors)};
 }
 
 TwoComplex::operator FlatTriangulationCombinatorial() const {

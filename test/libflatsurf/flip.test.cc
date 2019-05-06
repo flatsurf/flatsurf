@@ -35,39 +35,32 @@
 
 #include "surfaces.hpp"
 
+using namespace flatsurf;
+using eantic::renf_class;
 using std::vector;
 using testing::Test;
 using testing::Types;
-using namespace flatsurf;
-using eantic::renf_class;
 
 namespace {
 template <class R2>
-class SaddleConnectionsTest : public Test {};
+class FlipTest : public Test {};
 
 using ExactVectors = Types<VectorLongLong, VectorEAntic>;
-TYPED_TEST_CASE(SaddleConnectionsTest, ExactVectors);
+TYPED_TEST_CASE(FlipTest, ExactVectors);
 
-TYPED_TEST(SaddleConnectionsTest, Trivial) {
+TYPED_TEST(FlipTest, Square) {
   auto square = makeSquare<TypeParam>();
-  auto connections = SaddleConnections(square, Bound(0), HalfEdge(1));
-  EXPECT_EQ(connections.begin(), connections.end());
-}
 
-TYPED_TEST(SaddleConnectionsTest, Square) {
-  auto square = makeSquare<TypeParam>();
-  auto connections = SaddleConnections(square, Bound(100 * 100), HalfEdge(1));
-  EXPECT_EQ(std::distance(connections.begin(), connections.end()), 2386);
-  connections = SaddleConnections(square, Bound(100 * 100), HalfEdge(3));
-  EXPECT_EQ(std::distance(connections.begin(), connections.end()), 2386);
-  connections = SaddleConnections(square, Bound(100 * 100), HalfEdge(2));
-  EXPECT_EQ(std::distance(connections.begin(), connections.end()), 2386 * 2);
-  connections = SaddleConnections(square, Bound(100 * 100), HalfEdge(-1));
-  EXPECT_EQ(std::distance(connections.begin(), connections.end()), 2386);
-  connections = SaddleConnections(square, Bound(100 * 100), HalfEdge(-3));
-  EXPECT_EQ(std::distance(connections.begin(), connections.end()), 2386);
-  connections = SaddleConnections(square, Bound(100 * 100), HalfEdge(-2));
-  EXPECT_EQ(std::distance(connections.begin(), connections.end()), 2386 * 2);
+  for (auto halfEdge : square.edges()) {
+    const auto vector = square.fromEdge(halfEdge);
+    square.flip(halfEdge);
+    EXPECT_NE(vector, square.fromEdge(halfEdge));
+    square.flip(halfEdge);
+    EXPECT_EQ(vector, -square.fromEdge(halfEdge));
+    square.flip(halfEdge);
+    square.flip(halfEdge);
+    EXPECT_EQ(vector, square.fromEdge(halfEdge));
+  }
 }
 }  // namespace
 

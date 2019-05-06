@@ -33,6 +33,15 @@ using std::ostream;
 using std::vector;
 
 namespace flatsurf {
+namespace {
+void updateAfterFlip(HalfEdgeMap<int> &map, HalfEdge halfEdge,
+                     const FlatTriangulationCombinatorial &parent) {
+  map.set(-parent.nextAtVertex(halfEdge), map.get(halfEdge));
+  map.set(-parent.nextInFace(parent.nextInFace(halfEdge)), map.get(halfEdge));
+  map.set(halfEdge, 0);
+}
+}  // namespace
+
 template <typename V, typename Approximation>
 struct VectorAlongTriangulationWithApproximation<
     V, Approximation>::Implementation {
@@ -40,7 +49,7 @@ struct VectorAlongTriangulationWithApproximation<
 
   explicit Implementation(const Surface &surface)
       : surface(surface),
-        coefficients(vector<int>(surface.nedges)),
+        coefficients(surface, vector<int>(surface.nedges), updateAfterFlip),
         approximation() {}
 
   V exact() const {
