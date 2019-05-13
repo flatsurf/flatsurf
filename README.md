@@ -1,9 +1,9 @@
-[![Linux](https://img.shields.io/circleci/project/github/polygon-tbd/polygon/master.svg?label=Linux)](https://circleci.com/gh/polygon-tbd/polygon)
-[![OSX](https://img.shields.io/travis/polygon-tbd/polygon/master.svg?label=macOS)](https://travis-ci.org/polygon-tbd/polygon)
+[![Linux](https://dev.azure.com/flatsurf/conda/_apis/build/status/flatsurf.flatsurf?branchName=master&jobName=linux&configuration=build_linux_)](https://dev.azure.com/flatsurf/conda/_build/latest?definitionId=&branchName=master)
+![OSX disabled](https://img.shields.io/badge/OSX-disabled-lightgrey.svg)
 ![Windows disabled](https://img.shields.io/badge/Windows-disabled-lightgrey.svg)
-[![Coverage Status](https://coveralls.io/repos/github/polygon-tbd/polygon/badge.svg?branch=_conda_cache_origin_head)](https://coveralls.io/github/polygon-tbd/polygon?branch=_conda_cache_origin_head)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/polygon-tbd/polygon/master?filepath=binder%2FSample.ipynb)
-[![asv](http://img.shields.io/badge/benchmarked%20by-asv-blue.svg?style=flat)](https://polygon-tbd.github.io/polygon-asv/)
+![ppc64le disabled](https://img.shields.io/badge/ppc64le-disabled-lightgrey.svg)
+[![Coverage Status](https://coveralls.io/repos/github/flatsurf/flatsurf/badge.svg?branch=master)](https://coveralls.io/github/flatsurf/flatsurf?branch=master)
+[![asv](http://img.shields.io/badge/benchmarked%20by-asv-blue.svg?style=flat)](https://flatsurf.github.io/flatsurf-asv/)
 
 ## Current Release Info
 
@@ -18,59 +18,88 @@ This repository contains three related projects:
 
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
-| [![Nightly Build](https://img.shields.io/badge/experimental-libpolygon-green.svg)](https://anaconda.org/saraedum/libpolygon) | [![Conda Downloads](https://img.shields.io/conda/dn/saraedum/libpolygon.svg)](https://anaconda.org/saraedum/libpolygon) | [![Conda Version](https://img.shields.io/conda/vn/saraedum/libpolygon.svg)](https://anaconda.org/saraedum/libpolygon) | [![Conda Platforms](https://img.shields.io/conda/pn/saraedum/libpolygon.svg)](https://anaconda.org/saraedum/libpolygon) |
-| [![Nightly Build](https://img.shields.io/badge/experimental-libpypolygon-green.svg)](https://anaconda.org/saraedum/libpypolygon) | [![Conda Downloads](https://img.shields.io/conda/dn/saraedum/libpypolygon.svg)](https://anaconda.org/saraedum/libpypolygon) | [![Conda Version](https://img.shields.io/conda/vn/saraedum/libpypolygon.svg)](https://anaconda.org/saraedum/libpypolygon) | [![Conda Platforms](https://img.shields.io/conda/pn/saraedum/libpypolygon.svg)](https://anaconda.org/saraedum/libpypolygon) |
+| [![Nightly Build](https://img.shields.io/badge/recipe-libflatsurf-green.svg)](https://anaconda.org/flatsurf/libflatsurf) | [![Conda Downloads](https://img.shields.io/conda/dn/flatsurf/libflatsurf.svg)](https://anaconda.org/flatsurf/libflatsurf) | [![Conda Version](https://img.shields.io/conda/vn/flatsurf/libflatsurf.svg)](https://anaconda.org/flatsurf/libflatsurf) | [![Conda Platforms](https://img.shields.io/conda/pn/flatsurf/libflatsurf.svg)](https://anaconda.org/flatsurf/libflatsurf) |
+| [![Nightly Build](https://img.shields.io/badge/recipe-pyflatsurf-green.svg)](https://anaconda.org/flatsurf/pyflatsurf) | [![Conda Downloads](https://img.shields.io/conda/dn/flatsurf/pyflatsurf.svg)](https://anaconda.org/flatsurf/pyflatsurf) | [![Conda Version](https://img.shields.io/conda/vn/flatsurf/pyflatsurf.svg)](https://anaconda.org/flatsurf/pyflatsurf) | [![Conda Platforms](https://img.shields.io/conda/pn/flatsurf/pyflatsurf.svg)](https://anaconda.org/flatsurf/pyflatsurf) |
+| [![Nightly Build](https://img.shields.io/badge/recipe-flatsurf-green.svg)](https://anaconda.org/flatsurf/flatsurf) | [![Conda Downloads](https://img.shields.io/conda/dn/flatsurf/flatsurf.svg)](https://anaconda.org/flatsurf/flatsurf) | [![Conda Version](https://img.shields.io/conda/vn/flatsurf/flatsurf.svg)](https://anaconda.org/flatsurf/flatsurf) | [![Conda Platforms](https://img.shields.io/conda/pn/flatsurf/flatsurf.svg)](https://anaconda.org/flatsurf/flatsurf) |
 
 ## Install with Conda
 
-You can install this package with conda. Download and install [Miniconda](https://conda.io/miniconda.html), then run
+You can install these packages with conda. Download and install [Miniconda](https://conda.io/miniconda.html), then run
 
 ```
-conda config --add channels flatsurf conda-forge
-conda install -c saraedum pyflatsurf flatsurf
+conda config --add channels conda-forge
+conda install -c flatsurf pyflatsurf flatsurf
 ```
 
 ## Run with binder in the Cloud
 
 You can try out the projects in this repository in a very limited environment online by clicking the following links:
 
-* **libflatsurf** [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/polygon-tbd/polygon/master?filepath=binder%2FSample.libflatsurf.ipynb)
-* **pyflatsurf** [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/polygon-tbd/polygon/master?filepath=binder%2FSample.pyflatsurf.ipynb)
-* **flatsurf** [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/polygon-tbd/polygon/master?filepath=binder%2FSample.flatsurf.ipynb)
+* **libflatsurf** [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/flatsurf/master?filepath=binder%2FSample.libflatsurf.ipynb)
+* **pyflatsurf** [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/flatsurf/master?filepath=binder%2FSample.pyflatsurf.ipynb)
+* **flatsurf** [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/flatsurf/master?filepath=binder%2FSample.flatsurf.ipynb)
 
 ## Build from the Source Code Repository
 
 We are following a standard autoconf setup, i.e., you can create the library
-`src/libpolygon` and the corresponding Python wrapper `src/libpypolygon` with
-the following:
+`src/libflatsurf`, the Python wrapper `src/pyflatsurf`, and the binary
+`src/flatsurf/flatsurf` with the following:
 
 ```
-git clone https://github.com/polygon-tbd/polygon.git
-cd polygon
+git clone --recurse-submodules https://github.com/flatsurf/flatsurf.git
+cd flatsurf
 ./bootstrap
 ./configure
 make
+make check # to run our test suite
+make install # to install into /usr/local
 ```
 
-For best performance run `CXXFLAGS="-O3 -flto" CXX="g++
--fno-semantic-interposition" ./configure` instead of `./configure` as this code
-greatly benefits from flto inlining. (Unfortunately, libtool filters out
-`-fno-semantic-interposition` as of early 2019 so we can not pass it as part of
-`CXXFLAGS`. If you are using clang, `-fno-semantic-interposition` does not seem
-to be necessary.) You might want to add `-g3` to the `CXXFLAGS` which does not
-hurt performance but gives a better debugging experience. For the best
-debugging experience, you might want to replace `-O3` with `-Og` or even `-O0`
-but the latter results in very poor performance.
+For best performance run `CXXFLAGS="-O3 -flto -march=native -mtune=native"
+CXX="g++ -fno-semantic-interposition" ./configure` instead of `./configure` as
+this code greatly benefits from flto inlining. (Unfortunately, libtool filters
+out `-fno-semantic-interposition` as of early 2019 so we can not pass it as
+part of `CXXFLAGS`. If you are using clang, `-fno-semantic-interposition` does
+not seem to be necessary.) Do not use `-Ofast` or `-ffast-math` as parts of our
+code rely on IEEE compliance. You might want to add `-g3` to the `CXXFLAGS`
+which does not hurt performance but gives a better debugging experience. For
+the best debugging experience, you might want to replace `-O3` with `-Og` or
+even `-O0` but the latter results in very poor performance.
 
 Additionally, you might want to run with configure with ` --disable-static`
 which improves the build time.
 
 [perf](https://perf.wiki.kernel.org/index.php/Main_Page) works well to profile
-when you make sure that `CXXFLAGS` contains `-fno-omit-frame-pointer`. You can
-then for example run our test suite with `perf record --call-graph dwarf make check`
-Apart from perf itself there are several ways to analyze the output,
+when you make sure that `CXXFLAGS` contains `-fno-omit-framepointer`. You can
+then for example run our test suite with `perf record --call-graph dwarf make
+check` Apart from perf itself there are several ways to analyze the output,
 [hotspot](https://github.com/KDAB/hotspot) might be the most convenient one at
 the time of this writing.
+
+## Build from the Source Code Repository with Conda Dependencies
+
+To build these packages, you need a fairly recent C++ compiler and probably
+some packages that might not be readily available on your system. If you don't
+want to use your distribution's packages, you can provide these dependencies
+with conda. Download and install [Miniconda](https://conda.io/miniconda.html),
+then run
+
+```
+conda config --add channels conda-forge
+conda config --add channels flatsurf # if you want to pull in the latest version of dependencies
+conda create -n flatsurf-build cxx-compiler libtool automake boost-cpp libexactreal gtest benchmark ccache
+conda activate flatsurf-build
+export CPPFLAGS="-isystem $CONDA_PREFIX/include"
+export CFLAGS="$CPPFLAGS"
+export LDFLAGS="-L$CONDA_PREFIX/lib -Wl,-rpath-link=$CONDA_PREFIX/lib"
+export CC="ccache cc"
+export CXX="ccache c++"
+git clone --recurse-submodules https://github.com/flatsurf/flatsurf.git
+cd flatsurf
+./bootstrap
+./configure --prefix="$CONDA_PREFIX"
+make
+```
 
 ## Build from the Source Code Repository with Conda
 
@@ -79,10 +108,11 @@ Integration. If you want to build the recipe manually, something like the
 following should work:
 
 ```
-git clone https://github.com/polygon-tbd/polygon.git
-cd polygon
-source activate root
+git clone --recurse-submodules https://github.com/flatsurf/flatsurf.git
+cd flatsurf
+conda activate root
 conda config --add channels conda-forge
+conda config --add channels flatsurf # if you want to pull in the latest version of dependencies
 conda install conda-build conda-forge-ci-setup=2
 export FEEDSTOCK_ROOT=`pwd`
 export RECIPE_ROOT=${FEEDSTOCK_ROOT}/recipe
@@ -94,10 +124,11 @@ conda build "${RECIPE_ROOT}" -m "${CI_SUPPORT}/${CONFIG}.yaml" --clobber-file "$
 
 You can then try out the package that you just built with:
 ```
-conda create -n polygon-test --use-local libpypolygon
-source activate polygon-test
+conda create -n flatsurf-test --use-local libflatsurf pyflatsurf
+conda activate flatsurf-test
 ```
 
 ## Maintainers
 
 * [@saraedum](https://github.com/saraedum)
+* [@videlec](https://github.com/videlec)

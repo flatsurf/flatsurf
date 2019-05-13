@@ -171,8 +171,7 @@ IntervalExchangeTransformation<Vector>::IntervalExchangeTransformation(
     : impl(spimpl::make_unique_impl<Implementation>(parent, vertical)) {}
 
 template <typename Vector>
-ostream& operator<<(ostream& os,
-                    const IntervalExchangeTransformation<Vector>& self) {
+ostream& operator<<(ostream&, const IntervalExchangeTransformation<Vector>&) {
   throw std::logic_error(
       "not implemented IntervalExchangeTransformation::operator<<");
 }

@@ -21,9 +21,9 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include <complex>
+#include <eigen/Eigen/Dense>
 #include <ostream>
 #include <vector>
-#include "external/eigen/Eigen/Dense"
 
 #include "./algebraic.h"
 #include "./defs.h"
@@ -311,10 +311,10 @@ NumberField<T>::NumberField(
     T p[], size_t deg, complex<COORD> emb,
     std::shared_ptr<eantic::renf_class> totally_real_field,
     const complex<renf_elem_class> &&gen)
-    : embedding(emb),
-      totally_real_field(totally_real_field),
+    : degree(deg),
       gen(std::move(gen)),
-      degree(deg) {
+      embedding(emb),
+      totally_real_field(totally_real_field) {
   vector<T> coefficients;
   for (size_t i = 0; i <= degree; i++) coefficients.push_back(p[i]);
   minimal_poly = poly<T>(coefficients);

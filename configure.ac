@@ -63,5 +63,5 @@ AX_CXX_CHECK_LIB([exactreal], [exactreal::RealNumber::random()], , AC_MSG_ERROR(
 AC_CHECK_HEADERS([exact-real/real_number.hpp exact-real/module.hpp], , AC_MSG_ERROR([libexactreal headers not found]))
 
 AC_CONFIG_HEADERS([src/libflatsurf/flatsurf/config.h])
-AC_CONFIG_FILES([Makefile src/Makefile src/libflatsurf/Makefile src/libpyflatsurf/Makefile src/flatsurf/Makefile test/Makefile test/flatsurf/Makefile test/libflatsurf/Makefile test/libpyflatsurf/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile src/libflatsurf/Makefile src/pyflatsurf/Makefile src/flatsurf/Makefile test/Makefile test/flatsurf/Makefile test/libflatsurf/Makefile test/pyflatsurf/Makefile])
 AC_OUTPUT

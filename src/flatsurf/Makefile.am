@@ -24,4 +24,4 @@ flatsurf_SOURCES =         \
     globals.cc
 
 AM_LDFLAGS = $(builddir)/../libflatsurf/libflatsurf.la
-AM_CPPFLAGS = -I $(srcdir)/../../src/libflatsurf/ -I $(builddir)/../../src/libflatsurf
+AM_CPPFLAGS = -I $(srcdir)/../../src/libflatsurf/ -I $(builddir)/../../src/libflatsurf -isystem $(srcdir)/external
