@@ -1,12 +1,13 @@
 # conda-smithy assumes that the build number is >= 1000 when building with the new anaconda compilers,
 # this probably is not important but make_build_number otherwise complains during the build
-{% set version = environ.get('GIT_DESCRIBE_TAG')|string %}
+# See https://github.com/conda/conda-build/issues/2666 for the missing tag
+{% set version = environ.get('GIT_DESCRIBE_TAG', 'untagged')|string|replace('-','_') %}
 {% set build_number = (environ.get('GIT_DESCRIBE_NUMBER')|int + 1000)|string %}
 {% set build_string = "master_" + build_number %}
 {% set flavour = environ.get('FLAVOUR', 'build')|string %}
 
 package:
-  name: polygon
+  name: flatsurf
   version: {{ version }}
 
 source:
@@ -15,9 +16,15 @@ source:
 build:
   number: {{ build_number }}
   string: {{ build_string }}
+  # currently not built for Windows & macOS
+  skip: True  # [win]
+  skip: True  # [osx]
   script:
     - source ./recipe/cflags.sh
+    - source /tmp/secrets
     - ./recipe/build-{{ flavour }}.sh
+    - ./recipe/test-{{ flavour }}.sh
+    - make install
 
 requirements:
   build:
@@ -26,53 +33,35 @@ requirements:
     - {{ compiler('cxx') }}
   host:
     - boost-cpp
-    - e-antic
-    # conda-forge's NTL package was linking GMP in a strange way in earlier versions
-    - ntl >= 11.3.1
-
-test:
-  source_files:
-    - test/
-    - asv.conf.json
-  commands:
-    - test/test-{{ flavour }}.sh            # [linux]
-    # Tests on macOS fail at the moment. It's unclear whether that's a problem, see https://github.com/polygon-tbd/polygon/pull/5
-    - test/test-{{ flavour }}.sh || true    # [osx]
-  requires:
-    - asv
-    - plumbum
-    # can be removed once https://github.com/conda-forge/asv-feedstock/pull/10 has been resolved
-    - setuptools
-    - pytest
+    - e-antic 1.*
+    # requirement of make check which also runs benchmarks
+    - gtest
+    - benchmark
 
 outputs:
-  - name: libpolygon
+  - name: libflatsurf
     build:
       run_exports:
-        - {{ pin_subpackage("libpolygon", exact=True) }}
+        - {{ pin_subpackage("libflatsurf", exact=True) }}
     files:
       - lib/*.dylib    # [osx]
       - lib/*.so*      # [linux]
-      - include/libpolygon/*.h
-  - name: libpypolygon
+      - include/flatsurf/*.h
+  - name: flatsurf
     requirements:
       run:
-        - {{ pin_subpackage('libpolygon', exact=True) }}
+        - {{ pin_subpackage("libflatsurf", exact=True) }}
       files:
-        - todo
-  - name: polygon
-    requirements:
-      run:
-        - {{ pin_subpackage('libpolygon', exact=True) }}
-      files:
-        - bin/polygon
+        - bin/flatsurf
 
 about:
-  home: https://github.com/polygon-tbd/polygon
+  home: https://github.com/flatsurf/flatsurf
   license: GPL2
   license_file: COPYING
   summary: Alex Eskin's polygon program
 
+
 extra:
   recipe-maintainers:
     - saraedum
+    - videlec

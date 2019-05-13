@@ -1,11 +1,7 @@
-<!--
-# -*- mode: jinja -*-
--->
+About flatsurf
+==============
 
-About polygon
-=============
-
-Home: https://github.com/polygon-tbd/polygon
+Home: https://github.com/flatsurf/flatsurf
 
 Package license: GPL2
 
@@ -18,53 +14,91 @@ Summary: Alex Eskin's polygon program
 Current build status
 ====================
 
-[![Linux](https://img.shields.io/circleci/project/github/conda-forge/polygon-feedstock/master.svg?label=Linux)](https://circleci.com/gh/conda-forge/polygon-feedstock)
-[![OSX](https://img.shields.io/travis/conda-forge/polygon-feedstock/master.svg?label=macOS)](https://travis-ci.org/conda-forge/polygon-feedstock)
-![Windows disabled](https://img.shields.io/badge/Windows-disabled-lightgrey.svg)
+
+<table>
+    
+  <tr>
+    <td>Azure</td>
+    <td>
+      <details>
+        <summary>
+          <a href="https://dev.azure.com/flatsurf/conda/_build/latest?definitionId=&branchName=master">
+            <img src="https://dev.azure.com/flatsurf/conda/_apis/build/status/flatsurf-feedstock?branchName=master">
+          </a>
+        </summary>
+        <table>
+          <thead><tr><th>Variant</th><th>Status</th></tr></thead>
+          <tbody><tr>
+              <td>linux</td>
+              <td>
+                <a href="https://dev.azure.com/flatsurf/conda/_build/latest?definitionId=&branchName=master">
+                  <img src="https://dev.azure.com/flatsurf/conda/_apis/build/status/flatsurf-feedstock?branchName=master&jobName=linux&configuration=linux_" alt="variant">
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </details>
+    </td>
+  </tr>
+  <tr>
+    <td>OSX</td>
+    <td>
+      <img src="https://img.shields.io/badge/OSX-disabled-lightgrey.svg" alt="OSX disabled">
+    </td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>
+      <img src="https://img.shields.io/badge/Windows-disabled-lightgrey.svg" alt="Windows disabled">
+    </td>
+  </tr>
+![ppc64le disabled](https://img.shields.io/badge/ppc64le-disabled-lightgrey.svg)
+</table>
 
 Current release info
 ====================
 
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
-| [![Conda Recipe](https://img.shields.io/badge/recipe-libpolygon-green.svg)](https://anaconda.org/saraedum/libpolygon) | [![Conda Downloads](https://img.shields.io/conda/dn/saraedum/libpolygon.svg)](https://anaconda.org/saraedum/libpolygon) | [![Conda Version](https://img.shields.io/conda/vn/saraedum/libpolygon.svg)](https://anaconda.org/saraedum/libpolygon) | [![Conda Platforms](https://img.shields.io/conda/pn/saraedum/libpolygon.svg)](https://anaconda.org/saraedum/libpolygon) |
-| [![Conda Recipe](https://img.shields.io/badge/recipe-polygon-green.svg)](https://anaconda.org/saraedum/polygon) | [![Conda Downloads](https://img.shields.io/conda/dn/saraedum/polygon.svg)](https://anaconda.org/saraedum/polygon) | [![Conda Version](https://img.shields.io/conda/vn/saraedum/polygon.svg)](https://anaconda.org/saraedum/polygon) | [![Conda Platforms](https://img.shields.io/conda/pn/saraedum/polygon.svg)](https://anaconda.org/saraedum/polygon) |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-flatsurf-green.svg)](https://anaconda.org/flatsurf/flatsurf) | [![Conda Downloads](https://img.shields.io/conda/dn/flatsurf/flatsurf.svg)](https://anaconda.org/flatsurf/flatsurf) | [![Conda Version](https://img.shields.io/conda/vn/flatsurf/flatsurf.svg)](https://anaconda.org/flatsurf/flatsurf) | [![Conda Platforms](https://img.shields.io/conda/pn/flatsurf/flatsurf.svg)](https://anaconda.org/flatsurf/flatsurf) |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-libflatsurf-green.svg)](https://anaconda.org/flatsurf/libflatsurf) | [![Conda Downloads](https://img.shields.io/conda/dn/flatsurf/libflatsurf.svg)](https://anaconda.org/flatsurf/libflatsurf) | [![Conda Version](https://img.shields.io/conda/vn/flatsurf/libflatsurf.svg)](https://anaconda.org/flatsurf/libflatsurf) | [![Conda Platforms](https://img.shields.io/conda/pn/flatsurf/libflatsurf.svg)](https://anaconda.org/flatsurf/libflatsurf) |
 
-Installing polygon
-==================
+Installing flatsurf
+===================
 
-Installing `polygon` from the `saraedum` channel can be achieved by adding `saraedum` to your channels with:
-
-```
-conda config --add channels saraedum
-```
-
-Once the `saraedum` channel has been enabled, `libpolygon, polygon` can be installed with:
+Installing `flatsurf` from the `flatsurf` channel can be achieved by adding `flatsurf` to your channels with:
 
 ```
-conda install libpolygon polygon
+conda config --add channels flatsurf
 ```
 
-It is possible to list all of the versions of `libpolygon` available on your platform with:
+Once the `flatsurf` channel has been enabled, `flatsurf, libflatsurf` can be installed with:
 
 ```
-conda search libpolygon --channel saraedum
+conda install flatsurf libflatsurf
+```
+
+It is possible to list all of the versions of `flatsurf` available on your platform with:
+
+```
+conda search flatsurf --channel flatsurf
 ```
 
 
 
 
-Updating polygon-feedstock
-==========================
+Updating flatsurf-feedstock
+===========================
 
-If you would like to improve the polygon recipe or build a new
+If you would like to improve the flatsurf recipe or build a new
 package version, please fork this repository and submit a PR. Upon submission,
 your changes will be run on the appropriate platforms to give the reviewer an
 opportunity to confirm that the changes result in a successful build. Once
 merged, the recipe will be re-built and uploaded automatically to the
-`saraedum` channel, whereupon the built conda packages will be available for
-everybody to install and use from the `saraedum` channel.
-Note that all branches in the conda-forge/polygon-feedstock are
+`flatsurf` channel, whereupon the built conda packages will be available for
+everybody to install and use from the `flatsurf` channel.
+Note that all branches in the conda-forge/flatsurf-feedstock are
 immediately built and any created packages are uploaded, so PRs should be based
 on branches in forks and branches in the main repository should only be used to
 build distinct package versions.
@@ -80,4 +114,5 @@ Feedstock Maintainers
 =====================
 
 * [@saraedum](https://github.com/saraedum/)
+* [@videlec](https://github.com/videlec/)
 
