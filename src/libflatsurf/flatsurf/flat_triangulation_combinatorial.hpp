@@ -34,6 +34,12 @@ struct FlatTriangulationCombinatorial {
   FlatTriangulationCombinatorial(const Permutation<HalfEdge> &vertices);
   FlatTriangulationCombinatorial(FlatTriangulationCombinatorial &&);
 
+  // Create an unrelated clone of this triangulation that is built from the
+  // same data. There is no copy-constructor since it is too likely that
+  // this is would not update the associated HalfEdgeMaps in the way that the
+  // caller expects.
+  FlatTriangulationCombinatorial clone() const;
+
   HalfEdge nextAtVertex(HalfEdge e) const;
   HalfEdge nextInFace(HalfEdge e) const;
 

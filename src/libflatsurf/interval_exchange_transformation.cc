@@ -151,7 +151,9 @@ void makeContour(insert_iterator<vector<HalfEdge>> target,
 
 template <typename Vector>
 struct IntervalExchangeTransformation<Vector>::Implementation {
-  Implementation(FlatTriangulation<Vector>& parent, const Vector& vertical) {
+  Implementation(const FlatTriangulation<Vector>& original,
+                 const Vector& vertical) {
+    auto parent = original.clone();
     HalfEdge source = makeUniqueLargeEdge(parent, vertical);
     vector<HalfEdge> top, bottom;
     makeContour(inserter(top, next(top.begin())), source, parent, vertical);

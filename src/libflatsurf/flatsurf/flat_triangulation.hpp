@@ -35,6 +35,12 @@ struct FlatTriangulation : FlatTriangulationCombinatorial {
   FlatTriangulation(FlatTriangulationCombinatorial &&, const std::vector<Vector> &vectors);
   FlatTriangulation(FlatTriangulationCombinatorial &&, HalfEdgeMap<Vector> &&vectors);
 
+  // Create an unrelated clone of this triangulation that is built from the
+  // same data. There is no copy-constructor since it is too likely that
+  // this is would not update the associated HalfEdgeMaps in the way that the
+  // caller expects.
+  FlatTriangulation<Vector> clone() const;
+
   const Vector &fromEdge(HalfEdge) const;
 
   template <typename W>

@@ -76,6 +76,15 @@ FlatTriangulation<Vector>::FlatTriangulation(
 }
 
 template <typename Vector>
+FlatTriangulation<Vector> FlatTriangulation<Vector>::clone() const {
+  std::vector<Vector> vectors;
+  for (int e = 1; e <= halfEdges().size() / 2; e++)
+    vectors.push_back(fromEdge(HalfEdge(e)));
+  return FlatTriangulation(FlatTriangulationCombinatorial::clone(),
+                           std::move(vectors));
+}
+
+template <typename Vector>
 ostream &operator<<(ostream &os, const FlatTriangulation<Vector> &self) {
   return os << static_cast<const FlatTriangulationCombinatorial &>(self)
             << " with vectors " << self.impl->vectors;

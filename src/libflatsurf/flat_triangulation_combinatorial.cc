@@ -101,6 +101,10 @@ FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(
   for (const auto& map : impl->halfEdgeMaps) map.second.relink(this);
 }
 
+FlatTriangulationCombinatorial FlatTriangulationCombinatorial::clone() const {
+  return FlatTriangulationCombinatorial(impl->vertices);
+}
+
 void FlatTriangulationCombinatorial::flip(HalfEdge e) {
   // Let (e a b) and (-e c d) be the faces containing e and -e before the flip.
   const HalfEdge a = nextInFace(e);
