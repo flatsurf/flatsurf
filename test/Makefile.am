@@ -1,1 +1,1 @@
-SUBDIRS = libflatsurf flatsurf libpyflatsurf
+SUBDIRS = libflatsurf flatsurf pyflatsurf
