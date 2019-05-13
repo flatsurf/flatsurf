@@ -33,7 +33,6 @@ struct FlatTriangulationCombinatorial {
   FlatTriangulationCombinatorial(const std::vector<std::vector<int>> &vertices);
   FlatTriangulationCombinatorial(const Permutation<HalfEdge> &vertices);
   FlatTriangulationCombinatorial(FlatTriangulationCombinatorial &&);
-  virtual ~FlatTriangulationCombinatorial();
 
   HalfEdge nextAtVertex(HalfEdge e) const;
   HalfEdge nextInFace(HalfEdge e) const;
@@ -44,7 +43,6 @@ struct FlatTriangulationCombinatorial {
   void flip(HalfEdge);
 
   friend std::ostream &operator<<(std::ostream &, const FlatTriangulationCombinatorial &);
-  const size_t nedges;
 
 private:
   struct Implementation;

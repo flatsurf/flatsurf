@@ -51,7 +51,7 @@ TYPED_TEST_CASE(FlipTest, ExactVectors);
 TYPED_TEST(FlipTest, Square) {
   auto square = makeSquare<TypeParam>();
 
-  for (auto halfEdge : square.edges()) {
+  for (auto halfEdge : square.halfEdges()) {
     const auto vector = square.fromEdge(halfEdge);
     square.flip(halfEdge);
     EXPECT_NE(vector, square.fromEdge(halfEdge));

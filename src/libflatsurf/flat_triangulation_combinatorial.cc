@@ -58,6 +58,10 @@ struct FlatTriangulationCombinatorial::Implementation {
                   .toVector()),
         halfEdgeMaps() {}
 
+  ~Implementation() {
+    for (const auto& map : halfEdgeMaps) map.second.relink(nullptr);
+  }
+
   Permutation<HalfEdge> vertices;
   Permutation<HalfEdge> faces;
   mutable unordered_map<uintptr_t, HalfEdgeMapProxy> halfEdgeMaps;
@@ -82,8 +86,7 @@ FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(
 
 FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(
     const Permutation<HalfEdge>& vertices)
-    : nedges(vertices.size() / 2),
-      impl(spimpl::make_unique_impl<Implementation>(vertices)) {
+    : impl(spimpl::make_unique_impl<Implementation>(vertices)) {
   CHECK_ARGUMENT(vertices.size() % 2 == 0, "half edges must come in pairs");
   // check that faces are triangles
   for (auto edge : impl->faces.domain()) {
@@ -94,14 +97,8 @@ FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(
 
 FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(
     FlatTriangulationCombinatorial&& rhs)
-    : nedges(rhs.impl->vertices.size() / 2), impl(std::move(rhs.impl)) {
+    : impl(std::move(rhs.impl)) {
   for (const auto& map : impl->halfEdgeMaps) map.second.relink(this);
-}
-
-FlatTriangulationCombinatorial::~FlatTriangulationCombinatorial() {
-  if (impl) {
-    for (const auto& map : impl->halfEdgeMaps) map.second.relink(nullptr);
-  }
 }
 
 void FlatTriangulationCombinatorial::flip(HalfEdge e) {

@@ -34,7 +34,6 @@ nobase_include_HEADERS =                              \
     flatsurf/forward.hpp                                       \
     flatsurf/half_edge.hpp                                     \
     flatsurf/half_edge_map.hpp                                 \
-    flatsurf/libflatsurf.hpp                                   \
     flatsurf/orientation.hpp                                   \
     flatsurf/permutation.hpp                                   \
     flatsurf/saddle_connection.hpp                             \

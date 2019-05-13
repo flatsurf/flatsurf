@@ -38,7 +38,7 @@ HalfEdgeMap<T>::HalfEdgeMap(const FlatTriangulationCombinatorial &parent,
                             const vector<T> &values,
                             const FlipHandler &updateAfterFlip)
     : parent(&parent), updateAfterFlip(updateAfterFlip) {
-  assert(values.size() == parent.nedges &&
+  assert(values.size() == parent.halfEdges().size() / 2 &&
          "values must contain one entry for each pair of half edges");
   for (size_t i = 0; i < values.size(); i++) {
     this->values.emplace_back(values[i]);

@@ -49,7 +49,8 @@ struct VectorAlongTriangulationWithApproximation<
 
   explicit Implementation(const Surface &surface)
       : surface(surface),
-        coefficients(surface, vector<int>(surface.nedges), updateAfterFlip),
+        coefficients(surface, vector<int>(surface.halfEdges().size() / 2),
+                     updateAfterFlip),
         approximation() {}
 
   V exact() const {

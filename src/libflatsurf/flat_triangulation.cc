@@ -65,8 +65,7 @@ FlatTriangulation<Vector>::FlatTriangulation(
     : FlatTriangulationCombinatorial(std::move(combinatorial)),
       impl(spimpl::make_unique_impl<Implementation>(std::move(vectors))) {
   // check that faces are closed
-  for (size_t e = 0; e < nedges; e++) {
-    HalfEdge edge(static_cast<int>(e + 1));
+  for (auto edge : halfEdges()) {
     auto zero = fromEdge(edge);
     edge = nextInFace(edge);
     zero += fromEdge(edge);
