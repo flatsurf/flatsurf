@@ -77,6 +77,18 @@ CCW VectorLongLong::ccw(const VectorLongLong &other) const {
     return CCW::COLLINEAR;
   }
 }
+
+ORIENTATION VectorLongLong::orientation(const VectorLongLong &rhs) const {
+  auto dot = x * rhs.x + y * rhs.y;
+  if (dot > 0) {
+    return ORIENTATION::SAME;
+  } else if (dot == 0) {
+    return ORIENTATION::ORTHOGONAL;
+  } else {
+    return ORIENTATION::OPPOSITE;
+  }
+}
+
 ostream &operator<<(ostream &os, const VectorLongLong &self) {
   return os << "(" << self.x << "," << self.y << ")";
 }

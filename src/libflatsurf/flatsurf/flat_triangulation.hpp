@@ -35,7 +35,7 @@ struct FlatTriangulation : FlatTriangulationCombinatorial {
   FlatTriangulation(FlatTriangulationCombinatorial &&, const std::vector<Vector> &vectors);
   FlatTriangulation(FlatTriangulationCombinatorial &&, HalfEdgeMap<Vector> &&vectors);
 
-  const Vector &fromEdge(const HalfEdge e) const;
+  const Vector &fromEdge(HalfEdge) const;
 
   template <typename W>
   friend std::ostream &operator<<(std::ostream &, const FlatTriangulation<W> &);

@@ -17,47 +17,27 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_FLAT_TRIANGULATION_COMBINATORIAL_HPP
-#define LIBFLATSURF_FLAT_TRIANGULATION_COMBINATORIAL_HPP
+#ifndef LIBFLATSURF_INTERVAL_EXCHANGE_TRANSFORMATION_HPP
+#define LIBFLATSURF_INTERVAL_EXCHANGE_TRANSFORMATION_HPP
 
 #include "external/spimpl/spimpl.h"
-#include <iosfwd>
-#include <memory>
-#include <vector>
 
 #include "flatsurf/flatsurf.hpp"
 #include "flatsurf/forward.hpp"
 
 namespace flatsurf {
-struct FlatTriangulationCombinatorial {
-  FlatTriangulationCombinatorial(const std::vector<std::vector<int>> &vertices);
-  FlatTriangulationCombinatorial(const Permutation<HalfEdge> &vertices);
-  FlatTriangulationCombinatorial(FlatTriangulationCombinatorial &&);
-  virtual ~FlatTriangulationCombinatorial();
+template <class Vector>
+struct IntervalExchangeTransformation {
+  IntervalExchangeTransformation(FlatTriangulation<Vector>&, const Vector& vertical);
 
-  HalfEdge nextAtVertex(HalfEdge e) const;
-  HalfEdge nextInFace(HalfEdge e) const;
-
-  const std::vector<HalfEdge> &halfEdges() const;
-  const std::vector<Vertex> &vertices() const;
-
-  void flip(HalfEdge);
-
-  friend std::ostream &operator<<(std::ostream &, const FlatTriangulationCombinatorial &);
-  const size_t nedges;
+  template <typename W>
+  friend std::ostream &operator<<(std::ostream &, const IntervalExchangeTransformation<W> &);
 
 private:
   struct Implementation;
   spimpl::unique_impl_ptr<Implementation> impl;
-
-  template <typename T>
-  friend struct HalfEdgeMap;
-
-  template <typename T>
-  void registerMap(const HalfEdgeMap<T>&) const;
-  template <typename T>
-  void deregisterMap(const HalfEdgeMap<T>&) const;
 };
 } // namespace flatsurf
 
 #endif
+

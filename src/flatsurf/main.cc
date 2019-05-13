@@ -634,7 +634,7 @@ int main(int argc, char **argv) {
             static_cast<VectorExactReal<exactreal::NumberFieldTraits>>(
                 saddle_connection->vector);
 
-        for (const HalfEdge e : flat_triangulation.edges()) {
+        for (const HalfEdge e : flat_triangulation.halfEdges()) {
           if (flat_triangulation.fromEdge(e).ccw(direction) ==
               flatsurf::CCW::CLOCKWISE) {
             continue;

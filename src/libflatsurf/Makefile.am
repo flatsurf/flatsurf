@@ -19,6 +19,7 @@ libflatsurf_la_SOURCES =                \
     half_edge_map.cc                    \
     cppyy.cc                            \
     vector_exactreal.cc                 \
+    interval_exchange_transformation.cc \
     vector_along_triangulation_with_approximation.cc
 
 nobase_include_HEADERS =                              \
@@ -46,6 +47,7 @@ nobase_include_HEADERS =                              \
     flatsurf/vector_exactreal.hpp                              \
     flatsurf/vector_longlong.hpp                               \
     flatsurf/vertex.hpp                                        \
+    flatsurf/interval_exchange_transformation.hpp              \
     external/spimpl/spimpl.h
 
 libflatsurf_la_LDFLAGS = -version-info $(libflatsurf_version_info)

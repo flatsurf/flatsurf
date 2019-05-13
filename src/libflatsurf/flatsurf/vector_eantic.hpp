@@ -24,8 +24,8 @@
 #include <e-antic/renfxx.h>
 #include <iosfwd>
 
-#include "flatsurf/ccw.hpp"
 #include "flatsurf/flatsurf.hpp"
+#include "flatsurf/ccw.hpp"
 #include "flatsurf/orientation.hpp"
 #include "flatsurf/vector_along_triangulation_with_approximation.hpp"
 

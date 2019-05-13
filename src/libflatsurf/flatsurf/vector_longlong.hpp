@@ -23,8 +23,9 @@
 #include <boost/operators.hpp>
 #include <iosfwd>
 
-#include "flatsurf/ccw.hpp"
 #include "flatsurf/flatsurf.hpp"
+#include "flatsurf/ccw.hpp"
+#include "flatsurf/orientation.hpp"
 #include "flatsurf/vector_along_triangulation.hpp"
 
 namespace flatsurf {
@@ -44,6 +45,7 @@ struct VectorLongLong : boost::additive<VectorLongLong>,
   VectorLongLong(long long x, long long y);
 
   CCW ccw(const V &rhs) const;
+  ORIENTATION orientation(const V &) const;
 
   friend std::ostream &operator<<(std::ostream &, const V &);
   V operator-() const;

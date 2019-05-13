@@ -71,7 +71,7 @@ HalfEdge FlatTriangulationCombinatorial::nextAtVertex(const HalfEdge e) const {
   return impl->vertices(e);
 }
 
-const vector<HalfEdge>& FlatTriangulationCombinatorial::edges() const {
+const vector<HalfEdge>& FlatTriangulationCombinatorial::halfEdges() const {
   return impl->vertices.domain();
 }
 
