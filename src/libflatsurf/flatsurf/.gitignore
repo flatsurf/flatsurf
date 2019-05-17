@@ -1,5 +1,5 @@
 ### Autotools Generated Files
-/libflatsurf.hpp
-/config.h
-/config.h.in
-/stamp-h1
+libflatsurf.hpp
+config.h
+config.h.in
+stamp-h1
