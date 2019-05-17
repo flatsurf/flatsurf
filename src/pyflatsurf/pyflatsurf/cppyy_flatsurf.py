@@ -19,12 +19,17 @@
 
 import cppyy
 
+from pyexactreal import exactreal
+
 # Importing cysignals after cppyy gives us proper stack traces on segfaults
 # whereas cppyy otherwise only reports "segmentation violation" (which is
 # probably what cling provides.)
 import os
-if os.environ.get('PYFLATSURF_CYSIGNALS', True):
-    import cysignals
+if os.environ.get('PYEXACTREAL_CYSIGNALS', True):
+    try:
+        import cysignals
+    except ModuleNotFoundError:
+        pass
 
 def make_iterable(proxy, name):
     if hasattr(proxy, 'begin') and hasattr(proxy, 'end'):
@@ -39,10 +44,14 @@ def make_iterable(proxy, name):
 
 cppyy.py.add_pythonization(make_iterable, "flatsurf")
 
-if 'PYFLATSURF_INCLUDE' in os.environ:
-    cppyy.add_include_path(os.environ['PYFLATSURF_INCLUDE'])
+def pretty_print(proxy, name):
+    proxy.__repr__ = proxy.__str__
+
+cppyy.py.add_pythonization(pretty_print, "flatsurf")
+
+for path in os.environ.get('PYFLATSURF_INCLUDE','').split(':'):
+    if path: cppyy.add_include_path(path)
 
 cppyy.include("flatsurf/cppyy.hpp")
-cppyy.include("e-antic/renfxx.h")
 
 from cppyy.gbl import flatsurf
