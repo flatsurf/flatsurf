@@ -74,6 +74,11 @@ AC_CHECK_HEADERS([NTL/LLL.h NTL/mat_ZZ.h], , AC_MSG_ERROR([NTL headers not found
 AX_CXX_CHECK_LIB([exactreal], [exactreal::RealNumber::random()], [have_exactreal=yes], AC_MSG_ERROR([exact-real library not found]), [-lgmp -lmpfr -lflint])
 AC_CHECK_HEADERS([exact-real/real_number.hpp exact-real/module.hpp], , AC_MSG_ERROR([libexactreal headers not found]))
 
+dnl flatsurf (but not libflatsurf yet) use Eigen for some Linear Algebra
+AC_CHECK_HEADERS([eigen3/Eigen/Dense eigen/Eigen/Dense], [have_eigen=yes; break;])
+
+AS_IF([test "x$have_eigen" != "xyes"], [AC_MSG_ERROR([Eigen headers not found])])
+
 dnl Our test suite uses googletest and Google's C++ benchmark library.
 dnl We fail if they cannot be found but let the user disable all checks explicitly.
 AC_ARG_WITH([googletest], AS_HELP_STRING([--without-googletest], [Do not build C++ tests that require googletest/benchmark]))
@@ -96,7 +101,7 @@ AS_IF([test "x$with_pytest" != "xno" && test "x$have_python" = "xyes"],
       ], [])
 AM_CONDITIONAL([HAVE_PYTEST], [test "x$with_pytest" = "xyes"])
 
-AC_CONFIG_HEADERS([src/libflatsurf/flatsurf/config.h])
+AC_CONFIG_HEADERS([src/config.h])
 AC_CONFIG_FILES([Makefile src/Makefile src/libflatsurf/Makefile src/pyflatsurf/Makefile src/flatsurf/Makefile test/Makefile test/flatsurf/Makefile test/libflatsurf/Makefile test/pyflatsurf/Makefile])
 
 dnl Python's setuptools absolutely want to run in the source directory of the

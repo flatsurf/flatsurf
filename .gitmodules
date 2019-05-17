@@ -1,6 +1,3 @@
 [submodule "src/libflatsurf/external/spimpl"]
 	path = src/libflatsurf/external/spimpl
 	url = https://github.com/oliora/samples.git
-[submodule "src/flatsurf/external/eigen"]
-	path = src/flatsurf/external/eigen
-	url = https://github.com/eigenteam/eigen-git-mirror.git

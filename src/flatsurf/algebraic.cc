@@ -18,12 +18,18 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "../config.h"
+
 #include <boost/lexical_cast.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include <complex>
-#include <eigen/Eigen/Dense>
 #include <ostream>
 #include <vector>
+#ifdef HAVE_EIGEN_EIGEN_DENSE
+#include <eigen/Eigen/Dense>
+#elif HAVE_EIGEN3_EIGEN_DENSE
+#include <eigen3/Eigen/Dense>
+#endif
 
 #include "./algebraic.h"
 #include "./defs.h"

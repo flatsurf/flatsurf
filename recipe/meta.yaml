@@ -42,6 +42,7 @@ requirements:
     - libexactreal
     - e-antic 1.*
     - arb
+    - eigen
     - gmp
     - mpfr
     - ntl
