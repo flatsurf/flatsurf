@@ -126,3 +126,6 @@ cysignals_crash_logs
 
 ### GDB
 .gdb_history
+
+### Core Dumps
+vgcore.*
