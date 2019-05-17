@@ -98,4 +98,12 @@ AM_CONDITIONAL([HAVE_PYTEST], [test "x$with_pytest" = "xyes"])
 
 AC_CONFIG_HEADERS([src/libflatsurf/flatsurf/config.h])
 AC_CONFIG_FILES([Makefile src/Makefile src/libflatsurf/Makefile src/pyflatsurf/Makefile src/flatsurf/Makefile test/Makefile test/flatsurf/Makefile test/libflatsurf/Makefile test/pyflatsurf/Makefile])
+
+dnl Python's setuptools absolutely want to run in the source directory of the
+dnl module. Since this is incompatible with out-of-tree builds of
+dnl autoconfiscated packages, we have to copy all the Python bits over to the
+dnl build dir manually so that Python can't tell the difference.
+AC_CONFIG_LINKS([src/pyflatsurf/pyflatsurf/__init__.py:src/pyflatsurf/pyflatsurf/__init__.py
+                 src/pyflatsurf/pyflatsurf/cppyy_flatsurf.py:src/pyflatsurf/pyflatsurf/cppyy_flatsurf.py])
+
 AC_OUTPUT
