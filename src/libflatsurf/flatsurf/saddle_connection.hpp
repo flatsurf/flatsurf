@@ -31,12 +31,6 @@ template <typename Vector> struct FlatTriangulation;
 
 struct Vertex;
 
-// TODO: Maybe this should be a pimpl? But this only makes sense if it's
-// constructor is accepting the underlying pimpl. But then the calling code
-// would need to know the pimpl…, i.e., we would have to move the
-// implementation inside saddle_connections_iterator.cc. That makes sense but
-// is breaking a bit with our conventions here. So we might want to include
-// saddle_conection.tcc from saddle_connection_iterator.cc.
 template <typename Vector, typename AlongTriangulation>
 struct SaddleConnection : boost::equality_comparable<SaddleConnection<Vector, AlongTriangulation>> {
   SaddleConnection(const FlatTriangulation<Vector> &,
