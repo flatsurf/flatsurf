@@ -119,7 +119,8 @@ Vertex &Vertex::from(const flatsurf::Vertex &v) {
       return *w;
     }
   }
-  assert(false);
+  throw std::logic_error(
+      "libflatsurf's vertex not corresponding to any vertices here");
 }
 
 Vertex::operator flatsurf::Vertex() const {
