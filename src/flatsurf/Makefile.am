@@ -1,6 +1,6 @@
 bin_PROGRAMS = flatsurf
 
-flatsurf_SOURCES =         \
+flatsurf_SOURCES =        \
     main.cc               \
     algebraic.cc          \
     alg_misc.cc           \
@@ -22,6 +22,38 @@ flatsurf_SOURCES =         \
     vertex.cc             \
     params.cc             \
     globals.cc
+
+noinst_HEADERS =          \
+    algebraic.h           \
+    alg_t.h               \
+    big_point.h           \
+    cylinder.h            \
+    defs.h                \
+    dir.h                 \
+    dmap.h                \
+    elementary_geometry.h \
+    face.h                \
+    globals.h             \
+    my_ostream.h          \
+    number_field.h        \
+    oedge.h               \
+    params.h              \
+    pface.h               \
+    poly.h                \
+    psimplex.h            \
+    puedge.h              \
+    pvertex.h             \
+    saddleconf.h          \
+    segment.h             \
+    shared.h              \
+    simplex.h             \
+    summary.h             \
+    two_complex.h         \
+    uedge.h               \
+    vector.h              \
+    vertex.h              \
+    vert_pattern.h
+
 
 AM_LDFLAGS = $(builddir)/../libflatsurf/libflatsurf.la
 # is_fmpq() from eanticxx is calling directly into FLINT
