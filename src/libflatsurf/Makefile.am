@@ -54,6 +54,8 @@ libflatsurf_la_LDFLAGS = -version-info $(libflatsurf_version_info)
 libflatsurf_la_LDFLAGS += -larb
 # we use exact-real in our vectors
 libflatsurf_la_LDFLAGS += -lexactreal
+# we use e-antic in our vectors
+libflatsurf_la_LDFLAGS += -leanticxx -leantic
 
 $(builddir)/flatsurf/flatsurf.hpp: $(srcdir)/flatsurf/flatsurf.hpp.in Makefile
 	mkdir -p $(builddir)/flatsurf
