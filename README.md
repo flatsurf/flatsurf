@@ -1,4 +1,4 @@
-[![Linux](https://dev.azure.com/flatsurf/conda/_apis/build/status/flatsurf.flatsurf?branchName=master&jobName=linux&configuration=build_linux_)](https://dev.azure.com/flatsurf/conda/_build/latest?definitionId=&branchName=master)
+[![Linux](https://dev.azure.com/flatsurf/conda/_apis/build/status/flatsurf.flatsurf?branchName=master&jobName=linux&configuration=linux%20build_linux_)](https://dev.azure.com/flatsurf/conda/_build/latest?definitionId=&branchName=master)
 ![OSX disabled](https://img.shields.io/badge/OSX-disabled-lightgrey.svg)
 ![Windows disabled](https://img.shields.io/badge/Windows-disabled-lightgrey.svg)
 ![ppc64le disabled](https://img.shields.io/badge/ppc64le-disabled-lightgrey.svg)
@@ -28,7 +28,15 @@ You can install these packages with conda. Download and install [Miniconda](http
 
 ```
 conda config --add channels conda-forge
-conda install -c flatsurf pyflatsurf flatsurf
+conda create -n flatsurf -c flatsurf flatsurf pyflatsurf
+conda activate flatsurf
+```
+
+The Python wrapper `pyflatsurf` is based on [cppyy](https://cppyy.readthedocs.io/) which is [not available on conda-forge yet](https://bitbucket.org/wlav/cppyy/issues/55/package-for-conda-forge). Therefore, to use the Python wrapper, you need to install cppyy from PyPI:
+
+```
+conda install pip
+pip install cppyy
 ```
 
 ## Run with binder in the Cloud
@@ -124,9 +132,18 @@ conda build "${RECIPE_ROOT}" -m "${CI_SUPPORT}/${CONFIG}.yaml" --clobber-file "$
 
 You can then try out the package that you just built with:
 ```
-conda create -n flatsurf-test --use-local libflatsurf pyflatsurf
+conda create -n flatsurf-test --use-local libflatsurf pyflatsurf flatsurf
 conda activate flatsurf-test
 ```
+
+## Run Tests and Benchmark
+
+`make check` runs all tests and benchmarks. During development `make check TESTS=module`
+only runs the tests for `module`. For randomized tests, you might want to add
+`GTEST_REPEAT=1024` to run such tests repeatedly. Note that the environment
+variable `EXACTREAL_CHECK` is passed on to the tests and benchmarks, i.e., you
+could add `EXACTREAL_CHECK="--benchmark_min_time=.02"` to not let the
+benchmarks run as long as they would usually.
 
 ## Maintainers
 
