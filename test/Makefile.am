@@ -1,1 +1,7 @@
-SUBDIRS = libflatsurf flatsurf pyflatsurf
+if HAVE_PYTEST
+  MAYBE_PYFLATSURF = pyflatsurf
+endif
+if HAVE_GOOGLETEST
+  MAYBE_LIBFLATSURF = libflatsurf
+endif
+SUBDIRS = $(MAYBE_LIBFLATSURF) $(MAYBE_PYFLATSURF) flatsurf
