@@ -120,5 +120,5 @@ dmypy.json
 .venv/
 
 #### perf output ###
-/perf.data
-/perf.data.old
+perf.data
+perf.data.old

@@ -115,14 +115,14 @@ final_results
 compile_commands.json
 
 ### ASV Benchmark Tool
-/.asv
+.asv
 
 ### Perf Profiler
-/perf.data
-/perf.data.old
+perf.data
+perf.data.old
 
 ### Cysignals
-/cysignals_crash_logs
+cysignals_crash_logs
 
 ### GDB
-/.gdb_history
+.gdb_history

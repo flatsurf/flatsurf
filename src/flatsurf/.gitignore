@@ -34,7 +34,7 @@
 /flatsurf
 
 ### Autotools Generated Files
-/.deps
-/.libs
-/.dirstamp
-/stamp-h1
+.deps
+.libs
+.dirstamp
+stamp-h1

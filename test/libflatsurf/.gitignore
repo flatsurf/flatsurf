@@ -35,11 +35,11 @@
 /flip
 
 ### Autotools Generated Files
-/.deps
-/.libs
-/.dirstamp
-/stamp-h1
+.deps
+.libs
+.dirstamp
+stamp-h1
 
 ### googletest Generated Files
-/*.log
-/*.trs
+*.log
+*.trs
