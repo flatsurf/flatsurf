@@ -363,7 +363,7 @@ std::vector<algebraic<T>> to_algebraic_coeffs(const VectorExactReal<Ring> &v) {
   y.promote(x.module());
   assert(&*x.module() == &*y.module());
 
-  return from(x.module()->gens())
+  return from(x.module()->basis())
       .select_i([&](auto, int i) { return algebraic<T>(x[i], y[i]); })
       .toVector();
 }

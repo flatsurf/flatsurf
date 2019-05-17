@@ -19,6 +19,7 @@
  *********************************************************************/
 
 #include <boost/lexical_cast.hpp>
+#include <exact-real/module.hpp>
 #include <exact-real/real_number.hpp>
 #include <ostream>
 #include <vector>
@@ -37,8 +38,8 @@ using std::vector;
 namespace {
 vector<shared_ptr<RealNumber>> reals;
 // TODO: Should I fix a prec here?
-auto mod = std::make_shared<const Module<NumberFieldTraits>>(
-    std::vector<std::shared_ptr<RealNumber>>{RealNumber::rational(1)},
+auto mod = Module<NumberFieldTraits>::make(
+    std::vector<std::shared_ptr<const RealNumber>>{RealNumber::rational(1)},
     eantic::renf_class());
 }  // namespace
 
@@ -54,13 +55,13 @@ void Params::AddParams(size_t n, COORD prms[]) {
     reals.push_back(shared_ptr<RealNumber>(RealNumber::random(prms[i])));
   }
   n_params += n;
-  vector<shared_ptr<RealNumber>> basis;
+  vector<shared_ptr<const RealNumber>> basis;
   basis.push_back(RealNumber::rational(1));
   for (const auto &b : reals) {
     basis.push_back(b);
   }
   // TODO: Should I fix a prec here?
-  mod = std::make_shared<const Module<NumberFieldTraits>>(
+  mod = Module<NumberFieldTraits>::make(
       basis, static_cast<const eantic::renf_class &>(*NumberField<bigrat>::F));
 }
 
