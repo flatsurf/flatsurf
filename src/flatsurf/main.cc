@@ -619,7 +619,7 @@ int main(int argc, char **argv) {
            SaddleConnections(flat_triangulation,
                              Bound(static_cast<long long>(ceil(depth * depth))),
                              sectorBegin)) {
-        if (!Vertex::from(flatsurf::Vertex::source(saddle_connection->source,
+        if (!Vertex::from(flatsurf::Vertex::source(saddle_connection->source(),
                                                    flat_triangulation))
                  .relevant()) {
           // It would be good to have a proper notion of marked vertices
@@ -632,7 +632,7 @@ int main(int argc, char **argv) {
 
         auto direction =
             static_cast<VectorExactReal<exactreal::NumberFieldTraits>>(
-                saddle_connection->vector);
+                saddle_connection->vector());
 
         for (const HalfEdge e : flat_triangulation.halfEdges()) {
           if (flat_triangulation.fromEdge(e).ccw(direction) ==
@@ -662,17 +662,17 @@ int main(int argc, char **argv) {
             auto saddle_connection_in_same_direction = *it;
 
             const Vertex &target = Vertex::from(flatsurf::Vertex::target(
-                saddle_connection_in_same_direction->target,
+                saddle_connection_in_same_direction->target(),
                 flat_triangulation));
 
             if (!target.relevant()) continue;
             if (target.deleted()) continue;
 
-            auto ccw = saddle_connection_in_same_direction->vector.ccw(
-                saddle_connection->vector);
+            auto ccw = saddle_connection_in_same_direction->vector().ccw(
+                saddle_connection->vector());
             if (ccw == flatsurf::CCW::COLLINEAR) {
               auto vector = static_cast<VectorExactReal<NumberFieldTraits>>(
-                  saddle_connection_in_same_direction->vector);
+                  saddle_connection_in_same_direction->vector());
               assert(flat_triangulation.fromEdge(e).ccw(vector) ==
                      flatsurf::CCW::COUNTERCLOCKWISE);
               auto dvector = static_cast<Point>(static_cast<VectorArb>(vector));
@@ -680,7 +680,7 @@ int main(int argc, char **argv) {
               assert(start.v->id() == source.id());
               // end points back to start from the target vertex
               auto end = Dir(flat_triangulation.nextInFace(
-                                 saddle_connection_in_same_direction->target),
+                                 saddle_connection_in_same_direction->target()),
                              -dvector);
               assert(end.v->id() == target.id());
               sc.add_saddle(start, end, vector);

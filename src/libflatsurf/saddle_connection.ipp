@@ -28,25 +28,30 @@ using std::ostream;
 
 namespace flatsurf {
 template <typename Vector, typename AlongTriangulation>
-SaddleConnection<Vector, AlongTriangulation>::SaddleConnection(
-    const FlatTriangulation<Vector> &surface, const AlongTriangulation &vector,
-    const HalfEdge &source, const HalfEdge &target)
+struct SaddleConnection<Vector, AlongTriangulation>::Implementation {
+  Implementation(const FlatTriangulation<Vector> &surface, const AlongTriangulation &vector, const HalfEdge &source, const HalfEdge &target)
     : surface(surface), vector(vector), source(source), target(target) {}
+
+  const FlatTriangulation<Vector> &surface;
+  AlongTriangulation vector;
+  HalfEdge source;
+  HalfEdge target;
+};
 
 template <typename Vector, typename AlongTriangulation>
 ostream &operator<<(ostream &os,
                     const SaddleConnection<Vector, AlongTriangulation> &self) {
-  os << "SaddleConnection(" << self.source << " -> " << self.target
-     << " in direction " << self.vector << " crossing";
+  os << "SaddleConnection(" << self.source() << " -> " << self.target()
+     << " in direction " << self.vector() << " crossing";
 
   // We reconstruct the sequence of half edges that this saddle connection
   // crossed. This is expensive (but cheap in terms of the output size.) This
   // information seems to be essential to properly plot a saddle connection.
   auto reconstruction = SaddleConnections<Vector, AlongTriangulation>(
-      self.surface, Bound(LLONG_MAX), self.source);
+      self.impl->surface, Bound(LLONG_MAX), self.source());
   auto it = reconstruction.begin();
   while (**it != self) {
-    auto ccw = (*it)->vector.ccw(self.vector);
+    auto ccw = (*it)->vector().ccw(self.vector());
     assert(ccw != CCW::COLLINEAR &&
            "There cannot be another saddle connection in exactly the same "
            "direction.");
@@ -67,12 +72,21 @@ ostream &operator<<(ostream &os,
 template <typename Vector, typename AlongTriangulation>
 bool SaddleConnection<Vector, AlongTriangulation>::operator==(
     const SaddleConnection<Vector, AlongTriangulation> &rhs) const {
-  bool ret = &surface == &rhs.surface &&
-             static_cast<Vector>(vector) == static_cast<Vector>(rhs.vector) &&
-             source == rhs.source;
-  assert(!ret || target == rhs.target);
+  bool ret = &impl->surface == &rhs.impl->surface &&
+             static_cast<Vector>(vector()) == static_cast<Vector>(rhs.vector()) &&
+             source() == rhs.source();
+  assert(!ret || target() == rhs.target());
   return ret;
 }
+
+template <typename Vector, typename AlongTriangulation>
+HalfEdge SaddleConnection<Vector, AlongTriangulation>::source() const { return impl->source; }
+
+template <typename Vector, typename AlongTriangulation>
+HalfEdge SaddleConnection<Vector, AlongTriangulation>::target() const { return impl->target; }
+
+template <typename Vector, typename AlongTriangulation>
+const AlongTriangulation& SaddleConnection<Vector, AlongTriangulation>::vector() const { return impl->vector; }
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker

@@ -22,8 +22,10 @@
 
 #include <iosfwd>
 #include <boost/operators.hpp>
+#include "external/spimpl/spimpl.h"
 
 #include "flatsurf/flatsurf.hpp"
+#include "flatsurf/forward.hpp"
 #include "flatsurf/half_edge.hpp"
 
 namespace flatsurf {
@@ -33,26 +35,26 @@ struct Vertex;
 
 template <typename Vector, typename AlongTriangulation>
 struct SaddleConnection : boost::equality_comparable<SaddleConnection<Vector, AlongTriangulation>> {
-  SaddleConnection(const FlatTriangulation<Vector> &,
-                   const AlongTriangulation &,
-                   const HalfEdge &source,
-                   const HalfEdge &target);
+  const AlongTriangulation& vector() const;
+  // The saddle connection is leaving from the vertex at the source of source.
+  // It is leaving in a direction that is contained in the sector next to
+  // source (counterclockwise.)
+  HalfEdge source() const;
+  // The saddle connection is reaching the vertex at the target of target.
+  // It is approching in a direction that is contained in the sector
+  // *clockwise* from *-target*.
+  HalfEdge target() const;
+
+  bool operator==(const SaddleConnection<Vector, AlongTriangulation>&) const;
 
   template <typename V, typename A>
   friend std::ostream &operator<<(std::ostream &, const SaddleConnection<V, A> &);
 
-  bool operator==(const SaddleConnection<Vector, AlongTriangulation>&) const;
+ private:
+  friend SaddleConnectionsIterator<Vector, AlongTriangulation>;
 
-  const FlatTriangulation<Vector> &surface;
-  const AlongTriangulation vector;
-  // The saddle connection is leaving from the vertex at the source of source.
-  // It is leaving in a direction that is contained in the sector next to
-  // source (counterclockwise.)
-  const HalfEdge source;
-  // The saddle connection is reaching the vertex at the target of target.
-  // It is approching in a direction that is contained in the sector
-  // *clockwise* from *-target*.
-  const HalfEdge target;
+  struct Implementation;
+  spimpl::impl_ptr<Implementation> impl;
 };
 } // namespace flatsurf
 

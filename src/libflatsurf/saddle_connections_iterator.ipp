@@ -26,6 +26,8 @@
 #include "flatsurf/saddle_connections.hpp"
 #include "flatsurf/saddle_connections_iterator.hpp"
 
+#include "saddle_connection.ipp"
+
 namespace flatsurf {
 template <typename Vector, typename VectorAlongTriangulation>
 struct SaddleConnectionsIterator<Vector,
@@ -347,16 +349,6 @@ struct SaddleConnectionsIterator<Vector,
 };
 
 template <typename Vector, typename VectorAlongTriangulation>
-SaddleConnectionsIterator<Vector, VectorAlongTriangulation>::
-    SaddleConnectionsIterator(const FlatTriangulation<Vector> &surface,
-                              const Bound searchRadius,
-                              const HalfEdge sectorBoundary,
-                              const VectorAlongTriangulation &sectorBegin,
-                              const VectorAlongTriangulation &sectorEnd)
-    : impl(spimpl::make_impl<Implementation>(
-          surface, searchRadius, sectorBoundary, sectorBegin, sectorEnd)) {}
-
-template <typename Vector, typename VectorAlongTriangulation>
 SaddleConnectionsIterator<Vector,
                           VectorAlongTriangulation>::SaddleConnectionsIterator()
     : impl(nullptr) {}
@@ -406,8 +398,10 @@ template <typename Vector, typename VectorAlongTriangulation>
 std::unique_ptr<SaddleConnection<Vector, VectorAlongTriangulation>>
 SaddleConnectionsIterator<Vector, VectorAlongTriangulation>::dereference()
     const {
-  return std::make_unique<SaddleConnection<Vector, VectorAlongTriangulation>>(
+  auto ret = std::make_unique<SaddleConnection<Vector, VectorAlongTriangulation>>();
+  ret->impl = spimpl::make_impl<typename SaddleConnection<Vector, VectorAlongTriangulation>::Implementation>(
       *impl->surface, impl->nextEdgeEnd, impl->source, impl->nextEdge);
+  return ret;
 }
 }  // namespace flatsurf
 

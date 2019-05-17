@@ -21,8 +21,8 @@
 #define LIBFLATSURF_SADDLE_CONNECTIONS_ITERATOR_HPP
 
 #include <optional>
-#include "external/spimpl/spimpl.h"
 #include <boost/iterator/iterator_facade.hpp>
+#include "external/spimpl/spimpl.h"
 
 #include "flatsurf/ccw.hpp"
 #include "flatsurf/flatsurf.hpp"
@@ -55,11 +55,6 @@ struct SaddleConnectionsIterator
 private:
   friend struct SaddleConnections<Vector, VectorAlongTriangulation>;
   SaddleConnectionsIterator();
-  SaddleConnectionsIterator(const FlatTriangulation<Vector> &surface,
-                            const Bound searchRadius,
-                            const HalfEdge sectorBoundary,
-                            const VectorAlongTriangulation &sectorBegin,
-                            const VectorAlongTriangulation &sectorEnd);
 
   struct Implementation;
   spimpl::impl_ptr<Implementation> impl;

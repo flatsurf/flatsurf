@@ -9,8 +9,6 @@ libflatsurf_la_SOURCES =                \
     flat_triangulation.cc               \
     flat_triangulation_combinatorial.cc \
     saddle_connections.cc               \
-    saddle_connection.cc                \
-    saddle_connections_iterator.cc      \
     permutation.cc                      \
     bound.cc                            \
     vector_eantic.cc                    \
@@ -50,7 +48,9 @@ nobase_include_HEADERS =                                       \
     external/spimpl/spimpl.h
 
 noinst_HEADERS =                                               \
-    flatsurf/detail/as_vector.hpp
+    flatsurf/detail/as_vector.hpp                              \
+    saddle_connections_iterator.ipp                            \
+    saddle_connection.ipp
 
 libflatsurf_la_LDFLAGS = -version-info $(libflatsurf_version_info)
 # some of our vectors use arb directly and through exact-real's arb wrappers

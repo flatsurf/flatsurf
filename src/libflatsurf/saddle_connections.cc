@@ -21,6 +21,8 @@
 #include "flatsurf/half_edge.hpp"
 #include "flatsurf/saddle_connections.hpp"
 
+#include "saddle_connections_iterator.ipp"
+
 namespace flatsurf {
 template <typename Vector, typename VectorAlongTriangulation>
 struct SaddleConnections<Vector, VectorAlongTriangulation>::Implementation {
@@ -65,9 +67,12 @@ SaddleConnections<Vector, VectorAlongTriangulation>::SaddleConnections(
 template <typename Vector, typename VectorAlongTriangulation>
 SaddleConnectionsIterator<Vector, VectorAlongTriangulation>
 SaddleConnections<Vector, VectorAlongTriangulation>::begin() const {
-  return SaddleConnectionsIterator<Vector, VectorAlongTriangulation>(
+  auto ret = SaddleConnectionsIterator<Vector, VectorAlongTriangulation>();
+  ret.impl = spimpl::make_impl<typename SaddleConnectionsIterator<
+      Vector, VectorAlongTriangulation>::Implementation>(
       *impl->surface, impl->searchRadius, impl->sectorBoundary, impl->sector[0],
       impl->sector[1]);
+  return ret;
 }
 
 template <typename Vector, typename VectorAlongTriangulation>
