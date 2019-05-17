@@ -16,15 +16,21 @@ source:
 build:
   number: {{ build_number }}
   string: {{ build_string }}
-  # currently not built for Windows & macOS
+  # flatsurf is not available for Windows & macOS
   skip: True  # [win]
   skip: True  # [osx]
   script:
     - source ./recipe/cflags.sh
+    # /tmp/secrets contains some CI-injected credentials to services such as
+    # coveralls or ASV.
     - source /tmp/secrets
     - ./recipe/build-{{ flavour }}.sh
+    # conda-build can currently not copy build-artifacts over to the testing
+    # stage, so we can only run make check if we rebuild everything. Therefore,
+    # we run make check as part of the build in the usual make; make check;
+    # make install order.
     - ./recipe/test-{{ flavour }}.sh
-    - make install
+    - cd src/flatsurf && make install
 
 requirements:
   build:
@@ -42,29 +48,64 @@ requirements:
     # requirement of make check which also runs benchmarks
     - gtest
     - benchmark
+  run_exports:
+    - libflatsurf {{ version }}
 
 outputs:
+  - name: flatsurf
   - name: libflatsurf
     build:
-      run_exports:
-        - {{ pin_subpackage("libflatsurf", exact=True) }}
-    files:
-      - lib/*.dylib    # [osx]
-      - lib/*.so*      # [linux]
-      - include/flatsurf/*.h
-  - name: flatsurf
+      skip: True  # [win]
+      skip: True  # [osx]
+    script: install-libflatsurf.sh
     requirements:
+      build:
+        - libtool
+        - automake
+        - {{ compiler('cxx') }}
+      host:
+        - boost-cpp
+        - libexactreal
+        - e-antic 1.*
+        - arb
+        - gmp
+        - mpfr
+        - ntl
       run:
-        - {{ pin_subpackage("libflatsurf", exact=True) }}
-      files:
-        - bin/flatsurf
+        - libflatsurf =={{ version }}
+        # cppyy, not packaged in conda-forge yet
+  - name: pyflatsurf
+    build:
+      skip: True  # [win]
+      skip: True  # [osx]
+    script: install-pyflatsurf.sh
+    requirements:
+      build:
+        - libtool
+        - automake
+        - {{ compiler('cxx') }}
+      host:
+        - boost-cpp
+        - libexactreal
+        - e-antic 1.*
+        - arb
+        - gmp
+        - mpfr
+        - ntl
+      run:
+        - libflatsurf =={{ version }}
+        # cppyy, not packaged in conda-forge yet
+
+    # We cannot test that that the import works since cppyy is not on conda-forge yet
+    #test:
+    #  imports:
+    #    - pyflatsurf
 
 about:
   home: https://github.com/flatsurf/flatsurf
   license: GPL2
   license_file: COPYING
   summary: Alex Eskin's polygon program
-
 
 extra:
   recipe-maintainers:
