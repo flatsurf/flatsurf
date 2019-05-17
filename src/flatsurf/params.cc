@@ -37,7 +37,6 @@ using std::vector;
 
 namespace {
 vector<shared_ptr<RealNumber>> reals;
-// TODO: Should I fix a prec here?
 auto mod = Module<NumberFieldTraits>::make(
     std::vector<std::shared_ptr<const RealNumber>>{RealNumber::rational(1)},
     eantic::renf_class());
@@ -60,7 +59,6 @@ void Params::AddParams(size_t n, COORD prms[]) {
   for (const auto &b : reals) {
     basis.push_back(b);
   }
-  // TODO: Should I fix a prec here?
   mod = Module<NumberFieldTraits>::make(
       basis, static_cast<const eantic::renf_class &>(*NumberField<bigrat>::F));
 }

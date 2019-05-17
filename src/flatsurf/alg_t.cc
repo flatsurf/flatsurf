@@ -269,10 +269,12 @@ im.change_ring(M).roots(multiplicities=False))
         "and have not been generated for that degree yet");
   }
 
-  // TODO: What is the correct precision here?
+  // We have not figured out the correct precision here yet, see
+  // https://github.com/flatsurf/flatsurf/issues/52. 64 bits should be plently
+  // for most occasions though.
   auto totally_real_field = std::make_shared<eantic::renf_class>(
       totally_real_data[n][0], "x", totally_real_data[n][1] + " +/- 0.00001",
-      flatsurf::VectorArb::prec);
+      exactreal::ARB_PRECISION_FAST);
   auto re =
       eantic::renf_elem_class(*totally_real_field, totally_real_data[n][2]);
   auto im =

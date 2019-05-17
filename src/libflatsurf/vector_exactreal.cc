@@ -32,13 +32,15 @@ using boost::numeric_cast;
 using exactreal::Arb;
 using exactreal::Element;
 using std::ostream;
+// Currently, we use this precision for all computations. This is not really a
+// good choice, see https://github.com/flatsurf/flatsurf/issues/52.
+using exactreal::ARB_PRECISION_FAST;
 
 namespace flatsurf {
 template <typename Ring>
 struct VectorExactReal<Ring>::Implementation {
   Implementation(const Element<Ring> &x, const Element<Ring> &y,
-                 // TODO: Is this a good precision?
-                 const mp_limb_signed_t precision = VectorArb::prec)
+                 const mp_limb_signed_t precision = ARB_PRECISION_FAST)
       : x(x), y(y), precision(precision) {}
 
   Implementation(const Implementation &rhs)

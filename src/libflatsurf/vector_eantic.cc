@@ -30,6 +30,9 @@ using boost::numeric_cast;
 using eantic::renf_elem_class;
 using exactreal::Arb;
 using std::ostream;
+// Currently, we use this precision for all computations. This is not really a
+// good choice, see https://github.com/flatsurf/flatsurf/issues/52.
+using exactreal::ARB_PRECISION_FAST;
 
 namespace flatsurf {
 struct VectorEAntic::Implementation {
@@ -51,8 +54,7 @@ VectorEAntic::VectorEAntic()
     : VectorEAntic(renf_elem_class(), renf_elem_class()) {}
 
 VectorEAntic::VectorEAntic(const renf_elem_class &x, const renf_elem_class &y)
-    // TODO: What is the correct precision here?
-    : impl(spimpl::make_impl<Implementation>(x, y, VectorArb::prec)) {
+    : impl(spimpl::make_impl<Implementation>(x, y, ARB_PRECISION_FAST)) {
   impl->refresh();
 }
 

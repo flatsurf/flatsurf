@@ -53,9 +53,6 @@ struct VectorArb : boost::additive<VectorArb>,
 
   explicit operator std::complex<double>() const;
 
-  // TODO: Drop default precision
-  static mp_limb_signed_t prec;
-
 private:
   exactreal::Arb x;
   exactreal::Arb y;

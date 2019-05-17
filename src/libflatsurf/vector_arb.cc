@@ -27,6 +27,9 @@
 using exactreal::Arb;
 using std::optional;
 using std::ostream;
+// Currently, we use this precision for all computations. This is not really a
+// good choice, see https://github.com/flatsurf/flatsurf/issues/52.
+using exactreal::ARB_PRECISION_FAST;
 
 namespace flatsurf {
 VectorArb::VectorArb() {}
@@ -36,28 +39,24 @@ VectorArb::VectorArb(const Arb &x, const Arb &y) : x(x), y(y) {}
 bool VectorArb::isExact() const { return x.is_exact() && y.is_exact(); }
 
 VectorArb &VectorArb::operator+=(const VectorArb &rhs) {
-  // TODO: Should we really fix a precision here?
-  x += (rhs.x)(ARF_PREC_EXACT);
-  y += (rhs.y)(ARF_PREC_EXACT);
+  x += (rhs.x)(ARB_PRECISION_FAST);
+  y += (rhs.y)(ARB_PRECISION_FAST);
   return *this;
 }
 
 VectorArb &VectorArb::operator*=(const int rhs) {
-  // TODO: Should we really fix a precision here?
-  arb_mul_si(x.arb_t(), x.arb_t(), rhs, ARF_PREC_EXACT);
-  arb_mul_si(y.arb_t(), y.arb_t(), rhs, ARF_PREC_EXACT);
+  arb_mul_si(x.arb_t(), x.arb_t(), rhs, ARB_PRECISION_FAST);
+  arb_mul_si(y.arb_t(), y.arb_t(), rhs, ARB_PRECISION_FAST);
   return *this;
 }
 
 optional<bool> VectorArb::operator<(const Bound bound) const {
-  // TODO: Should we really fix a precision here?
-  Arb size = (x * x + y * y)(ARF_PREC_EXACT);
+  Arb size = (x * x + y * y)(ARB_PRECISION_FAST);
   return size < bound.squared;
 }
 
 optional<bool> VectorArb::operator>(const Bound bound) const {
-  // TODO: Should we really fix a precision here?
-  Arb size = (x * x + y * y)(ARF_PREC_EXACT);
+  Arb size = (x * x + y * y)(ARB_PRECISION_FAST);
   return size > bound.squared;
 }
 
@@ -66,9 +65,8 @@ VectorArb::operator std::complex<double>() const {
 }
 
 optional<CCW> VectorArb::ccw(const VectorArb &rhs) const {
-  // TODO: Should we really fix a precision here? No.
-  const Arb a = (x * rhs.y)(ARF_PREC_EXACT);
-  const Arb b = (rhs.x * y)(ARF_PREC_EXACT);
+  const Arb a = (x * rhs.y)(ARB_PRECISION_FAST);
+  const Arb b = (rhs.x * y)(ARB_PRECISION_FAST);
 
   bool overlaps = arb_overlaps(a.arb_t(), b.arb_t());
   if (overlaps) {
@@ -90,10 +88,9 @@ optional<CCW> VectorArb::ccw(const VectorArb &rhs) const {
 }
 
 optional<ORIENTATION> VectorArb::orientation(const VectorArb &rhs) const {
-  // TODO: Should we really fix a precision here?
-  // TODO: Arb also has a dot product. In such a low dimension it probably does
-  // not make a difference.
-  const Arb dot = (x * rhs.x + y * rhs.y)(ARF_PREC_EXACT);
+  // Arb also has a built-in dot product. It's probably not doing anything else
+  // in 2d.
+  const Arb dot = (x * rhs.x + y * rhs.y)(ARB_PRECISION_FAST);
 
   auto cmp = dot > 0;
   if (cmp.has_value()) {
@@ -116,5 +113,4 @@ ostream &operator<<(ostream &os, const VectorArb &self) {
   return os << "(" << self.x << ", " << self.y << ")";
 }
 
-mp_limb_signed_t VectorArb::prec = 64;
 }  // namespace flatsurf
