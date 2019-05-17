@@ -27,8 +27,8 @@
 #include <flatsurf/vector_longlong.hpp>
 
 using namespace flatsurf;
-using std::vector;
 using eantic::renf_class;
+using std::vector;
 
 namespace {
 template <typename R2>
@@ -46,4 +46,4 @@ auto makeHexagon() {
   auto vertices = vector<vector<int>>({{1, 3, -4, -5, -3, -2}, {2, -1, -6, 4, 5, 6}});
   return FlatTriangulation(vertices, vectors);
 }
-}
+}  // namespace

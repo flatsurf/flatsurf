@@ -20,8 +20,8 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTIONS_ITERATOR_HPP
 #define LIBFLATSURF_SADDLE_CONNECTIONS_ITERATOR_HPP
 
-#include <optional>
 #include <boost/iterator/iterator_facade.hpp>
+#include <optional>
 #include "external/spimpl/spimpl.h"
 
 #include "flatsurf/ccw.hpp"
@@ -52,13 +52,13 @@ struct SaddleConnectionsIterator
 
   void skipSector(CCW sector);
 
-private:
+ private:
   friend struct SaddleConnections<Vector, VectorAlongTriangulation>;
   SaddleConnectionsIterator();
 
   struct Implementation;
   spimpl::impl_ptr<Implementation> impl;
 };
-} // namespace flatsurf
+}  // namespace flatsurf
 
 #endif

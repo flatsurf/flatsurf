@@ -25,8 +25,8 @@
 #include <iosfwd>
 #include <vector>
 
-#include "flatsurf/half_edge.hpp"
 #include "flatsurf/forward.hpp"
+#include "flatsurf/half_edge.hpp"
 
 namespace flatsurf {
 // A map HalfEdge -> T such that map[-edge] == -map[edge] always holds
@@ -34,10 +34,10 @@ namespace flatsurf {
 // flipped.
 template <typename T>
 struct HalfEdgeMap final {
-  using FlipHandler = std::function<void(HalfEdgeMap&, HalfEdge, const FlatTriangulationCombinatorial&)>;
-  HalfEdgeMap(const FlatTriangulationCombinatorial& parent, const std::vector<T> &values, const FlipHandler& updateAfterFlip);
-  HalfEdgeMap(const HalfEdgeMap&);
-  HalfEdgeMap(HalfEdgeMap&&);
+  using FlipHandler = std::function<void(HalfEdgeMap &, HalfEdge, const FlatTriangulationCombinatorial &)>;
+  HalfEdgeMap(const FlatTriangulationCombinatorial &parent, const std::vector<T> &values, const FlipHandler &updateAfterFlip);
+  HalfEdgeMap(const HalfEdgeMap &);
+  HalfEdgeMap(HalfEdgeMap &&);
   ~HalfEdgeMap();
 
   const T &get(HalfEdge key) const;
@@ -47,22 +47,22 @@ struct HalfEdgeMap final {
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const HalfEdgeMap<S> &);
 
-  HalfEdgeMap& operator=(const HalfEdgeMap&);
-  HalfEdgeMap& operator=(HalfEdgeMap&&);
+  HalfEdgeMap &operator=(const HalfEdgeMap &);
+  HalfEdgeMap &operator=(HalfEdgeMap &&);
 
   static size_t index(const HalfEdge);
 
-private:
+ private:
   friend FlatTriangulationCombinatorial;
 
   // We keep a reference to the triangulation that we were created with so that
   // we can notify it on costruction that we do not need to be informed about
   // future flips anymore.
-  mutable FlatTriangulationCombinatorial const* parent;
+  mutable FlatTriangulationCombinatorial const *parent;
 
   mutable std::vector<T> values;
   const FlipHandler updateAfterFlip;
 };
-} // namespace flatsurf
+}  // namespace flatsurf
 
 #endif

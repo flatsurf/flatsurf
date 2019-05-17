@@ -32,8 +32,8 @@ class DMap  // developing map class
   Dir<PointT>& _start();  // this is the Dir we are following
 
   std::list<OEdge>::iterator&
-  _next_edge();    // next face will be on the edge on the other side of this
-  void advance();  // go to the next face (following DMap._start() )
+  _next_edge();          // next face will be on the edge on the other side of this
+  void advance();        // go to the next face (following DMap._start() )
   Face* current_face();  // the face containing the current edge
   std::list<OEdge>::iterator
   current_edge();  // the current edge cut by the line we are
@@ -44,7 +44,7 @@ class DMap  // developing map class
                                 // current_edge, where base of start is (0,0)
                                 // this is our candidate
 
-  bool going_to_hit();  // are we about to hit a vertex along _start()?
+  bool going_to_hit();            // are we about to hit a vertex along _start()?
   Dir<PointT>& _vertex_to_hit();  // if yes, this is the vertex we will hit
 
   Dir<PointT> current_vert_Dir();  // the Dir whose vec is -vert_pos(), oriented

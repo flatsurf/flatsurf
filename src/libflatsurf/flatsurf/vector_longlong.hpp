@@ -23,14 +23,15 @@
 #include <boost/operators.hpp>
 #include <iosfwd>
 
-#include "flatsurf/flatsurf.hpp"
 #include "flatsurf/ccw.hpp"
+#include "flatsurf/flatsurf.hpp"
 #include "flatsurf/orientation.hpp"
 #include "flatsurf/vector_along_triangulation.hpp"
 
 namespace flatsurf {
 struct Bound;
-template <typename V> struct VectorAlongTriangulation;
+template <typename V>
+struct VectorAlongTriangulation;
 
 // An exact vector in ℝ² whose coordinates are integers in the range of a long
 // long. For operations such as ccw() to work, the square of the coordinates
@@ -59,10 +60,10 @@ struct VectorLongLong : boost::additive<VectorLongLong>,
 
   using AlongTriangulation = VectorAlongTriangulation<VectorLongLong>;
 
-private:
+ private:
   long long x;
   long long y;
 };
-} // namespace flatsurf
+}  // namespace flatsurf
 
 #endif

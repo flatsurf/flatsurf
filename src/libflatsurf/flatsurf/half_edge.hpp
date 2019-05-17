@@ -20,9 +20,9 @@
 #ifndef LIBFLATSURF_HALF_EDGE_HPP
 #define LIBFLATSURF_HALF_EDGE_HPP
 
+#include <stddef.h>
 #include <boost/operators.hpp>
 #include <iosfwd>
-#include <stddef.h>
 #include <string>
 
 #include "flatsurf/flatsurf.hpp"
@@ -33,7 +33,8 @@ namespace flatsurf {
 struct HalfEdge : boost::equality_comparable<HalfEdge>,
                   boost::less_than_comparable<HalfEdge> {
   friend struct Edge;
-  template <typename T> friend struct HalfEdgeMap;
+  template <typename T>
+  friend struct HalfEdgeMap;
   friend struct FlatTriangulationCombinatorial;
   friend struct Vertex;
 
@@ -49,9 +50,9 @@ struct HalfEdge : boost::equality_comparable<HalfEdge>,
   friend std::ostream &operator<<(std::ostream &, const HalfEdge &);
   Edge edge() const;
 
-private:
+ private:
   int id;
 };
-} // namespace flatsurf
+}  // namespace flatsurf
 
 #endif

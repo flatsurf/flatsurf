@@ -49,7 +49,7 @@ struct SaddleConnections {
   SaddleConnectionsIterator<Vector, VectorAlongTriangulation> begin() const;
   SaddleConnectionsIterator<Vector, VectorAlongTriangulation> end() const;
 
-private:
+ private:
   friend struct SaddleConnectionsIterator<Vector, VectorAlongTriangulation>;
   struct Implementation;
   spimpl::impl_ptr<Implementation> impl;
@@ -58,6 +58,6 @@ private:
 template <typename Vector>
 SaddleConnections(const FlatTriangulation<Vector> &, Bound, HalfEdge)
     ->SaddleConnections<Vector, typename Vector::AlongTriangulation>;
-} // namespace flatsurf
+}  // namespace flatsurf
 
 #endif

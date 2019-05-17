@@ -30,18 +30,18 @@
     throw std::invalid_argument(#CONDITION                                     \
                                 " in " __FILE__ BOOST_PP_STRINGIZE(__LINE__)); \
   }
-#define CHECK_ARGUMENT(CONDITION, MESSAGE)                                     \
-  while (not(CONDITION)) {                                                     \
-    throw std::invalid_argument(                                               \
-        #CONDITION " " MESSAGE " in " __FILE__ BOOST_PP_STRINGIZE(__LINE__));  \
+#define CHECK_ARGUMENT(CONDITION, MESSAGE)                                    \
+  while (not(CONDITION)) {                                                    \
+    throw std::invalid_argument(                                              \
+        #CONDITION " " MESSAGE " in " __FILE__ BOOST_PP_STRINGIZE(__LINE__)); \
   }
 
 #ifdef NDEBUG
-#define ASSERT_ARGUMENT_(CONDITION)                                            \
-  while (false) {                                                              \
+#define ASSERT_ARGUMENT_(CONDITION) \
+  while (false) {                   \
   }
-#define ASSERT_ARGUMENT(CONDITION, MESSAGE)                                    \
-  while (false) {                                                              \
+#define ASSERT_ARGUMENT(CONDITION, MESSAGE) \
+  while (false) {                           \
   }
 #else
 #define ASSERT_ARGUMENT_(CONDITION) CHECK_ARGUMENT_(CONDITION)

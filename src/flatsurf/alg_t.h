@@ -98,10 +98,9 @@ class [[deprecated("Use flatsurf VectorExactReal instead.")]] alg_t {
                               algebraic<bigrat>& ratio);
 
   bool get_direction(
-      algebraic<T> &
-      direction);  // is direction in C independent of parameters?
-                   // If yes, return true, and return the
-                   // direction in direction. If no, return false
+      algebraic<T> & direction);  // is direction in C independent of parameters?
+                                  // If yes, return true, and return the
+                                  // direction in direction. If no, return false
 
  private:
   std::vector<algebraic<T> > coeffs;

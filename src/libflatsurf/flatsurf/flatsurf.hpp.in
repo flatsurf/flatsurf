@@ -31,6 +31,6 @@
 #pragma cling add_library_path("@libdir@")
 #pragma cling load("libflatsurf")
 
-#endif // __CLING__
+#endif  // __CLING__
 
-#endif // LIBFLATSURF_LIBFLATSURF_H
+#endif  // LIBFLATSURF_LIBFLATSURF_H

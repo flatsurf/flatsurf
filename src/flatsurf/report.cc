@@ -135,7 +135,8 @@ void VertPattern::add(Dir<Point> &d, int id) {
     }
 
     if (j == d.v->int_angle) {
-      std::cout << "**WARNING: j == d.v->int_angle" << endl << flush;
+      std::cout << "**WARNING: j == d.v->int_angle" << endl
+                << flush;
       j = 0;
     }
 
@@ -1212,7 +1213,8 @@ size_t Summary::add_new_conf(SaddleConf &sc) {
     ofstream output_stream(filename);
     S->StatPrint(output_stream);
     sc.print(output_stream);
-    output_stream << endl << "------------------------" << endl;
+    output_stream << endl
+                  << "------------------------" << endl;
     output_stream.close();
 
     sc.output_f = fopen(filename, "a");
@@ -1444,7 +1446,8 @@ void Summary::pack() {
   pvm_pkint(&close_count, 1, 1);
   int scf_count = scf.size();
   pvm_pkint(&scf_count, 1, 1);
-  std::cout << "scf_count = " << scf_count << endl << flush;
+  std::cout << "scf_count = " << scf_count << endl
+            << flush;
   for (int i = 0; i < scf_count; i++) {
     scf[i].pack();
   }

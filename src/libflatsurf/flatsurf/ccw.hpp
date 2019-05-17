@@ -20,8 +20,8 @@
 #ifndef LIBFLATSURF_CCW_HPP
 #define LIBFLATSURF_CCW_HPP
 
-#include "external/spimpl/spimpl.h"
 #include <boost/operators.hpp>
+#include "external/spimpl/spimpl.h"
 
 #include "flatsurf/flatsurf.hpp"
 
@@ -33,6 +33,6 @@ enum class CCW {
 };
 
 CCW operator-(CCW ccw);
-} // namespace flatsurf
+}  // namespace flatsurf
 
 #endif

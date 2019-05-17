@@ -43,7 +43,7 @@ struct Vertex : boost::equality_comparable<Vertex> {
 
   friend std::ostream &operator<<(std::ostream &, const Vertex &);
 
-private:
+ private:
   Vertex(const HalfEdge &);
 
   // The actual vertex is the start of this half edge.
@@ -51,6 +51,6 @@ private:
   // with the smallest id.
   HalfEdge representative;
 };
-} // namespace flatsurf
+}  // namespace flatsurf
 
 #endif

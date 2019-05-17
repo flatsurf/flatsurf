@@ -29,6 +29,6 @@ struct Bound {
   explicit Bound(long long lengthSquared);
   const long long squared;
 };
-} // namespace flatsurf
+}  // namespace flatsurf
 
 #endif

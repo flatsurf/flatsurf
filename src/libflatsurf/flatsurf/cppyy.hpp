@@ -30,8 +30,8 @@
 #include "flatsurf/vector_along_triangulation_with_approximation.hpp"
 #include "flatsurf/vector_arb.hpp"
 #include "flatsurf/vector_eantic.hpp"
-#include "flatsurf/vector_longlong.hpp"
 #include "flatsurf/vector_exactreal.hpp"
+#include "flatsurf/vector_longlong.hpp"
 
 // As of early 2019, cppyy does not appear to honour
 // https://en.wikipedia.org/wiki/Argument-dependent_name_lookup for operators.

@@ -40,7 +40,7 @@ struct Permutation {
   T operator()(const T &t) const;
 
   template <typename S>
-  friend Permutation<S>& operator*=(const std::vector<S>& cycle, Permutation<S>&);
+  friend Permutation<S> &operator*=(const std::vector<S> &cycle, Permutation<S> &);
 
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const Permutation<S> &);
@@ -48,9 +48,9 @@ struct Permutation {
   size_t index(const T &) const;
   const std::vector<T> &domain() const;
 
-private:
+ private:
   std::vector<T> data;
 };
-} // namespace flatsurf
+}  // namespace flatsurf
 
 #endif

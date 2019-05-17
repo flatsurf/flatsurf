@@ -53,10 +53,10 @@ struct VectorArb : boost::additive<VectorArb>,
 
   explicit operator std::complex<double>() const;
 
-private:
+ private:
   exactreal::Arb x;
   exactreal::Arb y;
 };
-} // namespace flatsurf
+}  // namespace flatsurf
 
 #endif

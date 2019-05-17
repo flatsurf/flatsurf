@@ -195,8 +195,10 @@ Dir<Point> Dir<Point>::RotateF_general(COORD theta) {
   if (theta < 0) {
     ERR_RET("rotate_general: negative angle");
   }
-  std::cout << "RotateF: theta = " << theta << endl << flush;
-  std::cout << "starting edge: E" << (*(this->ep))->id() << endl << flush;
+  std::cout << "RotateF: theta = " << theta << endl
+            << flush;
+  std::cout << "starting edge: E" << (*(this->ep))->id() << endl
+            << flush;
 
   Dir<Point> bak = *this;
   COORD theta_bak = theta;
@@ -209,7 +211,8 @@ Dir<Point> Dir<Point>::RotateF_general(COORD theta) {
   int count = static_cast<int>(floor(2.0 * theta / pi<COORD>()));
 #endif
 
-  std::cout << "RotateF: count = " << count << endl << flush;
+  std::cout << "RotateF: count = " << count << endl
+            << flush;
   for (int j = 0; j < count; j++) {
     n = n.RotateF(0.5 * pi<COORD>());
     theta = theta - 0.5 * pi<COORD>();
@@ -217,7 +220,8 @@ Dir<Point> Dir<Point>::RotateF_general(COORD theta) {
   if (theta >= 0) {
     n = n.RotateF(theta);
   }
-  std::cout << "ending edge: E" << (*(n.ep))->id() << endl << flush;
+  std::cout << "ending edge: E" << (*(n.ep))->id() << endl
+            << flush;
   if (abs(bak.AngleF(n) - theta_bak) > 1E-7) {
     std::cerr << "in Angle_F, angle off by " << abs(bak.AngleF(n) - theta_bak)
               << endl

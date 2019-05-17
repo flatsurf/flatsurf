@@ -20,8 +20,8 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTION_HPP
 #define LIBFLATSURF_SADDLE_CONNECTION_HPP
 
-#include <iosfwd>
 #include <boost/operators.hpp>
+#include <iosfwd>
 #include "external/spimpl/spimpl.h"
 
 #include "flatsurf/flatsurf.hpp"
@@ -29,13 +29,14 @@
 #include "flatsurf/half_edge.hpp"
 
 namespace flatsurf {
-template <typename Vector> struct FlatTriangulation;
+template <typename Vector>
+struct FlatTriangulation;
 
 struct Vertex;
 
 template <typename Vector, typename AlongTriangulation>
 struct SaddleConnection : boost::equality_comparable<SaddleConnection<Vector, AlongTriangulation>> {
-  const AlongTriangulation& vector() const;
+  const AlongTriangulation &vector() const;
   // The saddle connection is leaving from the vertex at the source of source.
   // It is leaving in a direction that is contained in the sector next to
   // source (counterclockwise.)
@@ -45,7 +46,7 @@ struct SaddleConnection : boost::equality_comparable<SaddleConnection<Vector, Al
   // *clockwise* from *-target*.
   HalfEdge target() const;
 
-  bool operator==(const SaddleConnection<Vector, AlongTriangulation>&) const;
+  bool operator==(const SaddleConnection<Vector, AlongTriangulation> &) const;
 
   template <typename V, typename A>
   friend std::ostream &operator<<(std::ostream &, const SaddleConnection<V, A> &);
@@ -56,6 +57,6 @@ struct SaddleConnection : boost::equality_comparable<SaddleConnection<Vector, Al
   struct Implementation;
   spimpl::impl_ptr<Implementation> impl;
 };
-} // namespace flatsurf
+}  // namespace flatsurf
 
 #endif

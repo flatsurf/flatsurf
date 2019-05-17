@@ -20,18 +20,19 @@
 #ifndef LIBFLATSURF_VECTOR_EANTIC
 #define LIBFLATSURF_VECTOR_EANTIC
 
-#include <boost/operators.hpp>
 #include <e-antic/renfxx.h>
+#include <boost/operators.hpp>
 #include <iosfwd>
 
-#include "flatsurf/flatsurf.hpp"
 #include "flatsurf/ccw.hpp"
+#include "flatsurf/flatsurf.hpp"
 #include "flatsurf/orientation.hpp"
 #include "flatsurf/vector_along_triangulation_with_approximation.hpp"
 
 namespace flatsurf {
 struct Bound;
-template <typename V> struct VectorArbAlongTriangulation;
+template <typename V>
+struct VectorArbAlongTriangulation;
 struct VectorArb;
 
 struct VectorEAntic : boost::additive<VectorEAntic>,
@@ -63,10 +64,10 @@ struct VectorEAntic : boost::additive<VectorEAntic>,
   using AlongTriangulation =
       VectorAlongTriangulationWithApproximation<VectorEAntic, VectorArb>;
 
-private:
+ private:
   struct Implementation;
   spimpl::impl_ptr<Implementation> impl;
 };
-} // namespace flatsurf
+}  // namespace flatsurf
 
 #endif

@@ -30,7 +30,7 @@ namespace flatsurf {
 template <typename Vector, typename AlongTriangulation>
 struct SaddleConnection<Vector, AlongTriangulation>::Implementation {
   Implementation(const FlatTriangulation<Vector> &surface, const AlongTriangulation &vector, const HalfEdge &source, const HalfEdge &target)
-    : surface(surface), vector(vector), source(source), target(target) {}
+      : surface(surface), vector(vector), source(source), target(target) {}
 
   const FlatTriangulation<Vector> &surface;
   AlongTriangulation vector;
@@ -86,7 +86,7 @@ template <typename Vector, typename AlongTriangulation>
 HalfEdge SaddleConnection<Vector, AlongTriangulation>::target() const { return impl->target; }
 
 template <typename Vector, typename AlongTriangulation>
-const AlongTriangulation& SaddleConnection<Vector, AlongTriangulation>::vector() const { return impl->vector; }
+const AlongTriangulation &SaddleConnection<Vector, AlongTriangulation>::vector() const { return impl->vector; }
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker

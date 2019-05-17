@@ -20,8 +20,8 @@
 #ifndef LIBFLATSURF_ORIENTATION_HPP
 #define LIBFLATSURF_ORIENTATION_HPP
 
-#include "external/spimpl/spimpl.h"
 #include <boost/operators.hpp>
+#include "external/spimpl/spimpl.h"
 
 #include "flatsurf/flatsurf.hpp"
 
@@ -33,6 +33,6 @@ enum class ORIENTATION {
 };
 
 ORIENTATION operator-(ORIENTATION orientation);
-} // namespace flatsurf
+}  // namespace flatsurf
 
 #endif

@@ -29,7 +29,8 @@
 
 namespace flatsurf {
 struct Bound;
-template <typename V> struct VectorArbAlongTriangulation;
+template <typename V>
+struct VectorArbAlongTriangulation;
 struct VectorArb;
 
 template <typename Ring>
@@ -70,10 +71,10 @@ struct VectorExactReal : boost::additive<VectorExactReal<Ring>>,
       VectorAlongTriangulationWithApproximation<VectorExactReal<Ring>,
                                                 VectorArb>;
 
-private:
+ private:
   struct Implementation;
   spimpl::impl_ptr<Implementation> impl;
 };
-} // namespace flatsurf
+}  // namespace flatsurf
 
 #endif

@@ -40,7 +40,8 @@ template <typename Vector, typename VectorAlongTriangulation =
                                typename Vector::AlongTriangulation>
 struct SaddleConnection;
 
-template <typename Vector>struct FlatTriangulation;
+template <typename Vector>
+struct FlatTriangulation;
 
 struct HalfEdge;
 
@@ -49,17 +50,20 @@ struct HalfEdgeMap;
 
 struct Edge;
 
-template <typename T> struct Permutation;
+template <typename T>
+struct Permutation;
 
 struct Bound;
 
-template <typename Ring> struct VectorExactReal;
+template <typename Ring>
+struct VectorExactReal;
 
-template <typename V> struct VectorAlongTriangulation;
+template <typename V>
+struct VectorAlongTriangulation;
 
 struct Vertex;
 
 struct FlatTriangulationCombinatorial;
-} // namespace flatsurf
+}  // namespace flatsurf
 
 #endif

@@ -20,18 +20,18 @@
 #ifndef LIBFLATSURF_AS_VECTOR_HPP
 #define LIBFLATSURF_AS_VECTOR_HPP
 
-#include <vector>
-#include <boost/range/iterator_range.hpp>
 #include <boost/iterator/iterator_traits.hpp>
+#include <boost/range/iterator_range.hpp>
+#include <vector>
 
 namespace {
-  // Since BoostToOven::as_container never made it into boost, we use this little
-  // helper to convert a boost range to a vector.
-  template <typename Iterator>
-  auto as_vector(const boost::iterator_range<Iterator>& range) {
-    using T = typename boost::iterators::iterator_value<Iterator>::type;
-    return std::vector<T>(range.begin(), range.end());
-  }
+// Since BoostToOven::as_container never made it into boost, we use this little
+// helper to convert a boost range to a vector.
+template <typename Iterator>
+auto as_vector(const boost::iterator_range<Iterator>& range) {
+  using T = typename boost::iterators::iterator_value<Iterator>::type;
+  return std::vector<T>(range.begin(), range.end());
 }
+}  // namespace
 
 #endif

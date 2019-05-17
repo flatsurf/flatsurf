@@ -46,13 +46,13 @@ struct FlatTriangulation : FlatTriangulationCombinatorial {
   template <typename W>
   friend std::ostream &operator<<(std::ostream &, const FlatTriangulation<W> &);
 
-private:
+ private:
   struct Implementation;
   spimpl::unique_impl_ptr<Implementation> impl;
 };
 
 template <typename Vector>
-FlatTriangulation(const std::vector<std::vector<int>> &, const std::vector<Vector> &) ->FlatTriangulation<Vector>;
-} // namespace flatsurf
+FlatTriangulation(const std::vector<std::vector<int>> &, const std::vector<Vector> &)->FlatTriangulation<Vector>;
+}  // namespace flatsurf
 
 #endif

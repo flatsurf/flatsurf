@@ -20,18 +20,20 @@
 #ifndef LIBFLATSURF_VECTOR_ALONG_TRIANGULATION_WITH_APPROXIMATION
 #define LIBFLATSURF_VECTOR_ALONG_TRIANGULATION_WITH_APPROXIMATION
 
-#include "external/spimpl/spimpl.h"
 #include <boost/operators.hpp>
 #include <iosfwd>
+#include "external/spimpl/spimpl.h"
 
 #include "flatsurf/ccw.hpp"
 #include "flatsurf/flatsurf.hpp"
 
 namespace flatsurf {
 struct Bound;
-template <typename V> struct FlatTriangulation;
+template <typename V>
+struct FlatTriangulation;
 struct HalfEdge;
-template <typename V> struct VectorAlongTriangulation;
+template <typename V>
+struct VectorAlongTriangulation;
 
 template <typename V, typename Approximation>
 struct VectorAlongTriangulationWithApproximation
@@ -68,10 +70,10 @@ struct VectorAlongTriangulationWithApproximation
 
   explicit operator V() const;
 
-private:
+ private:
   struct Implementation;
   spimpl::impl_ptr<Implementation> impl;
 };
-} // namespace flatsurf
+}  // namespace flatsurf
 
 #endif

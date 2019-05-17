@@ -42,10 +42,10 @@ struct Edge {
   std::pair<HalfEdge, HalfEdge> halfEdges() const;
   size_t index() const;
 
-private:
+ private:
   explicit Edge(size_t id);
   const size_t id;
 };
-} // namespace flatsurf
+}  // namespace flatsurf
 
 #endif

@@ -19,17 +19,19 @@
 #ifndef LIBFLATSURF_VECTOR_ALONG_TRIANGULATION
 #define LIBFLATSURF_VECTOR_ALONG_TRIANGULATION
 
-#include "external/spimpl/spimpl.h"
 #include <boost/operators.hpp>
 #include <iosfwd>
+#include "external/spimpl/spimpl.h"
 
 #include "flatsurf/ccw.hpp"
 
 namespace flatsurf {
-template <typename Vector> struct FlatTriangulation;
+template <typename Vector>
+struct FlatTriangulation;
 struct HalfEdge;
 struct Bound;
-template <typename T> struct HalfEdgeMap;
+template <typename T>
+struct HalfEdgeMap;
 
 // A generic implementation of a vector in ℝ² that is a sum of half edges of a
 // flat triangulation.
@@ -58,10 +60,10 @@ struct VectorAlongTriangulation
   bool operator==(const VectorAlongTriangulation<V> &);
   operator V() const;
 
-private:
+ private:
   struct Implementation;
   spimpl::impl_ptr<Implementation> impl;
 };
-} // namespace flatsurf
+}  // namespace flatsurf
 
 #endif

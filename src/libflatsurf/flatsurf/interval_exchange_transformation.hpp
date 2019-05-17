@@ -28,16 +28,15 @@
 namespace flatsurf {
 template <class Vector>
 struct IntervalExchangeTransformation {
-  IntervalExchangeTransformation(FlatTriangulation<Vector>&, const Vector& vertical);
+  IntervalExchangeTransformation(FlatTriangulation<Vector> &, const Vector &vertical);
 
   template <typename W>
   friend std::ostream &operator<<(std::ostream &, const IntervalExchangeTransformation<W> &);
 
-private:
+ private:
   struct Implementation;
   spimpl::unique_impl_ptr<Implementation> impl;
 };
-} // namespace flatsurf
+}  // namespace flatsurf
 
 #endif
-

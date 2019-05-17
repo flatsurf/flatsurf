@@ -20,10 +20,10 @@
 #ifndef LIBFLATSURF_FLAT_TRIANGULATION_COMBINATORIAL_HPP
 #define LIBFLATSURF_FLAT_TRIANGULATION_COMBINATORIAL_HPP
 
-#include "external/spimpl/spimpl.h"
 #include <iosfwd>
 #include <memory>
 #include <vector>
+#include "external/spimpl/spimpl.h"
 
 #include "flatsurf/flatsurf.hpp"
 #include "flatsurf/forward.hpp"
@@ -50,7 +50,7 @@ struct FlatTriangulationCombinatorial {
 
   friend std::ostream &operator<<(std::ostream &, const FlatTriangulationCombinatorial &);
 
-private:
+ private:
   struct Implementation;
   spimpl::unique_impl_ptr<Implementation> impl;
 
@@ -58,10 +58,10 @@ private:
   friend struct HalfEdgeMap;
 
   template <typename T>
-  void registerMap(const HalfEdgeMap<T>&) const;
+  void registerMap(const HalfEdgeMap<T> &) const;
   template <typename T>
-  void deregisterMap(const HalfEdgeMap<T>&) const;
+  void deregisterMap(const HalfEdgeMap<T> &) const;
 };
-} // namespace flatsurf
+}  // namespace flatsurf
 
 #endif
