@@ -24,4 +24,10 @@ flatsurf_SOURCES =         \
     globals.cc
 
 AM_LDFLAGS = $(builddir)/../libflatsurf/libflatsurf.la
+# is_fmpq() from eanticxx is calling directly into FLINT
+AM_LDFLAGS += -lflint
+# we are manipulating mpz_t and mpq_t directly without GMPXX
+AM_LDFLAGS += -lgmp
+# we are using NTL's LLL
+AM_LDFLAGS += -lntl
 AM_CPPFLAGS = -I $(srcdir)/../../src/libflatsurf/ -I $(builddir)/../../src/libflatsurf -isystem $(srcdir)/external

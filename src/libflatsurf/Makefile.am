@@ -50,6 +50,10 @@ nobase_include_HEADERS =                              \
     external/spimpl/spimpl.h
 
 libflatsurf_la_LDFLAGS = -version-info $(libflatsurf_version_info)
+# some of our vectors use arb directly and through exact-real's arb wrappers
+libflatsurf_la_LDFLAGS += -larb
+# we use exact-real in our vectors
+libflatsurf_la_LDFLAGS += -lexactreal
 
 $(builddir)/flatsurf/flatsurf.hpp: $(srcdir)/flatsurf/flatsurf.hpp.in Makefile
 	mkdir -p $(builddir)/flatsurf

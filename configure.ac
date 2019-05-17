@@ -40,26 +40,30 @@ AM_PATH_PYTHON()
 
 AC_CHECK_HEADERS([boost/type_traits.hpp], , AC_MSG_ERROR([boost headers not found]))
 
-dnl flatsurf uses GMP/MPFR directly in a few places
-# AC_CHECK_LIB([gmp], [__gmpq_init], , AC_MSG_ERROR([GMP library not found]))
-# AC_CHECK_LIB([mpfr], [mpfr_init], , AC_MSG_ERROR([MPFR library not found]))
+dnl flatsurf (but not libflatsurf) uses GMP directly in a few places (without gmpxx)
+dnl 
+AC_CHECK_LIB([gmp], [__gmpq_init], [have_gmp=yes], AC_MSG_ERROR([GMP library not found]))
+
+dnl flatsurf (but not libflatsurf) uses FLINT directly in a few places through e-antic's is_fmpq()
+AC_CHECK_LIB([flint], [_fmpz_promote], [have_flint=yes], AC_MSG_ERROR([FLINT library not found]))
+
 # GMPXX does not contain anything that we can check for with AX_CXX_CHECK_LIB
 # so we just check for something from the standard library, i.e., that -lgmpxx
 # goes through
-AX_CXX_CHECK_LIB([gmpxx], [std::runtime_error::what () const], , AC_MSG_ERROR([GMP library for C++ not found]), [-lgmp -lmpfr -lflint])
+AX_CXX_CHECK_LIB([gmpxx], [std::runtime_error::what () const], [have_gmpxx=yes], AC_MSG_ERROR([GMP library for C++ not found]), [-lgmp -lmpfr -lflint])
 
 dnl We use Arb for ball arithmetic in our geometry
-AC_CHECK_LIB([arb], [arb_init], , AC_MSG_ERROR([arb library not found]), [-lgmp -lmpfr -lflint])
+AC_CHECK_LIB([arb], [arb_init], [have_arb=yes], AC_MSG_ERROR([arb library not found]), [-lgmp -lmpfr -lflint])
 AC_CHECK_HEADERS([arb.h], , AC_MSG_ERROR([arb headers not found]))
 
-AC_CHECK_LIB([eantic], [renf_init], , AC_MSG_ERROR([e-antic library not found]), [-lgmp -lmpfr -lflint])
-AX_CXX_CHECK_LIB([eanticxx], [eantic::renf_elem_class], , AC_MSG_ERROR([E-ANTIC library not found]), [-lgmp -lmpfr -lflint])
+AC_CHECK_LIB([eantic], [renf_init], [have_eantic=yes], AC_MSG_ERROR([e-antic library not found]), [-lgmp -lmpfr -lflint])
+AX_CXX_CHECK_LIB([eanticxx], [eantic::renf_elem_class], [have_eanticxx=yes], AC_MSG_ERROR([E-ANTIC library not found]), [-lgmp -lmpfr -lflint])
 
-dnl flatsurf uses NTL
-AX_CXX_CHECK_LIB([ntl], [NTL::ZZ::zero()], , AC_MSG_ERROR([NTL library not found]), [-lgmp -lmpfr -lflint])
+dnl flatsurf (but not libflatsurf) uses NTL
+AX_CXX_CHECK_LIB([ntl], [NTL::ZZ::zero()], [have_ntl=yes], AC_MSG_ERROR([NTL library not found]), [-lgmp -lmpfr -lflint])
 AC_CHECK_HEADERS([NTL/LLL.h NTL/mat_ZZ.h], , AC_MSG_ERROR([NTL headers not found]))
 
-AX_CXX_CHECK_LIB([exactreal], [exactreal::RealNumber::random()], , AC_MSG_ERROR([exact-real library not found]), [-lgmp -lmpfr -lflint])
+AX_CXX_CHECK_LIB([exactreal], [exactreal::RealNumber::random()], [have_exactreal=yes], AC_MSG_ERROR([exact-real library not found]), [-lgmp -lmpfr -lflint])
 AC_CHECK_HEADERS([exact-real/real_number.hpp exact-real/module.hpp], , AC_MSG_ERROR([libexactreal headers not found]))
 
 AC_CONFIG_HEADERS([src/libflatsurf/flatsurf/config.h])

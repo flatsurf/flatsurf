@@ -9,10 +9,8 @@ flip_SOURCES = flip.test.cc main.hpp surfaces.hpp
 
 AM_CPPFLAGS = -I $(srcdir)/../../src/libflatsurf -I $(builddir)/../../src/libflatsurf
 AM_LDFLAGS = $(builddir)/../../src/libflatsurf/libflatsurf.la -lgtest -lbenchmark -lrt -lpthread
-# arb.hpp & arf.hpp use gmpxx; it appears that we need to link gmp in explicitly as well to make gmpxx happy
-AM_LDFLAGS += -lgmpxx -lgmp
-# arb.hpp & arf.hpp use flint
-AM_LDFLAGS += -lflint
+# we use gmpxx & flint through exact-real's arb/arf wrappers
+AM_LDFLAGS += -lgmpxx -lflint
 
 # Run tests serially so we can see the output without having to check the log file explicitly.
 # AUTOMAKE_OPTIONS = serial-tests
