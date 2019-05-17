@@ -20,12 +20,12 @@
  *********************************************************************/
 
 #include <boost/math/constants/constants.hpp>
+#include <boost/range/adaptors.hpp>
 #include <list>
 #include <ostream>
 #include <vector>
 #include "exact-real/element.hpp"
 #include "exact-real/number_field_traits.hpp"
-#include "external/boolinq/include/boolinq/boolinq.h"
 
 #include "./elementary_geometry.h"
 #include "./globals.h"
@@ -38,6 +38,7 @@
 #include "./uedge.h"
 #include "./vertex.h"
 
+#include "flatsurf/detail/as_vector.hpp"
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/half_edge.hpp"
 #include "flatsurf/half_edge_map.hpp"
@@ -45,7 +46,7 @@
 #include "flatsurf/vector_eantic.hpp"
 #include "flatsurf/vector_exactreal.hpp"
 
-using boolinq::from;
+using boost::adaptors::transformed;
 using boost::math::constants::pi;
 using exactreal::Element;
 using exactreal::NumberFieldTraits;
@@ -103,16 +104,12 @@ TwoComplex::operator FlatTriangulation<
 }
 
 TwoComplex::operator FlatTriangulationCombinatorial() const {
-  auto permutation = Permutation<HalfEdge>(
-      from(vertices)
-          .select([](auto v) {
-            return from(v->out_edges)
-                .select([](auto e) { return static_cast<HalfEdge>(*e); })
-                .toVector();
-          })
-          .toVector());
-
-  return {permutation};
+  return {Permutation<HalfEdge>(as_vector(
+      vertices | transformed([](const auto &v) {
+        return as_vector(v->out_edges | transformed([](const auto &e) {
+                           return static_cast<HalfEdge>(*e);
+                         }));
+      })))};
 }
 
 size_t TwoComplex::nedges() { return (uedges.size()); }

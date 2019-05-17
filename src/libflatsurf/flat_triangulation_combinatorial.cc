@@ -17,20 +17,21 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <boost/range/adaptors.hpp>
 #include <cstdint>
 #include <ostream>
 #include <unordered_map>
 #include <vector>
-#include "external/boolinq/include/boolinq/boolinq.h"
 
 #include "flatsurf/assert.hpp"
+#include "flatsurf/detail/as_vector.hpp"
 #include "flatsurf/flat_triangulation_combinatorial.hpp"
 #include "flatsurf/half_edge.hpp"
 #include "flatsurf/half_edge_map.hpp"
 #include "flatsurf/permutation.hpp"
 
 using namespace flatsurf;
-using boolinq::from;
+using boost::adaptors::transformed;
 using std::function;
 using std::ostream;
 using std::pair;
@@ -51,11 +52,9 @@ struct FlatTriangulationCombinatorial::Implementation {
       : vertices(vertices),
         // In the triangulation, the order in which half edges are attached to a
         // vertex defines the faces, so we reconstruct the faces here.
-        faces(from(vertices.domain())
-                  .select([&](const HalfEdge& e) {
-                    return pair<HalfEdge, HalfEdge>(-vertices(e), e);
-                  })
-                  .toVector()),
+        faces(as_vector(vertices.domain() | transformed([&](const HalfEdge& e) {
+                          return pair<HalfEdge, HalfEdge>(-vertices(e), e);
+                        }))),
         halfEdgeMaps() {}
 
   ~Implementation() {

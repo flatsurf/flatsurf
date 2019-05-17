@@ -25,10 +25,11 @@
 #include <boost/math/constants/constants.hpp>
 #include <boost/math/special_functions/binomial.hpp>
 #include <boost/numeric/conversion/cast.hpp>
+#include <boost/range/adaptors.hpp>
+#include <boost/range/irange.hpp>
 #include <complex>
 #include <ostream>
 #include <vector>
-#include "external/boolinq/include/boolinq/boolinq.h"
 
 #include "./algebraic.h"
 #include "./defs.h"
@@ -36,11 +37,13 @@
 #include "./number_field.h"
 #include "./params.h"
 #include "./two_complex.h"
+#include "flatsurf/detail/as_vector.hpp"
 #include "flatsurf/vector_arb.hpp"
 
-using boolinq::from;
+using boost::irange;
 using boost::lexical_cast;
 using boost::numeric_cast;
+using boost::adaptors::transformed;
 using boost::math::binomial_coefficient;
 using exactreal::Element;
 using exactreal::NumberFieldTraits;
@@ -363,9 +366,9 @@ std::vector<algebraic<T>> to_algebraic_coeffs(const VectorExactReal<Ring> &v) {
   y.promote(x.module());
   assert(&*x.module() == &*y.module());
 
-  return from(x.module()->basis())
-      .select_i([&](auto, int i) { return algebraic<T>(x[i], y[i]); })
-      .toVector();
+  return as_vector(irange(x.module()->rank()) | transformed([&](int i) {
+                     return algebraic<T>(x[i], y[i]);
+                   }));
 }
 }  // namespace
 
@@ -539,19 +542,17 @@ bool colinear(const alg_t<T> &p1, const alg_t<T> &p2) {
 template <typename T>
 Element<NumberFieldTraits> alg_t<T>::real() const {
   return Element<NumberFieldTraits>(
-      Params::module(),
-      from(coeffs)
-          .select([](const auto &coeff) { return coeff.real(); })
-          .toVector());
+      Params::module(), as_vector(coeffs | transformed([](const auto &coeff) {
+                                    return coeff.real();
+                                  })));
 }
 
 template <typename T>
 Element<NumberFieldTraits> alg_t<T>::imag() const {
   return Element<NumberFieldTraits>(
-      Params::module(),
-      from(coeffs)
-          .select([](const auto &coeff) { return coeff.imag(); })
-          .toVector());
+      Params::module(), as_vector(coeffs | transformed([](const auto &coeff) {
+                                    return coeff.imag();
+                                  })));
 }
 
 template <typename T>

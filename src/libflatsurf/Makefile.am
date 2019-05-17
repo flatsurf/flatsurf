@@ -22,7 +22,7 @@ libflatsurf_la_SOURCES =                \
     interval_exchange_transformation.cc \
     vector_along_triangulation_with_approximation.cc
 
-nobase_include_HEADERS =                              \
+nobase_include_HEADERS =                                       \
     flatsurf/assert.hpp                                        \
     flatsurf/bound.hpp                                         \
     flatsurf/ccw.hpp                                           \
@@ -48,6 +48,9 @@ nobase_include_HEADERS =                              \
     flatsurf/vertex.hpp                                        \
     flatsurf/interval_exchange_transformation.hpp              \
     external/spimpl/spimpl.h
+
+noinst_HEADERS =                                               \
+    flatsurf/detail/as_vector.hpp
 
 libflatsurf_la_LDFLAGS = -version-info $(libflatsurf_version_info)
 # some of our vectors use arb directly and through exact-real's arb wrappers

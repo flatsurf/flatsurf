@@ -20,16 +20,16 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/range/combine.hpp>
 #include <cassert>
 #include <ostream>
-#include "external/boolinq/include/boolinq/boolinq.h"
 
 #include "flatsurf/flat_triangulation_combinatorial.hpp"
 #include "flatsurf/half_edge_map.hpp"
 
-using boolinq::from;
 using std::function;
 using std::ostream;
+using std::string;
 using std::vector;
 
 namespace flatsurf {
@@ -112,22 +112,16 @@ size_t HalfEdgeMap<T>::index(const HalfEdge e) {
 
 template <typename T>
 ostream &operator<<(ostream &os, const flatsurf::HalfEdgeMap<T> &self) {
-  return os << boost::algorithm::join(
-             from(self.values)
-                 .select_i([](const T t, const int i) {
-                   return (i % 2 ? "-" : "") +
-                          boost::lexical_cast<std::string>(i / 2 + 1) + ": " +
-                          boost::lexical_cast<std::string>(t);
-                 })
-                 .where_i([](const std::string t, const int i) {
-                   // TODO: This is a hack. However, we cannot use a where_i
-                   // further up because VectorExactReal has no default
-                   // constructor.
-                   return (i % 2 == 0) &&
-                          !boost::algorithm::ends_with(t, ": 0");
-                 })
-                 .toVector(),
-             ", ");
+  std::vector<string> items;
+  for (auto it = self.values.begin(); it != self.values.end(); it++) {
+    long i = it - self.values.begin();
+    if (i % 2 == 0) continue;
+    string v = boost::lexical_cast<string>(*it);
+    if (v == "0") continue;
+    items.push_back(boost::lexical_cast<string>(i / 2 + 1) + ": " + v);
+  }
+
+  return os << boost::algorithm::join(items, ", ");
 }
 }  // namespace flatsurf
 

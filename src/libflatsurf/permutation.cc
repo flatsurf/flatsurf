@@ -17,14 +17,17 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <boost/range/adaptors.hpp>
+#include <boost/range/numeric.hpp>
 #include <cassert>
 #include <ostream>
 #include <set>
-#include "external/boolinq/include/boolinq/boolinq.h"
 
+#include "flatsurf/detail/as_vector.hpp"
 #include "flatsurf/permutation.hpp"
 
-using boolinq::from;
+using boost::accumulate;
+using boost::adaptors::transformed;
 using std::function;
 using std::ostream;
 using std::pair;
@@ -35,8 +38,9 @@ namespace flatsurf {
 
 template <typename T>
 Permutation<T>::Permutation(const vector<vector<T>> &cycles)
-    : data(from(cycles).sum(
-          [](const vector<T> &cycle) { return cycle.size(); })) {
+    : data(accumulate(cycles, 0u, [](size_t sum, const auto &cycle) {
+        return sum + cycle.size();
+      })) {
   for (const auto cycle : cycles) {
     for (auto i = 0u; i < cycle.size(); i++) {
       data[index(cycle[i])] = cycle[(i + 1) % cycle.size()];
@@ -71,13 +75,10 @@ template <typename T>
 template <typename S>
 Permutation<T> Permutation<T>::create(const vector<vector<S>> &cycles,
                                       const function<T(S)> &converter) {
-  return Permutation(from(cycles)
-                         .select([&](const vector<S> &cycle) {
-                           return from(cycle)
-                               .select([&](const S s) { return converter(s); })
-                               .toVector();
-                         })
-                         .toVector());
+  return Permutation(as_vector(cycles | transformed([&](const auto &cycle) {
+                                 return as_vector(cycle |
+                                                  transformed(converter));
+                               })));
 }
 
 template <typename T>
