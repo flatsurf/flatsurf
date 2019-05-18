@@ -61,7 +61,7 @@ template <typename T>
 bool operator!=(const alg_t<T>&, const alg_t<T>&);
 
 template <typename T>
-class [[deprecated("Use flatsurf VectorExactReal instead.")]] alg_t {
+class[[deprecated("Use flatsurf VectorExactReal instead.")]] alg_t {
  public:
   alg_t();  // initialize to 0
   explicit alg_t(std::vector<algebraic<T> > coeffs);

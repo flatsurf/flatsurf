@@ -94,9 +94,9 @@ void TwoComplex::TriangulateFace(Face *f) {
         ERR_RET("triangluate face: a < 0 \n");
       }
 
-      // 	    // a = true_angle((*i).vec_cx(),
-      // -(*i).prev_edge()->vec_cx()) +
-      // 	    // 	true_angle((*j).vec_cx(), -(*j).prev_edge()->vec_cx());
+        // 	    // a = true_angle((*i).vec_cx(),
+        // -(*i).prev_edge()->vec_cx()) +
+        // 	    // 	true_angle((*j).vec_cx(), -(*j).prev_edge()->vec_cx());
 
 #ifdef USE_LONG_DOUBLE
       printf("F%d V%d(E%d) V%d(E%d) a=%Lg, can_bisect=%d\n", f->id(),

@@ -34,8 +34,8 @@
 #include "./uedge.h"
 
 using namespace NTL;
-using boost::numeric_cast;
 using boost::math::constants::pi;
+using boost::numeric_cast;
 using std::abs;
 using std::cout;
 using std::endl;

@@ -35,7 +35,7 @@ class Vertex;
 // Note that two vectors with the same vec and v may not describe the same
 // vector on the surface if the total angle around v exceeds 2π.
 template <typename PointT>
-class [[deprecated("Use flatsurf::VectorAlongTriangulation or some other vector type in flatsurf instead.")]] Dir {
+class[[deprecated("Use flatsurf::VectorAlongTriangulation or some other vector type in flatsurf instead.")]] Dir {
  public:
   PointT vec;
   Vertex* v;

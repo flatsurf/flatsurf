@@ -35,8 +35,8 @@
 #include "flatsurf/flat_triangulation_combinatorial.hpp"
 #include "flatsurf/vertex.hpp"
 
-using boost::math::iround;
 using boost::math::constants::pi;
+using boost::math::iround;
 using std::abs;
 using std::endl;
 using std::list;

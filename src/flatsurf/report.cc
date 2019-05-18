@@ -43,10 +43,10 @@
 #include "./vert_pattern.h"
 #include "flatsurf/vertex.hpp"
 
-using boost::numeric_cast;
+using boost::math::constants::pi;
 using boost::math::iround;
 using boost::math::round;
-using boost::math::constants::pi;
+using boost::numeric_cast;
 using std::abs;
 using std::endl;
 using std::flush;

@@ -58,7 +58,7 @@ template <class T>
 algebraic<T> cross_product(const algebraic<T> &u, const algebraic<T> &v);
 
 template <typename T>
-class [[deprecated("Use renf_elem_class instead.")]] algebraic {
+class[[deprecated("Use renf_elem_class instead.")]] algebraic {
  public:
   algebraic();
   explicit algebraic(NumberField<T> *);  // zero element of NumberField
