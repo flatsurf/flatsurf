@@ -21,4 +21,7 @@
 
 namespace flatsurf {
 Bound::Bound(long long lengthSquared) : squared(lengthSquared) {}
+
+bool Bound::operator==(const Bound& rhs) const { return squared == rhs.squared; }
+bool Bound::operator<(const Bound& rhs) const { return squared < rhs.squared; }
 }  // namespace flatsurf
