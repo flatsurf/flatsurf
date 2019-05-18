@@ -32,6 +32,7 @@
 *.out
 *.app
 /saddle_connections
+/saddle_connections_benchmark
 /flip
 /vector_exactreal
 
@@ -44,3 +45,4 @@ stamp-h1
 ### googletest Generated Files
 *.log
 *.trs
+*.json

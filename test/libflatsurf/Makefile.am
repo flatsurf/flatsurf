@@ -1,8 +1,9 @@
-check_PROGRAMS = saddle_connections flip vector_exactreal
+check_PROGRAMS = saddle_connections flip vector_exactreal saddle_connections_benchmark
 
 TESTS = $(check_PROGRAMS)
 
 saddle_connections_SOURCES = saddle_connections.test.cc main.hpp surfaces.hpp
+saddle_connections_benchmark_SOURCES = saddle_connections.benchmark.cc main.hpp surfaces.hpp
 flip_SOURCES = flip.test.cc main.hpp surfaces.hpp
 vector_exactreal_SOURCES = vector_exactreal.test.cc main.hpp
 

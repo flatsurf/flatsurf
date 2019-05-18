@@ -18,6 +18,7 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <benchmark/benchmark.h>
 #include <gtest/gtest.h>
 #include <boost/lexical_cast.hpp>
 
@@ -43,35 +44,28 @@ using eantic::renf_class;
 
 namespace {
 template <class R2>
-class SaddleConnectionsTest : public Test {};
-
-using ExactVectors = Types<VectorLongLong, VectorEAntic>;
-TYPED_TEST_CASE(SaddleConnectionsTest, ExactVectors);
-
-TYPED_TEST(SaddleConnectionsTest, Trivial) {
-  auto square = makeSquare<TypeParam>();
-  auto connections = SaddleConnections(square, Bound(0), HalfEdge(1));
-  EXPECT_EQ(connections.begin(), connections.end());
+void SaddleConnectionsSquare(benchmark::State& state) {
+  auto square = makeSquare<R2>();
+  auto bound = Bound(state.range(0) * state.range(0));
+  auto expected = state.range(1);
+  for (auto _ : state) {
+    auto connections = SaddleConnections(square, bound, HalfEdge(1));
+    EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
+    connections = SaddleConnections(square, bound, HalfEdge(3));
+    EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
+    connections = SaddleConnections(square, bound, HalfEdge(2));
+    EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected * 2);
+    connections = SaddleConnections(square, bound, HalfEdge(-1));
+    EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
+    connections = SaddleConnections(square, bound, HalfEdge(-3));
+    EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
+    connections = SaddleConnections(square, bound, HalfEdge(-2));
+    EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected * 2);
+  }
 }
+BENCHMARK_TEMPLATE(SaddleConnectionsSquare, VectorLongLong)->Args({64, 980});
+BENCHMARK_TEMPLATE(SaddleConnectionsSquare, VectorEAntic)->Args({64, 980});
 
-TYPED_TEST(SaddleConnectionsTest, Square) {
-  auto square = makeSquare<TypeParam>();
-  auto bound = Bound(16 * 16);
-  auto expected = 60;
-  auto connections = SaddleConnections(square, bound, HalfEdge(1));
-  EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-  connections = SaddleConnections(square, bound, HalfEdge(3));
-  EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-  connections = SaddleConnections(square, bound, HalfEdge(2));
-  EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected * 2);
-  connections = SaddleConnections(square, bound, HalfEdge(-1));
-  EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-  connections = SaddleConnections(square, bound, HalfEdge(-3));
-  EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-  connections = SaddleConnections(square, bound, HalfEdge(-2));
-  EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected * 2);
-}
 }  // namespace
 
 #include "main.hpp"
-
