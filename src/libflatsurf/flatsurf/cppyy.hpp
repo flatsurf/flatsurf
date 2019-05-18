@@ -25,6 +25,8 @@
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/forward.hpp"
 #include "flatsurf/half_edge.hpp"
+#include "flatsurf/half_edge_map.hpp"
+#include "flatsurf/saddle_connection.hpp"
 #include "flatsurf/saddle_connections.hpp"
 #include "flatsurf/vector_along_triangulation.hpp"
 #include "flatsurf/vector_along_triangulation_with_approximation.hpp"
@@ -33,28 +35,29 @@
 #include "flatsurf/vector_exactreal.hpp"
 #include "flatsurf/vector_longlong.hpp"
 
-// As of early 2019, cppyy does not appear to honour
-// https://en.wikipedia.org/wiki/Argument-dependent_name_lookup for operators.
-// So we need to declare the operator<< in the global namespace, otherwise cppyy
-// is ignoring it in str() unfortunately. At the same time, we can not only
-// declare the global operator as then boost's lexical_cast does not see it,
-// strangely.
-std::ostream &operator<<(std::ostream &, const flatsurf::HalfEdge &);
-std::ostream &operator<<(std::ostream &, const flatsurf::VectorLongLong &);
-std::ostream &operator<<(std::ostream &, const flatsurf::VectorArb &);
-std::ostream &operator<<(std::ostream &, const flatsurf::VectorEAntic &);
-std::ostream &operator<<(std::ostream &,
-                         const flatsurf::Permutation<flatsurf::HalfEdge> &);
-std::ostream &
-operator<<(std::ostream &,
-           const flatsurf::HalfEdgeMap<flatsurf::VectorLongLong> &);
-std::ostream &operator<<(std::ostream &,
-                         const flatsurf::HalfEdgeMap<flatsurf::VectorEAntic> &);
-std::ostream &
-operator<<(std::ostream &,
-           const flatsurf::FlatTriangulation<flatsurf::VectorLongLong> &);
-std::ostream &
-operator<<(std::ostream &,
-           const flatsurf::FlatTriangulation<flatsurf::VectorEAntic> &);
+// See https://bitbucket.org/wlav/cppyy/issues/95/lookup-of-friend-operator
+namespace flatsurf {
+std::ostream &operator<<(std::ostream &, const HalfEdge &);
+std::ostream &operator<<(std::ostream &, const VectorLongLong &);
+std::ostream &operator<<(std::ostream &, const VectorArb &);
+std::ostream &operator<<(std::ostream &, const VectorEAntic &);
+template <typename T>
+std::ostream &operator<<(std::ostream &, const Permutation<T> &);
+template <typename T>
+std::ostream &operator<<(std::ostream &, const HalfEdgeMap<T> &);
+template <typename Vector>
+std::ostream &operator<<(std::ostream &, const FlatTriangulation<Vector> &);
+template <typename Vector, typename AlongTriangulation>
+std::ostream &operator<<(std::ostream &, const SaddleConnection<Vector, AlongTriangulation> &);
+}  // namespace flatsurf
+
+// Work around https://bitbucket.org/wlav/cppyy/issues/96/cannot-make-wrapper-for-a-function
+extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::Permutation<flatsurf::HalfEdge> &);
+extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::HalfEdgeMap<flatsurf::VectorLongLong> &);
+extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::HalfEdgeMap<flatsurf::VectorEAntic> &);
+extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::FlatTriangulation<flatsurf::VectorLongLong> &);
+extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::FlatTriangulation<flatsurf::VectorEAntic> &);
+extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::SaddleConnection<flatsurf::VectorLongLong> &);
+extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::SaddleConnection<flatsurf::VectorEAntic> &);
 
 #endif

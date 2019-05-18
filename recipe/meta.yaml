@@ -95,6 +95,7 @@ outputs:
         - ntl
       run:
         - libflatsurf =={{ version }}
+        - pyexactreal
         # cppyy, not packaged in conda-forge yet
 
     # We cannot test that that the import works since cppyy is not on conda-forge yet

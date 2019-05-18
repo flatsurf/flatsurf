@@ -18,6 +18,7 @@
 #*********************************************************************
 
 import cppyy
+from cppyy.gbl import std
 
 from pyexactreal import exactreal
 
@@ -25,7 +26,7 @@ from pyexactreal import exactreal
 # whereas cppyy otherwise only reports "segmentation violation" (which is
 # probably what cling provides.)
 import os
-if os.environ.get('PYEXACTREAL_CYSIGNALS', True):
+if os.environ.get('PYFLATSURFL_CYSIGNALS', True):
     try:
         import cysignals
     except ModuleNotFoundError:
@@ -37,10 +38,26 @@ def make_iterable(proxy, name):
             def iter(self):
                 i = self.begin()
                 while i != self.end():
-                    yield i.__deref__()
-                    i.__preinc__()
+                    if hasattr(i, '__deref__'):
+                        yield i.__deref__()
+                    elif hasattr(i, 'dereference'):
+                        yield i.dereference()
+                    else:
+                        raise Exception("iterator has no deref method")
+                    if hasattr(i, '__preinc__'):
+                        i.__preinc__()
+                    elif hasattr(i, 'increment'):
+                        i.increment()
+                    else:
+                        raise Exception("iterator has not preinc method")
 
             proxy.__iter__ = iter
+
+        if not hasattr(proxy, '__len__'):
+            def len(self):
+                return std.distance(self.begin(), self.end())
+
+            proxy.__len__ = len
 
 cppyy.py.add_pythonization(make_iterable, "flatsurf")
 
@@ -55,3 +72,12 @@ for path in os.environ.get('PYFLATSURF_INCLUDE','').split(':'):
 cppyy.include("flatsurf/cppyy.hpp")
 
 from cppyy.gbl import flatsurf
+
+def make_surface(vertices, vectors):
+    vertices = std.vector[std.vector[int]]([std.vector[int](l) for l in vertices])
+    R2 = type(vectors[0]).__cppname__
+    vectors = std.vector[R2](vectors)
+
+    return flatsurf.FlatTriangulation[R2](flatsurf.FlatTriangulationCombinatorial(vertices), vectors)
+
+flatsurf.Surface = make_surface

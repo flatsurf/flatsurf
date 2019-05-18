@@ -1,0 +1,5 @@
+#!/bin/sh
+
+export PYFLATSURF_INCLUDE="@srcdir@/../../src/libflatsurf:@builddir@/../../src/libflatsurf"
+export LD_LIBRARY_PATH="@builddir@/../../src/libflatsurf/.libs/"
+export PYTHONPATH="@builddir@/../../src/pyflatsurf/:@pythondir@"
