@@ -357,11 +357,12 @@ template <typename Vector, typename VectorAlongTriangulation>
 bool SaddleConnectionsIterator<Vector, VectorAlongTriangulation>::equal(
     const SaddleConnectionsIterator<Vector, VectorAlongTriangulation> &other)
     const {
-  if (!impl || impl->atEnd()) {
-    return !other.impl || other.impl->atEnd();
-  } else {
-    return false;
-  }
+  bool atEnd = !impl || impl->atEnd();
+  bool otherAtEnd = !other.impl || other.impl->atEnd();
+  if (atEnd || otherAtEnd)
+    return atEnd && otherAtEnd;
+
+  return &impl->surface == &other.impl->surface && impl->source == other.impl->source && impl->sector[0] == other.impl->sector[0] && impl->sector[1] == other.impl->sector[1] && impl->searchRadius == other.impl->searchRadius && impl->nextEdge == other.impl->nextEdge && impl->nextEdgeEnd == other.impl->nextEdgeEnd;
 }
 
 template <typename Vector, typename VectorAlongTriangulation>
@@ -398,6 +399,9 @@ template <typename Vector, typename VectorAlongTriangulation>
 std::unique_ptr<SaddleConnection<Vector, VectorAlongTriangulation>>
 SaddleConnectionsIterator<Vector, VectorAlongTriangulation>::dereference()
     const {
+  if (this->impl->atEnd()) {
+    throw std::out_of_range("iterator is at end()");
+  }
   auto ret = std::make_unique<SaddleConnection<Vector, VectorAlongTriangulation>>();
   ret->impl = spimpl::make_impl<typename SaddleConnection<Vector, VectorAlongTriangulation>::Implementation>(
       *impl->surface, impl->nextEdgeEnd, impl->source, impl->nextEdge);
