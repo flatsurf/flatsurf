@@ -47,6 +47,12 @@ struct VectorArb : boost::additive<VectorArb>,
   VectorArb operator-() const;
   std::optional<bool> operator>(const Bound bound) const;
   std::optional<bool> operator<(const Bound bound) const;
+  // Return true if both vectors are the same exact vector, false if the
+  // respective balls do not overlap.
+  std::optional<bool> operator==(const VectorArb &) const;
+  // Return true if the respective balls do not overlap, false if both vectors
+  // are the same exact vector.
+  std::optional<bool> operator!=(const VectorArb &) const;
   VectorArb &operator+=(const VectorArb &rhs);
   VectorArb &operator-=(const VectorArb &rhs);
   VectorArb &operator*=(const int rhs);

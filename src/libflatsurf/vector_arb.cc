@@ -60,6 +60,25 @@ optional<bool> VectorArb::operator>(const Bound bound) const {
   return size > bound.squared;
 }
 
+optional<bool> VectorArb::operator==(const VectorArb &rhs) const {
+  auto xeq = x == rhs.x;
+  auto yeq = y == rhs.y;
+
+  if (xeq && *xeq && yeq && *yeq) {
+    return true;
+  }
+  if ((xeq && !*xeq) || (yeq && !*yeq)) {
+    return false;
+  }
+
+  return {};
+}
+
+optional<bool> VectorArb::operator!=(const VectorArb &rhs) const {
+  auto eq = *this == rhs;
+  return eq ? !*eq : eq;
+}
+
 VectorArb::operator std::complex<double>() const {
   return std::complex(static_cast<double>(x), static_cast<double>(y));
 }
