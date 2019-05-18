@@ -39,10 +39,11 @@ struct SaddleConnection<Vector, AlongTriangulation>::Implementation {
 };
 
 template <typename Vector, typename AlongTriangulation>
-ostream &operator<<(ostream &os,
-                    const SaddleConnection<Vector, AlongTriangulation> &self) {
+ostream &operator<<(ostream &os, const SaddleConnection<Vector, AlongTriangulation> &self) {
   os << "SaddleConnection(" << self.source() << " -> " << self.target()
-     << " in direction " << self.vector() << " crossing";
+     << " in direction " << self.vector();
+
+  bool crossingAnyHalfEdge = false;
 
   // We reconstruct the sequence of half edges that this saddle connection
   // crossed. This is expensive (but cheap in terms of the output size.) This
@@ -59,6 +60,9 @@ ostream &operator<<(ostream &os,
     while (true) {
       auto crossing = it.incrementWithCrossings();
       if (crossing.has_value()) {
+        if (!crossingAnyHalfEdge)
+          os << " crossing";
+        crossingAnyHalfEdge = true;
         os << " " << *crossing;
       } else {
         break;
@@ -98,19 +102,10 @@ const AlongTriangulation &SaddleConnection<Vector, AlongTriangulation>::vector()
 using namespace flatsurf;
 
 template struct flatsurf::SaddleConnection<VectorLongLong>;
-template ostream &flatsurf::operator<<(
-    ostream &, const SaddleConnection<VectorLongLong> &);
+template ostream &flatsurf::operator<<(ostream &, const SaddleConnection<VectorLongLong> &);
 template struct flatsurf::SaddleConnection<VectorEAntic>;
-template ostream &flatsurf::operator<<(ostream &,
-                                       const SaddleConnection<VectorEAntic> &);
-template struct flatsurf::SaddleConnection<
-    VectorEAntic, VectorAlongTriangulation<VectorEAntic>>;
-template ostream &flatsurf::operator<<(
-    ostream &,
-    const SaddleConnection<VectorEAntic, VectorAlongTriangulation<VectorEAntic>>
-        &);
-template struct flatsurf::SaddleConnection<
-    VectorExactReal<exactreal::NumberFieldTraits>>;
-template ostream &flatsurf::operator<<(
-    ostream &,
-    const SaddleConnection<VectorExactReal<exactreal::NumberFieldTraits>> &);
+template ostream &flatsurf::operator<<(ostream &, const SaddleConnection<VectorEAntic> &);
+template struct flatsurf::SaddleConnection<VectorEAntic, VectorAlongTriangulation<VectorEAntic>>;
+template ostream &flatsurf::operator<<(ostream &, const SaddleConnection<VectorEAntic, VectorAlongTriangulation<VectorEAntic>> &);
+template struct flatsurf::SaddleConnection<VectorExactReal<exactreal::NumberFieldTraits>>;
+template ostream &flatsurf::operator<<(ostream &, const SaddleConnection<VectorExactReal<exactreal::NumberFieldTraits>> &);
