@@ -1,11 +1,13 @@
 name: binder
 channels:
-  - saraedum
+  - flatsurf
   - conda-forge
   - defaults
 dependencies:
-  - polygon
+  - libflatsurf
+  - pyflatsurf
+  - flatsurf
   - boost-cpp
   - notebook
   # https://github.com/QuantStack/xeus-cling/issues/194#issuecomment-456547091
-  - xeus-cling=0.4.10=he860b03_1000
+  - xeus-cling
