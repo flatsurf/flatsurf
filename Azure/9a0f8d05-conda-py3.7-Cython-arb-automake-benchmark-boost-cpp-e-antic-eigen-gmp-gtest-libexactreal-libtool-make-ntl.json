@@ -1,0 +1,60 @@
+{
+    "benchmark_version": {
+        "Benchmarks.track_SaddleConnectionsSquare<VectorEAntic>_64_980": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107",
+        "Benchmarks.track_SaddleConnectionsSquare<VectorLongLong>_64_980": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "commit_hash": "9a0f8d05318434793aec3512fc810d56a11a2832",
+    "date": 1558186883000,
+    "ended_at": {
+        "Benchmarks.track_SaddleConnectionsSquare<VectorEAntic>_64_980": 1558188766000,
+        "Benchmarks.track_SaddleConnectionsSquare<VectorLongLong>_64_980": 1558188766053
+    },
+    "env_name": "conda-py3.7-Cython-arb-automake-benchmark-boost-cpp-e-antic-eigen-gmp-gtest-libexactreal-libtool-make-ntl",
+    "params": {
+        "Cython": "",
+        "arb": "",
+        "arch": "x86_64",
+        "automake": "",
+        "benchmark": "",
+        "boost-cpp": "",
+        "cpu": "Standard_DS2_v2",
+        "e-antic": "",
+        "eigen": "",
+        "gmp": "",
+        "gtest": "",
+        "libexactreal": "",
+        "libtool": "",
+        "machine": "Azure",
+        "make": "",
+        "ntl": "",
+        "os": "Linux",
+        "python": "3.7",
+        "ram": "61830880"
+    },
+    "profiles": {},
+    "python": "3.7",
+    "requirements": {
+        "Cython": "",
+        "arb": "",
+        "automake": "",
+        "benchmark": "",
+        "boost-cpp": "",
+        "e-antic": "",
+        "eigen": "",
+        "gmp": "",
+        "gtest": "",
+        "libexactreal": "",
+        "libtool": "",
+        "make": "",
+        "ntl": ""
+    },
+    "results": {
+        "Benchmarks.track_SaddleConnectionsSquare<VectorEAntic>_64_980": 770459852.0,
+        "Benchmarks.track_SaddleConnectionsSquare<VectorLongLong>_64_980": 112682445.83333336
+    },
+    "started_at": {
+        "Benchmarks.track_SaddleConnectionsSquare<VectorEAntic>_64_980": 1558188765947,
+        "Benchmarks.track_SaddleConnectionsSquare<VectorLongLong>_64_980": 1558188766001
+    },
+    "version": 1
+}
