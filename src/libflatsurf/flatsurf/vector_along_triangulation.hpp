@@ -57,7 +57,7 @@ struct VectorAlongTriangulation
   VectorAlongTriangulation<V> &operator+=(const HalfEdge);
   VectorAlongTriangulation<V> &operator-=(const HalfEdge);
   VectorAlongTriangulation<V> &iadd(const HalfEdge, const int);
-  bool operator==(const VectorAlongTriangulation<V> &);
+  bool operator==(const VectorAlongTriangulation<V> &) const;
   operator V() const;
 
  private:

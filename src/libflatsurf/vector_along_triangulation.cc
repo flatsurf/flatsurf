@@ -66,6 +66,11 @@ VectorAlongTriangulation<V> &VectorAlongTriangulation<V>::operator-=(
 }
 
 template <typename V>
+bool VectorAlongTriangulation<V>::operator==(const VectorAlongTriangulation<V> &rhs) const {
+  return impl->impl == rhs.impl->impl;
+}
+
+template <typename V>
 VectorAlongTriangulation<V> &VectorAlongTriangulation<V>::iadd(
     const HalfEdge halfEdge, const int c) {
   if (c != 0) {
