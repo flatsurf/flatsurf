@@ -17,9 +17,9 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "flatsurf/saddle_connections.hpp"
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/half_edge.hpp"
-#include "flatsurf/saddle_connections.hpp"
 
 #include "saddle_connections_iterator.ipp"
 
