@@ -74,4 +74,3 @@ TYPED_TEST(SaddleConnectionsTest, Square) {
 }  // namespace
 
 #include "main.hpp"
-
