@@ -33,6 +33,7 @@
 *.app
 /saddle_connections
 /flip
+/vector_exactreal
 
 ### Autotools Generated Files
 .deps

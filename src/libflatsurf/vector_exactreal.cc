@@ -213,28 +213,24 @@ ORIENTATION VectorExactReal<Ring>::orientation(
 
 template <typename Ring>
 bool VectorExactReal<Ring>::operator<(const Bound bound) const {
-  // TODO: Test that an integer element can decide that it's not smaller than
-  // its exact value.
-  for (long prec = 64;; prec *= 2) {
-    const auto v = VectorArb(impl->x.arb(prec), impl->y.arb(prec));
-    const auto lt = v < bound;
-    if (lt.has_value()) {
-      return *lt;
-    }
+  const auto v = VectorArb(impl->x.arb(ARB_PRECISION_FAST), impl->y.arb(ARB_PRECISION_FAST));
+  const auto lt = v < bound;
+  if (lt.has_value()) {
+    return *lt;
   }
+
+  return impl->x * impl->x + impl->y * impl->y < bound.squared;
 }
 
 template <typename Ring>
 bool VectorExactReal<Ring>::operator>(const Bound bound) const {
-  // TODO: Test that an integer element can decide that it's not greater than
-  // its exact value.
-  for (long prec = 64;; prec *= 2) {
-    const auto v = VectorArb(impl->x.arb(prec), impl->y.arb(prec));
-    const auto gt = v > bound;
-    if (gt.has_value()) {
-      return *gt;
-    }
+  const auto v = VectorArb(impl->x.arb(ARB_PRECISION_FAST), impl->y.arb(ARB_PRECISION_FAST));
+  const auto lt = v > bound;
+  if (lt.has_value()) {
+    return *lt;
   }
+
+  return impl->x * impl->x + impl->y * impl->y > bound.squared;
 }
 
 template <typename Ring>
@@ -259,7 +255,16 @@ ostream &operator<<(ostream &os, const VectorExactReal<Ring> &self) {
 using namespace flatsurf;
 
 // Instantiations of templates so implementations are generated for the linker
+#include <exact-real/integer_ring_traits.hpp>
 #include <exact-real/number_field_traits.hpp>
+#include <exact-real/rational_field_traits.hpp>
+
+template struct flatsurf::VectorExactReal<exactreal::IntegerRingTraits>;
+template ostream &flatsurf::operator<<<exactreal::IntegerRingTraits>(
+    ostream &, const VectorExactReal<exactreal::IntegerRingTraits> &);
+template struct flatsurf::VectorExactReal<exactreal::RationalFieldTraits>;
+template ostream &flatsurf::operator<<<exactreal::RationalFieldTraits>(
+    ostream &, const VectorExactReal<exactreal::RationalFieldTraits> &);
 template struct flatsurf::VectorExactReal<exactreal::NumberFieldTraits>;
 template ostream &flatsurf::operator<<<exactreal::NumberFieldTraits>(
     ostream &, const VectorExactReal<exactreal::NumberFieldTraits> &);
