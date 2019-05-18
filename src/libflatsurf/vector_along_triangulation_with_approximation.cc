@@ -70,6 +70,22 @@ VectorAlongTriangulationWithApproximation<V, Approximation>::
     : impl(spimpl::make_impl<Implementation>(surface)) {}
 
 template <typename V, typename Approximation>
+bool VectorAlongTriangulationWithApproximation<V, Approximation>::operator==(const VectorAlongTriangulationWithApproximation<V, Approximation> &rhs) const {
+  if (this == &rhs)
+    return true;
+
+  if (&impl->surface != &rhs.impl->surface)
+    return false;
+
+  auto eq = impl->approximation == rhs.impl->approximation;
+  if (eq) {
+    return *eq;
+  }
+
+  return impl->exact() == rhs.impl->exact();
+}
+
+template <typename V, typename Approximation>
 VectorAlongTriangulationWithApproximation<V, Approximation>
     &VectorAlongTriangulationWithApproximation<V, Approximation>::operator+=(
         const HalfEdge halfEdge) {
