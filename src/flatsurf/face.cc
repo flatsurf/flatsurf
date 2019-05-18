@@ -33,8 +33,8 @@
 #include "./two_complex.h"
 #include "./uedge.h"
 
-using boost::math::constants::pi;
 using boost::numeric_cast;
+using boost::math::constants::pi;
 using std::endl;
 using std::list;
 using std::ostream;

@@ -482,9 +482,9 @@ char *read_coords(char *s, COORD *p_vec_re, COORD *p_vec_im, int line_number) {
   if (sscanf(s, "%999s %999s", re, im) != 2) {
     ERR_RET2("bad coord: cant find real and imaginary parts", line_number);
   }
-    //  char *junk[0];
+  //  char *junk[0];
 
-    //  printf("s=%s re=%s im=%s\n", s, re, im);
+  //  printf("s=%s re=%s im=%s\n", s, re, im);
 
 #ifdef USE_LONG_DOUBLE
   *p_vec_re = strtold(re, (char **)0);

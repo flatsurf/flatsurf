@@ -40,17 +40,17 @@
 #include "flatsurf/detail/as_vector.hpp"
 #include "flatsurf/vector_arb.hpp"
 
-using NTL::Mat;
-using NTL::Vec;
-using NTL::ZZ;
-using boost::adaptors::transformed;
 using boost::irange;
 using boost::lexical_cast;
-using boost::math::binomial_coefficient;
 using boost::numeric_cast;
+using boost::adaptors::transformed;
+using boost::math::binomial_coefficient;
 using exactreal::Element;
 using exactreal::NumberFieldTraits;
 using flatsurf::VectorExactReal;
+using NTL::Mat;
+using NTL::Vec;
+using NTL::ZZ;
 using std::complex;
 using std::ostream;
 using std::vector;
