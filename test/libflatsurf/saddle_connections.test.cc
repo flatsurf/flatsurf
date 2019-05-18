@@ -71,6 +71,28 @@ TYPED_TEST(SaddleConnectionsTest, Square) {
   connections = SaddleConnections(square, bound, HalfEdge(-2));
   EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected * 2);
 }
+
+TYPED_TEST(SaddleConnectionsTest, Hexagon) {
+  if constexpr (std::is_same_v<TypeParam, VectorLongLong>) {
+    // An regular hexagon can not be constructed with integer coordinates.
+    return;
+  } else {
+    auto hexagon = makeHexagon<TypeParam>();
+    auto bound = Bound(16 * 16);
+    auto connections = SaddleConnections(hexagon, bound, HalfEdge(1));
+    EXPECT_EQ(std::distance(connections.begin(), connections.end()), 10);
+    connections = SaddleConnections(hexagon, bound, HalfEdge(2));
+    EXPECT_EQ(std::distance(connections.begin(), connections.end()), 36);
+    connections = SaddleConnections(hexagon, bound, HalfEdge(3));
+    EXPECT_EQ(std::distance(connections.begin(), connections.end()), 26);
+    connections = SaddleConnections(hexagon, bound, HalfEdge(4));
+    EXPECT_EQ(std::distance(connections.begin(), connections.end()), 18);
+    connections = SaddleConnections(hexagon, bound, HalfEdge(5));
+    EXPECT_EQ(std::distance(connections.begin(), connections.end()), 8);
+    connections = SaddleConnections(hexagon, bound, HalfEdge(6));
+    EXPECT_EQ(std::distance(connections.begin(), connections.end()), 10);
+  }
+}
 }  // namespace
 
 #include "main.hpp"

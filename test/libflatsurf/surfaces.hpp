@@ -38,11 +38,13 @@ auto makeSquare() {
   return FlatTriangulation(vertices, vectors);
 }
 
+auto K = renf_class("x^2 - 3", "x", "1.73 +/- 0.1");
+
 template <typename R2>
 auto makeHexagon() {
-  auto K = renf_class("x^2 - 3", "x", "1.73 +/- 0.1");
   auto x = K.gen();
-  auto vectors = vector{R2(2, 0), R2(1, x), R2(3, x), R2(1, -x), R2(4, 0), R2(3, x)};
+  using R = eantic::renf_elem_class;
+  auto vectors = vector{R2(R(K, 2), R(K, 0)), R2(R(K, 1), x), R2(R(K, 3), x), R2(R(K, 1), -x), R2(R(K, 4), R(K, 0)), R2(R(K, 3), x)};
   auto vertices = vector<vector<int>>({{1, 3, -4, -5, -3, -2}, {2, -1, -6, 4, 5, 6}});
   return FlatTriangulation(vertices, vectors);
 }
