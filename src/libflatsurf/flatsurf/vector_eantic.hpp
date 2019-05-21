@@ -24,22 +24,16 @@
 #include <boost/operators.hpp>
 #include <iosfwd>
 
-#include "flatsurf/ccw.hpp"
-#include "flatsurf/flatsurf.hpp"
-#include "flatsurf/orientation.hpp"
+#include "flatsurf/forward.hpp"
 #include "flatsurf/vector_along_triangulation_with_approximation.hpp"
 
 namespace flatsurf {
-struct Bound;
-template <typename V>
-struct VectorArbAlongTriangulation;
-struct VectorArb;
-
-struct VectorEAntic : boost::additive<VectorEAntic>,
-                      boost::multipliable<VectorEAntic, int>,
-                      boost::equality_comparable<VectorEAntic> {
+class VectorEAntic : boost::additive<VectorEAntic>,
+                     boost::multipliable<VectorEAntic, int>,
+                     boost::equality_comparable<VectorEAntic> {
+ public:
   using V = VectorEAntic;
-  friend struct VectorArb;
+  friend VectorArb;
 
   VectorEAntic();
   VectorEAntic(const eantic::renf_elem_class &x,
@@ -65,7 +59,7 @@ struct VectorEAntic : boost::additive<VectorEAntic>,
       VectorAlongTriangulationWithApproximation<VectorEAntic, VectorArb>;
 
  private:
-  struct Implementation;
+  class Implementation;
   spimpl::impl_ptr<Implementation> impl;
 };
 }  // namespace flatsurf

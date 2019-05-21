@@ -26,16 +26,12 @@
 #include <iosfwd>
 #include <optional>
 
-#include "flatsurf/ccw.hpp"
-#include "flatsurf/flatsurf.hpp"
-#include "flatsurf/orientation.hpp"
+#include "flatsurf/forward.hpp"
 
 namespace flatsurf {
-struct Bound;
-struct VectorEAntic;
-
-struct VectorArb : boost::additive<VectorArb>,
-                   boost::multipliable<VectorArb, int> {
+class VectorArb : boost::additive<VectorArb>,
+                  boost::multipliable<VectorArb, int> {
+ public:
   VectorArb();
   VectorArb(const exactreal::Arb &x, const exactreal::Arb &y);
 

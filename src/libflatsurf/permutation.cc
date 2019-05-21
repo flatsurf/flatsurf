@@ -124,11 +124,7 @@ using namespace flatsurf;
 // Instantiations of templates so implementations are generated for the linker
 #include "flatsurf/half_edge.hpp"
 
-template struct flatsurf::Permutation<HalfEdge>;
-template Permutation<HalfEdge> Permutation<HalfEdge>::create<int>(
-    const vector<vector<int>> &cycles,
-    const function<HalfEdge(int)> &converter);
-template ostream &flatsurf::operator<<(ostream &os,
-                                       const Permutation<HalfEdge> &self);
-template Permutation<HalfEdge> &flatsurf::operator*=(const vector<HalfEdge> &,
-                                                     Permutation<HalfEdge> &);
+template class flatsurf::Permutation<HalfEdge>;
+template Permutation<HalfEdge> Permutation<HalfEdge>::create<int>(const vector<vector<int>> &cycles, const function<HalfEdge(int)> &converter);
+template ostream &flatsurf::operator<<(ostream &os, const Permutation<HalfEdge> &self);
+template Permutation<HalfEdge> &flatsurf::operator*=(const vector<HalfEdge> &, Permutation<HalfEdge> &);

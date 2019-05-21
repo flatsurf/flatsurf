@@ -150,7 +150,8 @@ void makeContour(insert_iterator<vector<HalfEdge>> target,
 }  // namespace
 
 template <typename Vector>
-struct IntervalExchangeTransformation<Vector>::Implementation {
+class IntervalExchangeTransformation<Vector>::Implementation {
+ public:
   Implementation(const FlatTriangulation<Vector>& original,
                  const Vector& vertical) {
     auto parent = original.clone();
@@ -185,14 +186,9 @@ ostream& operator<<(ostream&, const IntervalExchangeTransformation<Vector>&) {
 
 using namespace flatsurf;
 
-template struct flatsurf::IntervalExchangeTransformation<VectorLongLong>;
-template ostream& flatsurf::operator<<(
-    ostream&, const IntervalExchangeTransformation<VectorLongLong>&);
-template struct flatsurf::IntervalExchangeTransformation<VectorEAntic>;
-template ostream& flatsurf::operator<<(
-    ostream&, const IntervalExchangeTransformation<VectorEAntic>&);
-template struct flatsurf::IntervalExchangeTransformation<
-    VectorExactReal<exactreal::NumberFieldTraits>>;
-template ostream& flatsurf::operator<<(
-    ostream&, const IntervalExchangeTransformation<
-                  VectorExactReal<exactreal::NumberFieldTraits>>&);
+template class flatsurf::IntervalExchangeTransformation<VectorLongLong>;
+template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<VectorLongLong>&);
+template class flatsurf::IntervalExchangeTransformation<VectorEAntic>;
+template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<VectorEAntic>&);
+template class flatsurf::IntervalExchangeTransformation<VectorExactReal<exactreal::NumberFieldTraits>>;
+template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<VectorExactReal<exactreal::NumberFieldTraits>>&);

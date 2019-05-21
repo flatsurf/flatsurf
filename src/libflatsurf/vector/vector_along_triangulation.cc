@@ -30,7 +30,8 @@ using std::ostream;
 
 namespace flatsurf {
 template <typename V>
-struct VectorAlongTriangulation<V>::Implementation {
+class VectorAlongTriangulation<V>::Implementation {
+ public:
   using Surface = FlatTriangulation<V>;
 
   explicit Implementation(const Surface &surface) : surface(surface), impl() {}
@@ -113,16 +114,9 @@ ostream &operator<<(ostream &os, const VectorAlongTriangulation<V> &self) {
 #include "flatsurf/vector_eantic.hpp"
 #include "flatsurf/vector_exactreal.hpp"
 #include "flatsurf/vector_longlong.hpp"
-template struct flatsurf::VectorAlongTriangulation<flatsurf::VectorLongLong>;
-template ostream &flatsurf::operator<<(
-    ostream &,
-    const flatsurf::VectorAlongTriangulation<flatsurf::VectorLongLong> &);
-template struct flatsurf::VectorAlongTriangulation<flatsurf::VectorEAntic>;
-template ostream &flatsurf::operator<<(
-    ostream &,
-    const flatsurf::VectorAlongTriangulation<flatsurf::VectorEAntic> &);
-template struct flatsurf::VectorAlongTriangulation<
-    flatsurf::VectorExactReal<exactreal::NumberFieldTraits>>;
-template ostream &flatsurf::operator<<(
-    ostream &, const flatsurf::VectorAlongTriangulation<
-                   flatsurf::VectorExactReal<exactreal::NumberFieldTraits>> &);
+template class flatsurf::VectorAlongTriangulation<flatsurf::VectorLongLong>;
+template ostream &flatsurf::operator<<(ostream &, const flatsurf::VectorAlongTriangulation<flatsurf::VectorLongLong> &);
+template class flatsurf::VectorAlongTriangulation<flatsurf::VectorEAntic>;
+template ostream &flatsurf::operator<<(ostream &, const flatsurf::VectorAlongTriangulation<flatsurf::VectorEAntic> &);
+template class flatsurf::VectorAlongTriangulation<flatsurf::VectorExactReal<exactreal::NumberFieldTraits>>;
+template ostream &flatsurf::operator<<(ostream &, const flatsurf::VectorAlongTriangulation<flatsurf::VectorExactReal<exactreal::NumberFieldTraits>> &);

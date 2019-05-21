@@ -38,7 +38,8 @@ using exactreal::ARB_PRECISION_FAST;
 
 namespace flatsurf {
 template <typename Ring>
-struct VectorExactReal<Ring>::Implementation {
+class VectorExactReal<Ring>::Implementation {
+ public:
   Implementation(const Element<Ring> &x, const Element<Ring> &y,
                  const mp_limb_signed_t precision = ARB_PRECISION_FAST)
       : x(x), y(y), precision(precision) {}
@@ -259,12 +260,9 @@ using namespace flatsurf;
 #include <exact-real/number_field_traits.hpp>
 #include <exact-real/rational_field_traits.hpp>
 
-template struct flatsurf::VectorExactReal<exactreal::IntegerRingTraits>;
-template ostream &flatsurf::operator<<<exactreal::IntegerRingTraits>(
-    ostream &, const VectorExactReal<exactreal::IntegerRingTraits> &);
-template struct flatsurf::VectorExactReal<exactreal::RationalFieldTraits>;
-template ostream &flatsurf::operator<<<exactreal::RationalFieldTraits>(
-    ostream &, const VectorExactReal<exactreal::RationalFieldTraits> &);
-template struct flatsurf::VectorExactReal<exactreal::NumberFieldTraits>;
-template ostream &flatsurf::operator<<<exactreal::NumberFieldTraits>(
-    ostream &, const VectorExactReal<exactreal::NumberFieldTraits> &);
+template class flatsurf::VectorExactReal<exactreal::IntegerRingTraits>;
+template ostream &flatsurf::operator<<<exactreal::IntegerRingTraits>(ostream &, const VectorExactReal<exactreal::IntegerRingTraits> &);
+template class flatsurf::VectorExactReal<exactreal::RationalFieldTraits>;
+template ostream &flatsurf::operator<<<exactreal::RationalFieldTraits>(ostream &, const VectorExactReal<exactreal::RationalFieldTraits> &);
+template class flatsurf::VectorExactReal<exactreal::NumberFieldTraits>;
+template ostream &flatsurf::operator<<<exactreal::NumberFieldTraits>(ostream &, const VectorExactReal<exactreal::NumberFieldTraits> &);

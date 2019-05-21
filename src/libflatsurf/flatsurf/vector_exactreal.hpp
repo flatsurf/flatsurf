@@ -22,23 +22,17 @@
 
 #include <exact-real/element.hpp>
 
-#include "flatsurf/ccw.hpp"
-#include "flatsurf/flatsurf.hpp"
-#include "flatsurf/orientation.hpp"
+#include "flatsurf/forward.hpp"
 #include "flatsurf/vector_along_triangulation_with_approximation.hpp"
 
 namespace flatsurf {
-struct Bound;
-template <typename V>
-struct VectorArbAlongTriangulation;
-struct VectorArb;
-
 template <typename Ring>
-struct VectorExactReal : boost::additive<VectorExactReal<Ring>>,
-                         boost::multipliable<VectorExactReal<Ring>, int>,
-                         boost::equality_comparable<VectorExactReal<Ring>> {
+class VectorExactReal : boost::additive<VectorExactReal<Ring>>,
+                        boost::multipliable<VectorExactReal<Ring>, int>,
+                        boost::equality_comparable<VectorExactReal<Ring>> {
+ public:
   using V = VectorExactReal;
-  friend struct VectorArb;
+  friend VectorArb;
 
   VectorExactReal();
   VectorExactReal(const exactreal::Element<Ring> &x,
@@ -72,7 +66,7 @@ struct VectorExactReal : boost::additive<VectorExactReal<Ring>>,
                                                 VectorArb>;
 
  private:
-  struct Implementation;
+  class Implementation;
   spimpl::impl_ptr<Implementation> impl;
 };
 }  // namespace flatsurf

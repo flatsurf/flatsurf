@@ -23,24 +23,18 @@
 #include <iosfwd>
 #include "external/spimpl/spimpl.h"
 
-#include "flatsurf/ccw.hpp"
+#include "flatsurf/forward.hpp"
 
 namespace flatsurf {
-template <typename Vector>
-struct FlatTriangulation;
-struct HalfEdge;
-struct Bound;
-template <typename T>
-struct HalfEdgeMap;
-
 // A generic implementation of a vector in ℝ² that is a sum of half edges of a
 // flat triangulation.
 template <typename V>
-struct VectorAlongTriangulation
+class VectorAlongTriangulation
     : boost::additive<VectorAlongTriangulation<V>>,
       boost::additive<VectorAlongTriangulation<V>, HalfEdge>,
       boost::less_than_comparable<VectorAlongTriangulation<V>, Bound>,
       boost::equality_comparable<VectorAlongTriangulation<V>> {
+ public:
   using Surface = FlatTriangulation<V>;
 
   explicit VectorAlongTriangulation(const Surface &surface);
@@ -61,7 +55,7 @@ struct VectorAlongTriangulation
   operator V() const;
 
  private:
-  struct Implementation;
+  class Implementation;
   spimpl::impl_ptr<Implementation> impl;
 };
 }  // namespace flatsurf

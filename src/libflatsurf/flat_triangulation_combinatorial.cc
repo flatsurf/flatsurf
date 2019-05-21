@@ -47,7 +47,8 @@ struct HalfEdgeMapProxy {
 };
 }  // namespace
 
-struct FlatTriangulationCombinatorial::Implementation {
+class FlatTriangulationCombinatorial::Implementation {
+ public:
   Implementation(const Permutation<HalfEdge>& vertices)
       : vertices(vertices),
         // In the triangulation, the order in which half edges are attached to a
@@ -172,19 +173,11 @@ using namespace flatsurf;
 #include "flatsurf/vector_exactreal.hpp"
 #include "flatsurf/vector_longlong.hpp"
 
-template void flatsurf::FlatTriangulationCombinatorial::registerMap(
-    const HalfEdgeMap<VectorEAntic>&) const;
-template void flatsurf::FlatTriangulationCombinatorial::registerMap(
-    const HalfEdgeMap<VectorExactReal<exactreal::NumberFieldTraits>>&) const;
-template void flatsurf::FlatTriangulationCombinatorial::registerMap(
-    const HalfEdgeMap<VectorLongLong>&) const;
-template void flatsurf::FlatTriangulationCombinatorial::registerMap(
-    const HalfEdgeMap<int>&) const;
-template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(
-    const HalfEdgeMap<VectorEAntic>&) const;
-template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(
-    const HalfEdgeMap<VectorExactReal<exactreal::NumberFieldTraits>>&) const;
-template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(
-    const HalfEdgeMap<VectorLongLong>&) const;
-template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(
-    const HalfEdgeMap<int>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<VectorEAntic>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<VectorExactReal<exactreal::NumberFieldTraits>>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<VectorLongLong>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<int>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<VectorEAntic>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<VectorExactReal<exactreal::NumberFieldTraits>>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<VectorLongLong>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<int>&) const;

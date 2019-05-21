@@ -25,13 +25,14 @@
 #include <vector>
 
 #include "external/spimpl/spimpl.h"
+
 #include "flatsurf/flat_triangulation_combinatorial.hpp"
-#include "flatsurf/flatsurf.hpp"
 #include "flatsurf/forward.hpp"
 
 namespace flatsurf {
 template <class Vector>
-struct FlatTriangulation : FlatTriangulationCombinatorial {
+class FlatTriangulation : public FlatTriangulationCombinatorial {
+ public:
   FlatTriangulation(FlatTriangulationCombinatorial &&, const std::vector<Vector> &vectors);
   FlatTriangulation(FlatTriangulationCombinatorial &&, HalfEdgeMap<Vector> &&vectors);
 
@@ -47,7 +48,7 @@ struct FlatTriangulation : FlatTriangulationCombinatorial {
   friend std::ostream &operator<<(std::ostream &, const FlatTriangulation<W> &);
 
  private:
-  struct Implementation;
+  class Implementation;
   spimpl::unique_impl_ptr<Implementation> impl;
 };
 

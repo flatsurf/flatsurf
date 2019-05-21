@@ -30,8 +30,8 @@
 
 namespace flatsurf {
 template <typename Vector, typename VectorAlongTriangulation>
-struct SaddleConnectionsIterator<Vector,
-                                 VectorAlongTriangulation>::Implementation {
+class SaddleConnectionsIterator<Vector, VectorAlongTriangulation>::Implementation {
+ public:
   enum class Classification {
     OUTSIDE_SEARCH_SECTOR_CLOCKWISE,
     SADDLE_CONNECTION,
@@ -417,9 +417,7 @@ SaddleConnectionsIterator<Vector, VectorAlongTriangulation>::dereference()
 #include "flatsurf/vector_longlong.hpp"
 using namespace flatsurf;
 
-template struct flatsurf::SaddleConnectionsIterator<VectorLongLong>;
-template struct flatsurf::SaddleConnectionsIterator<VectorEAntic>;
-template struct flatsurf::SaddleConnectionsIterator<
-    VectorExactReal<exactreal::NumberFieldTraits>>;
-template struct flatsurf::SaddleConnectionsIterator<
-    VectorEAntic, VectorAlongTriangulation<VectorEAntic>>;
+template class flatsurf::SaddleConnectionsIterator<VectorLongLong>;
+template class flatsurf::SaddleConnectionsIterator<VectorEAntic>;
+template class flatsurf::SaddleConnectionsIterator<VectorExactReal<exactreal::NumberFieldTraits>>;
+template class flatsurf::SaddleConnectionsIterator<VectorEAntic, VectorAlongTriangulation<VectorEAntic>>;

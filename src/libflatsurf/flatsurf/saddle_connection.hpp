@@ -24,18 +24,13 @@
 #include <iosfwd>
 #include "external/spimpl/spimpl.h"
 
-#include "flatsurf/flatsurf.hpp"
 #include "flatsurf/forward.hpp"
 #include "flatsurf/half_edge.hpp"
 
 namespace flatsurf {
-template <typename Vector>
-struct FlatTriangulation;
-
-struct Vertex;
-
 template <typename Vector, typename AlongTriangulation>
-struct SaddleConnection : boost::equality_comparable<SaddleConnection<Vector, AlongTriangulation>> {
+class SaddleConnection : boost::equality_comparable<SaddleConnection<Vector, AlongTriangulation>> {
+ public:
   const AlongTriangulation &vector() const;
   // The saddle connection is leaving from the vertex at the source of source.
   // It is leaving in a direction that is contained in the sector next to
@@ -54,7 +49,7 @@ struct SaddleConnection : boost::equality_comparable<SaddleConnection<Vector, Al
  private:
   friend SaddleConnectionsIterator<Vector, AlongTriangulation>;
 
-  struct Implementation;
+  class Implementation;
   spimpl::impl_ptr<Implementation> impl;
 };
 }  // namespace flatsurf

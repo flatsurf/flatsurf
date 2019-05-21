@@ -132,16 +132,11 @@ using namespace flatsurf;
 #include "flatsurf/vector_eantic.hpp"
 #include "flatsurf/vector_exactreal.hpp"
 #include "flatsurf/vector_longlong.hpp"
-template struct flatsurf::HalfEdgeMap<VectorLongLong>;
-template ostream &flatsurf::operator<<(ostream &,
-                                       const HalfEdgeMap<VectorLongLong> &);
-template struct flatsurf::HalfEdgeMap<
-    VectorExactReal<exactreal::NumberFieldTraits>>;
-template ostream &flatsurf::operator<<(
-    ostream &,
-    const HalfEdgeMap<VectorExactReal<exactreal::NumberFieldTraits>> &);
-template struct flatsurf::HalfEdgeMap<VectorEAntic>;
-template ostream &flatsurf::operator<<(ostream &,
-                                       const HalfEdgeMap<VectorEAntic> &);
-template struct flatsurf::HalfEdgeMap<int>;
+template class flatsurf::HalfEdgeMap<VectorLongLong>;
+template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<VectorLongLong> &);
+template class flatsurf::HalfEdgeMap<VectorExactReal<exactreal::NumberFieldTraits>>;
+template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<VectorExactReal<exactreal::NumberFieldTraits>> &);
+template class flatsurf::HalfEdgeMap<VectorEAntic>;
+template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<VectorEAntic> &);
+template class flatsurf::HalfEdgeMap<int>;
 template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<int> &);

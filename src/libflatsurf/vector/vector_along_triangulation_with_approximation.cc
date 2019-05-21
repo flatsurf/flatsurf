@@ -43,8 +43,8 @@ void updateAfterFlip(HalfEdgeMap<int> &map, HalfEdge halfEdge,
 }  // namespace
 
 template <typename V, typename Approximation>
-struct VectorAlongTriangulationWithApproximation<
-    V, Approximation>::Implementation {
+class VectorAlongTriangulationWithApproximation<V, Approximation>::Implementation {
+ public:
   using Surface = FlatTriangulation<V>;
 
   explicit Implementation(const Surface &surface)
@@ -150,15 +150,7 @@ ostream &operator<<(
 #include "flatsurf/vector_arb.hpp"
 #include "flatsurf/vector_eantic.hpp"
 #include "flatsurf/vector_exactreal.hpp"
-template struct flatsurf::VectorAlongTriangulationWithApproximation<
-    flatsurf::VectorEAntic, flatsurf::VectorArb>;
-template ostream &flatsurf::operator<<(
-    ostream &, const flatsurf::VectorAlongTriangulationWithApproximation<
-                   flatsurf::VectorEAntic, flatsurf::VectorArb> &);
-template struct flatsurf::VectorAlongTriangulationWithApproximation<
-    flatsurf::VectorExactReal<exactreal::NumberFieldTraits>,
-    flatsurf::VectorArb>;
-template ostream &flatsurf::operator<<(
-    ostream &, const flatsurf::VectorAlongTriangulationWithApproximation<
-                   flatsurf::VectorExactReal<exactreal::NumberFieldTraits>,
-                   flatsurf::VectorArb> &);
+template class flatsurf::VectorAlongTriangulationWithApproximation<flatsurf::VectorEAntic, flatsurf::VectorArb>;
+template ostream &flatsurf::operator<<(ostream &, const flatsurf::VectorAlongTriangulationWithApproximation<flatsurf::VectorEAntic, flatsurf::VectorArb> &);
+template class flatsurf::VectorAlongTriangulationWithApproximation<flatsurf::VectorExactReal<exactreal::NumberFieldTraits>, flatsurf::VectorArb>;
+template ostream &flatsurf::operator<<(ostream &, const flatsurf::VectorAlongTriangulationWithApproximation<flatsurf::VectorExactReal<exactreal::NumberFieldTraits>, flatsurf::VectorArb> &);

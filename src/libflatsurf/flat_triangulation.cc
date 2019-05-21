@@ -39,7 +39,8 @@ void updateAfterFlip(HalfEdgeMap<T> &map, HalfEdge halfEdge,
 }  // namespace
 
 template <typename Vector>
-struct FlatTriangulation<Vector>::Implementation {
+class FlatTriangulation<Vector>::Implementation {
+ public:
   Implementation(HalfEdgeMap<Vector> &&vectors) : vectors(std::move(vectors)) {}
 
   const HalfEdgeMap<Vector> vectors;
@@ -99,14 +100,9 @@ ostream &operator<<(ostream &os, const FlatTriangulation<Vector> &self) {
 
 using namespace flatsurf;
 
-template struct flatsurf::FlatTriangulation<VectorLongLong>;
-template ostream &flatsurf::operator<<(
-    ostream &, const FlatTriangulation<VectorLongLong> &);
-template struct flatsurf::FlatTriangulation<VectorEAntic>;
-template ostream &flatsurf::operator<<(ostream &,
-                                       const FlatTriangulation<VectorEAntic> &);
-template struct flatsurf::FlatTriangulation<
-    VectorExactReal<exactreal::NumberFieldTraits>>;
-template ostream &flatsurf::operator<<(
-    ostream &,
-    const FlatTriangulation<VectorExactReal<exactreal::NumberFieldTraits>> &);
+template class flatsurf::FlatTriangulation<VectorLongLong>;
+template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<VectorLongLong> &);
+template class flatsurf::FlatTriangulation<VectorEAntic>;
+template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<VectorEAntic> &);
+template class flatsurf::FlatTriangulation<VectorExactReal<exactreal::NumberFieldTraits>>;
+template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<VectorExactReal<exactreal::NumberFieldTraits>> &);
