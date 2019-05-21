@@ -52,7 +52,7 @@ for benchmark in glob.glob('test/**/*.*.cc'):
         time = float(bench["cpu_time"])
         unit = bench["time_unit"]
 
-        asv_name = "%s%s"%(PREFIX, name.replace("/", "_"), )
+        asv_name = "%s%s"%(PREFIX, name.replace("/", "_").replace("<", "_").replace(">", "_"), )
         def asv_method(self, t=time): return t
         asv_method.unit = unit
         asv_method.number = 1
