@@ -20,9 +20,6 @@
 #ifndef LIBFLATSURF_CCW_HPP
 #define LIBFLATSURF_CCW_HPP
 
-#include <boost/operators.hpp>
-#include "external/spimpl/spimpl.h"
-
 #include "flatsurf/flatsurf.hpp"
 
 namespace flatsurf {

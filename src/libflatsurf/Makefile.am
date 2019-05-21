@@ -1,56 +1,56 @@
 lib_LTLIBRARIES = libflatsurf.la
 
-libflatsurf_la_SOURCES =                \
-    vector_longlong.cc                  \
-    vector_along_triangulation.cc       \
-    half_edge.cc                        \
-    vertex.cc                           \
-    edge.cc                             \
-    flat_triangulation.cc               \
-    flat_triangulation_combinatorial.cc \
-    saddle_connections.cc               \
-    permutation.cc                      \
-    bound.cc                            \
-    vector_eantic.cc                    \
-    vector_arb.cc                       \
-    ccw.cc                              \
-    half_edge_map.cc                    \
-    cppyy.cc                            \
-    vector_exactreal.cc                 \
-    interval_exchange_transformation.cc \
-    vector_along_triangulation_with_approximation.cc
+libflatsurf_la_SOURCES =                                      \
+	half_edge.cc                                                \
+	vertex.cc                                                   \
+	edge.cc                                                     \
+	flat_triangulation.cc                                       \
+	flat_triangulation_combinatorial.cc                         \
+	saddle_connections.cc                                       \
+	permutation.cc                                              \
+	bound.cc                                                    \
+	ccw.cc                                                      \
+	half_edge_map.cc                                            \
+	cppyy.cc                                                    \
+	interval_exchange_transformation.cc                         \
+	vector/vector_longlong.cc                                   \
+	vector/vector_along_triangulation.cc                        \
+	vector/vector_exactreal.cc                                  \
+	vector/vector_eantic.cc                                     \
+	vector/vector_arb.cc                                        \
+	vector/vector_along_triangulation_with_approximation.cc
 
-nobase_include_HEADERS =                                       \
-    flatsurf/assert.hpp                                        \
-    flatsurf/bound.hpp                                         \
-    flatsurf/ccw.hpp                                           \
-    flatsurf/cppyy.hpp                                         \
-    flatsurf/edge.hpp                                          \
-    flatsurf/flatsurf.hpp                                      \
-    flatsurf/flat_triangulation_combinatorial.hpp              \
-    flatsurf/flat_triangulation.hpp                            \
-    flatsurf/forward.hpp                                       \
-    flatsurf/half_edge.hpp                                     \
-    flatsurf/half_edge_map.hpp                                 \
-    flatsurf/orientation.hpp                                   \
-    flatsurf/permutation.hpp                                   \
-    flatsurf/saddle_connection.hpp                             \
-    flatsurf/saddle_connections.hpp                            \
-    flatsurf/saddle_connections_iterator.hpp                   \
-    flatsurf/vector_along_triangulation.hpp                    \
-    flatsurf/vector_along_triangulation_with_approximation.hpp \
-    flatsurf/vector_arb.hpp                                    \
-    flatsurf/vector_eantic.hpp                                 \
-    flatsurf/vector_exactreal.hpp                              \
-    flatsurf/vector_longlong.hpp                               \
-    flatsurf/vertex.hpp                                        \
-    flatsurf/interval_exchange_transformation.hpp              \
-    external/spimpl/spimpl.h
+nobase_include_HEADERS =                                     \
+	flatsurf/assert.hpp                                        \
+	flatsurf/bound.hpp                                         \
+	flatsurf/ccw.hpp                                           \
+	flatsurf/cppyy.hpp                                         \
+	flatsurf/edge.hpp                                          \
+	flatsurf/flatsurf.hpp                                      \
+	flatsurf/flat_triangulation_combinatorial.hpp              \
+	flatsurf/flat_triangulation.hpp                            \
+	flatsurf/forward.hpp                                       \
+	flatsurf/half_edge.hpp                                     \
+	flatsurf/half_edge_map.hpp                                 \
+	flatsurf/orientation.hpp                                   \
+	flatsurf/permutation.hpp                                   \
+	flatsurf/saddle_connection.hpp                             \
+	flatsurf/saddle_connections.hpp                            \
+	flatsurf/saddle_connections_iterator.hpp                   \
+	flatsurf/vector_along_triangulation.hpp                    \
+	flatsurf/vector_along_triangulation_with_approximation.hpp \
+	flatsurf/vector_arb.hpp                                    \
+	flatsurf/vector_eantic.hpp                                 \
+	flatsurf/vector_exactreal.hpp                              \
+	flatsurf/vector_longlong.hpp                               \
+	flatsurf/vertex.hpp                                        \
+	flatsurf/interval_exchange_transformation.hpp              \
+	external/spimpl/spimpl.h
 
-noinst_HEADERS =                                               \
-    flatsurf/detail/as_vector.hpp                              \
-    saddle_connections_iterator.ipp                            \
-    saddle_connection.ipp
+noinst_HEADERS =                                             \
+	flatsurf/detail/as_vector.hpp                              \
+	saddle_connections_iterator.ipp                            \
+	saddle_connection.ipp
 
 libflatsurf_la_LDFLAGS = -version-info $(libflatsurf_version_info)
 # some of our vectors use arb directly and through exact-real's arb wrappers
