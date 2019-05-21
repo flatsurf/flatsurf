@@ -33,6 +33,8 @@ else
 fi
   
 cp recipe/asv-machine.json ~/.asv-machine.json
+# We have to be on a branch. Otherwise, asv cannot find the branch for the
+# commits and refuses to generate graphs.
 git checkout -b master
 
 asv run --machine=azure

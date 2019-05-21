@@ -2,7 +2,7 @@
     "version": 1,
     "project": "flatsurf",
     "project_url": "https://github.com/flatsurf/flatsurf",
-    "show_commit_url": "https://github.com/flatsurf/flatsurf",
+    "show_commit_url": "https://github.com/flatsurf/flatsurf/commit/",
     "repo": ".",
     "environment_type": "conda",
     "matrix": {
@@ -17,12 +17,12 @@
       "arb": [],
       "gmp": [],
       "ntl": [],
-      "gtest": [],
-      "benchmark": []
+      "gtest": []
     },
     "conda_channels": ["flatsurf", "conda-forge", "default"],
     "build_command": [
-	"./recipe/configure.sh",
+  "conda install -c conda-forge benchmark",
+  "./recipe/configure.sh",
 	"./recipe/build_.sh"
     ],
     "install_command": [],

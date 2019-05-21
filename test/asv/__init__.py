@@ -21,6 +21,11 @@
 # by AirSpeedVelocity which provides a nice web interface to see how benchmarks
 # perform over time.
 
+# If you want to use this module, make sure NOT to add the conda-forge package
+# 'benchmark' (google benchmark) to your asv.conf.json matrix. The benchmark
+# key is used internally by asv. Instead, add "conda install -c conda-forge
+# benchmark" to your build_commands.
+
 import json
 import glob
 import os
