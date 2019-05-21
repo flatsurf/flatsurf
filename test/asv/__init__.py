@@ -21,6 +21,10 @@
 # by AirSpeedVelocity which provides a nice web interface to see how benchmarks
 # perform over time.
 
+# If you want to use this module, make sure NOT to add the conda-forge package
+# 'benchmark' (google benchmark) to your asv.conf.json matrix as that is a
+# reserved key in ASV. Instead add an exact pin such as 'benchmark==1.4.1'.
+
 import json
 import glob
 import os
@@ -47,7 +51,7 @@ for benchmark in glob.glob('test/**/*.*.cc'):
         time = float(bench["cpu_time"])
         unit = bench["time_unit"]
 
-        asv_name = "%s%s"%(PREFIX, name.replace("/", "_"), )
+        asv_name = "%s%s"%(PREFIX, name.replace("/", "_").replace("<", "_").replace(">", "_"), )
         def asv_method(self, t=time): return t
         asv_method.unit = unit
         asv_method.number = 1
