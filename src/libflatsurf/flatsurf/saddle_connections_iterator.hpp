@@ -24,21 +24,20 @@
 #include <optional>
 #include "external/spimpl/spimpl.h"
 
-#include "flatsurf/ccw.hpp"
-#include "flatsurf/flatsurf.hpp"
 #include "flatsurf/forward.hpp"
 #include "flatsurf/saddle_connection.hpp"
 
 namespace flatsurf {
 template <typename Vector, typename VectorAlongTriangulation>
-struct SaddleConnectionsIterator
-    : boost::iterator_facade<
+class SaddleConnectionsIterator
+    : public boost::iterator_facade<
           SaddleConnectionsIterator<Vector, VectorAlongTriangulation>,
           const std::unique_ptr<SaddleConnection<Vector, VectorAlongTriangulation>>,
           std::forward_iterator_tag,
           const std::unique_ptr<SaddleConnection<Vector, VectorAlongTriangulation>>> {
   friend class boost::iterator_core_access;
 
+ public:
   // Advance the iterator to the next saddle connection.
   void increment();
   // Advance the iterator to the next saddle connection or until a HalfEdge is
@@ -53,10 +52,10 @@ struct SaddleConnectionsIterator
   void skipSector(CCW sector);
 
  private:
-  friend struct SaddleConnections<Vector, VectorAlongTriangulation>;
+  friend SaddleConnections<Vector, VectorAlongTriangulation>;
   SaddleConnectionsIterator();
 
-  struct Implementation;
+  class Implementation;
   spimpl::impl_ptr<Implementation> impl;
 };
 }  // namespace flatsurf

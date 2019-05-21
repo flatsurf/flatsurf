@@ -35,7 +35,8 @@ using std::ostream;
 using exactreal::ARB_PRECISION_FAST;
 
 namespace flatsurf {
-struct VectorEAntic::Implementation {
+class VectorEAntic::Implementation {
+ public:
   Implementation(const renf_elem_class &x, const renf_elem_class &y,
                  const mp_limb_signed_t precision)
       : x(x), y(y), precision(precision) {}

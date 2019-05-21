@@ -22,19 +22,19 @@
 
 #include "external/spimpl/spimpl.h"
 
-#include "flatsurf/flatsurf.hpp"
 #include "flatsurf/forward.hpp"
 
 namespace flatsurf {
 template <class Vector>
-struct IntervalExchangeTransformation {
+class IntervalExchangeTransformation {
+ public:
   IntervalExchangeTransformation(FlatTriangulation<Vector> &, const Vector &vertical);
 
   template <typename W>
   friend std::ostream &operator<<(std::ostream &, const IntervalExchangeTransformation<W> &);
 
  private:
-  struct Implementation;
+  class Implementation;
   spimpl::unique_impl_ptr<Implementation> impl;
 };
 }  // namespace flatsurf

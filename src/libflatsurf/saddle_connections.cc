@@ -25,7 +25,8 @@
 
 namespace flatsurf {
 template <typename Vector, typename VectorAlongTriangulation>
-struct SaddleConnections<Vector, VectorAlongTriangulation>::Implementation {
+class SaddleConnections<Vector, VectorAlongTriangulation>::Implementation {
+ public:
   Implementation(const Surface &surface, const Bound searchRadius,
                  const HalfEdge sectorBoundary,
                  const VectorAlongTriangulation &sectorBegin,
@@ -90,9 +91,7 @@ SaddleConnections<Vector, VectorAlongTriangulation>::end() const {
 #include "flatsurf/vector_longlong.hpp"
 using namespace flatsurf;
 
-template struct flatsurf::SaddleConnections<VectorLongLong>;
-template struct flatsurf::SaddleConnections<VectorEAntic>;
-template struct flatsurf::SaddleConnections<
-    VectorEAntic, VectorAlongTriangulation<VectorEAntic>>;
-template struct flatsurf::SaddleConnections<
-    VectorExactReal<exactreal::NumberFieldTraits>>;
+template class flatsurf::SaddleConnections<VectorLongLong>;
+template class flatsurf::SaddleConnections<VectorEAntic>;
+template class flatsurf::SaddleConnections<VectorEAntic, VectorAlongTriangulation<VectorEAntic>>;
+template class flatsurf::SaddleConnections<VectorExactReal<exactreal::NumberFieldTraits>>;

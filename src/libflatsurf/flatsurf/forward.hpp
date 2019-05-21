@@ -27,43 +27,45 @@
 
 #include "flatsurf/flatsurf.hpp"
 
+#include "flatsurf/ccw.hpp"
+#include "flatsurf/orientation.hpp"
+
 namespace flatsurf {
-template <typename Vector, typename VectorAlongTriangulation =
-                               typename Vector::AlongTriangulation>
-struct SaddleConnections;
+template <typename Vector, typename VectorAlongTriangulation = typename Vector::AlongTriangulation>
+class SaddleConnections;
 
-template <typename Vector, typename VectorAlongTriangulation =
-                               typename Vector::AlongTriangulation>
-struct SaddleConnectionsIterator;
+template <typename Vector, typename VectorAlongTriangulation = typename Vector::AlongTriangulation>
+class SaddleConnectionsIterator;
 
-template <typename Vector, typename VectorAlongTriangulation =
-                               typename Vector::AlongTriangulation>
-struct SaddleConnection;
+template <typename Vector, typename VectorAlongTriangulation = typename Vector::AlongTriangulation>
+class SaddleConnection;
 
 template <typename Vector>
-struct FlatTriangulation;
+class FlatTriangulation;
 
-struct HalfEdge;
-
-template <typename T>
-struct HalfEdgeMap;
-
-struct Edge;
+class HalfEdge;
 
 template <typename T>
-struct Permutation;
+class HalfEdgeMap;
+
+class Edge;
+
+template <typename T>
+class Permutation;
 
 struct Bound;
 
 template <typename Ring>
-struct VectorExactReal;
+class VectorExactReal;
 
 template <typename V>
-struct VectorAlongTriangulation;
+class VectorAlongTriangulation;
 
-struct Vertex;
+class VectorArb;
 
-struct FlatTriangulationCombinatorial;
+class Vertex;
+
+class FlatTriangulationCombinatorial;
 }  // namespace flatsurf
 
 #endif

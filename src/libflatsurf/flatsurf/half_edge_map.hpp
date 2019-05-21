@@ -33,7 +33,8 @@ namespace flatsurf {
 // automatically. Also, instances are automatically updated when an edge is
 // flipped.
 template <typename T>
-struct HalfEdgeMap final {
+class HalfEdgeMap final {
+ public:
   using FlipHandler = std::function<void(HalfEdgeMap &, HalfEdge, const FlatTriangulationCombinatorial &)>;
   HalfEdgeMap(const FlatTriangulationCombinatorial &parent, const std::vector<T> &values, const FlipHandler &updateAfterFlip);
   HalfEdgeMap(const HalfEdgeMap &);

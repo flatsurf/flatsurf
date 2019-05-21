@@ -31,7 +31,8 @@ namespace flatsurf {
 // There should be no runtime overhead to using a simple T[], at least when
 // compiled with -flto.
 template <typename T>
-struct Permutation {
+class Permutation {
+ public:
   explicit Permutation(const std::vector<std::vector<T>> &cycles);
   explicit Permutation(const std::vector<std::pair<T, T>> &permutation);
   template <typename S>

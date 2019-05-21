@@ -22,8 +22,6 @@
 
 #include <vector>
 
-#include "flatsurf/flatsurf.hpp"
-
 #include "flatsurf/half_edge.hpp"
 
 namespace flatsurf {
@@ -35,7 +33,8 @@ namespace flatsurf {
 // get a lot of compile-time safety by using such a wrapper instead, e.g.,
 // you cannot add edges but you could add ints which would not make much
 // sense usually.
-struct Edge {
+class Edge {
+ public:
   Edge() = delete;
 
   static std::vector<Edge> makeEdges(size_t nedges);

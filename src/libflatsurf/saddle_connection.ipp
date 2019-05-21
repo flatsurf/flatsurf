@@ -28,7 +28,8 @@ using std::ostream;
 
 namespace flatsurf {
 template <typename Vector, typename AlongTriangulation>
-struct SaddleConnection<Vector, AlongTriangulation>::Implementation {
+class SaddleConnection<Vector, AlongTriangulation>::Implementation {
+ public:
   Implementation(const FlatTriangulation<Vector> &surface, const AlongTriangulation &vector, const HalfEdge &source, const HalfEdge &target)
       : surface(surface), vector(vector), source(source), target(target) {}
 
@@ -101,11 +102,11 @@ const AlongTriangulation &SaddleConnection<Vector, AlongTriangulation>::vector()
 #include "flatsurf/vector_longlong.hpp"
 using namespace flatsurf;
 
-template struct flatsurf::SaddleConnection<VectorLongLong>;
+template class flatsurf::SaddleConnection<VectorLongLong>;
 template ostream &flatsurf::operator<<(ostream &, const SaddleConnection<VectorLongLong> &);
-template struct flatsurf::SaddleConnection<VectorEAntic>;
+template class flatsurf::SaddleConnection<VectorEAntic>;
 template ostream &flatsurf::operator<<(ostream &, const SaddleConnection<VectorEAntic> &);
-template struct flatsurf::SaddleConnection<VectorEAntic, VectorAlongTriangulation<VectorEAntic>>;
+template class flatsurf::SaddleConnection<VectorEAntic, VectorAlongTriangulation<VectorEAntic>>;
 template ostream &flatsurf::operator<<(ostream &, const SaddleConnection<VectorEAntic, VectorAlongTriangulation<VectorEAntic>> &);
-template struct flatsurf::SaddleConnection<VectorExactReal<exactreal::NumberFieldTraits>>;
+template class flatsurf::SaddleConnection<VectorExactReal<exactreal::NumberFieldTraits>>;
 template ostream &flatsurf::operator<<(ostream &, const SaddleConnection<VectorExactReal<exactreal::NumberFieldTraits>> &);

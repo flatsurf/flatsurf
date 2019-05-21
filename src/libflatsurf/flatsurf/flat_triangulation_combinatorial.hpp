@@ -25,11 +25,11 @@
 #include <vector>
 #include "external/spimpl/spimpl.h"
 
-#include "flatsurf/flatsurf.hpp"
 #include "flatsurf/forward.hpp"
 
 namespace flatsurf {
-struct FlatTriangulationCombinatorial {
+class FlatTriangulationCombinatorial {
+ public:
   FlatTriangulationCombinatorial(const std::vector<std::vector<int>> &vertices);
   FlatTriangulationCombinatorial(const Permutation<HalfEdge> &vertices);
   FlatTriangulationCombinatorial(FlatTriangulationCombinatorial &&);
@@ -51,7 +51,7 @@ struct FlatTriangulationCombinatorial {
   friend std::ostream &operator<<(std::ostream &, const FlatTriangulationCombinatorial &);
 
  private:
-  struct Implementation;
+  class Implementation;
   spimpl::unique_impl_ptr<Implementation> impl;
 
   template <typename T>

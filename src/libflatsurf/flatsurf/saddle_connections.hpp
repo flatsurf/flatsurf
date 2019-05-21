@@ -23,7 +23,6 @@
 #include "external/spimpl/spimpl.h"
 
 #include "flatsurf/bound.hpp"
-#include "flatsurf/flatsurf.hpp"
 #include "flatsurf/forward.hpp"
 #include "flatsurf/half_edge.hpp"
 #include "flatsurf/saddle_connections_iterator.hpp"
@@ -31,7 +30,8 @@
 
 namespace flatsurf {
 template <typename Vector, typename VectorAlongTriangulation>
-struct SaddleConnections {
+class SaddleConnections {
+ public:
   using Surface = FlatTriangulation<Vector>;
 
   // The saddle connections that are starting at the source of sectorBegin
@@ -50,8 +50,8 @@ struct SaddleConnections {
   SaddleConnectionsIterator<Vector, VectorAlongTriangulation> end() const;
 
  private:
-  friend struct SaddleConnectionsIterator<Vector, VectorAlongTriangulation>;
-  struct Implementation;
+  friend SaddleConnectionsIterator<Vector, VectorAlongTriangulation>;
+  class Implementation;
   spimpl::impl_ptr<Implementation> impl;
 };
 

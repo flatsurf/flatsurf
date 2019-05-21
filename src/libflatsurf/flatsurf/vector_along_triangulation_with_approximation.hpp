@@ -24,19 +24,11 @@
 #include <iosfwd>
 #include "external/spimpl/spimpl.h"
 
-#include "flatsurf/ccw.hpp"
-#include "flatsurf/flatsurf.hpp"
+#include "flatsurf/forward.hpp"
 
 namespace flatsurf {
-struct Bound;
-template <typename V>
-struct FlatTriangulation;
-struct HalfEdge;
-template <typename V>
-struct VectorAlongTriangulation;
-
 template <typename V, typename Approximation>
-struct VectorAlongTriangulationWithApproximation
+class VectorAlongTriangulationWithApproximation
     : boost::additive<
           VectorAlongTriangulationWithApproximation<V, Approximation>>,
       boost::additive<
@@ -46,6 +38,7 @@ struct VectorAlongTriangulationWithApproximation
           VectorAlongTriangulationWithApproximation<V, Approximation>, Bound>,
       boost::equality_comparable<
           VectorAlongTriangulationWithApproximation<V, Approximation>> {
+ public:
   using Surface = FlatTriangulation<V>;
 
   VectorAlongTriangulationWithApproximation(const Surface &surface);
@@ -71,7 +64,7 @@ struct VectorAlongTriangulationWithApproximation
   explicit operator V() const;
 
  private:
-  struct Implementation;
+  class Implementation;
   spimpl::impl_ptr<Implementation> impl;
 };
 }  // namespace flatsurf

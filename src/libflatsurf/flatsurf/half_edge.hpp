@@ -25,23 +25,23 @@
 #include <iosfwd>
 #include <string>
 
-#include "flatsurf/flatsurf.hpp"
+#include "flatsurf/forward.hpp"
 
 namespace flatsurf {
 // Similar to Edge this is a wrapper to get type-safe HalfEdges without any
 // runtime overhead (at least when compiling with -flto.)
-struct HalfEdge : boost::equality_comparable<HalfEdge>,
-                  boost::less_than_comparable<HalfEdge> {
-  friend struct Edge;
+class HalfEdge : boost::equality_comparable<HalfEdge>,
+                 boost::less_than_comparable<HalfEdge> {
+ public:
+  friend class Edge;
   template <typename T>
-  friend struct HalfEdgeMap;
-  friend struct FlatTriangulationCombinatorial;
-  friend struct Vertex;
+  friend class HalfEdgeMap;
+  friend class FlatTriangulationCombinatorial;
+  friend class Vertex;
 
   HalfEdge();
   HalfEdge(const HalfEdge &edge) = default;
   explicit HalfEdge(const int id);
-  struct Edge;
 
   HalfEdge operator-() const;
   HalfEdge &operator=(const HalfEdge &other);

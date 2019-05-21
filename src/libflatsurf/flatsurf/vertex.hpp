@@ -33,7 +33,8 @@ namespace flatsurf {
 // vertex of that half edge. However, it is semantically
 // nicer to have a distinct notion. Also this gives us a
 // proper operator== for vertices.
-struct Vertex : boost::equality_comparable<Vertex> {
+class Vertex : boost::equality_comparable<Vertex> {
+ public:
   static Vertex source(const HalfEdge &,
                        const FlatTriangulationCombinatorial &);
   static Vertex target(const HalfEdge &,

@@ -23,6 +23,7 @@
 #include <iosfwd>
 
 #include "flatsurf/flat_triangulation.hpp"
+#include "flatsurf/flat_triangulation_combinatorial.hpp"
 #include "flatsurf/forward.hpp"
 #include "flatsurf/half_edge.hpp"
 #include "flatsurf/half_edge_map.hpp"
