@@ -1,13 +1,13 @@
 {
     "benchmark_version": {
-        "Benchmarks.track_SaddleConnectionsSquare<VectorEAntic>_64_980": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107",
-        "Benchmarks.track_SaddleConnectionsSquare<VectorLongLong>_64_980": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+        "Benchmarks.track_SaddleConnectionsSquare_VectorEAntic__64_980": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107",
+        "Benchmarks.track_SaddleConnectionsSquare_VectorLongLong__64_980": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
     },
     "commit_hash": "241260e7adf7731ae3ec09c5f476fea4a4facfb0",
     "date": 1558197193000,
     "ended_at": {
-        "Benchmarks.track_SaddleConnectionsSquare<VectorEAntic>_64_980": 1558197884267,
-        "Benchmarks.track_SaddleConnectionsSquare<VectorLongLong>_64_980": 1558197884319
+        "Benchmarks.track_SaddleConnectionsSquare_VectorEAntic__64_980": 1558197884267,
+        "Benchmarks.track_SaddleConnectionsSquare_VectorLongLong__64_980": 1558197884319
     },
     "env_name": "conda-py3.7-Cython-arb-automake-benchmark-boost-cpp-e-antic-eigen-gmp-gtest-libexactreal-libtool-make-ntl",
     "params": {
@@ -49,12 +49,12 @@
         "ntl": ""
     },
     "results": {
-        "Benchmarks.track_SaddleConnectionsSquare<VectorEAntic>_64_980": 782589182.9999999,
-        "Benchmarks.track_SaddleConnectionsSquare<VectorLongLong>_64_980": 110516183.66666667
+        "Benchmarks.track_SaddleConnectionsSquare_VectorEAntic__64_980": 782589182.9999999,
+        "Benchmarks.track_SaddleConnectionsSquare_VectorLongLong__64_980": 110516183.66666667
     },
     "started_at": {
-        "Benchmarks.track_SaddleConnectionsSquare<VectorEAntic>_64_980": 1558197884214,
-        "Benchmarks.track_SaddleConnectionsSquare<VectorLongLong>_64_980": 1558197884267
+        "Benchmarks.track_SaddleConnectionsSquare_VectorEAntic__64_980": 1558197884214,
+        "Benchmarks.track_SaddleConnectionsSquare_VectorLongLong__64_980": 1558197884267
     },
     "version": 1
 }
