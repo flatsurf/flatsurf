@@ -29,7 +29,7 @@ rm -rf .asv/results
 if test "x$have_asv" = "xyes"; then
   git clone git@github.com:flatsurf/flatsurf-asv.git .asv/results
 else
-  git clone https://github.com/flatsurf/flatsurf.git .asv/results
+  git clone https://github.com/flatsurf/flatsurf-asv.git .asv/results
 fi
   
 cp recipe/asv-machine.json ~/.asv-machine.json
