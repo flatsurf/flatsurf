@@ -55,6 +55,11 @@ class VectorEAntic : boost::additive<VectorEAntic>,
   // is unchanged.
   operator const VectorArb &() const;
 
+  // Note that the returned coordinate is only valid as long as this element is unchanged.
+  const eantic::renf_elem_class &x() const;
+  // Note that the returned coordinate is only valid as long as this element is unchanged.
+  const eantic::renf_elem_class &y() const;
+
   using AlongTriangulation =
       VectorAlongTriangulationWithApproximation<VectorEAntic, VectorArb>;
 

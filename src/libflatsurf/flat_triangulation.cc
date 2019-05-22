@@ -93,7 +93,9 @@ ostream &operator<<(ostream &os, const FlatTriangulation<Vector> &self) {
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
+#include <exact-real/integer_ring_traits.hpp>
 #include <exact-real/number_field_traits.hpp>
+#include <exact-real/rational_field_traits.hpp>
 #include "flatsurf/vector_eantic.hpp"
 #include "flatsurf/vector_exactreal.hpp"
 #include "flatsurf/vector_longlong.hpp"
@@ -104,5 +106,9 @@ template class flatsurf::FlatTriangulation<VectorLongLong>;
 template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<VectorLongLong> &);
 template class flatsurf::FlatTriangulation<VectorEAntic>;
 template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<VectorEAntic> &);
+template class flatsurf::FlatTriangulation<VectorExactReal<exactreal::IntegerRingTraits>>;
+template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<VectorExactReal<exactreal::IntegerRingTraits>> &);
+template class flatsurf::FlatTriangulation<VectorExactReal<exactreal::RationalFieldTraits>>;
+template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<VectorExactReal<exactreal::RationalFieldTraits>> &);
 template class flatsurf::FlatTriangulation<VectorExactReal<exactreal::NumberFieldTraits>>;
 template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<VectorExactReal<exactreal::NumberFieldTraits>> &);

@@ -22,6 +22,7 @@
 
 #include <exact-real/element.hpp>
 
+#include "external/spimpl/spimpl.h"
 #include "flatsurf/forward.hpp"
 #include "flatsurf/vector_along_triangulation_with_approximation.hpp"
 

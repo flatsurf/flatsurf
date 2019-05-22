@@ -21,19 +21,28 @@
 #include <vector>
 
 #include <exact-real/integer_ring_traits.hpp>
+#include <exact-real/module.hpp>
+#include <exact-real/real_number.hpp>
 #include <flatsurf/flat_triangulation.hpp>
 #include <flatsurf/vector_eantic.hpp>
 #include <flatsurf/vector_exactreal.hpp>
 #include <flatsurf/vector_longlong.hpp>
 
 using namespace flatsurf;
+using namespace exactreal;
 using eantic::renf_class;
 using std::vector;
 
 namespace {
 template <typename R2>
 auto makeSquare() {
-  auto vectors = vector{R2(1, 0), R2(0, 1), R2(1, 1)};
+  vector<R2> vectors;
+  if constexpr (std::is_same_v<R2, VectorExactReal<IntegerRingTraits>>) {
+    auto module = Module<IntegerRingTraits>::make({RealNumber::rational(1)});
+    vectors = {R2(module->gen(0), Element(module)), R2(Element(module), module->gen(0)), R2(module->gen(0), module->gen(0))};
+  } else {
+    vectors = vector{R2(1, 0), R2(0, 1), R2(1, 1)};
+  }
   auto vertices = vector<vector<int>>{{1, 3, 2, -1, -3, -2}};
   return FlatTriangulation(vertices, vectors);
 }

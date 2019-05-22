@@ -53,11 +53,13 @@ class VectorLongLong : boost::additive<VectorLongLong>,
   V &operator-=(const V &);
   V &operator*=(const int);
 
+  long long x() const;
+  long long y() const;
+
   using AlongTriangulation = VectorAlongTriangulation<VectorLongLong>;
 
  private:
-  long long x;
-  long long y;
+  long long cx, cy;
 };
 }  // namespace flatsurf
 

@@ -127,6 +127,10 @@ VectorEAntic &VectorEAntic::operator*=(const int rhs) {
   return *this;
 }
 
+const renf_elem_class &VectorEAntic::x() const { return impl->x; }
+
+const renf_elem_class &VectorEAntic::y() const { return impl->y; }
+
 ostream &operator<<(ostream &os, const VectorEAntic &self) {
   return os << "(" << self.impl->x << "," << self.impl->y << ")";
 }

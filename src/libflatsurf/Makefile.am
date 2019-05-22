@@ -5,6 +5,7 @@ libflatsurf_la_SOURCES =                                      \
 	vertex.cc                                                   \
 	edge.cc                                                     \
 	flat_triangulation.cc                                       \
+	delaunay_triangulation.cc                                   \
 	flat_triangulation_combinatorial.cc                         \
 	saddle_connections.cc                                       \
 	permutation.cc                                              \
@@ -29,6 +30,7 @@ nobase_include_HEADERS =                                     \
 	flatsurf/flatsurf.hpp                                      \
 	flatsurf/flat_triangulation_combinatorial.hpp              \
 	flatsurf/flat_triangulation.hpp                            \
+	flatsurf/delaunay_triangulation.hpp                        \
 	flatsurf/forward.hpp                                       \
 	flatsurf/half_edge.hpp                                     \
 	flatsurf/half_edge_map.hpp                                 \

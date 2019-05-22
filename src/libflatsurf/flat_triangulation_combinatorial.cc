@@ -168,16 +168,22 @@ ostream& operator<<(ostream& os, const FlatTriangulationCombinatorial& self) {
 using namespace flatsurf;
 
 // Instantiations of templates so implementations are generated for the linker
+#include <exact-real/integer_ring_traits.hpp>
 #include <exact-real/number_field_traits.hpp>
+#include <exact-real/rational_field_traits.hpp>
 #include "flatsurf/vector_eantic.hpp"
 #include "flatsurf/vector_exactreal.hpp"
 #include "flatsurf/vector_longlong.hpp"
 
-template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<VectorEAntic>&) const;
-template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<VectorExactReal<exactreal::NumberFieldTraits>>&) const;
-template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<VectorLongLong>&) const;
 template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<int>&) const;
-template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<VectorEAntic>&) const;
-template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<VectorExactReal<exactreal::NumberFieldTraits>>&) const;
-template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<VectorLongLong>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<VectorLongLong>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<VectorEAntic>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<VectorExactReal<exactreal::IntegerRingTraits>>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<VectorExactReal<exactreal::RationalFieldTraits>>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<VectorExactReal<exactreal::NumberFieldTraits>>&) const;
 template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<int>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<VectorLongLong>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<VectorEAntic>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<VectorExactReal<exactreal::IntegerRingTraits>>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<VectorExactReal<exactreal::RationalFieldTraits>>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<VectorExactReal<exactreal::NumberFieldTraits>>&) const;

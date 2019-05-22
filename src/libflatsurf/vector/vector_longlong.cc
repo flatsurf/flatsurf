@@ -29,45 +29,49 @@ using std::ostream;
 namespace flatsurf {
 VectorLongLong::VectorLongLong() : VectorLongLong(0ll, 0ll) {}
 VectorLongLong::VectorLongLong(const long long x, const long long y)
-    : x(x), y(y) {}
+    : cx(x), cy(y) {}
 
 VectorLongLong VectorLongLong::operator-() const {
-  return VectorLongLong(-x, -y);
+  return VectorLongLong(-cx, -cy);
 }
 
 VectorLongLong &VectorLongLong::operator+=(const VectorLongLong &rhs) {
-  x += rhs.x;
-  y += rhs.y;
+  cx += rhs.cx;
+  cy += rhs.cy;
   return *this;
 }
 
 VectorLongLong &VectorLongLong::operator-=(const VectorLongLong &rhs) {
-  x -= rhs.x;
-  y -= rhs.y;
+  cx -= rhs.cx;
+  cy -= rhs.cy;
   return *this;
 }
 bool VectorLongLong::operator>(const Bound bound) const {
-  return x * x + y * y > bound.squared;
+  return cx * cx + cy * cy > bound.squared;
 }
 bool VectorLongLong::operator<(const Bound bound) const {
-  return x * x + y * y < bound.squared;
+  return cx * cx + cy * cy < bound.squared;
 }
 
 bool VectorLongLong::operator==(const VectorLongLong &rhs) const {
-  return x == rhs.x && y == rhs.y;
+  return cx == rhs.cx && cy == rhs.cy;
 }
 
 VectorLongLong &VectorLongLong::operator*=(const int rhs) {
-  x *= rhs;
-  y *= rhs;
+  cx *= rhs;
+  cy *= rhs;
   return *this;
 }
 
-VectorLongLong::operator bool() const { return x != 0 || y != 0; }
+VectorLongLong::operator bool() const { return cx != 0 || cy != 0; }
+
+long long VectorLongLong::x() const { return cx; }
+
+long long VectorLongLong::y() const { return cy; }
 
 CCW VectorLongLong::ccw(const VectorLongLong &other) const {
-  const auto a = x * other.y;
-  const auto b = y * other.x;
+  const auto a = cx * other.cy;
+  const auto b = cy * other.cx;
 
   if (a > b) {
     return CCW::COUNTERCLOCKWISE;
@@ -79,7 +83,7 @@ CCW VectorLongLong::ccw(const VectorLongLong &other) const {
 }
 
 ORIENTATION VectorLongLong::orientation(const VectorLongLong &rhs) const {
-  auto dot = x * rhs.x + y * rhs.y;
+  auto dot = cx * rhs.cx + cy * rhs.cy;
   if (dot > 0) {
     return ORIENTATION::SAME;
   } else if (dot == 0) {
@@ -90,6 +94,6 @@ ORIENTATION VectorLongLong::orientation(const VectorLongLong &rhs) const {
 }
 
 ostream &operator<<(ostream &os, const VectorLongLong &self) {
-  return os << "(" << self.x << "," << self.y << ")";
+  return os << "(" << self.cx << "," << self.cy << ")";
 }
 }  // namespace flatsurf

@@ -35,6 +35,7 @@
 /saddle_connections_benchmark
 /flip
 /vector_exactreal
+/delaunay
 
 ### Autotools Generated Files
 .deps
