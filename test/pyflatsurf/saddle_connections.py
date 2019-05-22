@@ -36,4 +36,16 @@ def test_square_longlong():
     # assert len(list(connections))
     assert len([1 for c in connections]) == 60
 
+def test_hexagon_eantic():
+    surface = surfaces.hexagon()
+    connections = flatsurf.SaddleConnections[flatsurf.VectorEAntic](surface, flatsurf.Bound(16**2), flatsurf.HalfEdge(1))
+    assert len([1 for c in connections]) == 10
+
+def test_hexagon_exactreal():
+    from pyexactreal import exactreal
+    surface = surfaces.random_hexagon()
+    connections = flatsurf.SaddleConnections[flatsurf.VectorExactReal[exactreal.NumberFieldTraits]](surface, flatsurf.Bound(16**2), flatsurf.HalfEdge(1))
+    # This is very slow at the moment, see https://github.com/flatsurf/exact-real/issues/37
+    # assert len([1 for c in connections]) >= 10
+
 if __name__ == '__main__': sys.exit(pytest.main(sys.argv))

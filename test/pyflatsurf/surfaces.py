@@ -18,9 +18,41 @@
 ######################################################################
 
 from pyflatsurf import flatsurf
-from cppyy.gbl import std
+from pyexactreal import exactreal
+
+# The number field has to live out here and not be a local variable in the
+# methods as it would be destroyed by the garbage collector otherwise
+# (segfault.) Eventually we want renf_class/Module to use shared_ptr here. Then
+# this won't be a problem anymore.
+K = exactreal.NumberField("x^2 - 3", "x", "1.73 +/- 0.1")
 
 def square(R2):
     vectors = [R2(1, 0), R2(0, 1), R2(1, 1)]
     vertices = [[1, 3, 2, -1, -3, -2]]
+    return flatsurf.Surface(vertices, vectors)
+
+def hexagon():
+    R2 = flatsurf.VectorEAntic
+    x = K.gen()
+    R = exactreal.NumberFieldElement
+    vectors = [R2(R(K, 2), R(K, 0)), R2(R(K, 1), x), R2(R(K, 3), x), R2(R(K, 1), -x), R2(R(K, 4), R(K, 0)), R2(R(K, 3), x)]
+    vertices = [[1, 3, -4, -5, -3, -2], [2, -1, -6, 4, 5, 6]]
+    return flatsurf.Surface(vertices, vectors)
+
+def random_hexagon():
+    x = K.gen()
+    RealNumber = exactreal.RealNumber
+    Module = exactreal.NumberFieldModule
+    M = Module(K, RealNumber.rational(1), RealNumber.random(), RealNumber.random())
+    R2 = flatsurf.VectorExactReal[exactreal.NumberFieldTraits]
+    # The side lengths are going to be 2, 2·μ, 2·ν where μ,ν are the random parameters of M.
+    one = M.gen(0)
+    μ = M.gen(1)
+    ν = M.gen(2)
+    # We build our vectors from (2, 0), μ·(1, √3), ν.(-1, √3).
+    u = R2(2*one, 0*one)
+    v = R2(μ, x*μ)
+    w = R2(-ν, x*ν)
+    vectors = [u, v, u + v, -w, u + v - w, u+v]
+    vertices = [[1, 3, -4, -5, -3, -2], [2, -1, -6, 4, 5, 6]]
     return flatsurf.Surface(vertices, vectors)
