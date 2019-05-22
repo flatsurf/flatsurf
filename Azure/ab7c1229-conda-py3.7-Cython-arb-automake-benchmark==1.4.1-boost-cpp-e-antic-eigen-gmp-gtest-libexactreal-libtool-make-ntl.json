@@ -1,0 +1,60 @@
+{
+    "benchmark_version": {
+        "Benchmarks.track_SaddleConnectionsSquare_VectorEAntic__64_980": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107",
+        "Benchmarks.track_SaddleConnectionsSquare_VectorLongLong__64_980": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "commit_hash": "ab7c12291610d565256cc45a86500dc3a8cb3823",
+    "date": 1558564258000,
+    "ended_at": {
+        "Benchmarks.track_SaddleConnectionsSquare_VectorEAntic__64_980": 1558564894459,
+        "Benchmarks.track_SaddleConnectionsSquare_VectorLongLong__64_980": 1558564894511
+    },
+    "env_name": "conda-py3.7-Cython-arb-automake-benchmark==1.4.1-boost-cpp-e-antic-eigen-gmp-gtest-libexactreal-libtool-make-ntl",
+    "params": {
+        "Cython": "",
+        "arb": "",
+        "arch": "x86_64",
+        "automake": "",
+        "benchmark==1.4.1": "",
+        "boost-cpp": "",
+        "cpu": "Standard_DS2_v2",
+        "e-antic": "",
+        "eigen": "",
+        "gmp": "",
+        "gtest": "",
+        "libexactreal": "",
+        "libtool": "",
+        "machine": "Azure",
+        "make": "",
+        "ntl": "",
+        "os": "Linux",
+        "python": "3.7",
+        "ram": "61830880"
+    },
+    "profiles": {},
+    "python": "3.7",
+    "requirements": {
+        "Cython": "",
+        "arb": "",
+        "automake": "",
+        "benchmark==1.4.1": "",
+        "boost-cpp": "",
+        "e-antic": "",
+        "eigen": "",
+        "gmp": "",
+        "gtest": "",
+        "libexactreal": "",
+        "libtool": "",
+        "make": "",
+        "ntl": ""
+    },
+    "results": {
+        "Benchmarks.track_SaddleConnectionsSquare_VectorEAntic__64_980": 753673661.0000001,
+        "Benchmarks.track_SaddleConnectionsSquare_VectorLongLong__64_980": 107129702.57142857
+    },
+    "started_at": {
+        "Benchmarks.track_SaddleConnectionsSquare_VectorEAntic__64_980": 1558564894406,
+        "Benchmarks.track_SaddleConnectionsSquare_VectorLongLong__64_980": 1558564894460
+    },
+    "version": 1
+}
