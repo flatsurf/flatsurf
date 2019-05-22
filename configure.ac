@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 dnl We need at least autoconf 2.69 for this configure.ac to work.
 AC_PREREQ([2.69])
-AC_INIT([flatsurf], [0.0.1], [eskin@math.uchicago.edu])
+AC_INIT([flatsurf], [0.0.1], [julian.rueth@fsfe.org])
 
 dnl Version number of the library c:r:a.
 dnl Set to c+1:0:0 on a non-backwards-compatible change.
