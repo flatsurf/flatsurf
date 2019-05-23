@@ -62,6 +62,24 @@ def make_iterable(proxy, name):
 
 cppyy.py.add_pythonization(make_iterable, "flatsurf")
 
+def enable_arithmetic(proxy, name):
+    if name.startswith('Vector'):
+        for (n, op) in [('add', ord('+')), ('sub', ord('-')), ('mul', ord('*')), ('div', ord('/'))]:
+            def cppname(x):
+                # some types such as int do not have a __cppname__; there might
+                # be a better way to get their cppname but this seems to work
+                # fine for the types we're using at least.
+                return type(x).__cppname__ if hasattr(type(x), '__cppname__') else type(x).__name__
+            def binary(lhs, rhs, op = op):
+                return cppyy.gbl.exactreal.boost_binary[cppname(lhs), cppname(rhs), op](lhs, rhs)
+            def inplace(lhs, *args, **kwargs): raise NotImplementedError("inplace operators are not supported yet")
+            setattr(proxy, "__%s__"%n, binary)
+            setattr(proxy, "__r%s__"%n, binary)
+            setattr(proxy, "__i%s__"%n, inplace)
+        setattr(proxy, "__neg__", lambda self: cppyy.gbl.exactreal.minus(self))
+
+cppyy.py.add_pythonization(enable_arithmetic, "flatsurf")
+
 def pretty_print(proxy, name):
     proxy.__repr__ = proxy.__str__
 

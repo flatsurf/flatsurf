@@ -52,6 +52,30 @@ template <typename Vector, typename AlongTriangulation>
 std::ostream &operator<<(std::ostream &, const SaddleConnection<Vector, AlongTriangulation> &);
 }  // namespace flatsurf
 
+// cppyy does not see the operators that come out of boost/operators.hpp.
+// Why exactly is not clear to me at the moment. Since they are defined as
+// non-template friends inside the template classes such as addable<>, we can
+// not explicitly declare them like we did with the operator<< below.
+template <typename S, typename T, char op>
+auto boost_binary(const S &lhs, const T &rhs) {
+  if constexpr (op == '+')
+    return lhs + rhs;
+  else if constexpr (op == '-')
+    return lhs - rhs;
+  else if constexpr (op == '*')
+    return lhs * rhs;
+  else if constexpr (op == '/')
+    return lhs / rhs;
+  else {
+    static_assert(flatsurf::false_v<op>, "operator not implemented");
+  }
+}
+
+template <typename T>
+T minus(const T &lhs) {
+  return -lhs;
+}
+
 // Work around https://bitbucket.org/wlav/cppyy/issues/96/cannot-make-wrapper-for-a-function
 extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::Permutation<flatsurf::HalfEdge> &);
 extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::HalfEdgeMap<flatsurf::VectorLongLong> &);
