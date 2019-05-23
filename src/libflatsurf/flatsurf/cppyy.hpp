@@ -67,7 +67,7 @@ auto boost_binary(const S &lhs, const T &rhs) {
   else if constexpr (op == '/')
     return lhs / rhs;
   else {
-    static_assert(false_v<op>, "operator not implemented");
+    static_assert(flatsurf::false_v<op>, "operator not implemented");
   }
 }
 
