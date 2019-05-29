@@ -17,23 +17,42 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_DELAUNAY_TRIANGULATION_HPP
-#define LIBFLATSURF_DELAUNAY_TRIANGULATION_HPP
+#ifndef LIBFLATSURF_VECTOR_STORAGE_CARTESIAN_IPP
+#define LIBFLATSURF_VECTOR_STORAGE_CARTESIAN_IPP
 
-#include "flatsurf/forward.hpp"
+#include <type_traits>
+#include <utility>
+
+#include "../../util/type_traits.ipp"
+
+using std::is_base_of_v;
 
 namespace flatsurf {
-template <typename T>
-class DelaunayTriangulation {
- public:
-  // Flip edges in this triangulation so that all faces satisfy the l²-Delaunay condition.
-  static void transform(FlatTriangulation<T>&);
+namespace {
 
-  // Return whether this half edge satisfies the l²-Delaunay condition, i.e.,
-  // whether the circumcircles of the face attached to this edge does not
-  // contain the face attached to the reverse half edge.
-  static bool test(const FlatTriangulation<T>&, HalfEdge);
+// A Vector::Implementation base class for vectors that rely on data stored in
+// Cartesian coordinates.
+template <typename T>
+class Cartesian {
+ public:
+  using CartesianCoordinate = T;
+
+  Cartesian(const T& x, const T& y) : x(x), y(y) {}
+  Cartesian(T&& x, T&& y) : x(std::move(x)), y(std::move(y)) {}
+
+  T x, y;
 };
+
+template <typename Implementation, typename = void>
+struct is_cartesian_t : std::false_type {};
+template <typename Implementation>
+struct is_cartesian_t<Implementation, std::void_t<typename Implementation::CartesianCoordinate>> : std::true_type {};
+
+template <typename Implementation>
+inline constexpr bool is_cartesian_v = is_cartesian_t<Implementation>::value;
+
+static_assert(is_cartesian_v<Cartesian<int>>);
+}  // namespace
 }  // namespace flatsurf
 
 #endif

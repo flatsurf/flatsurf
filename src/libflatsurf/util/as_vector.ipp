@@ -17,8 +17,21 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "flatsurf/cppyy.hpp"
+#ifndef LIBFLATSURF_UTIL_AS_VECTOR_IPP
+#define LIBFLATSURF_UTIL_AS_VECTOR_IPP
 
-#include <ostream>
+#include <boost/iterator/iterator_traits.hpp>
+#include <boost/range/iterator_range.hpp>
+#include <vector>
 
-using namespace flatsurf;
+namespace {
+// Since BoostToOven::as_container never made it into boost, we use this little
+// helper to convert a boost range to a vector.
+template <typename Iterator>
+auto as_vector(const boost::iterator_range<Iterator>& range) {
+  using T = typename boost::iterators::iterator_value<Iterator>::type;
+  return std::vector<T>(range.begin(), range.end());
+}
+}  // namespace
+
+#endif

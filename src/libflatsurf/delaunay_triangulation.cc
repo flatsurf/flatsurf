@@ -23,6 +23,7 @@
 #include "flatsurf/delaunay_triangulation.hpp"
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/half_edge.hpp"
+#include "flatsurf/vector.hpp"
 
 namespace {
 template <typename T>
@@ -32,8 +33,8 @@ T det(const T& x00, const T& x01, const T& x02, const T& x10, const T& x11, cons
 }  // namespace
 
 namespace flatsurf {
-template <typename Vector>
-void DelaunayTriangulation<Vector>::transform(FlatTriangulation<Vector>& triangulation) {
+template <typename T>
+void DelaunayTriangulation<T>::transform(FlatTriangulation<T>& triangulation) {
   bool isDelaunay;
   do {
     isDelaunay = true;
@@ -46,8 +47,12 @@ void DelaunayTriangulation<Vector>::transform(FlatTriangulation<Vector>& triangu
   } while (!isDelaunay);
 }
 
-template <typename Vector>
-bool DelaunayTriangulation<Vector>::test(const FlatTriangulation<Vector>& triangulation, const HalfEdge edge) {
+template <typename T>
+bool DelaunayTriangulation<T>::test(const FlatTriangulation<T>& triangulation, const HalfEdge edge) {
+  // We could eventually use Vector::insideCircumcircle() so vectors can
+  // provide optimized implementations of this. However, at the moment, it does
+  // not seem worth it.
+
   // We use the condition described in Wikipedia (whether a certain determinant
   // is positive.) Using the notation there, the face attached to this half
   // edge is the triangle (a, b, c), and the face attached to the reversed half
@@ -65,17 +70,16 @@ bool DelaunayTriangulation<Vector>::test(const FlatTriangulation<Vector>& triang
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
+#include <e-antic/renfxx.h>
+#include <exact-real/element.hpp>
 #include <exact-real/integer_ring_traits.hpp>
 #include <exact-real/number_field_traits.hpp>
 #include <exact-real/rational_field_traits.hpp>
-#include "flatsurf/vector_eantic.hpp"
-#include "flatsurf/vector_exactreal.hpp"
-#include "flatsurf/vector_longlong.hpp"
 
 using namespace flatsurf;
 
-template class flatsurf::DelaunayTriangulation<VectorLongLong>;
-template class flatsurf::DelaunayTriangulation<VectorEAntic>;
-template class flatsurf::DelaunayTriangulation<VectorExactReal<exactreal::IntegerRingTraits>>;
-template class flatsurf::DelaunayTriangulation<VectorExactReal<exactreal::RationalFieldTraits>>;
-template class flatsurf::DelaunayTriangulation<VectorExactReal<exactreal::NumberFieldTraits>>;
+template class flatsurf::DelaunayTriangulation<long long>;
+template class flatsurf::DelaunayTriangulation<eantic::renf_elem_class>;
+template class flatsurf::DelaunayTriangulation<exactreal::Element<exactreal::IntegerRingTraits>>;
+template class flatsurf::DelaunayTriangulation<exactreal::Element<exactreal::RationalFieldTraits>>;
+template class flatsurf::DelaunayTriangulation<exactreal::Element<exactreal::NumberFieldTraits>>;

@@ -21,11 +21,12 @@
 #include <gtest/gtest.h>
 #include <boost/lexical_cast.hpp>
 
+#include <exact-real/element.hpp>
 #include <exact-real/integer_ring_traits.hpp>
 #include <exact-real/module.hpp>
 #include <exact-real/real_number.hpp>
 #include <flatsurf/bound.hpp>
-#include <flatsurf/vector_exactreal.hpp>
+#include <flatsurf/vector.hpp>
 
 using std::vector;
 using testing::Test;
@@ -34,10 +35,8 @@ using namespace exactreal;
 using namespace flatsurf;
 
 TEST(VectorExactRealTest, Comparison) {
-  auto m = Module<IntegerRingTraits>::make(
-      {RealNumber::rational(1), RealNumber::random()});
-  auto vector =
-      VectorExactReal<IntegerRingTraits>(3 * m->gen(0), 4 * m->gen(0));
+  auto m = Module<IntegerRingTraits>::make({RealNumber::rational(1), RealNumber::random()});
+  auto vector = Vector<Element<IntegerRingTraits>>(3 * m->gen(0), 4 * m->gen(0));
 
   EXPECT_FALSE(vector > Bound(5 * 5));
   EXPECT_FALSE(vector < Bound(5 * 5));

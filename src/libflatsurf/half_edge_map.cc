@@ -34,9 +34,12 @@ using std::vector;
 
 namespace flatsurf {
 template <typename T>
-HalfEdgeMap<T>::HalfEdgeMap(const FlatTriangulationCombinatorial &parent,
-                            const vector<T> &values,
-                            const FlipHandler &updateAfterFlip)
+HalfEdgeMap<T>::HalfEdgeMap(const FlatTriangulationCombinatorial &parent, const FlipHandler &updateAfterFlip) : parent(&parent), values(parent.halfEdges().size()), updateAfterFlip(updateAfterFlip) {
+  parent.registerMap(*this);
+}
+
+template <typename T>
+HalfEdgeMap<T>::HalfEdgeMap(const FlatTriangulationCombinatorial &parent, const vector<T> &values, const FlipHandler &updateAfterFlip)
     : parent(&parent), updateAfterFlip(updateAfterFlip) {
   assert(values.size() == parent.halfEdges().size() / 2 &&
          "values must contain one entry for each pair of half edges");
@@ -111,6 +114,15 @@ size_t HalfEdgeMap<T>::index(const HalfEdge e) {
 }
 
 template <typename T>
+HalfEdgeMap<T> HalfEdgeMap<T>::operator-() const noexcept {
+  vector<T> negatives;
+  for (size_t i = 0; i < values.size(); i += 2) {
+    negatives.push_back(-values[i]);
+  }
+  return HalfEdgeMap(*parent, std::move(negatives), updateAfterFlip);
+}
+
+template <typename T>
 ostream &operator<<(ostream &os, const flatsurf::HalfEdgeMap<T> &self) {
   std::vector<string> items;
   for (auto it = self.values.begin(); it != self.values.end(); it++) {
@@ -125,25 +137,24 @@ ostream &operator<<(ostream &os, const flatsurf::HalfEdgeMap<T> &self) {
 }
 }  // namespace flatsurf
 
-using namespace flatsurf;
-
 // Instantiations of templates so implementations are generated for the linker
+#include <exact-real/element.hpp>
 #include <exact-real/integer_ring_traits.hpp>
 #include <exact-real/number_field_traits.hpp>
 #include <exact-real/rational_field_traits.hpp>
-#include "flatsurf/vector_eantic.hpp"
-#include "flatsurf/vector_exactreal.hpp"
-#include "flatsurf/vector_longlong.hpp"
+#include "flatsurf/vector.hpp"
 
-template class flatsurf::HalfEdgeMap<VectorLongLong>;
-template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<VectorLongLong> &);
-template class flatsurf::HalfEdgeMap<VectorEAntic>;
-template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<VectorEAntic> &);
+using namespace flatsurf;
+
+template class flatsurf::HalfEdgeMap<Vector<long long>>;
+template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<Vector<long long>> &);
+template class flatsurf::HalfEdgeMap<Vector<eantic::renf_elem_class>>;
+template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<Vector<eantic::renf_elem_class>> &);
 template class flatsurf::HalfEdgeMap<int>;
 template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<int> &);
-template class flatsurf::HalfEdgeMap<VectorExactReal<exactreal::IntegerRingTraits>>;
-template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<VectorExactReal<exactreal::IntegerRingTraits>> &);
-template class flatsurf::HalfEdgeMap<VectorExactReal<exactreal::RationalFieldTraits>>;
-template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<VectorExactReal<exactreal::RationalFieldTraits>> &);
-template class flatsurf::HalfEdgeMap<VectorExactReal<exactreal::NumberFieldTraits>>;
-template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<VectorExactReal<exactreal::NumberFieldTraits>> &);
+template class flatsurf::HalfEdgeMap<Vector<exactreal::Element<exactreal::IntegerRingTraits>>>;
+template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<Vector<exactreal::Element<exactreal::IntegerRingTraits>>> &);
+template class flatsurf::HalfEdgeMap<Vector<exactreal::Element<exactreal::RationalFieldTraits>>>;
+template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<Vector<exactreal::Element<exactreal::RationalFieldTraits>>> &);
+template class flatsurf::HalfEdgeMap<Vector<exactreal::Element<exactreal::NumberFieldTraits>>>;
+template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<Vector<exactreal::Element<exactreal::NumberFieldTraits>>> &);

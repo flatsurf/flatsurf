@@ -17,10 +17,10 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <boost/preprocessor/stringize.hpp>
+#ifndef LIBFLATSURF_UTIL_ASSERT_IPP
+#define LIBFLATSURF_UTIL_ASSERT_IPP
 
-// This file has no header guards on purpose. It should not be include by other
-// headers, just by implementation .cc files.
+#include <boost/preprocessor/stringize.hpp>
 
 // Run a (cheap) check that a (user provided) argument is valid.
 // If the check should be disabled when NDEBUG is defined, e.g., because it
@@ -46,4 +46,6 @@
 #else
 #define ASSERT_ARGUMENT_(CONDITION) CHECK_ARGUMENT_(CONDITION)
 #define ASSERT_ARGUMENT(CONDITION, MESSAGE) CHECK_ARGUMENT(CONDITION, MESSAGE)
+#endif
+
 #endif

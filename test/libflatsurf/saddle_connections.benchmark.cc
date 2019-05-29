@@ -28,11 +28,8 @@
 #include <flatsurf/half_edge.hpp>
 #include <flatsurf/saddle_connection.hpp>
 #include <flatsurf/saddle_connections.hpp>
+#include <flatsurf/vector.hpp>
 #include <flatsurf/vector_along_triangulation.hpp>
-#include <flatsurf/vector_arb.hpp>
-#include <flatsurf/vector_eantic.hpp>
-#include <flatsurf/vector_exactreal.hpp>
-#include <flatsurf/vector_longlong.hpp>
 
 #include "surfaces.hpp"
 
@@ -63,8 +60,8 @@ void SaddleConnectionsSquare(benchmark::State& state) {
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected * 2);
   }
 }
-BENCHMARK_TEMPLATE(SaddleConnectionsSquare, VectorLongLong)->Args({64, 980});
-BENCHMARK_TEMPLATE(SaddleConnectionsSquare, VectorEAntic)->Args({64, 980});
+BENCHMARK_TEMPLATE(SaddleConnectionsSquare, Vector<long long>)->Args({64, 980});
+BENCHMARK_TEMPLATE(SaddleConnectionsSquare, Vector<eantic::renf_elem_class>)->Args({64, 980});
 
 }  // namespace
 

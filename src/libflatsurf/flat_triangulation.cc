@@ -20,10 +20,11 @@
 #include <ostream>
 #include <vector>
 
-#include "flatsurf/assert.hpp"
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/half_edge.hpp"
 #include "flatsurf/half_edge_map.hpp"
+#include "flatsurf/vector.hpp"
+#include "util/assert.ipp"
 
 using std::ostream;
 using std::vector;
@@ -38,29 +39,29 @@ void updateAfterFlip(HalfEdgeMap<T> &map, HalfEdge halfEdge,
 }
 }  // namespace
 
-template <typename Vector>
-class FlatTriangulation<Vector>::Implementation {
+template <typename T>
+class FlatTriangulation<T>::Implementation {
  public:
   Implementation(HalfEdgeMap<Vector> &&vectors) : vectors(std::move(vectors)) {}
 
   const HalfEdgeMap<Vector> vectors;
 };
 
-template <typename Vector>
-const Vector &FlatTriangulation<Vector>::fromEdge(const HalfEdge e) const {
+template <typename T>
+const Vector<T> &FlatTriangulation<T>::fromEdge(const HalfEdge e) const {
   return impl->vectors.get(e);
 }
 
-template <typename Vector>
-FlatTriangulation<Vector>::FlatTriangulation(
+template <typename T>
+FlatTriangulation<T>::FlatTriangulation(
     FlatTriangulationCombinatorial &&combinatorial,
     const vector<Vector> &vectors)
     : FlatTriangulation(std::move(combinatorial),
                         HalfEdgeMap<Vector>(combinatorial, vectors,
                                             updateAfterFlip<Vector>)) {}
 
-template <typename Vector>
-FlatTriangulation<Vector>::FlatTriangulation(
+template <typename T>
+FlatTriangulation<T>::FlatTriangulation(
     FlatTriangulationCombinatorial &&combinatorial,
     HalfEdgeMap<Vector> &&vectors)
     : FlatTriangulationCombinatorial(std::move(combinatorial)),
@@ -76,8 +77,8 @@ FlatTriangulation<Vector>::FlatTriangulation(
   }
 }
 
-template <typename Vector>
-FlatTriangulation<Vector> FlatTriangulation<Vector>::clone() const {
+template <typename T>
+FlatTriangulation<T> FlatTriangulation<T>::clone() const {
   std::vector<Vector> vectors;
   for (int e = 1; e <= halfEdges().size() / 2; e++)
     vectors.push_back(fromEdge(HalfEdge(e)));
@@ -85,30 +86,28 @@ FlatTriangulation<Vector> FlatTriangulation<Vector>::clone() const {
                            std::move(vectors));
 }
 
-template <typename Vector>
-ostream &operator<<(ostream &os, const FlatTriangulation<Vector> &self) {
+template <typename T>
+ostream &operator<<(ostream &os, const FlatTriangulation<T> &self) {
   return os << static_cast<const FlatTriangulationCombinatorial &>(self)
             << " with vectors " << self.impl->vectors;
 }
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
+#include <e-antic/renfxx_fwd.h>
 #include <exact-real/integer_ring_traits.hpp>
 #include <exact-real/number_field_traits.hpp>
 #include <exact-real/rational_field_traits.hpp>
-#include "flatsurf/vector_eantic.hpp"
-#include "flatsurf/vector_exactreal.hpp"
-#include "flatsurf/vector_longlong.hpp"
 
 using namespace flatsurf;
 
-template class flatsurf::FlatTriangulation<VectorLongLong>;
-template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<VectorLongLong> &);
-template class flatsurf::FlatTriangulation<VectorEAntic>;
-template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<VectorEAntic> &);
-template class flatsurf::FlatTriangulation<VectorExactReal<exactreal::IntegerRingTraits>>;
-template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<VectorExactReal<exactreal::IntegerRingTraits>> &);
-template class flatsurf::FlatTriangulation<VectorExactReal<exactreal::RationalFieldTraits>>;
-template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<VectorExactReal<exactreal::RationalFieldTraits>> &);
-template class flatsurf::FlatTriangulation<VectorExactReal<exactreal::NumberFieldTraits>>;
-template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<VectorExactReal<exactreal::NumberFieldTraits>> &);
+template class flatsurf::FlatTriangulation<long long>;
+template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<long long> &);
+template class flatsurf::FlatTriangulation<eantic::renf_elem_class>;
+template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<eantic::renf_elem_class> &);
+template class flatsurf::FlatTriangulation<exactreal::Element<exactreal::IntegerRingTraits>>;
+template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<exactreal::Element<exactreal::IntegerRingTraits>> &);
+template class flatsurf::FlatTriangulation<exactreal::Element<exactreal::RationalFieldTraits>>;
+template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<exactreal::Element<exactreal::RationalFieldTraits>> &);
+template class flatsurf::FlatTriangulation<exactreal::Element<exactreal::NumberFieldTraits>>;
+template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<exactreal::Element<exactreal::NumberFieldTraits>> &);

@@ -27,11 +27,8 @@
 #include <flatsurf/half_edge.hpp>
 #include <flatsurf/saddle_connection.hpp>
 #include <flatsurf/saddle_connections.hpp>
+#include <flatsurf/vector.hpp>
 #include <flatsurf/vector_along_triangulation.hpp>
-#include <flatsurf/vector_arb.hpp>
-#include <flatsurf/vector_eantic.hpp>
-#include <flatsurf/vector_exactreal.hpp>
-#include <flatsurf/vector_longlong.hpp>
 
 #include "surfaces.hpp"
 
@@ -40,12 +37,13 @@ using testing::Test;
 using testing::Types;
 using namespace flatsurf;
 using eantic::renf_class;
+using eantic::renf_elem_class;
 
 namespace {
 template <class R2>
 class SaddleConnectionsTest : public Test {};
 
-using ExactVectors = Types<VectorLongLong, VectorEAntic>;
+using ExactVectors = Types<Vector<long long>, Vector<renf_elem_class>>;
 TYPED_TEST_CASE(SaddleConnectionsTest, ExactVectors);
 
 TYPED_TEST(SaddleConnectionsTest, Trivial) {
@@ -70,10 +68,13 @@ TYPED_TEST(SaddleConnectionsTest, Square) {
   EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
   connections = SaddleConnections(square, bound, HalfEdge(-2));
   EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected * 2);
+
+  connections = SaddleConnections(square, bound);
+  EXPECT_EQ(std::distance(connections.begin(), connections.end()), 480);
 }
 
 TYPED_TEST(SaddleConnectionsTest, Hexagon) {
-  if constexpr (std::is_same_v<TypeParam, VectorLongLong>) {
+  if constexpr (std::is_same_v<TypeParam, Vector<long long>>) {
     // An regular hexagon can not be constructed with integer coordinates.
     return;
   } else {
@@ -91,6 +92,9 @@ TYPED_TEST(SaddleConnectionsTest, Hexagon) {
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), 8);
     connections = SaddleConnections(hexagon, bound, HalfEdge(6));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), 10);
+
+    connections = SaddleConnections(hexagon, bound);
+    EXPECT_EQ(std::distance(connections.begin(), connections.end()), 216);
   }
 }
 }  // namespace

@@ -27,6 +27,7 @@
 #include "flatsurf/half_edge.hpp"
 #include "flatsurf/interval_exchange_transformation.hpp"
 #include "flatsurf/orientation.hpp"
+#include "flatsurf/vector.hpp"
 
 using std::any_of;
 using std::find_if;
@@ -46,9 +47,9 @@ enum class TRIANGLE {
   RIGHT_VERTICAL,
 };
 
-template <typename Vector>
-TRIANGLE classifyFace(HalfEdge face, const FlatTriangulation<Vector>& parent,
-                      const Vector& vertical) {
+template <typename T>
+TRIANGLE classifyFace(HalfEdge face, const FlatTriangulation<T>& parent,
+                      const Vector<T>& vertical) {
   int topEdges = 0;
 
   for (int i = 0; i < 3; i++) {
@@ -82,16 +83,16 @@ TRIANGLE classifyFace(HalfEdge face, const FlatTriangulation<Vector>& parent,
   }
 }
 
-template <typename Vector>
-bool large(HalfEdge e, const FlatTriangulation<Vector>& parent,
-           const Vector& vertical) {
+template <typename T>
+bool large(HalfEdge e, const FlatTriangulation<T>& parent,
+           const Vector<T>& vertical) {
   return classifyFace(e, parent, vertical) == TRIANGLE::FORWARD &&
          classifyFace(-e, parent, vertical) == TRIANGLE::BACKWARD;
 }
 
-template <typename Vector>
-HalfEdge makeUniqueLargeEdge(FlatTriangulation<Vector>& parent,
-                             const Vector& vertical) {
+template <typename T>
+HalfEdge makeUniqueLargeEdge(FlatTriangulation<T>& parent,
+                             const Vector<T>& vertical) {
   auto source =
       find_if(parent.halfEdges().begin(), parent.halfEdges().end(),
               [&](const HalfEdge e) {
@@ -127,10 +128,10 @@ HalfEdge makeUniqueLargeEdge(FlatTriangulation<Vector>& parent,
   return *source;
 }
 
-template <typename Vector>
+template <typename T>
 void makeContour(insert_iterator<vector<HalfEdge>> target,
-                 const HalfEdge source, const FlatTriangulation<Vector>& parent,
-                 const Vector& vertical) {
+                 const HalfEdge source, const FlatTriangulation<T>& parent,
+                 const Vector<T>& vertical) {
   switch (classifyFace(source, parent, vertical)) {
     case TRIANGLE::BACKWARD:
       makeContour(target, -parent.nextInFace(parent.nextInFace(source)), parent,
@@ -149,46 +150,47 @@ void makeContour(insert_iterator<vector<HalfEdge>> target,
 
 }  // namespace
 
-template <typename Vector>
-class IntervalExchangeTransformation<Vector>::Implementation {
+template <typename T>
+class IntervalExchangeTransformation<T>::Implementation {
  public:
-  Implementation(const FlatTriangulation<Vector>& original,
-                 const Vector& vertical) {
+  Implementation(const FlatTriangulation<T>& original, const Vector<T>& vertical) {
     auto parent = original.clone();
     HalfEdge source = makeUniqueLargeEdge(parent, vertical);
     vector<HalfEdge> top, bottom;
     makeContour(inserter(top, next(top.begin())), source, parent, vertical);
-    makeContour(inserter(bottom, next(bottom.begin())), -source, parent,
-                -vertical);
+    makeContour(inserter(bottom, next(bottom.begin())), -source, parent, -vertical);
     reverse(bottom.begin(), bottom.end());
-    transform(bottom.begin(), bottom.end(), bottom.begin(),
-              [](HalfEdge e) { return -e; });
+    transform(bottom.begin(), bottom.end(), bottom.begin(), [](HalfEdge e) { return -e; });
   }
 };
 
-template <typename Vector>
-IntervalExchangeTransformation<Vector>::IntervalExchangeTransformation(
-    FlatTriangulation<Vector>& parent, const Vector& vertical)
+template <typename T>
+IntervalExchangeTransformation<T>::IntervalExchangeTransformation(
+    FlatTriangulation<T>& parent, const Vector<T>& vertical)
     : impl(spimpl::make_unique_impl<Implementation>(parent, vertical)) {}
 
-template <typename Vector>
-ostream& operator<<(ostream&, const IntervalExchangeTransformation<Vector>&) {
-  throw std::logic_error(
-      "not implemented IntervalExchangeTransformation::operator<<");
+template <typename T>
+ostream& operator<<(ostream&, const IntervalExchangeTransformation<T>&) {
+  throw std::logic_error("not implemented IntervalExchangeTransformation::operator<<");
 }
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
+#include <e-antic/renfxx.h>
+#include <exact-real/element.hpp>
+#include <exact-real/integer_ring_traits.hpp>
 #include <exact-real/number_field_traits.hpp>
-#include "flatsurf/vector_eantic.hpp"
-#include "flatsurf/vector_exactreal.hpp"
-#include "flatsurf/vector_longlong.hpp"
+#include <exact-real/rational_field_traits.hpp>
 
 using namespace flatsurf;
 
-template class flatsurf::IntervalExchangeTransformation<VectorLongLong>;
-template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<VectorLongLong>&);
-template class flatsurf::IntervalExchangeTransformation<VectorEAntic>;
-template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<VectorEAntic>&);
-template class flatsurf::IntervalExchangeTransformation<VectorExactReal<exactreal::NumberFieldTraits>>;
-template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<VectorExactReal<exactreal::NumberFieldTraits>>&);
+template class flatsurf::IntervalExchangeTransformation<long long>;
+template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<long long>&);
+template class flatsurf::IntervalExchangeTransformation<eantic::renf_elem_class>;
+template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<eantic::renf_elem_class>&);
+template class flatsurf::IntervalExchangeTransformation<exactreal::Element<exactreal::IntegerRingTraits>>;
+template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<exactreal::Element<exactreal::IntegerRingTraits>>&);
+template class flatsurf::IntervalExchangeTransformation<exactreal::Element<exactreal::RationalFieldTraits>>;
+template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<exactreal::Element<exactreal::RationalFieldTraits>>&);
+template class flatsurf::IntervalExchangeTransformation<exactreal::Element<exactreal::NumberFieldTraits>>;
+template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<exactreal::Element<exactreal::NumberFieldTraits>>&);

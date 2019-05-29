@@ -1,0 +1,9 @@
+class Vector<T> where T is one of:
+* long long
+* arb
+* renf_elem_class
+* Element
+class VectorAlongTriangulation<T> {};
+class VectorAlongTriangulationWithApproximation<T, Approximation> {};
+class VectorExact<Vector>{};
+class VectorWithError<Vector>{};

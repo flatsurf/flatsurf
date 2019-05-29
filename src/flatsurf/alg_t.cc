@@ -28,17 +28,17 @@
 #include <boost/range/adaptors.hpp>
 #include <boost/range/irange.hpp>
 #include <complex>
+#include <exact-real/arb.hpp>
 #include <ostream>
 #include <vector>
 
+#include "../libflatsurf/util/as_vector.ipp"
 #include "./algebraic.h"
 #include "./defs.h"
 #include "./globals.h"
 #include "./number_field.h"
 #include "./params.h"
 #include "./two_complex.h"
-#include "flatsurf/detail/as_vector.hpp"
-#include "flatsurf/vector_arb.hpp"
 
 using boost::irange;
 using boost::lexical_cast;
@@ -47,7 +47,6 @@ using boost::adaptors::transformed;
 using boost::math::binomial_coefficient;
 using exactreal::Element;
 using exactreal::NumberFieldTraits;
-using flatsurf::VectorExactReal;
 using NTL::Mat;
 using NTL::Vec;
 using NTL::ZZ;
@@ -360,7 +359,7 @@ alg_t<T>::alg_t(vector<algebraic<T>> c) : coeffs(c) {
 
 namespace {
 template <typename T, typename Ring>
-std::vector<algebraic<T>> to_algebraic_coeffs(const VectorExactReal<Ring> &v) {
+std::vector<algebraic<T>> to_algebraic_coeffs(const flatsurf::Vector<exactreal::Element<Ring>> &v) {
   exactreal::Element<Ring> x = v.x();
   exactreal::Element<Ring> y = v.y();
 
@@ -376,7 +375,7 @@ std::vector<algebraic<T>> to_algebraic_coeffs(const VectorExactReal<Ring> &v) {
 
 template <typename T>
 template <typename Ring>
-alg_t<T>::alg_t(const VectorExactReal<Ring> &v)
+alg_t<T>::alg_t(const flatsurf::Vector<exactreal::Element<Ring>> &v)
     : alg_t(to_algebraic_coeffs<T, Ring>(v)) {}
 
 template <typename T>
@@ -771,7 +770,7 @@ template class alg_t<int64_t>;
 
 template poly<int64_t> cyclotomic_poly(int n);
 template NumberField<int64_t> *InitCyclotomic(int n);
-template alg_t<int64_t>::alg_t(const VectorExactReal<NumberFieldTraits> &);
+template alg_t<int64_t>::alg_t(const flatsurf::Vector<exactreal::Element<NumberFieldTraits>> &);
 template alg_t<int64_t> operator+(alg_t<int64_t> p, const alg_t<int64_t> &q);
 template alg_t<int64_t> operator-(alg_t<int64_t> p, const alg_t<int64_t> &q);
 template alg_t<int64_t> operator*(const algebraic<int64_t> &p,

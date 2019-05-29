@@ -35,14 +35,15 @@ using testing::Types;
 
 namespace {
 TEST(DelaunayTest, Square) {
-  using Vector = VectorExactReal<exactreal::IntegerRingTraits>;
+  using T = Element<exactreal::IntegerRingTraits>;
+  using Vector = Vector<T>;
   auto square = makeSquare<Vector>();
 
   for (auto halfEdge : square.halfEdges()) {
     square.flip(halfEdge);
-    DelaunayTriangulation<Vector>::transform(square);
+    DelaunayTriangulation<T>::transform(square);
     for (auto edge : square.halfEdges()) {
-      EXPECT_TRUE(DelaunayTriangulation<Vector>::test(square, edge));
+      EXPECT_TRUE(DelaunayTriangulation<T>::test(square, edge));
       EXPECT_LT(square.fromEdge(edge), Bound(2 * 2));
     }
   }

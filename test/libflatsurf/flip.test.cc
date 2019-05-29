@@ -21,22 +21,21 @@
 #include <gtest/gtest.h>
 #include <boost/lexical_cast.hpp>
 
+#include <e-antic/renfxx_fwd.h>
 #include <exact-real/integer_ring_traits.hpp>
 #include <flatsurf/bound.hpp>
 #include <flatsurf/flat_triangulation.hpp>
 #include <flatsurf/half_edge.hpp>
 #include <flatsurf/saddle_connection.hpp>
 #include <flatsurf/saddle_connections.hpp>
+#include <flatsurf/vector.hpp>
 #include <flatsurf/vector_along_triangulation.hpp>
-#include <flatsurf/vector_arb.hpp>
-#include <flatsurf/vector_eantic.hpp>
-#include <flatsurf/vector_exactreal.hpp>
-#include <flatsurf/vector_longlong.hpp>
 
 #include "surfaces.hpp"
 
 using namespace flatsurf;
 using eantic::renf_class;
+using eantic::renf_elem_class;
 using std::vector;
 using testing::Test;
 using testing::Types;
@@ -45,7 +44,7 @@ namespace {
 template <class R2>
 class FlipTest : public Test {};
 
-using ExactVectors = Types<VectorLongLong, VectorEAntic>;
+using ExactVectors = Types<Vector<long long>, Vector<renf_elem_class>>;
 TYPED_TEST_CASE(FlipTest, ExactVectors);
 
 TYPED_TEST(FlipTest, Square) {

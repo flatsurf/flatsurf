@@ -38,7 +38,7 @@ class Permutation {
   template <typename S>
   static Permutation<T> create(const std::vector<std::vector<S>> &, const std::function<T(S)> &);
 
-  T operator()(const T &t) const;
+  const T &operator()(const T &t) const;
 
   template <typename S>
   friend Permutation<S> &operator*=(const std::vector<S> &cycle, Permutation<S> &);

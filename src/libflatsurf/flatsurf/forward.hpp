@@ -31,41 +31,39 @@
 #include "flatsurf/orientation.hpp"
 
 namespace flatsurf {
-template <typename Vector, typename VectorAlongTriangulation = typename Vector::AlongTriangulation>
+template <typename T>
+class Vector;
+
+class FlatTriangulationCombinatorial;
+
+template <typename T>
+class FlatTriangulation;
+
+template <typename T, typename Approximation = void, typename Surface = FlatTriangulation<T>>
+class VectorAlongTriangulation;
+
+template <typename Surface>
 class SaddleConnections;
 
-template <typename Vector, typename VectorAlongTriangulation = typename Vector::AlongTriangulation>
-class SaddleConnectionsIterator;
-
-template <typename Vector, typename VectorAlongTriangulation = typename Vector::AlongTriangulation>
+template <typename Surface>
 class SaddleConnection;
-
-template <typename Vector>
-class FlatTriangulation;
 
 class HalfEdge;
 
+class Edge;
+
+class Vertex;
+
 template <typename T>
 class HalfEdgeMap;
-
-class Edge;
 
 template <typename T>
 class Permutation;
 
 struct Bound;
 
-template <typename Ring>
-class VectorExactReal;
-
-template <typename V>
-class VectorAlongTriangulation;
-
-class VectorArb;
-
-class Vertex;
-
-class FlatTriangulationCombinatorial;
+template <typename T>
+class IntervalExchangeTransformation;
 }  // namespace flatsurf
 
 #endif

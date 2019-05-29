@@ -33,7 +33,7 @@ def square(R2):
     return flatsurf.Surface(vertices, vectors)
 
 def hexagon():
-    R2 = flatsurf.VectorEAntic
+    R2 = flatsurf.Vector['eantic::renf_elem_class']
     x = K.gen()
     R = exactreal.NumberFieldElement
     vectors = [R2(R(K, 2), R(K, 0)), R2(R(K, 1), x), R2(R(K, 3), x), R2(R(K, 1), -x), R2(R(K, 4), R(K, 0)), R2(R(K, 3), x)]
@@ -45,7 +45,7 @@ def random_hexagon():
     RealNumber = exactreal.RealNumber
     Module = exactreal.NumberFieldModule
     M = Module(K, RealNumber.rational(1), RealNumber.random(), RealNumber.random())
-    R2 = flatsurf.VectorExactReal[exactreal.NumberFieldTraits]
+    R2 = flatsurf.Vector['exactreal::Element<exactreal::NumberFieldTraits>']
     # The side lengths are going to be 2, 2·μ, 2·ν where μ,ν are the random parameters of M.
     one = M.gen(0)
     μ = M.gen(1)

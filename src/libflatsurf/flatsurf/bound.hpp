@@ -25,9 +25,10 @@
 #include "flatsurf/flatsurf.hpp"
 
 namespace flatsurf {
-// A rough measure for lengths of vectors in R^2.
+// A measure for lengths of vectors in R^2.
 // In a type safe wrapper so we do not mix actual lengths and their squares.
 struct Bound : boost::totally_ordered<Bound> {
+  Bound();
   explicit Bound(long long lengthSquared);
   const long long squared;
 

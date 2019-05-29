@@ -19,23 +19,12 @@
 
 /*
  * This file is included by all headers that are shipped with this library.
- * It should therefore contain global definitions but only those that can
- * be safely shipped to the client, i.e., not the ones in config.h
+ * It should contain global customization that can be safely shipped to the
+ * client, i.., not the ones in config.h.
  */
 
 #ifndef LIBFLATSURF_LIBFLATSURF_H
 #define LIBFLATSURF_LIBFLATSURF_H
-
-namespace flatsurf {
-// A templatized constant that is false. This helps to use static_assert in
-// branches of constexpr-if. Just using a plain false leads to compile errors
-// so we must make sure the compiler tries not to instantiate this if it's not
-// on an active branch.
-template <auto = 0>
-constexpr bool false_v = false;
-template <typename = void>
-constexpr bool false_t = false;
-}  // namespace flatsurf
 
 #ifdef __CLING__
 

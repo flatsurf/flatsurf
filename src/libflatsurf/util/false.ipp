@@ -17,21 +17,18 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_AS_VECTOR_HPP
-#define LIBFLATSURF_AS_VECTOR_HPP
+#ifndef LIBFLATSURF_UTIL_FALSE_IPP
+#define LIBFLATSURF_UTIL_FALSE_IPP
 
-#include <boost/iterator/iterator_traits.hpp>
-#include <boost/range/iterator_range.hpp>
-#include <vector>
-
-namespace {
-// Since BoostToOven::as_container never made it into boost, we use this little
-// helper to convert a boost range to a vector.
-template <typename Iterator>
-auto as_vector(const boost::iterator_range<Iterator>& range) {
-  using T = typename boost::iterators::iterator_value<Iterator>::type;
-  return std::vector<T>(range.begin(), range.end());
-}
-}  // namespace
+namespace flatsurf {
+// A templatized constant that is false. This helps to use static_assert in
+// branches of constexpr-if. Just using a plain false leads to compile errors
+// so we must make sure the compiler tries not to instantiate this if it's not
+// on an active branch.
+template <auto = 0>
+constexpr bool false_value_v = false;
+template <typename = void>
+constexpr bool false_type_v = false;
+}  // namespace flatsurf
 
 #endif

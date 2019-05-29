@@ -35,10 +35,8 @@ namespace flatsurf {
 // proper operator== for vertices.
 class Vertex : boost::equality_comparable<Vertex> {
  public:
-  static Vertex source(const HalfEdge &,
-                       const FlatTriangulationCombinatorial &);
-  static Vertex target(const HalfEdge &,
-                       const FlatTriangulationCombinatorial &);
+  static Vertex source(const HalfEdge &, const FlatTriangulationCombinatorial &);
+  static Vertex target(const HalfEdge &, const FlatTriangulationCombinatorial &);
 
   bool operator==(const Vertex &) const;
 
@@ -51,6 +49,8 @@ class Vertex : boost::equality_comparable<Vertex> {
   // Made a unique representative by taking the half edge with this property
   // with the smallest id.
   HalfEdge representative;
+
+  friend FlatTriangulationCombinatorial;
 };
 }  // namespace flatsurf
 

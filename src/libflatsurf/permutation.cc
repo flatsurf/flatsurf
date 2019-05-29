@@ -23,8 +23,8 @@
 #include <ostream>
 #include <set>
 
-#include "flatsurf/detail/as_vector.hpp"
 #include "flatsurf/permutation.hpp"
+#include "util/as_vector.ipp"
 
 using boost::accumulate;
 using boost::adaptors::transformed;
@@ -57,7 +57,7 @@ Permutation<T>::Permutation(const vector<pair<T, T>> &permutation)
 }
 
 template <typename T>
-T Permutation<T>::operator()(const T &t) const {
+const T &Permutation<T>::operator()(const T &t) const {
   return data[index(t)];
 }
 
