@@ -14,7 +14,6 @@ pip install cpp-coveralls
 
 cd $SRC_DIR/src/libflatsurf/
 
-git remote add origin https://github.com/flatsurf/flatsurf.git
 git fetch origin
 git checkout -b master
 git branch -u origin/master
