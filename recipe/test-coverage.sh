@@ -23,5 +23,4 @@ git branch -u origin/master
 set +x
 if [ ${#COVERALLS_REPO_TOKEN} = 36 ];then
   bash <(curl -s https://codecov.io/bash) -t $COVERALLS_REPO_TOKEN -x `which x86_64-conda_cos6-linux-gnu-gcov` -a '\-lrp' -p .
-  # coveralls --verbose --gcov `which x86_64-conda_cos6-linux-gnu-gcov` --exclude flatsurf/external --gcov-options '\-lrp' -b .;
 fi
