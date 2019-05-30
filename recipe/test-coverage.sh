@@ -13,6 +13,11 @@ unset PIP_NO_DEPENDENCIES
 pip install cpp-coveralls
 
 cd $SRC_DIR/src/libflatsurf/
+
+git remote add https://github.com/flatsurf/flatsurf.git
+git fetch origin
 git checkout -b master
+git branch -u origin/master
+
 set +x
 if [ ${#COVERALLS_REPO_TOKEN} = 33 ];then coveralls --gcov `which x86_64-conda_cos6-linux-gnu-gcov` --exclude flatsurf/external --gcov-options '\-lrp' -b .; fi
