@@ -1,6 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
+ *        Copyright (C) 2019 Vincent Delecroix
  *        Copyright (C) 2019 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
@@ -17,8 +18,36 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "flatsurf/cppyy.hpp"
+#include <gtest/gtest.h>
+#include <boost/lexical_cast.hpp>
 
-#include <ostream>
+#include <flatsurf/bound.hpp>
+#include <flatsurf/delaunay_triangulation.hpp>
+#include <flatsurf/half_edge.hpp>
+
+#include "surfaces.hpp"
 
 using namespace flatsurf;
+using eantic::renf_class;
+using std::vector;
+using testing::Test;
+using testing::Types;
+
+namespace {
+TEST(DelaunayTest, Square) {
+  using T = Element<exactreal::IntegerRingTraits>;
+  using Vector = Vector<T>;
+  auto square = makeSquare<Vector>();
+
+  for (auto halfEdge : square.halfEdges()) {
+    square.flip(halfEdge);
+    DelaunayTriangulation<T>::transform(square);
+    for (auto edge : square.halfEdges()) {
+      EXPECT_TRUE(DelaunayTriangulation<T>::test(square, edge));
+      EXPECT_LT(square.fromEdge(edge), Bound(2 * 2));
+    }
+  }
+}
+}  // namespace
+
+#include "main.hpp"

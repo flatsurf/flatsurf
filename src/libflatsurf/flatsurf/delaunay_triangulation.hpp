@@ -17,21 +17,23 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_AS_VECTOR_HPP
-#define LIBFLATSURF_AS_VECTOR_HPP
+#ifndef LIBFLATSURF_DELAUNAY_TRIANGULATION_HPP
+#define LIBFLATSURF_DELAUNAY_TRIANGULATION_HPP
 
-#include <boost/iterator/iterator_traits.hpp>
-#include <boost/range/iterator_range.hpp>
-#include <vector>
+#include "flatsurf/forward.hpp"
 
-namespace {
-// Since BoostToOven::as_container never made it into boost, we use this little
-// helper to convert a boost range to a vector.
-template <typename Iterator>
-auto as_vector(const boost::iterator_range<Iterator>& range) {
-  using T = typename boost::iterators::iterator_value<Iterator>::type;
-  return std::vector<T>(range.begin(), range.end());
-}
-}  // namespace
+namespace flatsurf {
+template <typename T>
+class DelaunayTriangulation {
+ public:
+  // Flip edges in this triangulation so that all faces satisfy the l²-Delaunay condition.
+  static void transform(FlatTriangulation<T>&);
+
+  // Return whether this half edge satisfies the l²-Delaunay condition, i.e.,
+  // whether the circumcircles of the face attached to this edge does not
+  // contain the face attached to the reverse half edge.
+  static bool test(const FlatTriangulation<T>&, HalfEdge);
+};
+}  // namespace flatsurf
 
 #endif

@@ -38,13 +38,11 @@
 #include "./uedge.h"
 #include "./vertex.h"
 
-#include "flatsurf/detail/as_vector.hpp"
+#include "../libflatsurf/util/as_vector.ipp"
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/half_edge.hpp"
 #include "flatsurf/half_edge_map.hpp"
 #include "flatsurf/permutation.hpp"
-#include "flatsurf/vector_eantic.hpp"
-#include "flatsurf/vector_exactreal.hpp"
 
 using boost::adaptors::transformed;
 using boost::math::constants::pi;
@@ -55,7 +53,7 @@ using flatsurf::FlatTriangulationCombinatorial;
 using flatsurf::HalfEdge;
 using flatsurf::HalfEdgeMap;
 using flatsurf::Permutation;
-using flatsurf::VectorExactReal;
+using flatsurf::Vector;
 using std::endl;
 using std::flush;
 using std::list;
@@ -78,16 +76,15 @@ TwoComplex::~TwoComplex() {
   }
 }
 
-TwoComplex::operator FlatTriangulation<
-    VectorExactReal<exactreal::NumberFieldTraits>>() const {
-  VectorExactReal<NumberFieldTraits> zero{alg_t<bigrat>().real(),
-                                          alg_t<bigrat>().imag()};
+TwoComplex::operator FlatTriangulation<exactreal::Element<exactreal::NumberFieldTraits>>() const {
+  Vector<exactreal::Element<NumberFieldTraits>> zero{alg_t<bigrat>().real(),
+                                                     alg_t<bigrat>().imag()};
 
   auto combinatorial = static_cast<FlatTriangulationCombinatorial>(*this);
-  auto vectors = HalfEdgeMap<VectorExactReal<NumberFieldTraits>>(
+  auto vectors = HalfEdgeMap<Vector<exactreal::Element<NumberFieldTraits>>>(
       combinatorial,
-      vector<VectorExactReal<NumberFieldTraits>>(uedges.size(), zero),
-      [](HalfEdgeMap<VectorExactReal<NumberFieldTraits>> &map,
+      vector<Vector<exactreal::Element<NumberFieldTraits>>>(uedges.size(), zero),
+      [](HalfEdgeMap<Vector<exactreal::Element<NumberFieldTraits>>> &map,
          HalfEdge halfEdge, const FlatTriangulationCombinatorial &parent) {
         map.set(halfEdge, map.get(-parent.nextInFace(halfEdge)) +
                               map.get(parent.nextAtVertex(halfEdge)));

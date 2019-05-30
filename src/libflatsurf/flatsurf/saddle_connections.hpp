@@ -20,44 +20,68 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTIONS_HPP
 #define LIBFLATSURF_SADDLE_CONNECTIONS_HPP
 
+#include <boost/iterator/iterator_facade.hpp>
+#include <optional>
 #include "external/spimpl/spimpl.h"
 
 #include "flatsurf/bound.hpp"
 #include "flatsurf/forward.hpp"
 #include "flatsurf/half_edge.hpp"
-#include "flatsurf/saddle_connections_iterator.hpp"
 #include "flatsurf/vertex.hpp"
 
 namespace flatsurf {
-template <typename Vector, typename VectorAlongTriangulation>
+template <typename Surface>
 class SaddleConnections {
  public:
-  using Surface = FlatTriangulation<Vector>;
+  // All saddle connections on the surface starting at any vertex.
+  SaddleConnections(const Surface &, Bound searchRadius);
+
+  // All saddle connections on the surface starting at source.
+  SaddleConnections(const Surface &, Bound searchRadius, const Vertex source);
 
   // The saddle connections that are starting at the source of sectorBegin
   // and lie in the sector between sectorBegin and the follow half edge in
   // counter-clockwise order.
   SaddleConnections(const Surface &, Bound searchRadius, HalfEdge sectorBegin);
-  // The saddle connections that are crossing sectorBoundary and are in the
-  // sector between sectorBegin and sectorEnd; these two must be connected
-  // by a half edge, sectorBoundary.
-  SaddleConnections(const Surface &surface, const Bound searchRadius,
-                    const HalfEdge sectorBoundary,
-                    const VectorAlongTriangulation &sectorBegin,
-                    const VectorAlongTriangulation &sectorEnd);
 
-  SaddleConnectionsIterator<Vector, VectorAlongTriangulation> begin() const;
-  SaddleConnectionsIterator<Vector, VectorAlongTriangulation> end() const;
+  class Iterator : public boost::iterator_facade<Iterator, const std::unique_ptr<SaddleConnection<Surface>>, std::forward_iterator_tag, const std::unique_ptr<SaddleConnection<Surface>>> {
+    class Implementation;
+    spimpl::impl_ptr<Implementation> impl;
+
+    friend SaddleConnections;
+
+   public:
+    Iterator(spimpl::impl_ptr<Implementation> &&impl);
+
+    // Advance the iterator to the next saddle connection.
+    void increment();
+    // Advance the iterator to the next saddle connection or until a HalfEdge is
+    // being crossed during the search (in forward direction.) This can be useful
+    // if information about the exact path in the surface for a saddle connection
+    // needs to be reconstructed.
+    std::optional<HalfEdge> incrementWithCrossings();
+    bool equal(const Iterator &other) const;
+    std::unique_ptr<SaddleConnection<Surface>> dereference() const;
+
+    void skipSector(CCW sector);
+
+#ifdef __GNUG__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnon-template-friend"
+#endif
+    friend std::ostream &operator<<(std::ostream &, const Iterator &);
+#ifdef __GNUG__
+#pragma GCC diagnostic pop
+#endif
+  };
+
+  Iterator begin() const;
+  Iterator end() const;
 
  private:
-  friend SaddleConnectionsIterator<Vector, VectorAlongTriangulation>;
   class Implementation;
   spimpl::impl_ptr<Implementation> impl;
 };
-
-template <typename Vector>
-SaddleConnections(const FlatTriangulation<Vector> &, Bound, HalfEdge)
-    ->SaddleConnections<Vector, typename Vector::AlongTriangulation>;
 }  // namespace flatsurf
 
 #endif

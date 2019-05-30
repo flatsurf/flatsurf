@@ -25,13 +25,13 @@
 #include "flatsurf/forward.hpp"
 
 namespace flatsurf {
-template <class Vector>
+template <class T>
 class IntervalExchangeTransformation {
  public:
-  IntervalExchangeTransformation(FlatTriangulation<Vector> &, const Vector &vertical);
+  IntervalExchangeTransformation(FlatTriangulation<T> &, const Vector<T> &vertical);
 
-  template <typename W>
-  friend std::ostream &operator<<(std::ostream &, const IntervalExchangeTransformation<W> &);
+  template <typename S>
+  friend std::ostream &operator<<(std::ostream &, const IntervalExchangeTransformation<S> &);
 
  private:
   class Implementation;

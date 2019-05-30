@@ -28,10 +28,10 @@
 #include "flatsurf/half_edge.hpp"
 
 namespace flatsurf {
-template <typename Vector, typename AlongTriangulation>
-class SaddleConnection : boost::equality_comparable<SaddleConnection<Vector, AlongTriangulation>> {
+template <typename Surface>
+class SaddleConnection : boost::equality_comparable<SaddleConnection<Surface>> {
  public:
-  const AlongTriangulation &vector() const;
+  const typename Surface::Vector &vector() const;
   // The saddle connection is leaving from the vertex at the source of source.
   // It is leaving in a direction that is contained in the sector next to
   // source (counterclockwise.)
@@ -41,13 +41,13 @@ class SaddleConnection : boost::equality_comparable<SaddleConnection<Vector, Alo
   // *clockwise* from *-target*.
   HalfEdge target() const;
 
-  bool operator==(const SaddleConnection<Vector, AlongTriangulation> &) const;
+  bool operator==(const SaddleConnection<Surface> &) const;
 
-  template <typename V, typename A>
-  friend std::ostream &operator<<(std::ostream &, const SaddleConnection<V, A> &);
+  template <typename TR>
+  friend std::ostream &operator<<(std::ostream &, const SaddleConnection<TR> &);
 
  private:
-  friend SaddleConnectionsIterator<Vector, AlongTriangulation>;
+  friend SaddleConnections<Surface>;
 
   class Implementation;
   spimpl::impl_ptr<Implementation> impl;

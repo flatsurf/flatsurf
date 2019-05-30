@@ -37,6 +37,7 @@ class HalfEdgeMap final {
  public:
   using FlipHandler = std::function<void(HalfEdgeMap &, HalfEdge, const FlatTriangulationCombinatorial &)>;
   HalfEdgeMap(const FlatTriangulationCombinatorial &parent, const std::vector<T> &values, const FlipHandler &updateAfterFlip);
+  HalfEdgeMap(const FlatTriangulationCombinatorial &parent, const FlipHandler &updateAfterFlip);
   HalfEdgeMap(const HalfEdgeMap &);
   HalfEdgeMap(HalfEdgeMap &&);
   ~HalfEdgeMap();
@@ -48,8 +49,9 @@ class HalfEdgeMap final {
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const HalfEdgeMap<S> &);
 
-  HalfEdgeMap &operator=(const HalfEdgeMap &);
-  HalfEdgeMap &operator=(HalfEdgeMap &&);
+  HalfEdgeMap &operator=(const HalfEdgeMap &) = delete;
+  HalfEdgeMap &operator=(HalfEdgeMap &&) = delete;
+  HalfEdgeMap operator-() const noexcept;
 
   static size_t index(const HalfEdge);
 

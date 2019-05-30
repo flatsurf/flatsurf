@@ -45,6 +45,8 @@ class FlatTriangulationCombinatorial {
 
   const std::vector<HalfEdge> &halfEdges() const;
   const std::vector<Vertex> &vertices() const;
+  // Return the outgoing half edges from this vertex in ccw order.
+  std::vector<HalfEdge> atVertex(Vertex) const;
 
   void flip(HalfEdge);
 
@@ -55,7 +57,7 @@ class FlatTriangulationCombinatorial {
   spimpl::unique_impl_ptr<Implementation> impl;
 
   template <typename T>
-  friend struct HalfEdgeMap;
+  friend class HalfEdgeMap;
 
   template <typename T>
   void registerMap(const HalfEdgeMap<T> &) const;

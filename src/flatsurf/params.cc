@@ -26,10 +26,8 @@
 
 #include "./number_field.h"
 #include "./params.h"
-#include "flatsurf/vector_arb.hpp"
 
 using exactreal::RealNumber;
-using flatsurf::VectorArb;
 using std::endl;
 using std::ostream;
 using std::shared_ptr;

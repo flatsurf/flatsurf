@@ -30,9 +30,11 @@
 #include "flatsurf/forward.hpp"
 
 namespace flatsurf {
-template <class Vector>
+template <class T>
 class FlatTriangulation : public FlatTriangulationCombinatorial {
  public:
+  using Vector = flatsurf::Vector<T>;
+
   FlatTriangulation(FlatTriangulationCombinatorial &&, const std::vector<Vector> &vectors);
   FlatTriangulation(FlatTriangulationCombinatorial &&, HalfEdgeMap<Vector> &&vectors);
 
@@ -40,7 +42,7 @@ class FlatTriangulation : public FlatTriangulationCombinatorial {
   // same data. There is no copy-constructor since it is too likely that
   // this is would not update the associated HalfEdgeMaps in the way that the
   // caller expects.
-  FlatTriangulation<Vector> clone() const;
+  FlatTriangulation<T> clone() const;
 
   const Vector &fromEdge(HalfEdge) const;
 
@@ -53,7 +55,7 @@ class FlatTriangulation : public FlatTriangulationCombinatorial {
 };
 
 template <typename Vector>
-FlatTriangulation(const std::vector<std::vector<int>> &, const std::vector<Vector> &)->FlatTriangulation<Vector>;
+FlatTriangulation(const std::vector<std::vector<int>> &, const std::vector<Vector> &)->FlatTriangulation<typename Vector::Coordinate>;
 }  // namespace flatsurf
 
 #endif

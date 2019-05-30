@@ -30,9 +30,10 @@
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/half_edge.hpp"
 #include "flatsurf/orientation.hpp"
+#include "flatsurf/saddle_connection.hpp"
 #include "flatsurf/saddle_connections.hpp"
-#include "flatsurf/vector_arb.hpp"
-#include "flatsurf/vector_exactreal.hpp"
+#include "flatsurf/vector.hpp"
+#include "flatsurf/vector_along_triangulation.hpp"
 
 #include "./globals.h"
 #include "./my_ostream.h"
@@ -44,13 +45,13 @@
 using namespace polygon;
 
 using boost::numeric_cast;
+using exactreal::Arb;
 using exactreal::NumberFieldTraits;
 using flatsurf::Bound;
 using flatsurf::FlatTriangulation;
 using flatsurf::HalfEdge;
 using flatsurf::SaddleConnections;
-using flatsurf::VectorArb;
-using flatsurf::VectorExactReal;
+using flatsurf::Vector;
 using std::cout;
 using std::endl;
 using std::list;
@@ -602,104 +603,77 @@ int main(int argc, char **argv) {
   auto first_edge = *((*i)->out_edges.begin());
 
   if (libflatsurf) {
-    using FlatTriangulation =
-        FlatTriangulation<VectorExactReal<NumberFieldTraits>>;
+    using FlatTriangulation = FlatTriangulation<exactreal::Element<exactreal::NumberFieldTraits>>;
     auto flat_triangulation = static_cast<FlatTriangulation>(*S);
     std::cout << flat_triangulation << std::endl;
 
-    const HalfEdge firstEdge = static_cast<HalfEdge>(*first_edge);
-    HalfEdge sectorBegin = firstEdge;
-
     SaddleConf sc;
 
-    do {
-      using SaddleConnections =
-          SaddleConnections<VectorExactReal<NumberFieldTraits>>;
-      for (auto saddle_connection :
-           SaddleConnections(flat_triangulation,
-                             Bound(static_cast<long long>(ceil(depth * depth))),
-                             sectorBegin)) {
-        if (!Vertex::from(flatsurf::Vertex::source(saddle_connection->source(),
-                                                   flat_triangulation))
-                 .relevant()) {
-          // It would be good to have a proper notion of marked vertices
-          // instead, but currently we rely on polygon's original concept of
-          // "relevant"
+    using SaddleConnections = SaddleConnections<FlatTriangulation>;
+    for (auto saddle_connection : SaddleConnections(flat_triangulation, Bound(static_cast<long long>(ceil(depth * depth))))) {
+      if (!Vertex::from(flatsurf::Vertex::source(saddle_connection->source(), flat_triangulation)).relevant()) {
+        // It would be good to have a proper notion of marked vertices
+        // instead, but currently we rely on polygon's original concept of
+        // "relevant"
+        continue;
+      }
+
+      sc.clear();
+
+      auto direction = static_cast<typename FlatTriangulation::Vector>(saddle_connection->vector());
+
+      for (const HalfEdge e : flat_triangulation.halfEdges()) {
+        if (flat_triangulation.fromEdge(e).ccw(direction) == flatsurf::CCW::CLOCKWISE) {
+          continue;
+        }
+        if (flat_triangulation.fromEdge(flat_triangulation.nextAtVertex(e)).ccw(direction) == flatsurf::CCW::COUNTERCLOCKWISE) {
+          continue;
+        }
+        if (flat_triangulation.fromEdge(flat_triangulation.nextAtVertex(e)).orientation(direction) != flatsurf::ORIENTATION::SAME) {
           continue;
         }
 
-        sc.clear();
+        const Vertex &source = Vertex::from(flatsurf::Vertex::source(e, flat_triangulation));
+        if (!source.relevant()) continue;
+        if (source.deleted()) continue;
 
-        auto direction =
-            static_cast<VectorExactReal<exactreal::NumberFieldTraits>>(
-                saddle_connection->vector());
+        auto saddle_connections_in_same_direction = SaddleConnections(flat_triangulation, Bound(static_cast<long long>(ceil(follow_depth * follow_depth))), e);
+        for (auto it = saddle_connections_in_same_direction.begin();
+             it != saddle_connections_in_same_direction.end(); ++it) {
+          auto saddle_connection_in_same_direction = *it;
 
-        for (const HalfEdge e : flat_triangulation.halfEdges()) {
-          if (flat_triangulation.fromEdge(e).ccw(direction) ==
-              flatsurf::CCW::CLOCKWISE) {
-            continue;
+          const Vertex &target = Vertex::from(flatsurf::Vertex::target(
+              saddle_connection_in_same_direction->target(),
+              flat_triangulation));
+
+          if (!target.relevant()) continue;
+          if (target.deleted()) continue;
+
+          auto ccw = saddle_connection_in_same_direction->vector().ccw(saddle_connection->vector());
+          if (ccw == flatsurf::CCW::COLLINEAR) {
+            auto vector = static_cast<Vector<exactreal::Element<NumberFieldTraits>>>(saddle_connection_in_same_direction->vector());
+            assert(flat_triangulation.fromEdge(e).ccw(vector) == flatsurf::CCW::COUNTERCLOCKWISE);
+            auto dvector = static_cast<Point>(static_cast<Vector<Arb>>(vector));
+            auto start = Dir(e, dvector);
+            assert(start.v->id() == source.id());
+            // end points back to start from the target vertex
+            auto end = Dir(flat_triangulation.nextInFace(saddle_connection_in_same_direction->target()), -dvector);
+            assert(end.v->id() == target.id());
+            sc.add_saddle(start, end, vector);
+            break;
+          } else {
+            it.skipSector(-ccw);
           }
-          if (flat_triangulation.fromEdge(flat_triangulation.nextAtVertex(e))
-                  .ccw(direction) == flatsurf::CCW::COUNTERCLOCKWISE) {
-            continue;
-          }
-          if (flat_triangulation.fromEdge(flat_triangulation.nextAtVertex(e))
-                  .orientation(direction) != flatsurf::ORIENTATION::SAME) {
-            continue;
-          }
-
-          const Vertex &source =
-              Vertex::from(flatsurf::Vertex::source(e, flat_triangulation));
-          if (!source.relevant()) continue;
-          if (source.deleted()) continue;
-
-          auto saddle_connections_in_same_direction = SaddleConnections(
-              flat_triangulation,
-              Bound(static_cast<long long>(ceil(follow_depth * follow_depth))),
-              e);
-          for (auto it = saddle_connections_in_same_direction.begin();
-               it != saddle_connections_in_same_direction.end(); ++it) {
-            auto saddle_connection_in_same_direction = *it;
-
-            const Vertex &target = Vertex::from(flatsurf::Vertex::target(
-                saddle_connection_in_same_direction->target(),
-                flat_triangulation));
-
-            if (!target.relevant()) continue;
-            if (target.deleted()) continue;
-
-            auto ccw = saddle_connection_in_same_direction->vector().ccw(
-                saddle_connection->vector());
-            if (ccw == flatsurf::CCW::COLLINEAR) {
-              auto vector = static_cast<VectorExactReal<NumberFieldTraits>>(
-                  saddle_connection_in_same_direction->vector());
-              assert(flat_triangulation.fromEdge(e).ccw(vector) ==
-                     flatsurf::CCW::COUNTERCLOCKWISE);
-              auto dvector = static_cast<Point>(static_cast<VectorArb>(vector));
-              auto start = Dir(e, dvector);
-              assert(start.v->id() == source.id());
-              // end points back to start from the target vertex
-              auto end = Dir(flat_triangulation.nextInFace(
-                                 saddle_connection_in_same_direction->target()),
-                             -dvector);
-              assert(end.v->id() == target.id());
-              sc.add_saddle(start, end, vector);
-              break;
-            } else {
-              it.skipSector(-ccw);
-            }
-          }
-        }
-        if (show_lengths || show_cyls) {
-          sc.renorm_lengths();
-        }
-
-        if (sc.n_saddles() > 0) {
-          smry.add_one_conf(sc);
         }
       }
-      sectorBegin = flat_triangulation.nextAtVertex(sectorBegin);
-    } while (sectorBegin != firstEdge);
+      if (show_lengths || show_cyls) {
+        sc.renorm_lengths();
+      }
+
+      if (sc.n_saddles() > 0) {
+        smry.add_one_conf(sc);
+      }
+    }
   } else {
     S->Sweep<BigPointI>(depth, Dir<BigPointI>(first_edge), GoalTotalAngle);
   }

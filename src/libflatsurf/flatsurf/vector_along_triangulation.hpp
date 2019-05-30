@@ -16,45 +16,46 @@
  *  You should have received a copy of the GNU General Public License
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
-#ifndef LIBFLATSURF_VECTOR_ALONG_TRIANGULATION
-#define LIBFLATSURF_VECTOR_ALONG_TRIANGULATION
+#ifndef LIBFLATSURF_VECTOR_ALONG_TRIANGULATION_HPP
+#define LIBFLATSURF_VECTOR_ALONG_TRIANGULATION_HPP
 
 #include <boost/operators.hpp>
-#include <iosfwd>
+#include <vector>
 #include "external/spimpl/spimpl.h"
 
+#include "flatsurf/detail/vector_exact.hpp"
+#include "flatsurf/detail/vector_with_error.hpp"
 #include "flatsurf/forward.hpp"
 
 namespace flatsurf {
 // A generic implementation of a vector in ℝ² that is a sum of half edges of a
 // flat triangulation.
-template <typename V>
-class VectorAlongTriangulation
-    : boost::additive<VectorAlongTriangulation<V>>,
-      boost::additive<VectorAlongTriangulation<V>, HalfEdge>,
-      boost::less_than_comparable<VectorAlongTriangulation<V>, Bound>,
-      boost::equality_comparable<VectorAlongTriangulation<V>> {
+template <typename T, typename Approximation, typename Surf>
+class VectorAlongTriangulation : public std::conditional_t<std::is_base_of_v<detail::VectorExact<Vector<T>, T>, Vector<T>>, detail::VectorExact<VectorAlongTriangulation<T, Approximation>, T>, detail::VectorWithError<VectorAlongTriangulation<T, Approximation>>>,
+                                 boost::additive<VectorAlongTriangulation<T, Approximation>, HalfEdge>,
+                                 boost::additive<VectorAlongTriangulation<T, Approximation>, HalfEdgeMap<int>> {
  public:
-  using Surface = FlatTriangulation<V>;
+  using Coordinate = T;
+  using Surface = Surf;
 
   explicit VectorAlongTriangulation(const Surface &surface);
-  VectorAlongTriangulation(const Surface &surface,
-                           const HalfEdgeMap<int> &coefficients);
+  VectorAlongTriangulation(const Surface &surface, const std::vector<HalfEdge> &);
+  VectorAlongTriangulation(const Surface &surface, const HalfEdgeMap<int> &coefficients);
 
-  CCW ccw(const VectorAlongTriangulation<V> &rhs) const;
+  VectorAlongTriangulation &operator+=(const HalfEdge);
+  VectorAlongTriangulation &operator-=(const HalfEdge);
+  VectorAlongTriangulation &operator+=(const HalfEdgeMap<int> &);
+  VectorAlongTriangulation &operator-=(const HalfEdgeMap<int> &);
 
-  template <typename W>
-  friend std::ostream &operator<<(std::ostream &,
-                                  const VectorAlongTriangulation<W> &);
-  bool operator>(const Bound bound) const;
-  bool operator<(const Bound bound) const;
-  VectorAlongTriangulation<V> &operator+=(const HalfEdge);
-  VectorAlongTriangulation<V> &operator-=(const HalfEdge);
-  VectorAlongTriangulation<V> &iadd(const HalfEdge, const int);
-  bool operator==(const VectorAlongTriangulation<V> &) const;
-  operator V() const;
+  operator Vector<T>() const noexcept;
 
  private:
+  friend detail::VectorBase<VectorAlongTriangulation<T, Approximation>>;
+  friend detail::VectorExact<VectorAlongTriangulation<T, Approximation>, T>;
+  friend detail::VectorWithError<VectorAlongTriangulation<T, Approximation>>;
+  template <typename Vector>
+  friend std::ostream &detail::operator<<(std::ostream &, const detail::VectorBase<Vector> &);
+
   class Implementation;
   spimpl::impl_ptr<Implementation> impl;
 };
