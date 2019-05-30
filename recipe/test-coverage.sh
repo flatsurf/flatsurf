@@ -20,10 +20,8 @@ git fetch origin
 git checkout -b master
 git branch -u origin/master
 
-# coveralls-cpp uses the following arguments to figure out more about the repository:
-git log -1
-git rev-parse --abbrev-ref HEAD
-git --no-pager log -1 --pretty=format:%H
-
 set +x
-if [ ${#COVERALLS_REPO_TOKEN} = 33 ];then coveralls --verbose --gcov `which x86_64-conda_cos6-linux-gnu-gcov` --exclude flatsurf/external --gcov-options '\-lrp' -b .; fi
+if [ ${#COVERALLS_REPO_TOKEN} = 36 ];then
+  bash <(curl -s https://codecov.io/bash) -t $COVERALLS_REPO_TOKEN -x `which x86_64-conda_cos6-linux-gnu-gcov` -a '\-lrp' -p .
+  # coveralls --verbose --gcov `which x86_64-conda_cos6-linux-gnu-gcov` --exclude flatsurf/external --gcov-options '\-lrp' -b .;
+fi
