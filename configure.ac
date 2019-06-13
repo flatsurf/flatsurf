@@ -74,6 +74,9 @@ AC_CHECK_HEADERS([NTL/LLL.h NTL/mat_ZZ.h], , AC_MSG_ERROR([NTL headers not found
 AX_CXX_CHECK_LIB([exactreal], [exactreal::RealNumber::random()], [have_exactreal=yes], AC_MSG_ERROR([exact-real library not found]), [-lgmp -lmpfr -lflint])
 AC_CHECK_HEADERS([exact-real/real_number.hpp exact-real/module.hpp], , AC_MSG_ERROR([libexactreal headers not found]))
 
+AX_CXX_CHECK_LIB([intervalxt], [intervalxt::RationalLinearSubspace], [have_intervalxt=yes], AC_MSG_ERROR([intervalxt library not found]), [-lgmp -lmpfr -lflint])
+AC_CHECK_HEADERS([intervalxt/intervalxt.hpp], , AC_MSG_ERROR([libintervalxt headers not found]))
+
 dnl flatsurf (but not libflatsurf yet) use Eigen for some Linear Algebra
 AC_CHECK_HEADERS([eigen3/Eigen/Dense eigen/Eigen/Dense], [have_eigen=yes; break;])
 

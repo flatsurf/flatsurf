@@ -43,8 +43,8 @@ class SaddleConnection : boost::equality_comparable<SaddleConnection<Surface>> {
 
   bool operator==(const SaddleConnection<Surface> &) const;
 
-  template <typename TR>
-  friend std::ostream &operator<<(std::ostream &, const SaddleConnection<TR> &);
+  template <typename Surf>
+  friend std::ostream &operator<<(std::ostream &, const SaddleConnection<Surf> &);
 
  private:
   friend SaddleConnections<Surface>;

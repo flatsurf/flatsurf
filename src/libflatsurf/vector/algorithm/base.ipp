@@ -87,6 +87,10 @@ Vector VectorBase<Vector>::operator-() const noexcept {
 
   if constexpr (has_unary_negate<Implementation>) {
     return -*self.impl;
+  } else if constexpr (is_cartesian_v<Implementation>) {
+    return Implementation::make(-self.impl->x, -self.impl->y);
+  } else if constexpr (is_forward_v<Implementation>) {
+    return Implementation::make(-self.impl->vector);
   } else {
     static_assert(false_type_v<Implementation>, "Implementation is missing operator-.");
   }
@@ -126,7 +130,7 @@ Vector& VectorBase<Vector>::operator*=(const int c) {
   using Implementation = typename Vector::Implementation;
   Vector& self = static_cast<Vector&>(*this);
 
-  if constexpr (has_binary_inplace_times<Implementation>) {
+  if constexpr (has_binary_inplace_times_int<Implementation>) {
     *self.impl *= c;
   } else if constexpr (is_cartesian_v<Implementation>) {
     self.impl->x *= c;
@@ -138,6 +142,54 @@ Vector& VectorBase<Vector>::operator*=(const int c) {
   }
 
   return self;
+}
+
+template <typename Vector>
+Vector& VectorBase<Vector>::operator*=(const mpz_class& c) {
+  using Implementation = typename Vector::Implementation;
+  Vector& self = static_cast<Vector&>(*this);
+
+  if constexpr (has_binary_inplace_times_mpz<Implementation>) {
+    *self.impl *= c;
+  } else if constexpr (is_cartesian_v<Implementation>) {
+    self.impl->x *= c;
+    self.impl->y *= c;
+  } else if constexpr (is_forward_v<Implementation>) {
+    self.impl->vector *= c;
+  } else {
+    static_assert(false_type_v<Implementation>, "Implementation is missing operator*=.");
+  }
+
+  return self;
+}
+
+template <typename Vector>
+Vector VectorBase<Vector>::projection(const Vector& rhs) const {
+  using Implementation = typename Vector::Implementation;
+  const Vector& self = static_cast<const Vector&>(*this);
+
+  if constexpr (has_projection<Implementation>) {
+    return self.impl->projection(rhs);
+  } else if constexpr (is_cartesian_v<Implementation>) {
+    auto dot = self.impl->x * rhs.impl->x + self.impl->y * rhs.impl->y;
+    return Implementation::make(rhs.impl->x * dot, rhs.impl->y * dot);
+  } else {
+    static_assert(false_type_v<Implementation>, "Implementation is missing projection().");
+  }
+}
+
+template <typename Vector>
+Vector VectorBase<Vector>::perpendicular() const {
+  using Implementation = typename Vector::Implementation;
+  const Vector& self = static_cast<const Vector&>(*this);
+
+  if constexpr (has_perpendicular<Implementation>) {
+    return self.impl->perpendicular();
+  } else if constexpr (is_cartesian_v<Implementation>) {
+    return Implementation::make(-self.impl->y, self.impl->x);
+  } else {
+    static_assert(false_type_v<Implementation>, "Implementation is missing perpendicular().");
+  }
 }
 
 }  // namespace flatsurf

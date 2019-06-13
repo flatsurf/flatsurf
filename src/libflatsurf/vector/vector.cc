@@ -49,8 +49,8 @@ class Vector<T>::Implementation : public Cartesian<T> {
   using Cartesian<T>::Cartesian;
   using Vector = flatsurf::Vector<T>;
 
-  Vector operator-() const noexcept {
-    return Vector(-this->x, -this->y);
+  static Vector make(const T& x, const T& y) {
+    return Vector(x, y);
   }
 
   template <typename _ = void, typename = std::enable_if_t<std::is_same_v<T, exactreal::Arb>, void>>
@@ -60,10 +60,23 @@ class Vector<T>::Implementation : public Cartesian<T> {
     return *this;
   }
 
-  template <typename _ = void, typename = std::enable_if_t<std::is_same_v<T, exactreal::Arb>, void>>
-  Implementation& operator*=(const int c) {
-    this->x *= Arb(c)(ARB_PRECISION_FAST);
-    this->y *= Arb(c)(ARB_PRECISION_FAST);
+  template <typename S, typename = std::enable_if_t<std::is_same_v<T, long long> || std::is_same_v<T, exactreal::Arb>, void>>
+  Implementation& operator*=(const S& c) {
+    if constexpr(std::is_same_v<T, long long>) {
+      if constexpr(std::is_same_v<S, mpz_class>) {
+        if (mpz_fits_sint_p(c.get_mpz_t())) {
+          *this *= c.get_si();
+        } else {
+          throw std::logic_error("not implemented: multiplication with mpz_class.");
+        }
+      } else {
+        this->x *= c;
+        this->y *= c;
+      }
+    } else {
+      this->x *= Arb(c)(ARB_PRECISION_FAST);
+      this->y *= Arb(c)(ARB_PRECISION_FAST);
+    }
     return *this;
   }
 
@@ -135,6 +148,13 @@ class Vector<T>::Implementation : public Cartesian<T> {
       return maybe_y;
 
     return true;
+  }
+
+  template <typename = void, typename = std::enable_if_t<std::is_same_v<T, exactreal::Arb>, void>>
+  Vector projection(const Vector& rhs) const {
+    Arb dot = (this->x * rhs.impl->x + this->y * rhs.impl->y)(ARB_PRECISION_FAST);
+    return make((dot * rhs.impl->x)(ARB_PRECISION_FAST),
+                (dot * rhs.impl->y)(ARB_PRECISION_FAST));
   }
 
   template <typename = void, typename = std::enable_if_t<std::is_same_v<T, eantic::renf_elem_class> || std::is_same_v<T, exactreal::Element<exactreal::IntegerRingTraits>> || std::is_same_v<T, exactreal::Element<exactreal::RationalFieldTraits>> || std::is_same_v<T, exactreal::Element<exactreal::NumberFieldTraits>>, void>>

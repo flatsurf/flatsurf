@@ -21,13 +21,24 @@
 #include <memory>
 #include <ostream>
 #include <vector>
+#include <map>
+
+#include <boost/range/adaptors.hpp>
+#include <boost/lexical_cast.hpp>
+#include <intervalxt/interval_exchange_transformation.hpp>
+#include <intervalxt/label.hpp>
 
 #include "flatsurf/ccw.hpp"
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/half_edge.hpp"
 #include "flatsurf/interval_exchange_transformation.hpp"
+#include "flatsurf/length_along_triangulation.hpp"
+#include "flatsurf/vector_along_triangulation.hpp"
 #include "flatsurf/orientation.hpp"
 #include "flatsurf/vector.hpp"
+#include "util/as_vector.ipp"
+
+#include "util/union_join.ipp"
 
 using std::any_of;
 using std::find_if;
@@ -37,6 +48,9 @@ using std::next;
 using std::ostream;
 using std::shared_ptr;
 using std::vector;
+using std::map;
+
+using boost::adaptors::transformed;
 
 namespace flatsurf {
 namespace {
@@ -66,9 +80,9 @@ TRIANGLE classifyFace(HalfEdge face, const FlatTriangulation<T>& parent,
                 "time");
         }
       case CCW::CLOCKWISE:
+        topEdges++;
         break;
       case CCW::COUNTERCLOCKWISE:
-        topEdges++;
         break;
     }
 
@@ -86,44 +100,39 @@ TRIANGLE classifyFace(HalfEdge face, const FlatTriangulation<T>& parent,
 template <typename T>
 bool large(HalfEdge e, const FlatTriangulation<T>& parent,
            const Vector<T>& vertical) {
-  return classifyFace(e, parent, vertical) == TRIANGLE::FORWARD &&
+  return vertical.ccw(parent.fromEdge(e)) == CCW::CLOCKWISE &&
+         classifyFace(e, parent, vertical) == TRIANGLE::FORWARD &&
          classifyFace(-e, parent, vertical) == TRIANGLE::BACKWARD;
 }
 
 template <typename T>
-HalfEdge makeUniqueLargeEdge(FlatTriangulation<T>& parent,
-                             const Vector<T>& vertical) {
+HalfEdge makeUniqueLargeEdge(FlatTriangulation<T>& parent, const Vector<T>& vertical, const std::set<HalfEdge>& component) {
+  assert(component.size());
   auto source =
-      find_if(parent.halfEdges().begin(), parent.halfEdges().end(),
+      find_if(component.begin(), component.end(),
               [&](const HalfEdge e) {
-                return large(e, parent, vertical) &&
-                       vertical.ccw(parent.fromEdge(e)) == CCW::CLOCKWISE;
+                // We can start from an edge at the bottom of its face if it is:
+                // * A large edge
+                // * A non-vertical edge in a right vertical triangle
+                return large(e, parent, vertical) ||
+                  (vertical.ccw(parent.fromEdge(parent.nextInFace(e))) == CCW::COLLINEAR && vertical.ccw(parent.fromEdge(e)) == CCW::CLOCKWISE);
               });
 
-  if (source == parent.halfEdges().end())
-    throw std::logic_error("not implemented - no large edge in triangulation");
+  if (source == component.end())
+    throw std::logic_error("not implemented: no large edges & no vertical edges; something is wrong.");
 
+  // Eliminate other large edges
   while (true) {
-    auto largeEdge = find_if(parent.halfEdges().begin(),
-                             parent.halfEdges().end(), [&](const HalfEdge e) {
+    auto largeEdge = find_if(component.begin(), component.end(),
+                             [&](const HalfEdge e) {
                                return e != *source && e != -*source &&
                                       large(e, parent, vertical);
                              });
 
-    if (largeEdge == parent.halfEdges().end()) break;
+    if (largeEdge == component.end()) break;
 
     parent.flip(*largeEdge);
   }
-
-  assert(large(*source, parent, vertical) &&
-         "largeness of the initial edge does not change by flipping other "
-         "large edges");
-
-  if (any_of(parent.halfEdges().begin(), parent.halfEdges().end(),
-             [&](const HalfEdge e) {
-               return vertical.ccw(parent.fromEdge(e)) == CCW::COLLINEAR;
-             }))
-    throw std::logic_error("not implemented - vertical edge in triangulation");
 
   return *source;
 }
@@ -131,20 +140,47 @@ HalfEdge makeUniqueLargeEdge(FlatTriangulation<T>& parent,
 template <typename T>
 void makeContour(insert_iterator<vector<HalfEdge>> target,
                  const HalfEdge source, const FlatTriangulation<T>& parent,
-                 const Vector<T>& vertical) {
+                 const Vector<T>& vertical, std::set<HalfEdge>& contourEdges) {
+  auto addToContour = [&] () {
+    target = source;
+    // If we ever stumble upon this edge or its reverse, it must be part of the
+    // contour.
+    contourEdges.insert(source);
+    contourEdges.insert(-source);
+  };
+
+  if (contourEdges.find(source) != contourEdges.end()) {
+    addToContour();
+    return;
+  }
+
+  std::vector<HalfEdge> recurseAcross;
   switch (classifyFace(source, parent, vertical)) {
     case TRIANGLE::BACKWARD:
-      makeContour(target, -parent.nextInFace(parent.nextInFace(source)), parent,
-                  vertical);
-      makeContour(target, -parent.nextInFace(source), parent, vertical);
+      // In a backward triangle, we recurse into both edges on the top.
+      recurseAcross.push_back(parent.nextInFace(parent.nextInFace(source)));
+      recurseAcross.push_back(parent.nextInFace(source));
       break;
     case TRIANGLE::FORWARD:
-      target = source;
+      // In a forward triangle, we backtrack but log the edge we just crossed.
+      addToContour();
       break;
     case TRIANGLE::LEFT_VERTICAL:
-    case TRIANGLE::RIGHT_VERTICAL:
-      throw std::logic_error("not implemented - vertical edge");
+      // If we happen to see source again in the same direction, the surface is
+      // a cylinder of vertical faces. Make sure we abort the recursion then.
+      contourEdges.insert(source);
+      recurseAcross.push_back(parent.nextInFace(source));
       break;
+    case TRIANGLE::RIGHT_VERTICAL:
+      // If we happen to see source again in the same direction, the surface is
+      // a cylinder of vertical faces. Make sure we abort the recursion then.
+      contourEdges.insert(source);
+      recurseAcross.push_back(parent.nextInFace(parent.nextInFace(source)));
+      break;
+  }
+
+  for (auto e : recurseAcross) {
+    makeContour(target, -e, parent, vertical, contourEdges);
   }
 }
 
@@ -152,16 +188,84 @@ void makeContour(insert_iterator<vector<HalfEdge>> target,
 
 template <typename T>
 class IntervalExchangeTransformation<T>::Implementation {
- public:
-  Implementation(const FlatTriangulation<T>& original, const Vector<T>& vertical) {
-    auto parent = original.clone();
-    HalfEdge source = makeUniqueLargeEdge(parent, vertical);
-    vector<HalfEdge> top, bottom;
-    makeContour(inserter(top, next(top.begin())), source, parent, vertical);
-    makeContour(inserter(bottom, next(bottom.begin())), -source, parent, -vertical);
+  using Length = LengthAlongTriangulation<T>;
+  using Label = intervalxt::Label<Length>;
+  using IET = intervalxt::IntervalExchangeTransformation<Length>;
+  FlatTriangulation<T> parent;
+  std::vector<IET> iets;
+
+  static std::vector<IET> create(FlatTriangulation<T>& parent, const Vector<T>& vertical, const std::set<HalfEdge>& component) {
+    HalfEdge source = makeUniqueLargeEdge(parent, vertical, component);
+
+    // TODO: Move this to a separate method
+    // Check whether vertical edges disconnect the surface
+    map<HalfEdge, std::unique_ptr<UnionJoin<HalfEdge>>> components;
+    for (auto e : component)
+      components[e] = std::make_unique<UnionJoin<HalfEdge>>(e);
+    for (auto e : component) {
+      // Each half edge is in the same component as the other half edges in
+      // its face.
+      components[e]->join(*components[parent.nextInFace(e)]);
+      components[e]->join(*components[parent.nextInFace(parent.nextInFace(e))]);
+      // If the edge is not vertical, the two opposite half edges are in the
+      // same component.
+      if (parent.fromEdge(e).ccw(vertical) != CCW::COLLINEAR) {
+        components[e]->join(*components[-e]);
+      }
+    }
+
+    std::map<HalfEdge, std::set<HalfEdge>> newComponents;
+    for (auto e : component) {
+      newComponents[components[e]->representative()].insert(e);
+    }
+
+    // If there is multiple components, we call ourself for each component.
+    if (newComponents.size() > 1) {
+      throw std::logic_error("not implemented: recursive call in IntervalExchangeTransformation::Implementation::create()");
+    }
+
+    // We build the top contour by starting from our single wide edge and going
+    // up. When we enter a backward triangle, we cross over the two top edges
+    // and recurse. When we enter a forward triangle, we have found a piece of
+    // the contour; the opposite search, going from the wide edge down instead
+    // of up, will stop at the same edge.
+    // This discussion ignores vertical edges so far which make this much more
+    // complicated. In general, we treat faces with a vertical edge as backward
+    // faces and recurse across the non-vertical edge. However, there are two
+    // problems with this: for one, the top and the bottom contour now don't
+    // contain the same edges anymore, as they find different forward faces in
+    // sequences of vertical faces. And then, if all faces are vertical, the
+    // recursion just won't stop. Therefore we need to identify edges of
+    // vertical faces and do some extra bookkeeping to work around these two
+    // issues.
+    std::set<HalfEdge> verticalFaces;
+
+    std::vector<HalfEdge> top;
+    makeContour(inserter(top, top.end()), source, parent, vertical, verticalFaces);
+
+    std::vector<HalfEdge> bottom;
+    makeContour(inserter(bottom, bottom.end()), -source, parent, -vertical, verticalFaces);
     reverse(bottom.begin(), bottom.end());
     transform(bottom.begin(), bottom.end(), bottom.begin(), [](HalfEdge e) { return -e; });
+    assert(std::set<HalfEdge>(bottom.begin(), bottom.end()) == std::set<HalfEdge>(top.begin(), top.end()) && "top & bottom contour must contain the same half edges");
+
+    // For the final IntervalExchangeTransformation, the top/bottom intervals
+    // are labelled by the horizontal sections of the top/bottom contour.
+    auto squashed = parent.projection(vertical.perpendicular());
+
+    map<HalfEdge, Label> labels;
+    for (auto e : component)
+      labels[e] = Label(Length(squashed, e));
+
+    auto ret = std::vector<IET>();
+    ret.emplace_back(IET(
+        as_vector(top | transformed([&](HalfEdge e) { return labels[e]; })),
+        as_vector(bottom | transformed([&](HalfEdge e) { return labels[e]; }))));
+    return ret;
   }
+
+ public:
+  Implementation(const FlatTriangulation<T>& parent, const Vector<T>& vertical) : parent(std::move(parent.clone())), iets(create(this->parent, vertical, std::set<HalfEdge>(this->parent.halfEdges().begin(), this->parent.halfEdges().end()))) {}
 };
 
 template <typename T>

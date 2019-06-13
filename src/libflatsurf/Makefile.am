@@ -10,6 +10,7 @@ libflatsurf_la_SOURCES =                                      \
 	half_edge.cc                                                \
 	half_edge_map.cc                                            \
 	interval_exchange_transformation.cc                         \
+	length_along_triangulation.cc                               \
 	permutation.cc                                              \
 	saddle_connections.cc                                       \
 	vertex.cc                                                   \
@@ -29,6 +30,7 @@ nobase_include_HEADERS =                                      \
 	flatsurf/half_edge.hpp                                      \
 	flatsurf/half_edge_map.hpp                                  \
 	flatsurf/interval_exchange_transformation.hpp               \
+	flatsurf/length_along_triangulation.hpp                     \
 	flatsurf/orientation.hpp                                    \
 	flatsurf/permutation.hpp                                    \
 	flatsurf/saddle_connections.hpp                             \
@@ -66,6 +68,8 @@ libflatsurf_la_LDFLAGS += -larb
 libflatsurf_la_LDFLAGS += -lexactreal
 # we use e-antic in our vectors
 libflatsurf_la_LDFLAGS += -leanticxx -leantic
+# we build IETs with intervalxt
+libflatsurf_la_LDFLAGS += -lintervalxt
 
 $(builddir)/flatsurf/flatsurf.hpp: $(srcdir)/flatsurf/flatsurf.hpp.in Makefile
 	mkdir -p $(builddir)/flatsurf

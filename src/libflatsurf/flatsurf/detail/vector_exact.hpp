@@ -20,6 +20,8 @@
 #ifndef LIBFLATSURF_DETAIL_VECTOR_EXACT_HPP
 #define LIBFLATSURF_DETAIL_VECTOR_EXACT_HPP
 
+#include <intervalxt/forward.hpp>
+
 #include "flatsurf/detail/vector_base.hpp"
 
 namespace flatsurf::detail {

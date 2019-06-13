@@ -127,7 +127,7 @@ ostream &operator<<(ostream &os, const flatsurf::HalfEdgeMap<T> &self) {
   std::vector<string> items;
   for (auto it = self.values.begin(); it != self.values.end(); it++) {
     long i = it - self.values.begin();
-    if (i % 2 == 0) continue;
+    if (i % 2) continue;
     string v = boost::lexical_cast<string>(*it);
     if (v == "0") continue;
     items.push_back(boost::lexical_cast<string>(i / 2 + 1) + ": " + v);

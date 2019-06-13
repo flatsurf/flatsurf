@@ -36,6 +36,9 @@
 /flip
 /vector_exactreal
 /delaunay
+/vector_longlong
+/interval_exchange_transformation
+/length_along_triangulation
 
 ### Autotools Generated Files
 .deps

@@ -24,6 +24,7 @@
 #include <complex>
 #include <exact-real/forward.hpp>
 #include <iosfwd>
+#include <gmpxx.h>
 
 #include "flatsurf/forward.hpp"
 
@@ -39,6 +40,15 @@ class VectorBase : private boost::additive<Vector>,
   Vector &operator+=(const Vector &);
   Vector &operator-=(const Vector &);
   Vector &operator*=(const int);
+  Vector &operator*=(const mpz_class&);
+
+  // Return the vector projection of this vector x onto its argument a, i.e.,
+  // <x,a>·a; note that the result is not normalized when a is not a unit
+  // vector.
+  Vector projection(const Vector &) const;
+  // Return the perpendicular vector in CCW direction
+  // to this vector.
+  Vector perpendicular() const;
 
   // See https://github.com/flatsurf/flatsurf/issues/66
   explicit operator std::complex<double>() const noexcept;

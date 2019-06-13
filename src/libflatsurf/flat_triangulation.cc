@@ -82,8 +82,15 @@ FlatTriangulation<T> FlatTriangulation<T>::clone() const {
   std::vector<Vector> vectors;
   for (int e = 1; e <= halfEdges().size() / 2; e++)
     vectors.push_back(fromEdge(HalfEdge(e)));
-  return FlatTriangulation(FlatTriangulationCombinatorial::clone(),
-                           std::move(vectors));
+  return FlatTriangulation(FlatTriangulationCombinatorial::clone(), std::move(vectors));
+}
+
+template <typename T>
+FlatTriangulation<T> FlatTriangulation<T>::projection(const Vector& onto) const {
+  std::vector<Vector> vectors;
+  for (int e = 1; e <= halfEdges().size() / 2; e++)
+    vectors.push_back(fromEdge(HalfEdge(e)).projection(onto));
+  return FlatTriangulation(FlatTriangulationCombinatorial::clone(), std::move(vectors));
 }
 
 template <typename T>
