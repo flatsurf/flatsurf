@@ -47,12 +47,9 @@ TEST(LengthAlongTriangulationTest, Square) {
   EXPECT_EQ(3 * v10, 7 * v01);
   EXPECT_EQ(3 * v10 - 7 * v01, Length());
 
-  //TODO
-  /*
   EXPECT_EQ(v10 / v01, 7 / 3);
   EXPECT_EQ(2*v10 / v01, 2*7 / 3);
   EXPECT_EQ(3*v10 / v01, 7);
-  */
 }
 }  // namespace
 

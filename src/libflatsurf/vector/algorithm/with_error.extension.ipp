@@ -51,6 +51,9 @@ static constexpr bool has_optional_lt_bound = is_detected_exact_v<std::optional<
 
 template <typename Implementation>
 static constexpr bool has_optional_gt_bound = is_detected_exact_v<std::optional<bool>, gt_bound_t, Implementation>;
+
+template <typename Implementation>
+static constexpr bool has_arb_scalar_product = is_detected_exact_v<exactreal::Arb, scalar_product_t, Implementation>;
 }  // namespace
 }  // namespace flatsurf::detail
 

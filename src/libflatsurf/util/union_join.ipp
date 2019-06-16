@@ -22,9 +22,6 @@
 
 #include <boost/operators.hpp>
 
-// TODO
-#include <iostream>
-
 namespace flatsurf {
 namespace {
 // The classic union-join data structure to decide set membership in

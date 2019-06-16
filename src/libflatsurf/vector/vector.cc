@@ -152,9 +152,14 @@ class Vector<T>::Implementation : public Cartesian<T> {
 
   template <typename = void, typename = std::enable_if_t<std::is_same_v<T, exactreal::Arb>, void>>
   Vector projection(const Vector& rhs) const {
-    Arb dot = (this->x * rhs.impl->x + this->y * rhs.impl->y)(ARB_PRECISION_FAST);
+    Arb dot = *this * rhs;
     return make((dot * rhs.impl->x)(ARB_PRECISION_FAST),
                 (dot * rhs.impl->y)(ARB_PRECISION_FAST));
+  }
+
+  template <typename = void, typename = std::enable_if_t<std::is_same_v<T, Arb>, void>>
+  Arb operator*(const Vector& rhs) const {
+    return (this->x * rhs.impl->x + this->y * rhs.impl->y)(ARB_PRECISION_FAST);
   }
 
   template <typename = void, typename = std::enable_if_t<std::is_same_v<T, eantic::renf_elem_class> || std::is_same_v<T, exactreal::Element<exactreal::IntegerRingTraits>> || std::is_same_v<T, exactreal::Element<exactreal::RationalFieldTraits>> || std::is_same_v<T, exactreal::Element<exactreal::NumberFieldTraits>>, void>>

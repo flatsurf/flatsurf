@@ -17,67 +17,81 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <exact-real/arb.hpp>
+#include <exact-real/yap/arb.hpp>
 #include <optional>
-
-// TODO:
-#include <iostream>
+#include <gmpxx.h>
 
 #include "flatsurf/length_along_triangulation.hpp"
 #include "flatsurf/vector_along_triangulation.hpp"
 #include "flatsurf/vector.hpp"
 #include "flatsurf/half_edge.hpp"
+#include "flatsurf/half_edge_map.hpp"
 #include "flatsurf/flat_triangulation.hpp"
 
 // TODO: Many of the assertions here should be argument checks.
-// TODO: We do not use any approximate computations here yet, but we should of course.
 
 using std::optional;
+using exactreal::Arb;
+using exactreal::ARB_PRECISION_FAST;
 
 namespace flatsurf {
 namespace {
 enum CLASSIFICATION {
-  BOTH_ARE_ZERO,
-  LEFT_IS_ZERO,
-  RIGHT_IS_ZERO,
-  NONE_IS_ZERO,
+  BOTH_ARE_NIL,
+  LEFT_IS_NIL,
+  RIGHT_IS_NIL,
+  NONE_IS_NIL,
 };
 }
 
 template <typename T>
 class LengthAlongTriangulation<T>::Implementation {
  public:
-  Implementation() : value() {}
+  using Coefficient = std::conditional_t<std::is_same_v<long long, T>, long long, mpz_class>;
 
-  Implementation(Surface const * parent, Vector<T> const * horizontal, const HalfEdge e) : parent(parent), horizontal(horizontal), value(parent->fromEdge(e) * *horizontal) {
-    std::cout<<*parent<<std::endl;
-    std::cout<<*horizontal<<std::endl;
-    std::cout<<e<<std::endl;
-    assert(value >= 0 && "Lenghts must not be negative");
+  static void updateAfterFlip(HalfEdgeMap<Coefficient>& map, HalfEdge halfEdge, const FlatTriangulationCombinatorial& parent) {
+    map.set(-parent.nextAtVertex(halfEdge), map.get(halfEdge));
+    map.set(-parent.nextInFace(parent.nextInFace(halfEdge)), map.get(halfEdge));
+    map.set(halfEdge, 0);
+  }
+
+  Implementation() : parent(nullptr), horizontal(nullptr), coefficients(), approximation() {}
+
+  Implementation(Surface const * parent, Vector<T> const * horizontal, const HalfEdge e) : parent(parent), horizontal(horizontal), coefficients(HalfEdgeMap<Coefficient>(this->parent, updateAfterFlip)), approximation() {
+    coefficients->set(e, 1);
+    approximation = static_cast<Vector<Arb>>(parent->fromEdge(e)) * static_cast<Vector<Arb>>(*horizontal);
+
+    assert(static_cast<T>(*this) >= 0 && "Lenghts must not be negative");
+  }
+
+  operator T() const noexcept {
+    if (!coefficients)
+      return T();
+    T ret;
+    coefficients->apply([&](const HalfEdge e, const Coefficient& c) {
+      ret += c * (parent->fromEdge(e) * *horizontal);
+    });
+    return ret;
   }
 
   CLASSIFICATION classify(const Implementation& rhs) const {
-    bool is_zero = parent == nullptr || !value;
-    bool rhs_is_zero = rhs.parent == nullptr || !rhs.value;
-    if (is_zero && rhs_is_zero) {
-      return BOTH_ARE_ZERO;
-    }
-    if (is_zero) {
-      return LEFT_IS_ZERO;
-    }
-    if (rhs_is_zero) {
-      return RIGHT_IS_ZERO;
-    }
+    if (!coefficients && !rhs.coefficients)
+      return BOTH_ARE_NIL;
+    if (!coefficients)
+      return LEFT_IS_NIL;
+    if (!rhs.coefficients)
+      return RIGHT_IS_NIL;
 
     assert(parent == rhs.parent && "Lengths must be in the same triangulation.");
     assert(horizontal == rhs.horizontal && "Lengths must be relative to the same horizontal vector.");
 
-    return NONE_IS_ZERO;
+    return NONE_IS_NIL;
   }
 
   Surface const * parent;
   Vector<T> const * horizontal;
-  T value;
+  std::optional<HalfEdgeMap<Coefficient>> coefficients;
+  Arb approximation;
 };
 
 template <typename T>
@@ -88,61 +102,82 @@ LengthAlongTriangulation<T>::LengthAlongTriangulation(Surface const * parent, Ve
 
 template <typename T>
 bool LengthAlongTriangulation<T>::operator==(const LengthAlongTriangulation& rhs) const {
-  return impl->value == rhs.impl->value;
+  auto maybe = impl->approximation == rhs.impl->approximation;
+  if (maybe)
+    return *maybe;
+  return static_cast<T>(*impl) == static_cast<T>(*rhs.impl);
 }
 
 template <typename T>
 bool LengthAlongTriangulation<T>::operator<(const LengthAlongTriangulation& rhs) const {
-  return impl->value < rhs.impl->value;
+  auto maybe = impl->approximation < rhs.impl->approximation;
+  if (maybe)
+    return *maybe;
+  return static_cast<T>(*impl) < static_cast<T>(*rhs.impl);
 }
 
 template <typename T>
 LengthAlongTriangulation<T>& LengthAlongTriangulation<T>::operator+=(const LengthAlongTriangulation& rhs) {
   switch(impl->classify(*rhs.impl)) {
-    case BOTH_ARE_ZERO:
-    case RIGHT_IS_ZERO:
-      return *this;
-    case LEFT_IS_ZERO:
+    case BOTH_ARE_NIL:
+    case RIGHT_IS_NIL:
+      break;
+    case LEFT_IS_NIL:
       impl = rhs.impl;
-      return *this;
-    case NONE_IS_ZERO:
-      impl->value += rhs.impl->value;
-      return *this;
+      break;
+    case NONE_IS_NIL:
+      impl->approximation += rhs.impl->approximation (ARB_PRECISION_FAST);
+      rhs.impl->coefficients->apply([&](const HalfEdge e, const typename Implementation::Coefficient& c) {
+        impl->coefficients->set(e, impl->coefficients->get(e) + c);
+      });
+      break;
   }
+  return *this;
 }
 
 template <typename T>
 LengthAlongTriangulation<T>& LengthAlongTriangulation<T>::operator-=(const LengthAlongTriangulation& rhs) {
   switch(impl->classify(*rhs.impl)) {
-    case BOTH_ARE_ZERO:
-    case RIGHT_IS_ZERO:
-      return *this;
-    case LEFT_IS_ZERO:
+    case BOTH_ARE_NIL:
+    case RIGHT_IS_NIL:
+      break;
+    case LEFT_IS_NIL:
       throw std::logic_error("Can not subtract non-zero length from zero length.");
-      return *this;
-    case NONE_IS_ZERO:
+    case NONE_IS_NIL:
       assert(rhs <= *this && "Can not subtract length from smaller length.");
-      impl->value -= rhs.impl->value;
-      assert(impl->value >= 0 && "Lengths must not be negative");
-      return *this;
+      impl->approximation -= rhs.impl->approximation (ARB_PRECISION_FAST);
+      rhs.impl->coefficients->apply([&](const HalfEdge e, const typename Implementation::Coefficient& c) {
+        impl->coefficients->set(e, impl->coefficients->get(e) - c);
+      });
+      assert(*this >= LengthAlongTriangulation() && "Lengths must not be negative");
+      break;
   }
+  return *this;
 }
 
 template <typename T>
 LengthAlongTriangulation<T>& LengthAlongTriangulation<T>::operator*=(const Quotient& rhs) {
-  if (impl->value) {
-    if constexpr (std::is_same_v<T, long long>) {
-      impl->value *= rhs.get_si();
-    } else {
-      impl->value *= rhs;
-    }
+  if (impl->coefficients) {
+    impl->coefficients->apply([&](const HalfEdge e, const typename Implementation::Coefficient& c) {
+      if constexpr (std::is_same_v<long long, T>) {
+        impl->coefficients->set(e, c * rhs.get_si());
+      } else {
+        impl->coefficients->set(e, c * rhs);
+      }
+    });
+    impl->approximation *= Arb(rhs) (ARB_PRECISION_FAST);
   }
   return *this;
 }
 
 template <typename T>
 LengthAlongTriangulation<T>::operator bool() const noexcept {
-  return static_cast<bool>(impl->value);
+  if (!impl->coefficients)
+    return false;
+  auto maybe = impl->approximation == Arb();
+  if (maybe)
+    return !*maybe;
+  return static_cast<bool>(static_cast<T>(*impl));
 }
 
 template <typename T>
@@ -152,8 +187,15 @@ typename LengthAlongTriangulation<T>::Quotient LengthAlongTriangulation<T>::oper
     return mpz_class(0);
   }
 
-  // TODO: Implement me
-  throw std::logic_error("not implemented: operator/");
+  mpz_class quo = static_cast<Arb>((impl->approximation / rhs.impl->approximation) (ARB_PRECISION_FAST)).floor();
+
+  while (rhs * quo < *this) {
+    quo++;
+  }
+  while (rhs * quo > *this) {
+    quo--;
+  }
+  return quo;
 }
 
 template <typename T>

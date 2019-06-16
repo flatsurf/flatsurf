@@ -189,6 +189,7 @@ class IntervalExchangeTransformation<T>::Implementation {
   Vector<T> horizontal;
   std::vector<IET> iets;
 
+  // TODO: Should we change all places where we accept a const * to take a shared_ptr instead?
   static std::vector<IET> create(FlatTriangulation<T>* parent, Vector<T> const * horizontal, const std::set<HalfEdge>& component) {
     auto vertical = horizontal->perpendicular();
     HalfEdge source = makeUniqueLargeEdge(*parent, vertical, component);
