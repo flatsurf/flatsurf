@@ -69,11 +69,20 @@ class LengthAlongTriangulation<T>::Implementation {
   operator T() const noexcept {
     if (!coefficients)
       return T();
-    T ret;
+    T ret = T();
     coefficients->apply([&](const HalfEdge e, const Coefficient& c) {
       ret += c * (parent->fromEdge(e) * *horizontal);
     });
-    // TODO: update approximation
+
+    // Update approximation from the latest exact value
+    if constexpr (std::is_same_v<T, long long>) {
+      approximation = Arb(mpz_class(lexical_cast<std::string>(ret)));
+    } else if constexpr (std::is_same_v<T, eantic::renf_elem_class>) {
+      approximation = Arb(ret, ARB_PRECISION_FAST);
+    } else {
+      approximation = ret.arb(ARB_PRECISION_FAST);
+    }
+
     return ret;
   }
 
@@ -94,7 +103,7 @@ class LengthAlongTriangulation<T>::Implementation {
   Surface const * parent;
   Vector<T> const * horizontal;
   std::optional<HalfEdgeMap<Coefficient>> coefficients;
-  Arb approximation;
+  mutable Arb approximation;
 };
 
 template <typename T>
