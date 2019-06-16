@@ -28,7 +28,7 @@ namespace flatsurf {
 template <class T>
 class IntervalExchangeTransformation {
  public:
-  IntervalExchangeTransformation(FlatTriangulation<T> &, const Vector<T> &vertical);
+  IntervalExchangeTransformation(const FlatTriangulation<T> &, const Vector<T> &vertical);
 
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const IntervalExchangeTransformation<S> &);

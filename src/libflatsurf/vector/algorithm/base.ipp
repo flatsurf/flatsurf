@@ -164,21 +164,6 @@ Vector& VectorBase<Vector>::operator*=(const mpz_class& c) {
 }
 
 template <typename Vector>
-Vector VectorBase<Vector>::projection(const Vector& rhs) const {
-  using Implementation = typename Vector::Implementation;
-  const Vector& self = static_cast<const Vector&>(*this);
-
-  if constexpr (has_projection<Implementation>) {
-    return self.impl->projection(rhs);
-  } else if constexpr (is_cartesian_v<Implementation>) {
-    auto dot = self.impl->x * rhs.impl->x + self.impl->y * rhs.impl->y;
-    return Implementation::make(rhs.impl->x * dot, rhs.impl->y * dot);
-  } else {
-    static_assert(false_type_v<Implementation>, "Implementation is missing projection().");
-  }
-}
-
-template <typename Vector>
 Vector VectorBase<Vector>::perpendicular() const {
   using Implementation = typename Vector::Implementation;
   const Vector& self = static_cast<const Vector&>(*this);

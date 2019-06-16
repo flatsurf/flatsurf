@@ -27,9 +27,8 @@
 #include "flatsurf/forward.hpp"
 
 namespace flatsurf {
-// Implements intervalxt::Length as the sum of half edges of a
-// FlatTriangulation where all half edges live in the same one-dimensional
-// subspace of ℝ².
+// Implements intervalxt::Length of half edges after projection to a
+// one-dimensional subspace of ℝ².
 template <typename T>
 class LengthAlongTriangulation : boost::totally_ordered<LengthAlongTriangulation<T>>, boost::additive<LengthAlongTriangulation<T>>, boost::multipliable<LengthAlongTriangulation<T>, mpz_class> {
  public:
@@ -37,7 +36,7 @@ class LengthAlongTriangulation : boost::totally_ordered<LengthAlongTriangulation
   using Surface = FlatTriangulation<T>;
 
   LengthAlongTriangulation();
-  LengthAlongTriangulation(const Surface&, const HalfEdge);
+  LengthAlongTriangulation(Surface const *, Vector<T> const * horizontal, const HalfEdge);
 
   bool operator==(const LengthAlongTriangulation&) const;
   bool operator<(const LengthAlongTriangulation&) const;

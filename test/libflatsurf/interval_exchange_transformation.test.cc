@@ -49,7 +49,7 @@ TYPED_TEST_CASE(IntervalExchangeTransformationTest, ExactVectors);
 TYPED_TEST(IntervalExchangeTransformationTest, Square) {
   auto square = makeSquare<TypeParam>();
 
-  for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(square, Bound(4*4))) {
+  for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(&square, Bound(4*4))) {
     auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(square, sc->vector());
   }
 }

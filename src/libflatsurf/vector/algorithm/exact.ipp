@@ -215,6 +215,22 @@ ORIENTATION VectorExact<Vector, T>::orientation(const Vector& rhs) const noexcep
   }
 }
 
+template <typename Vector, typename T>
+T VectorExact<Vector, T>::operator*(const Vector& rhs) const noexcept {
+  using Implementation = typename Vector::Implementation;
+  const Vector& self = static_cast<const Vector&>(*this);
+
+  if constexpr (has_scalar_product<Implementation>) {
+    return self.impl->operator*(rhs);
+  } else if constexpr (is_cartesian_v<Implementation>) {
+    return self.impl->x * rhs.impl->x + self.impl->y * rhs.impl->y;
+  } else if constexpr (is_forward_v<Implementation>) {
+    return self.impl->value * rhs.impl->value;
+  } else {
+    static_assert(false_type_v<Implementation>, "Implementation is missing scalar product operator*().");
+  }
+}
+
 }  // namespace flatsurf
 
 #endif

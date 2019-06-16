@@ -62,8 +62,7 @@ enum class TRIANGLE {
 };
 
 template <typename T>
-TRIANGLE classifyFace(HalfEdge face, const FlatTriangulation<T>& parent,
-                      const Vector<T>& vertical) {
+TRIANGLE classifyFace(HalfEdge face, const FlatTriangulation<T>& parent, const Vector<T>& vertical) {
   int topEdges = 0;
 
   for (int i = 0; i < 3; i++) {
@@ -98,8 +97,7 @@ TRIANGLE classifyFace(HalfEdge face, const FlatTriangulation<T>& parent,
 }
 
 template <typename T>
-bool large(HalfEdge e, const FlatTriangulation<T>& parent,
-           const Vector<T>& vertical) {
+bool large(HalfEdge e, const FlatTriangulation<T>& parent, const Vector<T>& vertical) {
   return vertical.ccw(parent.fromEdge(e)) == CCW::CLOCKWISE &&
          classifyFace(e, parent, vertical) == TRIANGLE::FORWARD &&
          classifyFace(-e, parent, vertical) == TRIANGLE::BACKWARD;
@@ -142,6 +140,7 @@ void makeContour(insert_iterator<vector<HalfEdge>> target,
                  const HalfEdge source, const FlatTriangulation<T>& parent,
                  const Vector<T>& vertical, std::set<HalfEdge>& contourEdges) {
   auto addToContour = [&] () {
+    assert(vertical.ccw(parent.fromEdge(source)) == CCW::CLOCKWISE && "Contour must be in positive direction with respect to the vertical.");
     target = source;
     // If we ever stumble upon this edge or its reverse, it must be part of the
     // contour.
@@ -154,12 +153,11 @@ void makeContour(insert_iterator<vector<HalfEdge>> target,
     return;
   }
 
-  std::vector<HalfEdge> recurseAcross;
   switch (classifyFace(source, parent, vertical)) {
     case TRIANGLE::BACKWARD:
       // In a backward triangle, we recurse into both edges on the top.
-      recurseAcross.push_back(parent.nextInFace(parent.nextInFace(source)));
-      recurseAcross.push_back(parent.nextInFace(source));
+      makeContour(target, -parent.nextInFace(parent.nextInFace(source)), parent, vertical, contourEdges);
+      makeContour(target, -parent.nextInFace(source), parent, vertical, contourEdges);
       break;
     case TRIANGLE::FORWARD:
       // In a forward triangle, we backtrack but log the edge we just crossed.
@@ -169,18 +167,14 @@ void makeContour(insert_iterator<vector<HalfEdge>> target,
       // If we happen to see source again in the same direction, the surface is
       // a cylinder of vertical faces. Make sure we abort the recursion then.
       contourEdges.insert(source);
-      recurseAcross.push_back(parent.nextInFace(source));
+      makeContour(target, -parent.nextInFace(parent.nextInFace(source)), parent, vertical, contourEdges);
       break;
     case TRIANGLE::RIGHT_VERTICAL:
       // If we happen to see source again in the same direction, the surface is
       // a cylinder of vertical faces. Make sure we abort the recursion then.
       contourEdges.insert(source);
-      recurseAcross.push_back(parent.nextInFace(parent.nextInFace(source)));
+      makeContour(target, -parent.nextInFace(source), parent, vertical, contourEdges);
       break;
-  }
-
-  for (auto e : recurseAcross) {
-    makeContour(target, -e, parent, vertical, contourEdges);
   }
 }
 
@@ -192,10 +186,12 @@ class IntervalExchangeTransformation<T>::Implementation {
   using Label = intervalxt::Label<Length>;
   using IET = intervalxt::IntervalExchangeTransformation<Length>;
   FlatTriangulation<T> parent;
+  Vector<T> horizontal;
   std::vector<IET> iets;
 
-  static std::vector<IET> create(FlatTriangulation<T>& parent, const Vector<T>& vertical, const std::set<HalfEdge>& component) {
-    HalfEdge source = makeUniqueLargeEdge(parent, vertical, component);
+  static std::vector<IET> create(FlatTriangulation<T>* parent, Vector<T> const * horizontal, const std::set<HalfEdge>& component) {
+    auto vertical = horizontal->perpendicular();
+    HalfEdge source = makeUniqueLargeEdge(*parent, vertical, component);
 
     // TODO: Move this to a separate method
     // Check whether vertical edges disconnect the surface
@@ -205,11 +201,11 @@ class IntervalExchangeTransformation<T>::Implementation {
     for (auto e : component) {
       // Each half edge is in the same component as the other half edges in
       // its face.
-      components[e]->join(*components[parent.nextInFace(e)]);
-      components[e]->join(*components[parent.nextInFace(parent.nextInFace(e))]);
+      components[e]->join(*components[parent->nextInFace(e)]);
+      components[e]->join(*components[parent->nextInFace(parent->nextInFace(e))]);
       // If the edge is not vertical, the two opposite half edges are in the
       // same component.
-      if (parent.fromEdge(e).ccw(vertical) != CCW::COLLINEAR) {
+      if (parent->fromEdge(e).ccw(vertical) != CCW::COLLINEAR) {
         components[e]->join(*components[-e]);
       }
     }
@@ -241,36 +237,37 @@ class IntervalExchangeTransformation<T>::Implementation {
     std::set<HalfEdge> verticalFaces;
 
     std::vector<HalfEdge> top;
-    makeContour(inserter(top, top.end()), source, parent, vertical, verticalFaces);
+    makeContour(inserter(top, top.end()), source, *parent, vertical, verticalFaces);
 
     std::vector<HalfEdge> bottom;
-    makeContour(inserter(bottom, bottom.end()), -source, parent, -vertical, verticalFaces);
+    makeContour(inserter(bottom, bottom.end()), -source, *parent, -vertical, verticalFaces);
     reverse(bottom.begin(), bottom.end());
     transform(bottom.begin(), bottom.end(), bottom.begin(), [](HalfEdge e) { return -e; });
     assert(std::set<HalfEdge>(bottom.begin(), bottom.end()) == std::set<HalfEdge>(top.begin(), top.end()) && "top & bottom contour must contain the same half edges");
 
     // For the final IntervalExchangeTransformation, the top/bottom intervals
     // are labelled by the horizontal sections of the top/bottom contour.
-    auto squashed = parent.projection(vertical.perpendicular());
-
     map<HalfEdge, Label> labels;
-    for (auto e : component)
-      labels[e] = Label(Length(squashed, e));
+    auto label = [&](const HalfEdge e) {
+      if (labels.find(e) == labels.end()) {
+        labels[e] = Label(Length(parent, horizontal, e));
+      }
+      return labels[e];
+    };
 
     auto ret = std::vector<IET>();
     ret.emplace_back(IET(
-        as_vector(top | transformed([&](HalfEdge e) { return labels[e]; })),
-        as_vector(bottom | transformed([&](HalfEdge e) { return labels[e]; }))));
+        as_vector(top | transformed([&](HalfEdge e) { return label(e); })),
+        as_vector(bottom | transformed([&](HalfEdge e) { return label(e); }))));
     return ret;
   }
 
  public:
-  Implementation(const FlatTriangulation<T>& parent, const Vector<T>& vertical) : parent(std::move(parent.clone())), iets(create(this->parent, vertical, std::set<HalfEdge>(this->parent.halfEdges().begin(), this->parent.halfEdges().end()))) {}
+  Implementation(const FlatTriangulation<T>& parent, const Vector<T>& vertical) : parent(std::move(parent.clone())), horizontal(-vertical.perpendicular()), iets(create(&this->parent, &this->horizontal, std::set<HalfEdge>(this->parent.halfEdges().begin(), this->parent.halfEdges().end()))) {}
 };
 
 template <typename T>
-IntervalExchangeTransformation<T>::IntervalExchangeTransformation(
-    FlatTriangulation<T>& parent, const Vector<T>& vertical)
+IntervalExchangeTransformation<T>::IntervalExchangeTransformation(const FlatTriangulation<T>& parent, const Vector<T>& vertical)
     : impl(spimpl::make_unique_impl<Implementation>(parent, vertical)) {}
 
 template <typename T>

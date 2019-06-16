@@ -34,15 +34,15 @@ template <typename Surface>
 class SaddleConnections {
  public:
   // All saddle connections on the surface starting at any vertex.
-  SaddleConnections(const Surface &, Bound searchRadius);
+  SaddleConnections(Surface const *, Bound searchRadius);
 
   // All saddle connections on the surface starting at source.
-  SaddleConnections(const Surface &, Bound searchRadius, const Vertex source);
+  SaddleConnections(Surface const *, Bound searchRadius, const Vertex source);
 
   // The saddle connections that are starting at the source of sectorBegin
   // and lie in the sector between sectorBegin and the follow half edge in
   // counter-clockwise order.
-  SaddleConnections(const Surface &, Bound searchRadius, HalfEdge sectorBegin);
+  SaddleConnections(Surface const *, Bound searchRadius, HalfEdge sectorBegin);
 
   class Iterator : public boost::iterator_facade<Iterator, const std::unique_ptr<SaddleConnection<Surface>>, std::forward_iterator_tag, const std::unique_ptr<SaddleConnection<Surface>>> {
     class Implementation;

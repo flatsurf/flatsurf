@@ -63,11 +63,6 @@ template <typename Implementation>
 using perpendicular_t = decltype(std::declval<const Implementation>().perpendicular());
 template <typename Implementation>
 static constexpr bool has_perpendicular = is_detected_exact_v<typename Implementation::Vector, perpendicular_t, Implementation>;
-
-template <typename Implementation>
-using projection_t = decltype(std::declval<const Implementation>().projection(std::declval<const typename Implementation::Vector&>()));
-template <typename Implementation>
-static constexpr bool has_projection = is_detected_exact_v<typename Implementation::Vector, projection_t, Implementation>;
 }  // namespace
 }  // namespace flatsurf
 

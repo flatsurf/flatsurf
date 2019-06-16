@@ -68,7 +68,7 @@ class SaddleConnections<Surface>::Iterator::Implementation {
   using AlongTriangulation = VectorAlongTriangulation<typename Surface::Vector::Coordinate, std::conditional_t<std::is_same_v<typename Surface::Vector::Coordinate, long long>, void, exactreal::Arb>>;
 
  public:
-  Implementation(const Surface& surface, const Bound searchRadius, const vector<HalfEdge> searchSectors) : surface(&surface), searchRadius(searchRadius), sectors(std::move(searchSectors)), sector(0), boundary{AlongTriangulation(surface), AlongTriangulation(surface)}, nextEdgeEnd(AlongTriangulation(surface)) {
+  Implementation(Surface const * surface, const Bound searchRadius, const vector<HalfEdge> searchSectors) : surface(surface), searchRadius(searchRadius), sectors(std::move(searchSectors)), sector(0), boundary{AlongTriangulation(surface), AlongTriangulation(surface)}, nextEdgeEnd(AlongTriangulation(surface)) {
     if (sectors.size()) {
       prepareSearch(sectors[0]);
     }
@@ -79,7 +79,7 @@ class SaddleConnections<Surface>::Iterator::Implementation {
     assert(tmp.size() == 0);
     assert(moves.size() == 0);
 
-    boundary[0] = AlongTriangulation(*surface, vector<HalfEdge>{e});
+    boundary[0] = AlongTriangulation(surface, vector<HalfEdge>{e});
     nextEdge = surface->nextInFace(e);
     boundary[1] = boundary[0] + nextEdge;
     nextEdgeEnd = boundary[1];
@@ -392,15 +392,15 @@ class SaddleConnections<Surface>::Iterator::Implementation {
 };
 
 template <typename Surface>
-SaddleConnections<Surface>::SaddleConnections(const Surface& surface, const Bound searchRadius)
-    : impl(spimpl::make_impl<Implementation>(spimpl::make_impl<typename Iterator::Implementation>(surface, searchRadius, surface.halfEdges()))) {}
+SaddleConnections<Surface>::SaddleConnections(Surface const * surface, const Bound searchRadius)
+    : impl(spimpl::make_impl<Implementation>(spimpl::make_impl<typename Iterator::Implementation>(surface, searchRadius, surface->halfEdges()))) {}
 
 template <typename Surface>
-SaddleConnections<Surface>::SaddleConnections(const Surface& surface, const Bound searchRadius, const Vertex source)
-    : impl(spimpl::make_impl<Implementation>(spimpl::make_impl<typename Iterator::Implementation>(surface, searchRadius, surface.atVertex(source)))) {}
+SaddleConnections<Surface>::SaddleConnections(Surface const * surface, const Bound searchRadius, const Vertex source)
+    : impl(spimpl::make_impl<Implementation>(spimpl::make_impl<typename Iterator::Implementation>(surface, searchRadius, surface->atVertex(source)))) {}
 
 template <typename Surface>
-SaddleConnections<Surface>::SaddleConnections(const Surface& surface, const Bound searchRadius, const HalfEdge sectorBegin)
+SaddleConnections<Surface>::SaddleConnections(Surface const * surface, const Bound searchRadius, const HalfEdge sectorBegin)
     : impl(spimpl::make_impl<Implementation>(spimpl::make_impl<typename Iterator::Implementation>(surface, searchRadius, vector<HalfEdge>{sectorBegin}))) {}
 
 template <typename Surface>
@@ -462,7 +462,7 @@ std::unique_ptr<SaddleConnection<Surface>> SaddleConnections<Surface>::Iterator:
     throw std::out_of_range("iterator is at end()");
   }
   auto ret = std::make_unique<SaddleConnection<Surface>>();
-  ret->impl = spimpl::make_impl<typename SaddleConnection<Surface>::Implementation>(*impl->surface, static_cast<typename Surface::Vector>(impl->nextEdgeEnd), impl->sectors[impl->sector], impl->nextEdge);
+  ret->impl = spimpl::make_impl<typename SaddleConnection<Surface>::Implementation>(impl->surface, static_cast<typename Surface::Vector>(impl->nextEdgeEnd), impl->sectors[impl->sector], impl->nextEdge);
   return ret;
 }
 

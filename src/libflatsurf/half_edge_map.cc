@@ -34,21 +34,21 @@ using std::vector;
 
 namespace flatsurf {
 template <typename T>
-HalfEdgeMap<T>::HalfEdgeMap(const FlatTriangulationCombinatorial &parent, const FlipHandler &updateAfterFlip) : parent(&parent), values(parent.halfEdges().size()), updateAfterFlip(updateAfterFlip) {
-  parent.registerMap(*this);
+HalfEdgeMap<T>::HalfEdgeMap(FlatTriangulationCombinatorial const * parent, const FlipHandler &updateAfterFlip) : parent(parent), values(parent->halfEdges().size()), updateAfterFlip(updateAfterFlip) {
+  parent->registerMap(*this);
 }
 
 template <typename T>
-HalfEdgeMap<T>::HalfEdgeMap(const FlatTriangulationCombinatorial &parent, const vector<T> &values, const FlipHandler &updateAfterFlip)
-    : parent(&parent), updateAfterFlip(updateAfterFlip) {
-  assert(values.size() == parent.halfEdges().size() / 2 &&
+HalfEdgeMap<T>::HalfEdgeMap(FlatTriangulationCombinatorial const * parent, const vector<T> &values, const FlipHandler &updateAfterFlip)
+    : parent(parent), updateAfterFlip(updateAfterFlip) {
+  assert(values.size() == parent->halfEdges().size() / 2 &&
          "values must contain one entry for each pair of half edges");
   for (size_t i = 0; i < values.size(); i++) {
     this->values.emplace_back(values[i]);
     this->values.emplace_back(-values[i]);
   }
 
-  parent.registerMap(*this);
+  parent->registerMap(*this);
 }
 
 template <typename T>
@@ -119,7 +119,7 @@ HalfEdgeMap<T> HalfEdgeMap<T>::operator-() const noexcept {
   for (size_t i = 0; i < values.size(); i += 2) {
     negatives.push_back(-values[i]);
   }
-  return HalfEdgeMap(*parent, std::move(negatives), updateAfterFlip);
+  return HalfEdgeMap(parent, std::move(negatives), updateAfterFlip);
 }
 
 template <typename T>

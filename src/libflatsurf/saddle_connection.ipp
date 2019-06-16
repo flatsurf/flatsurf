@@ -41,10 +41,10 @@ namespace flatsurf {
 template <typename Surface>
 class SaddleConnection<Surface>::Implementation {
  public:
-  Implementation(const Surface &surface, const typename Surface::Vector &vector, const HalfEdge &source, const HalfEdge &target)
+  Implementation(Surface const * surface, const typename Surface::Vector &vector, const HalfEdge &source, const HalfEdge &target)
       : surface(surface), vector(vector), source(source), target(target) {}
 
-  const Surface &surface;
+  Surface const * surface;
   const typename Surface::Vector vector;
   HalfEdge source;
   HalfEdge target;

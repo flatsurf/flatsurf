@@ -20,18 +20,17 @@
 #include <exact-real/arb.hpp>
 #include <optional>
 
+// TODO:
+#include <iostream>
+
 #include "flatsurf/length_along_triangulation.hpp"
 #include "flatsurf/vector_along_triangulation.hpp"
 #include "flatsurf/vector.hpp"
 #include "flatsurf/half_edge.hpp"
+#include "flatsurf/flat_triangulation.hpp"
 
 // TODO: Many of the assertions here should be argument checks.
-// TODO: This should not be backed by a VectorAlongTriangulation. We should
-// just keep the HalfEdgeMap and each "vector" of the squashed triangulation
-// should just be the scalar product without multiplying by the horizontal
-// vector. (To do this, it's probably easiest to change projection to return a
-// triangulation with only the x component. In turn, projection on a vector
-// should just return a T and not an actual vector anymore.)
+// TODO: We do not use any approximate computations here yet, but we should of course.
 
 using std::optional;
 
@@ -48,19 +47,18 @@ enum CLASSIFICATION {
 template <typename T>
 class LengthAlongTriangulation<T>::Implementation {
  public:
-  // TODO: Pick an approximation automatically (or make it selectable as a
-  // template parameter.)
-  using Vector = VectorAlongTriangulation<T>;
-
   Implementation() : value() {}
 
-  Implementation(const Surface& parent, const HalfEdge e) : value(parent) {
-    *value += e;
+  Implementation(Surface const * parent, Vector<T> const * horizontal, const HalfEdge e) : parent(parent), horizontal(horizontal), value(parent->fromEdge(e) * *horizontal) {
+    std::cout<<*parent<<std::endl;
+    std::cout<<*horizontal<<std::endl;
+    std::cout<<e<<std::endl;
+    assert(value >= 0 && "Lenghts must not be negative");
   }
 
   CLASSIFICATION classify(const Implementation& rhs) const {
-    bool is_zero = !value || !*value;
-    bool rhs_is_zero = !rhs.value || !*rhs.value;
+    bool is_zero = parent == nullptr || !value;
+    bool rhs_is_zero = rhs.parent == nullptr || !rhs.value;
     if (is_zero && rhs_is_zero) {
       return BOTH_ARE_ZERO;
     }
@@ -71,54 +69,31 @@ class LengthAlongTriangulation<T>::Implementation {
       return RIGHT_IS_ZERO;
     }
 
-    assert(value->ccw(*rhs.value) == CCW::COLLINEAR && "Can only compare lengths that come from collinear vectors.");
-    assert(value->orientation(*rhs.value) == ORIENTATION::SAME && "Lengths must be non-negative.");
+    assert(parent == rhs.parent && "Lengths must be in the same triangulation.");
+    assert(horizontal == rhs.horizontal && "Lengths must be relative to the same horizontal vector.");
 
     return NONE_IS_ZERO;
   }
 
-  optional<Vector> value;
+  Surface const * parent;
+  Vector<T> const * horizontal;
+  T value;
 };
 
 template <typename T>
 LengthAlongTriangulation<T>::LengthAlongTriangulation() : impl(spimpl::make_impl<Implementation>()) {}
 
 template <typename T>
-LengthAlongTriangulation<T>::LengthAlongTriangulation(const Surface& parent, const HalfEdge e) : impl(spimpl::make_impl<Implementation>(parent, e)) {}
+LengthAlongTriangulation<T>::LengthAlongTriangulation(Surface const * parent, Vector<T> const * horizontal, const HalfEdge e) : impl(spimpl::make_impl<Implementation>(parent, horizontal, e)) {}
 
 template <typename T>
 bool LengthAlongTriangulation<T>::operator==(const LengthAlongTriangulation& rhs) const {
-  switch(impl->classify(*rhs.impl)) {
-    case BOTH_ARE_ZERO:
-      return true;
-    case LEFT_IS_ZERO:
-    case RIGHT_IS_ZERO:
-      return false;
-    case NONE_IS_ZERO:
-      return *impl->value == *rhs.impl->value;
-  }
+  return impl->value == rhs.impl->value;
 }
 
 template <typename T>
 bool LengthAlongTriangulation<T>::operator<(const LengthAlongTriangulation& rhs) const {
-  switch(impl->classify(*rhs.impl)) {
-    case BOTH_ARE_ZERO:
-      return false;
-    case LEFT_IS_ZERO:
-      return true;
-    case RIGHT_IS_ZERO:
-      return false;
-    case NONE_IS_ZERO:
-      switch(impl->value->orientation(*impl->value - *rhs.impl->value)) {
-        case ORIENTATION::ORTHOGONAL:
-          assert(*this == rhs);
-          return false;
-        case ORIENTATION::SAME:
-          return false;
-        case ORIENTATION::OPPOSITE:
-          return true;
-      }
-  }
+  return impl->value < rhs.impl->value;
 }
 
 template <typename T>
@@ -128,10 +103,10 @@ LengthAlongTriangulation<T>& LengthAlongTriangulation<T>::operator+=(const Lengt
     case RIGHT_IS_ZERO:
       return *this;
     case LEFT_IS_ZERO:
-      impl->value = *rhs.impl->value;
+      impl = rhs.impl;
       return *this;
     case NONE_IS_ZERO:
-      *impl->value += *rhs.impl->value;
+      impl->value += rhs.impl->value;
       return *this;
   }
 }
@@ -147,8 +122,8 @@ LengthAlongTriangulation<T>& LengthAlongTriangulation<T>::operator-=(const Lengt
       return *this;
     case NONE_IS_ZERO:
       assert(rhs <= *this && "Can not subtract length from smaller length.");
-      *impl->value -= *rhs.impl->value;
-      assert(impl->value->orientation(*rhs.impl->value) != ORIENTATION::OPPOSITE && "Lengths must not be negative");
+      impl->value -= rhs.impl->value;
+      assert(impl->value >= 0 && "Lengths must not be negative");
       return *this;
   }
 }
@@ -156,14 +131,18 @@ LengthAlongTriangulation<T>& LengthAlongTriangulation<T>::operator-=(const Lengt
 template <typename T>
 LengthAlongTriangulation<T>& LengthAlongTriangulation<T>::operator*=(const Quotient& rhs) {
   if (impl->value) {
-    *impl->value *= rhs;
+    if constexpr (std::is_same_v<T, long long>) {
+      impl->value *= rhs.get_si();
+    } else {
+      impl->value *= rhs;
+    }
   }
   return *this;
 }
 
 template <typename T>
 LengthAlongTriangulation<T>::operator bool() const noexcept {
-  return impl->value && *impl->value;
+  return static_cast<bool>(impl->value);
 }
 
 template <typename T>
@@ -182,7 +161,7 @@ std::ostream& operator<<(std::ostream& os, const LengthAlongTriangulation<T>& se
   if (!self)
     return os << 0;
   else
-    return os << "LengthOf(" << *self.impl->value << ")";
+    throw std::logic_error("not implemented: operator<<(LengthAlongTriangulation)");
 }
 }
 

@@ -36,8 +36,8 @@ template <typename T>
 class HalfEdgeMap final {
  public:
   using FlipHandler = std::function<void(HalfEdgeMap &, HalfEdge, const FlatTriangulationCombinatorial &)>;
-  HalfEdgeMap(const FlatTriangulationCombinatorial &parent, const std::vector<T> &values, const FlipHandler &updateAfterFlip);
-  HalfEdgeMap(const FlatTriangulationCombinatorial &parent, const FlipHandler &updateAfterFlip);
+  HalfEdgeMap(FlatTriangulationCombinatorial const * parent, const std::vector<T> &values, const FlipHandler &updateAfterFlip);
+  HalfEdgeMap(FlatTriangulationCombinatorial const * parent, const FlipHandler &updateAfterFlip);
   HalfEdgeMap(const HalfEdgeMap &);
   HalfEdgeMap(HalfEdgeMap &&);
   ~HalfEdgeMap();

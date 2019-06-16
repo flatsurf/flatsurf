@@ -37,6 +37,9 @@ class VectorExact : public VectorBase<Vector>,
   ORIENTATION orientation(const Vector &) const noexcept;
   bool insideCircumcircle(std::initializer_list<Vector>) const noexcept;
 
+  // Return the scalar product with the argument
+  T operator*(const Vector&) const noexcept;
+
   bool operator>(const Bound) const noexcept;
   bool operator<(const Bound) const noexcept;
   bool operator==(const Vector &) const noexcept;

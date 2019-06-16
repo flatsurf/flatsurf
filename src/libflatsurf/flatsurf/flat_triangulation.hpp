@@ -43,10 +43,6 @@ class FlatTriangulation : public FlatTriangulationCombinatorial {
   // this is would not update the associated HalfEdgeMaps in the way that the
   // caller expects.
   FlatTriangulation<T> clone() const;
-  // Create a copy of this triangulation with all half edges projected onto the
-  // argument, i.e., a triangulation that lives entirely in the one-dimensional
-  // subspace spanned by the argument.
-  FlatTriangulation<T> projection(const Vector&) const;
 
   const Vector &fromEdge(HalfEdge) const;
 

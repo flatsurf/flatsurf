@@ -42,10 +42,6 @@ class VectorBase : private boost::additive<Vector>,
   Vector &operator*=(const int);
   Vector &operator*=(const mpz_class&);
 
-  // Return the vector projection of this vector x onto its argument a, i.e.,
-  // <x,a>·a; note that the result is not normalized when a is not a unit
-  // vector.
-  Vector projection(const Vector &) const;
   // Return the perpendicular vector in CCW direction
   // to this vector.
   Vector perpendicular() const;
