@@ -20,6 +20,7 @@
 #include <exact-real/yap/arb.hpp>
 #include <optional>
 #include <gmpxx.h>
+#include <boost/lexical_cast.hpp>
 
 #include "flatsurf/length_along_triangulation.hpp"
 #include "flatsurf/vector_along_triangulation.hpp"
@@ -31,6 +32,7 @@
 // TODO: Many of the assertions here should be argument checks.
 
 using std::optional;
+using boost::lexical_cast;
 using exactreal::Arb;
 using exactreal::ARB_PRECISION_FAST;
 
@@ -160,7 +162,8 @@ LengthAlongTriangulation<T>& LengthAlongTriangulation<T>::operator*=(const Quoti
   if (impl->coefficients) {
     impl->coefficients->apply([&](const HalfEdge e, const typename Implementation::Coefficient& c) {
       if constexpr (std::is_same_v<long long, T>) {
-        impl->coefficients->set(e, c * rhs.get_si());
+        assert(rhs * mpz_class(lexical_cast<std::string>(c)) <= mpz_class(lexical_cast<std::string>(LONG_LONG_MAX)) && "Multiplication overflow");
+        impl->coefficients->set(e, c * lexical_cast<long long>(lexical_cast<std::string>(rhs)));
       } else {
         impl->coefficients->set(e, c * rhs);
       }
