@@ -29,7 +29,7 @@
 #include "flatsurf/half_edge_map.hpp"
 #include "flatsurf/flat_triangulation.hpp"
 
-// TODO: Many of the assertions here should be argument checks.
+#include "util/assert.ipp"
 
 using std::optional;
 using boost::lexical_cast;
@@ -63,7 +63,7 @@ class LengthAlongTriangulation<T>::Implementation {
     coefficients->set(e, 1);
     approximation = static_cast<Vector<Arb>>(parent->fromEdge(e)) * static_cast<Vector<Arb>>(*horizontal);
 
-    assert(static_cast<T>(*this) >= 0 && "Lenghts must not be negative");
+    ASSERT_ARGUMENT(static_cast<T>(*this) >= 0, "Lenghts must not be negative");
   }
 
   operator T() const noexcept {
@@ -73,6 +73,7 @@ class LengthAlongTriangulation<T>::Implementation {
     coefficients->apply([&](const HalfEdge e, const Coefficient& c) {
       ret += c * (parent->fromEdge(e) * *horizontal);
     });
+    // TODO: update approximation
     return ret;
   }
 
@@ -84,8 +85,8 @@ class LengthAlongTriangulation<T>::Implementation {
     if (!rhs.coefficients)
       return RIGHT_IS_NIL;
 
-    assert(parent == rhs.parent && "Lengths must be in the same triangulation.");
-    assert(horizontal == rhs.horizontal && "Lengths must be relative to the same horizontal vector.");
+    ASSERT_ARGUMENT(parent == rhs.parent, "Lengths must be in the same triangulation.");
+    ASSERT_ARGUMENT(horizontal == rhs.horizontal, "Lengths must be relative to the same horizontal vector.");
 
     return NONE_IS_NIL;
   }
@@ -146,7 +147,7 @@ LengthAlongTriangulation<T>& LengthAlongTriangulation<T>::operator-=(const Lengt
     case LEFT_IS_NIL:
       throw std::logic_error("Can not subtract non-zero length from zero length.");
     case NONE_IS_NIL:
-      assert(rhs <= *this && "Can not subtract length from smaller length.");
+      ASSERT_ARGUMENT(rhs <= *this, "Can not subtract a length from a smaller length.");
       impl->approximation -= rhs.impl->approximation (ARB_PRECISION_FAST);
       rhs.impl->coefficients->apply([&](const HalfEdge e, const typename Implementation::Coefficient& c) {
         impl->coefficients->set(e, impl->coefficients->get(e) - c);
@@ -162,7 +163,7 @@ LengthAlongTriangulation<T>& LengthAlongTriangulation<T>::operator*=(const Quoti
   if (impl->coefficients) {
     impl->coefficients->apply([&](const HalfEdge e, const typename Implementation::Coefficient& c) {
       if constexpr (std::is_same_v<long long, T>) {
-        assert(rhs * mpz_class(lexical_cast<std::string>(c)) <= mpz_class(lexical_cast<std::string>(LONG_LONG_MAX)) && "Multiplication overflow");
+        ASSERT_ARGUMENT(rhs * mpz_class(lexical_cast<std::string>(c)) <= mpz_class(lexical_cast<std::string>(LONG_LONG_MAX)), "Multiplication overflow");
         impl->coefficients->set(e, c * lexical_cast<long long>(lexical_cast<std::string>(rhs)));
       } else {
         impl->coefficients->set(e, c * rhs);
@@ -185,7 +186,7 @@ LengthAlongTriangulation<T>::operator bool() const noexcept {
 
 template <typename T>
 typename LengthAlongTriangulation<T>::Quotient LengthAlongTriangulation<T>::operator/(const LengthAlongTriangulation& rhs) {
-  assert(rhs && "Division by zero length");
+  ASSERT_ARGUMENT(rhs, "Division by zero length");
   if (!*this) {
     return mpz_class(0);
   }
