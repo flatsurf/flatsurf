@@ -178,6 +178,36 @@ void makeContour(insert_iterator<vector<HalfEdge>> target,
   }
 }
 
+template <typename T>
+std::vector<std::set<HalfEdge>> verticalComponents(const FlatTriangulation<T>& parent, const Vector<T>& vertical, const std::set<HalfEdge>& component) {
+  // Check whether vertical edges disconnect the surface
+  map<HalfEdge, std::unique_ptr<UnionJoin<HalfEdge>>> components;
+  for (auto e : component)
+    components[e] = std::make_unique<UnionJoin<HalfEdge>>(e);
+  for (auto e : component) {
+    // Each half edge is in the same component as the other half edges in
+    // its face.
+    components[e]->join(*components[parent.nextInFace(e)]);
+    components[e]->join(*components[parent.nextInFace(parent.nextInFace(e))]);
+    // If the edge is not vertical, the two opposite half edges are in the
+    // same component.
+    if (parent.fromEdge(e).ccw(vertical) != CCW::COLLINEAR) {
+      components[e]->join(*components[-e]);
+    }
+  }
+
+  std::map<HalfEdge, std::set<HalfEdge>> newComponents;
+  for (auto e : component) {
+    newComponents[components[e]->representative()].insert(e);
+  }
+
+  std::vector<std::set<HalfEdge>> ret;
+  for (auto c : newComponents) {
+    ret.push_back(c.second);
+  }
+  return ret;
+}
+
 }  // namespace
 
 template <typename T>
@@ -194,31 +224,16 @@ class IntervalExchangeTransformation<T>::Implementation {
     auto vertical = horizontal->perpendicular();
     HalfEdge source = makeUniqueLargeEdge(*parent, vertical, component);
 
-    // TODO: Move this to a separate method
-    // Check whether vertical edges disconnect the surface
-    map<HalfEdge, std::unique_ptr<UnionJoin<HalfEdge>>> components;
-    for (auto e : component)
-      components[e] = std::make_unique<UnionJoin<HalfEdge>>(e);
-    for (auto e : component) {
-      // Each half edge is in the same component as the other half edges in
-      // its face.
-      components[e]->join(*components[parent->nextInFace(e)]);
-      components[e]->join(*components[parent->nextInFace(parent->nextInFace(e))]);
-      // If the edge is not vertical, the two opposite half edges are in the
-      // same component.
-      if (parent->fromEdge(e).ccw(vertical) != CCW::COLLINEAR) {
-        components[e]->join(*components[-e]);
+    auto components = verticalComponents(*parent, vertical, component);
+    // If vertical edges disconnect the surface, we call ourself for each component.
+    if (components.size() > 1) {
+      std::vector<IET> ret;
+      for (auto c : components) {
+        for (auto&& iet : create(parent, horizontal, c)) {
+          ret.emplace_back(std::move(iet));
+        }
       }
-    }
-
-    std::map<HalfEdge, std::set<HalfEdge>> newComponents;
-    for (auto e : component) {
-      newComponents[components[e]->representative()].insert(e);
-    }
-
-    // If there is multiple components, we call ourself for each component.
-    if (newComponents.size() > 1) {
-      throw std::logic_error("not implemented: recursive call in IntervalExchangeTransformation::Implementation::create()");
+      return ret;
     }
 
     // We build the top contour by starting from our single wide edge and going
