@@ -20,12 +20,14 @@ libflatsurf_la_SOURCES =                                      \
 nobase_include_HEADERS =                                      \
 	flatsurf/bound.hpp                                          \
 	flatsurf/ccw.hpp                                            \
+	flatsurf/component.hpp                                      \
 	flatsurf/cppyy.hpp                                          \
 	flatsurf/delaunay_triangulation.hpp                         \
 	flatsurf/edge.hpp                                           \
 	flatsurf/flatsurf.hpp                                       \
 	flatsurf/flat_triangulation.hpp                             \
 	flatsurf/flat_triangulation_combinatorial.hpp               \
+	flatsurf/flow_decomposition.hpp                             \
 	flatsurf/forward.hpp                                        \
 	flatsurf/half_edge.hpp                                      \
 	flatsurf/half_edge_map.hpp                                  \

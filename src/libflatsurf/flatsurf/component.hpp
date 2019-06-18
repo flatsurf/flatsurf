@@ -17,8 +17,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_FLOW_DECOMPOSITION_HPP
-#define LIBFLATSURF_FLOW_DECOMPOSITION_HPP
+#ifndef LIBFLATSURF_COMPONENT_HPP
+#define LIBFLATSURF_COMPONENT_HPP
 
 #include <optional>
 #include <vector>
@@ -28,33 +28,23 @@
 
 namespace flatsurf {
 
-template <class T>
-class FlowDecomposition {
+template <typename T>
+class Component {
  public:
   using Surface = FlatTriangulation<T>;
+  using Boundary = std::vector<const SaddleConnection<Surface>>;
 
-  FlowDecomposition(const Surface& surface, const Vector<T>& direction);
-
-  // Return the new component if component splits.
-  std::optional<const Component<T>&> findSaddleConnection(const Component<T>& component, int limit = -1);
-
-  // Run findSaddleConnection() recursively on every component.
-  void findSaddleConnections(int limit = -1);
-
-  const std::vector<Component<T>>& components() const noexcept;
-
-  const SaddleConnection<Surface>& successor(const SaddleConnection<Surface>&) const;
-  // Return the component on the left of this saddle connection, i.e., the
-  // component that reports it as its boundary.
-  const Component<T>& component(const SaddleConnection<Surface>&) const;
-
-  template <typename S>
-  friend std::ostream& operator<<(std::ostream&, const IntervalExchangeTransformation<S>&);
-
- private:
-  class Implementation;
-  spimpl::unique_impl_ptr<Implementation> impl;
+  bool cylinder() const noexcept;
+  // Whether this is a cylinder or a certified minimal component.
+  bool certified() const noexcept;
+  // Maybe circular linked list? (On a cylinder, the right boundary goes with the vertical direction and the left against.)
+  const std::vector<Boundary>& boundaries() const noexcept;
+  FlatTriangulation<T> triangulation() const;
+  // The real part of the non-vertical edges of the triangulation()
+  LengthAlongTriangulation<T> width() const noexcept;
 };
-}  // namespace flatsurf
+
+}
 
 #endif
+

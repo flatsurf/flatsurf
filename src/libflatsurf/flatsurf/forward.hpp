@@ -67,6 +67,12 @@ struct Bound;
 
 template <typename T>
 class IntervalExchangeTransformation;
+
+template <typename T>
+class Component;
+
+template <typename T>
+class FlowDecomposition;
 }  // namespace flatsurf
 
 #endif
