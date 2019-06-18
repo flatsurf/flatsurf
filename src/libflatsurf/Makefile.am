@@ -1,7 +1,6 @@
 lib_LTLIBRARIES = libflatsurf.la
 
 libflatsurf_la_SOURCES =                                      \
-	bound.cc                                                    \
 	ccw.cc                                                      \
 	delaunay_triangulation.cc                                   \
 	edge.cc                                                     \
@@ -18,7 +17,6 @@ libflatsurf_la_SOURCES =                                      \
 	vector/vector_along_triangulation.cc
 
 nobase_include_HEADERS =                                      \
-	flatsurf/bound.hpp                                          \
 	flatsurf/ccw.hpp                                            \
 	flatsurf/component.hpp                                      \
 	flatsurf/cppyy.hpp                                          \
