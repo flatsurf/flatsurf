@@ -18,13 +18,13 @@
  *********************************************************************/
 
 #include <algorithm>
+#include <map>
 #include <memory>
 #include <ostream>
 #include <vector>
-#include <map>
 
-#include <boost/range/adaptors.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/range/adaptors.hpp>
 #include <intervalxt/interval_exchange_transformation.hpp>
 #include <intervalxt/label.hpp>
 
@@ -33,22 +33,22 @@
 #include "flatsurf/half_edge.hpp"
 #include "flatsurf/interval_exchange_transformation.hpp"
 #include "flatsurf/length_along_triangulation.hpp"
-#include "flatsurf/vector_along_triangulation.hpp"
 #include "flatsurf/orientation.hpp"
 #include "flatsurf/vector.hpp"
+#include "flatsurf/vector_along_triangulation.hpp"
 #include "util/as_vector.ipp"
 
 #include "util/union_join.ipp"
 
 using std::any_of;
-using std::find_if;
 using std::back_insert_iterator;
 using std::back_inserter;
+using std::find_if;
+using std::map;
 using std::next;
 using std::ostream;
 using std::shared_ptr;
 using std::vector;
-using std::map;
 
 using boost::adaptors::transformed;
 
@@ -113,7 +113,7 @@ HalfEdge makeUniqueLargeEdge(FlatTriangulation<T>& parent, const Vector<T>& vert
                 // * A large edge
                 // * A non-vertical edge in a right vertical triangle
                 return large(e, parent, vertical) ||
-                  (vertical.ccw(parent.fromEdge(parent.nextInFace(e))) == CCW::COLLINEAR && vertical.ccw(parent.fromEdge(e)) == CCW::CLOCKWISE);
+                       (vertical.ccw(parent.fromEdge(parent.nextInFace(e))) == CCW::COLLINEAR && vertical.ccw(parent.fromEdge(e)) == CCW::CLOCKWISE);
               });
 
   if (source == component.end())
@@ -141,7 +141,7 @@ template <typename T>
 void makeContour(back_insert_iterator<vector<HalfEdge>> target,
                  const HalfEdge source, const FlatTriangulation<T>& parent,
                  const Vector<T>& vertical, std::set<HalfEdge>& contourEdges) {
-  auto addToContour = [&] () {
+  auto addToContour = [&]() {
     assert(vertical.ccw(parent.fromEdge(source)) == CCW::CLOCKWISE && "Contour must be in positive direction with respect to the vertical.");
     target = source;
     // If we ever stumble upon this edge or its reverse, it must be part of the
@@ -222,7 +222,7 @@ class IntervalExchangeTransformation<T>::Implementation {
   std::vector<IET> iets;
 
   // TODO: Should we change all places where we accept a const * to take a shared_ptr instead?
-  static std::vector<IET> create(FlatTriangulation<T>* parent, Vector<T> const * horizontal, const std::set<HalfEdge>& component) {
+  static std::vector<IET> create(FlatTriangulation<T>* parent, Vector<T> const* horizontal, const std::set<HalfEdge>& component) {
     auto vertical = horizontal->perpendicular();
     HalfEdge source = makeUniqueLargeEdge(*parent, vertical, component);
 

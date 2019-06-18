@@ -66,7 +66,7 @@ class FlowDecomposition {
   const Component<T>& component(const SaddleConnection<Surface>&) const;
 
   template <typename S>
-  friend std::ostream &operator<<(std::ostream &, const IntervalExchangeTransformation<S> &);
+  friend std::ostream& operator<<(std::ostream&, const IntervalExchangeTransformation<S>&);
 
  private:
   class Implementation;

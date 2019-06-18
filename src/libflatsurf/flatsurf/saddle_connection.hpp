@@ -42,7 +42,7 @@ class SaddleConnection : boost::equality_comparable<SaddleConnection<Surface>> {
   // *clockwise* from *-target*.
   HalfEdge target() const;
 
-  std::optional<int> angle(const SaddleConnection<Surface>&) const;
+  std::optional<int> angle(const SaddleConnection<Surface> &) const;
 
   SaddleConnection<Surface> operator-() const noexcept;
 

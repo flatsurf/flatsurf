@@ -17,24 +17,24 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <exact-real/yap/arb.hpp>
-#include <optional>
 #include <gmpxx.h>
 #include <boost/lexical_cast.hpp>
+#include <exact-real/yap/arb.hpp>
+#include <optional>
 
-#include "flatsurf/length_along_triangulation.hpp"
-#include "flatsurf/vector_along_triangulation.hpp"
-#include "flatsurf/vector.hpp"
+#include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/half_edge.hpp"
 #include "flatsurf/half_edge_map.hpp"
-#include "flatsurf/flat_triangulation.hpp"
+#include "flatsurf/length_along_triangulation.hpp"
+#include "flatsurf/vector.hpp"
+#include "flatsurf/vector_along_triangulation.hpp"
 
 #include "util/assert.ipp"
 
-using std::optional;
 using boost::lexical_cast;
 using exactreal::Arb;
 using exactreal::ARB_PRECISION_FAST;
+using std::optional;
 
 namespace flatsurf {
 namespace {
@@ -59,7 +59,7 @@ class LengthAlongTriangulation<T>::Implementation {
 
   Implementation() : parent(nullptr), horizontal(nullptr), coefficients(), approximation() {}
 
-  Implementation(Surface const * parent, Vector<T> const * horizontal, const HalfEdge e) : parent(parent), horizontal(horizontal), coefficients(HalfEdgeMap<Coefficient>(this->parent, updateAfterFlip)), approximation() {
+  Implementation(Surface const* parent, Vector<T> const* horizontal, const HalfEdge e) : parent(parent), horizontal(horizontal), coefficients(HalfEdgeMap<Coefficient>(this->parent, updateAfterFlip)), approximation() {
     coefficients->set(e, 1);
     approximation = static_cast<Vector<Arb>>(parent->fromEdge(e)) * static_cast<Vector<Arb>>(*horizontal);
 
@@ -100,8 +100,8 @@ class LengthAlongTriangulation<T>::Implementation {
     return NONE_IS_NIL;
   }
 
-  Surface const * parent;
-  Vector<T> const * horizontal;
+  Surface const* parent;
+  Vector<T> const* horizontal;
   std::optional<HalfEdgeMap<Coefficient>> coefficients;
   mutable Arb approximation;
 };
@@ -110,7 +110,7 @@ template <typename T>
 LengthAlongTriangulation<T>::LengthAlongTriangulation() : impl(spimpl::make_impl<Implementation>()) {}
 
 template <typename T>
-LengthAlongTriangulation<T>::LengthAlongTriangulation(Surface const * parent, Vector<T> const * horizontal, const HalfEdge e) : impl(spimpl::make_impl<Implementation>(parent, horizontal, e)) {}
+LengthAlongTriangulation<T>::LengthAlongTriangulation(Surface const* parent, Vector<T> const* horizontal, const HalfEdge e) : impl(spimpl::make_impl<Implementation>(parent, horizontal, e)) {}
 
 template <typename T>
 bool LengthAlongTriangulation<T>::operator==(const LengthAlongTriangulation& rhs) const {
@@ -130,7 +130,7 @@ bool LengthAlongTriangulation<T>::operator<(const LengthAlongTriangulation& rhs)
 
 template <typename T>
 LengthAlongTriangulation<T>& LengthAlongTriangulation<T>::operator+=(const LengthAlongTriangulation& rhs) {
-  switch(impl->classify(*rhs.impl)) {
+  switch (impl->classify(*rhs.impl)) {
     case BOTH_ARE_NIL:
     case RIGHT_IS_NIL:
       break;
@@ -138,7 +138,7 @@ LengthAlongTriangulation<T>& LengthAlongTriangulation<T>::operator+=(const Lengt
       impl = rhs.impl;
       break;
     case NONE_IS_NIL:
-      impl->approximation += rhs.impl->approximation (ARB_PRECISION_FAST);
+      impl->approximation += rhs.impl->approximation(ARB_PRECISION_FAST);
       rhs.impl->coefficients->apply([&](const HalfEdge e, const typename Implementation::Coefficient& c) {
         impl->coefficients->set(e, impl->coefficients->get(e) + c);
       });
@@ -149,7 +149,7 @@ LengthAlongTriangulation<T>& LengthAlongTriangulation<T>::operator+=(const Lengt
 
 template <typename T>
 LengthAlongTriangulation<T>& LengthAlongTriangulation<T>::operator-=(const LengthAlongTriangulation& rhs) {
-  switch(impl->classify(*rhs.impl)) {
+  switch (impl->classify(*rhs.impl)) {
     case BOTH_ARE_NIL:
     case RIGHT_IS_NIL:
       break;
@@ -157,7 +157,7 @@ LengthAlongTriangulation<T>& LengthAlongTriangulation<T>::operator-=(const Lengt
       throw std::logic_error("Can not subtract non-zero length from zero length.");
     case NONE_IS_NIL:
       ASSERT_ARGUMENT(rhs <= *this, "Can not subtract a length from a smaller length.");
-      impl->approximation -= rhs.impl->approximation (ARB_PRECISION_FAST);
+      impl->approximation -= rhs.impl->approximation(ARB_PRECISION_FAST);
       rhs.impl->coefficients->apply([&](const HalfEdge e, const typename Implementation::Coefficient& c) {
         impl->coefficients->set(e, impl->coefficients->get(e) - c);
       });
@@ -178,7 +178,7 @@ LengthAlongTriangulation<T>& LengthAlongTriangulation<T>::operator*=(const Quoti
         impl->coefficients->set(e, c * rhs);
       }
     });
-    impl->approximation *= Arb(rhs) (ARB_PRECISION_FAST);
+    impl->approximation *= Arb(rhs)(ARB_PRECISION_FAST);
   }
   return *this;
 }
@@ -200,7 +200,7 @@ typename LengthAlongTriangulation<T>::Quotient LengthAlongTriangulation<T>::oper
     return mpz_class(0);
   }
 
-  mpz_class quo = static_cast<Arb>((impl->approximation / rhs.impl->approximation) (ARB_PRECISION_FAST)).floor();
+  mpz_class quo = static_cast<Arb>((impl->approximation / rhs.impl->approximation)(ARB_PRECISION_FAST)).floor();
 
   while (rhs * quo < *this) {
     quo++;
@@ -218,7 +218,7 @@ std::ostream& operator<<(std::ostream& os, const LengthAlongTriangulation<T>& se
   else
     throw std::logic_error("not implemented: operator<<(LengthAlongTriangulation)");
 }
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include <e-antic/renfxx.h>
@@ -244,4 +244,4 @@ template class LengthAlongTriangulation<Element<RationalFieldTraits>>;
 template std::ostream& operator<<(std::ostream&, const LengthAlongTriangulation<Element<RationalFieldTraits>>&);
 template class LengthAlongTriangulation<Element<NumberFieldTraits>>;
 template std::ostream& operator<<(std::ostream&, const LengthAlongTriangulation<Element<NumberFieldTraits>>&);
-}
+}  // namespace flatsurf

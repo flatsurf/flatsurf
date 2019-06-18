@@ -20,8 +20,8 @@
 #ifndef LIBFLATSURF_VECTOR_ALGORITHM_EXACT_IPP
 #define LIBFLATSURF_VECTOR_ALGORITHM_EXACT_IPP
 
-#include <optional>
 #include <intervalxt/length.hpp>
+#include <optional>
 
 #include "flatsurf/bound.hpp"
 

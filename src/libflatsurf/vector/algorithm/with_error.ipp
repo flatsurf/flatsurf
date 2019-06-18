@@ -20,8 +20,8 @@
 #ifndef LIBFLATSURF_VECTOR_ALGORITHM_WITH_ERROR_IPP
 #define LIBFLATSURF_VECTOR_ALGORITHM_WITH_ERROR_IPP
 
-#include <optional>
 #include <exact-real/arb.hpp>
+#include <optional>
 
 #include "flatsurf/bound.hpp"
 

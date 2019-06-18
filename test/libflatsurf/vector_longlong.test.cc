@@ -37,4 +37,3 @@ TEST(VectorLongLongTest, CCW) {
 }
 
 #include "main.hpp"
-

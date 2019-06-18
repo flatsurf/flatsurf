@@ -28,7 +28,7 @@ namespace {
 // (practically) O(1).
 template <typename T>
 class UnionJoin : boost::equality_comparable<UnionJoin<T>> {
-  mutable UnionJoin const * parent;
+  mutable UnionJoin const* parent;
   const T repr;
 
   const UnionJoin& top() {
@@ -66,7 +66,7 @@ class UnionJoin : boost::equality_comparable<UnionJoin<T>> {
     return top().repr;
   }
 };
-}
-}
+}  // namespace
+}  // namespace flatsurf
 
 #endif

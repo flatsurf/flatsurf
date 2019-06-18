@@ -24,11 +24,11 @@
 #include <exact-real/element.hpp>
 #include <exact-real/number_field_traits.hpp>
 
-#include <flatsurf/vector.hpp>
 #include <flatsurf/bound.hpp>
 #include <flatsurf/interval_exchange_transformation.hpp>
-#include <flatsurf/saddle_connections.hpp>
 #include <flatsurf/saddle_connection.hpp>
+#include <flatsurf/saddle_connections.hpp>
+#include <flatsurf/vector.hpp>
 
 #include "surfaces.hpp"
 
@@ -55,7 +55,7 @@ TYPED_TEST(IntervalExchangeTransformationTest, Square) {
 }
 
 TYPED_TEST(IntervalExchangeTransformationTest, Hexagon) {
-  if constexpr(std::is_same_v<TypeParam, Vector<long long>>) {
+  if constexpr (std::is_same_v<TypeParam, Vector<long long>>) {
     ;
   } else {
     auto hexagon = makeHexagon<TypeParam>();
@@ -67,7 +67,7 @@ TYPED_TEST(IntervalExchangeTransformationTest, Hexagon) {
 }
 
 TYPED_TEST(IntervalExchangeTransformationTest, _1221) {
-  if constexpr(std::is_same_v<TypeParam, Vector<long long>>) {
+  if constexpr (std::is_same_v<TypeParam, Vector<long long>>) {
     ;
   } else {
     auto _1221 = make1221<TypeParam>();
@@ -81,4 +81,3 @@ TYPED_TEST(IntervalExchangeTransformationTest, _1221) {
 }  // namespace
 
 #include "main.hpp"
-

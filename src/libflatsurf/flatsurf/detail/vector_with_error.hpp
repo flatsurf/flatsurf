@@ -48,7 +48,7 @@ class VectorWithError : public VectorBase<Vector> {
   explicit operator std::optional<bool>() const noexcept;
 
   // Return the scalar product with the argument.
-  exactreal::Arb operator*(const Vector&) const noexcept;
+  exactreal::Arb operator*(const Vector &)const noexcept;
 };
 }  // namespace flatsurf::detail
 

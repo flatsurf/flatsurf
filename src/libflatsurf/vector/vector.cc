@@ -17,12 +17,12 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <boost/lexical_cast.hpp>
 #include <exact-real/element.hpp>
 #include <exact-real/integer_ring_traits.hpp>
 #include <exact-real/number_field_traits.hpp>
 #include <exact-real/rational_field_traits.hpp>
 #include <exact-real/yap/arb.hpp>
-#include <boost/lexical_cast.hpp>
 
 #include "flatsurf/vector.hpp"
 
@@ -30,9 +30,9 @@
 #include "algorithm/with_error.ipp"
 #include "storage/cartesian.ipp"
 
+using boost::lexical_cast;
 using std::enable_if_t;
 using std::is_same_v;
-using boost::lexical_cast;
 
 // We currently use this precision for all computations involving Arb.
 // This is somewhat random and should probably change, see
@@ -64,8 +64,8 @@ class Vector<T>::Implementation : public Cartesian<T> {
 
   template <typename S, typename = std::enable_if_t<std::is_same_v<T, long long> || std::is_same_v<T, exactreal::Arb>, void>>
   Implementation& operator*=(const S& c) {
-    if constexpr(std::is_same_v<T, long long>) {
-      if constexpr(std::is_same_v<S, mpz_class>) {
+    if constexpr (std::is_same_v<T, long long>) {
+      if constexpr (std::is_same_v<S, mpz_class>) {
         assert(c * mpz_class(lexical_cast<std::string>(this->x)) <= mpz_class(lexical_cast<std::string>(LONG_LONG_MAX)) && "Multiplication overflow");
         assert(c * mpz_class(lexical_cast<std::string>(this->y)) <= mpz_class(lexical_cast<std::string>(LONG_LONG_MAX)) && "Multiplication overflow");
         this->x *= lexical_cast<long long>(lexical_cast<std::string>(c));

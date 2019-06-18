@@ -35,6 +35,7 @@ class VectorAlongTriangulation : public std::conditional_t<std::is_base_of_v<det
                                  boost::additive<VectorAlongTriangulation<T, Approximation, Surf>, HalfEdge>,
                                  boost::additive<VectorAlongTriangulation<T, Approximation, Surf>, HalfEdgeMap<int>> {
   using Base = std::conditional_t<std::is_base_of_v<detail::VectorExact<Vector<T>, T>, Vector<T>>, detail::VectorExact<VectorAlongTriangulation<T, Approximation, Surf>, T>, detail::VectorWithError<VectorAlongTriangulation<T, Approximation, Surf>>>;
+
  public:
   using Coordinate = T;
   using Surface = Surf;

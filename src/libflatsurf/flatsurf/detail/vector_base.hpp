@@ -20,11 +20,11 @@
 #ifndef LIBFLATSURF_DETAIL_VECTOR_BASE_HPP
 #define LIBFLATSURF_DETAIL_VECTOR_BASE_HPP
 
+#include <gmpxx.h>
 #include <boost/operators.hpp>
 #include <complex>
 #include <exact-real/forward.hpp>
 #include <iosfwd>
-#include <gmpxx.h>
 
 #include "flatsurf/forward.hpp"
 
@@ -40,7 +40,7 @@ class VectorBase : private boost::additive<Vector>,
   Vector &operator+=(const Vector &);
   Vector &operator-=(const Vector &);
   Vector &operator*=(const int);
-  Vector &operator*=(const mpz_class&);
+  Vector &operator*=(const mpz_class &);
 
   // Return the perpendicular vector in CCW direction
   // to this vector.
