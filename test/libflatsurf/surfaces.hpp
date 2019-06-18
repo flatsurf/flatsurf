@@ -71,4 +71,28 @@ auto makeHexagon() {
   auto vertices = vector<vector<int>>({{1, 3, -4, -5, -3, -2}, {2, -1, -6, 4, 5, 6}});
   return FlatTriangulation(vertices, vectors);
 }
+
+template <typename R2>
+auto make1221() {
+	vector<R2> vectors;
+	auto x = K.gen();
+	auto o = renf_elem_class(K, 1);
+  if constexpr (std::is_same_v<R2, Vector<eantic::renf_elem_class>>) {
+    using R = eantic::renf_elem_class;
+		auto random = R(K, 200114)/100000;
+    vectors = vector{R2(1*o, 0*o), R2(o/2, x/2), R2(o/2, -x/2), R2(3*random/2, -x/2*random), R2(-3*random/2, -x/2*random), R2(0*o, x*random), R2(0*o, x*random), R2(1*o, -x*random), R2(-3*random/2, -x/2*random), R2(-o/2 + 3*random/2, x/2 + x/2*random), R2(3*random/2, -x/2*random), R2(-o/2 + -3*random/2, -x/2 + x/2*random)};
+  } else if constexpr (std::is_same_v<R2, Vector<Element<NumberFieldTraits>>>) {
+    auto module = Module<NumberFieldTraits>::make({RealNumber::rational(1), RealNumber::random()}, K);
+		auto g = module->gen(0);
+		// auto o = module->gen(0);
+		auto random= module->gen(1);
+    vectors = vector{R2(1*g, 0*g), R2(o/2*g, x/2*g), R2(o/2*g, -x/2*g), R2(3*o/2*random, -x/2*random), R2(-3*o/2*random, -x/2*random), R2(0*g, x*random), R2(0*g, x*random), R2(g, -x*random), R2(-3*o/2*random, -x/2*random), R2(-o/2*g + 3*o/2*random, x/2*g + x/2*random), R2(3*o/2*random, -x/2*random), R2(-o/2*g + -3*o/2*random, -x/2*g + x/2*random)};
+  } else {
+    throw std::logic_error("not implemented: make1221()");
+  }
+
+  auto vertices = vector<vector<int>>({{-12, 4, -6, -1, -8, 6, -5, 3, -10, 5, -4, 2}, {-11, 7, 1, 8, -7, 9, -3, 10, -9, 11, -2, 12}});
+	return FlatTriangulation(vertices, vectors);
+}
+
 }  // namespace

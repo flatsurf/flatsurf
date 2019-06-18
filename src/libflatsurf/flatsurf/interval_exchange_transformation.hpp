@@ -20,6 +20,7 @@
 #ifndef LIBFLATSURF_INTERVAL_EXCHANGE_TRANSFORMATION_HPP
 #define LIBFLATSURF_INTERVAL_EXCHANGE_TRANSFORMATION_HPP
 
+#include <intervalxt/maybe_saddle_connection.hpp>
 #include "external/spimpl/spimpl.h"
 
 #include "flatsurf/forward.hpp"

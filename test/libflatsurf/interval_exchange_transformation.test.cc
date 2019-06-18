@@ -49,8 +49,32 @@ TYPED_TEST_CASE(IntervalExchangeTransformationTest, ExactVectors);
 TYPED_TEST(IntervalExchangeTransformationTest, Square) {
   auto square = makeSquare<TypeParam>();
 
-  for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(&square, Bound(4*4))) {
+  for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(&square, Bound(10 * 10))) {
     auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(square, sc->vector());
+  }
+}
+
+TYPED_TEST(IntervalExchangeTransformationTest, Hexagon) {
+  if constexpr(std::is_same_v<TypeParam, Vector<long long>>) {
+    ;
+  } else {
+    auto hexagon = makeHexagon<TypeParam>();
+
+    for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(&hexagon, Bound(10 * 10))) {
+      auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(hexagon, sc->vector());
+    }
+  }
+}
+
+TYPED_TEST(IntervalExchangeTransformationTest, _1221) {
+  if constexpr(std::is_same_v<TypeParam, Vector<long long>>) {
+    ;
+  } else {
+    auto _1221 = make1221<TypeParam>();
+
+    for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(&_1221, Bound(10 * 10))) {
+      auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(_1221, sc->vector());
+    }
   }
 }
 

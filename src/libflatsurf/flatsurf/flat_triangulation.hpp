@@ -44,6 +44,8 @@ class FlatTriangulation : public FlatTriangulationCombinatorial {
   // caller expects.
   FlatTriangulation<T> clone() const;
 
+  T area() const noexcept;
+
   const Vector &fromEdge(HalfEdge) const;
 
   template <typename W>

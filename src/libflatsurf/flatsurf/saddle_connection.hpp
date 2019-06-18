@@ -22,6 +22,7 @@
 
 #include <boost/operators.hpp>
 #include <iosfwd>
+#include <optional>
 #include "external/spimpl/spimpl.h"
 
 #include "flatsurf/forward.hpp"
@@ -40,6 +41,10 @@ class SaddleConnection : boost::equality_comparable<SaddleConnection<Surface>> {
   // It is approching in a direction that is contained in the sector
   // *clockwise* from *-target*.
   HalfEdge target() const;
+
+  std::optional<int> angle(const SaddleConnection<Surface>&) const;
+
+  SaddleConnection<Surface> operator-() const noexcept;
 
   bool operator==(const SaddleConnection<Surface> &) const;
 

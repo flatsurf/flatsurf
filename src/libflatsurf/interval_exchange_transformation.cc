@@ -42,8 +42,8 @@
 
 using std::any_of;
 using std::find_if;
-using std::insert_iterator;
-using std::inserter;
+using std::back_insert_iterator;
+using std::back_inserter;
 using std::next;
 using std::ostream;
 using std::shared_ptr;
@@ -79,9 +79,9 @@ TRIANGLE classifyFace(HalfEdge face, const FlatTriangulation<T>& parent, const V
                 "time");
         }
       case CCW::CLOCKWISE:
-        topEdges++;
         break;
       case CCW::COUNTERCLOCKWISE:
+        topEdges++;
         break;
     }
 
@@ -99,8 +99,8 @@ TRIANGLE classifyFace(HalfEdge face, const FlatTriangulation<T>& parent, const V
 template <typename T>
 bool large(HalfEdge e, const FlatTriangulation<T>& parent, const Vector<T>& vertical) {
   return vertical.ccw(parent.fromEdge(e)) == CCW::CLOCKWISE &&
-         classifyFace(e, parent, vertical) == TRIANGLE::FORWARD &&
-         classifyFace(-e, parent, vertical) == TRIANGLE::BACKWARD;
+         classifyFace(e, parent, vertical) == TRIANGLE::BACKWARD &&
+         classifyFace(-e, parent, vertical) == TRIANGLE::FORWARD;
 }
 
 template <typename T>
@@ -130,13 +130,15 @@ HalfEdge makeUniqueLargeEdge(FlatTriangulation<T>& parent, const Vector<T>& vert
     if (largeEdge == component.end()) break;
 
     parent.flip(*largeEdge);
+
+    assert(!large(*largeEdge, parent, vertical));
   }
 
   return *source;
 }
 
 template <typename T>
-void makeContour(insert_iterator<vector<HalfEdge>> target,
+void makeContour(back_insert_iterator<vector<HalfEdge>> target,
                  const HalfEdge source, const FlatTriangulation<T>& parent,
                  const Vector<T>& vertical, std::set<HalfEdge>& contourEdges) {
   auto addToContour = [&] () {
@@ -253,10 +255,10 @@ class IntervalExchangeTransformation<T>::Implementation {
     std::set<HalfEdge> verticalFaces;
 
     std::vector<HalfEdge> top;
-    makeContour(inserter(top, top.end()), source, *parent, vertical, verticalFaces);
+    makeContour(back_inserter(top), source, *parent, vertical, verticalFaces);
 
     std::vector<HalfEdge> bottom;
-    makeContour(inserter(bottom, bottom.end()), -source, *parent, -vertical, verticalFaces);
+    makeContour(back_inserter(bottom), -source, *parent, -vertical, verticalFaces);
     reverse(bottom.begin(), bottom.end());
     transform(bottom.begin(), bottom.end(), bottom.begin(), [](HalfEdge e) { return -e; });
     assert(std::set<HalfEdge>(bottom.begin(), bottom.end()) == std::set<HalfEdge>(top.begin(), top.end()) && "top & bottom contour must contain the same half edges");
