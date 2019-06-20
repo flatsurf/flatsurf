@@ -66,13 +66,41 @@ TYPED_TEST(IntervalExchangeTransformationTest, Hexagon) {
   }
 }
 
+TYPED_TEST(IntervalExchangeTransformationTest, HeptagonL) {
+  if constexpr (std::is_same_v<TypeParam, Vector<long long>>) {
+    ;
+  } else if constexpr (std::is_same_v<TypeParam, Vector<Element<NumberFieldTraits>>>) {
+    ;
+  } else {
+    auto heptagonL = makeHeptagonL<TypeParam>();
+
+    for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(&heptagonL, Bound(20))) {
+      auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(heptagonL, sc->vector());
+    }
+  }
+}
+
+TYPED_TEST(IntervalExchangeTransformationTest, GoldenL) {
+  if constexpr (std::is_same_v<TypeParam, Vector<long long>>) {
+    ;
+  } else if constexpr (std::is_same_v<TypeParam, Vector<Element<NumberFieldTraits>>>) {
+    ;
+  } else {
+    auto goldenL = makeGoldenL<TypeParam>();
+
+    for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(&goldenL, Bound(20))) {
+      auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(goldenL, sc->vector());
+    }
+  }
+}
+
 TYPED_TEST(IntervalExchangeTransformationTest, _1221) {
   if constexpr (std::is_same_v<TypeParam, Vector<long long>>) {
     ;
   } else {
     auto _1221 = make1221<TypeParam>();
 
-    for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(&_1221, Bound(10))) {
+    for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(&_1221, Bound(5))) {
       auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(_1221, sc->vector());
     }
   }

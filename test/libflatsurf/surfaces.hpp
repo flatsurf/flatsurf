@@ -38,6 +38,8 @@ using std::vector;
 
 namespace {
 auto K = renf_class::make("x^2 - 3", "x", "1.73 +/- 0.1");
+auto L = renf_class::make("x^2 - x - 1", "x", "1.618 +/- 0.1");
+auto M = renf_class::make("x^3 - x^2 - 2*x +1", "x", "1.802 +/- 0.1");
 
 template <typename R2>
 auto makeSquare() {
@@ -56,6 +58,28 @@ auto makeSquare() {
 }
 
 template <typename R2>
+auto makeGoldenL() {
+  vector<R2> vectors;
+  auto a = L->gen();
+  if constexpr (std::is_same_v<R2, Vector<eantic::renf_elem_class>>) {
+    using R = eantic::renf_elem_class;
+    vectors = vector{R2(R(L, 1), R(L, 0)),
+                     R2(R(L, 1), R(L, 1)),
+                     R2(R(L, 0), R(L, 1)),
+                     R2(1 - a, R(L, 0)),
+                     R2(1 - a, R(L, -1)),
+                     R2(R(L, 1), R(L, 0)),
+                     R2(R(L, 1), a - 1),
+                     R2(R(L, 0), a - 1),
+                     R2(R(L, 0), R(L, -1))};
+  } else {
+    throw std::logic_error("not implemented: makeGoldenL()");
+  }
+  auto vertices = vector<vector<int>>{{1, 2, 3, 4, 5, -3, 6, 7, 8, -6, -2, 9, -4, -5, -9, -1, -7, -8}};
+  return FlatTriangulation(vertices, vectors);
+}
+
+template <typename R2>
 auto makeHexagon() {
   vector<R2> vectors;
   auto x = K->gen();
@@ -69,6 +93,35 @@ auto makeHexagon() {
     throw std::logic_error("not implemented: makeHexagon()");
   }
   auto vertices = vector<vector<int>>({{1, 3, -4, -5, -3, -2}, {2, -1, -6, 4, 5, 6}});
+  return FlatTriangulation(vertices, vectors);
+}
+
+template <typename R2>
+auto makeHeptagonL() {
+  vector<R2> vectors;
+  auto a = M->gen();
+  auto b = a*a - a - 1;
+  if constexpr (std::is_same_v<R2, Vector<eantic::renf_elem_class>>) {
+    using R = eantic::renf_elem_class;
+    vectors = vector{R2(R(M, 1), R(M, 0)),
+                     R2(R(M, 1), R(M, 1)),
+                     R2(R(M, 0), R(M, 1)),
+                     R2(1 - a, R(M, 0)),
+                     R2(1 - a, -b),
+                     R2(R(M, 0), -b),
+                     R2(a - 1, R(M, 1)),
+                     R2(R(M, 0), R(M, 1)),
+                     R2(R(M, -1), 1 - a),
+                     R2(R(M, 0), 1 - a),
+                     R2(b, R(M, 0)),
+                     R2(b, a - 1),
+                     R2(R(M, -1), R(M, 0)),
+                     R2(a - 1, R(M, 0)),
+                     R2(R(M, 0), a - 1)};
+  } else {
+    throw std::logic_error("not implemented: makeHeptagonL()");
+  }
+  auto vertices = vector<vector<int>>{{1, 2, 3, 4, 5, 6, -4, 7, 8, -1, 9, 10, 11, 12, -10, 13, -2, -8, 14, -5, -6, -14, -7, -3, -13, -9, 15, -11, -12, -15}};
   return FlatTriangulation(vertices, vectors);
 }
 

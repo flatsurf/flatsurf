@@ -63,6 +63,8 @@ enum class TRIANGLE {
 
 template <typename T>
 TRIANGLE classifyFace(HalfEdge face, const FlatTriangulation<T>& parent, const Vector<T>& vertical) {
+  // Ideally, we collapse vertical edges, https://github.com/flatsurf/flatsurf/issues/71 so vertical would never be an option.
+  // In any case, we should only consider the horizontal part so the CCW computations should go away.
   int topEdges = 0;
 
   for (int i = 0; i < 3; i++) {
@@ -98,43 +100,12 @@ TRIANGLE classifyFace(HalfEdge face, const FlatTriangulation<T>& parent, const V
 
 template <typename T>
 bool large(HalfEdge e, const FlatTriangulation<T>& parent, const Vector<T>& vertical) {
+  // Ideally, large would not special case verticals, https://github.com/flatsurf/flatsurf/issues/71
   return vertical.ccw(parent.fromEdge(e)) == CCW::CLOCKWISE &&
-         classifyFace(e, parent, vertical) == TRIANGLE::BACKWARD &&
-         classifyFace(-e, parent, vertical) == TRIANGLE::FORWARD;
-}
-
-template <typename T>
-HalfEdge makeUniqueLargeEdge(FlatTriangulation<T>& parent, const Vector<T>& vertical, const std::set<HalfEdge>& component) {
-  assert(component.size());
-  auto source =
-      find_if(component.begin(), component.end(),
-              [&](const HalfEdge e) {
-                // We can start from an edge at the bottom of its face if it is:
-                // * A large edge
-                // * A non-vertical edge in a right vertical triangle
-                return large(e, parent, vertical) ||
-                       (vertical.ccw(parent.fromEdge(parent.nextInFace(e))) == CCW::COLLINEAR && vertical.ccw(parent.fromEdge(e)) == CCW::CLOCKWISE);
-              });
-
-  if (source == component.end())
-    throw std::logic_error("not implemented: no large edges & no vertical edges; something is wrong.");
-
-  // Eliminate other large edges
-  while (true) {
-    auto largeEdge = find_if(component.begin(), component.end(),
-                             [&](const HalfEdge e) {
-                               return e != *source && e != -*source &&
-                                      large(e, parent, vertical);
-                             });
-
-    if (largeEdge == component.end()) break;
-
-    parent.flip(*largeEdge);
-
-    assert(!large(*largeEdge, parent, vertical));
-  }
-
-  return *source;
+         (
+          ((classifyFace(e, parent, vertical) == TRIANGLE::BACKWARD || classifyFace(e, parent, vertical) == TRIANGLE::LEFT_VERTICAL) &&
+           (classifyFace(-e, parent, vertical) == TRIANGLE::FORWARD || classifyFace(-e, parent, vertical) == TRIANGLE::RIGHT_VERTICAL))
+         );
 }
 
 template <typename T>
@@ -208,6 +179,44 @@ std::vector<std::set<HalfEdge>> verticalComponents(const FlatTriangulation<T>& p
     ret.push_back(c.second);
   }
   return ret;
+}
+
+template <typename T>
+HalfEdge makeUniqueLargeEdge(FlatTriangulation<T>& parent, const Vector<T>& vertical, const std::set<HalfEdge>& component) {
+  assert(component.size());
+  auto source =
+      find_if(component.begin(), component.end(),
+              [&](const HalfEdge e) {
+                // We can start from an edge at the bottom of its face if it is:
+                // * A large edge
+                // * A non-vertical edge in a right vertical triangle
+                return large(e, parent, vertical);
+              });
+
+  if (source == component.end())
+    throw std::logic_error("not implemented: no large edges & no vertical edges; something is wrong.");
+
+  // Eliminate other large edges
+  while (true) {
+    auto largeEdge = find_if(component.begin(), component.end(),
+                             [&](const HalfEdge e) {
+                               return e != *source && e != -*source &&
+                                      large(e, parent, vertical);
+                             });
+
+    if (largeEdge == component.end()) break;
+
+    // We do not want to check for this in every iteration, see https://github.com/flatsurf/flatsurf/issues/71
+    if (verticalComponents(parent, vertical, component).size() > 1) {
+      break;
+    }
+
+    parent.flip(*largeEdge);
+
+    assert(!large(*largeEdge, parent, vertical));
+  }
+
+  return *source;
 }
 
 }  // namespace

@@ -75,6 +75,11 @@ FlatTriangulation<T>::FlatTriangulation(
     zero += fromEdge(edge);
     CHECK_ARGUMENT(!zero, "some face is not closed");
   }
+  // check that faces are oriented correctly
+  for (auto edge : halfEdges()) {
+    auto next = nextInFace(edge);
+    CHECK_ARGUMENT(fromEdge(edge).ccw(fromEdge(next)) == CCW::COUNTERCLOCKWISE, "some face is not oriented correctly");
+  }
 }
 
 template <typename T>
