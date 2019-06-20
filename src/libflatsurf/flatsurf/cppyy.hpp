@@ -22,6 +22,7 @@
 
 #include <e-antic/renfxx_fwd.h>
 #include <exact-real/forward.hpp>
+#include <intervalxt/length.hpp>
 #include <iosfwd>
 
 #include "flatsurf/flat_triangulation.hpp"
