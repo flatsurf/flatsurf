@@ -37,7 +37,7 @@ using eantic::renf_elem_class;
 using std::vector;
 
 namespace {
-auto K = renf_class("x^2 - 3", "x", "1.73 +/- 0.1");
+auto K = renf_class::make("x^2 - 3", "x", "1.73 +/- 0.1");
 
 template <typename R2>
 auto makeSquare() {
@@ -58,7 +58,7 @@ auto makeSquare() {
 template <typename R2>
 auto makeHexagon() {
   vector<R2> vectors;
-  auto x = K.gen();
+  auto x = K->gen();
   if constexpr (std::is_same_v<R2, Vector<eantic::renf_elem_class>>) {
     using R = eantic::renf_elem_class;
     vectors = vector{R2(R(K, 2), R(K, 0)), R2(R(K, 1), x), R2(R(K, 3), x), R2(R(K, 1), -x), R2(R(K, 4), R(K, 0)), R2(R(K, 3), x)};
@@ -75,18 +75,17 @@ auto makeHexagon() {
 template <typename R2>
 auto make1221() {
   vector<R2> vectors;
-  auto x = K.gen();
+  auto x = -K->gen();
   auto o = renf_elem_class(K, 1);
+  using R = eantic::renf_elem_class;
   if constexpr (std::is_same_v<R2, Vector<eantic::renf_elem_class>>) {
-    using R = eantic::renf_elem_class;
     auto random = R(K, 200114) / 100000;
-    vectors = vector{R2(1 * o, 0 * o), R2(o / 2, x / 2), R2(o / 2, -x / 2), R2(3 * random / 2, -x / 2 * random), R2(-3 * random / 2, -x / 2 * random), R2(0 * o, x * random), R2(0 * o, x * random), R2(1 * o, -x * random), R2(-3 * random / 2, -x / 2 * random), R2(-o / 2 + 3 * random / 2, x / 2 + x / 2 * random), R2(3 * random / 2, -x / 2 * random), R2(-o / 2 + -3 * random / 2, -x / 2 + x / 2 * random)};
+    vectors = vector{R2(1, 0), R2( (R(K, 1)/2)*1, (R(K, 1)/2*x)*1), R2( (R(K, 1)/2)*1, (R(K, -1)/2*x)*1), R2( (R(K, 3)/2)*random, (R(K, -1)/2*x)*random), R2( (R(K, -3)/2)*random, (R(K, -1)/2*x)*random), R2( 0, (x)*random), R2( 0, (x)*random), R2( 1, (-x)*random), R2( (R(K, -3)/2)*random, (R(K, -1)/2*x)*random), R2( (R(K, -1)/2)*1 + (R(K, 3)/2)*random, (R(K, 1)/2*x)*1 + (R(K, 1)/2*x)*random), R2( (R(K, 3)/2)*random, (R(K, -1)/2*x)*random), R2( (R(K, -1)/2)*1 + (R(K, -3)/2)*random, (R(K, -1)/2*x)*1 + (R(K, 1)/2*x)*random)};
   } else if constexpr (std::is_same_v<R2, Vector<Element<NumberFieldTraits>>>) {
-    auto module = Module<NumberFieldTraits>::make({RealNumber::rational(1), RealNumber::random()}, K);
+    auto module = Module<NumberFieldTraits>::make({RealNumber::rational(1), RealNumber::random(2.00114)}, K);
     auto g = module->gen(0);
-    // auto o = module->gen(0);
     auto random = module->gen(1);
-    vectors = vector{R2(1 * g, 0 * g), R2(o / 2 * g, x / 2 * g), R2(o / 2 * g, -x / 2 * g), R2(3 * o / 2 * random, -x / 2 * random), R2(-3 * o / 2 * random, -x / 2 * random), R2(0 * g, x * random), R2(0 * g, x * random), R2(g, -x * random), R2(-3 * o / 2 * random, -x / 2 * random), R2(-o / 2 * g + 3 * o / 2 * random, x / 2 * g + x / 2 * random), R2(3 * o / 2 * random, -x / 2 * random), R2(-o / 2 * g + -3 * o / 2 * random, -x / 2 * g + x / 2 * random)};
+    vectors = vector{R2(g, 0*g), R2( (R(K, 1)/2)*g, (R(K, 1)/2*x)*g), R2( (R(K, 1)/2)*g, (R(K, -1)/2*x)*g), R2( (R(K, 3)/2)*random, (R(K, -1)/2*x)*random), R2( (R(K, -3)/2)*random, (R(K, -1)/2*x)*random), R2( 0*g, (x)*random), R2( 0*g, (x)*random), R2( g, (-x)*random), R2( (R(K, -3)/2)*random, (R(K, -1)/2*x)*random), R2( (R(K, -1)/2)*g + (R(K, 3)/2)*random, (R(K, 1)/2*x)*g + (R(K, 1)/2*x)*random), R2( (R(K, 3)/2)*random, (R(K, -1)/2*x)*random), R2( (R(K, -1)/2)*g + (R(K, -3)/2)*random, (R(K, -1)/2*x)*g + (R(K, 1)/2*x)*random)};
   } else {
     throw std::logic_error("not implemented: make1221()");
   }

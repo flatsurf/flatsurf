@@ -135,7 +135,7 @@ T(NTL::conv<long>(c)); }).toVector());
 // Return the smallest totally real field which contains Re(ξ) and Im(ξ) where
 // ξ is a primitive n-th root of unity; together with the elements Re(ξ) and
 // Im(ξ).
-std::tuple<std::shared_ptr<eantic::renf_class>, eantic::renf_elem_class,
+std::tuple<std::shared_ptr<const eantic::renf_class>, eantic::renf_elem_class,
            eantic::renf_elem_class>
 real_cyclotomic_field(size_t n) {
   /*
@@ -271,13 +271,13 @@ im.change_ring(M).roots(multiplicities=False))
   // We have not figured out the correct precision here yet, see
   // https://github.com/flatsurf/flatsurf/issues/52. 64 bits should be plently
   // for most occasions though.
-  auto totally_real_field = std::make_shared<eantic::renf_class>(
+  auto totally_real_field = eantic::renf_class::make(
       totally_real_data[n][0], "x", totally_real_data[n][1] + " +/- 0.00001",
       exactreal::ARB_PRECISION_FAST);
   auto re =
-      eantic::renf_elem_class(*totally_real_field, totally_real_data[n][2]);
+      eantic::renf_elem_class(totally_real_field, totally_real_data[n][2]);
   auto im =
-      eantic::renf_elem_class(*totally_real_field, totally_real_data[n][3]);
+      eantic::renf_elem_class(totally_real_field, totally_real_data[n][3]);
   return std::make_tuple(std::move(totally_real_field), re, im);
 }
 

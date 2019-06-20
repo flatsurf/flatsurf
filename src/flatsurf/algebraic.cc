@@ -315,7 +315,7 @@ NumberField<T>::NumberField() {}
 template <class T>
 NumberField<T>::NumberField(
     T p[], size_t deg, complex<COORD> emb,
-    std::shared_ptr<eantic::renf_class> totally_real_field,
+    std::shared_ptr<const eantic::renf_class> totally_real_field,
     const complex<renf_elem_class> &&gen)
     : degree(deg),
       gen(std::move(gen)),
@@ -372,8 +372,8 @@ void NumberField<T>::store_conjugate(algebraic<T> a) {
 }
 
 template <class T>
-NumberField<T>::operator const eantic::renf_class &() const {
-  return *totally_real_field;
+NumberField<T>::operator std::shared_ptr<const eantic::renf_class>() const {
+  return totally_real_field;
 }
 
 template <class T>
@@ -412,8 +412,8 @@ std::vector<T> to_coords(const renf_elem_class &real,
 
   // We'll solve a system A·x = b where the non-square A describes the "base
   // change" from the complex base to the real embedded base.
-  long real_rows = real.parent().degree();
-  long imag_rows = imag.parent().degree();
+  long real_rows = real.parent()->degree();
+  long imag_rows = imag.parent()->degree();
   assert(real_rows == imag_rows &&
          "This code has been written under this assumption. It probably does "
          "not work when this does not hold.");
