@@ -23,8 +23,6 @@
 #include <intervalxt/length.hpp>
 #include <optional>
 
-#include "flatsurf/bound.hpp"
-
 #include "../storage/cartesian.ipp"
 #include "../storage/forward.ipp"
 
@@ -73,7 +71,7 @@ bool VectorExact<Vector, T>::operator<(Bound bound) const noexcept {
       return *maybe;
     return static_cast<const typename Implementation::Exact>(*self.impl) < bound;
   } else {
-    return self.x() * self.x() + self.y() * self.y() < bound.squared;
+    return self.x() * self.x() + self.y() * self.y() < bound.length() * bound.length();
   }
 }
 
@@ -92,7 +90,7 @@ bool VectorExact<Vector, T>::operator>(Bound bound) const noexcept {
       return *maybe;
     return static_cast<const typename Implementation::Exact>(*self.impl) > bound;
   } else {
-    return self.x() * self.x() + self.y() * self.y() > bound.squared;
+    return self.x() * self.x() + self.y() * self.y() > bound.length() * bound.length();
   }
 }
 

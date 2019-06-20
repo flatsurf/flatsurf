@@ -25,6 +25,7 @@
 #include <exact-real/number_field_traits.hpp>
 #include <fstream>
 #include <iostream>
+#include <intervalxt/length.hpp>
 
 #include "flatsurf/ccw.hpp"
 #include "flatsurf/flat_triangulation.hpp"
@@ -610,7 +611,7 @@ int main(int argc, char **argv) {
     SaddleConf sc;
 
     using SaddleConnections = SaddleConnections<FlatTriangulation>;
-    for (auto saddle_connection : SaddleConnections(&flat_triangulation, Bound(static_cast<long long>(ceil(depth * depth))))) {
+    for (auto saddle_connection : SaddleConnections(&flat_triangulation, static_cast<long long>(ceil(depth * depth)))) {
       if (!Vertex::from(flatsurf::Vertex::source(saddle_connection->source(), flat_triangulation)).relevant()) {
         // It would be good to have a proper notion of marked vertices
         // instead, but currently we rely on polygon's original concept of

@@ -27,7 +27,6 @@
 #include <climits>
 #include <ostream>
 
-#include "flatsurf/bound.hpp"
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/saddle_connection.hpp"
 #include "flatsurf/saddle_connections.hpp"

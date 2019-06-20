@@ -23,8 +23,8 @@
 
 #include <exact-real/element.hpp>
 #include <exact-real/number_field_traits.hpp>
+#include <intervalxt/length.hpp>
 
-#include <flatsurf/bound.hpp>
 #include <flatsurf/flat_triangulation.hpp>
 #include <flatsurf/half_edge.hpp>
 #include <flatsurf/saddle_connection.hpp>
@@ -50,13 +50,13 @@ TYPED_TEST_CASE(SaddleConnectionsTest, ExactVectors);
 
 TYPED_TEST(SaddleConnectionsTest, Trivial) {
   auto square = makeSquare<TypeParam>();
-  auto connections = SaddleConnections(&square, Bound(0), HalfEdge(1));
+  auto connections = SaddleConnections(&square, 0, HalfEdge(1));
   EXPECT_EQ(connections.begin(), connections.end());
 }
 
 TYPED_TEST(SaddleConnectionsTest, Square) {
   auto square = makeSquare<TypeParam>();
-  auto bound = Bound(16 * 16);
+  auto bound = 16;
   auto expected = 60;
   auto connections = SaddleConnections(&square, bound, HalfEdge(1));
   EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
@@ -81,7 +81,7 @@ TYPED_TEST(SaddleConnectionsTest, Hexagon) {
     return;
   } else {
     auto hexagon = makeHexagon<TypeParam>();
-    auto bound = Bound(16 * 16);
+    auto bound = Bound(16);
     auto connections = SaddleConnections(&hexagon, bound, HalfEdge(1));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), 10);
     connections = SaddleConnections(&hexagon, bound, HalfEdge(2));

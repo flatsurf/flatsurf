@@ -23,8 +23,8 @@
 
 #include <exact-real/element.hpp>
 #include <exact-real/number_field_traits.hpp>
+#include <intervalxt/length.hpp>
 
-#include <flatsurf/bound.hpp>
 #include <flatsurf/interval_exchange_transformation.hpp>
 #include <flatsurf/saddle_connection.hpp>
 #include <flatsurf/saddle_connections.hpp>
@@ -49,7 +49,7 @@ TYPED_TEST_CASE(IntervalExchangeTransformationTest, ExactVectors);
 TYPED_TEST(IntervalExchangeTransformationTest, Square) {
   auto square = makeSquare<TypeParam>();
 
-  for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(&square, Bound(10 * 10))) {
+  for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(&square, Bound(10))) {
     auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(square, sc->vector());
   }
 }
@@ -60,7 +60,7 @@ TYPED_TEST(IntervalExchangeTransformationTest, Hexagon) {
   } else {
     auto hexagon = makeHexagon<TypeParam>();
 
-    for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(&hexagon, Bound(10 * 10))) {
+    for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(&hexagon, Bound(10))) {
       auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(hexagon, sc->vector());
     }
   }
@@ -72,7 +72,7 @@ TYPED_TEST(IntervalExchangeTransformationTest, _1221) {
   } else {
     auto _1221 = make1221<TypeParam>();
 
-    for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(&_1221, Bound(10 * 10))) {
+    for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(&_1221, Bound(10))) {
       auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(_1221, sc->vector());
     }
   }

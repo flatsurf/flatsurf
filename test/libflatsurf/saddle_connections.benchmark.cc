@@ -23,7 +23,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include <exact-real/integer_ring_traits.hpp>
-#include <flatsurf/bound.hpp>
+#include <intervalxt/length.hpp>
 #include <flatsurf/flat_triangulation.hpp>
 #include <flatsurf/half_edge.hpp>
 #include <flatsurf/saddle_connection.hpp>
@@ -43,7 +43,7 @@ namespace {
 template <class R2>
 void SaddleConnectionsSquare(benchmark::State& state) {
   auto square = makeSquare<R2>();
-  auto bound = Bound(state.range(0) * state.range(0));
+  auto bound = Bound(state.range(0));
   auto expected = state.range(1);
   for (auto _ : state) {
     auto connections = SaddleConnections(&square, bound, HalfEdge(1));

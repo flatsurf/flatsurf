@@ -25,6 +25,8 @@
 #ifndef LIBFLATSURF_FORWARD_HPP
 #define LIBFLATSURF_FORWARD_HPP
 
+#include <intervalxt/forward.hpp>
+
 #include "flatsurf/flatsurf.hpp"
 
 #include "flatsurf/ccw.hpp"
@@ -63,7 +65,7 @@ class HalfEdgeMap;
 template <typename T>
 class Permutation;
 
-struct Bound;
+using Bound = intervalxt::Length<long long>;
 
 template <typename T>
 class IntervalExchangeTransformation;

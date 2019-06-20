@@ -25,7 +25,6 @@
 #include <exact-real/element.hpp>
 #include <exact-real/number_field_traits.hpp>
 
-#include <flatsurf/bound.hpp>
 #include <flatsurf/flat_triangulation.hpp>
 #include <flatsurf/half_edge.hpp>
 #include <flatsurf/saddle_connection.hpp>

@@ -130,13 +130,13 @@ class Vector<T>::Implementation : public Cartesian<T> {
   template <typename _ = void, typename = std::enable_if_t<std::is_same_v<T, exactreal::Arb>, void>>
   std::optional<bool> operator<(const Bound bound) const noexcept {
     Arb size = (this->x * this->x + this->y * this->y)(ARB_PRECISION_FAST);
-    return size < bound.squared;
+    return size < bound.length() * bound.length();
   }
 
   template <typename _ = void, typename = std::enable_if_t<std::is_same_v<T, exactreal::Arb>, void>>
   std::optional<bool> operator>(const Bound bound) const noexcept {
     Arb size = (this->x * this->x + this->y * this->y)(ARB_PRECISION_FAST);
-    return size > bound.squared;
+    return size > bound.length() * bound.length();
   }
 
   template <typename = void, typename = std::enable_if_t<std::is_same_v<T, exactreal::Arb>, void>>

@@ -24,7 +24,6 @@
 #include <optional>
 #include "external/spimpl/spimpl.h"
 
-#include "flatsurf/bound.hpp"
 #include "flatsurf/forward.hpp"
 #include "flatsurf/half_edge.hpp"
 #include "flatsurf/vertex.hpp"
