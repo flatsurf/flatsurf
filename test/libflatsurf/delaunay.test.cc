@@ -21,9 +21,9 @@
 #include <gtest/gtest.h>
 #include <boost/lexical_cast.hpp>
 
-#include <intervalxt/length.hpp>
 #include <flatsurf/delaunay_triangulation.hpp>
 #include <flatsurf/half_edge.hpp>
+#include <intervalxt/length.hpp>
 
 #include "surfaces.hpp"
 

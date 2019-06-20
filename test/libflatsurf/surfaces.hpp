@@ -100,7 +100,7 @@ template <typename R2>
 auto makeHeptagonL() {
   vector<R2> vectors;
   auto a = M->gen();
-  auto b = a*a - a - 1;
+  auto b = a * a - a - 1;
   if constexpr (std::is_same_v<R2, Vector<eantic::renf_elem_class>>) {
     using R = eantic::renf_elem_class;
     vectors = vector{R2(R(M, 1), R(M, 0)),
@@ -133,12 +133,12 @@ auto make1221() {
   using R = eantic::renf_elem_class;
   if constexpr (std::is_same_v<R2, Vector<eantic::renf_elem_class>>) {
     auto random = R(K, 200114) / 100000;
-    vectors = vector{R2(1, 0), R2( (R(K, 1)/2)*1, (R(K, 1)/2*x)*1), R2( (R(K, 1)/2)*1, (R(K, -1)/2*x)*1), R2( (R(K, 3)/2)*random, (R(K, -1)/2*x)*random), R2( (R(K, -3)/2)*random, (R(K, -1)/2*x)*random), R2( 0, (x)*random), R2( 0, (x)*random), R2( 1, (-x)*random), R2( (R(K, -3)/2)*random, (R(K, -1)/2*x)*random), R2( (R(K, -1)/2)*1 + (R(K, 3)/2)*random, (R(K, 1)/2*x)*1 + (R(K, 1)/2*x)*random), R2( (R(K, 3)/2)*random, (R(K, -1)/2*x)*random), R2( (R(K, -1)/2)*1 + (R(K, -3)/2)*random, (R(K, -1)/2*x)*1 + (R(K, 1)/2*x)*random)};
+    vectors = vector{R2(1, 0), R2((R(K, 1) / 2) * 1, (R(K, 1) / 2 * x) * 1), R2((R(K, 1) / 2) * 1, (R(K, -1) / 2 * x) * 1), R2((R(K, 3) / 2) * random, (R(K, -1) / 2 * x) * random), R2((R(K, -3) / 2) * random, (R(K, -1) / 2 * x) * random), R2(0, (x)*random), R2(0, (x)*random), R2(1, (-x) * random), R2((R(K, -3) / 2) * random, (R(K, -1) / 2 * x) * random), R2((R(K, -1) / 2) * 1 + (R(K, 3) / 2) * random, (R(K, 1) / 2 * x) * 1 + (R(K, 1) / 2 * x) * random), R2((R(K, 3) / 2) * random, (R(K, -1) / 2 * x) * random), R2((R(K, -1) / 2) * 1 + (R(K, -3) / 2) * random, (R(K, -1) / 2 * x) * 1 + (R(K, 1) / 2 * x) * random)};
   } else if constexpr (std::is_same_v<R2, Vector<Element<NumberFieldTraits>>>) {
     auto module = Module<NumberFieldTraits>::make({RealNumber::rational(1), RealNumber::random(2.00114)}, K);
     auto g = module->gen(0);
     auto random = module->gen(1);
-    vectors = vector{R2(g, 0*g), R2( (R(K, 1)/2)*g, (R(K, 1)/2*x)*g), R2( (R(K, 1)/2)*g, (R(K, -1)/2*x)*g), R2( (R(K, 3)/2)*random, (R(K, -1)/2*x)*random), R2( (R(K, -3)/2)*random, (R(K, -1)/2*x)*random), R2( 0*g, (x)*random), R2( 0*g, (x)*random), R2( g, (-x)*random), R2( (R(K, -3)/2)*random, (R(K, -1)/2*x)*random), R2( (R(K, -1)/2)*g + (R(K, 3)/2)*random, (R(K, 1)/2*x)*g + (R(K, 1)/2*x)*random), R2( (R(K, 3)/2)*random, (R(K, -1)/2*x)*random), R2( (R(K, -1)/2)*g + (R(K, -3)/2)*random, (R(K, -1)/2*x)*g + (R(K, 1)/2*x)*random)};
+    vectors = vector{R2(g, 0 * g), R2((R(K, 1) / 2) * g, (R(K, 1) / 2 * x) * g), R2((R(K, 1) / 2) * g, (R(K, -1) / 2 * x) * g), R2((R(K, 3) / 2) * random, (R(K, -1) / 2 * x) * random), R2((R(K, -3) / 2) * random, (R(K, -1) / 2 * x) * random), R2(0 * g, (x)*random), R2(0 * g, (x)*random), R2(g, (-x) * random), R2((R(K, -3) / 2) * random, (R(K, -1) / 2 * x) * random), R2((R(K, -1) / 2) * g + (R(K, 3) / 2) * random, (R(K, 1) / 2 * x) * g + (R(K, 1) / 2 * x) * random), R2((R(K, 3) / 2) * random, (R(K, -1) / 2 * x) * random), R2((R(K, -1) / 2) * g + (R(K, -3) / 2) * random, (R(K, -1) / 2 * x) * g + (R(K, 1) / 2 * x) * random)};
   } else {
     throw std::logic_error("not implemented: make1221()");
   }

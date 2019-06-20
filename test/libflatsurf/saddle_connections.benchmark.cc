@@ -23,13 +23,13 @@
 #include <boost/lexical_cast.hpp>
 
 #include <exact-real/integer_ring_traits.hpp>
-#include <intervalxt/length.hpp>
 #include <flatsurf/flat_triangulation.hpp>
 #include <flatsurf/half_edge.hpp>
 #include <flatsurf/saddle_connection.hpp>
 #include <flatsurf/saddle_connections.hpp>
 #include <flatsurf/vector.hpp>
 #include <flatsurf/vector_along_triangulation.hpp>
+#include <intervalxt/length.hpp>
 
 #include "surfaces.hpp"
 

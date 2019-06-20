@@ -24,8 +24,8 @@
 #include <boost/numeric/conversion/cast.hpp>
 #include <exact-real/number_field_traits.hpp>
 #include <fstream>
-#include <iostream>
 #include <intervalxt/length.hpp>
+#include <iostream>
 
 #include "flatsurf/ccw.hpp"
 #include "flatsurf/flat_triangulation.hpp"

@@ -44,7 +44,6 @@ class Component {
   LengthAlongTriangulation<T> width() const noexcept;
 };
 
-}
+}  // namespace flatsurf
 
 #endif
-

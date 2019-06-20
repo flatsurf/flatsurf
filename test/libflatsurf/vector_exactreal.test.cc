@@ -25,8 +25,8 @@
 #include <exact-real/integer_ring_traits.hpp>
 #include <exact-real/module.hpp>
 #include <exact-real/real_number.hpp>
-#include <intervalxt/length.hpp>
 #include <flatsurf/vector.hpp>
+#include <intervalxt/length.hpp>
 
 using std::vector;
 using testing::Test;
