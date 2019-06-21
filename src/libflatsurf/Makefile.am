@@ -51,6 +51,7 @@ noinst_HEADERS =                                             \
 	util/assert.ipp                                            \
 	util/as_vector.ipp                                         \
 	util/false.ipp                                             \
+	util/union_join.ipp                                        \
 	vector/algorithm/exact.ipp                                 \
 	vector/algorithm/exact.extension.ipp                       \
 	vector/algorithm/extension.ipp                             \
