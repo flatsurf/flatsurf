@@ -21,9 +21,9 @@
 #include <gtest/gtest.h>
 #include <boost/lexical_cast.hpp>
 
-#include <flatsurf/bound.hpp>
 #include <flatsurf/delaunay_triangulation.hpp>
 #include <flatsurf/half_edge.hpp>
+#include <intervalxt/length.hpp>
 
 #include "surfaces.hpp"
 
@@ -44,7 +44,7 @@ TEST(DelaunayTest, Square) {
     DelaunayTriangulation<T>::transform(square);
     for (auto edge : square.halfEdges()) {
       EXPECT_TRUE(DelaunayTriangulation<T>::test(square, edge));
-      EXPECT_LT(square.fromEdge(edge), Bound(2 * 2));
+      EXPECT_LT(square.fromEdge(edge), Bound(2));
     }
   }
 }

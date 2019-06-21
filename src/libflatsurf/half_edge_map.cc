@@ -34,21 +34,21 @@ using std::vector;
 
 namespace flatsurf {
 template <typename T>
-HalfEdgeMap<T>::HalfEdgeMap(const FlatTriangulationCombinatorial &parent, const FlipHandler &updateAfterFlip) : parent(&parent), values(parent.halfEdges().size()), updateAfterFlip(updateAfterFlip) {
-  parent.registerMap(*this);
+HalfEdgeMap<T>::HalfEdgeMap(FlatTriangulationCombinatorial const *parent, const FlipHandler &updateAfterFlip) : parent(parent), values(parent->halfEdges().size()), updateAfterFlip(updateAfterFlip) {
+  parent->registerMap(*this);
 }
 
 template <typename T>
-HalfEdgeMap<T>::HalfEdgeMap(const FlatTriangulationCombinatorial &parent, const vector<T> &values, const FlipHandler &updateAfterFlip)
-    : parent(&parent), updateAfterFlip(updateAfterFlip) {
-  assert(values.size() == parent.halfEdges().size() / 2 &&
+HalfEdgeMap<T>::HalfEdgeMap(FlatTriangulationCombinatorial const *parent, const vector<T> &values, const FlipHandler &updateAfterFlip)
+    : parent(parent), updateAfterFlip(updateAfterFlip) {
+  assert(values.size() == parent->halfEdges().size() / 2 &&
          "values must contain one entry for each pair of half edges");
   for (size_t i = 0; i < values.size(); i++) {
     this->values.emplace_back(values[i]);
     this->values.emplace_back(-values[i]);
   }
 
-  parent.registerMap(*this);
+  parent->registerMap(*this);
 }
 
 template <typename T>
@@ -119,7 +119,7 @@ HalfEdgeMap<T> HalfEdgeMap<T>::operator-() const noexcept {
   for (size_t i = 0; i < values.size(); i += 2) {
     negatives.push_back(-values[i]);
   }
-  return HalfEdgeMap(*parent, std::move(negatives), updateAfterFlip);
+  return HalfEdgeMap(parent, std::move(negatives), updateAfterFlip);
 }
 
 template <typename T>
@@ -127,7 +127,7 @@ ostream &operator<<(ostream &os, const flatsurf::HalfEdgeMap<T> &self) {
   std::vector<string> items;
   for (auto it = self.values.begin(); it != self.values.end(); it++) {
     long i = it - self.values.begin();
-    if (i % 2 == 0) continue;
+    if (i % 2) continue;
     string v = boost::lexical_cast<string>(*it);
     if (v == "0") continue;
     items.push_back(boost::lexical_cast<string>(i / 2 + 1) + ": " + v);
@@ -150,8 +150,12 @@ template class flatsurf::HalfEdgeMap<Vector<long long>>;
 template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<Vector<long long>> &);
 template class flatsurf::HalfEdgeMap<Vector<eantic::renf_elem_class>>;
 template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<Vector<eantic::renf_elem_class>> &);
+template class flatsurf::HalfEdgeMap<long long>;
+template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<long long> &);
 template class flatsurf::HalfEdgeMap<int>;
 template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<int> &);
+template class flatsurf::HalfEdgeMap<mpz_class>;
+template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<mpz_class> &);
 template class flatsurf::HalfEdgeMap<Vector<exactreal::Element<exactreal::IntegerRingTraits>>>;
 template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<Vector<exactreal::Element<exactreal::IntegerRingTraits>>> &);
 template class flatsurf::HalfEdgeMap<Vector<exactreal::Element<exactreal::RationalFieldTraits>>>;

@@ -25,8 +25,8 @@
 #include <exact-real/integer_ring_traits.hpp>
 #include <exact-real/module.hpp>
 #include <exact-real/real_number.hpp>
-#include <flatsurf/bound.hpp>
 #include <flatsurf/vector.hpp>
+#include <intervalxt/length.hpp>
 
 using std::vector;
 using testing::Test;
@@ -38,9 +38,9 @@ TEST(VectorExactRealTest, Comparison) {
   auto m = Module<IntegerRingTraits>::make({RealNumber::rational(1), RealNumber::random()});
   auto vector = Vector<Element<IntegerRingTraits>>(3 * m->gen(0), 4 * m->gen(0));
 
-  EXPECT_FALSE(vector > Bound(5 * 5));
-  EXPECT_FALSE(vector < Bound(5 * 5));
-  EXPECT_TRUE(vector < Bound(6 * 6));
+  EXPECT_FALSE(vector > Bound(5));
+  EXPECT_FALSE(vector < Bound(5));
+  EXPECT_TRUE(vector < Bound(6));
 }
 
 #include "main.hpp"

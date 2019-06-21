@@ -35,7 +35,7 @@ class NumberField {
  public:
   NumberField<T>();
   NumberField<T>(T minimal_poly[], size_t degree, std::complex<COORD> embedding,
-                 std::shared_ptr<eantic::renf_class> totally_real_field,
+                 std::shared_ptr<const eantic::renf_class> totally_real_field,
                  const std::complex<eantic::renf_elem_class> &&gen);
 
   void store_conjugate(algebraic<T>);
@@ -49,7 +49,7 @@ class NumberField {
   friend algebraic<T> cross_product<>(const algebraic<T> &u,
                                       const algebraic<T> &v);
 
-  explicit operator const eantic::renf_class &() const;
+  explicit operator std::shared_ptr<const eantic::renf_class>() const;
 
   poly<T> min_poly();
   static NumberField<T> *F;    // everybody is in this field.
@@ -70,7 +70,7 @@ class NumberField {
   std::complex<COORD> embedding;  // numerical value for generator of field.
                                   // Used by algebraic<T>::to_complex().
 
-  std::shared_ptr<eantic::renf_class> totally_real_field;
+  std::shared_ptr<const eantic::renf_class> totally_real_field;
 
   void build_multiplication_table();
   void build_cross_product_table();

@@ -23,13 +23,13 @@
 #include <boost/lexical_cast.hpp>
 
 #include <exact-real/integer_ring_traits.hpp>
-#include <flatsurf/bound.hpp>
 #include <flatsurf/flat_triangulation.hpp>
 #include <flatsurf/half_edge.hpp>
 #include <flatsurf/saddle_connection.hpp>
 #include <flatsurf/saddle_connections.hpp>
 #include <flatsurf/vector.hpp>
 #include <flatsurf/vector_along_triangulation.hpp>
+#include <intervalxt/length.hpp>
 
 #include "surfaces.hpp"
 
@@ -43,20 +43,20 @@ namespace {
 template <class R2>
 void SaddleConnectionsSquare(benchmark::State& state) {
   auto square = makeSquare<R2>();
-  auto bound = Bound(state.range(0) * state.range(0));
+  auto bound = Bound(state.range(0));
   auto expected = state.range(1);
   for (auto _ : state) {
-    auto connections = SaddleConnections(square, bound, HalfEdge(1));
+    auto connections = SaddleConnections(&square, bound, HalfEdge(1));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-    connections = SaddleConnections(square, bound, HalfEdge(3));
+    connections = SaddleConnections(&square, bound, HalfEdge(3));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-    connections = SaddleConnections(square, bound, HalfEdge(2));
+    connections = SaddleConnections(&square, bound, HalfEdge(2));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected * 2);
-    connections = SaddleConnections(square, bound, HalfEdge(-1));
+    connections = SaddleConnections(&square, bound, HalfEdge(-1));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-    connections = SaddleConnections(square, bound, HalfEdge(-3));
+    connections = SaddleConnections(&square, bound, HalfEdge(-3));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-    connections = SaddleConnections(square, bound, HalfEdge(-2));
+    connections = SaddleConnections(&square, bound, HalfEdge(-2));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected * 2);
   }
 }

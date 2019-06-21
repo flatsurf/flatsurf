@@ -25,6 +25,8 @@
 #ifndef LIBFLATSURF_FORWARD_HPP
 #define LIBFLATSURF_FORWARD_HPP
 
+#include <intervalxt/forward.hpp>
+
 #include "flatsurf/flatsurf.hpp"
 
 #include "flatsurf/ccw.hpp"
@@ -41,6 +43,9 @@ class FlatTriangulation;
 
 template <typename T, typename Approximation = void, typename Surface = FlatTriangulation<T>>
 class VectorAlongTriangulation;
+
+template <typename T>
+class LengthAlongTriangulation;
 
 template <typename Surface>
 class SaddleConnections;
@@ -60,10 +65,16 @@ class HalfEdgeMap;
 template <typename T>
 class Permutation;
 
-struct Bound;
+using Bound = intervalxt::Length<long long>;
 
 template <typename T>
 class IntervalExchangeTransformation;
+
+template <typename T>
+class Component;
+
+template <typename T>
+class FlowDecomposition;
 }  // namespace flatsurf
 
 #endif

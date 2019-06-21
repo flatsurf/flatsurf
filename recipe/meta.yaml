@@ -40,6 +40,7 @@ requirements:
   host:
     - boost-cpp
     - libexactreal
+    - libintervalxt
     - e-antic 1.*
     - arb
     - eigen
@@ -67,6 +68,7 @@ outputs:
       host:
         - boost-cpp
         - libexactreal
+        - libintervalxt
         - e-antic 1.*
         - arb
         - gmp
@@ -87,6 +89,7 @@ outputs:
       host:
         - boost-cpp
         - libexactreal
+        - libintervalxt
         - e-antic 1.*
         - arb
         - gmp

@@ -21,8 +21,10 @@
 #include <gtest/gtest.h>
 #include <boost/lexical_cast.hpp>
 
-#include <exact-real/integer_ring_traits.hpp>
-#include <flatsurf/bound.hpp>
+#include <exact-real/element.hpp>
+#include <exact-real/number_field_traits.hpp>
+#include <intervalxt/length.hpp>
+
 #include <flatsurf/flat_triangulation.hpp>
 #include <flatsurf/half_edge.hpp>
 #include <flatsurf/saddle_connection.hpp>
@@ -43,33 +45,33 @@ namespace {
 template <class R2>
 class SaddleConnectionsTest : public Test {};
 
-using ExactVectors = Types<Vector<long long>, Vector<renf_elem_class>>;
+using ExactVectors = Types<Vector<long long>, Vector<renf_elem_class>, Vector<exactreal::Element<exactreal::NumberFieldTraits>>>;
 TYPED_TEST_CASE(SaddleConnectionsTest, ExactVectors);
 
 TYPED_TEST(SaddleConnectionsTest, Trivial) {
   auto square = makeSquare<TypeParam>();
-  auto connections = SaddleConnections(square, Bound(0), HalfEdge(1));
+  auto connections = SaddleConnections(&square, 0, HalfEdge(1));
   EXPECT_EQ(connections.begin(), connections.end());
 }
 
 TYPED_TEST(SaddleConnectionsTest, Square) {
   auto square = makeSquare<TypeParam>();
-  auto bound = Bound(16 * 16);
+  auto bound = 16;
   auto expected = 60;
-  auto connections = SaddleConnections(square, bound, HalfEdge(1));
+  auto connections = SaddleConnections(&square, bound, HalfEdge(1));
   EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-  connections = SaddleConnections(square, bound, HalfEdge(3));
+  connections = SaddleConnections(&square, bound, HalfEdge(3));
   EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-  connections = SaddleConnections(square, bound, HalfEdge(2));
+  connections = SaddleConnections(&square, bound, HalfEdge(2));
   EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected * 2);
-  connections = SaddleConnections(square, bound, HalfEdge(-1));
+  connections = SaddleConnections(&square, bound, HalfEdge(-1));
   EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-  connections = SaddleConnections(square, bound, HalfEdge(-3));
+  connections = SaddleConnections(&square, bound, HalfEdge(-3));
   EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-  connections = SaddleConnections(square, bound, HalfEdge(-2));
+  connections = SaddleConnections(&square, bound, HalfEdge(-2));
   EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected * 2);
 
-  connections = SaddleConnections(square, bound);
+  connections = SaddleConnections(&square, bound);
   EXPECT_EQ(std::distance(connections.begin(), connections.end()), 480);
 }
 
@@ -79,21 +81,21 @@ TYPED_TEST(SaddleConnectionsTest, Hexagon) {
     return;
   } else {
     auto hexagon = makeHexagon<TypeParam>();
-    auto bound = Bound(16 * 16);
-    auto connections = SaddleConnections(hexagon, bound, HalfEdge(1));
+    auto bound = Bound(16);
+    auto connections = SaddleConnections(&hexagon, bound, HalfEdge(1));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), 10);
-    connections = SaddleConnections(hexagon, bound, HalfEdge(2));
+    connections = SaddleConnections(&hexagon, bound, HalfEdge(2));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), 36);
-    connections = SaddleConnections(hexagon, bound, HalfEdge(3));
+    connections = SaddleConnections(&hexagon, bound, HalfEdge(3));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), 26);
-    connections = SaddleConnections(hexagon, bound, HalfEdge(4));
+    connections = SaddleConnections(&hexagon, bound, HalfEdge(4));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), 18);
-    connections = SaddleConnections(hexagon, bound, HalfEdge(5));
+    connections = SaddleConnections(&hexagon, bound, HalfEdge(5));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), 8);
-    connections = SaddleConnections(hexagon, bound, HalfEdge(6));
+    connections = SaddleConnections(&hexagon, bound, HalfEdge(6));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), 10);
 
-    connections = SaddleConnections(hexagon, bound);
+    connections = SaddleConnections(&hexagon, bound);
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), 216);
   }
 }

@@ -21,46 +21,35 @@
 #include <gtest/gtest.h>
 #include <boost/lexical_cast.hpp>
 
-#include <e-antic/renfxx_fwd.h>
-#include <exact-real/element.hpp>
-#include <exact-real/number_field_traits.hpp>
-
-#include <flatsurf/flat_triangulation.hpp>
 #include <flatsurf/half_edge.hpp>
-#include <flatsurf/saddle_connection.hpp>
-#include <flatsurf/saddle_connections.hpp>
+#include <flatsurf/length_along_triangulation.hpp>
 #include <flatsurf/vector.hpp>
-#include <flatsurf/vector_along_triangulation.hpp>
 
 #include "surfaces.hpp"
 
 using namespace flatsurf;
-using eantic::renf_class;
-using eantic::renf_elem_class;
 using std::vector;
 using testing::Test;
 using testing::Types;
 
 namespace {
-template <class R2>
-class FlipTest : public Test {};
+TEST(LengthAlongTriangulationTest, Square) {
+  using Vector = Vector<long long>;
+  using Length = LengthAlongTriangulation<long long>;
+  auto square = makeSquare<Vector>();
+  auto horizontal = Vector(7, -3);
 
-using ExactVectors = Types<Vector<long long>, Vector<renf_elem_class>, Vector<exactreal::Element<exactreal::NumberFieldTraits>>>;
-TYPED_TEST_CASE(FlipTest, ExactVectors);
+  auto v10 = Length(&square, &horizontal, HalfEdge(1));
+  auto v01 = Length(&square, &horizontal, HalfEdge(-2));
+  auto v11 = Length(&square, &horizontal, HalfEdge(3));
 
-TYPED_TEST(FlipTest, Square) {
-  auto square = makeSquare<TypeParam>();
+  EXPECT_EQ(v10 - v01, v11);
+  EXPECT_EQ(3 * v10, 7 * v01);
+  EXPECT_EQ(3 * v10 - 7 * v01, Length());
 
-  for (auto halfEdge : square.halfEdges()) {
-    const auto vector = square.fromEdge(halfEdge);
-    square.flip(halfEdge);
-    EXPECT_NE(vector, square.fromEdge(halfEdge));
-    square.flip(halfEdge);
-    EXPECT_EQ(vector, -square.fromEdge(halfEdge));
-    square.flip(halfEdge);
-    square.flip(halfEdge);
-    EXPECT_EQ(vector, square.fromEdge(halfEdge));
-  }
+  EXPECT_EQ(v10 / v01, 7 / 3);
+  EXPECT_EQ(2 * v10 / v01, 2 * 7 / 3);
+  EXPECT_EQ(3 * v10 / v01, 7);
 }
 }  // namespace
 

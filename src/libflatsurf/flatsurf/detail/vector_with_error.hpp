@@ -46,6 +46,9 @@ class VectorWithError : public VectorBase<Vector> {
   // Return true if the respective ball does not contain the zero vector, false
   // if this is exactly the zero vector.
   explicit operator std::optional<bool>() const noexcept;
+
+  // Return the scalar product with the argument.
+  exactreal::Arb operator*(const Vector &)const noexcept;
 };
 }  // namespace flatsurf::detail
 

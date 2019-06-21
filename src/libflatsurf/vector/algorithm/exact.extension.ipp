@@ -20,6 +20,7 @@
 #ifndef LIBFLATSURF_VECTOR_ALGORITHM_EXACT_EXTENSION_IPP
 #define LIBFLATSURF_VECTOR_ALGORITHM_EXACT_EXTENSION_IPP
 
+#include <intervalxt/forward.hpp>
 #include <optional>
 
 #include "flatsurf/detail/vector_base.hpp"
@@ -70,6 +71,16 @@ template <typename Implementation>
 using y_t = decltype(std::declval<const Implementation&>().y());
 template <typename Implementation>
 static constexpr bool has_y = is_detected_exact_v<typename Implementation::Vector::Coordinate, y_t, Implementation>;
+
+template <typename Implementation>
+using length_t = decltype(std::declval<const Implementation&>().length());
+template <typename Implementation>
+static constexpr bool has_length = is_detected_exact_v<intervalxt::Length<typename Implementation::Vector::Coordinate>, length_t, Implementation>;
+
+template <typename Implementation>
+using scalar_product_t = decltype(std::declval<const Implementation>() * (std::declval<const typename Implementation::Vector&>()));
+template <typename Implementation>
+static constexpr bool has_scalar_product = is_detected_exact_v<typename Implementation::Vector::Coordinate, scalar_product_t, Implementation>;
 }  // namespace
 }  // namespace flatsurf::detail
 

@@ -17,11 +17,33 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "flatsurf/bound.hpp"
+#ifndef LIBFLATSURF_COMPONENT_HPP
+#define LIBFLATSURF_COMPONENT_HPP
+
+#include <optional>
+#include <vector>
+#include "external/spimpl/spimpl.h"
+
+#include "flatsurf/forward.hpp"
 
 namespace flatsurf {
-Bound::Bound(long long lengthSquared) : squared(lengthSquared) {}
 
-bool Bound::operator==(const Bound& rhs) const { return squared == rhs.squared; }
-bool Bound::operator<(const Bound& rhs) const { return squared < rhs.squared; }
+template <typename T>
+class Component {
+ public:
+  using Surface = FlatTriangulation<T>;
+  using Boundary = std::vector<const SaddleConnection<Surface>>;
+
+  bool cylinder() const noexcept;
+  // Whether this is a cylinder or a certified minimal component.
+  bool certified() const noexcept;
+  // Maybe circular linked list? (On a cylinder, the right boundary goes with the vertical direction and the left against.)
+  const std::vector<Boundary>& boundaries() const noexcept;
+  FlatTriangulation<T> triangulation() const;
+  // The real part of the non-vertical edges of the triangulation()
+  LengthAlongTriangulation<T> width() const noexcept;
+};
+
 }  // namespace flatsurf
+
+#endif

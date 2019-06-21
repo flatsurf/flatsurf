@@ -20,12 +20,13 @@
 
 from pyflatsurf import flatsurf
 from pyexactreal import exactreal
+from pyeantic import eantic
 
 # The number field has to live out here and not be a local variable in the
 # methods as it would be destroyed by the garbage collector otherwise
 # (segfault.) Eventually we want renf_class/Module to use shared_ptr here. Then
 # this won't be a problem anymore.
-K = exactreal.NumberField("x^2 - 3", "x", "1.73 +/- 0.1")
+K = eantic.renf_class.make("x^2 - 3", "x", "1.73 +/- 0.1")
 
 def square(R2):
     vectors = [R2(1, 0), R2(0, 1), R2(1, 1)]
@@ -35,7 +36,7 @@ def square(R2):
 def hexagon():
     R2 = flatsurf.Vector['eantic::renf_elem_class']
     x = K.gen()
-    R = exactreal.NumberFieldElement
+    R = eantic.renf_elem
     vectors = [R2(R(K, 2), R(K, 0)), R2(R(K, 1), x), R2(R(K, 3), x), R2(R(K, 1), -x), R2(R(K, 4), R(K, 0)), R2(R(K, 3), x)]
     vertices = [[1, 3, -4, -5, -3, -2], [2, -1, -6, 4, 5, 6]]
     return flatsurf.Surface(vertices, vectors)

@@ -37,7 +37,7 @@ namespace {
 vector<shared_ptr<RealNumber>> reals;
 auto mod = Module<NumberFieldTraits>::make(
     std::vector<std::shared_ptr<const RealNumber>>{RealNumber::rational(1)},
-    eantic::renf_class());
+    eantic::renf_class::make());
 }  // namespace
 
 namespace polygon {
@@ -58,7 +58,7 @@ void Params::AddParams(size_t n, COORD prms[]) {
     basis.push_back(b);
   }
   mod = Module<NumberFieldTraits>::make(
-      basis, static_cast<const eantic::renf_class &>(*NumberField<bigrat>::F));
+      basis, static_cast<std::shared_ptr<const eantic::renf_class>>(*NumberField<bigrat>::F));
 }
 
 void Params::print(ostream &out) {

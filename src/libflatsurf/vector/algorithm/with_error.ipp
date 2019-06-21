@@ -20,9 +20,9 @@
 #ifndef LIBFLATSURF_VECTOR_ALGORITHM_WITH_ERROR_IPP
 #define LIBFLATSURF_VECTOR_ALGORITHM_WITH_ERROR_IPP
 
+#include <exact-real/arb.hpp>
+#include <intervalxt/length.hpp>
 #include <optional>
-
-#include "flatsurf/bound.hpp"
 
 #include "../storage/cartesian.ipp"
 #include "../storage/forward.ipp"
@@ -112,7 +112,7 @@ optional<bool> VectorWithError<Vector>::operator<(Bound bound) const noexcept {
   } else if constexpr (is_forward_v<Implementation>) {
     return self.impl->vector < bound;
   } else if constexpr (is_cartesian_v<Implementation>) {
-    return self.impl->x * self.impl->x + self.impl->y * self.impl->y < bound.squared;
+    return self.impl->x * self.impl->x + self.impl->y * self.impl->y < bound.length() * bound.length();
   } else {
     static_assert(false_type_v<Implementation>, "Implementation is missing operator<(Bound).");
   }
@@ -128,9 +128,25 @@ optional<bool> VectorWithError<Vector>::operator>(Bound bound) const noexcept {
   } else if constexpr (is_forward_v<Implementation>) {
     return self.impl->vector > bound;
   } else if constexpr (is_cartesian_v<Implementation>) {
-    return self.impl->x * self.impl->x + self.impl->y * self.impl->y > bound.squared;
+    return self.impl->x * self.impl->x + self.impl->y * self.impl->y > bound.length() * bound.length();
   } else {
     static_assert(false_type_v<Implementation>, "Implementation is missing operator>(Bound).");
+  }
+}
+
+template <typename Vector>
+exactreal::Arb VectorWithError<Vector>::operator*(const Vector& rhs) const noexcept {
+  using Implementation = typename Vector::Implementation;
+  const Vector& self = static_cast<const Vector&>(*this);
+
+  if constexpr (has_arb_scalar_product<Implementation>) {
+    return *self.impl * rhs;
+  } else if constexpr (is_forward_v<Implementation>) {
+    return self.impl->vector * rhs.impl->vector;
+  } else if constexpr (is_cartesian_v<Implementation>) {
+    return self.impl->x * rhs.impl->x + self.impl->y * rhs.impl->y;
+  } else {
+    static_assert(false_type_v<Implementation>, "Implementation is missing scalar product operator*.");
   }
 }
 

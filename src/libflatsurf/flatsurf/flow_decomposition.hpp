@@ -17,22 +17,39 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_INTERVAL_EXCHANGE_TRANSFORMATION_HPP
-#define LIBFLATSURF_INTERVAL_EXCHANGE_TRANSFORMATION_HPP
+#ifndef LIBFLATSURF_FLOW_DECOMPOSITION_HPP
+#define LIBFLATSURF_FLOW_DECOMPOSITION_HPP
 
-#include <intervalxt/maybe_saddle_connection.hpp>
+#include <optional>
+#include <vector>
 #include "external/spimpl/spimpl.h"
 
 #include "flatsurf/forward.hpp"
 
 namespace flatsurf {
+
 template <class T>
-class IntervalExchangeTransformation {
+class FlowDecomposition {
  public:
-  IntervalExchangeTransformation(const FlatTriangulation<T> &, const Vector<T> &vertical);
+  using Surface = FlatTriangulation<T>;
+
+  FlowDecomposition(const Surface& surface, const Vector<T>& direction);
+
+  // Return the new component if component splits.
+  std::optional<const Component<T>&> findSaddleConnection(const Component<T>& component, int limit = -1);
+
+  // Run findSaddleConnection() recursively on every component.
+  void findSaddleConnections(int limit = -1);
+
+  const std::vector<Component<T>>& components() const noexcept;
+
+  const SaddleConnection<Surface>& successor(const SaddleConnection<Surface>&) const;
+  // Return the component on the left of this saddle connection, i.e., the
+  // component that reports it as its boundary.
+  const Component<T>& component(const SaddleConnection<Surface>&) const;
 
   template <typename S>
-  friend std::ostream &operator<<(std::ostream &, const IntervalExchangeTransformation<S> &);
+  friend std::ostream& operator<<(std::ostream&, const IntervalExchangeTransformation<S>&);
 
  private:
   class Implementation;

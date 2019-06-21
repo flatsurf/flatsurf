@@ -39,9 +39,9 @@ class SharedImplementation {
  public:
   using Surface = typename Vector::Surface;
 
-  explicit SharedImplementation(const Surface& surface) : surface(surface) {}
+  explicit SharedImplementation(Surface const* surface) : surface(surface) {}
 
-  const Surface& surface;
+  const Surface* surface;
 };
 
 template <typename Vector, typename Implementation, typename Approximation>
@@ -57,7 +57,7 @@ class ImplementationWithApproximation : SharedImplementation<Vector, Implementat
   using Shared = SharedImplementation<Vector, Implementation>;
   using Surface = typename Shared::Surface;
 
-  ImplementationWithApproximation(const Surface& surface) : Shared(surface), coefficients(surface, updateAfterFlip), approx(surface) {}
+  ImplementationWithApproximation(Surface const* surface) : Shared(surface), coefficients(surface, updateAfterFlip), approx(surface) {}
 
   Vector operator-() const {
     Vector ret(this->surface);
@@ -82,6 +82,10 @@ class ImplementationWithApproximation : SharedImplementation<Vector, Implementat
     return static_cast<flatsurf::Vector<Approximation>>(approx);
   }
 
+  auto operator*(const Vector& rhs) const noexcept {
+    return static_cast<Exact>(*this) * static_cast<Exact>(rhs);
+  }
+
   auto& operator+=(const HalfEdge e) {
     coefficients.set(e, coefficients.get(e) + 1);
     approx += e;
@@ -90,7 +94,7 @@ class ImplementationWithApproximation : SharedImplementation<Vector, Implementat
 
   auto& operator+=(const HalfEdgeMap<int>& coefficients) {
     approx += coefficients;
-    for (auto e : this->surface.halfEdges()) {
+    for (auto e : this->surface->halfEdges()) {
       int c = coefficients.get(e);
       if (c > 0) {
         this->coefficients.set(e, this->coefficients.get(e) + c);
@@ -121,17 +125,27 @@ class ImplementationWithForward : public Forward<flatsurf::Vector<T>>, SharedImp
     return ret;
   }
 
+  T operator*(const Vector& rhs) const {
+    return this->vector * Implementation::impl(rhs).vector;
+  }
+
+  Vector perpendicular() const {
+    Vector ret(this->surface);
+    Implementation::impl(ret).vector = this->vector.perpendicular();
+    return ret;
+  }
+
   auto& operator+=(const HalfEdge e) {
     // The following cast is usually trivial, but may not be when Surface != FlatTriangulation<T>.
-    this->vector += static_cast<flatsurf::Vector<T>>(this->surface.fromEdge(e));
+    this->vector += static_cast<flatsurf::Vector<T>>(this->surface->fromEdge(e));
     return *this;
   }
 
   auto& operator+=(const HalfEdgeMap<int>& coefficients) {
-    for (auto e : this->surface.halfEdges()) {
+    for (auto e : this->surface->halfEdges()) {
       int c = coefficients.get(e);
       if (c > 0) {
-        this->vector += c * static_cast<flatsurf::Vector<T>>(this->surface.fromEdge(e));
+        this->vector += c * static_cast<flatsurf::Vector<T>>(this->surface->fromEdge(e));
       }
     }
     return *this;
@@ -151,17 +165,16 @@ class VectorAlongTriangulation<T, Approximation, Surface>::Implementation : publ
   using Vector = VectorAlongTriangulation<T, Approximation>;
   using Base::Base;
 
-  static Implementation& impl(Vector& v) {
-    return *v.impl;
-  }
+  static Implementation& impl(Vector& v) { return *v.impl; }
+  static const Implementation& impl(const Vector& v) { return *v.impl; }
 };
 
 template <typename T, typename Approximation, typename Surface>
-VectorAlongTriangulation<T, Approximation, Surface>::VectorAlongTriangulation(const Surface& surface)
+VectorAlongTriangulation<T, Approximation, Surface>::VectorAlongTriangulation(Surface const* surface)
     : impl(spimpl::make_impl<Implementation>(surface)) {}
 
 template <typename T, typename Approximation, typename Surface>
-VectorAlongTriangulation<T, Approximation, Surface>::VectorAlongTriangulation(const Surface& surface, const HalfEdgeMap<int>& coefficients)
+VectorAlongTriangulation<T, Approximation, Surface>::VectorAlongTriangulation(Surface const* surface, const HalfEdgeMap<int>& coefficients)
     : VectorAlongTriangulation(surface) {
   *this += coefficients;
 }
@@ -172,7 +185,7 @@ VectorAlongTriangulation<T, Approximation, Surface>::operator Vector<T>() const 
 }
 
 template <typename T, typename Approximation, typename Surface>
-VectorAlongTriangulation<T, Approximation, Surface>::VectorAlongTriangulation(const Surface& surface, const std::vector<HalfEdge>& edges) : VectorAlongTriangulation(surface) {
+VectorAlongTriangulation<T, Approximation, Surface>::VectorAlongTriangulation(Surface const* surface, const std::vector<HalfEdge>& edges) : VectorAlongTriangulation(surface) {
   for (auto edge : edges)
     *this += edge;
 }
@@ -233,11 +246,14 @@ extern template ORIENTATION VectorExact<Vector<long long>, long long>::orientati
 template class VectorAlongTriangulation<long long>;
 extern template long long VectorExact<Vector<long long>, long long>::x() const noexcept;
 extern template long long VectorExact<Vector<long long>, long long>::y() const noexcept;
+extern template long long VectorExact<Vector<long long>, long long>::operator*(const Vector<long long>&)const noexcept;
 extern template bool VectorExact<Vector<long long>, long long>::operator==(const Vector<long long>&) const noexcept;
 template class detail::VectorExact<VectorAlongTriangulation<long long>, long long>;
 extern template Vector<long long>& VectorBase<Vector<long long>>::operator+=(const Vector<long long>&);
 extern template Vector<long long>& VectorBase<Vector<long long>>::operator*=(int);
+extern template Vector<long long>& VectorBase<Vector<long long>>::operator*=(const mpz_class&);
 extern template Vector<long long> VectorBase<Vector<long long>>::operator-() const noexcept;
+extern template Vector<long long> VectorBase<Vector<long long>>::perpendicular() const;
 extern template VectorBase<Vector<long long>>::operator Vector<Arb>() const noexcept;
 extern template VectorBase<Vector<long long>>::operator std::complex<double>() const noexcept;
 extern template VectorBase<Vector<long long>>::operator Vector<Arb>() const noexcept;
@@ -254,11 +270,14 @@ extern template ORIENTATION VectorExact<Vector<renf_elem_class>, renf_elem_class
 template class VectorAlongTriangulation<renf_elem_class>;
 extern template renf_elem_class VectorExact<Vector<renf_elem_class>, renf_elem_class>::x() const noexcept;
 extern template renf_elem_class VectorExact<Vector<renf_elem_class>, renf_elem_class>::y() const noexcept;
+extern template renf_elem_class VectorExact<Vector<renf_elem_class>, renf_elem_class>::operator*(const Vector<renf_elem_class>&)const noexcept;
 extern template bool VectorExact<Vector<renf_elem_class>, renf_elem_class>::operator==(const Vector<renf_elem_class>&) const noexcept;
 template class detail::VectorExact<VectorAlongTriangulation<renf_elem_class>, renf_elem_class>;
 extern template Vector<renf_elem_class>& VectorBase<Vector<renf_elem_class>>::operator+=(const Vector<renf_elem_class>&);
 extern template Vector<renf_elem_class>& VectorBase<Vector<renf_elem_class>>::operator*=(int);
+extern template Vector<renf_elem_class>& VectorBase<Vector<renf_elem_class>>::operator*=(const mpz_class&);
 extern template Vector<renf_elem_class> VectorBase<Vector<renf_elem_class>>::operator-() const noexcept;
+extern template Vector<renf_elem_class> VectorBase<Vector<renf_elem_class>>::perpendicular() const;
 extern template VectorBase<Vector<renf_elem_class>>::operator Vector<Arb>() const noexcept;
 extern template VectorBase<Vector<renf_elem_class>>::operator std::complex<double>() const noexcept;
 extern template VectorBase<Vector<renf_elem_class>>::operator Vector<Arb>() const noexcept;
@@ -279,11 +298,14 @@ extern template ORIENTATION VectorExact<Vector<Element<IntegerRingTraits>>, Elem
 template class VectorAlongTriangulation<Element<IntegerRingTraits>>;
 extern template Element<IntegerRingTraits> VectorExact<Vector<Element<IntegerRingTraits>>, Element<IntegerRingTraits>>::x() const noexcept;
 extern template Element<IntegerRingTraits> VectorExact<Vector<Element<IntegerRingTraits>>, Element<IntegerRingTraits>>::y() const noexcept;
+extern template Element<IntegerRingTraits> VectorExact<Vector<Element<IntegerRingTraits>>, Element<IntegerRingTraits>>::operator*(const Vector<Element<IntegerRingTraits>>&)const noexcept;
 extern template bool VectorExact<Vector<Element<IntegerRingTraits>>, Element<IntegerRingTraits>>::operator==(const Vector<Element<IntegerRingTraits>>&) const noexcept;
 template class detail::VectorExact<VectorAlongTriangulation<Element<IntegerRingTraits>>, Element<IntegerRingTraits>>;
 extern template Vector<Element<IntegerRingTraits>>& VectorBase<Vector<Element<IntegerRingTraits>>>::operator+=(const Vector<Element<IntegerRingTraits>>&);
 extern template Vector<Element<IntegerRingTraits>>& VectorBase<Vector<Element<IntegerRingTraits>>>::operator*=(int);
+extern template Vector<Element<IntegerRingTraits>>& VectorBase<Vector<Element<IntegerRingTraits>>>::operator*=(const mpz_class&);
 extern template Vector<Element<IntegerRingTraits>> VectorBase<Vector<Element<IntegerRingTraits>>>::operator-() const noexcept;
+extern template Vector<Element<IntegerRingTraits>> VectorBase<Vector<Element<IntegerRingTraits>>>::perpendicular() const;
 extern template VectorBase<Vector<Element<IntegerRingTraits>>>::operator Vector<Arb>() const noexcept;
 extern template VectorBase<Vector<Element<IntegerRingTraits>>>::operator std::complex<double>() const noexcept;
 extern template VectorBase<Vector<Element<IntegerRingTraits>>>::operator Vector<Arb>() const noexcept;
@@ -304,11 +326,14 @@ extern template ORIENTATION VectorExact<Vector<Element<RationalFieldTraits>>, El
 template class VectorAlongTriangulation<Element<RationalFieldTraits>>;
 extern template Element<RationalFieldTraits> VectorExact<Vector<Element<RationalFieldTraits>>, Element<RationalFieldTraits>>::x() const noexcept;
 extern template Element<RationalFieldTraits> VectorExact<Vector<Element<RationalFieldTraits>>, Element<RationalFieldTraits>>::y() const noexcept;
+extern template Element<RationalFieldTraits> VectorExact<Vector<Element<RationalFieldTraits>>, Element<RationalFieldTraits>>::operator*(const Vector<Element<RationalFieldTraits>>&)const noexcept;
 extern template bool VectorExact<Vector<Element<RationalFieldTraits>>, Element<RationalFieldTraits>>::operator==(const Vector<Element<RationalFieldTraits>>&) const noexcept;
 template class detail::VectorExact<VectorAlongTriangulation<Element<RationalFieldTraits>>, Element<RationalFieldTraits>>;
 extern template Vector<Element<RationalFieldTraits>>& VectorBase<Vector<Element<RationalFieldTraits>>>::operator+=(const Vector<Element<RationalFieldTraits>>&);
 extern template Vector<Element<RationalFieldTraits>>& VectorBase<Vector<Element<RationalFieldTraits>>>::operator*=(int);
+extern template Vector<Element<RationalFieldTraits>>& VectorBase<Vector<Element<RationalFieldTraits>>>::operator*=(const mpz_class&);
 extern template Vector<Element<RationalFieldTraits>> VectorBase<Vector<Element<RationalFieldTraits>>>::operator-() const noexcept;
+extern template Vector<Element<RationalFieldTraits>> VectorBase<Vector<Element<RationalFieldTraits>>>::perpendicular() const;
 extern template VectorBase<Vector<Element<RationalFieldTraits>>>::operator Vector<Arb>() const noexcept;
 extern template VectorBase<Vector<Element<RationalFieldTraits>>>::operator std::complex<double>() const noexcept;
 extern template VectorBase<Vector<Element<RationalFieldTraits>>>::operator Vector<Arb>() const noexcept;
@@ -329,11 +354,14 @@ extern template ORIENTATION VectorExact<Vector<Element<NumberFieldTraits>>, Elem
 template class VectorAlongTriangulation<Element<NumberFieldTraits>>;
 extern template Element<NumberFieldTraits> VectorExact<Vector<Element<NumberFieldTraits>>, Element<NumberFieldTraits>>::x() const noexcept;
 extern template Element<NumberFieldTraits> VectorExact<Vector<Element<NumberFieldTraits>>, Element<NumberFieldTraits>>::y() const noexcept;
+extern template Element<NumberFieldTraits> VectorExact<Vector<Element<NumberFieldTraits>>, Element<NumberFieldTraits>>::operator*(const Vector<Element<NumberFieldTraits>>&)const noexcept;
 extern template bool VectorExact<Vector<Element<NumberFieldTraits>>, Element<NumberFieldTraits>>::operator==(const Vector<Element<NumberFieldTraits>>&) const noexcept;
 template class detail::VectorExact<VectorAlongTriangulation<Element<NumberFieldTraits>>, Element<NumberFieldTraits>>;
 extern template Vector<Element<NumberFieldTraits>>& VectorBase<Vector<Element<NumberFieldTraits>>>::operator+=(const Vector<Element<NumberFieldTraits>>&);
 extern template Vector<Element<NumberFieldTraits>>& VectorBase<Vector<Element<NumberFieldTraits>>>::operator*=(int);
+extern template Vector<Element<NumberFieldTraits>>& VectorBase<Vector<Element<NumberFieldTraits>>>::operator*=(const mpz_class&);
 extern template Vector<Element<NumberFieldTraits>> VectorBase<Vector<Element<NumberFieldTraits>>>::operator-() const noexcept;
+extern template Vector<Element<NumberFieldTraits>> VectorBase<Vector<Element<NumberFieldTraits>>>::perpendicular() const;
 extern template VectorBase<Vector<Element<NumberFieldTraits>>>::operator Vector<Arb>() const noexcept;
 extern template VectorBase<Vector<Element<NumberFieldTraits>>>::operator std::complex<double>() const noexcept;
 extern template VectorBase<Vector<Element<NumberFieldTraits>>>::operator Vector<Arb>() const noexcept;

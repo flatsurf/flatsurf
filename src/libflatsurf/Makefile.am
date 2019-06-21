@@ -1,7 +1,6 @@
 lib_LTLIBRARIES = libflatsurf.la
 
 libflatsurf_la_SOURCES =                                      \
-	bound.cc                                                    \
 	ccw.cc                                                      \
 	delaunay_triangulation.cc                                   \
 	edge.cc                                                     \
@@ -10,6 +9,7 @@ libflatsurf_la_SOURCES =                                      \
 	half_edge.cc                                                \
 	half_edge_map.cc                                            \
 	interval_exchange_transformation.cc                         \
+	length_along_triangulation.cc                               \
 	permutation.cc                                              \
 	saddle_connections.cc                                       \
 	vertex.cc                                                   \
@@ -17,18 +17,20 @@ libflatsurf_la_SOURCES =                                      \
 	vector/vector_along_triangulation.cc
 
 nobase_include_HEADERS =                                      \
-	flatsurf/bound.hpp                                          \
 	flatsurf/ccw.hpp                                            \
+	flatsurf/component.hpp                                      \
 	flatsurf/cppyy.hpp                                          \
 	flatsurf/delaunay_triangulation.hpp                         \
 	flatsurf/edge.hpp                                           \
 	flatsurf/flatsurf.hpp                                       \
 	flatsurf/flat_triangulation.hpp                             \
 	flatsurf/flat_triangulation_combinatorial.hpp               \
+	flatsurf/flow_decomposition.hpp                             \
 	flatsurf/forward.hpp                                        \
 	flatsurf/half_edge.hpp                                      \
 	flatsurf/half_edge_map.hpp                                  \
 	flatsurf/interval_exchange_transformation.hpp               \
+	flatsurf/length_along_triangulation.hpp                     \
 	flatsurf/orientation.hpp                                    \
 	flatsurf/permutation.hpp                                    \
 	flatsurf/saddle_connections.hpp                             \
@@ -49,6 +51,7 @@ noinst_HEADERS =                                             \
 	util/assert.ipp                                            \
 	util/as_vector.ipp                                         \
 	util/false.ipp                                             \
+	util/union_join.ipp                                        \
 	vector/algorithm/exact.ipp                                 \
 	vector/algorithm/exact.extension.ipp                       \
 	vector/algorithm/extension.ipp                             \
@@ -66,6 +69,8 @@ libflatsurf_la_LDFLAGS += -larb
 libflatsurf_la_LDFLAGS += -lexactreal
 # we use e-antic in our vectors
 libflatsurf_la_LDFLAGS += -leanticxx -leantic
+# we build IETs with intervalxt
+libflatsurf_la_LDFLAGS += -lintervalxt
 
 $(builddir)/flatsurf/flatsurf.hpp: $(srcdir)/flatsurf/flatsurf.hpp.in Makefile
 	mkdir -p $(builddir)/flatsurf

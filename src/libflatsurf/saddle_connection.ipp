@@ -27,7 +27,6 @@
 #include <climits>
 #include <ostream>
 
-#include "flatsurf/bound.hpp"
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/saddle_connection.hpp"
 #include "flatsurf/saddle_connections.hpp"
@@ -41,10 +40,10 @@ namespace flatsurf {
 template <typename Surface>
 class SaddleConnection<Surface>::Implementation {
  public:
-  Implementation(const Surface &surface, const typename Surface::Vector &vector, const HalfEdge &source, const HalfEdge &target)
+  Implementation(Surface const *surface, const typename Surface::Vector &vector, const HalfEdge &source, const HalfEdge &target)
       : surface(surface), vector(vector), source(source), target(target) {}
 
-  const Surface &surface;
+  Surface const *surface;
   const typename Surface::Vector vector;
   HalfEdge source;
   HalfEdge target;

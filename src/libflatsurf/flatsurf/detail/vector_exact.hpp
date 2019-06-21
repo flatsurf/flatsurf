@@ -20,6 +20,8 @@
 #ifndef LIBFLATSURF_DETAIL_VECTOR_EXACT_HPP
 #define LIBFLATSURF_DETAIL_VECTOR_EXACT_HPP
 
+#include <intervalxt/forward.hpp>
+
 #include "flatsurf/detail/vector_base.hpp"
 
 namespace flatsurf::detail {
@@ -34,6 +36,9 @@ class VectorExact : public VectorBase<Vector>,
   CCW ccw(const Vector &) const noexcept;
   ORIENTATION orientation(const Vector &) const noexcept;
   bool insideCircumcircle(std::initializer_list<Vector>) const noexcept;
+
+  // Return the scalar product with the argument
+  T operator*(const Vector &)const noexcept;
 
   bool operator>(const Bound) const noexcept;
   bool operator<(const Bound) const noexcept;

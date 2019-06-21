@@ -1,6 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
+ *        Copyright (C) 2019 Vincent Delecroix
  *        Copyright (C) 2019 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
@@ -17,24 +18,22 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_BOUND_HPP
-#define LIBFLATSURF_BOUND_HPP
+#include <gtest/gtest.h>
+#include <boost/lexical_cast.hpp>
 
-#include <boost/operators.hpp>
+#include <flatsurf/vector.hpp>
 
-#include "flatsurf/flatsurf.hpp"
+using namespace flatsurf;
+using testing::Test;
+using testing::Types;
 
-namespace flatsurf {
-// A measure for lengths of vectors in R^2.
-// In a type safe wrapper so we do not mix actual lengths and their squares.
-struct Bound : boost::totally_ordered<Bound> {
-  Bound();
-  explicit Bound(long long lengthSquared);
-  const long long squared;
+TEST(VectorLongLongTest, CCW) {
+  using V = Vector<long long>;
+  V vertical(2, 3);
 
-  bool operator<(const Bound&) const;
-  bool operator==(const Bound&) const;
-};
-}  // namespace flatsurf
+  EXPECT_EQ(vertical.ccw(V(1, 2)), CCW::COUNTERCLOCKWISE);
+  EXPECT_EQ(vertical.ccw(V(-1, -1)), CCW::COUNTERCLOCKWISE);
+  EXPECT_EQ(vertical.ccw(V(0, -1)), CCW::CLOCKWISE);
+}
 
-#endif
+#include "main.hpp"

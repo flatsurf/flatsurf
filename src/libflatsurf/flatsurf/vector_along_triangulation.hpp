@@ -31,21 +31,25 @@ namespace flatsurf {
 // A generic implementation of a vector in ℝ² that is a sum of half edges of a
 // flat triangulation.
 template <typename T, typename Approximation, typename Surf>
-class VectorAlongTriangulation : public std::conditional_t<std::is_base_of_v<detail::VectorExact<Vector<T>, T>, Vector<T>>, detail::VectorExact<VectorAlongTriangulation<T, Approximation>, T>, detail::VectorWithError<VectorAlongTriangulation<T, Approximation>>>,
-                                 boost::additive<VectorAlongTriangulation<T, Approximation>, HalfEdge>,
-                                 boost::additive<VectorAlongTriangulation<T, Approximation>, HalfEdgeMap<int>> {
+class VectorAlongTriangulation : public std::conditional_t<std::is_base_of_v<detail::VectorExact<Vector<T>, T>, Vector<T>>, detail::VectorExact<VectorAlongTriangulation<T, Approximation, Surf>, T>, detail::VectorWithError<VectorAlongTriangulation<T, Approximation, Surf>>>,
+                                 boost::additive<VectorAlongTriangulation<T, Approximation, Surf>, HalfEdge>,
+                                 boost::additive<VectorAlongTriangulation<T, Approximation, Surf>, HalfEdgeMap<int>> {
+  using Base = std::conditional_t<std::is_base_of_v<detail::VectorExact<Vector<T>, T>, Vector<T>>, detail::VectorExact<VectorAlongTriangulation<T, Approximation, Surf>, T>, detail::VectorWithError<VectorAlongTriangulation<T, Approximation, Surf>>>;
+
  public:
   using Coordinate = T;
   using Surface = Surf;
 
-  explicit VectorAlongTriangulation(const Surface &surface);
-  VectorAlongTriangulation(const Surface &surface, const std::vector<HalfEdge> &);
-  VectorAlongTriangulation(const Surface &surface, const HalfEdgeMap<int> &coefficients);
+  explicit VectorAlongTriangulation(Surface const *);
+  VectorAlongTriangulation(Surface const *, const std::vector<HalfEdge> &);
+  VectorAlongTriangulation(Surface const *, const HalfEdgeMap<int> &coefficients);
 
   VectorAlongTriangulation &operator+=(const HalfEdge);
   VectorAlongTriangulation &operator-=(const HalfEdge);
   VectorAlongTriangulation &operator+=(const HalfEdgeMap<int> &);
   VectorAlongTriangulation &operator-=(const HalfEdgeMap<int> &);
+  using Base::operator+=;
+  using Base::operator-=;
 
   operator Vector<T>() const noexcept;
 

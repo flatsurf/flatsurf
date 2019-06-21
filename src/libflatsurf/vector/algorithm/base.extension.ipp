@@ -50,10 +50,19 @@ template <typename Implementation>
 static constexpr bool has_binary_inplace_plus = is_detected_exact_v<Implementation&, binary_inplace_plus_t, Implementation>;
 
 template <typename Implementation>
-using binary_inplace_times_t = decltype(std::declval<Implementation>() *= std::declval<int>());
+using binary_inplace_times_int_t = decltype(std::declval<Implementation>() *= std::declval<int>());
 template <typename Implementation>
-static constexpr bool has_binary_inplace_times = is_detected_exact_v<Implementation&, binary_inplace_times_t, Implementation>;
+static constexpr bool has_binary_inplace_times_int = is_detected_exact_v<Implementation&, binary_inplace_times_int_t, Implementation>;
 
+template <typename Implementation>
+using binary_inplace_times_mpz_t = decltype(std::declval<Implementation>() *= std::declval<mpz_class>());
+template <typename Implementation>
+static constexpr bool has_binary_inplace_times_mpz = is_detected_exact_v<Implementation&, binary_inplace_times_mpz_t, Implementation>;
+
+template <typename Implementation>
+using perpendicular_t = decltype(std::declval<const Implementation>().perpendicular());
+template <typename Implementation>
+static constexpr bool has_perpendicular = is_detected_exact_v<typename Implementation::Vector, perpendicular_t, Implementation>;
 }  // namespace
 }  // namespace flatsurf
 

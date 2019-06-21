@@ -1,4 +1,4 @@
-check_PROGRAMS = delaunay saddle_connections flip vector_exactreal saddle_connections_benchmark
+check_PROGRAMS = length_along_triangulation vector_longlong interval_exchange_transformation delaunay saddle_connections flip vector_exactreal saddle_connections_benchmark
 
 TESTS = $(check_PROGRAMS)
 
@@ -7,6 +7,9 @@ saddle_connections_benchmark_SOURCES = saddle_connections.benchmark.cc main.hpp 
 flip_SOURCES = flip.test.cc main.hpp surfaces.hpp
 vector_exactreal_SOURCES = vector_exactreal.test.cc main.hpp
 delaunay_SOURCES = delaunay.test.cc main.hpp
+interval_exchange_transformation_SOURCES = interval_exchange_transformation.test.cc main.hpp surfaces.hpp
+vector_longlong_SOURCES = vector_longlong.test.cc main.hpp
+length_along_triangulation_SOURCES = length_along_triangulation.test.cc main.hpp surfaces.hpp
 
 @VALGRIND_CHECK_RULES@
 

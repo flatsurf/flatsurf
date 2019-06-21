@@ -17,6 +17,7 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <boost/lexical_cast.hpp>
 #include <exact-real/element.hpp>
 #include <exact-real/integer_ring_traits.hpp>
 #include <exact-real/number_field_traits.hpp>
@@ -29,6 +30,7 @@
 #include "algorithm/with_error.ipp"
 #include "storage/cartesian.ipp"
 
+using boost::lexical_cast;
 using std::enable_if_t;
 using std::is_same_v;
 
@@ -49,8 +51,8 @@ class Vector<T>::Implementation : public Cartesian<T> {
   using Cartesian<T>::Cartesian;
   using Vector = flatsurf::Vector<T>;
 
-  Vector operator-() const noexcept {
-    return Vector(-this->x, -this->y);
+  static Vector make(const T& x, const T& y) {
+    return Vector(x, y);
   }
 
   template <typename _ = void, typename = std::enable_if_t<std::is_same_v<T, exactreal::Arb>, void>>
@@ -60,10 +62,22 @@ class Vector<T>::Implementation : public Cartesian<T> {
     return *this;
   }
 
-  template <typename _ = void, typename = std::enable_if_t<std::is_same_v<T, exactreal::Arb>, void>>
-  Implementation& operator*=(const int c) {
-    this->x *= Arb(c)(ARB_PRECISION_FAST);
-    this->y *= Arb(c)(ARB_PRECISION_FAST);
+  template <typename S, typename = std::enable_if_t<std::is_same_v<T, long long> || std::is_same_v<T, exactreal::Arb>, void>>
+  Implementation& operator*=(const S& c) {
+    if constexpr (std::is_same_v<T, long long>) {
+      if constexpr (std::is_same_v<S, mpz_class>) {
+        assert(c * mpz_class(lexical_cast<std::string>(this->x)) <= mpz_class(lexical_cast<std::string>(LONG_LONG_MAX)) && "Multiplication overflow");
+        assert(c * mpz_class(lexical_cast<std::string>(this->y)) <= mpz_class(lexical_cast<std::string>(LONG_LONG_MAX)) && "Multiplication overflow");
+        this->x *= lexical_cast<long long>(lexical_cast<std::string>(c));
+        this->y *= lexical_cast<long long>(lexical_cast<std::string>(c));
+      } else {
+        this->x *= c;
+        this->y *= c;
+      }
+    } else {
+      this->x *= Arb(c)(ARB_PRECISION_FAST);
+      this->y *= Arb(c)(ARB_PRECISION_FAST);
+    }
     return *this;
   }
 
@@ -116,13 +130,13 @@ class Vector<T>::Implementation : public Cartesian<T> {
   template <typename _ = void, typename = std::enable_if_t<std::is_same_v<T, exactreal::Arb>, void>>
   std::optional<bool> operator<(const Bound bound) const noexcept {
     Arb size = (this->x * this->x + this->y * this->y)(ARB_PRECISION_FAST);
-    return size < bound.squared;
+    return size < bound.length() * bound.length();
   }
 
   template <typename _ = void, typename = std::enable_if_t<std::is_same_v<T, exactreal::Arb>, void>>
   std::optional<bool> operator>(const Bound bound) const noexcept {
     Arb size = (this->x * this->x + this->y * this->y)(ARB_PRECISION_FAST);
-    return size > bound.squared;
+    return size > bound.length() * bound.length();
   }
 
   template <typename = void, typename = std::enable_if_t<std::is_same_v<T, exactreal::Arb>, void>>
@@ -135,6 +149,18 @@ class Vector<T>::Implementation : public Cartesian<T> {
       return maybe_y;
 
     return true;
+  }
+
+  template <typename = void, typename = std::enable_if_t<std::is_same_v<T, exactreal::Arb>, void>>
+  Vector projection(const Vector& rhs) const {
+    Arb dot = *this * rhs;
+    return make((dot * rhs.impl->x)(ARB_PRECISION_FAST),
+                (dot * rhs.impl->y)(ARB_PRECISION_FAST));
+  }
+
+  template <typename = void, typename = std::enable_if_t<std::is_same_v<T, Arb>, void>>
+  Arb operator*(const Vector& rhs) const {
+    return (this->x * rhs.impl->x + this->y * rhs.impl->y)(ARB_PRECISION_FAST);
   }
 
   template <typename = void, typename = std::enable_if_t<std::is_same_v<T, eantic::renf_elem_class> || std::is_same_v<T, exactreal::Element<exactreal::IntegerRingTraits>> || std::is_same_v<T, exactreal::Element<exactreal::RationalFieldTraits>> || std::is_same_v<T, exactreal::Element<exactreal::NumberFieldTraits>>, void>>
