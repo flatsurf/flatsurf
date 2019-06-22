@@ -1,9 +1,10 @@
-TESTS = saddle_connections.py
+TESTS = saddle_connections.py vector_renf_elem.py
 EXTRA_DIST = $(TESTS) surfaces.py
 
 AM_TESTS_ENVIRONMENT = . $(builddir)/test-env.sh;
 
 saddle_connections.py: test-env.sh
+vector_renf_elem.py: test-env.sh
 
 @VALGRIND_CHECK_RULES@
 
