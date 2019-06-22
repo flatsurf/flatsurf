@@ -38,9 +38,6 @@
 // See https://bitbucket.org/wlav/cppyy/issues/95/lookup-of-friend-operator
 namespace flatsurf {
 std::ostream &operator<<(std::ostream &, const HalfEdge &);
-std::ostream &operator<<(std::ostream &, const Vector<long long> &);
-std::ostream &operator<<(std::ostream &, const Vector<exactreal::Arb> &);
-std::ostream &operator<<(std::ostream &, const Vector<eantic::renf_elem_class> &);
 template <typename T>
 std::ostream &operator<<(std::ostream &, const Permutation<T> &);
 template <typename T>
@@ -49,6 +46,13 @@ template <typename T>
 std::ostream &operator<<(std::ostream &, const FlatTriangulation<T> &);
 template <typename Surface>
 std::ostream &operator<<(std::ostream &, const SaddleConnection<Surface> &);
+
+// This does not work due to https://bitbucket.org/wlav/cppyy/issues/112/operator-for-a-base-class-is-not-found
+// namespace detail {
+// template <typename V>
+// std::ostream &operator<<(std::ostream &, const detail::VectorBase<V> &);
+// }  // namespace detail
+
 }  // namespace flatsurf
 
 // cppyy does not see the operators that come out of boost/operators.hpp.
