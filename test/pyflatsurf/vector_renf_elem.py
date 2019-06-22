@@ -30,8 +30,8 @@ import surfaces
 
 def test_printing():
     surface = surfaces.hexagon()
-    assert str(surface.fromEdge(flatsurf.HalfEdge(1))) == "?"
-    assert repr(surface.fromEdge(flatsurf.HalfEdge(1))) == "?"
+    assert str(surface.fromEdge(flatsurf.HalfEdge(1))) == "(2, 0)"
+    assert repr(surface.fromEdge(flatsurf.HalfEdge(1))) == "(2, 0)"
 
 if __name__ == '__main__': sys.exit(pytest.main(sys.argv))
 

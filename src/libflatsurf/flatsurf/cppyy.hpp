@@ -47,10 +47,11 @@ std::ostream &operator<<(std::ostream &, const FlatTriangulation<T> &);
 template <typename Surface>
 std::ostream &operator<<(std::ostream &, const SaddleConnection<Surface> &);
 
-namespace detail {
-template <typename V>
-std::ostream &operator<<(std::ostream &, const detail::VectorBase<V> &);
-}  // namespace detail
+// This does not work due to https://bitbucket.org/wlav/cppyy/issues/112/operator-for-a-base-class-is-not-found
+// namespace detail {
+// template <typename V>
+// std::ostream &operator<<(std::ostream &, const detail::VectorBase<V> &);
+// }  // namespace detail
 
 }  // namespace flatsurf
 
@@ -86,6 +87,5 @@ extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsur
 extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::FlatTriangulation<eantic::renf_elem_class> &);
 extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::SaddleConnection<long long> &);
 extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::SaddleConnection<eantic::renf_elem_class> &);
-extern template std::ostream& flatsurf::detail::operator<< <flatsurf::Vector<eantic::renf_elem_class> >(std::ostream&, flatsurf::detail::VectorBase<flatsurf::Vector<eantic::renf_elem_class> > const&);
 
 #endif

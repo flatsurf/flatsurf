@@ -85,6 +85,14 @@ def pretty_print(proxy, name):
 
 cppyy.py.add_pythonization(pretty_print, "flatsurf")
 
+# Work around https://bitbucket.org/wlav/cppyy/issues/112/operator-for-a-base-class-is-not-found
+def vector_print(proxy, name):
+    if name.startswith("Vector<"):
+        proxy.__str__ = lambda self: "(" + str(self.x()) + ", " + str(self.y()) + ")"
+        proxy.__repr__ = proxy.__str__
+
+cppyy.py.add_pythonization(vector_print, "flatsurf")
+
 for path in os.environ.get('PYFLATSURF_INCLUDE','').split(':'):
     if path: cppyy.add_include_path(path)
 
