@@ -34,6 +34,8 @@ TEST(VectorLongLongTest, CCW) {
   EXPECT_EQ(vertical.ccw(V(1, 2)), CCW::COUNTERCLOCKWISE);
   EXPECT_EQ(vertical.ccw(V(-1, -1)), CCW::COUNTERCLOCKWISE);
   EXPECT_EQ(vertical.ccw(V(0, -1)), CCW::CLOCKWISE);
+
+  EXPECT_EQ(boost::lexical_cast<std::string>(vertical), "(2, 3)");
 }
 
 #include "main.hpp"

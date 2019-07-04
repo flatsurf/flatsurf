@@ -49,7 +49,7 @@ std::ostream& operator<<(std::ostream& os, const VectorBase<Vector>& self) {
   } else if constexpr (has_approximation_v<Implementation>) {
     return os << s.impl->approximation();
   } else if constexpr (is_cartesian_v<Implementation>) {
-    return os << s.impl->x << ", " << s.impl->y;
+    return os << "(" << s.impl->x << ", " << s.impl->y << ")";
   } else {
     static_assert(false_type_v<Implementation>, "Implementation is missing operator<<.");
   }
