@@ -26,13 +26,12 @@
 
 #include "flatsurf/vector.hpp"
 
+#include "../util/assert.ipp"
 #include "algorithm/exact.ipp"
 #include "algorithm/with_error.ipp"
 #include "storage/cartesian.ipp"
 
 using boost::lexical_cast;
-using std::enable_if_t;
-using std::is_same_v;
 
 // We currently use this precision for all computations involving Arb.
 // This is somewhat random and should probably change, see
@@ -43,6 +42,27 @@ using std::is_same_v;
 // precision for that.
 using exactreal::Arb;
 using exactreal::ARB_PRECISION_FAST;
+
+template <bool Condition>
+using If = std::enable_if_t<Condition, bool>;
+
+template <typename S, typename T>
+inline constexpr bool Similar = std::is_same_v<std::decay_t<S>, std::decay_t<T>>;
+
+template <typename T>
+inline constexpr bool IsArb = Similar<T, Arb>;
+
+template <typename T>
+inline constexpr bool IsExactReal = Similar<T, exactreal::Element<exactreal::IntegerRingTraits>> || Similar<T, exactreal::Element<exactreal::RationalFieldTraits>> || Similar<T, exactreal::Element<exactreal::NumberFieldTraits>>;
+
+template <typename T>
+inline constexpr bool IsEAntic = Similar<T, eantic::renf_elem_class>;
+
+template <typename T>
+inline constexpr bool IsMPZ = Similar<T, mpz_class>;
+
+template <typename T>
+inline constexpr bool IsLongLong = Similar<T, long long>;
 
 namespace flatsurf {
 template <typename T>
@@ -55,33 +75,30 @@ class Vector<T>::Implementation : public Cartesian<T> {
     return Vector(x, y);
   }
 
-  template <typename _ = void, typename = std::enable_if_t<std::is_same_v<T, exactreal::Arb>, void>>
-  Implementation& operator+=(const flatsurf::Vector<exactreal::Arb>& rhs) {
+  template <bool Enable = IsArb<T>, If<Enable> = true>
+  Implementation& operator+=(const flatsurf::Vector<Arb>& rhs) {
     this->x += rhs.impl->x(ARB_PRECISION_FAST);
     this->y += rhs.impl->y(ARB_PRECISION_FAST);
     return *this;
   }
 
-  template <typename S, typename = std::enable_if_t<std::is_same_v<T, long long> || std::is_same_v<T, exactreal::Arb>, void>>
-  Implementation& operator*=(const S& c) {
-    if constexpr (std::is_same_v<T, long long>) {
-      if constexpr (std::is_same_v<S, mpz_class>) {
-        assert(c * mpz_class(lexical_cast<std::string>(this->x)) <= mpz_class(lexical_cast<std::string>(LONG_LONG_MAX)) && "Multiplication overflow");
-        assert(c * mpz_class(lexical_cast<std::string>(this->y)) <= mpz_class(lexical_cast<std::string>(LONG_LONG_MAX)) && "Multiplication overflow");
-        this->x *= lexical_cast<long long>(lexical_cast<std::string>(c));
-        this->y *= lexical_cast<long long>(lexical_cast<std::string>(c));
-      } else {
-        this->x *= c;
-        this->y *= c;
-      }
-    } else {
-      this->x *= Arb(c)(ARB_PRECISION_FAST);
-      this->y *= Arb(c)(ARB_PRECISION_FAST);
-    }
+  template <typename S, bool Enable = IsArb<T>, If<Enable> = true>
+  Implementation& operator*=(const S& rhs) {
+    this->x *= Arb(rhs)(ARB_PRECISION_FAST);
+    this->y *= Arb(rhs)(ARB_PRECISION_FAST);
     return *this;
   }
 
-  template <typename _ = void, typename = std::enable_if_t<std::is_same_v<T, exactreal::Arb>, void>>
+  template <typename S, bool Enable = IsLongLong<T>&& IsMPZ<S>, If<Enable> = true, typename = void>
+  Implementation& operator*=(const S& rhs) {
+    assert(rhs * mpz_class(lexical_cast<std::string>(this->x)) <= mpz_class(lexical_cast<std::string>(LONG_LONG_MAX)) && "Multiplication overflow");
+    assert(rhs * mpz_class(lexical_cast<std::string>(this->y)) <= mpz_class(lexical_cast<std::string>(LONG_LONG_MAX)) && "Multiplication overflow");
+    this->x *= lexical_cast<long long>(lexical_cast<std::string>(rhs));
+    this->y *= lexical_cast<long long>(lexical_cast<std::string>(rhs));
+    return *this;
+  }
+
+  template <bool Enable = IsArb<T>, If<Enable> = true>
   std::optional<CCW> ccw(const flatsurf::Vector<exactreal::Arb>& rhs) const noexcept {
     const Arb a = (this->x * rhs.impl->y)(ARB_PRECISION_FAST);
     const Arb b = (rhs.impl->x * this->y)(ARB_PRECISION_FAST);
@@ -105,7 +122,7 @@ class Vector<T>::Implementation : public Cartesian<T> {
     }
   }
 
-  template <typename _ = void, typename = std::enable_if_t<std::is_same_v<T, exactreal::Arb>, void>>
+  template <bool Enable = IsArb<T>, If<Enable> = true>
   std::optional<ORIENTATION> orientation(const flatsurf::Vector<exactreal::Arb>& rhs) const noexcept {
     // Arb also has a built-in dot product. It's probably not doing anything else in 2d.
     const Arb dot = (this->x * rhs.impl->x + this->y * rhs.impl->y)(ARB_PRECISION_FAST);
@@ -127,19 +144,19 @@ class Vector<T>::Implementation : public Cartesian<T> {
     return {};
   }
 
-  template <typename _ = void, typename = std::enable_if_t<std::is_same_v<T, exactreal::Arb>, void>>
+  template <bool Enable = IsArb<T>, If<Enable> = true>
   std::optional<bool> operator<(const Bound bound) const noexcept {
     Arb size = (this->x * this->x + this->y * this->y)(ARB_PRECISION_FAST);
     return size < bound.length() * bound.length();
   }
 
-  template <typename _ = void, typename = std::enable_if_t<std::is_same_v<T, exactreal::Arb>, void>>
+  template <bool Enable = IsArb<T>, If<Enable> = true>
   std::optional<bool> operator>(const Bound bound) const noexcept {
     Arb size = (this->x * this->x + this->y * this->y)(ARB_PRECISION_FAST);
     return size > bound.length() * bound.length();
   }
 
-  template <typename = void, typename = std::enable_if_t<std::is_same_v<T, exactreal::Arb>, void>>
+  template <bool Enable = IsArb<T>, If<Enable> = true>
   operator std::optional<bool>() const noexcept {
     auto maybe_x = this->x == Arb(0);
     if (!maybe_x || !*maybe_x)
@@ -151,25 +168,26 @@ class Vector<T>::Implementation : public Cartesian<T> {
     return true;
   }
 
-  template <typename = void, typename = std::enable_if_t<std::is_same_v<T, exactreal::Arb>, void>>
+  template <bool Enable = IsArb<T>, If<Enable> = true>
   Vector projection(const Vector& rhs) const {
     Arb dot = *this * rhs;
     return make((dot * rhs.impl->x)(ARB_PRECISION_FAST),
                 (dot * rhs.impl->y)(ARB_PRECISION_FAST));
   }
 
-  template <typename = void, typename = std::enable_if_t<std::is_same_v<T, Arb>, void>>
+  template <bool Enable = IsArb<T>, If<Enable> = true>
   Arb operator*(const Vector& rhs) const {
     return (this->x * rhs.impl->x + this->y * rhs.impl->y)(ARB_PRECISION_FAST);
   }
 
-  template <typename = void, typename = std::enable_if_t<std::is_same_v<T, eantic::renf_elem_class> || std::is_same_v<T, exactreal::Element<exactreal::IntegerRingTraits>> || std::is_same_v<T, exactreal::Element<exactreal::RationalFieldTraits>> || std::is_same_v<T, exactreal::Element<exactreal::NumberFieldTraits>>, void>>
+  template <bool Enable = IsEAntic<T>, If<Enable> = true>
   operator flatsurf::Vector<exactreal::Arb>() const noexcept {
-    if constexpr (is_same_v<T, eantic::renf_elem_class>) {
-      return flatsurf::Vector<exactreal::Arb>(Arb(this->x, ARB_PRECISION_FAST), Arb(this->y, ARB_PRECISION_FAST));
-    } else {
-      return flatsurf::Vector<exactreal::Arb>(this->x.arb(ARB_PRECISION_FAST), this->y.arb(ARB_PRECISION_FAST));
-    }
+    return flatsurf::Vector<exactreal::Arb>(Arb(this->x, ARB_PRECISION_FAST), Arb(this->y, ARB_PRECISION_FAST));
+  }
+
+  template <bool Enable = IsExactReal<T>, If<Enable> = true, typename = void>
+  operator flatsurf::Vector<exactreal::Arb>() const noexcept {
+    return flatsurf::Vector<exactreal::Arb>(this->x.arb(ARB_PRECISION_FAST), this->y.arb(ARB_PRECISION_FAST));
   }
 };
 
