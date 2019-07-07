@@ -43,7 +43,7 @@ template <typename Implementation>
 static constexpr bool has_lt_bound = is_detected_exact_v<bool, lt_bound_t, Implementation>;
 
 template <typename Implementation>
-using gt_bound_t = decltype(std::declval<const Implementation&>() < std::declval<Bound>());
+using gt_bound_t = decltype(std::declval<const Implementation&>() > std::declval<Bound>());
 template <typename Implementation>
 static constexpr bool has_gt_bound = is_detected_exact_v<bool, gt_bound_t, Implementation>;
 
