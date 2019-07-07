@@ -26,9 +26,9 @@ namespace flatsurf {
 // so we must make sure the compiler tries not to instantiate this if it's not
 // on an active branch.
 template <auto = 0>
-constexpr bool false_value_v = false;
+inline constexpr bool false_value_v = false;
 template <typename = void>
-constexpr bool false_type_v = false;
+inline constexpr bool false_type_v = false;
 }  // namespace flatsurf
 
 #endif

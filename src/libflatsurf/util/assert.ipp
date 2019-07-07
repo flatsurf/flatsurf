@@ -22,6 +22,8 @@
 
 #include <boost/preprocessor/stringize.hpp>
 
+#include "false.ipp"
+
 // Run a (cheap) check that a (user provided) argument is valid.
 // If the check should be disabled when NDEBUG is defined, e.g., because it
 // occurs in a hotspot, use ASSERT_ARGUMENT instead.
@@ -47,5 +49,10 @@
 #define ASSERT_ARGUMENT_(CONDITION) CHECK_ARGUMENT_(CONDITION)
 #define ASSERT_ARGUMENT(CONDITION, MESSAGE) CHECK_ARGUMENT(CONDITION, MESSAGE)
 #endif
+
+template <typename _ = void>
+inline void assert_unreachable() {
+  static_assert(flatsurf::false_value_v<_>, "This code path can not get instantiated by the compiler…or at least that's what we thought.");
+}
 
 #endif
