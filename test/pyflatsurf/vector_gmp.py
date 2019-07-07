@@ -31,5 +31,11 @@ def test_creation():
     v = flatsurf.Vector['mpz_class'](1, 1)
     assert str(v) == "(1, 1)"
 
+    import cppyy
+    mpq = cppyy.gbl.mpq_class
+    mpz = cppyy.gbl.mpz_class
+    v = flatsurf.Vector[mpq](mpq(mpz(1)), (mpq(mpz(1), mpz(3))))
+    assert str(v) == "(1, 1/3)"
+
 if __name__ == '__main__': sys.exit(pytest.main(sys.argv))
 
