@@ -62,6 +62,9 @@ template <typename T>
 inline constexpr bool IsMPZ = Similar<T, mpz_class>;
 
 template <typename T>
+inline constexpr bool IsMPQ = Similar<T, mpq_class>;
+
+template <typename T>
 inline constexpr bool IsLongLong = Similar<T, long long>;
 
 namespace flatsurf {
@@ -150,10 +153,20 @@ class Vector<T>::Implementation : public Cartesian<T> {
     return size < bound.length() * bound.length();
   }
 
+  template <bool Enable = IsMPZ<T> || IsMPQ<T>, If<Enable> = true, typename = void>
+  bool operator<(const Bound bound) const noexcept {
+    return this->x * this->x + this->y * this->y < mpz_class(boost::lexical_cast<std::string>(bound.length() * bound.length()));
+  }
+
   template <bool Enable = IsArb<T>, If<Enable> = true>
   std::optional<bool> operator>(const Bound bound) const noexcept {
     Arb size = (this->x * this->x + this->y * this->y)(ARB_PRECISION_FAST);
     return size > bound.length() * bound.length();
+  }
+
+  template <bool Enable = IsMPZ<T> || IsMPQ<T>, If<Enable> = true, typename = void>
+  bool operator>(const Bound bound) const noexcept {
+    return this->x * this->x + this->y * this->y > mpz_class(boost::lexical_cast<std::string>(bound.length() * bound.length()));
   }
 
   template <bool Enable = IsArb<T>, If<Enable> = true>
@@ -180,7 +193,7 @@ class Vector<T>::Implementation : public Cartesian<T> {
     return (this->x * rhs.impl->x + this->y * rhs.impl->y)(ARB_PRECISION_FAST);
   }
 
-  template <bool Enable = IsEAntic<T>, If<Enable> = true>
+  template <bool Enable = IsEAntic<T> || IsMPQ<T>, If<Enable> = true>
   operator flatsurf::Vector<exactreal::Arb>() const noexcept {
     return flatsurf::Vector<exactreal::Arb>(Arb(this->x, ARB_PRECISION_FAST), Arb(this->y, ARB_PRECISION_FAST));
   }
@@ -214,6 +227,8 @@ using exactreal::RationalFieldTraits;
 
 template class Vector<Arb>;
 template class Vector<long long>;
+template class Vector<mpz_class>;
+template class Vector<mpq_class>;
 template class Vector<renf_elem_class>;
 template class Vector<Element<IntegerRingTraits>>;
 template class Vector<Element<RationalFieldTraits>>;
@@ -227,6 +242,14 @@ template std::ostream& operator<<(std::ostream&, const VectorBase<Vector<Arb>>&)
 template class VectorExact<Vector<long long>, long long>;
 template class VectorBase<Vector<long long>>;
 template std::ostream& operator<<(std::ostream&, const VectorBase<Vector<long long>>&);
+
+template class VectorExact<Vector<mpz_class>, mpz_class>;
+template class VectorBase<Vector<mpz_class>>;
+template std::ostream& operator<<(std::ostream&, const VectorBase<Vector<mpz_class>>&);
+
+template class VectorExact<Vector<mpq_class>, mpq_class>;
+template class VectorBase<Vector<mpq_class>>;
+template std::ostream& operator<<(std::ostream&, const VectorBase<Vector<mpq_class>>&);
 
 template class VectorExact<Vector<renf_elem_class>, renf_elem_class>;
 template class VectorBase<Vector<renf_elem_class>>;
