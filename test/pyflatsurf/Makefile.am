@@ -1,4 +1,4 @@
-TESTS = saddle_connections.py vector_renf_elem.py vector_gmp.py
+TESTS = saddle_connections.py vector_renf_elem.py doc.py vector_gmp.py
 EXTRA_DIST = $(TESTS) surfaces.py
 
 AM_TESTS_ENVIRONMENT = . $(builddir)/test-env.sh;
