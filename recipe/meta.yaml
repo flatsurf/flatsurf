@@ -50,6 +50,11 @@ requirements:
     # requirement of make check which also runs benchmarks
     - gtest
     - benchmark
+    - pytest
+    - pyexactreal
+    - pyeantic
+    - cppyy
+    - sage
   run_exports:
     - libflatsurf {{ version }}
 
@@ -98,12 +103,11 @@ outputs:
       run:
         - libflatsurf =={{ version }}
         - pyexactreal
-        # cppyy, not packaged in conda-forge yet
-
-    # We cannot test that that the import works since cppyy is not on conda-forge yet
-    #test:
-    #  imports:
-    #    - pyflatsurf
+        - pyeantic
+        - cppyy
+    test:
+      imports:
+        - pyflatsurf
 
 about:
   home: https://github.com/flatsurf/flatsurf

@@ -9,5 +9,6 @@ dependencies:
   - flatsurf
   - boost-cpp
   - notebook
+  - sage
   # https://github.com/QuantStack/xeus-cling/issues/194#issuecomment-456547091
   - xeus-cling
