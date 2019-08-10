@@ -32,8 +32,9 @@ requirements:
   host:
     # compile time dependencies of libflatsurf
     - boost-cpp
-    - intervalxt
-    - exact-real
+    - libintervalxt
+    - libexactreal
+    - pyexactreal
     - e-antic 1.*
     - gmp
     # We pin to an explicit version of Python here; since the Python part is
@@ -67,8 +68,8 @@ outputs:
         - {{ compiler('cxx') }}
       host:
         - boost-cpp
-        - intervalxt
-        - exact-real
+        - libintervalxt
+        - libexactreal
         - e-antic 1.*
         - gmp
     run_exports:
@@ -97,6 +98,7 @@ outputs:
         - cppyy
         - pyeantic
         - pyintervalxt
+        - pyexactreal
         - boost-cpp
 {%- if build_flavour == 'release' %}
     test:
