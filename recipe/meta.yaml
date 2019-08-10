@@ -77,6 +77,28 @@ outputs:
       # We pin the version of libflatsurf exactly since we do not want to
       # bother with incompatibilities in our nightly builds.
       - libflatsurf {{ version }}
+  - name: flatsurf
+    script: install-flatsurf.sh
+    build:
+      number: {{ build_number }}
+      string: {{ build_string }}
+{%- if build_flavour and build_flavour != 'release' %}
+      features:
+        - {{ build_flavour }}
+{% endif %}
+    requirements:
+      build:
+        - {{ compiler('cxx') }}
+      host:
+        - boost-cpp
+        - libintervalxt
+        - libexactreal
+        - e-antic 1.*
+        - gmp
+    run_exports:
+      # We pin the version of libflatsurf exactly since we do not want to
+      # bother with incompatibilities in our nightly builds.
+      - libflatsurf {{ version }}
   - name: pyflatsurf
     build:
       number: {{ build_number }}
