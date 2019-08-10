@@ -1,5 +1,5 @@
 #!/bin/bash
-cd libflatsurf
+cd flatsurf
 
 make install
 

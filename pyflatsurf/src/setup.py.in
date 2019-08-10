@@ -1,0 +1,16 @@
+import os
+from distutils.core import setup
+from setuptools.command.egg_info import egg_info
+
+SRC_PATH = os.path.dirname(__file__)
+
+setup(
+    name = 'pyflatsurf',
+    version = '@PACKAGE_VERSION@',
+    packages = ['pyflatsurf',],
+    license = 'GPL 3.0+',
+    install_requires=[
+        'cppyy'
+    ],
+    long_description = open('@top_srcdir@/README').read(),
+)
