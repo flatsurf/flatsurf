@@ -23,7 +23,7 @@
 
 #include <e-antic/renfxx_fwd.h>
 #include <exact-real/element.hpp>
-#include <exact-real/number_field_traits.hpp>
+#include <exact-real/number_field.hpp>
 
 #include <flatsurf/flat_triangulation.hpp>
 #include <flatsurf/half_edge.hpp>
@@ -45,7 +45,7 @@ namespace {
 template <class R2>
 class FlipTest : public Test {};
 
-using ExactVectors = Types<Vector<long long>, Vector<renf_elem_class>, Vector<exactreal::Element<exactreal::NumberFieldTraits>>>;
+using ExactVectors = Types<Vector<long long>, Vector<renf_elem_class>, Vector<exactreal::Element<exactreal::NumberField>>>;
 TYPED_TEST_CASE(FlipTest, ExactVectors);
 
 TYPED_TEST(FlipTest, Square) {

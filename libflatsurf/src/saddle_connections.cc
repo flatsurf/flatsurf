@@ -469,9 +469,9 @@ std::unique_ptr<SaddleConnection<Surface>> SaddleConnections<Surface>::Iterator:
 
 // Instantiations of templates so implementations are generated for the linker
 #include <e-antic/renfxx_fwd.h>
-#include <exact-real/integer_ring_traits.hpp>
-#include <exact-real/number_field_traits.hpp>
-#include <exact-real/rational_field_traits.hpp>
+#include <exact-real/integer_ring.hpp>
+#include <exact-real/number_field.hpp>
+#include <exact-real/rational_field.hpp>
 using namespace flatsurf;
 
 // We need to explicitly list the operator<< implementations here, since we
@@ -479,14 +479,14 @@ using namespace flatsurf;
 // https://stackoverflow.com/questions/18823618/overload-operator-for-nested-class-template
 std::ostream& operator<<(std::ostream& os, const typename SaddleConnections<FlatTriangulation<long long>>::Iterator& self) { return os << *self.impl; }
 std::ostream& operator<<(std::ostream& os, const typename SaddleConnections<FlatTriangulation<eantic::renf_elem_class>>::Iterator& self) { return os << *self.impl; }
-std::ostream& operator<<(std::ostream& os, const typename SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::IntegerRingTraits>>>::Iterator& self) { return os << *self.impl; }
-std::ostream& operator<<(std::ostream& os, const typename SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::RationalFieldTraits>>>::Iterator& self) { return os << *self.impl; }
-std::ostream& operator<<(std::ostream& os, const typename SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::NumberFieldTraits>>>::Iterator& self) { return os << *self.impl; }
+std::ostream& operator<<(std::ostream& os, const typename SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::IntegerRing>>>::Iterator& self) { return os << *self.impl; }
+std::ostream& operator<<(std::ostream& os, const typename SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::RationalField>>>::Iterator& self) { return os << *self.impl; }
+std::ostream& operator<<(std::ostream& os, const typename SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::NumberField>>>::Iterator& self) { return os << *self.impl; }
 
 }  // namespace flatsurf
 
 template class flatsurf::SaddleConnections<FlatTriangulation<long long>>;
 template class flatsurf::SaddleConnections<FlatTriangulation<eantic::renf_elem_class>>;
-template class flatsurf::SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::IntegerRingTraits>>>;
-template class flatsurf::SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::RationalFieldTraits>>>;
-template class flatsurf::SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::NumberFieldTraits>>>;
+template class flatsurf::SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::IntegerRing>>>;
+template class flatsurf::SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::RationalField>>>;
+template class flatsurf::SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::NumberField>>>;

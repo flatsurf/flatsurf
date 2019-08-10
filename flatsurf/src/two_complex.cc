@@ -25,7 +25,7 @@
 #include <ostream>
 #include <vector>
 #include "exact-real/element.hpp"
-#include "exact-real/number_field_traits.hpp"
+#include "exact-real/number_field.hpp"
 
 #include "./elementary_geometry.h"
 #include "./globals.h"
@@ -38,7 +38,7 @@
 #include "./uedge.h"
 #include "./vertex.h"
 
-#include "../libflatsurf/util/as_vector.ipp"
+#include "../../libflatsurf/src/util/as_vector.ipp"
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/half_edge.hpp"
 #include "flatsurf/half_edge_map.hpp"
@@ -47,7 +47,6 @@
 using boost::adaptors::transformed;
 using boost::math::constants::pi;
 using exactreal::Element;
-using exactreal::NumberFieldTraits;
 using flatsurf::FlatTriangulation;
 using flatsurf::FlatTriangulationCombinatorial;
 using flatsurf::HalfEdge;
@@ -76,15 +75,15 @@ TwoComplex::~TwoComplex() {
   }
 }
 
-TwoComplex::operator FlatTriangulation<exactreal::Element<exactreal::NumberFieldTraits>>() const {
-  Vector<exactreal::Element<NumberFieldTraits>> zero{alg_t<bigrat>().real(),
+TwoComplex::operator FlatTriangulation<exactreal::Element<exactreal::NumberField>>() const {
+  Vector<exactreal::Element<exactreal::NumberField>> zero{alg_t<bigrat>().real(),
                                                      alg_t<bigrat>().imag()};
 
   auto combinatorial = static_cast<FlatTriangulationCombinatorial>(*this);
-  auto vectors = HalfEdgeMap<Vector<exactreal::Element<NumberFieldTraits>>>(
+  auto vectors = HalfEdgeMap<Vector<exactreal::Element<exactreal::NumberField>>>(
       &combinatorial,
-      vector<Vector<exactreal::Element<NumberFieldTraits>>>(uedges.size(), zero),
-      [](HalfEdgeMap<Vector<exactreal::Element<NumberFieldTraits>>> &map,
+      vector<Vector<exactreal::Element<exactreal::NumberField>>>(uedges.size(), zero),
+      [](HalfEdgeMap<Vector<exactreal::Element<exactreal::NumberField>>> &map,
          HalfEdge halfEdge, const FlatTriangulationCombinatorial &parent) {
         map.set(halfEdge, map.get(-parent.nextInFace(halfEdge)) +
                               map.get(parent.nextAtVertex(halfEdge)));

@@ -108,7 +108,7 @@ def make_surface(vertices, vectors):
     # Somehow vectors[0].Coordinate cannot be found, so we have to try which
     # coordinate type is the correct one; we should report this at cppyy if we
     # can find a more easily reproducible case.
-    for coordinate in ['long long', 'eantic::renf_elem_class', 'exactreal::Element<exactreal::IntegerRingTraits>', 'exactreal::Element<exactreal::RationalFieldTraits>', 'exactreal::Element<exactreal::NumberFieldTraits>']:
+    for coordinate in ['long long', 'eantic::renf_elem_class', 'exactreal::Element<exactreal::IntegerRing>', 'exactreal::Element<exactreal::RationalField>', 'exactreal::Element<exactreal::NumberField>']:
         if R2 == type(flatsurf.Vector[coordinate]).__cppname__:
             ret = flatsurf.FlatTriangulation[coordinate](flatsurf.FlatTriangulationCombinatorial(vertices), vectors)
             ret.saddleConnections = lambda *args: flatsurf.SaddleConnections[type(ret).__cppname__](ret, *args)

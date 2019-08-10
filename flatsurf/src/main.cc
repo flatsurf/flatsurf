@@ -22,7 +22,7 @@
 #include <getopt.h>
 #include <unistd.h>
 #include <boost/numeric/conversion/cast.hpp>
-#include <exact-real/number_field_traits.hpp>
+#include <exact-real/number_field.hpp>
 #include <fstream>
 #include <intervalxt/length.hpp>
 #include <iostream>
@@ -47,7 +47,6 @@ using namespace polygon;
 
 using boost::numeric_cast;
 using exactreal::Arb;
-using exactreal::NumberFieldTraits;
 using flatsurf::Bound;
 using flatsurf::FlatTriangulation;
 using flatsurf::HalfEdge;
@@ -604,7 +603,7 @@ int main(int argc, char **argv) {
   auto first_edge = *((*i)->out_edges.begin());
 
   if (libflatsurf) {
-    using FlatTriangulation = FlatTriangulation<exactreal::Element<exactreal::NumberFieldTraits>>;
+    using FlatTriangulation = FlatTriangulation<exactreal::Element<exactreal::NumberField>>;
     auto flat_triangulation = static_cast<FlatTriangulation>(*S);
     std::cout << flat_triangulation << std::endl;
 
@@ -652,7 +651,7 @@ int main(int argc, char **argv) {
 
           auto ccw = saddle_connection_in_same_direction->vector().ccw(saddle_connection->vector());
           if (ccw == flatsurf::CCW::COLLINEAR) {
-            auto vector = static_cast<Vector<exactreal::Element<NumberFieldTraits>>>(saddle_connection_in_same_direction->vector());
+            auto vector = static_cast<Vector<exactreal::Element<exactreal::NumberField>>>(saddle_connection_in_same_direction->vector());
             assert(flat_triangulation.fromEdge(e).ccw(vector) == flatsurf::CCW::COUNTERCLOCKWISE);
             auto dvector = static_cast<Point>(static_cast<Vector<Arb>>(vector));
             auto start = Dir(e, dvector);

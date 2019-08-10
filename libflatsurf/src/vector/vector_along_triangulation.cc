@@ -219,17 +219,17 @@ VectorAlongTriangulation<T, Approximation, Surface>& VectorAlongTriangulation<T,
 #include <e-antic/renfxx.h>
 #include <exact-real/arb.hpp>
 #include <exact-real/element.hpp>
-#include <exact-real/integer_ring_traits.hpp>
-#include <exact-real/number_field_traits.hpp>
-#include <exact-real/rational_field_traits.hpp>
+#include <exact-real/integer_ring.hpp>
+#include <exact-real/number_field.hpp>
+#include <exact-real/rational_field.hpp>
 
 namespace flatsurf {
 using eantic::renf_elem_class;
 using exactreal::Arb;
 using exactreal::Element;
-using exactreal::IntegerRingTraits;
-using exactreal::NumberFieldTraits;
-using exactreal::RationalFieldTraits;
+using exactreal::IntegerRing;
+using exactreal::NumberField;
+using exactreal::RationalField;
 
 extern template VectorBase<Vector<Arb>>::operator std::complex<double>() const noexcept;
 extern template Vector<Arb> VectorBase<Vector<Arb>>::operator-() const noexcept;
@@ -290,86 +290,86 @@ template class detail::VectorExact<VectorAlongTriangulation<renf_elem_class, Arb
 template std::ostream& detail::operator<<(std::ostream&, const VectorBase<VectorAlongTriangulation<renf_elem_class, Arb>>&);
 
 // Element<Integer>
-extern template bool VectorExact<Vector<Element<IntegerRingTraits>>, Element<IntegerRingTraits>>::operator>(Bound) const noexcept;
-extern template bool VectorExact<Vector<Element<IntegerRingTraits>>, Element<IntegerRingTraits>>::operator<(Bound) const noexcept;
-extern template VectorExact<Vector<Element<IntegerRingTraits>>, Element<IntegerRingTraits>>::operator bool() const noexcept;
-extern template CCW VectorExact<Vector<Element<IntegerRingTraits>>, Element<IntegerRingTraits>>::ccw(const Vector<Element<IntegerRingTraits>>&) const noexcept;
-extern template ORIENTATION VectorExact<Vector<Element<IntegerRingTraits>>, Element<IntegerRingTraits>>::orientation(const Vector<Element<IntegerRingTraits>>&) const noexcept;
-template class VectorAlongTriangulation<Element<IntegerRingTraits>>;
-extern template Element<IntegerRingTraits> VectorExact<Vector<Element<IntegerRingTraits>>, Element<IntegerRingTraits>>::x() const noexcept;
-extern template Element<IntegerRingTraits> VectorExact<Vector<Element<IntegerRingTraits>>, Element<IntegerRingTraits>>::y() const noexcept;
-extern template Element<IntegerRingTraits> VectorExact<Vector<Element<IntegerRingTraits>>, Element<IntegerRingTraits>>::operator*(const Vector<Element<IntegerRingTraits>>&)const noexcept;
-extern template bool VectorExact<Vector<Element<IntegerRingTraits>>, Element<IntegerRingTraits>>::operator==(const Vector<Element<IntegerRingTraits>>&) const noexcept;
-template class detail::VectorExact<VectorAlongTriangulation<Element<IntegerRingTraits>>, Element<IntegerRingTraits>>;
-extern template Vector<Element<IntegerRingTraits>>& VectorBase<Vector<Element<IntegerRingTraits>>>::operator+=(const Vector<Element<IntegerRingTraits>>&);
-extern template Vector<Element<IntegerRingTraits>>& VectorBase<Vector<Element<IntegerRingTraits>>>::operator*=(int);
-extern template Vector<Element<IntegerRingTraits>>& VectorBase<Vector<Element<IntegerRingTraits>>>::operator*=(const mpz_class&);
-extern template Vector<Element<IntegerRingTraits>> VectorBase<Vector<Element<IntegerRingTraits>>>::operator-() const noexcept;
-extern template Vector<Element<IntegerRingTraits>> VectorBase<Vector<Element<IntegerRingTraits>>>::perpendicular() const;
-extern template VectorBase<Vector<Element<IntegerRingTraits>>>::operator Vector<Arb>() const noexcept;
-extern template VectorBase<Vector<Element<IntegerRingTraits>>>::operator std::complex<double>() const noexcept;
-extern template VectorBase<Vector<Element<IntegerRingTraits>>>::operator Vector<Arb>() const noexcept;
-template class detail::VectorBase<VectorAlongTriangulation<Element<IntegerRingTraits>>>;
-extern template std::ostream& detail::operator<<(std::ostream&, const VectorBase<Vector<Element<IntegerRingTraits>>>&);
-template std::ostream& detail::operator<<(std::ostream&, const VectorBase<VectorAlongTriangulation<Element<IntegerRingTraits>>>&);
+extern template bool VectorExact<Vector<Element<IntegerRing>>, Element<IntegerRing>>::operator>(Bound) const noexcept;
+extern template bool VectorExact<Vector<Element<IntegerRing>>, Element<IntegerRing>>::operator<(Bound) const noexcept;
+extern template VectorExact<Vector<Element<IntegerRing>>, Element<IntegerRing>>::operator bool() const noexcept;
+extern template CCW VectorExact<Vector<Element<IntegerRing>>, Element<IntegerRing>>::ccw(const Vector<Element<IntegerRing>>&) const noexcept;
+extern template ORIENTATION VectorExact<Vector<Element<IntegerRing>>, Element<IntegerRing>>::orientation(const Vector<Element<IntegerRing>>&) const noexcept;
+template class VectorAlongTriangulation<Element<IntegerRing>>;
+extern template Element<IntegerRing> VectorExact<Vector<Element<IntegerRing>>, Element<IntegerRing>>::x() const noexcept;
+extern template Element<IntegerRing> VectorExact<Vector<Element<IntegerRing>>, Element<IntegerRing>>::y() const noexcept;
+extern template Element<IntegerRing> VectorExact<Vector<Element<IntegerRing>>, Element<IntegerRing>>::operator*(const Vector<Element<IntegerRing>>&)const noexcept;
+extern template bool VectorExact<Vector<Element<IntegerRing>>, Element<IntegerRing>>::operator==(const Vector<Element<IntegerRing>>&) const noexcept;
+template class detail::VectorExact<VectorAlongTriangulation<Element<IntegerRing>>, Element<IntegerRing>>;
+extern template Vector<Element<IntegerRing>>& VectorBase<Vector<Element<IntegerRing>>>::operator+=(const Vector<Element<IntegerRing>>&);
+extern template Vector<Element<IntegerRing>>& VectorBase<Vector<Element<IntegerRing>>>::operator*=(int);
+extern template Vector<Element<IntegerRing>>& VectorBase<Vector<Element<IntegerRing>>>::operator*=(const mpz_class&);
+extern template Vector<Element<IntegerRing>> VectorBase<Vector<Element<IntegerRing>>>::operator-() const noexcept;
+extern template Vector<Element<IntegerRing>> VectorBase<Vector<Element<IntegerRing>>>::perpendicular() const;
+extern template VectorBase<Vector<Element<IntegerRing>>>::operator Vector<Arb>() const noexcept;
+extern template VectorBase<Vector<Element<IntegerRing>>>::operator std::complex<double>() const noexcept;
+extern template VectorBase<Vector<Element<IntegerRing>>>::operator Vector<Arb>() const noexcept;
+template class detail::VectorBase<VectorAlongTriangulation<Element<IntegerRing>>>;
+extern template std::ostream& detail::operator<<(std::ostream&, const VectorBase<Vector<Element<IntegerRing>>>&);
+template std::ostream& detail::operator<<(std::ostream&, const VectorBase<VectorAlongTriangulation<Element<IntegerRing>>>&);
 
-template class VectorAlongTriangulation<Element<IntegerRingTraits>, Arb>;
-template class detail::VectorExact<VectorAlongTriangulation<Element<IntegerRingTraits>, Arb>, Element<IntegerRingTraits>>;
-template std::ostream& detail::operator<<(std::ostream&, const VectorBase<VectorAlongTriangulation<Element<IntegerRingTraits>, Arb>>&);
+template class VectorAlongTriangulation<Element<IntegerRing>, Arb>;
+template class detail::VectorExact<VectorAlongTriangulation<Element<IntegerRing>, Arb>, Element<IntegerRing>>;
+template std::ostream& detail::operator<<(std::ostream&, const VectorBase<VectorAlongTriangulation<Element<IntegerRing>, Arb>>&);
 
 // Element<Rational>
-extern template bool VectorExact<Vector<Element<RationalFieldTraits>>, Element<RationalFieldTraits>>::operator>(Bound) const noexcept;
-extern template bool VectorExact<Vector<Element<RationalFieldTraits>>, Element<RationalFieldTraits>>::operator<(Bound) const noexcept;
-extern template VectorExact<Vector<Element<RationalFieldTraits>>, Element<RationalFieldTraits>>::operator bool() const noexcept;
-extern template CCW VectorExact<Vector<Element<RationalFieldTraits>>, Element<RationalFieldTraits>>::ccw(const Vector<Element<RationalFieldTraits>>&) const noexcept;
-extern template ORIENTATION VectorExact<Vector<Element<RationalFieldTraits>>, Element<RationalFieldTraits>>::orientation(const Vector<Element<RationalFieldTraits>>&) const noexcept;
-template class VectorAlongTriangulation<Element<RationalFieldTraits>>;
-extern template Element<RationalFieldTraits> VectorExact<Vector<Element<RationalFieldTraits>>, Element<RationalFieldTraits>>::x() const noexcept;
-extern template Element<RationalFieldTraits> VectorExact<Vector<Element<RationalFieldTraits>>, Element<RationalFieldTraits>>::y() const noexcept;
-extern template Element<RationalFieldTraits> VectorExact<Vector<Element<RationalFieldTraits>>, Element<RationalFieldTraits>>::operator*(const Vector<Element<RationalFieldTraits>>&)const noexcept;
-extern template bool VectorExact<Vector<Element<RationalFieldTraits>>, Element<RationalFieldTraits>>::operator==(const Vector<Element<RationalFieldTraits>>&) const noexcept;
-template class detail::VectorExact<VectorAlongTriangulation<Element<RationalFieldTraits>>, Element<RationalFieldTraits>>;
-extern template Vector<Element<RationalFieldTraits>>& VectorBase<Vector<Element<RationalFieldTraits>>>::operator+=(const Vector<Element<RationalFieldTraits>>&);
-extern template Vector<Element<RationalFieldTraits>>& VectorBase<Vector<Element<RationalFieldTraits>>>::operator*=(int);
-extern template Vector<Element<RationalFieldTraits>>& VectorBase<Vector<Element<RationalFieldTraits>>>::operator*=(const mpz_class&);
-extern template Vector<Element<RationalFieldTraits>> VectorBase<Vector<Element<RationalFieldTraits>>>::operator-() const noexcept;
-extern template Vector<Element<RationalFieldTraits>> VectorBase<Vector<Element<RationalFieldTraits>>>::perpendicular() const;
-extern template VectorBase<Vector<Element<RationalFieldTraits>>>::operator Vector<Arb>() const noexcept;
-extern template VectorBase<Vector<Element<RationalFieldTraits>>>::operator std::complex<double>() const noexcept;
-extern template VectorBase<Vector<Element<RationalFieldTraits>>>::operator Vector<Arb>() const noexcept;
-template class detail::VectorBase<VectorAlongTriangulation<Element<RationalFieldTraits>>>;
-extern template std::ostream& detail::operator<<(std::ostream&, const VectorBase<Vector<Element<RationalFieldTraits>>>&);
-template std::ostream& detail::operator<<(std::ostream&, const VectorBase<VectorAlongTriangulation<Element<RationalFieldTraits>>>&);
+extern template bool VectorExact<Vector<Element<RationalField>>, Element<RationalField>>::operator>(Bound) const noexcept;
+extern template bool VectorExact<Vector<Element<RationalField>>, Element<RationalField>>::operator<(Bound) const noexcept;
+extern template VectorExact<Vector<Element<RationalField>>, Element<RationalField>>::operator bool() const noexcept;
+extern template CCW VectorExact<Vector<Element<RationalField>>, Element<RationalField>>::ccw(const Vector<Element<RationalField>>&) const noexcept;
+extern template ORIENTATION VectorExact<Vector<Element<RationalField>>, Element<RationalField>>::orientation(const Vector<Element<RationalField>>&) const noexcept;
+template class VectorAlongTriangulation<Element<RationalField>>;
+extern template Element<RationalField> VectorExact<Vector<Element<RationalField>>, Element<RationalField>>::x() const noexcept;
+extern template Element<RationalField> VectorExact<Vector<Element<RationalField>>, Element<RationalField>>::y() const noexcept;
+extern template Element<RationalField> VectorExact<Vector<Element<RationalField>>, Element<RationalField>>::operator*(const Vector<Element<RationalField>>&)const noexcept;
+extern template bool VectorExact<Vector<Element<RationalField>>, Element<RationalField>>::operator==(const Vector<Element<RationalField>>&) const noexcept;
+template class detail::VectorExact<VectorAlongTriangulation<Element<RationalField>>, Element<RationalField>>;
+extern template Vector<Element<RationalField>>& VectorBase<Vector<Element<RationalField>>>::operator+=(const Vector<Element<RationalField>>&);
+extern template Vector<Element<RationalField>>& VectorBase<Vector<Element<RationalField>>>::operator*=(int);
+extern template Vector<Element<RationalField>>& VectorBase<Vector<Element<RationalField>>>::operator*=(const mpz_class&);
+extern template Vector<Element<RationalField>> VectorBase<Vector<Element<RationalField>>>::operator-() const noexcept;
+extern template Vector<Element<RationalField>> VectorBase<Vector<Element<RationalField>>>::perpendicular() const;
+extern template VectorBase<Vector<Element<RationalField>>>::operator Vector<Arb>() const noexcept;
+extern template VectorBase<Vector<Element<RationalField>>>::operator std::complex<double>() const noexcept;
+extern template VectorBase<Vector<Element<RationalField>>>::operator Vector<Arb>() const noexcept;
+template class detail::VectorBase<VectorAlongTriangulation<Element<RationalField>>>;
+extern template std::ostream& detail::operator<<(std::ostream&, const VectorBase<Vector<Element<RationalField>>>&);
+template std::ostream& detail::operator<<(std::ostream&, const VectorBase<VectorAlongTriangulation<Element<RationalField>>>&);
 
-template class VectorAlongTriangulation<Element<RationalFieldTraits>, Arb>;
-template class detail::VectorExact<VectorAlongTriangulation<Element<RationalFieldTraits>, Arb>, Element<RationalFieldTraits>>;
-template std::ostream& detail::operator<<(std::ostream&, const VectorBase<VectorAlongTriangulation<Element<RationalFieldTraits>, Arb>>&);
+template class VectorAlongTriangulation<Element<RationalField>, Arb>;
+template class detail::VectorExact<VectorAlongTriangulation<Element<RationalField>, Arb>, Element<RationalField>>;
+template std::ostream& detail::operator<<(std::ostream&, const VectorBase<VectorAlongTriangulation<Element<RationalField>, Arb>>&);
 
 // Element<NumberField>
-extern template bool VectorExact<Vector<Element<NumberFieldTraits>>, Element<NumberFieldTraits>>::operator>(Bound) const noexcept;
-extern template bool VectorExact<Vector<Element<NumberFieldTraits>>, Element<NumberFieldTraits>>::operator<(Bound) const noexcept;
-extern template VectorExact<Vector<Element<NumberFieldTraits>>, Element<NumberFieldTraits>>::operator bool() const noexcept;
-extern template CCW VectorExact<Vector<Element<NumberFieldTraits>>, Element<NumberFieldTraits>>::ccw(const Vector<Element<NumberFieldTraits>>&) const noexcept;
-extern template ORIENTATION VectorExact<Vector<Element<NumberFieldTraits>>, Element<NumberFieldTraits>>::orientation(const Vector<Element<NumberFieldTraits>>&) const noexcept;
-template class VectorAlongTriangulation<Element<NumberFieldTraits>>;
-extern template Element<NumberFieldTraits> VectorExact<Vector<Element<NumberFieldTraits>>, Element<NumberFieldTraits>>::x() const noexcept;
-extern template Element<NumberFieldTraits> VectorExact<Vector<Element<NumberFieldTraits>>, Element<NumberFieldTraits>>::y() const noexcept;
-extern template Element<NumberFieldTraits> VectorExact<Vector<Element<NumberFieldTraits>>, Element<NumberFieldTraits>>::operator*(const Vector<Element<NumberFieldTraits>>&)const noexcept;
-extern template bool VectorExact<Vector<Element<NumberFieldTraits>>, Element<NumberFieldTraits>>::operator==(const Vector<Element<NumberFieldTraits>>&) const noexcept;
-template class detail::VectorExact<VectorAlongTriangulation<Element<NumberFieldTraits>>, Element<NumberFieldTraits>>;
-extern template Vector<Element<NumberFieldTraits>>& VectorBase<Vector<Element<NumberFieldTraits>>>::operator+=(const Vector<Element<NumberFieldTraits>>&);
-extern template Vector<Element<NumberFieldTraits>>& VectorBase<Vector<Element<NumberFieldTraits>>>::operator*=(int);
-extern template Vector<Element<NumberFieldTraits>>& VectorBase<Vector<Element<NumberFieldTraits>>>::operator*=(const mpz_class&);
-extern template Vector<Element<NumberFieldTraits>> VectorBase<Vector<Element<NumberFieldTraits>>>::operator-() const noexcept;
-extern template Vector<Element<NumberFieldTraits>> VectorBase<Vector<Element<NumberFieldTraits>>>::perpendicular() const;
-extern template VectorBase<Vector<Element<NumberFieldTraits>>>::operator Vector<Arb>() const noexcept;
-extern template VectorBase<Vector<Element<NumberFieldTraits>>>::operator std::complex<double>() const noexcept;
-extern template VectorBase<Vector<Element<NumberFieldTraits>>>::operator Vector<Arb>() const noexcept;
-template class detail::VectorBase<VectorAlongTriangulation<Element<NumberFieldTraits>>>;
-extern template std::ostream& detail::operator<<(std::ostream&, const VectorBase<Vector<Element<NumberFieldTraits>>>&);
-template std::ostream& detail::operator<<(std::ostream&, const VectorBase<VectorAlongTriangulation<Element<NumberFieldTraits>>>&);
+extern template bool VectorExact<Vector<Element<NumberField>>, Element<NumberField>>::operator>(Bound) const noexcept;
+extern template bool VectorExact<Vector<Element<NumberField>>, Element<NumberField>>::operator<(Bound) const noexcept;
+extern template VectorExact<Vector<Element<NumberField>>, Element<NumberField>>::operator bool() const noexcept;
+extern template CCW VectorExact<Vector<Element<NumberField>>, Element<NumberField>>::ccw(const Vector<Element<NumberField>>&) const noexcept;
+extern template ORIENTATION VectorExact<Vector<Element<NumberField>>, Element<NumberField>>::orientation(const Vector<Element<NumberField>>&) const noexcept;
+template class VectorAlongTriangulation<Element<NumberField>>;
+extern template Element<NumberField> VectorExact<Vector<Element<NumberField>>, Element<NumberField>>::x() const noexcept;
+extern template Element<NumberField> VectorExact<Vector<Element<NumberField>>, Element<NumberField>>::y() const noexcept;
+extern template Element<NumberField> VectorExact<Vector<Element<NumberField>>, Element<NumberField>>::operator*(const Vector<Element<NumberField>>&)const noexcept;
+extern template bool VectorExact<Vector<Element<NumberField>>, Element<NumberField>>::operator==(const Vector<Element<NumberField>>&) const noexcept;
+template class detail::VectorExact<VectorAlongTriangulation<Element<NumberField>>, Element<NumberField>>;
+extern template Vector<Element<NumberField>>& VectorBase<Vector<Element<NumberField>>>::operator+=(const Vector<Element<NumberField>>&);
+extern template Vector<Element<NumberField>>& VectorBase<Vector<Element<NumberField>>>::operator*=(int);
+extern template Vector<Element<NumberField>>& VectorBase<Vector<Element<NumberField>>>::operator*=(const mpz_class&);
+extern template Vector<Element<NumberField>> VectorBase<Vector<Element<NumberField>>>::operator-() const noexcept;
+extern template Vector<Element<NumberField>> VectorBase<Vector<Element<NumberField>>>::perpendicular() const;
+extern template VectorBase<Vector<Element<NumberField>>>::operator Vector<Arb>() const noexcept;
+extern template VectorBase<Vector<Element<NumberField>>>::operator std::complex<double>() const noexcept;
+extern template VectorBase<Vector<Element<NumberField>>>::operator Vector<Arb>() const noexcept;
+template class detail::VectorBase<VectorAlongTriangulation<Element<NumberField>>>;
+extern template std::ostream& detail::operator<<(std::ostream&, const VectorBase<Vector<Element<NumberField>>>&);
+template std::ostream& detail::operator<<(std::ostream&, const VectorBase<VectorAlongTriangulation<Element<NumberField>>>&);
 
-template class VectorAlongTriangulation<Element<NumberFieldTraits>, Arb>;
-template class detail::VectorExact<VectorAlongTriangulation<Element<NumberFieldTraits>, Arb>, Element<NumberFieldTraits>>;
-template std::ostream& detail::operator<<(std::ostream&, const VectorBase<VectorAlongTriangulation<Element<NumberFieldTraits>, Arb>>&);
+template class VectorAlongTriangulation<Element<NumberField>, Arb>;
+template class detail::VectorExact<VectorAlongTriangulation<Element<NumberField>, Arb>, Element<NumberField>>;
+template std::ostream& detail::operator<<(std::ostream&, const VectorBase<VectorAlongTriangulation<Element<NumberField>, Arb>>&);
 }  // namespace flatsurf

@@ -46,7 +46,7 @@ def random_hexagon():
     RealNumber = exactreal.RealNumber
     Module = exactreal.NumberFieldModule
     M = Module(K, RealNumber.rational(1), RealNumber.random(), RealNumber.random())
-    R2 = flatsurf.Vector['exactreal::Element<exactreal::NumberFieldTraits>']
+    R2 = flatsurf.Vector['exactreal::Element<exactreal::NumberField>']
     # The side lengths are going to be 2, 2·μ, 2·ν where μ,ν are the random parameters of M.
     one = M.gen(0)
     μ = M.gen(1)

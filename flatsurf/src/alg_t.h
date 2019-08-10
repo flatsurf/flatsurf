@@ -22,7 +22,7 @@
 #define FLATSURF_ALG_T_H
 
 #include <exact-real/element.hpp>
-#include <exact-real/number_field_traits.hpp>
+#include <exact-real/number_field.hpp>
 #include <flatsurf/vector.hpp>
 #include <ostream>
 #include <vector>
@@ -88,8 +88,8 @@ class [[deprecated("Use flatsurf VectorExactReal instead.")]] alg_t {
   Point tocomplex() const;
   alg_t<T> conjugate() const;
 
-  exactreal::Element<exactreal::NumberFieldTraits> real() const;
-  exactreal::Element<exactreal::NumberFieldTraits> imag() const;
+  exactreal::Element<exactreal::NumberField> real() const;
+  exactreal::Element<exactreal::NumberField> imag() const;
 
   friend bool colinear<>(const alg_t<T>& u, const alg_t<T>& v);
   // p1 divided by p2. Only works if it algebraic.

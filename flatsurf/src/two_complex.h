@@ -46,7 +46,7 @@ class TwoComplex {
   TwoComplex();
   virtual ~TwoComplex();
 
-  explicit operator flatsurf::FlatTriangulation<exactreal::Element<exactreal::NumberFieldTraits>>() const;
+  explicit operator flatsurf::FlatTriangulation<exactreal::Element<exactreal::NumberField>>() const;
   explicit operator flatsurf::FlatTriangulationCombinatorial() const;
 
   size_t nedges();

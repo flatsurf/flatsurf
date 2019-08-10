@@ -46,7 +46,6 @@ using boost::numeric_cast;
 using boost::adaptors::transformed;
 using boost::math::binomial_coefficient;
 using exactreal::Element;
-using exactreal::NumberFieldTraits;
 using NTL::Mat;
 using NTL::Vec;
 using NTL::ZZ;
@@ -541,16 +540,16 @@ bool colinear(const alg_t<T> &p1, const alg_t<T> &p2) {
 }
 
 template <typename T>
-Element<NumberFieldTraits> alg_t<T>::real() const {
-  return Element<NumberFieldTraits>(
+Element<exactreal::NumberField> alg_t<T>::real() const {
+  return Element<exactreal::NumberField>(
       Params::module(), as_vector(coeffs | transformed([](const auto &coeff) {
                                     return coeff.real();
                                   })));
 }
 
 template <typename T>
-Element<NumberFieldTraits> alg_t<T>::imag() const {
-  return Element<NumberFieldTraits>(
+Element<exactreal::NumberField> alg_t<T>::imag() const {
+  return Element<exactreal::NumberField>(
       Params::module(), as_vector(coeffs | transformed([](const auto &coeff) {
                                     return coeff.imag();
                                   })));
@@ -770,7 +769,7 @@ template class alg_t<int64_t>;
 
 template poly<int64_t> cyclotomic_poly(int n);
 template NumberField<int64_t> *InitCyclotomic(int n);
-template alg_t<int64_t>::alg_t(const flatsurf::Vector<exactreal::Element<NumberFieldTraits>> &);
+template alg_t<int64_t>::alg_t(const flatsurf::Vector<exactreal::Element<exactreal::NumberField>> &);
 template alg_t<int64_t> operator+(alg_t<int64_t> p, const alg_t<int64_t> &q);
 template alg_t<int64_t> operator-(alg_t<int64_t> p, const alg_t<int64_t> &q);
 template alg_t<int64_t> operator*(const algebraic<int64_t> &p,

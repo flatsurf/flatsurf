@@ -22,7 +22,7 @@
 #define FLATSURF_PARAMS_H
 
 #include <exact-real/module.hpp>
-#include <exact-real/number_field_traits.hpp>
+#include <exact-real/number_field.hpp>
 #include <exact-real/real_number.hpp>
 #include <ostream>
 #include <vector>
@@ -30,7 +30,6 @@
 #include "./defs.h"
 
 using exactreal::Module;
-using exactreal::NumberFieldTraits;
 using exactreal::RealNumber;
 
 namespace polygon {
@@ -44,8 +43,8 @@ class Params {
   static size_t n_params;
   static std::vector<COORD> params;
 
-  static std::shared_ptr<const Module<NumberFieldTraits>> module();
-  static std::shared_ptr<RealNumber> exact(size_t i);
+  static std::shared_ptr<const Module<exactreal::NumberField>> module();
+  static std::shared_ptr<const RealNumber> exact(size_t i);
 };
 }  // namespace polygon
 

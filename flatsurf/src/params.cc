@@ -34,8 +34,8 @@ using std::shared_ptr;
 using std::vector;
 
 namespace {
-vector<shared_ptr<RealNumber>> reals;
-auto mod = Module<NumberFieldTraits>::make(
+vector<shared_ptr<const RealNumber>> reals;
+auto mod = Module<exactreal::NumberField>::make(
     std::vector<std::shared_ptr<const RealNumber>>{RealNumber::rational(1)},
     eantic::renf_class::make());
 }  // namespace
@@ -49,7 +49,7 @@ size_t Params::nbr_params() { return n_params; }
 void Params::AddParams(size_t n, COORD prms[]) {
   for (size_t i = 0; i < n; i++) {
     params.push_back(prms[i]);
-    reals.push_back(shared_ptr<RealNumber>(RealNumber::random(prms[i])));
+    reals.push_back(RealNumber::random(prms[i]));
   }
   n_params += n;
   vector<shared_ptr<const RealNumber>> basis;
@@ -57,7 +57,7 @@ void Params::AddParams(size_t n, COORD prms[]) {
   for (const auto &b : reals) {
     basis.push_back(b);
   }
-  mod = Module<NumberFieldTraits>::make(
+  mod = Module<exactreal::NumberField>::make(
       basis, static_cast<std::shared_ptr<const eantic::renf_class>>(*NumberField<bigrat>::F));
 }
 
@@ -69,9 +69,9 @@ void Params::print(ostream &out) {
   out << endl;
 }
 
-std::shared_ptr<const Module<NumberFieldTraits>> Params::module() {
+std::shared_ptr<const Module<exactreal::NumberField>> Params::module() {
   return mod;
 }
 
-shared_ptr<RealNumber> Params::exact(size_t i) { return reals.at(i); }
+shared_ptr<const RealNumber> Params::exact(size_t i) { return reals.at(i); }
 }  // namespace polygon

@@ -303,9 +303,9 @@ ostream& operator<<(ostream&, const IntervalExchangeTransformation<T>&) {
 // Instantiations of templates so implementations are generated for the linker
 #include <e-antic/renfxx.h>
 #include <exact-real/element.hpp>
-#include <exact-real/integer_ring_traits.hpp>
-#include <exact-real/number_field_traits.hpp>
-#include <exact-real/rational_field_traits.hpp>
+#include <exact-real/integer_ring.hpp>
+#include <exact-real/number_field.hpp>
+#include <exact-real/rational_field.hpp>
 
 using namespace flatsurf;
 
@@ -313,9 +313,9 @@ template class flatsurf::IntervalExchangeTransformation<long long>;
 template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<long long>&);
 template class flatsurf::IntervalExchangeTransformation<eantic::renf_elem_class>;
 template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<eantic::renf_elem_class>&);
-template class flatsurf::IntervalExchangeTransformation<exactreal::Element<exactreal::IntegerRingTraits>>;
-template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<exactreal::Element<exactreal::IntegerRingTraits>>&);
-template class flatsurf::IntervalExchangeTransformation<exactreal::Element<exactreal::RationalFieldTraits>>;
-template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<exactreal::Element<exactreal::RationalFieldTraits>>&);
-template class flatsurf::IntervalExchangeTransformation<exactreal::Element<exactreal::NumberFieldTraits>>;
-template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<exactreal::Element<exactreal::NumberFieldTraits>>&);
+template class flatsurf::IntervalExchangeTransformation<exactreal::Element<exactreal::IntegerRing>>;
+template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<exactreal::Element<exactreal::IntegerRing>>&);
+template class flatsurf::IntervalExchangeTransformation<exactreal::Element<exactreal::RationalField>>;
+template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<exactreal::Element<exactreal::RationalField>>&);
+template class flatsurf::IntervalExchangeTransformation<exactreal::Element<exactreal::NumberField>>;
+template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<exactreal::Element<exactreal::NumberField>>&);

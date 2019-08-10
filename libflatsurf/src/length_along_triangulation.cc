@@ -223,25 +223,25 @@ std::ostream& operator<<(std::ostream& os, const LengthAlongTriangulation<T>& se
 // Instantiations of templates so implementations are generated for the linker
 #include <e-antic/renfxx.h>
 #include <exact-real/element.hpp>
-#include <exact-real/integer_ring_traits.hpp>
-#include <exact-real/number_field_traits.hpp>
-#include <exact-real/rational_field_traits.hpp>
+#include <exact-real/integer_ring.hpp>
+#include <exact-real/number_field.hpp>
+#include <exact-real/rational_field.hpp>
 
 namespace flatsurf {
 using eantic::renf_elem_class;
 using exactreal::Element;
-using exactreal::IntegerRingTraits;
-using exactreal::NumberFieldTraits;
-using exactreal::RationalFieldTraits;
+using exactreal::IntegerRing;
+using exactreal::NumberField;
+using exactreal::RationalField;
 
 template class LengthAlongTriangulation<long long>;
 template std::ostream& operator<<(std::ostream&, const LengthAlongTriangulation<long long>&);
 template class LengthAlongTriangulation<renf_elem_class>;
 template std::ostream& operator<<(std::ostream&, const LengthAlongTriangulation<renf_elem_class>&);
-template class LengthAlongTriangulation<Element<IntegerRingTraits>>;
-template std::ostream& operator<<(std::ostream&, const LengthAlongTriangulation<Element<IntegerRingTraits>>&);
-template class LengthAlongTriangulation<Element<RationalFieldTraits>>;
-template std::ostream& operator<<(std::ostream&, const LengthAlongTriangulation<Element<RationalFieldTraits>>&);
-template class LengthAlongTriangulation<Element<NumberFieldTraits>>;
-template std::ostream& operator<<(std::ostream&, const LengthAlongTriangulation<Element<NumberFieldTraits>>&);
+template class LengthAlongTriangulation<Element<IntegerRing>>;
+template std::ostream& operator<<(std::ostream&, const LengthAlongTriangulation<Element<IntegerRing>>&);
+template class LengthAlongTriangulation<Element<RationalField>>;
+template std::ostream& operator<<(std::ostream&, const LengthAlongTriangulation<Element<RationalField>>&);
+template class LengthAlongTriangulation<Element<NumberField>>;
+template std::ostream& operator<<(std::ostream&, const LengthAlongTriangulation<Element<NumberField>>&);
 }  // namespace flatsurf

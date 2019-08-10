@@ -99,9 +99,9 @@ ostream &operator<<(ostream &os, const FlatTriangulation<T> &self) {
 
 // Instantiations of templates so implementations are generated for the linker
 #include <e-antic/renfxx_fwd.h>
-#include <exact-real/integer_ring_traits.hpp>
-#include <exact-real/number_field_traits.hpp>
-#include <exact-real/rational_field_traits.hpp>
+#include <exact-real/integer_ring.hpp>
+#include <exact-real/number_field.hpp>
+#include <exact-real/rational_field.hpp>
 
 using namespace flatsurf;
 
@@ -109,9 +109,9 @@ template class flatsurf::FlatTriangulation<long long>;
 template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<long long> &);
 template class flatsurf::FlatTriangulation<eantic::renf_elem_class>;
 template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<eantic::renf_elem_class> &);
-template class flatsurf::FlatTriangulation<exactreal::Element<exactreal::IntegerRingTraits>>;
-template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<exactreal::Element<exactreal::IntegerRingTraits>> &);
-template class flatsurf::FlatTriangulation<exactreal::Element<exactreal::RationalFieldTraits>>;
-template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<exactreal::Element<exactreal::RationalFieldTraits>> &);
-template class flatsurf::FlatTriangulation<exactreal::Element<exactreal::NumberFieldTraits>>;
-template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<exactreal::Element<exactreal::NumberFieldTraits>> &);
+template class flatsurf::FlatTriangulation<exactreal::Element<exactreal::IntegerRing>>;
+template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<exactreal::Element<exactreal::IntegerRing>> &);
+template class flatsurf::FlatTriangulation<exactreal::Element<exactreal::RationalField>>;
+template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<exactreal::Element<exactreal::RationalField>> &);
+template class flatsurf::FlatTriangulation<exactreal::Element<exactreal::NumberField>>;
+template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<exactreal::Element<exactreal::NumberField>> &);

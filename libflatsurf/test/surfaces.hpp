@@ -22,9 +22,9 @@
 
 #include <e-antic/renfxx.h>
 #include <exact-real/element.hpp>
-#include <exact-real/integer_ring_traits.hpp>
+#include <exact-real/integer_ring.hpp>
 #include <exact-real/module.hpp>
-#include <exact-real/number_field_traits.hpp>
+#include <exact-real/number_field.hpp>
 #include <exact-real/real_number.hpp>
 
 #include <flatsurf/flat_triangulation.hpp>
@@ -44,11 +44,11 @@ auto M = renf_class::make("x^3 - x^2 - 2*x +1", "x", "1.802 +/- 0.1");
 template <typename R2>
 auto makeSquare() {
   vector<R2> vectors;
-  if constexpr (std::is_same_v<R2, Vector<Element<IntegerRingTraits>>>) {
-    auto module = Module<IntegerRingTraits>::make({RealNumber::rational(1)});
+  if constexpr (std::is_same_v<R2, Vector<Element<IntegerRing>>>) {
+    auto module = Module<IntegerRing>::make({RealNumber::rational(1)});
     vectors = {R2(module->gen(0), Element(module)), R2(Element(module), module->gen(0)), R2(module->gen(0), module->gen(0))};
-  } else if constexpr (std::is_same_v<R2, Vector<Element<NumberFieldTraits>>>) {
-    auto module = Module<NumberFieldTraits>::make({RealNumber::rational(1)}, K);
+  } else if constexpr (std::is_same_v<R2, Vector<Element<NumberField>>>) {
+    auto module = Module<NumberField>::make({RealNumber::rational(1)}, K);
     vectors = {R2(module->gen(0), Element(module)), R2(Element(module), module->gen(0)), R2(module->gen(0), module->gen(0))};
   } else {
     vectors = vector{R2(1, 0), R2(0, 1), R2(1, 1)};
@@ -86,8 +86,8 @@ auto makeHexagon() {
   if constexpr (std::is_same_v<R2, Vector<eantic::renf_elem_class>>) {
     using R = eantic::renf_elem_class;
     vectors = vector{R2(R(K, 2), R(K, 0)), R2(R(K, 1), x), R2(R(K, 3), x), R2(R(K, 1), -x), R2(R(K, 4), R(K, 0)), R2(R(K, 3), x)};
-  } else if constexpr (std::is_same_v<R2, Vector<Element<NumberFieldTraits>>>) {
-    auto module = Module<NumberFieldTraits>::make({RealNumber::rational(1)}, K);
+  } else if constexpr (std::is_same_v<R2, Vector<Element<NumberField>>>) {
+    auto module = Module<NumberField>::make({RealNumber::rational(1)}, K);
     vectors = vector{R2(module->gen(0) * 2, Element(module)), R2(module->gen(0), module->gen(0) * x), R2(module->gen(0) * 3, module->gen(0) * x), R2(module->gen(0), -module->gen(0) * x), R2(module->gen(0) * 4, Element(module)), R2(module->gen(0) * 3, module->gen(0) * x)};
   } else {
     throw std::logic_error("not implemented: makeHexagon()");
@@ -134,8 +134,8 @@ auto make1221() {
   if constexpr (std::is_same_v<R2, Vector<eantic::renf_elem_class>>) {
     auto random = R(K, 200114) / 100000;
     vectors = vector{R2(1, 0), R2((R(K, 1) / 2) * 1, (R(K, 1) / 2 * x) * 1), R2((R(K, 1) / 2) * 1, (R(K, -1) / 2 * x) * 1), R2((R(K, 3) / 2) * random, (R(K, -1) / 2 * x) * random), R2((R(K, -3) / 2) * random, (R(K, -1) / 2 * x) * random), R2(0, (x)*random), R2(0, (x)*random), R2(1, (-x) * random), R2((R(K, -3) / 2) * random, (R(K, -1) / 2 * x) * random), R2((R(K, -1) / 2) * 1 + (R(K, 3) / 2) * random, (R(K, 1) / 2 * x) * 1 + (R(K, 1) / 2 * x) * random), R2((R(K, 3) / 2) * random, (R(K, -1) / 2 * x) * random), R2((R(K, -1) / 2) * 1 + (R(K, -3) / 2) * random, (R(K, -1) / 2 * x) * 1 + (R(K, 1) / 2 * x) * random)};
-  } else if constexpr (std::is_same_v<R2, Vector<Element<NumberFieldTraits>>>) {
-    auto module = Module<NumberFieldTraits>::make({RealNumber::rational(1), RealNumber::random(2.00114)}, K);
+  } else if constexpr (std::is_same_v<R2, Vector<Element<NumberField>>>) {
+    auto module = Module<NumberField>::make({RealNumber::rational(1), RealNumber::random(2.00114)}, K);
     auto g = module->gen(0);
     auto random = module->gen(1);
     vectors = vector{R2(g, 0 * g), R2((R(K, 1) / 2) * g, (R(K, 1) / 2 * x) * g), R2((R(K, 1) / 2) * g, (R(K, -1) / 2 * x) * g), R2((R(K, 3) / 2) * random, (R(K, -1) / 2 * x) * random), R2((R(K, -3) / 2) * random, (R(K, -1) / 2 * x) * random), R2(0 * g, (x)*random), R2(0 * g, (x)*random), R2(g, (-x) * random), R2((R(K, -3) / 2) * random, (R(K, -1) / 2 * x) * random), R2((R(K, -1) / 2) * g + (R(K, 3) / 2) * random, (R(K, 1) / 2 * x) * g + (R(K, 1) / 2 * x) * random), R2((R(K, 3) / 2) * random, (R(K, -1) / 2 * x) * random), R2((R(K, -1) / 2) * g + (R(K, -3) / 2) * random, (R(K, -1) / 2 * x) * g + (R(K, 1) / 2 * x) * random)};

@@ -101,9 +101,9 @@ const typename Surface::Vector &SaddleConnection<Surface>::vector() const { retu
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
-#include <exact-real/integer_ring_traits.hpp>
-#include <exact-real/number_field_traits.hpp>
-#include <exact-real/rational_field_traits.hpp>
+#include <exact-real/integer_ring.hpp>
+#include <exact-real/number_field.hpp>
+#include <exact-real/rational_field.hpp>
 #include "flatsurf/forward.hpp"
 using namespace flatsurf;
 
@@ -111,11 +111,11 @@ template class flatsurf::SaddleConnection<flatsurf::FlatTriangulation<long long>
 template ostream &flatsurf::operator<<(ostream &, const SaddleConnection<flatsurf::FlatTriangulation<long long>> &);
 template class flatsurf::SaddleConnection<flatsurf::FlatTriangulation<eantic::renf_elem_class>>;
 template ostream &flatsurf::operator<<(ostream &, const SaddleConnection<flatsurf::FlatTriangulation<eantic::renf_elem_class>> &);
-template class flatsurf::SaddleConnection<flatsurf::FlatTriangulation<exactreal::Element<exactreal::IntegerRingTraits>>>;
-template ostream &flatsurf::operator<<(ostream &, const SaddleConnection<flatsurf::FlatTriangulation<exactreal::Element<exactreal::IntegerRingTraits>>> &);
-template class flatsurf::SaddleConnection<flatsurf::FlatTriangulation<exactreal::Element<exactreal::RationalFieldTraits>>>;
-template ostream &flatsurf::operator<<(ostream &, const SaddleConnection<flatsurf::FlatTriangulation<exactreal::Element<exactreal::RationalFieldTraits>>> &);
-template class flatsurf::SaddleConnection<flatsurf::FlatTriangulation<exactreal::Element<exactreal::NumberFieldTraits>>>;
-template ostream &flatsurf::operator<<(ostream &, const SaddleConnection<flatsurf::FlatTriangulation<exactreal::Element<exactreal::NumberFieldTraits>>> &);
+template class flatsurf::SaddleConnection<flatsurf::FlatTriangulation<exactreal::Element<exactreal::IntegerRing>>>;
+template ostream &flatsurf::operator<<(ostream &, const SaddleConnection<flatsurf::FlatTriangulation<exactreal::Element<exactreal::IntegerRing>>> &);
+template class flatsurf::SaddleConnection<flatsurf::FlatTriangulation<exactreal::Element<exactreal::RationalField>>>;
+template ostream &flatsurf::operator<<(ostream &, const SaddleConnection<flatsurf::FlatTriangulation<exactreal::Element<exactreal::RationalField>>> &);
+template class flatsurf::SaddleConnection<flatsurf::FlatTriangulation<exactreal::Element<exactreal::NumberField>>>;
+template ostream &flatsurf::operator<<(ostream &, const SaddleConnection<flatsurf::FlatTriangulation<exactreal::Element<exactreal::NumberField>>> &);
 
 #endif

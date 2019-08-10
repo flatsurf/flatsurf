@@ -19,9 +19,9 @@
 
 #include <boost/lexical_cast.hpp>
 #include <exact-real/element.hpp>
-#include <exact-real/integer_ring_traits.hpp>
-#include <exact-real/number_field_traits.hpp>
-#include <exact-real/rational_field_traits.hpp>
+#include <exact-real/integer_ring.hpp>
+#include <exact-real/number_field.hpp>
+#include <exact-real/rational_field.hpp>
 #include <exact-real/yap/arb.hpp>
 
 #include "flatsurf/vector.hpp"
@@ -53,7 +53,7 @@ template <typename T>
 inline constexpr bool IsArb = Similar<T, Arb>;
 
 template <typename T>
-inline constexpr bool IsExactReal = Similar<T, exactreal::Element<exactreal::IntegerRingTraits>> || Similar<T, exactreal::Element<exactreal::RationalFieldTraits>> || Similar<T, exactreal::Element<exactreal::NumberFieldTraits>>;
+inline constexpr bool IsExactReal = Similar<T, exactreal::Element<exactreal::IntegerRing>> || Similar<T, exactreal::Element<exactreal::RationalField>> || Similar<T, exactreal::Element<exactreal::NumberField>>;
 
 template <typename T>
 inline constexpr bool IsEAntic = Similar<T, eantic::renf_elem_class>;
@@ -221,18 +221,18 @@ namespace flatsurf {
 using eantic::renf_elem_class;
 using exactreal::Arb;
 using exactreal::Element;
-using exactreal::IntegerRingTraits;
-using exactreal::NumberFieldTraits;
-using exactreal::RationalFieldTraits;
+using exactreal::IntegerRing;
+using exactreal::NumberField;
+using exactreal::RationalField;
 
 template class Vector<Arb>;
 template class Vector<long long>;
 template class Vector<mpz_class>;
 template class Vector<mpq_class>;
 template class Vector<renf_elem_class>;
-template class Vector<Element<IntegerRingTraits>>;
-template class Vector<Element<RationalFieldTraits>>;
-template class Vector<Element<NumberFieldTraits>>;
+template class Vector<Element<IntegerRing>>;
+template class Vector<Element<RationalField>>;
+template class Vector<Element<NumberField>>;
 
 namespace detail {
 template class VectorWithError<Vector<Arb>>;
@@ -255,16 +255,16 @@ template class VectorExact<Vector<renf_elem_class>, renf_elem_class>;
 template class VectorBase<Vector<renf_elem_class>>;
 template std::ostream& operator<<(std::ostream&, const VectorBase<Vector<renf_elem_class>>&);
 
-template class VectorExact<Vector<Element<IntegerRingTraits>>, Element<IntegerRingTraits>>;
-template class VectorBase<Vector<Element<IntegerRingTraits>>>;
-template std::ostream& operator<<(std::ostream&, const VectorBase<Vector<Element<IntegerRingTraits>>>&);
+template class VectorExact<Vector<Element<IntegerRing>>, Element<IntegerRing>>;
+template class VectorBase<Vector<Element<IntegerRing>>>;
+template std::ostream& operator<<(std::ostream&, const VectorBase<Vector<Element<IntegerRing>>>&);
 
-template class VectorExact<Vector<Element<RationalFieldTraits>>, Element<RationalFieldTraits>>;
-template class VectorBase<Vector<Element<RationalFieldTraits>>>;
-template std::ostream& operator<<(std::ostream&, const VectorBase<Vector<Element<RationalFieldTraits>>>&);
+template class VectorExact<Vector<Element<RationalField>>, Element<RationalField>>;
+template class VectorBase<Vector<Element<RationalField>>>;
+template std::ostream& operator<<(std::ostream&, const VectorBase<Vector<Element<RationalField>>>&);
 
-template class VectorExact<Vector<Element<NumberFieldTraits>>, Element<NumberFieldTraits>>;
-template class VectorBase<Vector<Element<NumberFieldTraits>>>;
-template std::ostream& operator<<(std::ostream&, const VectorBase<Vector<Element<NumberFieldTraits>>>&);
+template class VectorExact<Vector<Element<NumberField>>, Element<NumberField>>;
+template class VectorBase<Vector<Element<NumberField>>>;
+template std::ostream& operator<<(std::ostream&, const VectorBase<Vector<Element<NumberField>>>&);
 }  // namespace detail
 }  // namespace flatsurf

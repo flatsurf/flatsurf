@@ -35,7 +35,7 @@ using testing::Types;
 
 namespace {
 TEST(DelaunayTest, Square) {
-  using T = Element<exactreal::IntegerRingTraits>;
+  using T = Element<exactreal::IntegerRing>;
   using Vector = Vector<T>;
   auto square = makeSquare<Vector>();
 

@@ -72,14 +72,14 @@ bool DelaunayTriangulation<T>::test(const FlatTriangulation<T>& triangulation, c
 // Instantiations of templates so implementations are generated for the linker
 #include <e-antic/renfxx.h>
 #include <exact-real/element.hpp>
-#include <exact-real/integer_ring_traits.hpp>
-#include <exact-real/number_field_traits.hpp>
-#include <exact-real/rational_field_traits.hpp>
+#include <exact-real/integer_ring.hpp>
+#include <exact-real/number_field.hpp>
+#include <exact-real/rational_field.hpp>
 
 using namespace flatsurf;
 
 template class flatsurf::DelaunayTriangulation<long long>;
 template class flatsurf::DelaunayTriangulation<eantic::renf_elem_class>;
-template class flatsurf::DelaunayTriangulation<exactreal::Element<exactreal::IntegerRingTraits>>;
-template class flatsurf::DelaunayTriangulation<exactreal::Element<exactreal::RationalFieldTraits>>;
-template class flatsurf::DelaunayTriangulation<exactreal::Element<exactreal::NumberFieldTraits>>;
+template class flatsurf::DelaunayTriangulation<exactreal::Element<exactreal::IntegerRing>>;
+template class flatsurf::DelaunayTriangulation<exactreal::Element<exactreal::RationalField>>;
+template class flatsurf::DelaunayTriangulation<exactreal::Element<exactreal::NumberField>>;

@@ -139,9 +139,9 @@ ostream &operator<<(ostream &os, const flatsurf::HalfEdgeMap<T> &self) {
 
 // Instantiations of templates so implementations are generated for the linker
 #include <exact-real/element.hpp>
-#include <exact-real/integer_ring_traits.hpp>
-#include <exact-real/number_field_traits.hpp>
-#include <exact-real/rational_field_traits.hpp>
+#include <exact-real/integer_ring.hpp>
+#include <exact-real/number_field.hpp>
+#include <exact-real/rational_field.hpp>
 #include "flatsurf/vector.hpp"
 
 using namespace flatsurf;
@@ -156,9 +156,9 @@ template class flatsurf::HalfEdgeMap<int>;
 template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<int> &);
 template class flatsurf::HalfEdgeMap<mpz_class>;
 template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<mpz_class> &);
-template class flatsurf::HalfEdgeMap<Vector<exactreal::Element<exactreal::IntegerRingTraits>>>;
-template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<Vector<exactreal::Element<exactreal::IntegerRingTraits>>> &);
-template class flatsurf::HalfEdgeMap<Vector<exactreal::Element<exactreal::RationalFieldTraits>>>;
-template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<Vector<exactreal::Element<exactreal::RationalFieldTraits>>> &);
-template class flatsurf::HalfEdgeMap<Vector<exactreal::Element<exactreal::NumberFieldTraits>>>;
-template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<Vector<exactreal::Element<exactreal::NumberFieldTraits>>> &);
+template class flatsurf::HalfEdgeMap<Vector<exactreal::Element<exactreal::IntegerRing>>>;
+template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<Vector<exactreal::Element<exactreal::IntegerRing>>> &);
+template class flatsurf::HalfEdgeMap<Vector<exactreal::Element<exactreal::RationalField>>>;
+template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<Vector<exactreal::Element<exactreal::RationalField>>> &);
+template class flatsurf::HalfEdgeMap<Vector<exactreal::Element<exactreal::NumberField>>>;
+template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<Vector<exactreal::Element<exactreal::NumberField>>> &);

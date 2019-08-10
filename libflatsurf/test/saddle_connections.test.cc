@@ -22,7 +22,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include <exact-real/element.hpp>
-#include <exact-real/number_field_traits.hpp>
+#include <exact-real/number_field.hpp>
 #include <intervalxt/length.hpp>
 
 #include <flatsurf/flat_triangulation.hpp>
@@ -45,7 +45,7 @@ namespace {
 template <class R2>
 class SaddleConnectionsTest : public Test {};
 
-using ExactVectors = Types<Vector<long long>, Vector<renf_elem_class>, Vector<exactreal::Element<exactreal::NumberFieldTraits>>>;
+using ExactVectors = Types<Vector<long long>, Vector<renf_elem_class>, Vector<exactreal::Element<exactreal::NumberField>>>;
 TYPED_TEST_CASE(SaddleConnectionsTest, ExactVectors);
 
 TYPED_TEST(SaddleConnectionsTest, Trivial) {

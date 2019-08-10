@@ -22,7 +22,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include <exact-real/element.hpp>
-#include <exact-real/number_field_traits.hpp>
+#include <exact-real/number_field.hpp>
 #include <intervalxt/length.hpp>
 
 #include <flatsurf/interval_exchange_transformation.hpp>
@@ -43,7 +43,7 @@ namespace {
 template <class R2>
 class IntervalExchangeTransformationTest : public Test {};
 
-using ExactVectors = Types<Vector<long long>, Vector<renf_elem_class>, Vector<exactreal::Element<exactreal::NumberFieldTraits>>>;
+using ExactVectors = Types<Vector<long long>, Vector<renf_elem_class>, Vector<exactreal::Element<exactreal::NumberField>>>;
 TYPED_TEST_CASE(IntervalExchangeTransformationTest, ExactVectors);
 
 TYPED_TEST(IntervalExchangeTransformationTest, Square) {
@@ -69,7 +69,7 @@ TYPED_TEST(IntervalExchangeTransformationTest, Hexagon) {
 TYPED_TEST(IntervalExchangeTransformationTest, HeptagonL) {
   if constexpr (std::is_same_v<TypeParam, Vector<long long>>) {
     ;
-  } else if constexpr (std::is_same_v<TypeParam, Vector<Element<NumberFieldTraits>>>) {
+  } else if constexpr (std::is_same_v<TypeParam, Vector<Element<NumberField>>>) {
     ;
   } else {
     auto heptagonL = makeHeptagonL<TypeParam>();
@@ -83,7 +83,7 @@ TYPED_TEST(IntervalExchangeTransformationTest, HeptagonL) {
 TYPED_TEST(IntervalExchangeTransformationTest, GoldenL) {
   if constexpr (std::is_same_v<TypeParam, Vector<long long>>) {
     ;
-  } else if constexpr (std::is_same_v<TypeParam, Vector<Element<NumberFieldTraits>>>) {
+  } else if constexpr (std::is_same_v<TypeParam, Vector<Element<NumberField>>>) {
     ;
   } else {
     auto goldenL = makeGoldenL<TypeParam>();
