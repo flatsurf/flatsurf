@@ -23,6 +23,7 @@ build:
 requirements:
   build:
     - libtool
+    - autoconf
     - automake
     - {{ compiler('cxx') }}
     # requirements for ASV benchmarks
