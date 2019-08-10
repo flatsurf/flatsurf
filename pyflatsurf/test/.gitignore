@@ -2,3 +2,5 @@ test-env.sh
 
 # test run artifacts
 *.trs
+*.log
+__pycache__
