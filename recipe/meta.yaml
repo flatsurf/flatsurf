@@ -37,6 +37,7 @@ requirements:
     - pyexactreal
     - e-antic 1.*
     - gmp
+    - eigen
     # We pin to an explicit version of Python here; since the Python part is
     # noarch:python, the version does not matter. However, we need the same
     # version when doing "make install" so that files go into the site-packages
