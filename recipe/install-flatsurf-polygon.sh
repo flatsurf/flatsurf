@@ -1,5 +1,5 @@
 #!/bin/bash
-cd flatsurf
+cd flatsurf-polygon
 
 make install
 

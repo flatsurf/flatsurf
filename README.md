@@ -14,7 +14,7 @@ This repository contains three related projects:
 
 * **libflatsurf** a C++ library
 * **pyflatsurf** a Python wrapper for **libflatsurf**
-* **flatsurf** a binary that builds upon **libflatsurf**
+* **flatsurf-polygonn** a legacy binary that builds upon **libflatsurf**
 
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
@@ -28,7 +28,7 @@ You can install these packages with conda. Download and install [Miniconda](http
 
 ```
 conda config --add channels conda-forge
-conda create -n flatsurf -c flatsurf flatsurf pyflatsurf
+conda create -n flatsurf -c flatsurf flatsurf-polygon pyflatsurf
 conda activate flatsurf
 ```
 
@@ -45,13 +45,13 @@ You can try out the projects in this repository in a very limited environment on
 
 * **libflatsurf** [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/flatsurf/master?filepath=binder%2FSample.libflatsurf.ipynb)
 * **pyflatsurf** [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/flatsurf/master?filepath=binder%2FSample.pyflatsurf.ipynb)
-* **flatsurf** [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/flatsurf/master?filepath=binder%2FSample.flatsurf.ipynb)
+* **flatsurf-polygon** [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/flatsurf/master?filepath=binder%2FSample.flatsurf-polygon.ipynb)
 
 ## Build from the Source Code Repository
 
 We are following a standard autoconf setup, i.e., you can create the library
 `src/libflatsurf`, the Python wrapper `src/pyflatsurf`, and the binary
-`src/flatsurf/flatsurf` with the following:
+`src/flatsurf-polygon/flatsurf-polygon` with the following:
 
 ```
 git clone --recurse-submodules https://github.com/flatsurf/flatsurf.git
@@ -132,7 +132,7 @@ conda build "${RECIPE_ROOT}" -m "${CI_SUPPORT}/${CONFIG}.yaml" --clobber-file "$
 
 You can then try out the package that you just built with:
 ```
-conda create -n flatsurf-test --use-local libflatsurf pyflatsurf flatsurf
+conda create -n flatsurf-test --use-local libflatsurf pyflatsurf flatsurf-polygon
 conda activate flatsurf-test
 ```
 

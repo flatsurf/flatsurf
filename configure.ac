@@ -9,6 +9,6 @@ AM_INIT_AUTOMAKE([1.14.1 tar-pax])
 
 AC_CONFIG_FILES([Makefile])
 
-AC_CONFIG_SUBDIRS([libflatsurf pyflatsurf flatsurf])
+AC_CONFIG_SUBDIRS([libflatsurf pyflatsurf flatsurf-polygon])
 
 AC_OUTPUT

@@ -1,6 +1,6 @@
-bin_PROGRAMS = flatsurf
+bin_PROGRAMS = flatsurf-polygon
 
-flatsurf_SOURCES =        \
+flatsurf_polygon_SOURCES =\
     main.cc               \
     algebraic.cc          \
     alg_misc.cc           \

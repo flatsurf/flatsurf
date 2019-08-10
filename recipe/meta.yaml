@@ -78,8 +78,8 @@ outputs:
       # We pin the version of libflatsurf exactly since we do not want to
       # bother with incompatibilities in our nightly builds.
       - libflatsurf {{ version }}
-  - name: flatsurf
-    script: install-flatsurf.sh
+  - name: flatsurf-polygon
+    script: install-flatsurf-polygon.sh
     build:
       number: {{ build_number }}
       string: {{ build_string }}
@@ -96,10 +96,9 @@ outputs:
         - libexactreal
         - e-antic 1.*
         - gmp
-    run_exports:
-      # We pin the version of libflatsurf exactly since we do not want to
-      # bother with incompatibilities in our nightly builds.
-      - libflatsurf {{ version }}
+    test:
+      commands:
+        - flatsurf-polygon 1 2 2 1
   - name: pyflatsurf
     build:
       number: {{ build_number }}

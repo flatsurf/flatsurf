@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 dnl We need at least autoconf 2.69 for this configure.ac to work.
 AC_PREREQ([2.69])
-AC_INIT([flatsurf], [0.0.1], [julian.rueth@fsfe.org])
+AC_INIT([flatsurf-polygon], [0.0.1], [julian.rueth@fsfe.org])
 
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([1.14.1])
@@ -29,18 +29,18 @@ AX_CXX_COMPILE_STDCXX_17()
 
 AC_CHECK_HEADERS([boost/type_traits.hpp], , AC_MSG_ERROR([boost headers not found]))
 
-dnl flatsurf (but not libflatsurf) uses GMP directly in a few places (without gmpxx)
+dnl flatsurf-polygon (but not libflatsurf) uses GMP directly in a few places (without gmpxx)
 dnl 
 AC_CHECK_LIB([gmp], [__gmpq_init], [have_gmp=yes], AC_MSG_ERROR([GMP library not found]))
 
-dnl flatsurf (but not libflatsurf) uses FLINT directly in a few places through e-antic's is_fmpq()
+dnl flatsurf-polygon (but not libflatsurf) uses FLINT directly in a few places through e-antic's is_fmpq()
 AC_CHECK_LIB([flint], [_fmpz_promote], [have_flint=yes], AC_MSG_ERROR([FLINT library not found]))
 
-dnl flatsurf (but not libflatsurf) uses NTL
+dnl flatsurf-polygon (but not libflatsurf) uses NTL
 AX_CXX_CHECK_LIB([ntl], [NTL::ZZ::zero()], [have_ntl=yes], AC_MSG_ERROR([NTL library not found]), [-lgmp -lmpfr -lflint])
 AC_CHECK_HEADERS([NTL/LLL.h NTL/mat_ZZ.h], , AC_MSG_ERROR([NTL headers not found]))
 
-dnl flatsurf (but not libflatsurf yet) use Eigen for some Linear Algebra
+dnl flatsurf-polygon (but not libflatsurf yet) use Eigen for some Linear Algebra
 AC_CHECK_HEADERS([eigen3/Eigen/Dense eigen/Eigen/Dense], [have_eigen=yes; break;])
 
 AS_IF([test "x$have_eigen" != "xyes"], [AC_MSG_ERROR([Eigen headers not found])])
