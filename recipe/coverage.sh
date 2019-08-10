@@ -2,7 +2,7 @@
 set -exo pipefail
 
 # Create coverage statistics
-make CXXFLAGS="$CXXFLAGS $EXTRA_CXXFLAGS"
+make check CXXFLAGS="$CXXFLAGS $EXTRA_CXXFLAGS"
 
 # Install gcov
 conda install -y --quiet gcc_linux-64
