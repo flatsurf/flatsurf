@@ -29,4 +29,8 @@ case `uname` in
         ;;
 esac
 
+if [[ "$build_flavour" == "coverage" ]]; then
+    export EXTRA_CXXFLAGS="$EXTRA_CXXFLAGS --coverage -O0"
+fi
+
 export MAKEFLAGS="-j$CPU_COUNT"

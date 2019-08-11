@@ -5,11 +5,6 @@ set -ex
 source $RECIPE_DIR/cflags.sh
 $RECIPE_DIR/configure.sh
 
-# Build libflatsurf
-if [[ "$build_flavour" == "coverage" ]]; then
-    export EXTRA_CXXFLAGS="$EXTRA_CXXFLAGS --coverage -O0"
-fi
-
 make CXXFLAGS="$CXXFLAGS $EXTRA_CXXFLAGS"
 
 # Run all our test suites
