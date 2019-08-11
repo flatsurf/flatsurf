@@ -24,7 +24,7 @@ if [[ "$build_flavour" == "release" ]]; then
     # Check would fail since libflatsurf is not installed
     # make distcheck
     popd
-    pushd flatsurf
+    pushd flatsurf-polygon
     make check-valgrind
     # Check would fail since libflatsurf is not installed
     # make distcheck
