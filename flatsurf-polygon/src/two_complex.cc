@@ -77,7 +77,7 @@ TwoComplex::~TwoComplex() {
 
 TwoComplex::operator FlatTriangulation<exactreal::Element<exactreal::NumberField>>() const {
   Vector<exactreal::Element<exactreal::NumberField>> zero{alg_t<bigrat>().real(),
-                                                     alg_t<bigrat>().imag()};
+                                                          alg_t<bigrat>().imag()};
 
   auto combinatorial = static_cast<FlatTriangulationCombinatorial>(*this);
   auto vectors = HalfEdgeMap<Vector<exactreal::Element<exactreal::NumberField>>>(
