@@ -60,7 +60,12 @@ Current build status
       <img src="https://img.shields.io/badge/Windows-disabled-lightgrey.svg" alt="Windows disabled">
     </td>
   </tr>
-![ppc64le disabled](https://img.shields.io/badge/ppc64le-disabled-lightgrey.svg)
+  <tr>
+    <td>Linux_ppc64le</td>
+    <td>
+      <img src="https://img.shields.io/badge/ppc64le-disabled-lightgrey.svg" alt="ppc64le disabled">
+    </td>
+  </tr>
 </table>
 
 Current release info
@@ -68,6 +73,7 @@ Current release info
 
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-flatsurf--polygon-green.svg)](https://anaconda.org/flatsurf/flatsurf-polygon) | [![Conda Downloads](https://img.shields.io/conda/dn/flatsurf/flatsurf-polygon.svg)](https://anaconda.org/flatsurf/flatsurf-polygon) | [![Conda Version](https://img.shields.io/conda/vn/flatsurf/flatsurf-polygon.svg)](https://anaconda.org/flatsurf/flatsurf-polygon) | [![Conda Platforms](https://img.shields.io/conda/pn/flatsurf/flatsurf-polygon.svg)](https://anaconda.org/flatsurf/flatsurf-polygon) |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-libflatsurf-green.svg)](https://anaconda.org/flatsurf/libflatsurf) | [![Conda Downloads](https://img.shields.io/conda/dn/flatsurf/libflatsurf.svg)](https://anaconda.org/flatsurf/libflatsurf) | [![Conda Version](https://img.shields.io/conda/vn/flatsurf/libflatsurf.svg)](https://anaconda.org/flatsurf/libflatsurf) | [![Conda Platforms](https://img.shields.io/conda/pn/flatsurf/libflatsurf.svg)](https://anaconda.org/flatsurf/libflatsurf) |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-pyflatsurf-green.svg)](https://anaconda.org/flatsurf/pyflatsurf) | [![Conda Downloads](https://img.shields.io/conda/dn/flatsurf/pyflatsurf.svg)](https://anaconda.org/flatsurf/pyflatsurf) | [![Conda Version](https://img.shields.io/conda/vn/flatsurf/pyflatsurf.svg)](https://anaconda.org/flatsurf/pyflatsurf) | [![Conda Platforms](https://img.shields.io/conda/pn/flatsurf/pyflatsurf.svg)](https://anaconda.org/flatsurf/pyflatsurf) |
 
@@ -80,16 +86,16 @@ Installing `flatsurf` from the `flatsurf` channel can be achieved by adding `fla
 conda config --add channels flatsurf
 ```
 
-Once the `flatsurf` channel has been enabled, `libflatsurf, pyflatsurf` can be installed with:
+Once the `flatsurf` channel has been enabled, `flatsurf-polygon, libflatsurf, pyflatsurf` can be installed with:
 
 ```
-conda install libflatsurf pyflatsurf
+conda install flatsurf-polygon libflatsurf pyflatsurf
 ```
 
-It is possible to list all of the versions of `libflatsurf` available on your platform with:
+It is possible to list all of the versions of `flatsurf-polygon` available on your platform with:
 
 ```
-conda search libflatsurf --channel flatsurf
+conda search flatsurf-polygon --channel flatsurf
 ```
 
 
