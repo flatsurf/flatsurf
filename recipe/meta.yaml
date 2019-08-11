@@ -39,6 +39,8 @@ requirements:
     - e-antic 1.*
     - gmp
     - eigen
+    # compile time dependencies of flatsurf-polygon
+    - ntl
     # We pin to an explicit version of Python here; since the Python part is
     # noarch:python, the version does not matter. However, we need the same
     # version when doing "make install" so that files go into the site-packages
@@ -96,6 +98,7 @@ outputs:
         - libexactreal
         - e-antic 1.*
         - gmp
+        - ntl
     test:
       commands:
         - flatsurf-polygon 1 2 2 1
