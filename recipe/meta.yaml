@@ -49,6 +49,8 @@ requirements:
     # enable test/pyflatsurf tests in ./configure
     - pytest
     - cppyy
+    # make sage-flatsurf integration doctests pass
+    - sage-flatsurf
     # enable test/libflatsurf tests in ./configure
     - gtest
     - benchmark
