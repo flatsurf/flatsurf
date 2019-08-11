@@ -38,9 +38,9 @@ requirements:
     - pyexactreal
     - e-antic 1.*
     - gmp
-    - eigen
     # compile time dependencies of flatsurf-polygon
     - ntl
+    - eigen
     # We pin to an explicit version of Python here; since the Python part is
     # noarch:python, the version does not matter. However, we need the same
     # version when doing "make install" so that files go into the site-packages
@@ -100,10 +100,17 @@ outputs:
         - libexactreal
         - e-antic 1.*
         - gmp
+        - eigen
         - ntl
+      run:
+        # We pin the version of libflatsurf exactly since we do not want to
+        # bother with incompatibilities in our nightly builds.
+        - {{ pin_subpackage('libflatsurf', exact=True) }}
+{%- if build_flavour == 'release' %}
     test:
       commands:
         - flatsurf-polygon 1 2 2 1
+{% endif %}
   - name: pyflatsurf
     build:
       number: {{ build_number }}
