@@ -1,4 +1,4 @@
 #!/bin/bash
-cd src/pyflatsurf
+cd pyflatsurf
 
 make install

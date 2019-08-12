@@ -18,16 +18,16 @@
     "gmp": [],
     "ntl": [],
     "gtest": [],
-    "benchmark==1.4.1": []
+    "benchmark==1.5.0": []
   },
   "conda_channels": ["flatsurf", "conda-forge", "default"],
   "build_command": [
     "./recipe/configure.sh",
-    "./recipe/build_.sh"
+    "make"
   ],
   "install_command": [],
   "uninstall_command": [],
-  "benchmark_dir": "test/asv",
+  "benchmark_dir": "asv",
   "env_dir": ".asv/env",
   "results_dir": ".asv/results",
   "html_dir": ".asv/html"
