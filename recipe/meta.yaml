@@ -113,6 +113,7 @@ outputs:
         # https://github.com/flatsurf/intervalxt/issues/43
         - libexactreal
         - libintervalxt
+        - e-antic 1.*
 {%- if build_flavour == 'release' %}
     test:
       commands:
