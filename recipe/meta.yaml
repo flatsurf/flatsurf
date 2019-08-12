@@ -71,6 +71,7 @@ outputs:
 {% endif %}
     requirements:
       build:
+        - libtool
         - {{ compiler('cxx') }}
       host:
         - boost-cpp
@@ -93,6 +94,7 @@ outputs:
 {% endif %}
     requirements:
       build:
+        - libtool
         - {{ compiler('cxx') }}
       host:
         - boost-cpp
