@@ -32,6 +32,7 @@ requirements:
     - clangdev ==8.0.0
   host:
     # compile time dependencies of libflatsurf
+    - arb
     - boost-cpp
     - libintervalxt
     - libexactreal
@@ -97,8 +98,8 @@ outputs:
         - libtool
         - {{ compiler('cxx') }}
       host:
+        - arb
         - boost-cpp
-        - libintervalxt
         - libexactreal
         - e-antic 1.*
         - gmp
