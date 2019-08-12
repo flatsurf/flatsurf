@@ -110,6 +110,9 @@ outputs:
         # We pin the version of libflatsurf exactly since we do not want to
         # bother with incompatibilities in our nightly builds.
         - {{ pin_subpackage('libflatsurf', exact=True) }}
+        # https://github.com/flatsurf/intervalxt/issues/43
+        - libexactreal
+        - libintervalxt
 {%- if build_flavour == 'release' %}
     test:
       commands:
