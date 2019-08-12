@@ -11,16 +11,16 @@ make CXXFLAGS="$CXXFLAGS $EXTRA_CXXFLAGS"
 make check CXXFLAGS="$CXXFLAGS $EXTRA_CXXFLAGS"
 if [[ "$build_flavour" == "release" ]]; then
     pushd libflatsurf
-    make check-valgrind
+    make check-valgrind CXXFLAGS="$CXXFLAGS $EXTRA_CXXFLAGS"
     make distcheck
     popd
     pushd pyflatsurf
-    make check-valgrind
+    make check-valgrind CXXFLAGS="$CXXFLAGS $EXTRA_CXXFLAGS"
     # Check would fail since libflatsurf is not installed
     # make distcheck
     popd
     pushd flatsurf-polygon
-    make check-valgrind
+    make check-valgrind CXXFLAGS="$CXXFLAGS $EXTRA_CXXFLAGS"
     # Check would fail since libflatsurf is not installed
     # make distcheck
     popd
