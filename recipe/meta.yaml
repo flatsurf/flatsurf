@@ -101,6 +101,7 @@ outputs:
         - arb
         - boost-cpp
         - libexactreal
+        - libintervalxt
         - e-antic 1.*
         - gmp
         - eigen
