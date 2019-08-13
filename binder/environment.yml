@@ -6,7 +6,8 @@ channels:
 dependencies:
   - libflatsurf
   - pyflatsurf
-  - flatsurf
+  - flatsurf-polygon
+  - sage-flatsurf
   - boost-cpp
   - notebook
   # https://github.com/QuantStack/xeus-cling/issues/194#issuecomment-456547091
