@@ -25,7 +25,7 @@ dnl Check for required libraries
 AC_LANG([C++])
 
 dnl We use some C++17 features such as if constexpr
-AX_CXX_COMPILE_STDCXX_17()
+AX_CXX_COMPILE_STDCXX(17)
 
 AC_CHECK_HEADERS([boost/type_traits.hpp], , AC_MSG_ERROR([boost headers not found]))
 
