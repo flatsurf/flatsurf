@@ -57,7 +57,11 @@ class FlatTriangulationCombinatorial::Implementation {
         faces(as_vector(vertices.domain() | transformed([&](const HalfEdge& e) {
                           return pair<HalfEdge, HalfEdge>(-vertices(e), e);
                         }))),
-        halfEdgeMaps() {}
+        halfEdgeMaps() {
+    for (auto& c : vertices.cycles()) {
+      vertexes.push_back(Vertex(c[0]));
+    }
+  }
 
   ~Implementation() {
     for (const auto& map : halfEdgeMaps) map.second.relink(nullptr);
@@ -65,6 +69,7 @@ class FlatTriangulationCombinatorial::Implementation {
 
   Permutation<HalfEdge> vertices;
   Permutation<HalfEdge> faces;
+  vector<Vertex> vertexes;
   mutable unordered_map<uintptr_t, HalfEdgeMapProxy> halfEdgeMaps;
 };
 
@@ -78,6 +83,10 @@ HalfEdge FlatTriangulationCombinatorial::nextAtVertex(const HalfEdge e) const {
 
 const vector<HalfEdge>& FlatTriangulationCombinatorial::halfEdges() const {
   return impl->vertices.domain();
+}
+
+const vector<Vertex>& FlatTriangulationCombinatorial::vertices() const  {
+  return impl->vertexes;
 }
 
 FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(

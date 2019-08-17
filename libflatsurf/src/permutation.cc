@@ -43,6 +43,7 @@ Permutation<T>::Permutation(const vector<vector<T>> &cycles)
       })) {
   for (const auto cycle : cycles) {
     for (auto i = 0u; i < cycle.size(); i++) {
+      assert(index(cycle[i]) < data.size());
       data[index(cycle[i])] = cycle[(i + 1) % cycle.size()];
     }
   }
@@ -52,8 +53,21 @@ template <typename T>
 Permutation<T>::Permutation(const vector<pair<T, T>> &permutation)
     : data(permutation.size()) {
   for (auto ab : permutation) {
+    assert(index(ab.first) < data.size());
     data[index(ab.first)] = ab.second;
   }
+}
+
+template <typename T>
+Permutation<T> Permutation<T>::random(const vector<T>& domain) {
+  assert(std::set<T>(domain.begin(), domain.end()).size() == domain.size());
+  vector<T> image = domain;
+  std::random_shuffle(image.begin(), image.end());
+  vector<pair<T, T>> permutation;
+  for (int i = 0; i<domain.size(); i++){
+    permutation.push_back(pair(domain[i], image[i]));
+  }
+  return Permutation<T>(permutation);
 }
 
 template <typename T>
@@ -62,13 +76,35 @@ const T &Permutation<T>::operator()(const T &t) const {
 }
 
 template <typename T>
-size_t Permutation<T>::size() const {
+size_t Permutation<T>::size() const noexcept {
   return data.size();
 }
 
 template <typename T>
-const vector<T> &Permutation<T>::domain() const {
+const vector<T> &Permutation<T>::domain() const noexcept {
   return data;
+}
+
+template <typename T>
+vector<vector<T>> Permutation<T>::cycles() const noexcept {
+  std::set<T> seen;
+  vector<vector<T>> cycles;
+  for(const auto & t : domain()) {
+    if (seen.find(t) != seen.end())
+      continue;
+
+    vector<T> cycle;
+    auto s = t;
+    do {
+      cycle.push_back(s);
+      seen.insert(s);
+      s = this->operator()(s);
+    } while(s != t);
+
+    cycles.push_back(cycle);
+  }
+
+  return cycles;
 }
 
 template <typename T>
@@ -92,6 +128,11 @@ Permutation<T> &operator*=(const vector<T> &cycle, Permutation<T> &self) {
   self.data[self.index(cycle[cycle.size() - 1])] = tmp;
 
   return self;
+}
+
+template <typename T>
+bool Permutation<T>::operator==(const Permutation& rhs) const noexcept {
+  return data == rhs.data;
 }
 
 template <typename T>

@@ -39,6 +39,7 @@
 /vector_longlong
 /interval_exchange_transformation
 /length_along_triangulation
+/permutation
 
 ### Autotools Generated Files
 .deps

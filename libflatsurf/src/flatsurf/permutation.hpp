@@ -23,6 +23,7 @@
 #include <functional>
 #include <iosfwd>
 #include <vector>
+#include <boost/operators.hpp>
 
 #include "flatsurf/flatsurf.hpp"
 
@@ -31,12 +32,13 @@ namespace flatsurf {
 // There should be no runtime overhead to using a simple T[], at least when
 // compiled with -flto.
 template <typename T>
-class Permutation {
+class Permutation : public boost::equality_comparable<Permutation<T>> {
  public:
   explicit Permutation(const std::vector<std::vector<T>> &cycles);
   explicit Permutation(const std::vector<std::pair<T, T>> &permutation);
   template <typename S>
   static Permutation<T> create(const std::vector<std::vector<S>> &, const std::function<T(S)> &);
+  static Permutation<T> random(const std::vector<T>& domain);
 
   const T &operator()(const T &t) const;
 
@@ -45,9 +47,12 @@ class Permutation {
 
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const Permutation<S> &);
-  size_t size() const;
+  size_t size() const noexcept;
   size_t index(const T &) const;
-  const std::vector<T> &domain() const;
+  const std::vector<T> &domain() const noexcept;
+  std::vector<std::vector<T>> cycles() const noexcept;
+
+  bool operator==(const Permutation&) const noexcept;
 
  private:
   std::vector<T> data;
