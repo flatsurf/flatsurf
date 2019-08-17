@@ -24,6 +24,7 @@
 #include <exact-real/forward.hpp>
 #include <intervalxt/length.hpp>
 #include <iosfwd>
+#include <boost/lexical_cast.hpp>
 
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/flat_triangulation_combinatorial.hpp"
@@ -34,26 +35,6 @@
 #include "flatsurf/saddle_connections.hpp"
 #include "flatsurf/vector.hpp"
 #include "flatsurf/vector_along_triangulation.hpp"
-
-// See https://bitbucket.org/wlav/cppyy/issues/95/lookup-of-friend-operator
-namespace flatsurf {
-std::ostream &operator<<(std::ostream &, const HalfEdge &);
-template <typename T>
-std::ostream &operator<<(std::ostream &, const Permutation<T> &);
-template <typename T>
-std::ostream &operator<<(std::ostream &, const HalfEdgeMap<T> &);
-template <typename T>
-std::ostream &operator<<(std::ostream &, const FlatTriangulation<T> &);
-template <typename Surface>
-std::ostream &operator<<(std::ostream &, const SaddleConnection<Surface> &);
-
-// This does not work due to https://bitbucket.org/wlav/cppyy/issues/112/operator-for-a-base-class-is-not-found
-// namespace detail {
-// template <typename V>
-// std::ostream &operator<<(std::ostream &, const detail::VectorBase<V> &);
-// }  // namespace detail
-
-}  // namespace flatsurf
 
 // cppyy does not see the operators that come out of boost/operators.hpp.
 // Why exactly is not clear to me at the moment. Since they are defined as
@@ -85,7 +66,9 @@ extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsur
 extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::HalfEdgeMap<flatsurf::Vector<eantic::renf_elem_class>> &);
 extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::FlatTriangulation<long long> &);
 extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::FlatTriangulation<eantic::renf_elem_class> &);
-extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::SaddleConnection<long long> &);
-extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::SaddleConnection<eantic::renf_elem_class> &);
+extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::SaddleConnection<flatsurf::FlatTriangulation<long long>> &);
+extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::SaddleConnection<flatsurf::FlatTriangulation<eantic::renf_elem_class>> &);
+extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::SaddleConnections<flatsurf::FlatTriangulation<long long>> &);
+extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::SaddleConnections<flatsurf::FlatTriangulation<eantic::renf_elem_class>> &);
 
 #endif

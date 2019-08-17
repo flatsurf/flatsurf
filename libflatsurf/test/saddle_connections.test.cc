@@ -73,6 +73,10 @@ TYPED_TEST(SaddleConnectionsTest, Square) {
 
   connections = SaddleConnections(&square, bound);
   EXPECT_EQ(std::distance(connections.begin(), connections.end()), 480);
+
+  EXPECT_EQ(boost::lexical_cast<std::string>(**connections.begin()), "SaddleConnection(3 -> -1 in direction (0, 1))");
+
+  EXPECT_EQ(**connections.begin(), **connections.begin());
 }
 
 TYPED_TEST(SaddleConnectionsTest, Hexagon) {

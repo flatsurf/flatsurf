@@ -43,6 +43,8 @@ dnl autoconfiscated packages, we have to copy all the Python bits over to the
 dnl build dir manually so that Python can't tell the difference.
 AC_CONFIG_LINKS([src/pyflatsurf/__init__.py:src/pyflatsurf/__init__.py
                  src/pyflatsurf/cppyy_flatsurf.py:src/pyflatsurf/cppyy_flatsurf.py
-                 src/pyflatsurf/sageflatsurf_pyflatsurf.py:src/pyflatsurf/sageflatsurf_pyflatsurf.py])
+                 src/pyflatsurf/pythonization.py:src/pyflatsurf/pythonization.py
+                 src/pyflatsurf/factory.py:src/pyflatsurf/factory.py
+                 src/pyflatsurf/sage_conversion.py:src/pyflatsurf/sage_conversion.py])
 
 AC_OUTPUT

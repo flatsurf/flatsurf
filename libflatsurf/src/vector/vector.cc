@@ -150,23 +150,23 @@ class Vector<T>::Implementation : public Cartesian<T> {
   template <bool Enable = IsArb<T>, If<Enable> = true>
   std::optional<bool> operator<(const Bound bound) const noexcept {
     Arb size = (this->x * this->x + this->y * this->y)(ARB_PRECISION_FAST);
-    return size < bound.length() * bound.length();
+    return size < bound.squared();
   }
 
   template <bool Enable = IsMPZ<T> || IsMPQ<T>, If<Enable> = true, typename = void>
   bool operator<(const Bound bound) const noexcept {
-    return this->x * this->x + this->y * this->y < mpz_class(boost::lexical_cast<std::string>(bound.length() * bound.length()));
+    return this->x * this->x + this->y * this->y < mpz_class(boost::lexical_cast<std::string>(bound.squared()));
   }
 
   template <bool Enable = IsArb<T>, If<Enable> = true>
   std::optional<bool> operator>(const Bound bound) const noexcept {
     Arb size = (this->x * this->x + this->y * this->y)(ARB_PRECISION_FAST);
-    return size > bound.length() * bound.length();
+    return size > bound.squared();
   }
 
   template <bool Enable = IsMPZ<T> || IsMPQ<T>, If<Enable> = true, typename = void>
   bool operator>(const Bound bound) const noexcept {
-    return this->x * this->x + this->y * this->y > mpz_class(boost::lexical_cast<std::string>(bound.length() * bound.length()));
+    return this->x * this->x + this->y * this->y > mpz_class(boost::lexical_cast<std::string>(bound.squared()));
   }
 
   template <bool Enable = IsArb<T>, If<Enable> = true>

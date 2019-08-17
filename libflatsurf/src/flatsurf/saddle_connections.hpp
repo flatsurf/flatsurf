@@ -64,18 +64,23 @@ class SaddleConnections {
 
     void skipSector(CCW sector);
 
-#ifdef __GNUG__
+// Detect GCC (and skip clang/cling so we do not see warnings): https://stackoverflow.com/questions/38499462/how-to-tell-clang-to-stop-pretending-to-be-other-compilers
+#if defined(__GNUC__) && !defined(__llvm__)
 #pragma GCC diagnostic push
+// We cannot make the following operator a template: https://stackoverflow.com/questions/18823618/overload-operator-for-nested-class-template
 #pragma GCC diagnostic ignored "-Wnon-template-friend"
 #endif
     friend std::ostream &operator<<(std::ostream &, const Iterator &);
-#ifdef __GNUG__
+#if defined(__GNUC__) && !defined(__llvm__)
 #pragma GCC diagnostic pop
 #endif
   };
 
   Iterator begin() const;
   Iterator end() const;
+
+  template <typename Surf>
+  friend std::ostream &operator<<(std::ostream &, const SaddleConnections<Surf> &);
 
  private:
   class Implementation;

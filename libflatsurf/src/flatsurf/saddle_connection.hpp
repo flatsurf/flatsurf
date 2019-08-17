@@ -31,8 +31,9 @@
 namespace flatsurf {
 template <typename Surface>
 class SaddleConnection : boost::equality_comparable<SaddleConnection<Surface>> {
+  using Vector = typename Surface::Vector;
  public:
-  const typename Surface::Vector &vector() const;
+  const Vector &vector() const;
   // The saddle connection is leaving from the vertex at the source of source.
   // It is leaving in a direction that is contained in the sector next to
   // source (counterclockwise.)
@@ -48,7 +49,8 @@ class SaddleConnection : boost::equality_comparable<SaddleConnection<Surface>> {
 
   bool operator==(const SaddleConnection<Surface> &) const;
 
-  template <typename Surf>
+  // See cppyy.hpp for the _ parameter.
+  template <typename Surf, typename _>
   friend std::ostream &operator<<(std::ostream &, const SaddleConnection<Surf> &);
 
  private:

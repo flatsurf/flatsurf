@@ -23,6 +23,8 @@ from cppyy.gbl import std
 
 from pyexactreal import exactreal
 
+from .pythonization import enable_iterable, enable_arithmetic, enable_pretty_print, enable_vector_print, add_saddle_connections
+
 # Importing cysignals after cppyy gives us proper stack traces on segfaults
 # whereas cppyy otherwise only reports "segmentation violation" (which is
 # probably what cling provides.)
@@ -33,65 +35,11 @@ if os.environ.get('PYFLATSURF_CYSIGNALS', True):
     except ModuleNotFoundError:
         pass
 
-def make_iterable(proxy, name):
-    if hasattr(proxy, 'begin') and hasattr(proxy, 'end'):
-        if not hasattr(proxy, '__iter__'):
-            def iter(self):
-                i = self.begin()
-                while i != self.end():
-                    if hasattr(i, '__deref__'):
-                        yield i.__deref__()
-                    elif hasattr(i, 'dereference'):
-                        yield i.dereference()
-                    else:
-                        raise Exception("iterator has no deref method")
-                    if hasattr(i, '__preinc__'):
-                        i.__preinc__()
-                    elif hasattr(i, 'increment'):
-                        i.increment()
-                    else:
-                        raise Exception("iterator has not preinc method")
-
-            proxy.__iter__ = iter
-
-        if not hasattr(proxy, '__len__'):
-            def len(self):
-                return std.distance(self.begin(), self.end())
-
-            proxy.__len__ = len
-
-cppyy.py.add_pythonization(make_iterable, "flatsurf")
-
-def enable_arithmetic(proxy, name):
-    if name.startswith('Vector'):
-        for (n, op) in [('add', ord('+')), ('sub', ord('-')), ('mul', ord('*')), ('div', ord('/'))]:
-            def cppname(x):
-                # some types such as int do not have a __cppname__; there might
-                # be a better way to get their cppname but this seems to work
-                # fine for the types we're using at least.
-                return type(x).__cppname__ if hasattr(type(x), '__cppname__') else type(x).__name__
-            def binary(lhs, rhs, op = op):
-                return cppyy.gbl.exactreal.boost_binary[cppname(lhs), cppname(rhs), op](lhs, rhs)
-            def inplace(lhs, *args, **kwargs): raise NotImplementedError("inplace operators are not supported yet")
-            setattr(proxy, "__%s__"%n, binary)
-            setattr(proxy, "__r%s__"%n, binary)
-            setattr(proxy, "__i%s__"%n, inplace)
-        setattr(proxy, "__neg__", lambda self: cppyy.gbl.exactreal.minus(self))
-
+cppyy.py.add_pythonization(enable_iterable, "flatsurf")
 cppyy.py.add_pythonization(enable_arithmetic, "flatsurf")
-
-def pretty_print(proxy, name):
-    proxy.__repr__ = proxy.__str__
-
-cppyy.py.add_pythonization(pretty_print, "flatsurf")
-
-# Work around https://bitbucket.org/wlav/cppyy/issues/112/operator-for-a-base-class-is-not-found
-def vector_print(proxy, name):
-    if name.startswith("Vector<"):
-        proxy.__str__ = lambda self: "(" + str(self.x()) + ", " + str(self.y()) + ")"
-        proxy.__repr__ = proxy.__str__
-
-cppyy.py.add_pythonization(vector_print, "flatsurf")
+cppyy.py.add_pythonization(enable_pretty_print, "flatsurf")
+cppyy.py.add_pythonization(enable_vector_print, "flatsurf")
+cppyy.py.add_pythonization(add_saddle_connections, "flatsurf")
 
 for path in os.environ.get('PYFLATSURF_INCLUDE','').split(':'):
     if path: cppyy.add_include_path(path)
@@ -99,21 +47,3 @@ for path in os.environ.get('PYFLATSURF_INCLUDE','').split(':'):
 cppyy.include("flatsurf/cppyy.hpp")
 
 from cppyy.gbl import flatsurf
-
-def make_surface(vertices, vectors):
-    vertices = std.vector[std.vector[int]]([std.vector[int](l) for l in vertices])
-    R2 = type(vectors[0]).__cppname__
-    vectors = std.vector[R2](vectors)
-
-    # Somehow vectors[0].Coordinate cannot be found, so we have to try which
-    # coordinate type is the correct one; we should report this at cppyy if we
-    # can find a more easily reproducible case.
-    for coordinate in ['long long', 'eantic::renf_elem_class', 'exactreal::Element<exactreal::IntegerRing>', 'exactreal::Element<exactreal::RationalField>', 'exactreal::Element<exactreal::NumberField>']:
-        if R2 == type(flatsurf.Vector[coordinate]).__cppname__:
-            ret = flatsurf.FlatTriangulation[coordinate](flatsurf.FlatTriangulationCombinatorial(vertices), vectors)
-            ret.saddleConnections = lambda *args: flatsurf.SaddleConnections[type(ret).__cppname__](ret, *args)
-            return ret
-
-    raise Exception("Coordinate not implemented in Python wrapper")
-
-flatsurf.Surface = make_surface

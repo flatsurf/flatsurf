@@ -26,6 +26,7 @@
 
 #include <climits>
 #include <ostream>
+#include <boost/lexical_cast.hpp>
 
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/saddle_connection.hpp"
@@ -49,7 +50,7 @@ class SaddleConnection<Surface>::Implementation {
   HalfEdge target;
 };
 
-template <typename Surface>
+template <typename Surface, typename _>
 ostream &operator<<(ostream &os, const SaddleConnection<Surface> &self) {
   os << "SaddleConnection(" << self.source() << " -> " << self.target()
      << " in direction " << self.vector();
@@ -59,13 +60,11 @@ ostream &operator<<(ostream &os, const SaddleConnection<Surface> &self) {
   // We reconstruct the sequence of half edges that this saddle connection
   // crossed. This is expensive (but cheap in terms of the output size.) This
   // information seems to be essential to properly plot a saddle connection.
-  auto reconstruction = SaddleConnections<Surface>(self.impl->surface, Bound(LLONG_MAX), self.source());
+  auto reconstruction = SaddleConnections<Surface>(self.impl->surface, Bound(INT_MAX), self.source());
   auto it = reconstruction.begin();
   while (**it != self) {
     auto ccw = (*it)->vector().ccw(self.vector());
-    assert(ccw != CCW::COLLINEAR &&
-           "There cannot be another saddle connection in exactly the same "
-           "direction.");
+    assert(ccw != CCW::COLLINEAR && "There cannot be another saddle connection in exactly the same direction.");
     it.skipSector(-ccw);
     while (true) {
       auto crossing = it.incrementWithCrossings();
@@ -85,7 +84,7 @@ ostream &operator<<(ostream &os, const SaddleConnection<Surface> &self) {
 
 template <typename Surface>
 bool SaddleConnection<Surface>::operator==(const SaddleConnection<Surface> &rhs) const {
-  bool ret = &impl->surface == &rhs.impl->surface && static_cast<typename Surface::Vector>(vector()) == static_cast<typename Surface::Vector>(rhs.vector()) && source() == rhs.source();
+  bool ret = impl->surface == rhs.impl->surface && static_cast<typename Surface::Vector>(vector()) == static_cast<typename Surface::Vector>(rhs.vector()) && source() == rhs.source();
   assert(!ret || target() == rhs.target());
   return ret;
 }
@@ -105,17 +104,18 @@ const typename Surface::Vector &SaddleConnection<Surface>::vector() const { retu
 #include <exact-real/number_field.hpp>
 #include <exact-real/rational_field.hpp>
 #include "flatsurf/forward.hpp"
-using namespace flatsurf;
 
-template class flatsurf::SaddleConnection<flatsurf::FlatTriangulation<long long>>;
-template ostream &flatsurf::operator<<(ostream &, const SaddleConnection<flatsurf::FlatTriangulation<long long>> &);
-template class flatsurf::SaddleConnection<flatsurf::FlatTriangulation<eantic::renf_elem_class>>;
-template ostream &flatsurf::operator<<(ostream &, const SaddleConnection<flatsurf::FlatTriangulation<eantic::renf_elem_class>> &);
-template class flatsurf::SaddleConnection<flatsurf::FlatTriangulation<exactreal::Element<exactreal::IntegerRing>>>;
-template ostream &flatsurf::operator<<(ostream &, const SaddleConnection<flatsurf::FlatTriangulation<exactreal::Element<exactreal::IntegerRing>>> &);
-template class flatsurf::SaddleConnection<flatsurf::FlatTriangulation<exactreal::Element<exactreal::RationalField>>>;
-template ostream &flatsurf::operator<<(ostream &, const SaddleConnection<flatsurf::FlatTriangulation<exactreal::Element<exactreal::RationalField>>> &);
-template class flatsurf::SaddleConnection<flatsurf::FlatTriangulation<exactreal::Element<exactreal::NumberField>>>;
-template ostream &flatsurf::operator<<(ostream &, const SaddleConnection<flatsurf::FlatTriangulation<exactreal::Element<exactreal::NumberField>>> &);
+namespace flatsurf {
+template class SaddleConnection<FlatTriangulation<long long>>;
+template ostream &operator<<(ostream &, const SaddleConnection<FlatTriangulation<long long>> &);
+template class SaddleConnection<FlatTriangulation<eantic::renf_elem_class>>;
+template ostream &operator<<(ostream &, const SaddleConnection<FlatTriangulation<eantic::renf_elem_class>> &);
+template class SaddleConnection<FlatTriangulation<exactreal::Element<exactreal::IntegerRing>>>;
+template ostream &operator<<(ostream &, const SaddleConnection<FlatTriangulation<exactreal::Element<exactreal::IntegerRing>>> &);
+template class SaddleConnection<FlatTriangulation<exactreal::Element<exactreal::RationalField>>>;
+template ostream &operator<<(ostream &, const SaddleConnection<FlatTriangulation<exactreal::Element<exactreal::RationalField>>> &);
+template class SaddleConnection<FlatTriangulation<exactreal::Element<exactreal::NumberField>>>;
+template ostream &operator<<(ostream &, const SaddleConnection<FlatTriangulation<exactreal::Element<exactreal::NumberField>>> &);
+}
 
 #endif

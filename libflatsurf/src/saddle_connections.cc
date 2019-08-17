@@ -98,9 +98,9 @@ class SaddleConnections<Surface>::Iterator::Implementation {
   const Surface* surface;
   const Bound searchRadius;
   const vector<HalfEdge> sectors;
-  // The half edge next to which we are currently changing, points into
-  // sectors. Advanced when we are doing searching an entire such sector for
-  // all saddle connections. (An index into sectors.)
+  // The half edge nextEdge, to which we are currently changing, points into
+  // sectors. Advanced when we are done searching an entire such sector for all
+  // saddle connections. (An index into sectors.)
   size_t sector;
 
   // The rays that enclose the search sector, in counterclockwise order. They
@@ -135,8 +135,8 @@ class SaddleConnections<Surface>::Iterator::Implementation {
   std::stack<AlongTriangulation> tmp;
 
   bool increment() {
-    assert(sector != sectors.size());
     assert(state.size());
+    assert(sector != sectors.size());
     assert(boundary[0].ccw(boundary[1]) == CCW::COUNTERCLOCKWISE);
 
     const auto s = state.top();
@@ -467,12 +467,16 @@ std::unique_ptr<SaddleConnection<Surface>> SaddleConnections<Surface>::Iterator:
   return ret;
 }
 
+template <typename Surface>
+std::ostream& operator<<(std::ostream& os, const SaddleConnections<Surface>&) {
+  os << "SaddleConnections()";
+}
+
 // Instantiations of templates so implementations are generated for the linker
 #include <e-antic/renfxx_fwd.h>
 #include <exact-real/integer_ring.hpp>
 #include <exact-real/number_field.hpp>
 #include <exact-real/rational_field.hpp>
-using namespace flatsurf;
 
 // We need to explicitly list the operator<< implementations here, since we
 // cannot use a template:
@@ -483,10 +487,15 @@ std::ostream& operator<<(std::ostream& os, const typename SaddleConnections<Flat
 std::ostream& operator<<(std::ostream& os, const typename SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::RationalField>>>::Iterator& self) { return os << *self.impl; }
 std::ostream& operator<<(std::ostream& os, const typename SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::NumberField>>>::Iterator& self) { return os << *self.impl; }
 
-}  // namespace flatsurf
+template class SaddleConnections<FlatTriangulation<long long>>;
+template ostream &operator<<(ostream &, const SaddleConnections<FlatTriangulation<long long>> &);
+template class SaddleConnections<FlatTriangulation<eantic::renf_elem_class>>;
+template ostream &operator<<(ostream &, const SaddleConnections<FlatTriangulation<eantic::renf_elem_class>> &);
+template class SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::IntegerRing>>>;
+template ostream &operator<<(ostream &, const SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::IntegerRing>>> &);
+template class SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::RationalField>>>;
+template ostream &operator<<(ostream &, const SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::RationalField>>> &);
+template class SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::NumberField>>>;
+template ostream &operator<<(ostream &, const SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::NumberField>>> &);
 
-template class flatsurf::SaddleConnections<FlatTriangulation<long long>>;
-template class flatsurf::SaddleConnections<FlatTriangulation<eantic::renf_elem_class>>;
-template class flatsurf::SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::IntegerRing>>>;
-template class flatsurf::SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::RationalField>>>;
-template class flatsurf::SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::NumberField>>>;
+}  // namespace flatsurf

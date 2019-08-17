@@ -12,7 +12,7 @@ See https://github.com/videlec/sage-flatsurf
 #
 #  Flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 2 of the License, or
+#  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
 #
 #  Flatsurf is distributed in the hope that it will be useful,
@@ -27,14 +27,15 @@ See https://github.com/videlec/sage-flatsurf
 try:
     from sage.all import QQ
 except ImportError:
-    raise ImportError("sageflatsurf_pyflatsurf needs SageMath, see http://www.sagemath.org/")
+    raise ImportError("pyflatsurf.sage_conversion needs SageMath, see http://www.sagemath.org/")
 
 try:
     import flatsurf as sage_flatsurf
 except ImportError:
-    raise ImportError("sageflatsurf_pyflatsurf needs sage-flatsurf, see https://github.com/videlec/sage-flatsurf")
+    raise ImportError("pyflatsurf.sage_conversion needs sage-flatsurf, see https://github.com/videlec/sage-flatsurf")
 
 from .cppyy_flatsurf import flatsurf
+from .factory import make_surface as Surface
 
 def _check_data(vp, fp, vec):
     r"""
@@ -88,7 +89,7 @@ def _cycle_decomposition(p):
             cycles.append(cycle)
     return cycles
 
-def flatsurf_to_pyflatsurf(S):
+def to_FlatTriangulation(S):
     r"""
     Given S a translation surface from flatsurf builds a flat polygonization
 
@@ -96,31 +97,31 @@ def flatsurf_to_pyflatsurf(S):
 
     >>> import sage.all
     >>> import flatsurf
-    >>> from pyflatsurf.sageflatsurf_pyflatsurf import flatsurf_to_pyflatsurf
+    >>> from pyflatsurf import Surface
 
     Building the regular 2n-gons for n=5,7 (Veech surfaces)
 
     >>> S5 = flatsurf.translation_surfaces.veech_double_n_gon(5)
-    >>> T5 = flatsurf_to_pyflatsurf(S5)
+    >>> T5 = Surface(S5)
 
     >>> S7 = flatsurf.translation_surfaces.veech_double_n_gon(7)
-    >>> T7 = flatsurf_to_pyflatsurf(S7)
+    >>> T7 = Surface(S7)
 
     Arnoux-Yoccoz surfaces in genus 3 and 4
 
     >>> A3 = flatsurf.translation_surfaces.arnoux_yoccoz(3)
-    >>> B3 = flatsurf_to_pyflatsurf(A3)
+    >>> B3 = Surface(A3)
 
     >>> A4 = flatsurf.translation_surfaces.arnoux_yoccoz(4)
-    >>> B4 = flatsurf_to_pyflatsurf(A4)
+    >>> B4 = Surface(A4)
 
     Ward surfaces (a regular 2n-gon glued to two regular n-gons)
 
     >>> W3 = flatsurf.translation_surfaces.ward(3)
-    >>> X3 = flatsurf_to_pyflatsurf(W3)
+    >>> X3 = Surface(W3)
 
     >>> W17 = flatsurf.translation_surfaces.ward(17)
-    >>> X17 = flatsurf_to_pyflatsurf(W17)
+    >>> X17 = Surface(W17)
     """
     if not isinstance(S, sage_flatsurf.geometry.translation_surface.TranslationSurface):
         raise TypeError("S must be a translation surface")
@@ -175,4 +176,4 @@ def flatsurf_to_pyflatsurf(S):
     # convert the vp permutation into cycles
     verts = _cycle_decomposition(vp)
 
-    return flatsurf.Surface(verts, vec)
+    return Surface(verts, vec)

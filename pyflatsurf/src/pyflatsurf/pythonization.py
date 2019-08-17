@@ -1,0 +1,85 @@
+# -*- coding: utf-8 -*-
+#*********************************************************************
+#  This file is part of flatsurf.
+#
+#        Copyright (C) 2019 Julian Rüth
+#
+#  Flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  Flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
+#*********************************************************************
+
+import cppyy
+
+def enable_iterable(proxy, name):
+    if hasattr(proxy, 'begin') and hasattr(proxy, 'end'):
+        if not hasattr(proxy, '__iter__'):
+            def iter(self):
+                i = self.begin()
+                while i != self.end():
+                    if hasattr(i, '__deref__'):
+                        yield i.__deref__()
+                    elif hasattr(i, 'dereference'):
+                        yield i.dereference()
+                    else:
+                        raise Exception("iterator has no deref method")
+                    if hasattr(i, '__preinc__'):
+                        i.__preinc__()
+                    elif hasattr(i, 'increment'):
+                        i.increment()
+                    else:
+                        raise Exception("iterator has not preinc method")
+
+            proxy.__iter__ = iter
+
+        if not hasattr(proxy, '__len__'):
+            def len(self):
+                return std.distance(self.begin(), self.end())
+
+            proxy.__len__ = len
+
+def enable_arithmetic(proxy, name):
+    if name.startswith('Vector'):
+        for (n, op) in [('add', ord('+')), ('sub', ord('-')), ('mul', ord('*')), ('div', ord('/'))]:
+            def cppname(x):
+                # some types such as int do not have a __cppname__; there might
+                # be a better way to get their cppname but this seems to work
+                # fine for the types we're using at least.
+                return type(x).__cppname__ if hasattr(type(x), '__cppname__') else type(x).__name__
+            def binary(lhs, rhs, op = op):
+                return cppyy.gbl.exactreal.boost_binary[cppname(lhs), cppname(rhs), op](lhs, rhs)
+            def inplace(lhs, *args, **kwargs): raise NotImplementedError("inplace operators are not supported yet")
+            setattr(proxy, "__%s__"%n, binary)
+            setattr(proxy, "__r%s__"%n, binary)
+            setattr(proxy, "__i%s__"%n, inplace)
+        setattr(proxy, "__neg__", lambda self: cppyy.gbl.exactreal.minus(self))
+
+def enable_pretty_print(proxy, name):
+    proxy.__repr__ = proxy.__str__
+
+# Work around https://bitbucket.org/wlav/cppyy/issues/112/operator-for-a-base-class-is-not-found
+def enable_vector_print(proxy, name):
+    if name.startswith("Vector<"):
+        proxy.__str__ = lambda self: "(" + str(self.x()) + ", " + str(self.y()) + ")"
+        proxy.__repr__ = proxy.__str__
+
+def add_saddle_connections(proxy, name):
+    if name.startswith("FlatTriangulation<"):
+        def saddle_connections(self, bound, source = None):
+            # Strangely, a T fails to convert implicitly to a Length<T> even
+            # though there is a non-explicit constructor Length(const T&).
+            # Therefore, we need to cast bound explicitly:
+            bound = cppyy.gbl.intervalxt.Length['long long'](bound)
+            sc = flatsurf.SaddleConnections[type(self).__cppname__]
+            return sc(self, bound) if source is None else sc(self, bound, source)
+        proxy.saddle_connections = saddle_connections
+
