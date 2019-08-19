@@ -25,6 +25,7 @@
 
 #include "flatsurf/permutation.hpp"
 #include "util/as_vector.ipp"
+#include "util/assert.ipp"
 
 using boost::accumulate;
 using boost::adaptors::transformed;
@@ -37,13 +38,16 @@ using std::vector;
 namespace flatsurf {
 
 template <typename T>
+Permutation<T>::Permutation() : Permutation(std::vector<pair<T, T>>()) {}
+
+template <typename T>
 Permutation<T>::Permutation(const vector<vector<T>> &cycles)
     : data(accumulate(cycles, 0u, [](size_t sum, const auto &cycle) {
         return sum + cycle.size();
       })) {
   for (const auto cycle : cycles) {
     for (auto i = 0u; i < cycle.size(); i++) {
-      assert(index(cycle[i]) < data.size());
+      ASSERT_ARGUMENT(index(cycle[i]) < data.size(), "cycle contains an element beyond the size of the permutation");
       data[index(cycle[i])] = cycle[(i + 1) % cycle.size()];
     }
   }
@@ -53,18 +57,18 @@ template <typename T>
 Permutation<T>::Permutation(const vector<pair<T, T>> &permutation)
     : data(permutation.size()) {
   for (auto ab : permutation) {
-    assert(index(ab.first) < data.size());
+    ASSERT_ARGUMENT(index(ab.first) < data.size(), "entry of permutation points to an element beoynd the size of the permutation");
     data[index(ab.first)] = ab.second;
   }
 }
 
 template <typename T>
 Permutation<T> Permutation<T>::random(const vector<T>& domain) {
-  assert(std::set<T>(domain.begin(), domain.end()).size() == domain.size());
+  ASSERT_ARGUMENT(std::set<T>(domain.begin(), domain.end()).size() == domain.size(), "domain must not contain duplicates");
   vector<T> image = domain;
   std::random_shuffle(image.begin(), image.end());
   vector<pair<T, T>> permutation;
-  for (int i = 0; i<domain.size(); i++){
+  for (size_t i = 0; i<domain.size(); i++){
     permutation.push_back(pair(domain[i], image[i]));
   }
   return Permutation<T>(permutation);
@@ -141,7 +145,7 @@ ostream &operator<<(ostream &os, const Permutation<T> &self) {
   for (auto t : self.data) {
     remaining.insert(t);
   }
-  assert(remaining.size() == self.data.size());
+  assert(remaining.size() == self.data.size() && "data must not contain duplicates");
   while (remaining.size()) {
     os << "(";
     const auto start = *remaining.begin();

@@ -224,11 +224,11 @@ class IntervalExchangeTransformation<T>::Implementation {
   using Length = LengthAlongTriangulation<T>;
   using Label = intervalxt::Label<Length>;
   using IET = intervalxt::IntervalExchangeTransformation<Length>;
-  FlatTriangulation<T> parent;
+  std::shared_ptr<FlatTriangulation<T>> parent;
   Vector<T> horizontal;
   std::vector<IET> iets;
 
-  static std::vector<IET> create(FlatTriangulation<T>* parent, Vector<T> const* horizontal, const std::set<HalfEdge>& component) {
+  static std::vector<IET> create(std::shared_ptr<FlatTriangulation<T>> parent, Vector<T> const* horizontal, const std::set<HalfEdge>& component) {
     auto vertical = horizontal->perpendicular();
     HalfEdge source = makeUniqueLargeEdge(*parent, vertical, component);
 
@@ -287,7 +287,7 @@ class IntervalExchangeTransformation<T>::Implementation {
   }
 
  public:
-  Implementation(const FlatTriangulation<T>& parent, const Vector<T>& vertical) : parent(std::move(parent.clone())), horizontal(-vertical.perpendicular()), iets(create(&this->parent, &this->horizontal, std::set<HalfEdge>(this->parent.halfEdges().begin(), this->parent.halfEdges().end()))) {}
+  Implementation(const FlatTriangulation<T>& parent, const Vector<T>& vertical) : parent(parent.clone()), horizontal(-vertical.perpendicular()), iets(create(this->parent, &this->horizontal, std::set<HalfEdge>(this->parent->halfEdges().begin(), this->parent->halfEdges().end()))) {}
 };
 
 template <typename T>

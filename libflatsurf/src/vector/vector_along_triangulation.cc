@@ -39,9 +39,9 @@ class SharedImplementation {
  public:
   using Surface = typename Vector::Surface;
 
-  explicit SharedImplementation(Surface const* surface) : surface(surface) {}
+  explicit SharedImplementation(const std::shared_ptr<const Surface> surface) : surface(surface) {}
 
-  const Surface* surface;
+  std::shared_ptr<const Surface> surface;
 };
 
 template <typename Vector, typename Implementation, typename Approximation>
@@ -57,7 +57,7 @@ class ImplementationWithApproximation : SharedImplementation<Vector, Implementat
   using Shared = SharedImplementation<Vector, Implementation>;
   using Surface = typename Shared::Surface;
 
-  ImplementationWithApproximation(Surface const* surface) : Shared(surface), coefficients(surface, updateAfterFlip), approx(surface) {}
+  ImplementationWithApproximation(const std::shared_ptr<const Surface>& surface) : Shared(surface), coefficients(surface.get(), updateAfterFlip), approx(surface) {}
 
   Vector operator-() const {
     Vector ret(this->surface);
@@ -170,11 +170,11 @@ class VectorAlongTriangulation<T, Approximation, Surface>::Implementation : publ
 };
 
 template <typename T, typename Approximation, typename Surface>
-VectorAlongTriangulation<T, Approximation, Surface>::VectorAlongTriangulation(Surface const* surface)
+VectorAlongTriangulation<T, Approximation, Surface>::VectorAlongTriangulation(const std::shared_ptr<const Surface>& surface)
     : impl(spimpl::make_impl<Implementation>(surface)) {}
 
 template <typename T, typename Approximation, typename Surface>
-VectorAlongTriangulation<T, Approximation, Surface>::VectorAlongTriangulation(Surface const* surface, const HalfEdgeMap<int>& coefficients)
+VectorAlongTriangulation<T, Approximation, Surface>::VectorAlongTriangulation(const std::shared_ptr<const Surface>& surface, const HalfEdgeMap<int>& coefficients)
     : VectorAlongTriangulation(surface) {
   *this += coefficients;
 }
@@ -185,7 +185,7 @@ VectorAlongTriangulation<T, Approximation, Surface>::operator Vector<T>() const 
 }
 
 template <typename T, typename Approximation, typename Surface>
-VectorAlongTriangulation<T, Approximation, Surface>::VectorAlongTriangulation(Surface const* surface, const std::vector<HalfEdge>& edges) : VectorAlongTriangulation(surface) {
+VectorAlongTriangulation<T, Approximation, Surface>::VectorAlongTriangulation(const std::shared_ptr<const Surface>& surface, const std::vector<HalfEdge>& edges) : VectorAlongTriangulation(surface) {
   for (auto edge : edges)
     *this += edge;
 }

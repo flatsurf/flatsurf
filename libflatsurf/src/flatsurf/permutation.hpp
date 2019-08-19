@@ -34,6 +34,7 @@ namespace flatsurf {
 template <typename T>
 class Permutation : public boost::equality_comparable<Permutation<T>> {
  public:
+  Permutation();
   explicit Permutation(const std::vector<std::vector<T>> &cycles);
   explicit Permutation(const std::vector<std::pair<T, T>> &permutation);
   template <typename S>

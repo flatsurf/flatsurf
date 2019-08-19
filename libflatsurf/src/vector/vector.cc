@@ -209,6 +209,12 @@ Vector<T>::Vector() : impl(spimpl::make_impl<Implementation>(T(), T())) {}
 
 template <typename T>
 Vector<T>::Vector(const T& x, const T& y) : impl(spimpl::make_impl<Implementation>(x, y)) {}
+
+template <typename T>
+typename Vector<T>::Coordinate Vector<T>::x() const noexcept { return impl->x; }
+
+template <typename T>
+typename Vector<T>::Coordinate Vector<T>::y() const noexcept { return impl->y; }
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker

@@ -51,22 +51,22 @@ TYPED_TEST_CASE(FlatTriangulationCombinatorialTest, ExactVectors);
 TYPED_TEST(FlatTriangulationCombinatorialTest, FlipSquare) {
   auto square = makeSquare<TypeParam>();
 
-  auto vertices = square.vertices();
+  auto vertices = square->vertices();
 
-  for (auto halfEdge : square.halfEdges()) {
-    const auto vector = square.fromEdge(halfEdge);
-    square.flip(halfEdge);
-    EXPECT_NE(vector, square.fromEdge(halfEdge));
-    square.flip(halfEdge);
-    EXPECT_EQ(vector, -square.fromEdge(halfEdge));
-    square.flip(halfEdge);
-    square.flip(halfEdge);
-    EXPECT_EQ(vector, square.fromEdge(halfEdge));
+  for (auto halfEdge : square->halfEdges()) {
+    const auto vector = square->fromEdge(halfEdge);
+    square->flip(halfEdge);
+    EXPECT_NE(vector, square->fromEdge(halfEdge));
+    square->flip(halfEdge);
+    EXPECT_EQ(vector, -square->fromEdge(halfEdge));
+    square->flip(halfEdge);
+    square->flip(halfEdge);
+    EXPECT_EQ(vector, square->fromEdge(halfEdge));
 
     // a square (torus) has only a single vertex so it won't change; in general
     // it should not change, however, the representatives attached to a vertex
     // are currently not properly updated: https://github.com/flatsurf/flatsurf/issues/100
-    EXPECT_EQ(vertices, square.vertices());
+    EXPECT_EQ(vertices, square->vertices());
   }
 }
 }  // namespace

@@ -604,14 +604,14 @@ int main(int argc, char **argv) {
 
   if (libflatsurf) {
     using FlatTriangulation = FlatTriangulation<exactreal::Element<exactreal::NumberField>>;
-    auto flat_triangulation = static_cast<FlatTriangulation>(*S);
+    std::shared_ptr<FlatTriangulation> flat_triangulation = static_cast<FlatTriangulation>(*S).clone();
     std::cout << flat_triangulation << std::endl;
 
     SaddleConf sc;
 
     using SaddleConnections = SaddleConnections<FlatTriangulation>;
-    for (auto saddle_connection : SaddleConnections(&flat_triangulation, static_cast<long long>(ceil(depth * depth)))) {
-      if (!Vertex::from(flatsurf::Vertex::source(saddle_connection->source(), flat_triangulation)).relevant()) {
+    for (auto saddle_connection : SaddleConnections(flat_triangulation, static_cast<long long>(ceil(depth * depth)))) {
+      if (!Vertex::from(flatsurf::Vertex::source(saddle_connection->source(), *flat_triangulation)).relevant()) {
         // It would be good to have a proper notion of marked vertices
         // instead, but currently we rely on polygon's original concept of
         // "relevant"
@@ -622,29 +622,29 @@ int main(int argc, char **argv) {
 
       auto direction = static_cast<typename FlatTriangulation::Vector>(saddle_connection->vector());
 
-      for (const HalfEdge e : flat_triangulation.halfEdges()) {
-        if (flat_triangulation.fromEdge(e).ccw(direction) == flatsurf::CCW::CLOCKWISE) {
+      for (const HalfEdge e : flat_triangulation->halfEdges()) {
+        if (flat_triangulation->fromEdge(e).ccw(direction) == flatsurf::CCW::CLOCKWISE) {
           continue;
         }
-        if (flat_triangulation.fromEdge(flat_triangulation.nextAtVertex(e)).ccw(direction) == flatsurf::CCW::COUNTERCLOCKWISE) {
+        if (flat_triangulation->fromEdge(flat_triangulation->nextAtVertex(e)).ccw(direction) == flatsurf::CCW::COUNTERCLOCKWISE) {
           continue;
         }
-        if (flat_triangulation.fromEdge(flat_triangulation.nextAtVertex(e)).orientation(direction) != flatsurf::ORIENTATION::SAME) {
+        if (flat_triangulation->fromEdge(flat_triangulation->nextAtVertex(e)).orientation(direction) != flatsurf::ORIENTATION::SAME) {
           continue;
         }
 
-        const Vertex &source = Vertex::from(flatsurf::Vertex::source(e, flat_triangulation));
+        const Vertex &source = Vertex::from(flatsurf::Vertex::source(e, *flat_triangulation));
         if (!source.relevant()) continue;
         if (source.deleted()) continue;
 
-        auto saddle_connections_in_same_direction = SaddleConnections(&flat_triangulation, Bound(static_cast<long long>(ceil(follow_depth * follow_depth))), e);
+        auto saddle_connections_in_same_direction = SaddleConnections(flat_triangulation, Bound(static_cast<long long>(ceil(follow_depth * follow_depth))), e);
         for (auto it = saddle_connections_in_same_direction.begin();
              it != saddle_connections_in_same_direction.end(); ++it) {
           auto saddle_connection_in_same_direction = *it;
 
           const Vertex &target = Vertex::from(flatsurf::Vertex::target(
               saddle_connection_in_same_direction->target(),
-              flat_triangulation));
+              *flat_triangulation));
 
           if (!target.relevant()) continue;
           if (target.deleted()) continue;
@@ -652,12 +652,12 @@ int main(int argc, char **argv) {
           auto ccw = saddle_connection_in_same_direction->vector().ccw(saddle_connection->vector());
           if (ccw == flatsurf::CCW::COLLINEAR) {
             auto vector = static_cast<Vector<exactreal::Element<exactreal::NumberField>>>(saddle_connection_in_same_direction->vector());
-            assert(flat_triangulation.fromEdge(e).ccw(vector) == flatsurf::CCW::COUNTERCLOCKWISE);
+            assert(flat_triangulation->fromEdge(e).ccw(vector) == flatsurf::CCW::COUNTERCLOCKWISE);
             auto dvector = static_cast<Point>(static_cast<Vector<Arb>>(vector));
             auto start = Dir(e, dvector);
             assert(start.v->id() == source.id());
             // end points back to start from the target vertex
-            auto end = Dir(flat_triangulation.nextInFace(saddle_connection_in_same_direction->target()), -dvector);
+            auto end = Dir(flat_triangulation->nextInFace(saddle_connection_in_same_direction->target()), -dvector);
             assert(end.v->id() == target.id());
             sc.add_saddle(start, end, vector);
             break;

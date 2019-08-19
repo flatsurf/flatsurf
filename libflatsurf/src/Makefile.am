@@ -11,6 +11,7 @@ libflatsurf_la_SOURCES =                                      \
 	interval_exchange_transformation.cc                         \
 	length_along_triangulation.cc                               \
 	permutation.cc                                              \
+	saddle_connection.cc                                        \
 	saddle_connections.cc                                       \
 	vertex.cc                                                   \
 	vector/vector.cc                                            \
@@ -45,21 +46,20 @@ nobase_include_HEADERS +=                                     \
 	flatsurf/detail/vector_with_error.hpp                       \
 	flatsurf/external/spimpl/spimpl.h
 
-noinst_HEADERS =                                             \
-	saddle_connection.ipp                                      \
-	util/type_traits.ipp                                       \
-	util/assert.ipp                                            \
-	util/as_vector.ipp                                         \
-	util/false.ipp                                             \
-	util/union_join.ipp                                        \
-	vector/algorithm/exact.ipp                                 \
-	vector/algorithm/exact.extension.ipp                       \
-	vector/algorithm/extension.ipp                             \
-	vector/algorithm/base.ipp                                  \
-	vector/algorithm/base.extension.ipp                        \
-	vector/algorithm/with_error.ipp                            \
-	vector/algorithm/with_error.extension.ipp                  \
-	vector/storage/forward.ipp                                 \
+noinst_HEADERS =                                              \
+	util/type_traits.ipp                                        \
+	util/assert.ipp                                             \
+	util/as_vector.ipp                                          \
+	util/false.ipp                                              \
+	util/union_join.ipp                                         \
+	vector/algorithm/exact.ipp                                  \
+	vector/algorithm/exact.extension.ipp                        \
+	vector/algorithm/extension.ipp                              \
+	vector/algorithm/base.ipp                                   \
+	vector/algorithm/base.extension.ipp                         \
+	vector/algorithm/with_error.ipp                             \
+	vector/algorithm/with_error.extension.ipp                   \
+	vector/storage/forward.ipp                                  \
 	vector/storage/cartesian.ipp
 
 libflatsurf_la_LDFLAGS = -version-info $(libflatsurf_version_info)

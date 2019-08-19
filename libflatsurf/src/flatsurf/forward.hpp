@@ -109,4 +109,10 @@ std::ostream &operator<<(std::ostream &, const SaddleConnections<Surface> &);
 
 }  // namespace flatsurf
 
+// Forward declare cereal::access so we can befriend it in our classes.
+// cereal is a serialization library that you can use by including the cereal.hpp header.
+namespace cereal {
+  struct access;
+}
+
 #endif

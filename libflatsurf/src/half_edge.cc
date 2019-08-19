@@ -17,28 +17,30 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <cassert>
 #include <ostream>
 
 #include "flatsurf/half_edge.hpp"
 #include "flatsurf/half_edge_map.hpp"
 #include "flatsurf/permutation.hpp"
+#include "util/assert.ipp"
 
 using std::ostream;
 
 namespace flatsurf {
-HalfEdge::HalfEdge(const int id) : id(id) { assert(id != 0); }
+HalfEdge::HalfEdge(const int id) : id(id) {
+  ASSERT_ARGUMENT(id != 0, "id must be non-zero");
+}
 
 HalfEdge::HalfEdge() : id(0) {}
 
 HalfEdge HalfEdge::operator-() const {
-  assert(id != 0);
+  ASSERT_ARGUMENT(id != 0, "id must be non-zero");
   return HalfEdge(-id);
 }
 
 HalfEdge &HalfEdge::operator=(const HalfEdge &rhs) {
   this->id = rhs.id;
-  assert(id != 0);
+  ASSERT_ARGUMENT(id != 0, "id must be non-zero");
   return *this;
 }
 

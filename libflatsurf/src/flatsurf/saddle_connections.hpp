@@ -33,15 +33,15 @@ template <typename Surface>
 class SaddleConnections {
  public:
   // All saddle connections on the surface starting at any vertex.
-  SaddleConnections(Surface const *, Bound searchRadius);
+  SaddleConnections(const std::shared_ptr<const Surface>&, Bound searchRadius);
 
   // All saddle connections on the surface starting at source.
-  SaddleConnections(Surface const *, Bound searchRadius, const Vertex source);
+  SaddleConnections(const std::shared_ptr<const Surface>&, Bound searchRadius, const Vertex source);
 
   // The saddle connections that are starting at the source of sectorBegin
   // and lie in the sector between sectorBegin and the follow half edge in
   // counter-clockwise order.
-  SaddleConnections(Surface const *, Bound searchRadius, HalfEdge sectorBegin);
+  SaddleConnections(const std::shared_ptr<const Surface>&, Bound searchRadius, HalfEdge sectorBegin);
 
   class Iterator : public boost::iterator_facade<Iterator, const std::unique_ptr<SaddleConnection<Surface>>, std::forward_iterator_tag, const std::unique_ptr<SaddleConnection<Surface>>> {
     class Implementation;
@@ -86,6 +86,16 @@ class SaddleConnections {
   class Implementation;
   spimpl::impl_ptr<Implementation> impl;
 };
+
+template <typename Surface>
+SaddleConnections(const std::shared_ptr<Surface>&, Bound) -> SaddleConnections<Surface>;
+
+template <typename Surface>
+SaddleConnections(const std::shared_ptr<Surface>&, Bound, const Vertex&) -> SaddleConnections<Surface>;
+
+template <typename Surface>
+SaddleConnections(const std::shared_ptr<Surface>&, Bound, const HalfEdge&) -> SaddleConnections<Surface>;
+
 }  // namespace flatsurf
 
 #endif

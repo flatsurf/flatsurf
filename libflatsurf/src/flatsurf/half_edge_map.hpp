@@ -33,11 +33,13 @@ namespace flatsurf {
 // automatically. Also, instances are automatically updated when an edge is
 // flipped.
 template <typename T>
-class HalfEdgeMap final {
+class HalfEdgeMap final : boost::equality_comparable<HalfEdgeMap<T>> {
  public:
   using FlipHandler = std::function<void(HalfEdgeMap &, HalfEdge, const FlatTriangulationCombinatorial &)>;
-  HalfEdgeMap(FlatTriangulationCombinatorial const *parent, const std::vector<T> &values, const FlipHandler &updateAfterFlip);
-  HalfEdgeMap(FlatTriangulationCombinatorial const *parent, const FlipHandler &updateAfterFlip);
+  // The parent does not need to remain valid. If it is destructed, it will signal the HalfEdgeMap so that it removes its reference to it.
+  HalfEdgeMap(const FlatTriangulationCombinatorial* parent, const std::vector<T> &values, const FlipHandler &updateAfterFlip);
+  // The parent does not need to remain valid. If it is destructed, it will signal the HalfEdgeMap so that it removes its reference to it.
+  HalfEdgeMap(const FlatTriangulationCombinatorial* parent, const FlipHandler &updateAfterFlip);
   HalfEdgeMap(const HalfEdgeMap &);
   HalfEdgeMap(HalfEdgeMap &&);
   ~HalfEdgeMap();
@@ -61,7 +63,9 @@ class HalfEdgeMap final {
   // We keep a reference to the triangulation that we were created with so that
   // we can notify it on costruction that we do not need to be informed about
   // future flips anymore.
-  mutable FlatTriangulationCombinatorial const *parent;
+  // Note that this reference can never be invalid as our parent will instruct
+  // us about its destruction in its destructor.
+  mutable const FlatTriangulationCombinatorial* parent;
 
   mutable std::vector<T> values;
   const FlipHandler updateAfterFlip;

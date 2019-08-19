@@ -23,6 +23,7 @@
 #include <boost/operators.hpp>
 #include <iosfwd>
 #include <optional>
+#include <vector>
 #include "external/spimpl/spimpl.h"
 
 #include "flatsurf/forward.hpp"
@@ -43,6 +44,10 @@ class SaddleConnection : boost::equality_comparable<SaddleConnection<Surface>> {
   // *clockwise* from *-target*.
   HalfEdge target() const;
 
+  const Surface& surface() const;
+
+  std::vector<HalfEdge> crossings() const;
+
   std::optional<int> angle(const SaddleConnection<Surface> &) const;
 
   SaddleConnection<Surface> operator-() const noexcept;
@@ -54,7 +59,15 @@ class SaddleConnection : boost::equality_comparable<SaddleConnection<Surface>> {
   friend std::ostream &operator<<(std::ostream &, const SaddleConnection<Surf> &);
 
  private:
+  SaddleConnection(const std::shared_ptr<const Surface>&, HalfEdge source, HalfEdge target, const Vector&);
+
   friend SaddleConnections<Surface>;
+
+  friend cereal::access;
+  template <typename Archive>
+  void save(Archive & archive) const;
+  template <typename Archive>
+  void load(Archive & archive);
 
   class Implementation;
   spimpl::impl_ptr<Implementation> impl;

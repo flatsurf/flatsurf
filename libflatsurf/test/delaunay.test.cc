@@ -39,12 +39,12 @@ TEST(DelaunayTest, Square) {
   using Vector = Vector<T>;
   auto square = makeSquare<Vector>();
 
-  for (auto halfEdge : square.halfEdges()) {
-    square.flip(halfEdge);
-    DelaunayTriangulation<T>::transform(square);
-    for (auto edge : square.halfEdges()) {
-      EXPECT_TRUE(DelaunayTriangulation<T>::test(square, edge));
-      EXPECT_LT(square.fromEdge(edge), Bound(2));
+  for (auto halfEdge : square->halfEdges()) {
+    square->flip(halfEdge);
+    DelaunayTriangulation<T>::transform(*square);
+    for (auto edge : square->halfEdges()) {
+      EXPECT_TRUE(DelaunayTriangulation<T>::test(*square, edge));
+      EXPECT_LT(square->fromEdge(edge), Bound(2));
     }
   }
 }

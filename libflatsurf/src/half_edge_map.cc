@@ -21,11 +21,11 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/range/combine.hpp>
-#include <cassert>
 #include <ostream>
 
 #include "flatsurf/flat_triangulation_combinatorial.hpp"
 #include "flatsurf/half_edge_map.hpp"
+#include "util/assert.ipp"
 
 using std::function;
 using std::ostream;
@@ -34,14 +34,14 @@ using std::vector;
 
 namespace flatsurf {
 template <typename T>
-HalfEdgeMap<T>::HalfEdgeMap(FlatTriangulationCombinatorial const *parent, const FlipHandler &updateAfterFlip) : parent(parent), values(parent->halfEdges().size()), updateAfterFlip(updateAfterFlip) {
+HalfEdgeMap<T>::HalfEdgeMap(const FlatTriangulationCombinatorial* parent, const FlipHandler &updateAfterFlip) : parent(parent), values(parent->halfEdges().size()), updateAfterFlip(updateAfterFlip) {
   parent->registerMap(*this);
 }
 
 template <typename T>
-HalfEdgeMap<T>::HalfEdgeMap(FlatTriangulationCombinatorial const *parent, const vector<T> &values, const FlipHandler &updateAfterFlip)
+HalfEdgeMap<T>::HalfEdgeMap(const FlatTriangulationCombinatorial* parent, const vector<T> &values, const FlipHandler &updateAfterFlip)
     : parent(parent), updateAfterFlip(updateAfterFlip) {
-  assert(values.size() == parent->halfEdges().size() / 2 &&
+  CHECK_ARGUMENT(values.size() == parent->halfEdges().size() / 2,
          "values must contain one entry for each pair of half edges");
   for (size_t i = 0; i < values.size(); i++) {
     this->values.emplace_back(values[i]);
@@ -105,7 +105,7 @@ void HalfEdgeMap<T>::set(const HalfEdge key, const T &value) {
 template <typename T>
 size_t HalfEdgeMap<T>::index(const HalfEdge e) {
   const int id = e.id;
-  assert(id != 0);
+  assert(id != 0 && "a valid half edge must have a non-zero id");
   if (id < 0) {
     return static_cast<size_t>(-2 * id - 1);
   } else {

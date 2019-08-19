@@ -20,13 +20,10 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTION_IPP
 #define LIBFLATSURF_SADDLE_CONNECTION_IPP
 
-// SaddleConnection lives in an .ipp header file since
-// SaddleConnections::Iterator needs access to its private Implementaion to
-// create instances.
-
 #include <climits>
 #include <ostream>
 #include <boost/lexical_cast.hpp>
+#include <intervalxt/length.hpp>
 
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/saddle_connection.hpp"
@@ -41,13 +38,13 @@ namespace flatsurf {
 template <typename Surface>
 class SaddleConnection<Surface>::Implementation {
  public:
-  Implementation(Surface const *surface, const typename Surface::Vector &vector, const HalfEdge &source, const HalfEdge &target)
-      : surface(surface), vector(vector), source(source), target(target) {}
+  Implementation(const std::shared_ptr<const Surface>& surface, HalfEdge source, HalfEdge target, const typename Surface::Vector &vector)
+      : surface(surface), source(source), target(target), vector(vector) {}
 
-  Surface const *surface;
-  const typename Surface::Vector vector;
+  std::shared_ptr<const Surface> surface;
   HalfEdge source;
   HalfEdge target;
+  typename Surface::Vector vector;
 };
 
 template <typename Surface, typename _>
@@ -57,35 +54,23 @@ ostream &operator<<(ostream &os, const SaddleConnection<Surface> &self) {
 
   bool crossingAnyHalfEdge = false;
 
-  // We reconstruct the sequence of half edges that this saddle connection
-  // crossed. This is expensive (but cheap in terms of the output size.) This
-  // information seems to be essential to properly plot a saddle connection.
-  auto reconstruction = SaddleConnections<Surface>(self.impl->surface, Bound(INT_MAX), self.source());
-  auto it = reconstruction.begin();
-  while (**it != self) {
-    auto ccw = (*it)->vector().ccw(self.vector());
-    assert(ccw != CCW::COLLINEAR && "There cannot be another saddle connection in exactly the same direction.");
-    it.skipSector(-ccw);
-    while (true) {
-      auto crossing = it.incrementWithCrossings();
-      if (crossing.has_value()) {
-        if (!crossingAnyHalfEdge)
-          os << " crossing";
-        crossingAnyHalfEdge = true;
-        os << " " << *crossing;
-      } else {
-        break;
-      }
-    }
+  for (auto & crossing : self.crossings()) {
+    if (!crossingAnyHalfEdge)
+      os << " crossing";
+    crossingAnyHalfEdge = true;
+    os << " " << crossing;
   }
 
   return os << ")";
 }
 
 template <typename Surface>
+SaddleConnection<Surface>::SaddleConnection(const std::shared_ptr<const Surface>& surface, HalfEdge source, HalfEdge target, const typename Surface::Vector &vector) : impl(spimpl::make_impl<Implementation>(surface, source, target, vector)) {}
+
+template <typename Surface>
 bool SaddleConnection<Surface>::operator==(const SaddleConnection<Surface> &rhs) const {
   bool ret = impl->surface == rhs.impl->surface && static_cast<typename Surface::Vector>(vector()) == static_cast<typename Surface::Vector>(rhs.vector()) && source() == rhs.source();
-  assert(!ret || target() == rhs.target());
+  assert(!ret || target() == rhs.target() && "Saddle Connection data is inconsistent");
   return ret;
 }
 
@@ -96,7 +81,37 @@ template <typename Surface>
 HalfEdge SaddleConnection<Surface>::target() const { return impl->target; }
 
 template <typename Surface>
+const Surface& SaddleConnection<Surface>::surface() const { return *impl->surface; }
+
+template <typename Surface>
 const typename Surface::Vector &SaddleConnection<Surface>::vector() const { return impl->vector; }
+
+template <typename Surface>
+std::vector<HalfEdge> SaddleConnection<Surface>::crossings() const {
+  std::vector<HalfEdge> ret;
+
+  // We reconstruct the sequence of half edges that this saddle connection
+  // crossed. This is expensive (but cheap in terms of the output size.) This
+  // information seems to be essential to properly plot a saddle connection.
+  auto reconstruction = SaddleConnections<Surface>(impl->surface, Bound(INT_MAX), source());
+  auto it = reconstruction.begin();
+  while (**it != *this) {
+    auto ccw = (*it)->vector().ccw(vector());
+    assert(ccw != CCW::COLLINEAR && "There cannot be another saddle connection in exactly the same direction.");
+    it.skipSector(-ccw);
+    while (true) {
+      auto crossing = it.incrementWithCrossings();
+      if (crossing.has_value()) {
+        ret.push_back(*crossing);
+      } else {
+        break;
+      }
+    }
+  }
+
+  return ret;
+}
+
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker

@@ -52,6 +52,12 @@ class Vertex : boost::equality_comparable<Vertex> {
   HalfEdge representative;
 
   friend FlatTriangulationCombinatorial;
+
+  friend cereal::access;
+  template <typename Archive>
+  void save(Archive&) const;
+  template <typename Archive>
+  void load(Archive&);
 };
 }  // namespace flatsurf
 
