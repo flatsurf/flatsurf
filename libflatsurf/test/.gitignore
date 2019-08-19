@@ -33,13 +33,14 @@
 *.app
 /saddle_connections
 /saddle_connections_benchmark
-/flip
 /vector_exactreal
 /delaunay
 /vector_longlong
 /interval_exchange_transformation
 /length_along_triangulation
 /permutation
+/cereal
+/flat_triangulation_combinatorial
 
 ### Autotools Generated Files
 .deps
