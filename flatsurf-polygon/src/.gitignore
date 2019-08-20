@@ -31,7 +31,7 @@
 *.exe
 *.out
 *.app
-/flatsurf
+/flatsurf-polygon
 
 ### Autotools Generated Files
 .deps

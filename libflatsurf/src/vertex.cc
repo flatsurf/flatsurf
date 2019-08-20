@@ -17,7 +17,6 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <cassert>
 #include <ostream>
 
 #include "flatsurf/flat_triangulation_combinatorial.hpp"

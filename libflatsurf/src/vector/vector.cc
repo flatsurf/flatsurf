@@ -150,23 +150,23 @@ class Vector<T>::Implementation : public Cartesian<T> {
   template <bool Enable = IsArb<T>, If<Enable> = true>
   std::optional<bool> operator<(const Bound bound) const noexcept {
     Arb size = (this->x * this->x + this->y * this->y)(ARB_PRECISION_FAST);
-    return size < bound.length() * bound.length();
+    return size < bound.squared();
   }
 
   template <bool Enable = IsMPZ<T> || IsMPQ<T>, If<Enable> = true, typename = void>
   bool operator<(const Bound bound) const noexcept {
-    return this->x * this->x + this->y * this->y < mpz_class(boost::lexical_cast<std::string>(bound.length() * bound.length()));
+    return this->x * this->x + this->y * this->y < mpz_class(boost::lexical_cast<std::string>(bound.squared()));
   }
 
   template <bool Enable = IsArb<T>, If<Enable> = true>
   std::optional<bool> operator>(const Bound bound) const noexcept {
     Arb size = (this->x * this->x + this->y * this->y)(ARB_PRECISION_FAST);
-    return size > bound.length() * bound.length();
+    return size > bound.squared();
   }
 
   template <bool Enable = IsMPZ<T> || IsMPQ<T>, If<Enable> = true, typename = void>
   bool operator>(const Bound bound) const noexcept {
-    return this->x * this->x + this->y * this->y > mpz_class(boost::lexical_cast<std::string>(bound.length() * bound.length()));
+    return this->x * this->x + this->y * this->y > mpz_class(boost::lexical_cast<std::string>(bound.squared()));
   }
 
   template <bool Enable = IsArb<T>, If<Enable> = true>
@@ -209,6 +209,12 @@ Vector<T>::Vector() : impl(spimpl::make_impl<Implementation>(T(), T())) {}
 
 template <typename T>
 Vector<T>::Vector(const T& x, const T& y) : impl(spimpl::make_impl<Implementation>(x, y)) {}
+
+template <typename T>
+typename Vector<T>::Coordinate Vector<T>::x() const noexcept { return impl->x; }
+
+template <typename T>
+typename Vector<T>::Coordinate Vector<T>::y() const noexcept { return impl->y; }
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker

@@ -21,47 +21,30 @@
 #include <gtest/gtest.h>
 #include <boost/lexical_cast.hpp>
 
-#include <e-antic/renfxx_fwd.h>
-#include <exact-real/element.hpp>
-#include <exact-real/number_field.hpp>
-
-#include <flatsurf/flat_triangulation.hpp>
 #include <flatsurf/half_edge.hpp>
-#include <flatsurf/saddle_connection.hpp>
-#include <flatsurf/saddle_connections.hpp>
-#include <flatsurf/vector.hpp>
-#include <flatsurf/vector_along_triangulation.hpp>
+#include <flatsurf/permutation.hpp>
 
-#include "surfaces.hpp"
-
-using namespace flatsurf;
-using eantic::renf_class;
-using eantic::renf_elem_class;
 using std::vector;
 using testing::Test;
 using testing::Types;
+using namespace flatsurf;
 
+namespace flatsurf {
 namespace {
-template <class R2>
-class FlipTest : public Test {};
-
-using ExactVectors = Types<Vector<long long>, Vector<renf_elem_class>, Vector<exactreal::Element<exactreal::NumberField>>>;
-TYPED_TEST_CASE(FlipTest, ExactVectors);
-
-TYPED_TEST(FlipTest, Square) {
-  auto square = makeSquare<TypeParam>();
-
-  for (auto halfEdge : square.halfEdges()) {
-    const auto vector = square.fromEdge(halfEdge);
-    square.flip(halfEdge);
-    EXPECT_NE(vector, square.fromEdge(halfEdge));
-    square.flip(halfEdge);
-    EXPECT_EQ(vector, -square.fromEdge(halfEdge));
-    square.flip(halfEdge);
-    square.flip(halfEdge);
-    EXPECT_EQ(vector, square.fromEdge(halfEdge));
+TEST(Permutation, Cycles) {
+  for (int n = 0; n < 10; n++) {
+    auto domain = vector<HalfEdge>();
+    for (int i = 1; i <= n; i++) {
+      domain.push_back(HalfEdge(i));
+      domain.push_back(HalfEdge(-i));
+    }
+    for (int run = 0; run < 128; run++) {
+      auto p = Permutation<HalfEdge>::random(domain);
+      EXPECT_EQ(p, Permutation<HalfEdge>(p.cycles()));
+    }
   }
 }
 }  // namespace
+}  // namespace flatsurf
 
 #include "main.hpp"

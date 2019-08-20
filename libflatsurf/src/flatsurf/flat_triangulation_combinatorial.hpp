@@ -28,8 +28,9 @@
 #include "flatsurf/forward.hpp"
 
 namespace flatsurf {
-class FlatTriangulationCombinatorial {
+class FlatTriangulationCombinatorial : boost::equality_comparable<FlatTriangulationCombinatorial>, public std::enable_shared_from_this<FlatTriangulationCombinatorial> {
  public:
+  FlatTriangulationCombinatorial();
   FlatTriangulationCombinatorial(const std::vector<std::vector<int>> &vertices);
   FlatTriangulationCombinatorial(const Permutation<HalfEdge> &vertices);
   FlatTriangulationCombinatorial(FlatTriangulationCombinatorial &&);
@@ -38,7 +39,7 @@ class FlatTriangulationCombinatorial {
   // same data. There is no copy-constructor since it is too likely that
   // this is would not update the associated HalfEdgeMaps in the way that the
   // caller expects.
-  FlatTriangulationCombinatorial clone() const;
+  std::unique_ptr<FlatTriangulationCombinatorial> clone() const;
 
   HalfEdge nextAtVertex(HalfEdge e) const;
   HalfEdge nextInFace(HalfEdge e) const;
@@ -49,6 +50,14 @@ class FlatTriangulationCombinatorial {
   std::vector<HalfEdge> atVertex(Vertex) const;
 
   void flip(HalfEdge);
+
+  // Return whether rhs is combinatorial the same triangulation (with the same
+  // numbering of edges.)
+  // This method is not virtual so that even non-combinatorial triangulations
+  // can be compared combinatorially.
+  bool operator==(const FlatTriangulationCombinatorial &rhs) const noexcept;
+
+  FlatTriangulationCombinatorial &operator=(FlatTriangulationCombinatorial &&) noexcept;
 
   friend std::ostream &operator<<(std::ostream &, const FlatTriangulationCombinatorial &);
 
@@ -63,6 +72,12 @@ class FlatTriangulationCombinatorial {
   void registerMap(const HalfEdgeMap<T> &) const;
   template <typename T>
   void deregisterMap(const HalfEdgeMap<T> &) const;
+
+  friend cereal::access;
+  template <typename Archive>
+  void save(Archive &archive) const;
+  template <typename Archive>
+  void load(Archive &archive);
 };
 }  // namespace flatsurf
 

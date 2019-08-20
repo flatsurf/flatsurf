@@ -44,7 +44,7 @@ namespace flatsurf {
 namespace {
 struct HalfEdgeMapProxy {
   function<void(HalfEdge, const FlatTriangulationCombinatorial&)> flip;
-  function<void(FlatTriangulationCombinatorial const*)> relink;
+  function<void(const FlatTriangulationCombinatorial*)> relink;
 };
 }  // namespace
 
@@ -57,7 +57,11 @@ class FlatTriangulationCombinatorial::Implementation {
         faces(as_vector(vertices.domain() | transformed([&](const HalfEdge& e) {
                           return pair<HalfEdge, HalfEdge>(-vertices(e), e);
                         }))),
-        halfEdgeMaps() {}
+        halfEdgeMaps() {
+    for (auto& c : vertices.cycles()) {
+      vertexes.push_back(Vertex(c[0]));
+    }
+  }
 
   ~Implementation() {
     for (const auto& map : halfEdgeMaps) map.second.relink(nullptr);
@@ -65,6 +69,7 @@ class FlatTriangulationCombinatorial::Implementation {
 
   Permutation<HalfEdge> vertices;
   Permutation<HalfEdge> faces;
+  vector<Vertex> vertexes;
   mutable unordered_map<uintptr_t, HalfEdgeMapProxy> halfEdgeMaps;
 };
 
@@ -80,13 +85,18 @@ const vector<HalfEdge>& FlatTriangulationCombinatorial::halfEdges() const {
   return impl->vertices.domain();
 }
 
-FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(
-    const vector<vector<int>>& vertices)
+const vector<Vertex>& FlatTriangulationCombinatorial::vertices() const {
+  return impl->vertexes;
+}
+
+FlatTriangulationCombinatorial::FlatTriangulationCombinatorial()
+    : FlatTriangulationCombinatorial(vector<vector<int>>()) {}
+
+FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(const vector<vector<int>>& vertices)
     : FlatTriangulationCombinatorial(Permutation<HalfEdge>::create<int>(
           vertices, [](int e) { return HalfEdge(e); })) {}
 
-FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(
-    const Permutation<HalfEdge>& vertices)
+FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(const Permutation<HalfEdge>& vertices)
     : impl(spimpl::make_unique_impl<Implementation>(vertices)) {
   CHECK_ARGUMENT(vertices.size() % 2 == 0, "half edges must come in pairs");
   // check that faces are triangles
@@ -96,14 +106,18 @@ FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(
   }
 }
 
-FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(
-    FlatTriangulationCombinatorial&& rhs)
-    : impl(std::move(rhs.impl)) {
-  for (const auto& map : impl->halfEdgeMaps) map.second.relink(this);
+FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(FlatTriangulationCombinatorial&& rhs) : FlatTriangulationCombinatorial() {
+  *this = std::move(rhs);
 }
 
-FlatTriangulationCombinatorial FlatTriangulationCombinatorial::clone() const {
-  return FlatTriangulationCombinatorial(impl->vertices);
+FlatTriangulationCombinatorial& FlatTriangulationCombinatorial::operator=(FlatTriangulationCombinatorial&& rhs) noexcept {
+  impl = std::move(rhs.impl);
+  for (const auto& map : impl->halfEdgeMaps) map.second.relink(this);
+  return *this;
+}
+
+std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::clone() const {
+  return std::make_unique<FlatTriangulationCombinatorial>(impl->vertices);
 }
 
 vector<HalfEdge> FlatTriangulationCombinatorial::atVertex(const Vertex v) const {
@@ -137,8 +151,6 @@ void FlatTriangulationCombinatorial::flip(HalfEdge e) {
   cycle{a, d, e} *= impl->faces;
   cycle{c, b, -e} *= impl->faces;
 
-  assert(impl->halfEdgeMaps.size());
-
   // notify the half edge maps about this flip
   for (const auto& map : impl->halfEdgeMaps) map.second.flip(e, *this);
 }
@@ -155,19 +167,21 @@ void FlatTriangulationCombinatorial::registerMap(
           },
           std::cref(map), std::placeholders::_1, std::placeholders::_2),
       std::bind(
-          [](const HalfEdgeMap<T>& self,
-             FlatTriangulationCombinatorial const* parent) {
+          [](const HalfEdgeMap<T>& self, const FlatTriangulationCombinatorial* parent) {
             self.parent = parent;
           },
           std::cref(map), std::placeholders::_1)};
 }
 
 template <typename T>
-void FlatTriangulationCombinatorial::deregisterMap(
-    const HalfEdgeMap<T>& map) const {
+void FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<T>& map) const {
   uintptr_t key = reinterpret_cast<uintptr_t>(&map);
-  assert(impl->halfEdgeMaps.find(key) != impl->halfEdgeMaps.end());
+  ASSERT_ARGUMENT(impl->halfEdgeMaps.find(key) != impl->halfEdgeMaps.end(), "map to deregister not found among registered maps");
   impl->halfEdgeMaps.erase(key);
+}
+
+bool FlatTriangulationCombinatorial::operator==(const FlatTriangulationCombinatorial& rhs) const noexcept {
+  return this->impl->vertices == rhs.impl->vertices;
 }
 
 ostream& operator<<(ostream& os, const FlatTriangulationCombinatorial& self) {

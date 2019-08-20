@@ -59,7 +59,7 @@ class LengthAlongTriangulation<T>::Implementation {
 
   Implementation() : parent(nullptr), horizontal(nullptr), coefficients(), approximation() {}
 
-  Implementation(Surface const* parent, Vector<T> const* horizontal, const HalfEdge e) : parent(parent), horizontal(horizontal), coefficients(HalfEdgeMap<Coefficient>(this->parent, updateAfterFlip)), approximation() {
+  Implementation(const std::shared_ptr<const Surface>& parent, Vector<T> const* horizontal, const HalfEdge e) : parent(parent), horizontal(horizontal), coefficients(HalfEdgeMap<Coefficient>(this->parent.get(), updateAfterFlip)), approximation() {
     coefficients->set(e, 1);
     approximation = static_cast<Vector<Arb>>(parent->fromEdge(e)) * static_cast<Vector<Arb>>(*horizontal);
 
@@ -100,7 +100,7 @@ class LengthAlongTriangulation<T>::Implementation {
     return NONE_IS_NIL;
   }
 
-  Surface const* parent;
+  std::shared_ptr<const Surface> parent;
   Vector<T> const* horizontal;
   std::optional<HalfEdgeMap<Coefficient>> coefficients;
   mutable Arb approximation;
@@ -110,7 +110,7 @@ template <typename T>
 LengthAlongTriangulation<T>::LengthAlongTriangulation() : impl(spimpl::make_impl<Implementation>()) {}
 
 template <typename T>
-LengthAlongTriangulation<T>::LengthAlongTriangulation(Surface const* parent, Vector<T> const* horizontal, const HalfEdge e) : impl(spimpl::make_impl<Implementation>(parent, horizontal, e)) {}
+LengthAlongTriangulation<T>::LengthAlongTriangulation(const std::shared_ptr<const Surface>& parent, Vector<T> const* horizontal, const HalfEdge e) : impl(spimpl::make_impl<Implementation>(parent, horizontal, e)) {}
 
 template <typename T>
 bool LengthAlongTriangulation<T>::operator==(const LengthAlongTriangulation& rhs) const {
@@ -161,7 +161,7 @@ LengthAlongTriangulation<T>& LengthAlongTriangulation<T>::operator-=(const Lengt
       rhs.impl->coefficients->apply([&](const HalfEdge e, const typename Implementation::Coefficient& c) {
         impl->coefficients->set(e, impl->coefficients->get(e) - c);
       });
-      assert(*this >= LengthAlongTriangulation() && "Lengths must not be negative");
+      CHECK_ARGUMENT(*this >= LengthAlongTriangulation(), "Lengths must not be negative");
       break;
   }
   return *this;

@@ -1,3 +1,6 @@
 [submodule "src/libflatsurf/external/spimpl"]
 	path = libflatsurf/src/flatsurf/external/spimpl
 	url = https://github.com/oliora/samples.git
+[submodule "libflatsurf/test/external/cereal"]
+	path = libflatsurf/test/external/cereal
+	url = https://github.com/USCiLab/cereal.git

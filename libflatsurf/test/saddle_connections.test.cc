@@ -50,7 +50,7 @@ TYPED_TEST_CASE(SaddleConnectionsTest, ExactVectors);
 
 TYPED_TEST(SaddleConnectionsTest, Trivial) {
   auto square = makeSquare<TypeParam>();
-  auto connections = SaddleConnections(&square, 0, HalfEdge(1));
+  auto connections = SaddleConnections(square, 0, HalfEdge(1));
   EXPECT_EQ(connections.begin(), connections.end());
 }
 
@@ -58,21 +58,25 @@ TYPED_TEST(SaddleConnectionsTest, Square) {
   auto square = makeSquare<TypeParam>();
   auto bound = 16;
   auto expected = 60;
-  auto connections = SaddleConnections(&square, bound, HalfEdge(1));
+  auto connections = SaddleConnections(square, bound, HalfEdge(1));
   EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-  connections = SaddleConnections(&square, bound, HalfEdge(3));
+  connections = SaddleConnections(square, bound, HalfEdge(3));
   EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-  connections = SaddleConnections(&square, bound, HalfEdge(2));
+  connections = SaddleConnections(square, bound, HalfEdge(2));
   EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected * 2);
-  connections = SaddleConnections(&square, bound, HalfEdge(-1));
+  connections = SaddleConnections(square, bound, HalfEdge(-1));
   EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-  connections = SaddleConnections(&square, bound, HalfEdge(-3));
+  connections = SaddleConnections(square, bound, HalfEdge(-3));
   EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-  connections = SaddleConnections(&square, bound, HalfEdge(-2));
+  connections = SaddleConnections(square, bound, HalfEdge(-2));
   EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected * 2);
 
-  connections = SaddleConnections(&square, bound);
+  connections = SaddleConnections(square, bound);
   EXPECT_EQ(std::distance(connections.begin(), connections.end()), 480);
+
+  EXPECT_EQ(boost::lexical_cast<std::string>(**connections.begin()), "SaddleConnection(3 -> -1 in direction (0, 1))");
+
+  EXPECT_EQ(**connections.begin(), **connections.begin());
 }
 
 TYPED_TEST(SaddleConnectionsTest, Hexagon) {
@@ -82,20 +86,20 @@ TYPED_TEST(SaddleConnectionsTest, Hexagon) {
   } else {
     auto hexagon = makeHexagon<TypeParam>();
     auto bound = Bound(16);
-    auto connections = SaddleConnections(&hexagon, bound, HalfEdge(1));
+    auto connections = SaddleConnections(hexagon, bound, HalfEdge(1));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), 10);
-    connections = SaddleConnections(&hexagon, bound, HalfEdge(2));
+    connections = SaddleConnections(hexagon, bound, HalfEdge(2));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), 36);
-    connections = SaddleConnections(&hexagon, bound, HalfEdge(3));
+    connections = SaddleConnections(hexagon, bound, HalfEdge(3));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), 26);
-    connections = SaddleConnections(&hexagon, bound, HalfEdge(4));
+    connections = SaddleConnections(hexagon, bound, HalfEdge(4));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), 18);
-    connections = SaddleConnections(&hexagon, bound, HalfEdge(5));
+    connections = SaddleConnections(hexagon, bound, HalfEdge(5));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), 8);
-    connections = SaddleConnections(&hexagon, bound, HalfEdge(6));
+    connections = SaddleConnections(hexagon, bound, HalfEdge(6));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), 10);
 
-    connections = SaddleConnections(&hexagon, bound);
+    connections = SaddleConnections(hexagon, bound);
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), 216);
   }
 }

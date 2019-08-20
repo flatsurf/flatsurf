@@ -36,12 +36,21 @@ class Vector : public std::conditional_t<std::is_same_v<T, exactreal::Arb>, deta
   Vector();
   Vector(const Coordinate& x, const Coordinate& y);
 
+  Coordinate x() const noexcept;
+  Coordinate y() const noexcept;
+
  private:
   friend detail::VectorExact<Vector<T>, T>;
   friend detail::VectorWithError<Vector<T>>;
   friend detail::VectorBase<Vector<T>>;
   template <typename V>
   friend std::ostream& detail::operator<<(std::ostream&, const detail::VectorBase<V>&);
+
+  friend cereal::access;
+  template <typename Archive>
+  void save(Archive& archive) const;
+  template <typename Archive>
+  void load(Archive& archive);
 
   class Implementation;
   spimpl::impl_ptr<Implementation> impl;

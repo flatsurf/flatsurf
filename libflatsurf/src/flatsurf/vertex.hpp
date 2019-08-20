@@ -38,6 +38,7 @@ class Vertex : boost::equality_comparable<Vertex> {
   static Vertex source(const HalfEdge &, const FlatTriangulationCombinatorial &);
   static Vertex target(const HalfEdge &, const FlatTriangulationCombinatorial &);
 
+  // Note that this operator fails to distinguish equally labelled vertices on different surfaces.
   bool operator==(const Vertex &) const;
 
   friend std::ostream &operator<<(std::ostream &, const Vertex &);
@@ -51,6 +52,12 @@ class Vertex : boost::equality_comparable<Vertex> {
   HalfEdge representative;
 
   friend FlatTriangulationCombinatorial;
+
+  friend cereal::access;
+  template <typename Archive>
+  void save(Archive &) const;
+  template <typename Archive>
+  void load(Archive &);
 };
 }  // namespace flatsurf
 

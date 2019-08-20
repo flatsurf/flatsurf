@@ -77,4 +77,42 @@ template <typename T>
 class FlowDecomposition;
 }  // namespace flatsurf
 
+// The following block of forward declarations is a bit odd. It only exists to
+// work around bugs in cppyy.
+
+// See https://bitbucket.org/wlav/cppyy/issues/95/lookup-of-friend-operator
+namespace flatsurf {
+std::ostream &operator<<(std::ostream &, const HalfEdge &);
+template <typename T>
+std::ostream &operator<<(std::ostream &, const Permutation<T> &);
+template <typename T>
+std::ostream &operator<<(std::ostream &, const HalfEdgeMap<T> &);
+template <typename T>
+std::ostream &operator<<(std::ostream &, const FlatTriangulation<T> &);
+// Strangely, when we do not put the _ here and try to print a
+// FlatTriangulation<eantic::renf_elem_class> through cppyy, it would compile
+// code that looks sane but fail because the overload resolution picked this
+// overload (which seems to be completely unrelated.) This fails because
+// renf_elem_class, does not have a ::Vector which SaddleConnection class
+// requires. This is clearly a bug in cppyy, but we have not been able to
+// create a minimal reproducer yet.
+template <typename Surface, typename _ = typename Surface::Vector>
+std::ostream &operator<<(std::ostream &, const SaddleConnection<Surface> &);
+template <typename Surface>
+std::ostream &operator<<(std::ostream &, const SaddleConnections<Surface> &);
+
+// This does not work due to https://bitbucket.org/wlav/cppyy/issues/112/operator-for-a-base-class-is-not-found
+// namespace detail {
+// template <typename V>
+// std::ostream &operator<<(std::ostream &, const detail::VectorBase<V> &);
+// }  // namespace detail
+
+}  // namespace flatsurf
+
+// Forward declare cereal::access so we can befriend it in our classes.
+// cereal is a serialization library that you can use by including the cereal.hpp header.
+namespace cereal {
+struct access;
+}
+
 #endif

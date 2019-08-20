@@ -26,6 +26,7 @@
 #include "flatsurf/vector.hpp"
 #include "util/assert.ipp"
 
+using std::map;
 using std::ostream;
 using std::vector;
 
@@ -53,17 +54,14 @@ const Vector<T> &FlatTriangulation<T>::fromEdge(const HalfEdge e) const {
 }
 
 template <typename T>
-FlatTriangulation<T>::FlatTriangulation(
-    FlatTriangulationCombinatorial &&combinatorial,
-    const vector<Vector> &vectors)
-    : FlatTriangulation(std::move(combinatorial),
-                        HalfEdgeMap<Vector>(&combinatorial, vectors,
-                                            updateAfterFlip<Vector>)) {}
+FlatTriangulation<T>::FlatTriangulation() noexcept : FlatTriangulation(FlatTriangulationCombinatorial(), vector<Vector>{}) {}
 
 template <typename T>
-FlatTriangulation<T>::FlatTriangulation(
-    FlatTriangulationCombinatorial &&combinatorial,
-    HalfEdgeMap<Vector> &&vectors)
+FlatTriangulation<T>::FlatTriangulation(FlatTriangulationCombinatorial &&combinatorial, const vector<Vector> &vectors)
+    : FlatTriangulation(std::move(combinatorial), HalfEdgeMap<Vector>(&combinatorial, vectors, updateAfterFlip<Vector>)) {}
+
+template <typename T>
+FlatTriangulation<T>::FlatTriangulation(FlatTriangulationCombinatorial &&combinatorial, HalfEdgeMap<Vector> &&vectors)
     : FlatTriangulationCombinatorial(std::move(combinatorial)),
       impl(spimpl::make_unique_impl<Implementation>(std::move(vectors))) {
   // check that faces are closed
@@ -83,11 +81,35 @@ FlatTriangulation<T>::FlatTriangulation(
 }
 
 template <typename T>
-FlatTriangulation<T> FlatTriangulation<T>::clone() const {
+FlatTriangulation<T>::FlatTriangulation(FlatTriangulation<T> &&rhs) noexcept : FlatTriangulation() {
+  *this = std::move(rhs);
+}
+
+template <typename T>
+FlatTriangulation<T> &FlatTriangulation<T>::operator=(FlatTriangulation<T> &&rhs) noexcept {
+  impl = std::move(rhs.impl);
+  FlatTriangulationCombinatorial &self = static_cast<FlatTriangulationCombinatorial &>(*this);
+  self = std::move(rhs);
+  return *this;
+}
+
+template <typename T>
+std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::clone() const {
   std::vector<Vector> vectors;
   for (int e = 1; e <= halfEdges().size() / 2; e++)
     vectors.push_back(fromEdge(HalfEdge(e)));
-  return FlatTriangulation(FlatTriangulationCombinatorial::clone(), std::move(vectors));
+  return std::make_unique<FlatTriangulation>(std::move(*FlatTriangulationCombinatorial::clone()), std::move(vectors));
+}
+
+template <typename T>
+bool FlatTriangulation<T>::operator==(const FlatTriangulation<T> &rhs) const noexcept {
+  if (static_cast<const FlatTriangulationCombinatorial &>(*this) != static_cast<const FlatTriangulationCombinatorial &>(rhs))
+    return false;
+  for (auto &edge : halfEdges()) {
+    if (this->impl->vectors.get(edge) != rhs.impl->vectors.get(edge))
+      return false;
+  }
+  return true;
 }
 
 template <typename T>

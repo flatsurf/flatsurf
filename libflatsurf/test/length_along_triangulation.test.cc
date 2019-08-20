@@ -39,9 +39,9 @@ TEST(LengthAlongTriangulationTest, Square) {
   auto square = makeSquare<Vector>();
   auto horizontal = Vector(7, -3);
 
-  auto v10 = Length(&square, &horizontal, HalfEdge(1));
-  auto v01 = Length(&square, &horizontal, HalfEdge(-2));
-  auto v11 = Length(&square, &horizontal, HalfEdge(3));
+  auto v10 = Length(square, &horizontal, HalfEdge(1));
+  auto v01 = Length(square, &horizontal, HalfEdge(-2));
+  auto v11 = Length(square, &horizontal, HalfEdge(3));
 
   EXPECT_EQ(v10 - v01, v11);
   EXPECT_EQ(3 * v10, 7 * v01);

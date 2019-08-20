@@ -49,8 +49,8 @@ TYPED_TEST_CASE(IntervalExchangeTransformationTest, ExactVectors);
 TYPED_TEST(IntervalExchangeTransformationTest, Square) {
   auto square = makeSquare<TypeParam>();
 
-  for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(&square, Bound(10))) {
-    auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(square, sc->vector());
+  for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(square, Bound(10))) {
+    auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(*square, sc->vector());
   }
 }
 
@@ -60,8 +60,8 @@ TYPED_TEST(IntervalExchangeTransformationTest, Hexagon) {
   } else {
     auto hexagon = makeHexagon<TypeParam>();
 
-    for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(&hexagon, Bound(10))) {
-      auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(hexagon, sc->vector());
+    for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(hexagon, Bound(10))) {
+      auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(*hexagon, sc->vector());
     }
   }
 }
@@ -74,8 +74,8 @@ TYPED_TEST(IntervalExchangeTransformationTest, HeptagonL) {
   } else {
     auto heptagonL = makeHeptagonL<TypeParam>();
 
-    for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(&heptagonL, Bound(5))) {
-      auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(heptagonL, sc->vector());
+    for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(heptagonL, Bound(5))) {
+      auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(*heptagonL, sc->vector());
     }
   }
 }
@@ -88,8 +88,8 @@ TYPED_TEST(IntervalExchangeTransformationTest, GoldenL) {
   } else {
     auto goldenL = makeGoldenL<TypeParam>();
 
-    for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(&goldenL, Bound(10))) {
-      auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(goldenL, sc->vector());
+    for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(goldenL, Bound(10))) {
+      auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(*goldenL, sc->vector());
     }
   }
 }
@@ -100,8 +100,8 @@ TYPED_TEST(IntervalExchangeTransformationTest, _1221) {
   } else {
     auto _1221 = make1221<TypeParam>();
 
-    for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(&_1221, Bound(5))) {
-      auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(_1221, sc->vector());
+    for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(_1221, Bound(5))) {
+      auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(*_1221, sc->vector());
     }
   }
 }

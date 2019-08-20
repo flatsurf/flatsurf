@@ -36,7 +36,7 @@ class LengthAlongTriangulation : boost::totally_ordered<LengthAlongTriangulation
   using Surface = FlatTriangulation<T>;
 
   LengthAlongTriangulation();
-  LengthAlongTriangulation(Surface const*, Vector<T> const* horizontal, const HalfEdge);
+  LengthAlongTriangulation(const std::shared_ptr<const Surface>&, Vector<T> const* horizontal, const HalfEdge);
 
   bool operator==(const LengthAlongTriangulation&) const;
   bool operator<(const LengthAlongTriangulation&) const;

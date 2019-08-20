@@ -25,12 +25,7 @@ import sys
 import pytest
 import doctest
 
-
-if __name__ == '__main__':
-    try:
-        import sage.all
-    except InportError:
-        sys.exit(0)
-    import pyflatsurf.sageflatsurf_pyflatsurf
-    sys.exit(doctest.testmod(pyflatsurf.sageflatsurf_pyflatsurf).failed)
-
+import sage.all
+import pyflatsurf.sage_conversion
+sys.exit(doctest.testmod(pyflatsurf.sage_conversion).failed)
+# and test everything else

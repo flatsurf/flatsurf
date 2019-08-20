@@ -23,6 +23,7 @@
 #include <boost/operators.hpp>
 #include <iosfwd>
 #include <optional>
+#include <vector>
 #include "external/spimpl/spimpl.h"
 
 #include "flatsurf/forward.hpp"
@@ -31,8 +32,10 @@
 namespace flatsurf {
 template <typename Surface>
 class SaddleConnection : boost::equality_comparable<SaddleConnection<Surface>> {
+  using Vector = typename Surface::Vector;
+
  public:
-  const typename Surface::Vector &vector() const;
+  const Vector &vector() const;
   // The saddle connection is leaving from the vertex at the source of source.
   // It is leaving in a direction that is contained in the sector next to
   // source (counterclockwise.)
@@ -42,17 +45,30 @@ class SaddleConnection : boost::equality_comparable<SaddleConnection<Surface>> {
   // *clockwise* from *-target*.
   HalfEdge target() const;
 
+  const Surface &surface() const;
+
+  std::vector<HalfEdge> crossings() const;
+
   std::optional<int> angle(const SaddleConnection<Surface> &) const;
 
   SaddleConnection<Surface> operator-() const noexcept;
 
   bool operator==(const SaddleConnection<Surface> &) const;
 
-  template <typename Surf>
+  // See cppyy.hpp for the _ parameter.
+  template <typename Surf, typename _>
   friend std::ostream &operator<<(std::ostream &, const SaddleConnection<Surf> &);
 
  private:
+  SaddleConnection(const std::shared_ptr<const Surface> &, HalfEdge source, HalfEdge target, const Vector &);
+
   friend SaddleConnections<Surface>;
+
+  friend cereal::access;
+  template <typename Archive>
+  void save(Archive &archive) const;
+  template <typename Archive>
+  void load(Archive &archive);
 
   class Implementation;
   spimpl::impl_ptr<Implementation> impl;

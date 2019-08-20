@@ -54,7 +54,7 @@ auto makeSquare() {
     vectors = vector{R2(1, 0), R2(0, 1), R2(1, 1)};
   }
   auto vertices = vector<vector<int>>{{1, 3, 2, -1, -3, -2}};
-  return FlatTriangulation(vertices, vectors);
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(vertices, vectors);
 }
 
 template <typename R2>
@@ -76,7 +76,7 @@ auto makeGoldenL() {
     throw std::logic_error("not implemented: makeGoldenL()");
   }
   auto vertices = vector<vector<int>>{{1, 2, 3, 4, 5, -3, 6, 7, 8, -6, -2, 9, -4, -5, -9, -1, -7, -8}};
-  return FlatTriangulation(vertices, vectors);
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(vertices, vectors);
 }
 
 template <typename R2>
@@ -93,7 +93,7 @@ auto makeHexagon() {
     throw std::logic_error("not implemented: makeHexagon()");
   }
   auto vertices = vector<vector<int>>({{1, 3, -4, -5, -3, -2}, {2, -1, -6, 4, 5, 6}});
-  return FlatTriangulation(vertices, vectors);
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(vertices, vectors);
 }
 
 template <typename R2>
@@ -122,7 +122,7 @@ auto makeHeptagonL() {
     throw std::logic_error("not implemented: makeHeptagonL()");
   }
   auto vertices = vector<vector<int>>{{1, 2, 3, 4, 5, 6, -4, 7, 8, -1, 9, 10, 11, 12, -10, 13, -2, -8, 14, -5, -6, -14, -7, -3, -13, -9, 15, -11, -12, -15}};
-  return FlatTriangulation(vertices, vectors);
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(vertices, vectors);
 }
 
 template <typename R2>
@@ -144,7 +144,7 @@ auto make1221() {
   }
 
   auto vertices = vector<vector<int>>({{-12, 4, -6, -1, -8, 6, -5, 3, -10, 5, -4, 2}, {-11, 7, 1, 8, -7, 9, -3, 10, -9, 11, -2, 12}});
-  return FlatTriangulation(vertices, vectors);
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(vertices, vectors);
 }
 
 }  // namespace

@@ -21,6 +21,7 @@
 #define LIBFLATSURF_FLAT_TRIANGULATION_HPP
 
 #include <iosfwd>
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -35,18 +36,24 @@ class FlatTriangulation : public FlatTriangulationCombinatorial {
  public:
   using Vector = flatsurf::Vector<T>;
 
+  FlatTriangulation() noexcept;
   FlatTriangulation(FlatTriangulationCombinatorial &&, const std::vector<Vector> &vectors);
   FlatTriangulation(FlatTriangulationCombinatorial &&, HalfEdgeMap<Vector> &&vectors);
+  FlatTriangulation(FlatTriangulation<T> &&rhs) noexcept;
 
   // Create an unrelated clone of this triangulation that is built from the
   // same data. There is no copy-constructor since it is too likely that
   // this is would not update the associated HalfEdgeMaps in the way that the
   // caller expects.
-  FlatTriangulation<T> clone() const;
+  std::unique_ptr<FlatTriangulation<T>> clone() const;
 
   T area() const noexcept;
 
   const Vector &fromEdge(HalfEdge) const;
+
+  FlatTriangulation<T> &operator=(FlatTriangulation<T> &&) noexcept;
+
+  bool operator==(const FlatTriangulation<T> &) const noexcept;
 
   template <typename W>
   friend std::ostream &operator<<(std::ostream &, const FlatTriangulation<W> &);
@@ -54,6 +61,12 @@ class FlatTriangulation : public FlatTriangulationCombinatorial {
  private:
   class Implementation;
   spimpl::unique_impl_ptr<Implementation> impl;
+
+  friend cereal::access;
+  template <typename Archive>
+  void save(Archive &archive) const;
+  template <typename Archive>
+  void load(Archive &archive);
 };
 
 template <typename Vector>

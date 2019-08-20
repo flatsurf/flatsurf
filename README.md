@@ -45,6 +45,7 @@ You can try out the projects in this repository in a very limited environment on
 
 * **libflatsurf** [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/flatsurf/master?filepath=binder%2FSample.libflatsurf.ipynb)
 * **pyflatsurf** [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/flatsurf/master?filepath=binder%2FSample.pyflatsurf.ipynb)
+* **pyflatsurf** with SageMath [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/flatsurf/master?filepath=binder%2FSample.pyflatsurf.sage.ipynb)
 * **flatsurf-polygon** [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/flatsurf/master?filepath=binder%2FSample.flatsurf-polygon.ipynb)
 
 ## Build from the Source Code Repository

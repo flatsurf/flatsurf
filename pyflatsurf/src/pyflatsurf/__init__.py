@@ -19,3 +19,5 @@
 #*********************************************************************
 
 from .cppyy_flatsurf import flatsurf
+
+from .factory import make_surface as Surface

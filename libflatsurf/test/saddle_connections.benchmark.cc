@@ -46,17 +46,17 @@ void SaddleConnectionsSquare(benchmark::State& state) {
   auto bound = Bound(state.range(0));
   auto expected = state.range(1);
   for (auto _ : state) {
-    auto connections = SaddleConnections(&square, bound, HalfEdge(1));
+    auto connections = SaddleConnections(square, bound, HalfEdge(1));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-    connections = SaddleConnections(&square, bound, HalfEdge(3));
+    connections = SaddleConnections(square, bound, HalfEdge(3));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-    connections = SaddleConnections(&square, bound, HalfEdge(2));
+    connections = SaddleConnections(square, bound, HalfEdge(2));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected * 2);
-    connections = SaddleConnections(&square, bound, HalfEdge(-1));
+    connections = SaddleConnections(square, bound, HalfEdge(-1));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-    connections = SaddleConnections(&square, bound, HalfEdge(-3));
+    connections = SaddleConnections(square, bound, HalfEdge(-3));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-    connections = SaddleConnections(&square, bound, HalfEdge(-2));
+    connections = SaddleConnections(square, bound, HalfEdge(-2));
     EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected * 2);
   }
 }

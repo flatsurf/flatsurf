@@ -25,6 +25,7 @@
 
 #include "flatsurf/permutation.hpp"
 #include "util/as_vector.ipp"
+#include "util/assert.ipp"
 
 using boost::accumulate;
 using boost::adaptors::transformed;
@@ -37,12 +38,16 @@ using std::vector;
 namespace flatsurf {
 
 template <typename T>
+Permutation<T>::Permutation() : Permutation(std::vector<pair<T, T>>()) {}
+
+template <typename T>
 Permutation<T>::Permutation(const vector<vector<T>> &cycles)
     : data(accumulate(cycles, 0u, [](size_t sum, const auto &cycle) {
         return sum + cycle.size();
       })) {
   for (const auto cycle : cycles) {
     for (auto i = 0u; i < cycle.size(); i++) {
+      ASSERT_ARGUMENT(index(cycle[i]) < data.size(), "cycle contains an element beyond the size of the permutation");
       data[index(cycle[i])] = cycle[(i + 1) % cycle.size()];
     }
   }
@@ -52,8 +57,21 @@ template <typename T>
 Permutation<T>::Permutation(const vector<pair<T, T>> &permutation)
     : data(permutation.size()) {
   for (auto ab : permutation) {
+    ASSERT_ARGUMENT(index(ab.first) < data.size(), "entry of permutation points to an element beoynd the size of the permutation");
     data[index(ab.first)] = ab.second;
   }
+}
+
+template <typename T>
+Permutation<T> Permutation<T>::random(const vector<T> &domain) {
+  ASSERT_ARGUMENT(std::set<T>(domain.begin(), domain.end()).size() == domain.size(), "domain must not contain duplicates");
+  vector<T> image = domain;
+  std::random_shuffle(image.begin(), image.end());
+  vector<pair<T, T>> permutation;
+  for (size_t i = 0; i < domain.size(); i++) {
+    permutation.push_back(pair(domain[i], image[i]));
+  }
+  return Permutation<T>(permutation);
 }
 
 template <typename T>
@@ -62,13 +80,35 @@ const T &Permutation<T>::operator()(const T &t) const {
 }
 
 template <typename T>
-size_t Permutation<T>::size() const {
+size_t Permutation<T>::size() const noexcept {
   return data.size();
 }
 
 template <typename T>
-const vector<T> &Permutation<T>::domain() const {
+const vector<T> &Permutation<T>::domain() const noexcept {
   return data;
+}
+
+template <typename T>
+vector<vector<T>> Permutation<T>::cycles() const noexcept {
+  std::set<T> seen;
+  vector<vector<T>> cycles;
+  for (const auto &t : domain()) {
+    if (seen.find(t) != seen.end())
+      continue;
+
+    vector<T> cycle;
+    auto s = t;
+    do {
+      cycle.push_back(s);
+      seen.insert(s);
+      s = this->operator()(s);
+    } while (s != t);
+
+    cycles.push_back(cycle);
+  }
+
+  return cycles;
 }
 
 template <typename T>
@@ -95,12 +135,17 @@ Permutation<T> &operator*=(const vector<T> &cycle, Permutation<T> &self) {
 }
 
 template <typename T>
+bool Permutation<T>::operator==(const Permutation &rhs) const noexcept {
+  return data == rhs.data;
+}
+
+template <typename T>
 ostream &operator<<(ostream &os, const Permutation<T> &self) {
   set<T> remaining;
   for (auto t : self.data) {
     remaining.insert(t);
   }
-  assert(remaining.size() == self.data.size());
+  assert(remaining.size() == self.data.size() && "data must not contain duplicates");
   while (remaining.size()) {
     os << "(";
     const auto start = *remaining.begin();
