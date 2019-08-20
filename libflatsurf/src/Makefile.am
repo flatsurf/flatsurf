@@ -38,6 +38,7 @@ nobase_include_HEADERS =                                      \
 	flatsurf/saddle_connection.hpp                              \
 	flatsurf/vector.hpp                                         \
 	flatsurf/vector_along_triangulation.hpp                     \
+	flatsurf/cereal.hpp                                         \
 	flatsurf/vertex.hpp
 
 nobase_include_HEADERS +=                                     \
