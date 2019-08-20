@@ -55,9 +55,9 @@ class Vertex : boost::equality_comparable<Vertex> {
 
   friend cereal::access;
   template <typename Archive>
-  void save(Archive&) const;
+  void save(Archive &) const;
   template <typename Archive>
-  void load(Archive&);
+  void load(Archive &);
 };
 }  // namespace flatsurf
 

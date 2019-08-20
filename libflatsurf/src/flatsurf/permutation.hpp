@@ -20,10 +20,10 @@
 #ifndef LIBFLATSURF_PERMUTATION_HPP
 #define LIBFLATSURF_PERMUTATION_HPP
 
+#include <boost/operators.hpp>
 #include <functional>
 #include <iosfwd>
 #include <vector>
-#include <boost/operators.hpp>
 
 #include "flatsurf/flatsurf.hpp"
 
@@ -39,7 +39,7 @@ class Permutation : public boost::equality_comparable<Permutation<T>> {
   explicit Permutation(const std::vector<std::pair<T, T>> &permutation);
   template <typename S>
   static Permutation<T> create(const std::vector<std::vector<S>> &, const std::function<T(S)> &);
-  static Permutation<T> random(const std::vector<T>& domain);
+  static Permutation<T> random(const std::vector<T> &domain);
 
   const T &operator()(const T &t) const;
 
@@ -53,7 +53,7 @@ class Permutation : public boost::equality_comparable<Permutation<T>> {
   const std::vector<T> &domain() const noexcept;
   std::vector<std::vector<T>> cycles() const noexcept;
 
-  bool operator==(const Permutation&) const noexcept;
+  bool operator==(const Permutation &) const noexcept;
 
  private:
   std::vector<T> data;

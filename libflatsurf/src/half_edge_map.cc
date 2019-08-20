@@ -34,15 +34,15 @@ using std::vector;
 
 namespace flatsurf {
 template <typename T>
-HalfEdgeMap<T>::HalfEdgeMap(const FlatTriangulationCombinatorial* parent, const FlipHandler &updateAfterFlip) : parent(parent), values(parent->halfEdges().size()), updateAfterFlip(updateAfterFlip) {
+HalfEdgeMap<T>::HalfEdgeMap(const FlatTriangulationCombinatorial *parent, const FlipHandler &updateAfterFlip) : parent(parent), values(parent->halfEdges().size()), updateAfterFlip(updateAfterFlip) {
   parent->registerMap(*this);
 }
 
 template <typename T>
-HalfEdgeMap<T>::HalfEdgeMap(const FlatTriangulationCombinatorial* parent, const vector<T> &values, const FlipHandler &updateAfterFlip)
+HalfEdgeMap<T>::HalfEdgeMap(const FlatTriangulationCombinatorial *parent, const vector<T> &values, const FlipHandler &updateAfterFlip)
     : parent(parent), updateAfterFlip(updateAfterFlip) {
   CHECK_ARGUMENT(values.size() == parent->halfEdges().size() / 2,
-         "values must contain one entry for each pair of half edges");
+                 "values must contain one entry for each pair of half edges");
   for (size_t i = 0; i < values.size(); i++) {
     this->values.emplace_back(values[i]);
     this->values.emplace_back(-values[i]);

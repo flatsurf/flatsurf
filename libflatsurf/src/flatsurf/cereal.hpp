@@ -18,25 +18,25 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  * *******************************************************************/
 
-#include <cereal/cereal.hpp>
-#include <cereal/types/memory.hpp>
-#include <cereal/types/vector.hpp>
-#include <cereal/types/map.hpp>
-#include <cereal/types/utility.hpp>
 #include <cereal/archives/json.hpp>
+#include <cereal/cereal.hpp>
+#include <cereal/types/map.hpp>
+#include <cereal/types/memory.hpp>
+#include <cereal/types/utility.hpp>
+#include <cereal/types/vector.hpp>
 
-#include "flatsurf/vertex.hpp"
+#include "flatsurf/flat_triangulation_combinatorial.hpp"
 #include "flatsurf/half_edge.hpp"
 #include "flatsurf/permutation.hpp"
-#include "flatsurf/flat_triangulation_combinatorial.hpp"
+#include "flatsurf/vertex.hpp"
 
 #include "flatsurf/flat_triangulation.hpp"
-#include "flatsurf/saddle_connections.hpp"
-#include "flatsurf/saddle_connection.hpp"
-#include "flatsurf/vector.hpp"
-#include "flatsurf/vector_along_triangulation.hpp"
 #include "flatsurf/half_edge_map.hpp"
 #include "flatsurf/interval_exchange_transformation.hpp"
+#include "flatsurf/saddle_connection.hpp"
+#include "flatsurf/saddle_connections.hpp"
+#include "flatsurf/vector.hpp"
+#include "flatsurf/vector_along_triangulation.hpp"
 
 namespace flatsurf {
 
@@ -100,7 +100,7 @@ void FlatTriangulation<T>::save(Archive& archive) const {
   archive(cereal::make_nvp("combinatorial", *static_cast<const FlatTriangulationCombinatorial*>(this)->clone()));
 
   std::map<HalfEdge, typename FlatTriangulation<T>::Vector> vectors;
-  for (auto & edge : halfEdges())
+  for (auto& edge : halfEdges())
     vectors[edge] = fromEdge(edge);
 
   archive(cereal::make_nvp("vectors", vectors));
@@ -109,30 +109,30 @@ void FlatTriangulation<T>::save(Archive& archive) const {
 template <typename T>
 template <typename Archive>
 void FlatTriangulation<T>::load(Archive& archive) {
-    FlatTriangulationCombinatorial combinatorial;
-    archive(cereal::make_nvp("combinatorial", combinatorial));
-    std::cout << combinatorial << std::endl;
-    std::map<HalfEdge, typename FlatTriangulation<T>::Vector> map;
-    archive(cereal::make_nvp("vectors", map));
+  FlatTriangulationCombinatorial combinatorial;
+  archive(cereal::make_nvp("combinatorial", combinatorial));
+  std::cout << combinatorial << std::endl;
+  std::map<HalfEdge, typename FlatTriangulation<T>::Vector> map;
+  archive(cereal::make_nvp("vectors", map));
 
-    auto vectors = HalfEdgeMap<typename flatsurf::FlatTriangulation<T>::Vector>(&combinatorial, [](auto&,auto,auto&){});
-    for (auto & v : map)
-      vectors.set(v.first, v.second);
+  auto vectors = HalfEdgeMap<typename flatsurf::FlatTriangulation<T>::Vector>(&combinatorial, [](auto&, auto, auto&) {});
+  for (auto& v : map)
+    vectors.set(v.first, v.second);
 
-    *this = FlatTriangulation<long long>(std::move(std::move(combinatorial)), std::move(vectors));
+  *this = FlatTriangulation<long long>(std::move(std::move(combinatorial)), std::move(vectors));
 }
 
 template <typename T>
 template <typename Archive>
-void Vector<T>::save(Archive & archive) const {
+void Vector<T>::save(Archive& archive) const {
   archive(cereal::make_nvp("x", x()));
   archive(cereal::make_nvp("y", y()));
 }
 
 template <typename T>
 template <typename Archive>
-void Vector<T>::load(Archive & archive) {
-  typename Vector<T>::Coordinate x,y;
+void Vector<T>::load(Archive& archive) {
+  typename Vector<T>::Coordinate x, y;
   archive(cereal::make_nvp("x", x));
   archive(cereal::make_nvp("y", y));
   *this = Vector<T>(x, y);
@@ -140,7 +140,7 @@ void Vector<T>::load(Archive & archive) {
 
 template <typename Surface>
 template <typename Archive>
-void SaddleConnection<Surface>::save(Archive & archive) const {
+void SaddleConnection<Surface>::save(Archive& archive) const {
   archive(cereal::make_nvp("surface", std::static_pointer_cast<const Surface>(surface().shared_from_this())));
   archive(cereal::make_nvp("source", source()));
   archive(cereal::make_nvp("target", target()));
@@ -150,7 +150,7 @@ void SaddleConnection<Surface>::save(Archive & archive) const {
 
 template <typename Surface>
 template <typename Archive>
-void SaddleConnection<Surface>::load(Archive & archive) {
+void SaddleConnection<Surface>::load(Archive& archive) {
   std::shared_ptr<Surface> surface;
   archive(cereal::make_nvp("surface", surface));
   HalfEdge source, target;
@@ -162,4 +162,4 @@ void SaddleConnection<Surface>::load(Archive & archive) {
   *this = SaddleConnection<Surface>(surface, source, target, vector);
 }
 
-}
+}  // namespace flatsurf

@@ -26,9 +26,9 @@
 #include "flatsurf/vector.hpp"
 #include "util/assert.ipp"
 
+using std::map;
 using std::ostream;
 using std::vector;
-using std::map;
 
 namespace flatsurf {
 namespace {
@@ -61,7 +61,7 @@ FlatTriangulation<T>::FlatTriangulation(FlatTriangulationCombinatorial &&combina
     : FlatTriangulation(std::move(combinatorial), HalfEdgeMap<Vector>(&combinatorial, vectors, updateAfterFlip<Vector>)) {}
 
 template <typename T>
-FlatTriangulation<T>::FlatTriangulation(FlatTriangulationCombinatorial&& combinatorial, HalfEdgeMap<Vector> &&vectors)
+FlatTriangulation<T>::FlatTriangulation(FlatTriangulationCombinatorial &&combinatorial, HalfEdgeMap<Vector> &&vectors)
     : FlatTriangulationCombinatorial(std::move(combinatorial)),
       impl(spimpl::make_unique_impl<Implementation>(std::move(vectors))) {
   // check that faces are closed
@@ -81,14 +81,14 @@ FlatTriangulation<T>::FlatTriangulation(FlatTriangulationCombinatorial&& combina
 }
 
 template <typename T>
-FlatTriangulation<T>::FlatTriangulation(FlatTriangulation<T>&& rhs) noexcept : FlatTriangulation() {
+FlatTriangulation<T>::FlatTriangulation(FlatTriangulation<T> &&rhs) noexcept : FlatTriangulation() {
   *this = std::move(rhs);
 }
 
 template <typename T>
-FlatTriangulation<T>& FlatTriangulation<T>::operator=(FlatTriangulation<T>&& rhs) noexcept {
+FlatTriangulation<T> &FlatTriangulation<T>::operator=(FlatTriangulation<T> &&rhs) noexcept {
   impl = std::move(rhs.impl);
-  FlatTriangulationCombinatorial& self = static_cast<FlatTriangulationCombinatorial&>(*this);
+  FlatTriangulationCombinatorial &self = static_cast<FlatTriangulationCombinatorial &>(*this);
   self = std::move(rhs);
   return *this;
 }
@@ -102,10 +102,10 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::clone() const {
 }
 
 template <typename T>
-bool FlatTriangulation<T>::operator==(const FlatTriangulation<T>& rhs) const noexcept {
-  if (static_cast<const FlatTriangulationCombinatorial&>(*this) != static_cast<const FlatTriangulationCombinatorial&>(rhs))
+bool FlatTriangulation<T>::operator==(const FlatTriangulation<T> &rhs) const noexcept {
+  if (static_cast<const FlatTriangulationCombinatorial &>(*this) != static_cast<const FlatTriangulationCombinatorial &>(rhs))
     return false;
-  for (auto & edge : halfEdges()) {
+  for (auto &edge : halfEdges()) {
     if (this->impl->vectors.get(edge) != rhs.impl->vectors.get(edge))
       return false;
   }

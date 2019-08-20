@@ -21,9 +21,9 @@
 #define LIBFLATSURF_FLAT_TRIANGULATION_HPP
 
 #include <iosfwd>
+#include <map>
 #include <memory>
 #include <vector>
-#include <map>
 
 #include "external/spimpl/spimpl.h"
 
@@ -37,9 +37,9 @@ class FlatTriangulation : public FlatTriangulationCombinatorial {
   using Vector = flatsurf::Vector<T>;
 
   FlatTriangulation() noexcept;
-  FlatTriangulation(FlatTriangulationCombinatorial&&, const std::vector<Vector> &vectors);
-  FlatTriangulation(FlatTriangulationCombinatorial&&, HalfEdgeMap<Vector> &&vectors);
-  FlatTriangulation(FlatTriangulation<T>&& rhs) noexcept;
+  FlatTriangulation(FlatTriangulationCombinatorial &&, const std::vector<Vector> &vectors);
+  FlatTriangulation(FlatTriangulationCombinatorial &&, HalfEdgeMap<Vector> &&vectors);
+  FlatTriangulation(FlatTriangulation<T> &&rhs) noexcept;
 
   // Create an unrelated clone of this triangulation that is built from the
   // same data. There is no copy-constructor since it is too likely that
@@ -51,9 +51,9 @@ class FlatTriangulation : public FlatTriangulationCombinatorial {
 
   const Vector &fromEdge(HalfEdge) const;
 
-  FlatTriangulation<T>& operator=(FlatTriangulation<T>&&) noexcept;
+  FlatTriangulation<T> &operator=(FlatTriangulation<T> &&) noexcept;
 
-  bool operator==(const FlatTriangulation<T>&) const noexcept;
+  bool operator==(const FlatTriangulation<T> &) const noexcept;
 
   template <typename W>
   friend std::ostream &operator<<(std::ostream &, const FlatTriangulation<W> &);
@@ -64,9 +64,9 @@ class FlatTriangulation : public FlatTriangulationCombinatorial {
 
   friend cereal::access;
   template <typename Archive>
-  void save(Archive & archive) const;
+  void save(Archive &archive) const;
   template <typename Archive>
-  void load(Archive & archive);
+  void load(Archive &archive);
 };
 
 template <typename Vector>

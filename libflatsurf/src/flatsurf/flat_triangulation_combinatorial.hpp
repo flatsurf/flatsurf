@@ -55,9 +55,9 @@ class FlatTriangulationCombinatorial : boost::equality_comparable<FlatTriangulat
   // numbering of edges.)
   // This method is not virtual so that even non-combinatorial triangulations
   // can be compared combinatorially.
-  bool operator==(const FlatTriangulationCombinatorial& rhs) const noexcept;
+  bool operator==(const FlatTriangulationCombinatorial &rhs) const noexcept;
 
-  FlatTriangulationCombinatorial& operator=(FlatTriangulationCombinatorial&&) noexcept;
+  FlatTriangulationCombinatorial &operator=(FlatTriangulationCombinatorial &&) noexcept;
 
   friend std::ostream &operator<<(std::ostream &, const FlatTriangulationCombinatorial &);
 
@@ -75,9 +75,9 @@ class FlatTriangulationCombinatorial : boost::equality_comparable<FlatTriangulat
 
   friend cereal::access;
   template <typename Archive>
-  void save(Archive & archive) const;
+  void save(Archive &archive) const;
   template <typename Archive>
-  void load(Archive & archive);
+  void load(Archive &archive);
 };
 }  // namespace flatsurf
 

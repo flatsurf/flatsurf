@@ -20,10 +20,10 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTION_IPP
 #define LIBFLATSURF_SADDLE_CONNECTION_IPP
 
-#include <climits>
-#include <ostream>
 #include <boost/lexical_cast.hpp>
+#include <climits>
 #include <intervalxt/length.hpp>
+#include <ostream>
 
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/saddle_connection.hpp"
@@ -38,7 +38,7 @@ namespace flatsurf {
 template <typename Surface>
 class SaddleConnection<Surface>::Implementation {
  public:
-  Implementation(const std::shared_ptr<const Surface>& surface, HalfEdge source, HalfEdge target, const typename Surface::Vector &vector)
+  Implementation(const std::shared_ptr<const Surface> &surface, HalfEdge source, HalfEdge target, const typename Surface::Vector &vector)
       : surface(surface), source(source), target(target), vector(vector) {}
 
   std::shared_ptr<const Surface> surface;
@@ -54,7 +54,7 @@ ostream &operator<<(ostream &os, const SaddleConnection<Surface> &self) {
 
   bool crossingAnyHalfEdge = false;
 
-  for (auto & crossing : self.crossings()) {
+  for (auto &crossing : self.crossings()) {
     if (!crossingAnyHalfEdge)
       os << " crossing";
     crossingAnyHalfEdge = true;
@@ -65,7 +65,7 @@ ostream &operator<<(ostream &os, const SaddleConnection<Surface> &self) {
 }
 
 template <typename Surface>
-SaddleConnection<Surface>::SaddleConnection(const std::shared_ptr<const Surface>& surface, HalfEdge source, HalfEdge target, const typename Surface::Vector &vector) : impl(spimpl::make_impl<Implementation>(surface, source, target, vector)) {}
+SaddleConnection<Surface>::SaddleConnection(const std::shared_ptr<const Surface> &surface, HalfEdge source, HalfEdge target, const typename Surface::Vector &vector) : impl(spimpl::make_impl<Implementation>(surface, source, target, vector)) {}
 
 template <typename Surface>
 bool SaddleConnection<Surface>::operator==(const SaddleConnection<Surface> &rhs) const {
@@ -81,7 +81,7 @@ template <typename Surface>
 HalfEdge SaddleConnection<Surface>::target() const { return impl->target; }
 
 template <typename Surface>
-const Surface& SaddleConnection<Surface>::surface() const { return *impl->surface; }
+const Surface &SaddleConnection<Surface>::surface() const { return *impl->surface; }
 
 template <typename Surface>
 const typename Surface::Vector &SaddleConnection<Surface>::vector() const { return impl->vector; }
@@ -131,6 +131,6 @@ template class SaddleConnection<FlatTriangulation<exactreal::Element<exactreal::
 template ostream &operator<<(ostream &, const SaddleConnection<FlatTriangulation<exactreal::Element<exactreal::RationalField>>> &);
 template class SaddleConnection<FlatTriangulation<exactreal::Element<exactreal::NumberField>>>;
 template ostream &operator<<(ostream &, const SaddleConnection<FlatTriangulation<exactreal::Element<exactreal::NumberField>>> &);
-}
+}  // namespace flatsurf
 
 #endif

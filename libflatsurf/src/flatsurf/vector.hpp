@@ -48,9 +48,9 @@ class Vector : public std::conditional_t<std::is_same_v<T, exactreal::Arb>, deta
 
   friend cereal::access;
   template <typename Archive>
-  void save(Archive & archive) const;
+  void save(Archive& archive) const;
   template <typename Archive>
-  void load(Archive & archive);
+  void load(Archive& archive);
 
   class Implementation;
   spimpl::impl_ptr<Implementation> impl;

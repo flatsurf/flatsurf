@@ -28,12 +28,12 @@
 #include "surfaces.hpp"
 
 using namespace flatsurf;
+using cereal::JSONInputArchive;
+using cereal::JSONOutputArchive;
 using eantic::renf_class;
 using std::vector;
 using testing::Test;
 using testing::Types;
-using cereal::JSONOutputArchive;
-using cereal::JSONInputArchive;
 
 namespace flatsurf {
 
@@ -71,8 +71,10 @@ struct printer {
 template <typename T>
 struct printer<std::shared_ptr<T>> {
   static std::string toString(const std::shared_ptr<T>& x) {
-    if (x) return boost::lexical_cast<std::string>(x) + " -> " + printer<T>::toString(*x);
-    else return "null";
+    if (x)
+      return boost::lexical_cast<std::string>(x) + " -> " + printer<T>::toString(*x);
+    else
+      return "null";
   }
 };
 
@@ -137,10 +139,10 @@ TEST(CerealTest, FlatTriangulation) {
 
 TEST(CerealTest, SaddleConnection) {
   auto square = makeSquare<Vector<long long>>();
-  auto sc  = SaddleConnections(square, Bound(8));
+  auto sc = SaddleConnections(square, Bound(8));
   test_serialization(**sc.begin());
 }
 
-}  // namespace
+}  // namespace flatsurf
 
 #include "main.hpp"

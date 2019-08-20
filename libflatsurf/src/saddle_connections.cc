@@ -23,8 +23,8 @@
 
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/half_edge.hpp"
-#include "flatsurf/saddle_connections.hpp"
 #include "flatsurf/saddle_connection.hpp"
+#include "flatsurf/saddle_connections.hpp"
 #include "flatsurf/vector.hpp"
 #include "flatsurf/vector_along_triangulation.hpp"
 
@@ -469,7 +469,7 @@ template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const SaddleConnections<Surface>&) {
   return os << "SaddleConnections()";
 }
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include <e-antic/renfxx_fwd.h>
@@ -488,14 +488,14 @@ std::ostream& operator<<(std::ostream& os, const typename SaddleConnections<Flat
 std::ostream& operator<<(std::ostream& os, const typename SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::NumberField>>>::Iterator& self) { return os << *self.impl; }
 
 template class SaddleConnections<FlatTriangulation<long long>>;
-template std::ostream &operator<<(std::ostream &, const SaddleConnections<FlatTriangulation<long long>> &);
+template std::ostream& operator<<(std::ostream&, const SaddleConnections<FlatTriangulation<long long>>&);
 template class SaddleConnections<FlatTriangulation<eantic::renf_elem_class>>;
-template std::ostream &operator<<(std::ostream &, const SaddleConnections<FlatTriangulation<eantic::renf_elem_class>> &);
+template std::ostream& operator<<(std::ostream&, const SaddleConnections<FlatTriangulation<eantic::renf_elem_class>>&);
 template class SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::IntegerRing>>>;
-template std::ostream &operator<<(std::ostream &, const SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::IntegerRing>>> &);
+template std::ostream& operator<<(std::ostream&, const SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::IntegerRing>>>&);
 template class SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::RationalField>>>;
-template std::ostream &operator<<(std::ostream &, const SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::RationalField>>> &);
+template std::ostream& operator<<(std::ostream&, const SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::RationalField>>>&);
 template class SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::NumberField>>>;
-template std::ostream &operator<<(std::ostream &, const SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::NumberField>>> &);
+template std::ostream& operator<<(std::ostream&, const SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::NumberField>>>&);
 
 }  // namespace flatsurf

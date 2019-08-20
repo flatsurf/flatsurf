@@ -63,12 +63,12 @@ Permutation<T>::Permutation(const vector<pair<T, T>> &permutation)
 }
 
 template <typename T>
-Permutation<T> Permutation<T>::random(const vector<T>& domain) {
+Permutation<T> Permutation<T>::random(const vector<T> &domain) {
   ASSERT_ARGUMENT(std::set<T>(domain.begin(), domain.end()).size() == domain.size(), "domain must not contain duplicates");
   vector<T> image = domain;
   std::random_shuffle(image.begin(), image.end());
   vector<pair<T, T>> permutation;
-  for (size_t i = 0; i<domain.size(); i++){
+  for (size_t i = 0; i < domain.size(); i++) {
     permutation.push_back(pair(domain[i], image[i]));
   }
   return Permutation<T>(permutation);
@@ -93,7 +93,7 @@ template <typename T>
 vector<vector<T>> Permutation<T>::cycles() const noexcept {
   std::set<T> seen;
   vector<vector<T>> cycles;
-  for(const auto & t : domain()) {
+  for (const auto &t : domain()) {
     if (seen.find(t) != seen.end())
       continue;
 
@@ -103,7 +103,7 @@ vector<vector<T>> Permutation<T>::cycles() const noexcept {
       cycle.push_back(s);
       seen.insert(s);
       s = this->operator()(s);
-    } while(s != t);
+    } while (s != t);
 
     cycles.push_back(cycle);
   }
@@ -135,7 +135,7 @@ Permutation<T> &operator*=(const vector<T> &cycle, Permutation<T> &self) {
 }
 
 template <typename T>
-bool Permutation<T>::operator==(const Permutation& rhs) const noexcept {
+bool Permutation<T>::operator==(const Permutation &rhs) const noexcept {
   return data == rhs.data;
 }
 

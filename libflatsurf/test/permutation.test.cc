@@ -21,8 +21,8 @@
 #include <gtest/gtest.h>
 #include <boost/lexical_cast.hpp>
 
-#include <flatsurf/permutation.hpp>
 #include <flatsurf/half_edge.hpp>
+#include <flatsurf/permutation.hpp>
 
 using std::vector;
 using testing::Test;
@@ -45,6 +45,6 @@ TEST(Permutation, Cycles) {
   }
 }
 }  // namespace
-}
+}  // namespace flatsurf
 
 #include "main.hpp"

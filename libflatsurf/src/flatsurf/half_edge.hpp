@@ -55,9 +55,9 @@ class HalfEdge : boost::equality_comparable<HalfEdge>,
 
   friend cereal::access;
   template <typename Archive>
-  int save_minimal(Archive&) const;
+  int save_minimal(Archive &) const;
   template <typename Archive>
-  void load_minimal(Archive&, const int&);
+  void load_minimal(Archive &, const int &);
 };
 }  // namespace flatsurf
 

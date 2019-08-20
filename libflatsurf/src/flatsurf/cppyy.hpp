@@ -21,10 +21,10 @@
 #define LIBFLATSURF_CPPYY_HPP
 
 #include <e-antic/renfxx_fwd.h>
+#include <boost/lexical_cast.hpp>
 #include <exact-real/forward.hpp>
 #include <intervalxt/length.hpp>
 #include <iosfwd>
-#include <boost/lexical_cast.hpp>
 
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/flat_triangulation_combinatorial.hpp"

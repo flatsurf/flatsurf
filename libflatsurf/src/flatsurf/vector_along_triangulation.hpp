@@ -40,9 +40,9 @@ class VectorAlongTriangulation : public std::conditional_t<std::is_base_of_v<det
   using Coordinate = T;
   using Surface = Surf;
 
-  explicit VectorAlongTriangulation(const std::shared_ptr<const Surface>&);
-  VectorAlongTriangulation(const std::shared_ptr<const Surface>&, const std::vector<HalfEdge> &);
-  VectorAlongTriangulation(const std::shared_ptr<const Surface>&, const HalfEdgeMap<int> &coefficients);
+  explicit VectorAlongTriangulation(const std::shared_ptr<const Surface> &);
+  VectorAlongTriangulation(const std::shared_ptr<const Surface> &, const std::vector<HalfEdge> &);
+  VectorAlongTriangulation(const std::shared_ptr<const Surface> &, const HalfEdgeMap<int> &coefficients);
 
   VectorAlongTriangulation &operator+=(const HalfEdge);
   VectorAlongTriangulation &operator-=(const HalfEdge);

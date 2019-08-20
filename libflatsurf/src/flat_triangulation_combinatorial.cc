@@ -85,19 +85,19 @@ const vector<HalfEdge>& FlatTriangulationCombinatorial::halfEdges() const {
   return impl->vertices.domain();
 }
 
-const vector<Vertex>& FlatTriangulationCombinatorial::vertices() const  {
+const vector<Vertex>& FlatTriangulationCombinatorial::vertices() const {
   return impl->vertexes;
 }
 
 FlatTriangulationCombinatorial::FlatTriangulationCombinatorial()
-  : FlatTriangulationCombinatorial(vector<vector<int>>()) {}
+    : FlatTriangulationCombinatorial(vector<vector<int>>()) {}
 
 FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(const vector<vector<int>>& vertices)
-  : FlatTriangulationCombinatorial(Permutation<HalfEdge>::create<int>(
+    : FlatTriangulationCombinatorial(Permutation<HalfEdge>::create<int>(
           vertices, [](int e) { return HalfEdge(e); })) {}
 
 FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(const Permutation<HalfEdge>& vertices)
-  : impl(spimpl::make_unique_impl<Implementation>(vertices)) {
+    : impl(spimpl::make_unique_impl<Implementation>(vertices)) {
   CHECK_ARGUMENT(vertices.size() % 2 == 0, "half edges must come in pairs");
   // check that faces are triangles
   for (auto edge : impl->faces.domain()) {
