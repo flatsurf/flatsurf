@@ -93,35 +93,40 @@ def to_FlatTriangulation(S):
     r"""
     Given S a translation surface from flatsurf builds a flat polygonization
 
-    Examples
+    EXAMPLES::
 
-    >>> import sage.all
-    >>> import flatsurf
-    >>> from pyflatsurf import Surface
+        sage: import flatsurf
+        sage: from pyflatsurf import Surface
 
-    Building the regular 2n-gons for n=5,7 (Veech surfaces)
+    Building the regular 2n-gons for n=5,7 (Veech surfaces)::
 
-    >>> S5 = flatsurf.translation_surfaces.veech_double_n_gon(5)
-    >>> T5 = Surface(S5)
+        sage: S5 = flatsurf.translation_surfaces.veech_double_n_gon(5)
+        sage: T5 = Surface(S5)
 
-    >>> S7 = flatsurf.translation_surfaces.veech_double_n_gon(7)
-    >>> T7 = Surface(S7)
+    ::
 
-    Arnoux-Yoccoz surfaces in genus 3 and 4
+        sage: S7 = flatsurf.translation_surfaces.veech_double_n_gon(7)
+        sage: T7 = Surface(S7)
 
-    >>> A3 = flatsurf.translation_surfaces.arnoux_yoccoz(3)
-    >>> B3 = Surface(A3)
+    Arnoux-Yoccoz surfaces in genus 3 and 4::
 
-    >>> A4 = flatsurf.translation_surfaces.arnoux_yoccoz(4)
-    >>> B4 = Surface(A4)
+        sage: A3 = flatsurf.translation_surfaces.arnoux_yoccoz(3)
+        sage: B3 = Surface(A3)
 
-    Ward surfaces (a regular 2n-gon glued to two regular n-gons)
+    ::
 
-    >>> W3 = flatsurf.translation_surfaces.ward(3)
-    >>> X3 = Surface(W3)
+        sage: A4 = flatsurf.translation_surfaces.arnoux_yoccoz(4)
+        sage: B4 = Surface(A4)
 
-    >>> W17 = flatsurf.translation_surfaces.ward(17)
-    >>> X17 = Surface(W17)
+    Ward surfaces (a regular 2n-gon glued to two regular n-gons)::
+
+        sage: W3 = flatsurf.translation_surfaces.ward(3)
+        sage: X3 = Surface(W3)
+
+    ::
+
+        sage: W17 = flatsurf.translation_surfaces.ward(17)
+        sage: X17 = Surface(W17)
     """
     if not isinstance(S, sage_flatsurf.geometry.translation_surface.TranslationSurface):
         raise TypeError("S must be a translation surface")

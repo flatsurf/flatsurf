@@ -25,6 +25,7 @@
 #include <exact-real/forward.hpp>
 #include <intervalxt/length.hpp>
 #include <iosfwd>
+#include <memory>
 
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/flat_triangulation_combinatorial.hpp"
@@ -36,28 +37,10 @@
 #include "flatsurf/vector.hpp"
 #include "flatsurf/vector_along_triangulation.hpp"
 
-// cppyy does not see the operators that come out of boost/operators.hpp.
-// Why exactly is not clear to me at the moment. Since they are defined as
-// non-template friends inside the template classes such as addable<>, we can
-// not explicitly declare them like we did with the operator<< below.
-template <typename S, typename T, char op>
-auto boost_binary(const S &lhs, const T &rhs) {
-  if constexpr (op == '+')
-    return lhs + rhs;
-  else if constexpr (op == '-')
-    return lhs - rhs;
-  else if constexpr (op == '*')
-    return lhs * rhs;
-  else if constexpr (op == '/')
-    return lhs / rhs;
-  else {
-    static_assert(std::is_void_v<op>, "operator not implemented");
-  }
-}
-
-template <typename T>
-T minus(const T &lhs) {
-  return -lhs;
+// cppyy sometimes has trouble with rvalues, let's help it to create a FlatTriangulation
+template<typename T, typename V>
+auto makeFlatTriangulation(const T& vertices, const std::vector<V>& vectors) {
+  return std::make_shared<flatsurf::FlatTriangulation<typename V::Coordinate>>(flatsurf::FlatTriangulationCombinatorial(vertices), vectors);
 }
 
 // Work around https://bitbucket.org/wlav/cppyy/issues/96/cannot-make-wrapper-for-a-function

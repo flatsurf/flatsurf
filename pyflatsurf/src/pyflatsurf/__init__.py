@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+r"""
+A Python Interface to libflatsurf
+
+>>> import pyflatsurf
+
+"""
 #*********************************************************************
 #  This file is part of flatsurf.
 #

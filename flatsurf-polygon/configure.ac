@@ -51,7 +51,10 @@ AX_CXX_CHECK_LIB([eanticxx], [eantic::renf_elem_class], [have_eanticxx=yes], AC_
 AX_CXX_CHECK_LIB([exactreal], [exactreal::RealNumber::arb (long prec = 0) const], [have_exactreal=yes], AC_MSG_ERROR([exact-real library not found]), [-lgmp -lmpfr -lflint])
 AC_CHECK_HEADERS([exact-real/real_number.hpp exact-real/module.hpp], , AC_MSG_ERROR([libexactreal headers not found]))
 
-AX_CXX_CHECK_LIB([intervalxt], [intervalxt::RationalLinearSubspace], [have_intervalxt=yes], AC_MSG_ERROR([intervalxt library not found]), [-lgmp -lmpfr -lflint])
+# intervalxt does not contain anything that we can check for with AX_CXX_CHECK_LIB
+# so we just check for something from the standard library, i.e., that -lintervalxt
+# goes through
+AX_CXX_CHECK_LIB([intervalxt], [std::runtime_error::what () const], [have_intervalxt=yes], AC_MSG_ERROR([intervalxt library not found]), [-lgmp -lmpfr -lflint])
 AC_CHECK_HEADERS([intervalxt/intervalxt.hpp], , AC_MSG_ERROR([libintervalxt headers not found]))
 
 
