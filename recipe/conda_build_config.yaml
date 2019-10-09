@@ -2,6 +2,22 @@ channel_targets:
   - flatsurf main
 channel_sources:
   - flatsurf,conda-forge,defaults
-build_flavour:
+target:
   - release
+  - release
+  - release
+  - style
+  - test
   - coverage
+  - benchmark
+name:
+  - libflatsurf
+  - pyflatsurf
+  - flatsurf-polygon
+  - flatsurf
+  - flatsurf
+  - flatsurf
+  - flatsurf
+zip_keys:
+  - target
+  - name

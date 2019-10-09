@@ -3,10 +3,11 @@
 # conda-smithy assumes that the build number is >= 1000 when building with the new anaconda compilers,
 # this probably is not important but make_build_number otherwise complains during the build
 {% set build_number = (environ.get('GIT_DESCRIBE_NUMBER')|int + 1000)|string %}
-{% set build_string = "master_" + ((build_flavour + "_") if build_flavour != "release" else "") + build_number %}
+{% set name = name or 'flatsurf' %}
+{% set target = target or 'release' %}
 
 package:
-  name: flatsurf
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -14,140 +15,108 @@ source:
 
 build:
   number: {{ build_number }}
-  string: {{ build_string }}
+{%- if name in ["libflatsurf", "flatsurf-polygon"] %}
+  string: {{ target }}_{{ build_number }}
+{%- else %}
+  string: {{ target }}_py{{ python }}_{{ build_number }}
+{%- endif %}
   # intervalxt is not available on Windows yet
   skip: True  # [win]
   # intervalxt is not available on macOS yet
   skip: True  # [osx]
+  # we do not support old versions of Python
+  skip: True  # [py < 36]
+{%- if name != "pyflatsurf" and target != "test" %}
+  # ignore Python version where it does not matter (conda-smithy still renders these but conda-build stops immediately)
+  skip: True  # [py != 37]
+{%- endif %}
+{%- if name == "libflatsurf" %}
+  run_exports:
+    # We pin the version of libflatsurf exactly since we do not want to
+    # bother with incompatibilities in our nightly builds.
+    - {{ pin_subpackage(name, exact=True) }}
+{%- endif %}
 
 requirements:
   build:
     - libtool
-    - autoconf
     - automake
+    - coreutils
     - {{ compiler('cxx') }}
-    # requirements for ASV benchmarks
+{%- if target == "benchmark" %}
     - git
-    # requirements for clang-format
+{%- elif target == "style" %}
     - clangdev ==8.0.0
+{%- endif %}
   host:
-    # compile time dependencies of libflatsurf
+{%- if name in ["flatsurf", "libflatsurf"] %}
     - arb
     - boost-cpp
     - libintervalxt
     - libexactreal
-    - pyexactreal
     - e-antic 1.*
     - gmp
-    # compile time dependencies of flatsurf-polygon
+{%- endif %}
+{%- if name in ["flatsurf", "pyflatsurf"] %}
+    - python
+    - pyexactreal
+{%- endif %}
+{%- if name in ["flatsurf", "flatsurf-polygon"] %}
+    - arb
+    - boost-cpp
+    - libexactreal
+    - libintervalxt
+    - e-antic 1.*
+    - gmp
     - ntl
     - eigen
-    # We pin to an explicit version of Python here; since the Python part is
-    # noarch:python, the version does not matter. However, we need the same
-    # version when doing "make install" so that files go into the site-packages
-    # directory that was determined by ./configure.
-    - python =3.7
+{%- endif %}
+{%- if name in ["pyflatsurf", "flatsurf-polygon"] %}
+    - libflatsurf {{ version }} {{ target }}_{{ build_number }}
+{%- endif %}
+{%- if target in ["test", "coverage", "benchmark"] %}
     # enable test/pyflatsurf tests in ./configure
     - pytest
     - cppyy
     # make sage-flatsurf integration doctests pass
     - sage-flatsurf
+    - sagelib
+    - pip
+    - ipywidgets
+    - sympy
     # enable test/libflatsurf tests in ./configure
     - gtest
     - benchmark
     # enable check-valgrind in ./configure
-    - valgrind
+    - valgrind >=3.15.0
+{%- endif %}
+{%- if target == "benchmark" %}
     # requirements for ASV benchmarks
     - asv
+{%- endif %}
+  run:
+{%- if name == "pyflatsurf" %}
+    - python
+    - cppyy
+    - pyexactreal
+    - boost-cpp
+{%- endif %}
 
 outputs:
-  - name: libflatsurf
-    script: install-libflatsurf.sh
-    build:
-      number: {{ build_number }}
-      string: {{ build_string }}
-{%- if build_flavour and build_flavour != 'release' %}
-      features:
-        - {{ build_flavour }}
-{% endif %}
-    requirements:
-      build:
-        - libtool
-        - {{ compiler('cxx') }}
-      host:
-        - boost-cpp
-        - libintervalxt
-        - libexactreal
-        - e-antic 1.*
-        - gmp
-    run_exports:
-      # We pin the version of libflatsurf exactly since we do not want to
-      # bother with incompatibilities in our nightly builds.
-      - libflatsurf {{ version }}
-  - name: flatsurf-polygon
-    script: install-flatsurf-polygon.sh
-    build:
-      number: {{ build_number }}
-      string: {{ build_string }}
-{%- if build_flavour and build_flavour != 'release' %}
-      features:
-        - {{ build_flavour }}
-{% endif %}
-    requirements:
-      build:
-        - libtool
-        - {{ compiler('cxx') }}
-      host:
-        - arb
-        - boost-cpp
-        - libexactreal
-        - libintervalxt
-        - e-antic 1.*
-        - gmp
-        - eigen
-        - ntl
-      run:
-        # We pin the version of libflatsurf exactly since we do not want to
-        # bother with incompatibilities in our nightly builds.
-        - {{ pin_subpackage('libflatsurf', exact=True) }}
-        # https://github.com/flatsurf/intervalxt/issues/43
-        - libexactreal
-        - libintervalxt
-        - e-antic 1.*
-{%- if build_flavour == 'release' %}
+  - name: {{ name }}
+{%- if target == "release" %}
+    script: install-{{ name }}.sh
+{%- endif %}
+{%- if name == "pyflatsurf" %}
+    test:
+      imports:
+        - {{ name }}
+{%- endif %}
+{%- if name == "flatsurf-polygon" %}
     test:
       commands:
         - flatsurf-polygon 1 2 2 1
-{% endif %}
-  - name: pyflatsurf
-    build:
-      number: {{ build_number }}
-      string: {{ build_string }}
-{%- if build_flavour and build_flavour != 'release' %}
-      features:
-        - {{ build_flavour }}
-{% endif %}
-      noarch: python
-    script: install-pyflatsurf.sh
-    requirements:
-      host:
-        - python =3.7
-        - setuptools
-      run:
-        - python
-        # We pin the version of libflatsurf exactly since we do not want to
-        # bother with incompatibilities in our nightly builds.
-        - {{ pin_subpackage('libflatsurf', exact=True) }}
-        - cppyy
-        - pyeantic
-        - pyintervalxt
-        - pyexactreal
-        - boost-cpp
-{%- if build_flavour == 'release' %}
-    test:
-      imports:
-        - pyflatsurf
-{% endif %}
+{%- endif %}
 
 about:
   home: https://github.com/flatsurf/flatsurf
