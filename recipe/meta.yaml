@@ -59,6 +59,7 @@ requirements:
 {%- endif %}
 {%- if name in ["flatsurf", "pyflatsurf"] %}
     - python
+    - setuptools
     - pyexactreal
 {%- endif %}
 {%- if name in ["flatsurf", "flatsurf-polygon"] %}
