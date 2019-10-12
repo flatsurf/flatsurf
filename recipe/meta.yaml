@@ -15,10 +15,14 @@ source:
 
 build:
   number: {{ build_number }}
+{%- if target == "release" %}
 {%- if name in ["libflatsurf", "flatsurf-polygon"] %}
-  string: {{ target }}_{{ build_number }}
+  string: {{ build_number }}
 {%- else %}
-  string: {{ target }}_py{{ python }}_{{ build_number }}
+  string: py{{ python }}_{{ build_number }}
+{%- endif %}
+{%- else %}
+  string: {{ target }}
 {%- endif %}
   # intervalxt is not available on Windows yet
   skip: True  # [win]
@@ -73,7 +77,7 @@ requirements:
     - eigen
 {%- endif %}
 {%- if name in ["pyflatsurf", "flatsurf-polygon"] %}
-    - libflatsurf {{ version }} {{ target }}_{{ build_number }}
+    - libflatsurf {{ version }} {{ build_number }}
 {%- endif %}
 {%- if target in ["test", "coverage", "benchmark"] %}
     # enable test/pyflatsurf tests in ./configure
