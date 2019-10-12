@@ -51,8 +51,8 @@ You can try out the projects in this repository in a very limited environment on
 ## Build from the Source Code Repository
 
 We are following a standard autoconf setup, i.e., you can create the library
-`src/libflatsurf`, the Python wrapper `src/pyflatsurf`, and the binary
-`src/flatsurf-polygon/flatsurf-polygon` with the following:
+`libflatsurf/src`, the Python wrapper `pyflatsurf/src`, and the binary
+`flatsurf-polygon/src/flatsurf-polygon` with the following:
 
 ```
 git clone --recurse-submodules https://github.com/flatsurf/flatsurf.git
