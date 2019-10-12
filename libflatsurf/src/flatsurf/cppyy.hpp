@@ -38,8 +38,8 @@
 #include "flatsurf/vector_along_triangulation.hpp"
 
 // cppyy sometimes has trouble with rvalues, let's help it to create a FlatTriangulation
-template<typename T, typename V>
-auto makeFlatTriangulation(const T& vertices, const std::vector<V>& vectors) {
+template <typename T, typename V>
+auto makeFlatTriangulation(const T &vertices, const std::vector<V> &vectors) {
   return std::make_shared<flatsurf::FlatTriangulation<typename V::Coordinate>>(flatsurf::FlatTriangulationCombinatorial(vertices), vectors);
 }
 
