@@ -61,6 +61,8 @@ AM_LDFLAGS = $(MAYBE_LIBFLATSURF)
 
 # is_fmpq() from eanticxx is calling directly into FLINT
 AM_LDFLAGS += -lflint
+# e-antic's renf_elem.h uses arb_mul_si
+AM_LDFLAGS += -larb
 # we are manipulating mpz_t and mpq_t directly and through GMPXX
 AM_LDFLAGS += -lgmp -lgmpxx
 # we are using NTL's LLL
