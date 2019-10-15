@@ -57,6 +57,13 @@ AC_CHECK_HEADERS([exact-real/real_number.hpp exact-real/module.hpp], , AC_MSG_ER
 AX_CXX_CHECK_LIB([intervalxt], [std::runtime_error::what () const], [have_intervalxt=yes], AC_MSG_ERROR([intervalxt library not found]), [-lgmp -lmpfr -lflint])
 AC_CHECK_HEADERS([intervalxt/intervalxt.hpp], , AC_MSG_ERROR([libintervalxt headers not found]))
 
+AC_ARG_WITH([local-libflatsurf], AS_HELP_STRING([--without-local-libflatsurf], [Do not use a locally built libflatsurf from ../libflatsurf]))
+AS_IF([test "x$with_local_libflatsurf" != "xno"],
+      [with_local_libflatsurf=yes],
+      [
+       AX_CXX_CHECK_LIB([flatsurf], [flatsurf::HalfEdge], [], AC_MSG_ERROR([libflatsurf not found]))])
+AM_CONDITIONAL([HAVE_LOCAL_LIBFLATSURF], [test "x$with_local_libflatsurf" = "xyes"])
+
 
 AC_CONFIG_HEADERS([src/config.h])
 AC_CONFIG_FILES([Makefile src/Makefile test/Makefile])

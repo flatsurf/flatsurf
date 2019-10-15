@@ -54,8 +54,11 @@ noinst_HEADERS =          \
     vertex.h              \
     vert_pattern.h
 
+if HAVE_LOCAL_LIBFLATSURF
+  MAYBE_LIBFLATSURF = $(builddir)/../../libflatsurf/src/libflatsurf.la
+endif
+AM_LDFLAGS = $(MAYBE_LIBFLATSURF)
 
-AM_LDFLAGS = $(builddir)/../../libflatsurf/src/libflatsurf.la
 # is_fmpq() from eanticxx is calling directly into FLINT
 AM_LDFLAGS += -lflint
 # we are manipulating mpz_t and mpq_t directly and through GMPXX

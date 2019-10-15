@@ -1,3 +1,3 @@
-SUBDIRS = libflatsurf pyflatsurf flatsurf-polygon
+SUBDIRS = @subdirs@
 
 ACLOCAL_AMFLAGS = -I m4
