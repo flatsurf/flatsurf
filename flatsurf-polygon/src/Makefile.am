@@ -59,6 +59,10 @@ if HAVE_LOCAL_LIBFLATSURF
 endif
 AM_LDFLAGS = $(MAYBE_LIBFLATSURF)
 
+# we use e-antic/exact-real in several places
+AM_LDFLAGS += -lexactreal -leanticxx -leantic
+# we use intervalxt in our main
+AM_LDFLAGS += -lintervalxt
 # is_fmpq() from eanticxx is calling directly into FLINT
 AM_LDFLAGS += -lflint
 # e-antic's renf_elem.h uses arb_mul_si
