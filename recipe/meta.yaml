@@ -65,6 +65,7 @@ requirements:
     - python
     - setuptools
     - pyexactreal
+    - cppyythonizations
 {%- endif %}
 {%- if name in ["flatsurf", "flatsurf-polygon"] %}
     - arb
@@ -105,6 +106,7 @@ requirements:
     - cppyy
     - pyexactreal
     - boost-cpp
+    - cppyythonizations
 {%- endif %}
 
 outputs:
