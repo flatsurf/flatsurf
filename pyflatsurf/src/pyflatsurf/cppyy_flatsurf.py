@@ -22,8 +22,11 @@ import cppyy
 from cppyy.gbl import std
 
 from pyexactreal import exactreal
+from pyexactreal.cppyy_exactreal import enable_arithmetic, pretty_print, add_pythonization
 
-from .pythonization import enable_iterable, enable_arithmetic, enable_pretty_print, enable_vector_print, add_saddle_connections
+from .pythonization import enable_iterable, enable_vector_print, add_saddle_connections
+
+from cppyythonizations.pickling.cereal import enable_cereal
 
 # Importing cysignals after cppyy gives us proper stack traces on segfaults
 # whereas cppyy otherwise only reports "segmentation violation" (which is
@@ -36,10 +39,11 @@ if os.environ.get('PYFLATSURF_CYSIGNALS', True):
         pass
 
 cppyy.py.add_pythonization(enable_iterable, "flatsurf")
-cppyy.py.add_pythonization(enable_arithmetic, "flatsurf")
-cppyy.py.add_pythonization(enable_pretty_print, "flatsurf")
+add_pythonization(enable_arithmetic, "flatsurf", lambda proxy, name: name.startswith("Vector<"))
+cppyy.py.add_pythonization(pretty_print, "flatsurf")
 cppyy.py.add_pythonization(enable_vector_print, "flatsurf")
 cppyy.py.add_pythonization(add_saddle_connections, "flatsurf")
+cppyy.py.add_pythonization(lambda proxy, name: enable_cereal(proxy, name, ["flatsurf/cereal.hpp"]), "flatsurf")
 
 for path in os.environ.get('PYFLATSURF_INCLUDE','').split(':'):
     if path: cppyy.add_include_path(path)

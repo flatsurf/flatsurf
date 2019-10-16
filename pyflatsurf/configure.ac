@@ -31,6 +31,7 @@ AS_IF([test "x$with_pytest" != "xno" && test "x$have_python" = "xyes"],
       [
        with_pytest=yes
        AS_IF([$PYTHON -c 'import pytest'], , AC_MSG_ERROR([pytest for make check not found; run --without-pytest to disable Python tests in make check]))
+       AS_IF([$PYTHON -c 'import pyexactreal'], , AC_MSG_ERROR([pyexactreal for make check not found; run --without-pytest to disable Python tests in make check]))
        AS_IF([$PYTHON -c 'import cppyy'], , AC_MSG_ERROR([cppyy for make check not found; run --without-pytest to disable Python tests in make check]))
       ], [])
 AM_CONDITIONAL([HAVE_PYTEST], [test "x$with_pytest" = "xyes"])
@@ -45,15 +46,5 @@ AS_IF([test "x$with_sage" != "xno" && test "x$have_python" = "xyes"],
 AM_CONDITIONAL([HAVE_SAGE], [test "x$with_sage" = "xyes"])
 
 AC_CONFIG_FILES([Makefile src/Makefile test/Makefile])
-
-dnl Python's setuptools absolutely want to run in the source directory of the
-dnl module. Since this is incompatible with out-of-tree builds of
-dnl autoconfiscated packages, we have to copy all the Python bits over to the
-dnl build dir manually so that Python can't tell the difference.
-AC_CONFIG_LINKS([src/pyflatsurf/__init__.py:src/pyflatsurf/__init__.py
-                 src/pyflatsurf/cppyy_flatsurf.py:src/pyflatsurf/cppyy_flatsurf.py
-                 src/pyflatsurf/pythonization.py:src/pyflatsurf/pythonization.py
-                 src/pyflatsurf/factory.py:src/pyflatsurf/factory.py
-                 src/pyflatsurf/sage_conversion.py:src/pyflatsurf/sage_conversion.py])
 
 AC_OUTPUT

@@ -2,4 +2,4 @@
 
 export PYFLATSURF_INCLUDE="@srcdir@/../../libflatsurf/src:@builddir@/../../libflatsurf/src"
 export LD_LIBRARY_PATH="@builddir@/../../libflatsurf/src/.libs/"
-export PYTHONPATH="@builddir@/../../pyflatsurf/src/:@pythondir@"
+export PYTHONPATH="@srcdir@/../src/:@pythondir@"

@@ -1,4 +1,6 @@
 test-env.sh
+python-doctest.sh
+sage-doctest.sh
 
 # test run artifacts
 *.trs

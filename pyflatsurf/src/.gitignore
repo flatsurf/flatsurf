@@ -8,6 +8,7 @@ Makefile.in
 /test-driver
 /ylwrap
 /.deps
+/MANIFEST.in
 
 # http://www.gnu.org/software/autoconf
 

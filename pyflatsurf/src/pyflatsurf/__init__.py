@@ -1,4 +1,29 @@
 # -*- coding: utf-8 -*-
+r"""
+A Python Interface to libflatsurf
+
+EXAMPLES:
+
+The translation surface coming from a square::
+
+    >>> from pyflatsurf import Surface, flatsurf
+    >>> R2 = flatsurf.Vector['long long']
+    >>> square = Surface([[1, 3, 2, -1, -3, -2]], [R2(1, 0), R2(0, 1), R2(1, 1)])
+
+TESTS:
+
+Pickling works::
+
+    >>> from pickle import loads, dumps
+
+    >>> v = R2(13, 37)
+    >>> loads(dumps(v)) == v
+    True
+
+    >>> loads(dumps(square)) == square
+    True
+
+"""
 #*********************************************************************
 #  This file is part of flatsurf.
 #

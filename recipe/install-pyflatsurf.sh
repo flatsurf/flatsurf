@@ -1,4 +1,7 @@
 #!/bin/bash
-cd pyflatsurf
+set -ex
 
-make install
+source $RECIPE_DIR/environment.sh
+
+cd pyflatsurf
+$SNIPPETS_DIR/make/install.sh

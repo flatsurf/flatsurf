@@ -19,6 +19,8 @@
 ######################################################################
 
 from pyflatsurf import flatsurf, Surface
+from pyexactreal import RealNumber, NumberFieldModule
+import pyexactreal
 from pyexactreal import exactreal
 from pyeantic import eantic
 
@@ -43,9 +45,7 @@ def hexagon():
 
 def random_hexagon():
     x = K.gen()
-    RealNumber = exactreal.RealNumber
-    Module = exactreal.NumberFieldModule
-    M = Module(K, RealNumber.rational(1), RealNumber.random(), RealNumber.random())
+    M = NumberFieldModule(K, RealNumber.rational(1), RealNumber.random(), RealNumber.random())
     R2 = flatsurf.Vector['exactreal::Element<exactreal::NumberField>']
     # The side lengths are going to be 2, 2·μ, 2·ν where μ,ν are the random parameters of M.
     one = M.gen(0)

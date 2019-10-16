@@ -54,10 +54,19 @@ noinst_HEADERS =          \
     vertex.h              \
     vert_pattern.h
 
+if HAVE_LOCAL_LIBFLATSURF
+  MAYBE_LIBFLATSURF = $(builddir)/../../libflatsurf/src/libflatsurf.la
+endif
+AM_LDFLAGS = $(MAYBE_LIBFLATSURF)
 
-AM_LDFLAGS = $(builddir)/../../libflatsurf/src/libflatsurf.la
+# we use e-antic/exact-real in several places
+AM_LDFLAGS += -lexactreal -leanticxx -leantic
+# we use intervalxt in our main
+AM_LDFLAGS += -lintervalxt
 # is_fmpq() from eanticxx is calling directly into FLINT
 AM_LDFLAGS += -lflint
+# e-antic's renf_elem.h uses arb_mul_si
+AM_LDFLAGS += -larb
 # we are manipulating mpz_t and mpq_t directly and through GMPXX
 AM_LDFLAGS += -lgmp -lgmpxx
 # we are using NTL's LLL
