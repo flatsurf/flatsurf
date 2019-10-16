@@ -70,7 +70,7 @@ SaddleConnection<Surface>::SaddleConnection(const std::shared_ptr<const Surface>
 template <typename Surface>
 bool SaddleConnection<Surface>::operator==(const SaddleConnection<Surface> &rhs) const {
   bool ret = impl->surface == rhs.impl->surface && static_cast<typename Surface::Vector>(vector()) == static_cast<typename Surface::Vector>(rhs.vector()) && source() == rhs.source();
-  assert(!ret || target() == rhs.target() && "Saddle Connection data is inconsistent");
+  assert((!ret || target() == rhs.target()) && "Saddle Connection data is inconsistent");
   return ret;
 }
 
