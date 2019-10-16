@@ -21,37 +21,39 @@
 #define LIBFLATSURF_CPPYY_HPP
 
 #include <e-antic/renfxx_fwd.h>
-#include <boost/lexical_cast.hpp>
-#include <exact-real/forward.hpp>
-#include <intervalxt/length.hpp>
 #include <iosfwd>
 #include <memory>
 
-#include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/flat_triangulation_combinatorial.hpp"
-#include "flatsurf/forward.hpp"
 #include "flatsurf/half_edge.hpp"
+#include "flatsurf/permutation.hpp"
+#include "flatsurf/vertex.hpp"
+
+#include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/half_edge_map.hpp"
+#include "flatsurf/interval_exchange_transformation.hpp"
 #include "flatsurf/saddle_connection.hpp"
 #include "flatsurf/saddle_connections.hpp"
 #include "flatsurf/vector.hpp"
 #include "flatsurf/vector_along_triangulation.hpp"
 
+namespace flatsurf {
 // cppyy sometimes has trouble with rvalues, let's help it to create a FlatTriangulation
 template <typename T, typename V>
 auto makeFlatTriangulation(const T &vertices, const std::vector<V> &vectors) {
-  return std::make_shared<flatsurf::FlatTriangulation<typename V::Coordinate>>(flatsurf::FlatTriangulationCombinatorial(vertices), vectors);
+  return std::make_shared<FlatTriangulation<typename V::Coordinate>>(FlatTriangulationCombinatorial(vertices), vectors);
 }
 
 // Work around https://bitbucket.org/wlav/cppyy/issues/96/cannot-make-wrapper-for-a-function
-extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::Permutation<flatsurf::HalfEdge> &);
-extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::HalfEdgeMap<flatsurf::Vector<long long>> &);
-extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::HalfEdgeMap<flatsurf::Vector<eantic::renf_elem_class>> &);
-extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::FlatTriangulation<long long> &);
-extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::FlatTriangulation<eantic::renf_elem_class> &);
-extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::SaddleConnection<flatsurf::FlatTriangulation<long long>> &);
-extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::SaddleConnection<flatsurf::FlatTriangulation<eantic::renf_elem_class>> &);
-extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::SaddleConnections<flatsurf::FlatTriangulation<long long>> &);
-extern template std::ostream &flatsurf::operator<<(std::ostream &, const flatsurf::SaddleConnections<flatsurf::FlatTriangulation<eantic::renf_elem_class>> &);
+extern template std::ostream &operator<<(std::ostream &, const Permutation<HalfEdge> &);
+extern template std::ostream &operator<<(std::ostream &, const HalfEdgeMap<Vector<long long>> &);
+extern template std::ostream &operator<<(std::ostream &, const HalfEdgeMap<Vector<eantic::renf_elem_class>> &);
+extern template std::ostream &operator<<(std::ostream &, const FlatTriangulation<long long> &);
+extern template std::ostream &operator<<(std::ostream &, const FlatTriangulation<eantic::renf_elem_class> &);
+extern template std::ostream &operator<<(std::ostream &, const SaddleConnection<FlatTriangulation<long long>> &);
+extern template std::ostream &operator<<(std::ostream &, const SaddleConnection<FlatTriangulation<eantic::renf_elem_class>> &);
+extern template std::ostream &operator<<(std::ostream &, const SaddleConnections<FlatTriangulation<long long>> &);
+extern template std::ostream &operator<<(std::ostream &, const SaddleConnections<FlatTriangulation<eantic::renf_elem_class>> &);
+}
 
 #endif
