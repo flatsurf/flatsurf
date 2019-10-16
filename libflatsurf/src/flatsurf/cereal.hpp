@@ -18,8 +18,9 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  * *******************************************************************/
 
-#include <cereal/archives/json.hpp>
-#include <cereal/cereal.hpp>
+#ifndef LIBFLATSURF_CEREAL_HPP
+#define LIBFLATSURF_CEREAL_HPP
+
 #include <cereal/types/map.hpp>
 #include <cereal/types/memory.hpp>
 #include <cereal/types/utility.hpp>
@@ -163,3 +164,5 @@ void SaddleConnection<Surface>::load(Archive& archive) {
 }
 
 }  // namespace flatsurf
+
+#endif
