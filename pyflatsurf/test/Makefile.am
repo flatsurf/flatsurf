@@ -9,7 +9,8 @@ AM_TESTS_ENVIRONMENT = . $(builddir)/test-env.sh;
 saddle_connections.py: test-env.sh surfaces.py
 vector_renf_elem.py: test-env.sh surfaces.py
 vector_gmp.py: test-env.sh
-doc.py: test-env.sh
+python-doctest.sh: test-env.sh
+sage-doctest.sh: test-env.sh
 
 @VALGRIND_CHECK_RULES@
 

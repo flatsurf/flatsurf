@@ -18,7 +18,7 @@
 #  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
 #*********************************************************************
 
-import cppyy.gbl
+import cppyy
 from .cppyy_flatsurf import flatsurf
 
 def make_FlatTriangulation(vertices, vectors):
@@ -26,14 +26,12 @@ def make_FlatTriangulation(vertices, vectors):
     R2 = type(vectors[0])
     vectors = cppyy.gbl.std.vector[R2](vectors)
     combinatorial = flatsurf.FlatTriangulationCombinatorial(vertices)
-    ret = cppyy.gbl.makeFlatTriangulation(vertices, vectors);
+    ret = cppyy.gbl.flatsurf.makeFlatTriangulation(vertices, vectors);
     ret.saddleConnections = lambda *args: flatsurf.SaddleConnections[type(ret)](ret, *args)
     return ret
 
-    raise Exception("Coordinate not implemented in Python wrapper")
-
 def make_surface(surface_or_vertices, vectors = None):
-    from collections import Iterable
+    from collections.abc import Iterable
     if hasattr(surface_or_vertices, "__module__") and surface_or_vertices.__module__ == "flatsurf.geometry.translation_surface":
         if vectors is not None:
             raise ValueError("vectors must be none when creating a FlatTriangulation from a SageMath flatsurf surface")
