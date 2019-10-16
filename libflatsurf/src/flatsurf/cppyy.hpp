@@ -54,6 +54,6 @@ extern template std::ostream &operator<<(std::ostream &, const SaddleConnection<
 extern template std::ostream &operator<<(std::ostream &, const SaddleConnection<FlatTriangulation<eantic::renf_elem_class>> &);
 extern template std::ostream &operator<<(std::ostream &, const SaddleConnections<FlatTriangulation<long long>> &);
 extern template std::ostream &operator<<(std::ostream &, const SaddleConnections<FlatTriangulation<eantic::renf_elem_class>> &);
-}
+}  // namespace flatsurf
 
 #endif
