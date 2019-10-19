@@ -31,12 +31,16 @@ Vertex::Vertex(const HalfEdge &canonical) : representative(canonical) {}
 Vertex Vertex::source(const HalfEdge &e,
                       const FlatTriangulationCombinatorial &surface) {
   HalfEdge best = e;
-  for (HalfEdge test = surface.nextAtVertex(e); test != e;
-       test = surface.nextAtVertex(test)) {
+  HalfEdge test = e;
+  do {
+    if (surface.boundary(-test)) {
+      return Vertex(test);
+    }
+    test = surface.nextInFace(surface.nextInFace(-test));
     if (test.id < best.id) {
       best = test;
     }
-  }
+  } while(test != e);
   return Vertex(best);
 }
 

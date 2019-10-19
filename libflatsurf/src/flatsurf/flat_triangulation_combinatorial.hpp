@@ -32,7 +32,7 @@ namespace flatsurf {
 class FlatTriangulationCombinatorial : boost::equality_comparable<FlatTriangulationCombinatorial>, public std::enable_shared_from_this<FlatTriangulationCombinatorial> {
  public:
   FlatTriangulationCombinatorial();
-  FlatTriangulationCombinatorial(const std::vector<std::vector<int>> &vertices, std::set<int> boundaries=std::set<int>());
+  FlatTriangulationCombinatorial(const std::vector<std::vector<int>> &vertices, const std::set<int>& boundaries=std::set<int>());
   FlatTriangulationCombinatorial(const Permutation<HalfEdge> &vertices);
   FlatTriangulationCombinatorial(FlatTriangulationCombinatorial &&);
 
@@ -42,9 +42,7 @@ class FlatTriangulationCombinatorial : boost::equality_comparable<FlatTriangulat
   // expects.
   std::unique_ptr<FlatTriangulationCombinatorial> clone() const;
 
-  // TODO: assert not crossing boundary
   HalfEdge nextAtVertex(HalfEdge e) const;
-  // TODO: assert not in boundary
   HalfEdge nextInFace(HalfEdge e) const;
 
   // Return whether this surface has a boundary edge.
@@ -56,10 +54,8 @@ class FlatTriangulationCombinatorial : boost::equality_comparable<FlatTriangulat
   const std::vector<HalfEdge> &halfEdges() const;
   const std::vector<Vertex> &vertices() const;
   // Return the outgoing half edges from this vertex in ccw order.
-  // TOOD: starting after the boundary and ending before it
   std::vector<HalfEdge> atVertex(Vertex) const;
 
-  // TODO: assert not beyond boundary
   void flip(HalfEdge);
 
   // Return whether rhs is combinatorial the same triangulation (with the same

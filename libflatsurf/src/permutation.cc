@@ -37,6 +37,21 @@ using std::vector;
 
 namespace flatsurf {
 
+namespace {
+template<typename T>
+void check(const Permutation<T>& permutation) {
+  vector<int> hits(permutation.size());
+  for (const auto& target : permutation.domain()) {
+    ASSERT_ARGUMENT(permutation.index(target) < hits.size(), "permutation maps beyond its domain");
+    hits[permutation.index(target)]++;
+  }
+  for (int h : hits)
+    CHECK_ARGUMENT(h, "not a permutation, not surjective");
+  for (int h : hits)
+    CHECK_ARGUMENT(h == 1, "not a permutation, not injective");
+}
+}
+
 template <typename T>
 Permutation<T>::Permutation() : Permutation(std::vector<pair<T, T>>()) {}
 
@@ -51,6 +66,7 @@ Permutation<T>::Permutation(const vector<vector<T>> &cycles)
       data[index(cycle[i])] = cycle[(i + 1) % cycle.size()];
     }
   }
+  check(*this);
 }
 
 template <typename T>
@@ -60,6 +76,7 @@ Permutation<T>::Permutation(const vector<pair<T, T>> &permutation)
     ASSERT_ARGUMENT(index(ab.first) < data.size(), "entry of permutation points to an element beoynd the size of the permutation");
     data[index(ab.first)] = ab.second;
   }
+  check(*this);
 }
 
 template <typename T>

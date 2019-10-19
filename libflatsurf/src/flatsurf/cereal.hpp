@@ -112,7 +112,6 @@ template <typename Archive>
 void FlatTriangulation<T>::load(Archive& archive) {
   FlatTriangulationCombinatorial combinatorial;
   archive(cereal::make_nvp("combinatorial", combinatorial));
-  std::cout << combinatorial << std::endl;
   std::map<HalfEdge, typename FlatTriangulation<T>::Vector> map;
   archive(cereal::make_nvp("vectors", map));
 

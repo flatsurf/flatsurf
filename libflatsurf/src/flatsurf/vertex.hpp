@@ -47,8 +47,9 @@ class Vertex : boost::equality_comparable<Vertex> {
   Vertex(const HalfEdge &);
 
   // The actual vertex is the start of this half edge.
-  // Made a unique representative by taking the half edge with this property
-  // with the smallest id.
+  // Made a unique representative by taking the one whose negative is a
+  // boundary or the half edge with this property with the smallest id if there
+  // is no boundary.
   HalfEdge representative;
 
   friend FlatTriangulationCombinatorial;

@@ -50,7 +50,7 @@ struct factory {
 template <>
 struct factory<Vertex> {
   static std::unique_ptr<Vertex> make() {
-    auto parent = FlatTriangulationCombinatorial({{1, -1}});
+    auto parent = makeSquareCombinatorial();
     return std::make_unique<Vertex>(Vertex::source(HalfEdge(1), parent));
   }
 };

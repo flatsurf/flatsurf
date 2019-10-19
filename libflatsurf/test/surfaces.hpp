@@ -62,8 +62,8 @@ auto makeSquare() {
 }
 
 auto makeSquareWithBoundaryCombinatorial() {
-  auto vertices = vector<vector<int>>{{1, 3, 2, -2}, {4, -1, -3, -4}};
-  return FlatTriangulationCombinatorial(vertices, {-2, -4});
+  auto vertices = vector<vector<int>>{{-2, 1, 3, 2}, {4, -1, -3, -4}};
+  return FlatTriangulationCombinatorial(vertices, {2, -4});
 }
 
 auto makeGoldenLCombinatorial() {

@@ -51,6 +51,7 @@ noinst_HEADERS =                                              \
 	util/type_traits.ipp                                        \
 	util/assert.ipp                                             \
 	util/as_vector.ipp                                          \
+	util/as_set.ipp                                             \
 	util/false.ipp                                              \
 	util/union_join.ipp                                         \
 	vector/algorithm/exact.ipp                                  \

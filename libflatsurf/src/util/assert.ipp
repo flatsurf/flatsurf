@@ -30,12 +30,12 @@
 #define CHECK_ARGUMENT_(CONDITION)                                             \
   while (not(CONDITION)) {                                                     \
     throw std::invalid_argument(#CONDITION                                     \
-                                " in " __FILE__ BOOST_PP_STRINGIZE(__LINE__)); \
+                                " does not hold in " __FILE__ ":" BOOST_PP_STRINGIZE(__LINE__)); \
   }
 #define CHECK_ARGUMENT(CONDITION, MESSAGE)                                    \
   while (not(CONDITION)) {                                                    \
     throw std::invalid_argument(                                              \
-        #CONDITION " " MESSAGE " in " __FILE__ BOOST_PP_STRINGIZE(__LINE__)); \
+        #CONDITION " does not hold: " MESSAGE " in " __FILE__ ":" BOOST_PP_STRINGIZE(__LINE__)); \
   }
 
 #ifdef NDEBUG
