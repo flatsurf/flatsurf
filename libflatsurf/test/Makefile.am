@@ -1,4 +1,4 @@
-check_PROGRAMS = length_along_triangulation vector_longlong interval_exchange_transformation delaunay saddle_connections vector_exactreal saddle_connections_benchmark cereal permutation flat_triangulation_combinatorial
+check_PROGRAMS = length_along_triangulation vector_longlong interval_exchange_transformation delaunay saddle_connections vector_exactreal saddle_connections_benchmark cereal permutation flat_triangulation_combinatorial flat_triangulation
 
 TESTS = $(check_PROGRAMS)
 
@@ -11,7 +11,8 @@ vector_longlong_SOURCES = vector_longlong.test.cc main.hpp
 length_along_triangulation_SOURCES = length_along_triangulation.test.cc main.hpp surfaces.hpp
 cereal_SOURCES = cereal.test.cc main.hpp surfaces.hpp
 permutation_SOURCES = permutation.test.cc main.hpp
-flat_triangulation_combinatorial_SOURCES = flat_triangulation_combinatorial.test.cc main.hpp
+flat_triangulation_combinatorial_SOURCES = flat_triangulation_combinatorial.test.cc main.hpp surfaces.hpp
+flat_triangulation_SOURCES = flat_triangulation.test.cc main.hpp surfaces.hpp
 
 # We vendor the header-only library Cereal (serialization with C++ to be able
 # to run the tests even when cereal is not installed.

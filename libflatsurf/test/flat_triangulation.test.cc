@@ -42,17 +42,35 @@ using testing::Test;
 using testing::Types;
 
 namespace {
-class FlatTriangulationCombinatorialTest : public Test {};
+template <class R2>
+class FlatTriangulationTest : public Test {};
 
-TEST(FlatTriangulationCombinatorialTest, Comparison) {
-  auto square = makeSquareCombinatorial();
-  EXPECT_EQ(square, *square.clone());
+using ExactVectors = Types<Vector<long long>, Vector<renf_elem_class>, Vector<exactreal::Element<exactreal::NumberField>>>;
+TYPED_TEST_CASE(FlatTriangulationTest, ExactVectors);
 
-  square = makeSquareWithBoundaryCombinatorial();
-  EXPECT_EQ(square, *square.clone());
-  EXPECT_NE(square, makeSquareCombinatorial());
+TYPED_TEST(FlatTriangulationTest, FlipSquare) {
+  auto square = makeSquare<TypeParam>();
+
+  auto vertices = square->vertices();
+
+  for (auto halfEdge : square->halfEdges()) {
+    const auto vector = square->fromEdge(halfEdge);
+    square->flip(halfEdge);
+    EXPECT_NE(vector, square->fromEdge(halfEdge));
+    square->flip(halfEdge);
+    EXPECT_EQ(vector, -square->fromEdge(halfEdge));
+    square->flip(halfEdge);
+    square->flip(halfEdge);
+    EXPECT_EQ(vector, square->fromEdge(halfEdge));
+
+    // a square (torus) has only a single vertex so it won't change; in general
+    // it should not change, however, the representatives attached to a vertex
+    // are currently not properly updated: https://github.com/flatsurf/flatsurf/issues/100
+    EXPECT_EQ(vertices, square->vertices());
+  }
 }
 
 }  // namespace
 
 #include "main.hpp"
+

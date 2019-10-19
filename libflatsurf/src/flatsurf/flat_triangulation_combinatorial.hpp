@@ -23,6 +23,7 @@
 #include <iosfwd>
 #include <memory>
 #include <vector>
+#include <set>
 #include "external/spimpl/spimpl.h"
 
 #include "flatsurf/forward.hpp"
@@ -31,30 +32,40 @@ namespace flatsurf {
 class FlatTriangulationCombinatorial : boost::equality_comparable<FlatTriangulationCombinatorial>, public std::enable_shared_from_this<FlatTriangulationCombinatorial> {
  public:
   FlatTriangulationCombinatorial();
-  FlatTriangulationCombinatorial(const std::vector<std::vector<int>> &vertices);
+  FlatTriangulationCombinatorial(const std::vector<std::vector<int>> &vertices, std::set<int> boundaries=std::set<int>());
   FlatTriangulationCombinatorial(const Permutation<HalfEdge> &vertices);
   FlatTriangulationCombinatorial(FlatTriangulationCombinatorial &&);
 
   // Create an unrelated clone of this triangulation that is built from the
-  // same data. There is no copy-constructor since it is too likely that
-  // this is would not update the associated HalfEdgeMaps in the way that the
-  // caller expects.
+  // same data. There is no copy-constructor since it is too likely that it
+  // would not update the associated HalfEdgeMaps in the way that the caller
+  // expects.
   std::unique_ptr<FlatTriangulationCombinatorial> clone() const;
 
+  // TODO: assert not crossing boundary
   HalfEdge nextAtVertex(HalfEdge e) const;
+  // TODO: assert not in boundary
   HalfEdge nextInFace(HalfEdge e) const;
+
+  // Return whether this surface has a boundary edge.
+  bool hasBoundary() const;
+  // Return whether this is a boundary half edge, i.e., there is no successor
+  // in counter-clockwise order of this half edge at its source.
+  bool boundary(HalfEdge e) const;
 
   const std::vector<HalfEdge> &halfEdges() const;
   const std::vector<Vertex> &vertices() const;
   // Return the outgoing half edges from this vertex in ccw order.
+  // TOOD: starting after the boundary and ending before it
   std::vector<HalfEdge> atVertex(Vertex) const;
 
+  // TODO: assert not beyond boundary
   void flip(HalfEdge);
 
   // Return whether rhs is combinatorial the same triangulation (with the same
   // numbering of edges.)
-  // This method is not virtual so that even non-combinatorial triangulations
-  // can be compared combinatorially.
+  // This method is not virtual so that non-combinatorial triangulations can
+  // also be compared combinatorially.
   bool operator==(const FlatTriangulationCombinatorial &rhs) const noexcept;
 
   FlatTriangulationCombinatorial &operator=(FlatTriangulationCombinatorial &&) noexcept;

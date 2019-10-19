@@ -92,9 +92,13 @@ const vector<Vertex>& FlatTriangulationCombinatorial::vertices() const {
 FlatTriangulationCombinatorial::FlatTriangulationCombinatorial()
     : FlatTriangulationCombinatorial(vector<vector<int>>()) {}
 
-FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(const vector<vector<int>>& vertices)
+FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(const vector<vector<int>>& vertices, std::set<int> boundaries)
     : FlatTriangulationCombinatorial(Permutation<HalfEdge>::create<int>(
-          vertices, [](int e) { return HalfEdge(e); })) {}
+          vertices, [](int e) { return HalfEdge(e); })) {
+  if (boundaries.size()) {
+    throw std::logic_error("not implemented: boundaries");
+  }
+}
 
 FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(const Permutation<HalfEdge>& vertices)
     : impl(spimpl::make_unique_impl<Implementation>(vertices)) {
