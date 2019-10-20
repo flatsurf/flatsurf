@@ -38,10 +38,10 @@ using std::vector;
 namespace flatsurf {
 
 namespace {
-template<typename T>
-void check(const Permutation<T>& permutation) {
+template <typename T>
+void check(const Permutation<T> &permutation) {
   vector<int> hits(permutation.size());
-  for (const auto& target : permutation.domain()) {
+  for (const auto &target : permutation.domain()) {
     ASSERT_ARGUMENT(permutation.index(target) < hits.size(), "permutation maps beyond its domain");
     hits[permutation.index(target)]++;
   }
@@ -50,7 +50,7 @@ void check(const Permutation<T>& permutation) {
   for (int h : hits)
     CHECK_ARGUMENT(h == 1, "not a permutation, not injective");
 }
-}
+}  // namespace
 
 template <typename T>
 Permutation<T>::Permutation() : Permutation(std::vector<pair<T, T>>()) {}

@@ -82,7 +82,6 @@ class SaddleConnections<Surface>::Iterator::Implementation {
       return;
     }
 
-
     const HalfEdge e = sectors[sector];
 
     if (surface->boundary(e)) {

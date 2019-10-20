@@ -22,8 +22,8 @@
 
 #include <iosfwd>
 #include <memory>
-#include <vector>
 #include <set>
+#include <vector>
 #include "external/spimpl/spimpl.h"
 
 #include "flatsurf/forward.hpp"
@@ -32,7 +32,7 @@ namespace flatsurf {
 class FlatTriangulationCombinatorial : boost::equality_comparable<FlatTriangulationCombinatorial>, public std::enable_shared_from_this<FlatTriangulationCombinatorial> {
  public:
   FlatTriangulationCombinatorial();
-  FlatTriangulationCombinatorial(const std::vector<std::vector<int>> &vertices, const std::set<int>& boundaries=std::set<int>());
+  FlatTriangulationCombinatorial(const std::vector<std::vector<int>> &vertices, const std::set<int> &boundaries = std::set<int>());
   FlatTriangulationCombinatorial(const Permutation<HalfEdge> &vertices);
   FlatTriangulationCombinatorial(FlatTriangulationCombinatorial &&);
 

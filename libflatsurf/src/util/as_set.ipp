@@ -35,4 +35,3 @@ auto as_set(const boost::iterator_range<Iterator>& range) {
 }  // namespace
 
 #endif
-

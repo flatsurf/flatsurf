@@ -27,14 +27,14 @@
 // Run a (cheap) check that a (user provided) argument is valid.
 // If the check should be disabled when NDEBUG is defined, e.g., because it
 // occurs in a hotspot, use ASSERT_ARGUMENT instead.
-#define CHECK_ARGUMENT_(CONDITION)                                             \
-  while (not(CONDITION)) {                                                     \
-    throw std::invalid_argument(#CONDITION                                     \
+#define CHECK_ARGUMENT_(CONDITION)                                                               \
+  while (not(CONDITION)) {                                                                       \
+    throw std::invalid_argument(#CONDITION                                                       \
                                 " does not hold in " __FILE__ ":" BOOST_PP_STRINGIZE(__LINE__)); \
   }
-#define CHECK_ARGUMENT(CONDITION, MESSAGE)                                    \
-  while (not(CONDITION)) {                                                    \
-    throw std::invalid_argument(                                              \
+#define CHECK_ARGUMENT(CONDITION, MESSAGE)                                                       \
+  while (not(CONDITION)) {                                                                       \
+    throw std::invalid_argument(                                                                 \
         #CONDITION " does not hold: " MESSAGE " in " __FILE__ ":" BOOST_PP_STRINGIZE(__LINE__)); \
   }
 

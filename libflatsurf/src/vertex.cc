@@ -40,7 +40,7 @@ Vertex Vertex::source(const HalfEdge &e,
     if (test.id < best.id) {
       best = test;
     }
-  } while(test != e);
+  } while (test != e);
   return Vertex(best);
 }
 

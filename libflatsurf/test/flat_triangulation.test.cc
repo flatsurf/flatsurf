@@ -73,4 +73,3 @@ TYPED_TEST(FlatTriangulationTest, FlipSquare) {
 }  // namespace
 
 #include "main.hpp"
-
