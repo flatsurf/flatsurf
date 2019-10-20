@@ -257,9 +257,8 @@ class SaddleConnections<Surface>::Iterator::Implementation {
   }
 
   bool onBoundary() {
-    // TODO: This code path can be optimized away with some templating magic
-    // (add bool template hasBoundary so we never get here when there is no
-    // boundary.)
+    // This code path could be optimized away by adding a bool template
+    // parameter hasBoundary to increment().
     applyMoves();
     return surface->boundary(nextEdge);
   }
