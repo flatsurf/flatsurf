@@ -66,6 +66,21 @@ auto makeSquareWithBoundaryCombinatorial() {
   return FlatTriangulationCombinatorial(vertices, {2, -4});
 }
 
+template <typename R2>
+auto makeSquareWithBoundary() {
+  vector<R2> vectors;
+  if constexpr (std::is_same_v<R2, Vector<Element<IntegerRing>>>) {
+    auto module = Module<IntegerRing>::make({RealNumber::rational(1)});
+    vectors = {R2(module->gen(0), Element(module)), R2(Element(module), module->gen(0)), R2(module->gen(0), module->gen(0)), R2(Element(module), module->gen(0))};
+  } else if constexpr (std::is_same_v<R2, Vector<Element<NumberField>>>) {
+    auto module = Module<NumberField>::make({RealNumber::rational(1)}, K);
+    vectors = {R2(module->gen(0), Element(module)), R2(Element(module), module->gen(0)), R2(module->gen(0), module->gen(0)), R2(Element(module), module->gen(0))};
+  } else {
+    vectors = vector{R2(1, 0), R2(0, 1), R2(1, 1), R2(0, 1)};
+  }
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(makeSquareWithBoundaryCombinatorial(), vectors);
+}
+
 auto makeGoldenLCombinatorial() {
   auto vertices = vector<vector<int>>{{1, 2, 3, 4, 5, -3, 6, 7, 8, -6, -2, 9, -4, -5, -9, -1, -7, -8}};
   return FlatTriangulationCombinatorial(vertices);

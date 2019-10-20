@@ -70,15 +70,26 @@ class SaddleConnections<Surface>::Iterator::Implementation {
 
  public:
   Implementation(const std::shared_ptr<const Surface>& surface, const Bound searchRadius, const vector<HalfEdge> searchSectors) : surface(std::move(surface)), searchRadius(searchRadius), sectors(std::move(searchSectors)), sector(0), boundary{AlongTriangulation(this->surface), AlongTriangulation(this->surface)}, nextEdgeEnd(AlongTriangulation(this->surface)) {
-    if (sectors.size()) {
-      prepareSearch(sectors[0]);
-    }
+    prepareSearch();
   }
 
-  void prepareSearch(HalfEdge e) {
+  void prepareSearch() {
     assert(state.size() == 0);
     assert(tmp.size() == 0);
     assert(moves.size() == 0);
+
+    if (sector == sectors.size()) {
+      return;
+    }
+
+
+    const HalfEdge e = sectors[sector];
+
+    if (surface->boundary(e)) {
+      sector++;
+      prepareSearch();
+      return;
+    }
 
     boundary[0] = AlongTriangulation(surface, vector<HalfEdge>{e});
     nextEdge = surface->nextInFace(e);
@@ -146,11 +157,15 @@ class SaddleConnections<Surface>::Iterator::Implementation {
         applyMoves();
         sector++;
         if (sector != sectors.size()) {
-          prepareSearch(sectors[sector]);
+          prepareSearch();
         }
         return true;
       case State::START:
         moves.push_back(Move::GOTO_OTHER_FACE);
+        if (onBoundary()) {
+          moves.push_back(Move::GOTO_OTHER_FACE);
+          return false;
+        }
         moves.push_back(Move::GOTO_NEXT_EDGE);
 
         applyMoves();
@@ -239,6 +254,14 @@ class SaddleConnections<Surface>::Iterator::Implementation {
     moves.push_back(Move::GOTO_NEXT_EDGE);
     moves.push_back(Move::GOTO_OTHER_FACE);
     return false;
+  }
+
+  bool onBoundary() {
+    // TODO: This code path can be optimized away with some templating magic
+    // (add bool template hasBoundary so we never get here when there is no
+    // boundary.)
+    applyMoves();
+    return surface->boundary(nextEdge);
   }
 
   void skipSector(CCW sector) {

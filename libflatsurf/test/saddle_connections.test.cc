@@ -79,6 +79,34 @@ TYPED_TEST(SaddleConnectionsTest, Square) {
   EXPECT_EQ(**connections.begin(), **connections.begin());
 }
 
+TYPED_TEST(SaddleConnectionsTest, SquareWithBoundary) {
+  auto square = makeSquareWithBoundary<TypeParam>();
+  auto bound = 16;
+  auto connections = SaddleConnections(square, bound, HalfEdge(1));
+  EXPECT_EQ(std::distance(connections.begin(), connections.end()), 1);
+  connections = SaddleConnections(square, bound, HalfEdge(2));
+  EXPECT_EQ(std::distance(connections.begin(), connections.end()), 0);
+  connections = SaddleConnections(square, bound, HalfEdge(3));
+  EXPECT_EQ(std::distance(connections.begin(), connections.end()), bound - 1);
+  connections = SaddleConnections(square, bound, HalfEdge(4));
+  EXPECT_EQ(std::distance(connections.begin(), connections.end()), bound);
+  connections = SaddleConnections(square, bound, HalfEdge(-1));
+  EXPECT_EQ(std::distance(connections.begin(), connections.end()), 1);
+  connections = SaddleConnections(square, bound, HalfEdge(-2));
+  EXPECT_EQ(std::distance(connections.begin(), connections.end()), bound);
+  connections = SaddleConnections(square, bound, HalfEdge(-3));
+  EXPECT_EQ(std::distance(connections.begin(), connections.end()), bound - 1);
+  connections = SaddleConnections(square, bound, HalfEdge(-4));
+  EXPECT_EQ(std::distance(connections.begin(), connections.end()), 0);
+
+  connections = SaddleConnections(square, bound);
+  EXPECT_EQ(std::distance(connections.begin(), connections.end()), 64);
+
+  EXPECT_EQ(boost::lexical_cast<std::string>(**connections.begin()), "SaddleConnection(3 -> -1 in direction (0, 1))");
+
+  EXPECT_EQ(**connections.begin(), **connections.begin());
+}
+
 TYPED_TEST(SaddleConnectionsTest, Hexagon) {
   if constexpr (std::is_same_v<TypeParam, Vector<long long>>) {
     // An regular hexagon can not be constructed with integer coordinates.

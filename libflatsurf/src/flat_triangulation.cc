@@ -66,6 +66,7 @@ FlatTriangulation<T>::FlatTriangulation(FlatTriangulationCombinatorial &&combina
       impl(spimpl::make_unique_impl<Implementation>(std::move(vectors))) {
   // check that faces are closed
   for (auto edge : halfEdges()) {
+    if (this->boundary(edge)) continue;
     auto zero = fromEdge(edge);
     edge = nextInFace(edge);
     zero += fromEdge(edge);
@@ -75,6 +76,7 @@ FlatTriangulation<T>::FlatTriangulation(FlatTriangulationCombinatorial &&combina
   }
   // check that faces are oriented correctly
   for (auto edge : halfEdges()) {
+    if (this->boundary(edge)) continue;
     auto next = nextInFace(edge);
     CHECK_ARGUMENT(fromEdge(edge).ccw(fromEdge(next)) == CCW::COUNTERCLOCKWISE, "some face is not oriented correctly");
   }

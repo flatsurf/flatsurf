@@ -39,8 +39,8 @@ class SaddleConnections {
   SaddleConnections(const std::shared_ptr<const Surface> &, Bound searchRadius, const Vertex source);
 
   // The saddle connections that are starting at the source of sectorBegin
-  // and lie in the sector between sectorBegin and the follow half edge in
-  // counter-clockwise order.
+  // and lie in the sector between sectorBegin (exclusive) and the following
+  // half edge (inclusive) in counter-clockwise order.
   SaddleConnections(const std::shared_ptr<const Surface> &, Bound searchRadius, HalfEdge sectorBegin);
 
   class Iterator : public boost::iterator_facade<Iterator, const std::unique_ptr<SaddleConnection<Surface>>, std::forward_iterator_tag, const std::unique_ptr<SaddleConnection<Surface>>> {
