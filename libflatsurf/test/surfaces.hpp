@@ -81,9 +81,30 @@ auto makeSquareWithBoundary() {
   return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(makeSquareWithBoundaryCombinatorial(), vectors);
 }
 
-auto makeGoldenLCombinatorial() {
+auto makeLCombinatorial() {
   auto vertices = vector<vector<int>>{{1, 2, 3, 4, 5, -3, 6, 7, 8, -6, -2, 9, -4, -5, -9, -1, -7, -8}};
   return FlatTriangulationCombinatorial(vertices);
+}
+
+template <typename R2>
+auto makeL() {
+  vector<R2> vectors;
+  if constexpr (std::is_same_v<R2, Vector<Element<IntegerRing>>>) {
+    auto module = Module<IntegerRing>::make({RealNumber::rational(1)});
+    auto l = module->gen(0);
+    auto o = Element(module);
+    vectors = {R2(l, o), R2(l, l), R2(o, l), R2(-l, o), R2(-l, -l), R2(l, o), R2(l, l), R2(o, l), R2(o, -l)};
+  } else if constexpr (std::is_same_v<R2, Vector<Element<NumberField>>>) {
+    auto module = Module<NumberField>::make({RealNumber::rational(1)}, K);
+    auto l = module->gen(0);
+    auto o = Element(module);
+    vectors = {R2(l, o), R2(l, l), R2(o, l), R2(-l, o), R2(-l, -l), R2(l, o), R2(l, l), R2(o, l), R2(o, -l)};
+  } else {
+    auto l = 1;
+    auto o = 0;
+    vectors = {R2(l, o), R2(l, l), R2(o, l), R2(-l, o), R2(-l, -l), R2(l, o), R2(l, l), R2(o, l), R2(o, -l)};
+  }
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(makeLCombinatorial(), vectors);
 }
 
 template <typename R2>
@@ -104,7 +125,7 @@ auto makeGoldenL() {
   } else {
     throw std::logic_error("not implemented: makeGoldenL()");
   }
-  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(makeGoldenLCombinatorial(), vectors);
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(makeLCombinatorial(), vectors);
 }
 
 auto makeHexagonCombinatorial() {

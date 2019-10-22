@@ -146,6 +146,38 @@ std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::
   return ret;
 }
 
+std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::insertAt(HalfEdge e) const {
+  CHECK_ARGUMENT(!boundary(e), "cannot insert vertex beyond boundary");
+
+  // Insert three new half edges a, b, c which go around the new vertex such that -a is next to e.
+  const int nextEdge = static_cast<int>(impl->vertices.size() / 2) + 1;
+  HalfEdge a = HalfEdge(nextEdge);
+  HalfEdge b = HalfEdge(nextEdge + 1);
+  HalfEdge c = HalfEdge(nextEdge + 2);
+
+  auto cycles = impl->vertices.cycles();
+  for (auto & cycle : cycles) {
+    for (size_t i = 0; i < cycle.size(); i++) {
+      if (cycle[i] == e) {
+        i++;
+        cycle.insert(cycle.begin() + i, -a);
+      } else if (cycle[i] == nextInFace(e)) {
+        i++;
+        cycle.insert(cycle.begin() + i, -b);
+      } else if (cycle[i] == nextInFace(nextInFace(e))) {
+        i++;
+        cycle.insert(cycle.begin() + i, -c);
+      }
+    }
+  }
+  cycles.push_back({ a, b, c});
+
+  auto ret = std::make_unique<FlatTriangulationCombinatorial>();
+  ret->impl = spimpl::make_unique_impl<Implementation>(Permutation<HalfEdge>(cycles),
+                                                       as_set(impl->faces.domain() | filtered([&](auto& edge) { return this->boundary(edge); })));
+  return ret;
+}
+
 vector<HalfEdge> FlatTriangulationCombinatorial::atVertex(const Vertex v) const {
   vector<HalfEdge> ret{v.representative};
   while (true) {

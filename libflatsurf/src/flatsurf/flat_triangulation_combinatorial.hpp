@@ -36,11 +36,18 @@ class FlatTriangulationCombinatorial : boost::equality_comparable<FlatTriangulat
   FlatTriangulationCombinatorial(const Permutation<HalfEdge> &vertices);
   FlatTriangulationCombinatorial(FlatTriangulationCombinatorial &&);
 
-  // Create an unrelated clone of this triangulation that is built from the
+  // Create an independent clone of this triangulation that is built from the
   // same data. There is no copy-constructor since it is too likely that it
   // would not update the associated HalfEdgeMaps in the way that the caller
   // expects.
   std::unique_ptr<FlatTriangulationCombinatorial> clone() const;
+
+  // Create an independent clone of this triangulation with an extra vertex
+  // inserted next to the given half edge e. The numbering of half edges is
+  // consistent with the numbering in this triangulation, i.e., to single out
+  // the new half edges, you may take a, the half edge that is nextAtVertex to
+  // e, and then look at the successors of -a.
+  std::unique_ptr<FlatTriangulationCombinatorial> insertAt(HalfEdge e) const;
 
   HalfEdge nextAtVertex(HalfEdge e) const;
   HalfEdge nextInFace(HalfEdge e) const;

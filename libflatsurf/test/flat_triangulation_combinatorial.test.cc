@@ -53,6 +53,21 @@ TEST(FlatTriangulationCombinatorialTest, Comparison) {
   EXPECT_NE(square, makeSquareCombinatorial());
 }
 
+TEST(FlatTriangulationCombinatorialTest, Insert) {
+  auto square = makeSquareCombinatorial();
+  auto e = square.halfEdges()[0];
+  auto square_ = square.insertAt(e);
+
+  ASSERT_NE(square, *square_);
+  ASSERT_EQ(square.vertices().size() + 1, square_->vertices().size());
+  ASSERT_EQ(square.halfEdges().size() + 6, square_->halfEdges().size());
+
+  auto a = -square_->nextAtVertex(e);
+  ASSERT_NE(a, -square.nextAtVertex(e));
+
+  EXPECT_EQ(square_->nextAtVertex(square_->nextAtVertex(square_->nextAtVertex(a))), a);
+}
+
 }  // namespace
 
 #include "main.hpp"
