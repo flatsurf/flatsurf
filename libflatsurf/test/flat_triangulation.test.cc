@@ -70,6 +70,20 @@ TYPED_TEST(FlatTriangulationTest, FlipSquare) {
   }
 }
 
+TYPED_TEST(FlatTriangulationTest, Insert) {
+  auto square = makeSquare<TypeParam>();
+  auto square3 = square->scale(3);
+
+  HalfEdge e(1);
+  TypeParam v = square->fromEdge(HalfEdge(1)) + square->fromEdge(HalfEdge(3));
+
+  auto square3_ = square3->insertAt(e, v);
+
+  ASSERT_NE(*square3, *square3_);
+  EXPECT_EQ(square3_->fromEdge(square3_->nextAtVertex(e)), v);
+}
+
+
 }  // namespace
 
 #include "main.hpp"

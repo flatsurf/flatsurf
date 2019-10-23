@@ -32,7 +32,8 @@ namespace flatsurf::detail {
 // Shared base class for vectors in ℝ².
 template <typename Vector>
 class VectorBase : private boost::additive<Vector>,
-                   private boost::multipliable<Vector, int> {
+                   private boost::multipliable<Vector, int>,
+                   private boost::multipliable<Vector, mpz_class> {
  public:
   template <typename V>
   friend std::ostream &operator<<(std::ostream &, const VectorBase<V> &);

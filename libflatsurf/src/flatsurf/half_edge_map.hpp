@@ -40,6 +40,7 @@ class HalfEdgeMap final : boost::equality_comparable<HalfEdgeMap<T>> {
   HalfEdgeMap(const FlatTriangulationCombinatorial *parent, const std::vector<T> &values, const FlipHandler &updateAfterFlip);
   // The parent does not need to remain valid. If it is destructed, it will signal the HalfEdgeMap so that it removes its reference to it.
   HalfEdgeMap(const FlatTriangulationCombinatorial *parent, const FlipHandler &updateAfterFlip);
+  HalfEdgeMap(const HalfEdgeMap &, const FlipHandler &updateAfterFlip);
   HalfEdgeMap(const HalfEdgeMap &);
   HalfEdgeMap(HalfEdgeMap &&);
   ~HalfEdgeMap();

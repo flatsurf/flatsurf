@@ -223,7 +223,7 @@ T VectorExact<Vector, T>::operator*(const Vector& rhs) const noexcept {
   } else if constexpr (is_cartesian_v<Implementation>) {
     return self.impl->x * rhs.impl->x + self.impl->y * rhs.impl->y;
   } else if constexpr (is_forward_v<Implementation>) {
-    return self.impl->value * rhs.impl->value;
+    return self.impl->vector * rhs.impl->vector;
   } else {
     static_assert(false_type_v<Implementation>, "Implementation is missing scalar product operator*().");
   }

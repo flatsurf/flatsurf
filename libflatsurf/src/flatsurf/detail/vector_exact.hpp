@@ -29,7 +29,8 @@ namespace flatsurf::detail {
 template <typename Vector, typename T>
 class VectorExact : public VectorBase<Vector>,
                     private boost::less_than_comparable<Vector, Bound>,
-                    private boost::equality_comparable<Vector> {
+                    private boost::equality_comparable<Vector>,
+                    private boost::multipliable<Vector, T> {
  public:
   using Coordinate = T;
 

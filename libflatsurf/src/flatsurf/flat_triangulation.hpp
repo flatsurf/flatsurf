@@ -25,6 +25,8 @@
 #include <memory>
 #include <vector>
 
+#include <gmpxx.h>
+
 #include "external/spimpl/spimpl.h"
 
 #include "flatsurf/flat_triangulation_combinatorial.hpp"
@@ -38,14 +40,22 @@ class FlatTriangulation : public FlatTriangulationCombinatorial {
 
   FlatTriangulation() noexcept;
   FlatTriangulation(FlatTriangulationCombinatorial &&, const std::vector<Vector> &vectors);
-  FlatTriangulation(FlatTriangulationCombinatorial &&, HalfEdgeMap<Vector> &&vectors);
+  FlatTriangulation(FlatTriangulationCombinatorial &&, const HalfEdgeMap<Vector> &vectors);
   FlatTriangulation(FlatTriangulation<T> &&rhs) noexcept;
 
-  // Create an unrelated clone of this triangulation that is built from the
-  // same data. There is no copy-constructor since it is too likely that
-  // this is would not update the associated HalfEdgeMaps in the way that the
-  // caller expects.
+  // Create an independent clone of this triangulation that is built from the
+  // same data. There is no copy-constructor since it is too likely that this
+  // is would not update the associated HalfEdgeMaps in the way that the caller
+  // expects.
   std::unique_ptr<FlatTriangulation<T>> clone() const;
+
+  // Create an independent clone of this triangulation with an edded vertex
+  // next to e at v from e's source.
+  std::unique_ptr<FlatTriangulation<T>> insertAt(HalfEdge e, const Vector & v) const;
+
+  // Create an independent clone of this triangulation with all vectors scaled
+  // by c.
+  std::unique_ptr<FlatTriangulation<T>> scale(const mpz_class& c) const;
 
   T area() const noexcept;
 

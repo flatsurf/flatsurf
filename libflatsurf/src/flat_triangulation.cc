@@ -61,9 +61,9 @@ FlatTriangulation<T>::FlatTriangulation(FlatTriangulationCombinatorial &&combina
     : FlatTriangulation(std::move(combinatorial), HalfEdgeMap<Vector>(&combinatorial, vectors, updateAfterFlip<Vector>)) {}
 
 template <typename T>
-FlatTriangulation<T>::FlatTriangulation(FlatTriangulationCombinatorial &&combinatorial, HalfEdgeMap<Vector> &&vectors)
+FlatTriangulation<T>::FlatTriangulation(FlatTriangulationCombinatorial &&combinatorial, const HalfEdgeMap<Vector> &vectors)
     : FlatTriangulationCombinatorial(std::move(combinatorial)),
-      impl(spimpl::make_unique_impl<Implementation>(std::move(vectors))) {
+      impl(spimpl::make_unique_impl<Implementation>(HalfEdgeMap<Vector>(vectors, updateAfterFlip<Vector>))) {
   // check that faces are closed
   for (auto edge : halfEdges()) {
     if (this->boundary(edge)) continue;
@@ -97,10 +97,42 @@ FlatTriangulation<T> &FlatTriangulation<T>::operator=(FlatTriangulation<T> &&rhs
 
 template <typename T>
 std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::clone() const {
-  std::vector<Vector> vectors;
-  for (int e = 1; e <= halfEdges().size() / 2; e++)
-    vectors.push_back(fromEdge(HalfEdge(e)));
-  return std::make_unique<FlatTriangulation>(std::move(*FlatTriangulationCombinatorial::clone()), std::move(vectors));
+  auto combinatorial = FlatTriangulationCombinatorial::clone();
+
+  HalfEdgeMap<Vector> vectors = HalfEdgeMap<Vector>(&*combinatorial, updateAfterFlip<Vector>);
+  for (auto edge : halfEdges())
+    vectors.set(edge, fromEdge(edge));
+
+  return std::make_unique<FlatTriangulation>(std::move(*combinatorial), vectors);
+}
+
+template <typename T>
+std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge e, const Vector & v) const {
+  auto combinatorial = FlatTriangulationCombinatorial::insertAt(e);
+
+  HalfEdgeMap<Vector> vectors = HalfEdgeMap<Vector>(&*combinatorial, updateAfterFlip<Vector>);
+  for (auto edge : halfEdges())
+    vectors.set(edge, fromEdge(edge));
+
+  HalfEdge a = -combinatorial->nextAtVertex(e);
+  vectors.set(a, -v);
+  HalfEdge b = combinatorial->nextAtVertex(a);
+  vectors.set(b, fromEdge(e) - v);
+  HalfEdge c = combinatorial->nextAtVertex(b);
+  vectors.set(c, fromEdge(nextAtVertex(e)) - v);
+
+  return std::make_unique<FlatTriangulation>(std::move(*combinatorial), vectors);
+}
+
+template <typename T>
+std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::scale(const mpz_class& c) const {
+  auto combinatorial = FlatTriangulationCombinatorial::clone();
+
+  HalfEdgeMap<Vector> vectors = HalfEdgeMap<Vector>(&*combinatorial, updateAfterFlip<Vector>);
+  for (auto edge : halfEdges())
+    vectors.set(edge, c * fromEdge(edge));
+
+  return std::make_unique<FlatTriangulation>(std::move(*combinatorial), vectors);
 }
 
 template <typename T>
