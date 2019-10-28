@@ -24,6 +24,9 @@
 #include "flatsurf/half_edge.hpp"
 #include "flatsurf/half_edge_map.hpp"
 #include "flatsurf/vector.hpp"
+#include "flatsurf/saddle_connections.hpp"
+#include "flatsurf/saddle_connection.hpp"
+#include "intervalxt/length.hpp"
 #include "util/assert.ipp"
 
 using std::map;
@@ -107,21 +110,108 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::clone() const {
 }
 
 template <typename T>
-std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge e, const Vector & v) const {
-  auto combinatorial = FlatTriangulationCombinatorial::insertAt(e);
+std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge& e, const Vector & v) const {
+  CHECK_ARGUMENT(fromEdge(e).ccw(v) == CCW::COUNTERCLOCKWISE && fromEdge(nextAtVertex(e)).ccw(v) == CCW::CLOCKWISE, "vector v must be strictly contained in the sector next to the half edge e");
 
-  HalfEdgeMap<Vector> vectors = HalfEdgeMap<Vector>(&*combinatorial, updateAfterFlip<Vector>);
-  for (auto edge : halfEdges())
-    vectors.set(edge, fromEdge(edge));
+  std::shared_ptr<FlatTriangulation<T>> surface = clone();
 
-  HalfEdge a = -combinatorial->nextAtVertex(e);
-  vectors.set(a, -v);
-  HalfEdge b = combinatorial->nextAtVertex(a);
-  vectors.set(b, fromEdge(e) - v);
-  HalfEdge c = combinatorial->nextAtVertex(b);
-  vectors.set(c, fromEdge(nextAtVertex(e)) - v);
+  auto check_orientation = [&](const Vector& saddle_connection) {
+    auto orient = (saddle_connection - v).orientation(v);
+    CHECK_ARGUMENT(orient != ORIENTATION::OPPOSITE, "cannot insert half edge that crosses over an existing vertex");
+    if (orient == ORIENTATION::ORTHOGONAL) {
+      // It is a bit unclear what to do if the new edge should end at a
+      // vertex, in particular if it is collinear with an existing half
+      // edge (after fliping.)
+      throw std::logic_error("insertion of half edges that end at an existing vertex not implemented yet");
+    }
+  };
 
-  return std::make_unique<FlatTriangulation>(std::move(*combinatorial), vectors);
+  // Whether the next half edge that the ray to v crosses is further away
+  // than v's length.
+  bool nextCrossingBeyondBound = false;
+  while(!nextCrossingBeyondBound) {
+    if (surface->fromEdge(e).ccw(v) == CCW::COLLINEAR) {
+      check_orientation(surface->fromEdge(e));
+      break;
+    }
+
+    // flip edges so all of v is in one face
+    auto connections = SaddleConnections<FlatTriangulation<T>>(surface, Bound(INT_MAX), e);
+    auto search = connections.begin();
+
+    while (true) {
+      auto ccw = (*search)->vector().ccw(v);
+      if (ccw == CCW::COLLINEAR) {
+        check_orientation((*search)->vector());
+        nextCrossingBeyondBound = true;
+        break;
+      }
+
+      search.skipSector(-ccw);
+
+      auto base = (*search)->vector() - surface->fromEdge((*search)->target());
+      auto crossing = search.incrementWithCrossings();
+      if (crossing.has_value()) {
+        // potentially crossing *crossing at base
+
+        auto edge = surface->fromEdge(*crossing);
+        auto relative = v - base;
+        nextCrossingBeyondBound = edge.ccw(relative) == CCW::COUNTERCLOCKWISE;
+        if (nextCrossingBeyondBound) break;
+
+        // v crosses crossing, so flip it and replace e if v is then not next to e anymore.
+        surface->flip(*crossing);
+        if (surface->fromEdge(-*crossing).ccw(v) != CCW::CLOCKWISE)
+          e = -*crossing;
+        break;
+      }
+    }
+  }
+
+  if (surface->fromEdge(e).ccw(v) != CCW::COLLINEAR) {
+    // After the flips we did, v is now completely inside a face.
+    assert(surface->fromEdge(e).ccw(v) == CCW::COUNTERCLOCKWISE);
+
+    auto combinatorial = static_cast<FlatTriangulationCombinatorial*>(surface.get())->insertAt(e);
+
+    HalfEdgeMap<Vector> vectors = HalfEdgeMap<Vector>(&*combinatorial, updateAfterFlip<Vector>);
+    for (auto edge : surface->halfEdges())
+      vectors.set(edge, surface->fromEdge(edge));
+
+    HalfEdge a = -combinatorial->nextAtVertex(e);
+    vectors.set(a, -v);
+    HalfEdge b = combinatorial->nextAtVertex(a);
+    vectors.set(b, surface->fromEdge(e) - v);
+    HalfEdge c = combinatorial->nextAtVertex(b);
+    vectors.set(c, surface->fromEdge(surface->nextAtVertex(e)) - v);
+
+    return std::make_unique<FlatTriangulation>(std::move(*combinatorial), vectors);
+  } else {
+    // After the flips we did, v is collinear with the half edge e (but shorter.)
+
+    // Insert our half edge ee next to e
+    auto combinatorial = static_cast<FlatTriangulationCombinatorial*>(surface.get())->insertAt(e);
+    auto ee = combinatorial->nextAtVertex(e);
+    // After a flip of e the original e can be recovered as ee + eee.
+    combinatorial->flip(e);
+    auto eee = combinatorial->nextAtVertex(combinatorial->nextAtVertex(-ee));
+
+    // The combinatorics are correct now, but we still have to patch up the
+    // vectors, namely the four half edges meeting at the new vertex all need
+    // updating.
+    HalfEdgeMap<Vector> vectors = HalfEdgeMap<Vector>(&*combinatorial, updateAfterFlip<Vector>);
+    for (auto edge : surface->halfEdges())
+      vectors.set(edge, surface->fromEdge(edge));
+
+    vectors.set(ee, v);
+    vectors.set(eee, surface->fromEdge(e) - v);
+    vectors.set(combinatorial->nextAtVertex(-ee), surface->fromEdge(surface->previousAtVertex(e)) - v);
+    vectors.set(combinatorial->nextAtVertex(eee), surface->fromEdge(surface->nextAtVertex(e)) - v);
+
+    e = combinatorial->previousAtVertex(ee);
+
+    return std::make_unique<FlatTriangulation>(std::move(*combinatorial), vectors);
+  }
 }
 
 template <typename T>

@@ -49,9 +49,10 @@ class FlatTriangulation : public FlatTriangulationCombinatorial {
   // expects.
   std::unique_ptr<FlatTriangulation<T>> clone() const;
 
-  // Create an independent clone of this triangulation with an edded vertex
-  // next to e at v from e's source.
-  std::unique_ptr<FlatTriangulation<T>> insertAt(HalfEdge e, const Vector & v) const;
+  // Create an independent clone of this triangulation with an added vertex
+  // next to e at v from e's source. If the vector does not fit into the face
+  // next to e, the necessary edge flips are performed to accomodate it.
+  std::unique_ptr<FlatTriangulation<T>> insertAt(HalfEdge& e, const Vector & v) const;
 
   // Create an independent clone of this triangulation with all vectors scaled
   // by c.

@@ -18,6 +18,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <numeric>
+
 #include <gtest/gtest.h>
 #include <boost/lexical_cast.hpp>
 
@@ -75,14 +77,26 @@ TYPED_TEST(FlatTriangulationTest, Insert) {
   auto square3 = square->scale(3);
 
   HalfEdge e(1);
-  TypeParam v = square->fromEdge(HalfEdge(1)) + square->fromEdge(HalfEdge(3));
 
-  auto square3_ = square3->insertAt(e, v);
+  for (int x = 1; x < 64; x++) {
+    for (int y = x + 1; y < 64; y++) {
+      bool crossesSingularity = false;
+      int xx = x / std::gcd(x, y);
+      int yy = y / std::gcd(x, y);
+      for (int n = 1; xx*n <= x; n++) {
+        if (xx * n % 3 == 0 && yy * n % 3 == 0)
+          crossesSingularity = true;
+      }
+      if (crossesSingularity) continue;
+      TypeParam v = x * square->fromEdge(HalfEdge(1)) + y * square->fromEdge(HalfEdge(3));
+      HalfEdge ee = e;
+      auto surf = square3->insertAt(ee, v);
 
-  ASSERT_NE(*square3, *square3_);
-  EXPECT_EQ(square3_->fromEdge(square3_->nextAtVertex(e)), v);
+      ASSERT_NE(*square3, *surf);
+      EXPECT_EQ(surf->fromEdge(surf->nextAtVertex(ee)), v);
+    }
+  }
 }
-
 
 }  // namespace
 

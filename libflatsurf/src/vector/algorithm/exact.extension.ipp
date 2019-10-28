@@ -38,6 +38,11 @@ template <typename Implementation>
 static constexpr bool has_bool = is_detected_v<bool_t, Implementation>;
 
 template <typename Implementation>
+using bound_t = decltype(std::declval<const Implementation&>().bound());
+template <typename Implementation>
+static constexpr bool has_bound = is_detected_exact_v<Bound, bound_t, Implementation>;
+
+template <typename Implementation>
 using lt_bound_t = decltype(std::declval<const Implementation&>() < std::declval<const Bound>());
 template <typename Implementation>
 static constexpr bool has_lt_bound = is_detected_exact_v<bool, lt_bound_t, Implementation>;
@@ -71,11 +76,6 @@ template <typename Implementation>
 using y_t = decltype(std::declval<const Implementation&>().y());
 template <typename Implementation>
 static constexpr bool has_y = is_detected_exact_v<typename Implementation::Vector::Coordinate, y_t, Implementation>;
-
-template <typename Implementation>
-using length_t = decltype(std::declval<const Implementation&>().length());
-template <typename Implementation>
-static constexpr bool has_length = is_detected_exact_v<intervalxt::Length<typename Implementation::Vector::Coordinate>, length_t, Implementation>;
 
 template <typename Implementation>
 using scalar_product_t = decltype(std::declval<const Implementation>() * (std::declval<const typename Implementation::Vector&>()));

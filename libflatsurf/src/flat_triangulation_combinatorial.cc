@@ -96,6 +96,10 @@ HalfEdge FlatTriangulationCombinatorial::nextInFace(const HalfEdge e) const {
   return impl->faces(e);
 }
 
+HalfEdge FlatTriangulationCombinatorial::previousInFace(const HalfEdge e) const {
+  return nextInFace(nextInFace(e));
+}
+
 bool FlatTriangulationCombinatorial::boundary(const HalfEdge e) const {
   return impl->faces(e) == e;
 }
@@ -103,6 +107,10 @@ bool FlatTriangulationCombinatorial::boundary(const HalfEdge e) const {
 HalfEdge FlatTriangulationCombinatorial::nextAtVertex(const HalfEdge e) const {
   ASSERT_ARGUMENT(!this->boundary(e), "boundary half edge has no successor at vertex");
   return impl->vertices(e);
+}
+
+HalfEdge FlatTriangulationCombinatorial::previousAtVertex(const HalfEdge e) const {
+  return nextInFace(-e);
 }
 
 const vector<HalfEdge>& FlatTriangulationCombinatorial::halfEdges() const {

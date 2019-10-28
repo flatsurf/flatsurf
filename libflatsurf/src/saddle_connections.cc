@@ -265,6 +265,7 @@ class SaddleConnections<Surface>::Iterator::Implementation {
   void skipSector(CCW sector) {
     ASSERT_ARGUMENT(sector != CCW::COLLINEAR,
                     "There is no such thing like a collinear sector.");
+    assert(state.size() && "cannot skip a sector in a completed search");
 
     if (state.top() == State::SADDLE_CONNECTION_FOUND) {
       increment();
@@ -464,8 +465,12 @@ void SaddleConnections<Surface>::Iterator::skipSector(CCW ccw) {
 
 template <typename Surface>
 std::optional<HalfEdge> SaddleConnections<Surface>::Iterator::incrementWithCrossings() {
+  assert(impl->sector != impl->sectors.size() && "cannot increment beyond the end");
+
   while (true) {
-    if (impl->state.top() == State::START) {
+    if (impl->sector == impl->sectors.size()) {
+      return {};
+    } else if (impl->state.top() == State::START) {
       impl->applyMoves();
       auto ret = impl->nextEdge;
       impl->increment();

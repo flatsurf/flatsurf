@@ -50,7 +50,9 @@ class FlatTriangulationCombinatorial : boost::equality_comparable<FlatTriangulat
   std::unique_ptr<FlatTriangulationCombinatorial> insertAt(HalfEdge e) const;
 
   HalfEdge nextAtVertex(HalfEdge e) const;
+  HalfEdge previousAtVertex(HalfEdge e) const;
   HalfEdge nextInFace(HalfEdge e) const;
+  HalfEdge previousInFace(HalfEdge e) const;
 
   // Return whether this surface has a boundary edge.
   bool hasBoundary() const;
