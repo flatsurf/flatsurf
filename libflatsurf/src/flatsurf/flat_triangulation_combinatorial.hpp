@@ -49,6 +49,11 @@ class FlatTriangulationCombinatorial : boost::equality_comparable<FlatTriangulat
   // e, and then look at the successors of -a.
   std::unique_ptr<FlatTriangulationCombinatorial> insertAt(HalfEdge e) const;
 
+  // Create an independent clone of this triangulation with an edded boundary
+  // at the half edge e by removing the identification of the two corresponding
+  // half edges there.
+  std::unique_ptr<FlatTriangulationCombinatorial> slot(HalfEdge e) const;
+
   HalfEdge nextAtVertex(HalfEdge e) const;
   HalfEdge previousAtVertex(HalfEdge e) const;
   HalfEdge nextInFace(HalfEdge e) const;

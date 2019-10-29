@@ -80,6 +80,15 @@ Permutation<T>::Permutation(const vector<pair<T, T>> &permutation)
 }
 
 template <typename T>
+Permutation<T>::Permutation(const std::map<T, T> &permutation) : data(permutation.size()) {
+  for (auto ab : permutation) {
+    ASSERT_ARGUMENT(index(ab.first) < data.size(), "entry of permutation points to an element beoynd the size of the permutation");
+    data[index(ab.first)] = ab.second;
+  }
+  check(*this);
+}
+
+template <typename T>
 Permutation<T> Permutation<T>::random(const vector<T> &domain) {
   ASSERT_ARGUMENT(std::set<T>(domain.begin(), domain.end()).size() == domain.size(), "domain must not contain duplicates");
   vector<T> image = domain;

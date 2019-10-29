@@ -21,6 +21,7 @@
 #include <benchmark/benchmark.h>
 #include <gtest/gtest.h>
 #include <boost/lexical_cast.hpp>
+#include <memory>
 
 #include <exact-real/integer_ring.hpp>
 #include <flatsurf/flat_triangulation.hpp>

@@ -152,6 +152,8 @@ using namespace flatsurf;
 
 template class flatsurf::HalfEdgeMap<Vector<long long>>;
 template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<Vector<long long>> &);
+template class flatsurf::HalfEdgeMap<Vector<mpq_class>>;
+template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<Vector<mpq_class>> &);
 template class flatsurf::HalfEdgeMap<Vector<eantic::renf_elem_class>>;
 template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<Vector<eantic::renf_elem_class>> &);
 template class flatsurf::HalfEdgeMap<long long>;

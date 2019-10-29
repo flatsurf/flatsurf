@@ -58,6 +58,13 @@ class FlatTriangulation : public FlatTriangulationCombinatorial {
   // by c.
   std::unique_ptr<FlatTriangulation<T>> scale(const mpz_class& c) const;
 
+  // Create an independent clone of this triangulation with an edded boundary
+  // at the half edge e by removing the identification of the two corresponding
+  // half edges there.
+  std::unique_ptr<FlatTriangulation<T>> slot(const HalfEdge e) const;
+
+  void flip(HalfEdge);
+
   T area() const noexcept;
 
   const Vector &fromEdge(HalfEdge) const;

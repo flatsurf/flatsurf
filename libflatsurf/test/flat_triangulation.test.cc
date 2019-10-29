@@ -98,6 +98,31 @@ TYPED_TEST(FlatTriangulationTest, Insert) {
   }
 }
 
+TYPED_TEST(FlatTriangulationTest, Slot) {
+  auto l = makeL<TypeParam>();
+  auto l3 = l->scale(3);
+
+  HalfEdge e(2);
+
+  for (int x = 1; x < 64; x++) {
+    for (int y = x + 1; y < 64; y++) {
+      bool crossesSingularity = false;
+      int xx = x / std::gcd(x, y);
+      int yy = y / std::gcd(x, y);
+      for (int n = 1; xx*n <= x; n++) {
+        if (xx * n % 3 == 0 && yy * n % 3 == 0)
+          crossesSingularity = true;
+      }
+      if (crossesSingularity) continue;
+      TypeParam v = x * l->fromEdge(HalfEdge(1)) + y * l->fromEdge(HalfEdge(3));
+      HalfEdge ee = e;
+      auto surf = l3->insertAt(ee, v)->slot(ee);
+
+      ASSERT_TRUE(surf->boundary(ee));
+    }
+  }
+}
+
 }  // namespace
 
 #include "main.hpp"

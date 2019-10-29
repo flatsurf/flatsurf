@@ -123,6 +123,8 @@ std::vector<HalfEdge> SaddleConnection<Surface>::crossings() const {
 namespace flatsurf {
 template class SaddleConnection<FlatTriangulation<long long>>;
 template ostream &operator<<(ostream &, const SaddleConnection<FlatTriangulation<long long>> &);
+template class SaddleConnection<FlatTriangulation<mpq_class>>;
+template ostream &operator<<(ostream &, const SaddleConnection<FlatTriangulation<mpq_class>> &);
 template class SaddleConnection<FlatTriangulation<eantic::renf_elem_class>>;
 template ostream &operator<<(ostream &, const SaddleConnection<FlatTriangulation<eantic::renf_elem_class>> &);
 template class SaddleConnection<FlatTriangulation<exactreal::Element<exactreal::IntegerRing>>>;

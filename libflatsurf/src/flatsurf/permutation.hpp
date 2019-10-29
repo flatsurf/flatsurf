@@ -24,6 +24,7 @@
 #include <functional>
 #include <iosfwd>
 #include <vector>
+#include <map>
 
 #include "flatsurf/flatsurf.hpp"
 
@@ -37,6 +38,7 @@ class Permutation : public boost::equality_comparable<Permutation<T>> {
   Permutation();
   explicit Permutation(const std::vector<std::vector<T>> &cycles);
   explicit Permutation(const std::vector<std::pair<T, T>> &permutation);
+  explicit Permutation(const std::map<T, T> &permutation);
   template <typename S>
   static Permutation<T> create(const std::vector<std::vector<S>> &, const std::function<T(S)> &);
   static Permutation<T> random(const std::vector<T> &domain);

@@ -135,8 +135,8 @@ CCW VectorExact<Vector, T>::ccw(const Vector& rhs) const noexcept {
     // Presumably, all of this could happen automagically with yap just by
     // looking at the predicate sgn(x*y - x'*y').
 
-    const auto a = self.x() * rhs.y();
-    const auto b = rhs.x() * self.y();
+    const T a = self.x() * rhs.y();
+    const T b = rhs.x() * self.y();
 
     if (a > b) {
       return CCW::COUNTERCLOCKWISE;
@@ -201,7 +201,7 @@ ORIENTATION VectorExact<Vector, T>::orientation(const Vector& rhs) const noexcep
     // increase precision until the approximations are good enough to decide.
     // Presumably, all of this could happen automagically with yap just by
     // looking at the predicate sgn(x*x' + y*y').
-    const auto dot = self.x() * rhs.x() + self.y() * rhs.y();
+    const T dot = self.x() * rhs.x() + self.y() * rhs.y();
 
     if (dot > 0) {
       return ORIENTATION::SAME;

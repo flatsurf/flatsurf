@@ -110,6 +110,18 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::clone() const {
 }
 
 template <typename T>
+std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::slot(HalfEdge e) const {
+  auto combinatorial = FlatTriangulationCombinatorial::slot(e);
+
+  HalfEdgeMap<Vector> vectors = HalfEdgeMap<Vector>(&*combinatorial, updateAfterFlip<Vector>);
+  for (auto edge : halfEdges())
+    vectors.set(edge, fromEdge(edge));
+  vectors.set(HalfEdge(halfEdges().size() / 2 + 1), fromEdge(e));
+
+  return std::make_unique<FlatTriangulation>(std::move(*combinatorial), vectors);
+}
+
+template <typename T>
 std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge& e, const Vector & v) const {
   CHECK_ARGUMENT(fromEdge(e).ccw(v) == CCW::COUNTERCLOCKWISE && fromEdge(nextAtVertex(e)).ccw(v) == CCW::CLOCKWISE, "vector v must be strictly contained in the sector next to the half edge e");
 
@@ -129,16 +141,19 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge& e
   // Whether the next half edge that the ray to v crosses is further away
   // than v's length.
   bool nextCrossingBeyondBound = false;
-  while(!nextCrossingBeyondBound) {
+  while(true) {
     if (surface->fromEdge(e).ccw(v) == CCW::COLLINEAR) {
       check_orientation(surface->fromEdge(e));
       break;
     }
+    assert(surface->fromEdge(e).ccw(v) == CCW::COUNTERCLOCKWISE);
 
     // flip edges so all of v is in one face
     auto connections = SaddleConnections<FlatTriangulation<T>>(surface, Bound(INT_MAX), e);
     auto search = connections.begin();
 
+    std::optional<HalfEdge> crossing;
+    Vector base;
     while (true) {
       auto ccw = (*search)->vector().ccw(v);
       if (ccw == CCW::COLLINEAR) {
@@ -149,23 +164,53 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge& e
 
       search.skipSector(-ccw);
 
-      auto base = (*search)->vector() - surface->fromEdge((*search)->target());
-      auto crossing = search.incrementWithCrossings();
+      base = (*search)->vector() - surface->fromEdge((*search)->target());
+      crossing = search.incrementWithCrossings();
       if (crossing.has_value()) {
-        // potentially crossing *crossing at base
-
-        auto edge = surface->fromEdge(*crossing);
-        auto relative = v - base;
-        nextCrossingBeyondBound = edge.ccw(relative) == CCW::COUNTERCLOCKWISE;
-        if (nextCrossingBeyondBound) break;
-
-        // v crosses crossing, so flip it and replace e if v is then not next to e anymore.
-        surface->flip(*crossing);
-        if (surface->fromEdge(-*crossing).ccw(v) != CCW::CLOCKWISE)
-          e = -*crossing;
         break;
       }
     }
+
+    if (nextCrossingBeyondBound)
+      break;
+
+    // potentially crossing *crossing at base
+    auto edge = surface->fromEdge(*crossing);
+    auto relative = v - base;
+    nextCrossingBeyondBound = edge.ccw(relative) == CCW::COUNTERCLOCKWISE;
+
+    if (nextCrossingBeyondBound)
+      break;
+
+    std::function<void(HalfEdge)> flip = [&](HalfEdge f) {
+      assert (f != e && f != -e && f != surface->nextAtVertex(e) && f != -surface->nextAtVertex(e));
+
+      auto canFlip = [&](HalfEdge g) {
+        return f != e && f != -e && f != surface->nextAtVertex(e) && f != -surface->nextAtVertex(e) &&
+          surface->fromEdge(surface->previousAtVertex(g)).ccw(surface->fromEdge(surface->nextAtVertex(g))) == CCW::COUNTERCLOCKWISE && surface->fromEdge(surface->previousAtVertex(-g)).ccw(surface->fromEdge(surface->nextAtVertex(-g))) == CCW::COUNTERCLOCKWISE;
+      };
+
+      while (!canFlip(f)) {
+        // f is blocked by a forward triangle on top of it so we flip its top
+        // edge.
+        if (v.ccw(surface->fromEdge(surface->previousAtVertex(f))) != CCW::COUNTERCLOCKWISE) {
+          flip(-surface->nextAtVertex(-f));
+          continue;
+        } else {
+          assert(v.ccw(surface->fromEdge(surface->nextAtVertex(-f))) != CCW::CLOCKWISE);
+          flip(surface->previousAtVertex(f));
+          continue;
+        }
+      }
+
+      surface->flip(f);
+    };
+
+    // v crosses crossing, so flip it and replace e if v is then not next to e anymore.
+    flip(*crossing);
+    assert(surface->fromEdge(e).ccw(v) == CCW::COUNTERCLOCKWISE);
+    while (surface->fromEdge(surface->nextAtVertex(e)).ccw(v) != CCW::CLOCKWISE)
+      e = surface->nextAtVertex(e);
   }
 
   if (surface->fromEdge(e).ccw(v) != CCW::COLLINEAR) {
@@ -226,6 +271,15 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::scale(const mpz_clas
 }
 
 template <typename T>
+void FlatTriangulation<T>::flip(HalfEdge e) {
+  CHECK_ARGUMENT(
+    fromEdge(previousAtVertex(e)).ccw(fromEdge(nextAtVertex(e))) == CCW::COUNTERCLOCKWISE &&
+    fromEdge(previousAtVertex(-e)).ccw(fromEdge(nextAtVertex(-e))) == CCW::COUNTERCLOCKWISE, "cannot flip this edge as a resulting face would not be strictly convex");
+
+  FlatTriangulationCombinatorial::flip(e);
+}
+
+template <typename T>
 bool FlatTriangulation<T>::operator==(const FlatTriangulation<T> &rhs) const noexcept {
   if (static_cast<const FlatTriangulationCombinatorial &>(*this) != static_cast<const FlatTriangulationCombinatorial &>(rhs))
     return false;
@@ -253,6 +307,8 @@ using namespace flatsurf;
 
 template class flatsurf::FlatTriangulation<long long>;
 template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<long long> &);
+template class flatsurf::FlatTriangulation<mpq_class>;
+template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<mpq_class> &);
 template class flatsurf::FlatTriangulation<eantic::renf_elem_class>;
 template ostream &flatsurf::operator<<(ostream &, const FlatTriangulation<eantic::renf_elem_class> &);
 template class flatsurf::FlatTriangulation<exactreal::Element<exactreal::IntegerRing>>;

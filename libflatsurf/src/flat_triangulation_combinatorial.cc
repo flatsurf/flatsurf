@@ -186,6 +186,51 @@ std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::
   return ret;
 }
 
+std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::slot(HalfEdge e) const {
+  CHECK_ARGUMENT(!boundary(e) && !boundary(-e), "cannot disconnect half edge that is already boundary");
+
+  // We insert a new half edge ee into the vertex permutation next to e
+  HalfEdge ee(static_cast<int>(halfEdges().size()) / 2 + 1);
+
+  std::map<HalfEdge, HalfEdge> vertices;
+  for (auto h : halfEdges()) {
+    if (h == e) {
+      vertices[e] = ee;
+      vertices[ee] = nextAtVertex(e);
+    } else if (nextAtVertex(h) == -e) {
+      vertices[h] = -ee;
+      vertices[-ee] = -e;
+    } else {
+      vertices[h] = nextAtVertex(h);
+    }
+  }
+
+  // If there is already a boundary at the vertex of e, we need to split this
+  // vertex as we do not allow connections only in a point.
+  for(HalfEdge current = nextAtVertex(e); current != e; current = nextAtVertex(current)) {
+    if (boundary(current)) {
+      vertices[current] = ee;
+      vertices[e] = impl->vertices(current);
+      break;
+    }
+  }
+
+  for(HalfEdge current = nextAtVertex(-e); current != -e; current = nextAtVertex(current)) {
+    if (boundary(current)) {
+      vertices[current] = -e;
+      vertices[-ee] = impl->vertices(current);
+      break;
+    }
+  }
+
+  Permutation<HalfEdge> vertexPermutation(vertices);
+
+  auto ret = std::make_unique<FlatTriangulationCombinatorial>();
+  ret->impl = spimpl::make_unique_impl<Implementation>(Permutation<HalfEdge>(vertices),
+      as_set(vertexPermutation.domain() | filtered([&](auto& edge) { return edge == e || edge == -ee || (edge != ee && boundary(edge)); })));
+  return ret;
+}
+
 vector<HalfEdge> FlatTriangulationCombinatorial::atVertex(const Vertex v) const {
   vector<HalfEdge> ret{v.representative};
   while (true) {
@@ -271,6 +316,7 @@ template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEd
 template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<long long>&) const;
 template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<mpz_class>&) const;
 template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<Vector<long long>>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<Vector<mpq_class>>&) const;
 template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<Vector<eantic::renf_elem_class>>&) const;
 template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<Vector<exactreal::Element<exactreal::IntegerRing>>>&) const;
 template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<Vector<exactreal::Element<exactreal::RationalField>>>&) const;
@@ -279,6 +325,7 @@ template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const Half
 template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<long long>&) const;
 template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<mpz_class>&) const;
 template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<Vector<long long>>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<Vector<mpq_class>>&) const;
 template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<Vector<eantic::renf_elem_class>>&) const;
 template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<Vector<exactreal::Element<exactreal::IntegerRing>>>&) const;
 template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<Vector<exactreal::Element<exactreal::RationalField>>>&) const;

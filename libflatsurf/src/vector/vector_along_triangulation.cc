@@ -257,9 +257,35 @@ extern template Vector<long long> VectorBase<Vector<long long>>::perpendicular()
 extern template VectorBase<Vector<long long>>::operator Vector<Arb>() const noexcept;
 extern template VectorBase<Vector<long long>>::operator std::complex<double>() const noexcept;
 extern template VectorBase<Vector<long long>>::operator Vector<Arb>() const noexcept;
+
 template class detail::VectorBase<VectorAlongTriangulation<long long>>;
 extern template std::ostream& detail::operator<<(std::ostream&, const VectorBase<Vector<long long>>&);
 template std::ostream& detail::operator<<(std::ostream&, const VectorBase<VectorAlongTriangulation<long long>>&);
+
+// mpq_class
+extern template bool VectorExact<Vector<mpq_class>, mpq_class>::operator>(Bound) const noexcept;
+extern template bool VectorExact<Vector<mpq_class>, mpq_class>::operator<(Bound) const noexcept;
+extern template VectorExact<Vector<mpq_class>, mpq_class>::operator bool() const noexcept;
+extern template CCW VectorExact<Vector<mpq_class>, mpq_class>::ccw(const Vector<mpq_class>&) const noexcept;
+extern template ORIENTATION VectorExact<Vector<mpq_class>, mpq_class>::orientation(const Vector<mpq_class>&) const noexcept;
+template class VectorAlongTriangulation<mpq_class>;
+extern template mpq_class VectorExact<Vector<mpq_class>, mpq_class>::x() const noexcept;
+extern template mpq_class VectorExact<Vector<mpq_class>, mpq_class>::y() const noexcept;
+extern template mpq_class VectorExact<Vector<mpq_class>, mpq_class>::operator*(const Vector<mpq_class>&)const noexcept;
+extern template bool VectorExact<Vector<mpq_class>, mpq_class>::operator==(const Vector<mpq_class>&) const noexcept;
+template class detail::VectorExact<VectorAlongTriangulation<mpq_class>, mpq_class>;
+extern template Vector<mpq_class>& VectorBase<Vector<mpq_class>>::operator+=(const Vector<mpq_class>&);
+extern template Vector<mpq_class>& VectorBase<Vector<mpq_class>>::operator*=(int);
+extern template Vector<mpq_class>& VectorBase<Vector<mpq_class>>::operator*=(const mpz_class&);
+extern template Vector<mpq_class> VectorBase<Vector<mpq_class>>::operator-() const noexcept;
+extern template Vector<mpq_class> VectorBase<Vector<mpq_class>>::perpendicular() const;
+extern template VectorBase<Vector<mpq_class>>::operator Vector<Arb>() const noexcept;
+extern template VectorBase<Vector<mpq_class>>::operator std::complex<double>() const noexcept;
+extern template VectorBase<Vector<mpq_class>>::operator Vector<Arb>() const noexcept;
+
+template class VectorAlongTriangulation<mpq_class, Arb>;
+template class detail::VectorExact<VectorAlongTriangulation<mpq_class, Arb>, mpq_class>;
+template std::ostream& detail::operator<<(std::ostream&, const VectorBase<VectorAlongTriangulation<mpq_class, Arb>>&);
 
 // renf_elem_class
 extern template bool VectorExact<Vector<renf_elem_class>, renf_elem_class>::operator>(Bound) const noexcept;
