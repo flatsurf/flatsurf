@@ -27,6 +27,8 @@
 
 #include <gmpxx.h>
 
+#include <exact-real/forward.hpp>
+
 #include "external/spimpl/spimpl.h"
 
 #include "flatsurf/flat_triangulation_combinatorial.hpp"
@@ -68,6 +70,7 @@ class FlatTriangulation : public FlatTriangulationCombinatorial {
   T area() const noexcept;
 
   const Vector &fromEdge(HalfEdge) const;
+  const flatsurf::Vector<exactreal::Arb> &fromEdgeApproximate(HalfEdge) const;
 
   FlatTriangulation<T> &operator=(FlatTriangulation<T> &&) noexcept;
 

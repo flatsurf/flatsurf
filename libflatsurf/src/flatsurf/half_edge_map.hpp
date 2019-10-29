@@ -58,6 +58,8 @@ class HalfEdgeMap final : boost::equality_comparable<HalfEdgeMap<T>> {
 
   static size_t index(const HalfEdge);
 
+  const FlatTriangulationCombinatorial &triangulation() const noexcept;
+
  private:
   friend FlatTriangulationCombinatorial;
 

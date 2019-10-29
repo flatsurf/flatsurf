@@ -127,6 +127,11 @@ HalfEdgeMap<T> HalfEdgeMap<T>::operator-() const noexcept {
 }
 
 template <typename T>
+const FlatTriangulationCombinatorial &HalfEdgeMap<T>::triangulation() const noexcept {
+  return *parent;
+}
+
+template <typename T>
 ostream &operator<<(ostream &os, const flatsurf::HalfEdgeMap<T> &self) {
   std::vector<string> items;
   for (auto it = self.values.begin(); it != self.values.end(); it++) {
@@ -162,6 +167,8 @@ template class flatsurf::HalfEdgeMap<int>;
 template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<int> &);
 template class flatsurf::HalfEdgeMap<mpz_class>;
 template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<mpz_class> &);
+template class flatsurf::HalfEdgeMap<Vector<exactreal::Arb>>;
+template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<Vector<exactreal::Arb>> &);
 template class flatsurf::HalfEdgeMap<Vector<exactreal::Element<exactreal::IntegerRing>>>;
 template ostream &flatsurf::operator<<(ostream &, const HalfEdgeMap<Vector<exactreal::Element<exactreal::IntegerRing>>> &);
 template class flatsurf::HalfEdgeMap<Vector<exactreal::Element<exactreal::RationalField>>>;

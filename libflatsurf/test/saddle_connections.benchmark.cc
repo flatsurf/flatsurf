@@ -75,8 +75,8 @@ void SaddleConnectionsLWithSlot(benchmark::State& state) {
   auto LWithSlot = std::shared_ptr<const FlatTriangulation<typename R2::Coordinate>>(L->insertAt(e, vector)->slot(e));
 
   for (auto _ : state) {
-    auto connections = SaddleConnections(LWithSlot, bound, LWithSlot->previousAtVertex(e));
-    std::cout<<std::distance(connections.begin(), connections.end())<<std::endl;
+    auto connections = SaddleConnections(LWithSlot, bound, Vertex::source(e, *LWithSlot));
+    std::distance(connections.begin(), connections.end());
   }
 }
 BENCHMARK_TEMPLATE(SaddleConnectionsLWithSlot, Vector<mpq_class>)->Args({100, 1})->Args({400, 1});

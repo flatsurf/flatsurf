@@ -136,8 +136,11 @@ class ImplementationWithForward : public Forward<flatsurf::Vector<T>>, SharedImp
   }
 
   auto& operator+=(const HalfEdge e) {
-    // The following cast is usually trivial, but may not be when Surface != FlatTriangulation<T>.
-    this->vector += static_cast<flatsurf::Vector<T>>(this->surface->fromEdge(e));
+    if constexpr (std::is_same_v<T, exactreal::Arb>) {
+      this->vector += this->surface->fromEdgeApproximate(e);
+    } else {
+      this->vector += this->surface->fromEdge(e);
+    }
     return *this;
   }
 
@@ -145,7 +148,11 @@ class ImplementationWithForward : public Forward<flatsurf::Vector<T>>, SharedImp
     for (auto e : this->surface->halfEdges()) {
       int c = coefficients.get(e);
       if (c > 0) {
-        this->vector += c * static_cast<flatsurf::Vector<T>>(this->surface->fromEdge(e));
+        if constexpr (std::is_same_v<T, exactreal::Arb>) {
+          this->vector += c * this->surface->fromEdgeApproximate(e);
+        } else {
+          this->vector += c * this->surface->fromEdge(e);
+        }
       }
     }
     return *this;

@@ -20,6 +20,8 @@
 #include <ostream>
 #include <vector>
 
+#include <boost/range/adaptors.hpp>
+
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/half_edge.hpp"
 #include "flatsurf/half_edge_map.hpp"
@@ -28,32 +30,54 @@
 #include "flatsurf/saddle_connection.hpp"
 #include "intervalxt/length.hpp"
 #include "util/assert.ipp"
+#include "util/as_vector.ipp"
 
 using std::map;
 using std::ostream;
 using std::vector;
+using boost::adaptors::filtered;
+using boost::adaptors::transformed;
 
 namespace flatsurf {
 namespace {
 template <typename T>
 void updateAfterFlip(HalfEdgeMap<T> &map, HalfEdge halfEdge,
                      const FlatTriangulationCombinatorial &parent) {
-  map.set(halfEdge, map.get(-parent.nextInFace(halfEdge)) +
-                        map.get(parent.nextAtVertex(halfEdge)));
+  map.set(halfEdge, map.get(-parent.nextInFace(halfEdge)) + map.get(parent.nextAtVertex(halfEdge)));
+}
+
+template <typename T>
+void updateApproximationAfterFlip(HalfEdgeMap<flatsurf::Vector<exactreal::Arb>> &map, HalfEdge halfEdge, const FlatTriangulationCombinatorial &parent) {
+  auto& surface = static_cast<const FlatTriangulation<T>&>(parent);
+  map.set(halfEdge, static_cast<flatsurf::Vector<exactreal::Arb>>(surface.fromEdge(-parent.nextInFace(halfEdge)) + surface.fromEdge(parent.nextAtVertex(halfEdge))));
 }
 }  // namespace
 
 template <typename T>
 class FlatTriangulation<T>::Implementation {
  public:
-  Implementation(HalfEdgeMap<Vector> &&vectors) : vectors(std::move(vectors)) {}
+  Implementation(HalfEdgeMap<Vector> &&vectors) : vectors(std::move(vectors)),
+    approximations([&]() {
+      HalfEdgeMap<flatsurf::Vector<exactreal::Arb>> approximations(&this->vectors.triangulation(), &updateApproximationAfterFlip<T>);
+      for (HalfEdge e : this->vectors.triangulation().halfEdges()) {
+        approximations.set(e, static_cast<flatsurf::Vector<exactreal::Arb>>(this->vectors.get(e)));
+      }
+      return approximations;
+    }(), &updateApproximationAfterFlip<T>) {}
 
   const HalfEdgeMap<Vector> vectors;
+  // A cache of approximations for improved performance
+  const HalfEdgeMap<flatsurf::Vector<exactreal::Arb>> approximations;
 };
 
 template <typename T>
 const Vector<T> &FlatTriangulation<T>::fromEdge(const HalfEdge e) const {
   return impl->vectors.get(e);
+}
+
+template <typename T>
+const flatsurf::Vector<exactreal::Arb> &FlatTriangulation<T>::fromEdgeApproximate(HalfEdge e) const {
+  return impl->approximations.get(e);
 }
 
 template <typename T>

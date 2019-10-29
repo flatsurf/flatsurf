@@ -17,12 +17,13 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <boost/range/adaptors.hpp>
 #include <cstdint>
 #include <ostream>
 #include <set>
 #include <unordered_map>
 #include <vector>
+
+#include <boost/range/adaptors.hpp>
 
 #include "flatsurf/flat_triangulation_combinatorial.hpp"
 #include "flatsurf/half_edge.hpp"
@@ -318,6 +319,7 @@ template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEd
 template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<Vector<long long>>&) const;
 template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<Vector<mpq_class>>&) const;
 template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<Vector<eantic::renf_elem_class>>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<Vector<exactreal::Arb>>&) const;
 template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<Vector<exactreal::Element<exactreal::IntegerRing>>>&) const;
 template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<Vector<exactreal::Element<exactreal::RationalField>>>&) const;
 template void flatsurf::FlatTriangulationCombinatorial::registerMap(const HalfEdgeMap<Vector<exactreal::Element<exactreal::NumberField>>>&) const;
@@ -327,6 +329,7 @@ template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const Half
 template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<Vector<long long>>&) const;
 template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<Vector<mpq_class>>&) const;
 template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<Vector<eantic::renf_elem_class>>&) const;
+template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<Vector<exactreal::Arb>>&) const;
 template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<Vector<exactreal::Element<exactreal::IntegerRing>>>&) const;
 template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<Vector<exactreal::Element<exactreal::RationalField>>>&) const;
 template void flatsurf::FlatTriangulationCombinatorial::deregisterMap(const HalfEdgeMap<Vector<exactreal::Element<exactreal::NumberField>>>&) const;
