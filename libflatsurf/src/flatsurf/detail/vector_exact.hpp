@@ -21,6 +21,7 @@
 #define LIBFLATSURF_DETAIL_VECTOR_EXACT_HPP
 
 #include <intervalxt/forward.hpp>
+#include <boost/core/empty_value.hpp>
 
 #include "flatsurf/detail/vector_base.hpp"
 
@@ -30,7 +31,7 @@ template <typename Vector, typename T>
 class VectorExact : public VectorBase<Vector>,
                     private boost::less_than_comparable<Vector, Bound>,
                     private boost::equality_comparable<Vector>,
-                    private boost::multipliable<Vector, T> {
+                    private std::conditional_t<std::is_same_v<T, mpz_class>, boost::empty_init_t, boost::multipliable<Vector, T>> {
  public:
   using Coordinate = T;
 

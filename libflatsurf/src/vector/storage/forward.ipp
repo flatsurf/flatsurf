@@ -23,8 +23,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "../../util/type_traits.ipp"
-
 using std::is_base_of_v;
 
 namespace flatsurf {

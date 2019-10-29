@@ -48,7 +48,6 @@ nobase_include_HEADERS +=                                     \
 	flatsurf/external/spimpl/spimpl.h
 
 noinst_HEADERS =                                              \
-	util/type_traits.ipp                                        \
 	util/assert.ipp                                             \
 	util/as_vector.ipp                                          \
 	util/as_set.ipp                                             \

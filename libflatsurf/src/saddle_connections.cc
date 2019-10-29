@@ -356,6 +356,8 @@ class SaddleConnections<Surface>::Iterator::Implementation {
               nextEdge = -nextEdge;
               continue;
           }
+          assert(false && "impossible enum value");
+          break;
         case Move::GOTO_PREVIOUS_EDGE:
           switch (n) {
             case Move::GOTO_NEXT_EDGE:
@@ -369,14 +371,13 @@ class SaddleConnections<Surface>::Iterator::Implementation {
               moves.push_front(Move::GOTO_NEXT_EDGE);
               continue;
           }
+          assert(false && "impossible enum value");
+          break;
         case Move::GOTO_OTHER_FACE:
           switch (n) {
             case Move::GOTO_NEXT_EDGE:
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
               moves.push_front(Move::GOTO_PREVIOUS_EDGE);
-#pragma GCC diagnostic pop
-              // fallthrough to the next case intended here
+              [[fallthrough]];
             case Move::GOTO_PREVIOUS_EDGE:
               nextEdge = -nextEdge;
               nextEdge = surface->nextAtVertex(nextEdge);
@@ -385,6 +386,8 @@ class SaddleConnections<Surface>::Iterator::Implementation {
             case Move::GOTO_OTHER_FACE:
               continue;
           }
+          assert(false && "impossible enum value");
+          break;
       }
     }
   }

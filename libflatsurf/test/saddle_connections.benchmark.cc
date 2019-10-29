@@ -64,6 +64,23 @@ void SaddleConnectionsSquare(benchmark::State& state) {
 BENCHMARK_TEMPLATE(SaddleConnectionsSquare, Vector<long long>)->Args({64, 980});
 BENCHMARK_TEMPLATE(SaddleConnectionsSquare, Vector<eantic::renf_elem_class>)->Args({64, 980});
 
+template <class R2>
+void SaddleConnectionsLWithSlot(benchmark::State& state) {
+  auto L = makeL<R2>();
+
+  auto bound = Bound(state.range(0));
+  R2 vector({ mpq_class(1009, 1361), state.range(1) });
+
+  HalfEdge e(2);
+  auto LWithSlot = std::shared_ptr<const FlatTriangulation<typename R2::Coordinate>>(L->insertAt(e, vector)->slot(e));
+
+  for (auto _ : state) {
+    auto connections = SaddleConnections(LWithSlot, bound, LWithSlot->previousAtVertex(e));
+    std::cout<<std::distance(connections.begin(), connections.end())<<std::endl;
+  }
+}
+BENCHMARK_TEMPLATE(SaddleConnectionsLWithSlot, Vector<mpq_class>)->Args({100, 1})->Args({400, 1});
+
 }  // namespace
 
 #include "main.hpp"

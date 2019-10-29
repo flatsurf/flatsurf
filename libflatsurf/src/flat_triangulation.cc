@@ -116,7 +116,7 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::slot(HalfEdge e) con
   HalfEdgeMap<Vector> vectors = HalfEdgeMap<Vector>(&*combinatorial, updateAfterFlip<Vector>);
   for (auto edge : halfEdges())
     vectors.set(edge, fromEdge(edge));
-  vectors.set(HalfEdge(halfEdges().size() / 2 + 1), fromEdge(e));
+  vectors.set(HalfEdge(static_cast<int>(halfEdges().size()) / 2 + 1), fromEdge(e));
 
   return std::make_unique<FlatTriangulation>(std::move(*combinatorial), vectors);
 }
