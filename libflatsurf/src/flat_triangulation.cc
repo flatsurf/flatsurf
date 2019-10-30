@@ -147,7 +147,7 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::slot(HalfEdge e) con
 
 template <typename T>
 std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge& e, const Vector & v) const {
-  CHECK_ARGUMENT(fromEdge(e).ccw(v) == CCW::COUNTERCLOCKWISE && fromEdge(nextAtVertex(e)).ccw(v) == CCW::CLOCKWISE, "vector v must be strictly contained in the sector next to the half edge e");
+  CHECK_ARGUMENT(fromEdge(e).ccw(v) != CCW::CLOCKWISE && fromEdge(nextAtVertex(e)).ccw(v) == CCW::CLOCKWISE, "vector v must be rontained in the sector next to the half edge e");
 
   std::shared_ptr<FlatTriangulation<T>> surface = clone();
 
