@@ -36,7 +36,7 @@ Vertex Vertex::source(const HalfEdge &e,
     if (surface.boundary(-test)) {
       return Vertex(test);
     }
-    test = surface.nextInFace(surface.nextInFace(-test));
+    test = surface.previousAtVertex(test);
     if (test.id < best.id) {
       best = test;
     }
