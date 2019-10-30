@@ -43,7 +43,7 @@ def enable_iterable(proxy, name):
 
         if not hasattr(proxy, '__len__'):
             def len(self):
-                return std.distance(self.begin(), self.end())
+                return cppyy.gbl.std.distance(self.begin(), self.end())
 
             proxy.__len__ = len
 
@@ -67,7 +67,7 @@ def add_saddle_connections(proxy, name):
             # though there is a non-explicit constructor Length(const T&).
             # Therefore, we need to cast bound explicitly:
             bound = cppyy.gbl.intervalxt.Length['long long'](bound)
-            sc = flatsurf.SaddleConnections[type(self).__cppname__]
+            sc = cppyy.gbl.flatsurf.SaddleConnections[type(self)]
             return sc(self, bound) if source is None else sc(self, bound, source)
         proxy.saddle_connections = saddle_connections
 
