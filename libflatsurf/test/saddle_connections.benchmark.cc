@@ -77,10 +77,10 @@ void SaddleConnectionsL(benchmark::State& state) {
     std::distance(connections.begin(), connections.end());
   }
 }
-BENCHMARK_TEMPLATE(SaddleConnectionsL, Vector<long long>)->Args({8})->Args({16})->Args({32})->Args({64})->Args({128})->Args({256});
-BENCHMARK_TEMPLATE(SaddleConnectionsL, Vector<mpq_class>)->Args({8})->Args({16})->Args({32})->Args({64})->Args({128})->Args({256});
-BENCHMARK_TEMPLATE(SaddleConnectionsL, Vector<eantic::renf_elem_class>)->Args({8})->Args({16})->Args({32})->Args({64})->Args({128})->Args({256});
-BENCHMARK_TEMPLATE(SaddleConnectionsL, Vector<exactreal::Element<exactreal::IntegerRing>>)->Args({8})->Args({16})->Args({32})->Args({64})->Args({128})->Args({256});
+BENCHMARK_TEMPLATE(SaddleConnectionsL, Vector<long long>)->Args({8})->Args({16})->Args({32})->Args({64})->Args({128});
+BENCHMARK_TEMPLATE(SaddleConnectionsL, Vector<mpq_class>)->Args({8})->Args({16})->Args({32})->Args({64})->Args({128});
+BENCHMARK_TEMPLATE(SaddleConnectionsL, Vector<eantic::renf_elem_class>)->Args({8})->Args({16})->Args({32})->Args({64})->Args({128});
+BENCHMARK_TEMPLATE(SaddleConnectionsL, Vector<exactreal::Element<exactreal::IntegerRing>>)->Args({8})->Args({16})->Args({32})->Args({64})->Args({128});
 
 template <class R2>
 void SaddleConnectionsLWithSlot(benchmark::State& state) {
@@ -97,7 +97,7 @@ void SaddleConnectionsLWithSlot(benchmark::State& state) {
     std::distance(connections.begin(), connections.end());
   }
 }
-BENCHMARK_TEMPLATE(SaddleConnectionsLWithSlot, Vector<mpq_class>)->Args({100, 1})->Args({400, 1});
+BENCHMARK_TEMPLATE(SaddleConnectionsLWithSlot, Vector<mpq_class>)->Args({100});
 
 }  // namespace
 
