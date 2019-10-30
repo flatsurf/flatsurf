@@ -50,6 +50,10 @@ def enable_iterable(proxy, name):
 def enable_pretty_print(proxy, name):
     proxy.__repr__ = proxy.__str__
 
+# see https://bitbucket.org/wlav/cppyy/issues/170/std-hash-is-not-picked-up-by-__hash__
+def enable_hash(proxy, name):
+    proxy.__hash__ = lambda self: cppyy.gbl.std.hash[proxy]()(self)
+
 # Work around https://bitbucket.org/wlav/cppyy/issues/112/operator-for-a-base-class-is-not-found
 def enable_vector_print(proxy, name):
     if name.startswith("Vector<"):
