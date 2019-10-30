@@ -58,6 +58,6 @@ ostream &operator<<(ostream &os, const Vertex &self) {
 }
 }  // namespace flatsurf
 
-size_t std::hash<flatsurf::Vertex>::operator()(const flatsurf::Vertex& v) const noexcept {
+size_t std::hash<flatsurf::Vertex>::operator()(const flatsurf::Vertex &v) const noexcept {
   return std::hash<flatsurf::HalfEdge>{}(v.representative);
 }

@@ -23,8 +23,8 @@
 #include <boost/operators.hpp>
 #include <functional>
 #include <iosfwd>
-#include <vector>
 #include <map>
+#include <vector>
 
 #include "flatsurf/flatsurf.hpp"
 

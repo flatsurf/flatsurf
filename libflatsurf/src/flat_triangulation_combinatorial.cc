@@ -165,7 +165,7 @@ std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::
   HalfEdge c = HalfEdge(nextEdge + 2);
 
   auto cycles = impl->vertices.cycles();
-  for (auto & cycle : cycles) {
+  for (auto& cycle : cycles) {
     for (size_t i = 0; i < cycle.size(); i++) {
       if (cycle[i] == e) {
         i++;
@@ -179,7 +179,7 @@ std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::
       }
     }
   }
-  cycles.push_back({ a, b, c});
+  cycles.push_back({a, b, c});
 
   auto ret = std::make_unique<FlatTriangulationCombinatorial>();
   ret->impl = spimpl::make_unique_impl<Implementation>(Permutation<HalfEdge>(cycles),
@@ -208,7 +208,7 @@ std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::
 
   // If there is already a boundary at the vertex of e, we need to split this
   // vertex as we do not allow connections only in a point.
-  for(HalfEdge current = nextAtVertex(e); current != e; current = nextAtVertex(current)) {
+  for (HalfEdge current = nextAtVertex(e); current != e; current = nextAtVertex(current)) {
     if (boundary(current)) {
       vertices[current] = ee;
       vertices[e] = impl->vertices(current);
@@ -216,7 +216,7 @@ std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::
     }
   }
 
-  for(HalfEdge current = nextAtVertex(-e); current != -e; current = nextAtVertex(current)) {
+  for (HalfEdge current = nextAtVertex(-e); current != -e; current = nextAtVertex(current)) {
     if (boundary(current)) {
       vertices[current] = -e;
       vertices[-ee] = impl->vertices(current);
@@ -228,7 +228,7 @@ std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::
 
   auto ret = std::make_unique<FlatTriangulationCombinatorial>();
   ret->impl = spimpl::make_unique_impl<Implementation>(Permutation<HalfEdge>(vertices),
-      as_set(vertexPermutation.domain() | filtered([&](auto& edge) { return edge == e || edge == -ee || (edge != ee && boundary(edge)); })));
+                                                       as_set(vertexPermutation.domain() | filtered([&](auto& edge) { return edge == e || edge == -ee || (edge != ee && boundary(edge)); })));
   return ret;
 }
 

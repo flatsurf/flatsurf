@@ -64,9 +64,10 @@ class Vertex : boost::equality_comparable<Vertex> {
 }  // namespace flatsurf
 
 namespace std {
-  template<> struct hash<flatsurf::Vertex> {
-    size_t operator()(const flatsurf::Vertex&) const noexcept;
-  };
-}
+template <>
+struct hash<flatsurf::Vertex> {
+  size_t operator()(const flatsurf::Vertex &) const noexcept;
+};
+}  // namespace std
 
 #endif

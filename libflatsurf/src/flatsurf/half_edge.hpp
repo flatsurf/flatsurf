@@ -63,10 +63,10 @@ class HalfEdge : boost::equality_comparable<HalfEdge>,
 }  // namespace flatsurf
 
 namespace std {
-  template<> struct hash<flatsurf::HalfEdge> {
-    size_t operator()(const flatsurf::HalfEdge&) const noexcept;
-  };
-}
-
+template <>
+struct hash<flatsurf::HalfEdge> {
+  size_t operator()(const flatsurf::HalfEdge &) const noexcept;
+};
+}  // namespace std
 
 #endif

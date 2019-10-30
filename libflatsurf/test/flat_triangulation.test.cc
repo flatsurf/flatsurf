@@ -83,7 +83,7 @@ TYPED_TEST(FlatTriangulationTest, Insert) {
       bool crossesSingularity = false;
       int xx = x / std::gcd(x, y);
       int yy = y / std::gcd(x, y);
-      for (int n = 1; xx*n <= x; n++) {
+      for (int n = 1; xx * n <= x; n++) {
         if (xx * n % 3 == 0 && yy * n % 3 == 0)
           crossesSingularity = true;
       }
@@ -109,7 +109,7 @@ TYPED_TEST(FlatTriangulationTest, Slot) {
       bool crossesSingularity = false;
       int xx = x / std::gcd(x, y);
       int yy = y / std::gcd(x, y);
-      for (int n = 1; xx*n <= x; n++) {
+      for (int n = 1; xx * n <= x; n++) {
         if (xx * n % 3 == 0 && yy * n % 3 == 0)
           crossesSingularity = true;
       }

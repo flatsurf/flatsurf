@@ -63,9 +63,9 @@ HalfEdgeMap<T>::HalfEdgeMap(const HalfEdgeMap &rhs, const FlipHandler &updateAft
 
 template <typename T>
 HalfEdgeMap<T>::HalfEdgeMap(const HalfEdgeMap &rhs) : HalfEdgeMap(rhs,
-    // Note that we silently assume that updateAfterFlip has no weird side
-    // effects so that it's fine to run it twice when there are two copies.
-    rhs.updateAfterFlip) {}
+                                                                  // Note that we silently assume that updateAfterFlip has no weird side
+                                                                  // effects so that it's fine to run it twice when there are two copies.
+                                                                  rhs.updateAfterFlip) {}
 
 template <typename T>
 HalfEdgeMap<T>::HalfEdgeMap(HalfEdgeMap &&rhs)
