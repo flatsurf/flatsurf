@@ -53,6 +53,7 @@ class HalfEdge : boost::equality_comparable<HalfEdge>,
  private:
   int id;
 
+  friend std::hash<HalfEdge>;
   friend cereal::access;
   template <typename Archive>
   int save_minimal(Archive &) const;
@@ -60,5 +61,12 @@ class HalfEdge : boost::equality_comparable<HalfEdge>,
   void load_minimal(Archive &, const int &);
 };
 }  // namespace flatsurf
+
+namespace std {
+  template<> struct hash<flatsurf::HalfEdge> {
+    size_t operator()(const flatsurf::HalfEdge&) const noexcept;
+  };
+}
+
 
 #endif

@@ -59,3 +59,7 @@ size_t Permutation<HalfEdge>::index(const HalfEdge &e) const {
   return HalfEdgeMap<int>::index(e);
 }
 }  // namespace flatsurf
+
+size_t std::hash<flatsurf::HalfEdge>::operator()(const flatsurf::HalfEdge& e) const noexcept {
+  return static_cast<size_t>(e.id);
+}

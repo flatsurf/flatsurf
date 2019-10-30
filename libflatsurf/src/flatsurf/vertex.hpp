@@ -54,6 +54,7 @@ class Vertex : boost::equality_comparable<Vertex> {
 
   friend FlatTriangulationCombinatorial;
 
+  friend std::hash<Vertex>;
   friend cereal::access;
   template <typename Archive>
   void save(Archive &) const;
@@ -61,5 +62,11 @@ class Vertex : boost::equality_comparable<Vertex> {
   void load(Archive &);
 };
 }  // namespace flatsurf
+
+namespace std {
+  template<> struct hash<flatsurf::Vertex> {
+    size_t operator()(const flatsurf::Vertex&) const noexcept;
+  };
+}
 
 #endif
