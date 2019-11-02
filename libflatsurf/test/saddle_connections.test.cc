@@ -57,7 +57,13 @@ TYPED_TEST(SaddleConnectionsTest, Trivial) {
 TYPED_TEST(SaddleConnectionsTest, Square) {
   auto square = makeSquare<TypeParam>();
   auto bound = 16;
-  auto expected = 60;
+  // saddle connections correspond to coprime (x, y) coordinates in the search sector
+  int expected = 0;
+  for (int x = 1; x < bound + 1; x++)
+    for (int y = 1; y <= x; y++)
+      if (x*x + y*y < bound.squared() && std::gcd(x, y) == 1)
+        expected++;
+
   auto connections = SaddleConnections(square, bound, HalfEdge(1));
   EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
   connections = SaddleConnections(square, bound, HalfEdge(3));

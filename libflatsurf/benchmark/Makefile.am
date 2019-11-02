@@ -1,0 +1,11 @@
+noinst_PROGRAMS = benchmark
+
+benchmark_SOURCES = main.cc saddle_connections.benchmark.cc surfaces.hpp
+
+AM_CPPFLAGS = -I $(srcdir)/../src -I $(builddir)/../src
+AM_LDFLAGS = $(builddir)/../src/libflatsurf.la
+# we use gmpxx & flint through exact-real's arb/arf wrappers; since we include
+# gmpxx.h, we need to link in gmp since it depends on it
+AM_LDFLAGS += -lgmpxx -lgmp -lflint
+# Google Benchmark and its dependencies
+AM_LDFLAGS += -lbenchmark -lrt -lpthread

@@ -1,9 +1,8 @@
-check_PROGRAMS = length_along_triangulation vector_longlong interval_exchange_transformation delaunay saddle_connections vector_exactreal saddle_connections_benchmark cereal permutation flat_triangulation_combinatorial flat_triangulation
+check_PROGRAMS = length_along_triangulation vector_longlong interval_exchange_transformation delaunay saddle_connections vector_exactreal cereal permutation flat_triangulation_combinatorial flat_triangulation
 
 TESTS = $(check_PROGRAMS)
 
 saddle_connections_SOURCES = saddle_connections.test.cc main.hpp surfaces.hpp
-saddle_connections_benchmark_SOURCES = saddle_connections.benchmark.cc main.hpp surfaces.hpp
 vector_exactreal_SOURCES = vector_exactreal.test.cc main.hpp
 delaunay_SOURCES = delaunay.test.cc main.hpp
 interval_exchange_transformation_SOURCES = interval_exchange_transformation.test.cc main.hpp surfaces.hpp
@@ -23,10 +22,7 @@ EXTRA_DIST = external/cereal/include
 @VALGRIND_CHECK_RULES@
 
 AM_CPPFLAGS = -I $(srcdir)/../src -I $(builddir)/../src -isystem $(srcdir)/external/cereal/include
-AM_LDFLAGS = $(builddir)/../src/libflatsurf.la -lgtest -lbenchmark -lrt -lpthread
+AM_LDFLAGS = $(builddir)/../src/libflatsurf.la
 # we use gmpxx & flint through exact-real's arb/arf wrappers; since we include
 # gmpxx.h, we need to link in gmp since it depends on it
 AM_LDFLAGS += -lgmpxx -lgmp -lflint
-
-# Run tests serially so we can see the output without having to check the log file explicitly.
-# AUTOMAKE_OPTIONS = serial-tests
