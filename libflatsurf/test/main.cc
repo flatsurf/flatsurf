@@ -18,25 +18,7 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+// Shared entry point of all test binaries
+
+#define CATCH_CONFIG_MAIN
 #include "catch.hpp"
-
-#include <flatsurf/half_edge.hpp>
-#include <flatsurf/permutation.hpp>
-
-namespace flatsurf::test {
-TEST_CASE("Permutation", "[permutation]") {
-  auto size = GENERATE(range(0, 10));
-  GIVEN("A Random Permutation on the Half Edges indexed from " << -size << " to " << size) {
-    auto domain = std::vector<HalfEdge>();
-    for (int i = 1; i <= size; i++) {
-      domain.push_back(HalfEdge(i));
-      domain.push_back(HalfEdge(-i));
-    }
-    auto p = Permutation<HalfEdge>::random(domain);
-
-    THEN("It can be Reconstructed From its Cycles") {
-      REQUIRE(p == Permutation<HalfEdge>(p.cycles()));
-    }
-  }
-}  // namespace flatsurf
-}

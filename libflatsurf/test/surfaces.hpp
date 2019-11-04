@@ -36,7 +36,7 @@ using eantic::renf_class;
 using eantic::renf_elem_class;
 using std::vector;
 
-namespace {
+namespace flatsurf::test {
 auto K = renf_class::make("x^2 - 3", "x", "1.73 +/- 0.1");
 auto L = renf_class::make("x^2 - x - 1", "x", "1.618 +/- 0.1");
 auto M = renf_class::make("x^3 - x^2 - 2*x +1", "x", "1.802 +/- 0.1");
@@ -48,16 +48,7 @@ auto makeSquareCombinatorial() {
 
 template <typename R2>
 auto makeSquare() {
-  vector<R2> vectors;
-  if constexpr (std::is_same_v<R2, Vector<Element<IntegerRing>>>) {
-    auto module = Module<IntegerRing>::make({RealNumber::rational(1)});
-    vectors = {R2(module->gen(0), Element(module)), R2(Element(module), module->gen(0)), R2(module->gen(0), module->gen(0))};
-  } else if constexpr (std::is_same_v<R2, Vector<Element<NumberField>>>) {
-    auto module = Module<NumberField>::make({RealNumber::rational(1)}, K);
-    vectors = {R2(module->gen(0), Element(module)), R2(Element(module), module->gen(0)), R2(module->gen(0), module->gen(0))};
-  } else {
-    vectors = vector{R2(1, 0), R2(0, 1), R2(1, 1)};
-  }
+  auto vectors = vector{R2(1, 0), R2(0, 1), R2(1, 1)};
   return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(makeSquareCombinatorial(), vectors);
 }
 
@@ -68,16 +59,7 @@ auto makeSquareWithBoundaryCombinatorial() {
 
 template <typename R2>
 auto makeSquareWithBoundary() {
-  vector<R2> vectors;
-  if constexpr (std::is_same_v<R2, Vector<Element<IntegerRing>>>) {
-    auto module = Module<IntegerRing>::make({RealNumber::rational(1)});
-    vectors = {R2(module->gen(0), Element(module)), R2(Element(module), module->gen(0)), R2(module->gen(0), module->gen(0)), R2(Element(module), module->gen(0))};
-  } else if constexpr (std::is_same_v<R2, Vector<Element<NumberField>>>) {
-    auto module = Module<NumberField>::make({RealNumber::rational(1)}, K);
-    vectors = {R2(module->gen(0), Element(module)), R2(Element(module), module->gen(0)), R2(module->gen(0), module->gen(0)), R2(Element(module), module->gen(0))};
-  } else {
-    vectors = vector{R2(1, 0), R2(0, 1), R2(1, 1), R2(0, 1)};
-  }
+  auto vectors = vector{R2(1, 0), R2(0, 1), R2(1, 1), R2(0, 1)};
   return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(makeSquareWithBoundaryCombinatorial(), vectors);
 }
 
@@ -88,22 +70,7 @@ auto makeLCombinatorial() {
 
 template <typename R2>
 auto makeL() {
-  vector<R2> vectors;
-  if constexpr (std::is_same_v<R2, Vector<Element<IntegerRing>>>) {
-    auto module = Module<IntegerRing>::make({RealNumber::rational(1)});
-    auto l = module->gen(0);
-    auto o = Element(module);
-    vectors = {R2(l, o), R2(l, l), R2(o, l), R2(-l, o), R2(-l, -l), R2(l, o), R2(l, l), R2(o, l), R2(o, -l)};
-  } else if constexpr (std::is_same_v<R2, Vector<Element<NumberField>>>) {
-    auto module = Module<NumberField>::make({RealNumber::rational(1)}, K);
-    auto l = module->gen(0);
-    auto o = Element(module);
-    vectors = {R2(l, o), R2(l, l), R2(o, l), R2(-l, o), R2(-l, -l), R2(l, o), R2(l, l), R2(o, l), R2(o, -l)};
-  } else {
-    auto l = 1;
-    auto o = 0;
-    vectors = {R2(l, o), R2(l, l), R2(o, l), R2(-l, o), R2(-l, -l), R2(l, o), R2(l, l), R2(o, l), R2(o, -l)};
-  }
+  auto vectors = {R2(1, 0), R2(1, 1), R2(0, 1), R2(-1, 0), R2(-1, -1), R2(1, 0), R2(1, 1), R2(0, 1), R2(0, -1)};
   return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(makeLCombinatorial(), vectors);
 }
 
@@ -111,20 +78,7 @@ template <typename R2>
 auto makeGoldenL() {
   vector<R2> vectors;
   auto a = L->gen();
-  if constexpr (std::is_same_v<R2, Vector<eantic::renf_elem_class>>) {
-    using R = eantic::renf_elem_class;
-    vectors = vector{R2(R(L, 1), R(L, 0)),
-                     R2(R(L, 1), R(L, 1)),
-                     R2(R(L, 0), R(L, 1)),
-                     R2(1 - a, R(L, 0)),
-                     R2(1 - a, R(L, -1)),
-                     R2(R(L, 1), R(L, 0)),
-                     R2(R(L, 1), a - 1),
-                     R2(R(L, 0), a - 1),
-                     R2(R(L, 0), R(L, -1))};
-  } else {
-    throw std::logic_error("not implemented: makeGoldenL()");
-  }
+  vectors = vector{R2(1, 0), R2(1, 1), R2(0, 1), R2(1 - a, 0), R2(1 - a, -1), R2(1, 0), R2(1, a - 1), R2(0, a - 1), R2(0, -1)};
   return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(makeLCombinatorial(), vectors);
 }
 
@@ -137,15 +91,7 @@ template <typename R2>
 auto makeHexagon() {
   vector<R2> vectors;
   auto x = K->gen();
-  if constexpr (std::is_same_v<R2, Vector<eantic::renf_elem_class>>) {
-    using R = eantic::renf_elem_class;
-    vectors = vector{R2(R(K, 2), R(K, 0)), R2(R(K, 1), x), R2(R(K, 3), x), R2(R(K, 1), -x), R2(R(K, 4), R(K, 0)), R2(R(K, 3), x)};
-  } else if constexpr (std::is_same_v<R2, Vector<Element<NumberField>>>) {
-    auto module = Module<NumberField>::make({RealNumber::rational(1)}, K);
-    vectors = vector{R2(module->gen(0) * 2, Element(module)), R2(module->gen(0), module->gen(0) * x), R2(module->gen(0) * 3, module->gen(0) * x), R2(module->gen(0), -module->gen(0) * x), R2(module->gen(0) * 4, Element(module)), R2(module->gen(0) * 3, module->gen(0) * x)};
-  } else {
-    throw std::logic_error("not implemented: makeHexagon()");
-  }
+  vectors = vector{R2(2, 0), R2(1, x), R2(3, x), R2(1, -x), R2(4, 0), R2(3, x)};
   return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(makeHexagonCombinatorial(), vectors);
 }
 
@@ -159,26 +105,7 @@ auto makeHeptagonL() {
   vector<R2> vectors;
   auto a = M->gen();
   auto b = a * a - a - 1;
-  if constexpr (std::is_same_v<R2, Vector<eantic::renf_elem_class>>) {
-    using R = eantic::renf_elem_class;
-    vectors = vector{R2(R(M, 1), R(M, 0)),
-                     R2(R(M, 1), R(M, 1)),
-                     R2(R(M, 0), R(M, 1)),
-                     R2(1 - a, R(M, 0)),
-                     R2(1 - a, -b),
-                     R2(R(M, 0), -b),
-                     R2(a - 1, R(M, 1)),
-                     R2(R(M, 0), R(M, 1)),
-                     R2(R(M, -1), 1 - a),
-                     R2(R(M, 0), 1 - a),
-                     R2(b, R(M, 0)),
-                     R2(b, a - 1),
-                     R2(R(M, -1), R(M, 0)),
-                     R2(a - 1, R(M, 0)),
-                     R2(R(M, 0), a - 1)};
-  } else {
-    throw std::logic_error("not implemented: makeHeptagonL()");
-  }
+  vectors = vector{R2(1, 0), R2(1, 1), R2(0, 1), R2(1 - a, 0), R2(1 - a, -b), R2(0, -b), R2(a - 1, 1), R2(0, 1), R2(-1, 1 - a), R2(0, 1 - a), R2(b, 0), R2(b, a - 1), R2(-1, 0), R2(a - 1, 0), R2(0, a - 1)};
   return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(makeHeptagonLCombinatorial(), vectors);
 }
 

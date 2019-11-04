@@ -18,8 +18,7 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <gtest/gtest.h>
-#include <boost/lexical_cast.hpp>
+#include "catch.hpp"
 
 #include <flatsurf/half_edge.hpp>
 #include <flatsurf/length_along_triangulation.hpp>
@@ -27,30 +26,31 @@
 
 #include "surfaces.hpp"
 
-using namespace flatsurf;
-using std::vector;
-using testing::Test;
-using testing::Types;
+namespace flatsurf::test {
+TEMPLATE_TEST_CASE("Length along Triangulation", "[length_along_triangulation]", (long long), (mpq_class), (eantic::renf_elem_class), (Element<exactreal::IntegerRing>)) {
+  using T = TestType;
+  using Vector = Vector<T>;
+  using Length = LengthAlongTriangulation<T>;
 
-namespace {
-TEST(LengthAlongTriangulationTest, Square) {
-  using Vector = Vector<long long>;
-  using Length = LengthAlongTriangulation<long long>;
   auto square = makeSquare<Vector>();
-  auto horizontal = Vector(7, -3);
+  GIVEN("The Square " << *square) {
 
-  auto v10 = Length(square, &horizontal, HalfEdge(1));
-  auto v01 = Length(square, &horizontal, HalfEdge(-2));
-  auto v11 = Length(square, &horizontal, HalfEdge(3));
+    auto horizontal = Vector(7, -3);
+    WHEN("We Fix the Vertical Direction Given by the Horizontal " << horizontal) {
 
-  EXPECT_EQ(v10 - v01, v11);
-  EXPECT_EQ(3 * v10, 7 * v01);
-  EXPECT_EQ(3 * v10 - 7 * v01, Length());
+      THEN("Lengths Relative to this Direction are as Expected") {
+        auto v10 = Length(square, &horizontal, HalfEdge(1));
+        auto v01 = Length(square, &horizontal, HalfEdge(-2));
+        auto v11 = Length(square, &horizontal, HalfEdge(3));
 
-  EXPECT_EQ(v10 / v01, 7 / 3);
-  EXPECT_EQ(2 * v10 / v01, 2 * 7 / 3);
-  EXPECT_EQ(3 * v10 / v01, 7);
-}
+        REQUIRE(v10 - v01 == v11);
+        REQUIRE(3 * v10 == 7 * v01);
+        REQUIRE(3 * v10 - 7 * v01 == Length());
+        REQUIRE(v10 / v01 == 7 / 3);
+        REQUIRE(2 * v10 / v01 == 2 * 7 / 3);
+        REQUIRE(3 * v10 / v01 == 7);
+      }
+    }
+  }
 }  // namespace
-
-#include "main.hpp"
+}

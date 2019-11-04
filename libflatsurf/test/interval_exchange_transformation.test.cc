@@ -18,10 +18,10 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <gtest/gtest.h>
-#include <boost/lexical_cast.hpp>
+#include "catch.hpp"
 
 #include <exact-real/element.hpp>
+#include <exact-real/integer_ring.hpp>
 #include <exact-real/number_field.hpp>
 #include <intervalxt/length.hpp>
 
@@ -32,80 +32,32 @@
 
 #include "surfaces.hpp"
 
-using std::vector;
-using testing::Test;
-using testing::Types;
-using namespace flatsurf;
 using eantic::renf_class;
 using eantic::renf_elem_class;
 
-namespace {
-template <class R2>
-class IntervalExchangeTransformationTest : public Test {};
+namespace flatsurf::test {
 
-using ExactVectors = Types<Vector<long long>, Vector<renf_elem_class>, Vector<exactreal::Element<exactreal::NumberField>>>;
-TYPED_TEST_CASE(IntervalExchangeTransformationTest, ExactVectors);
+using namespace flatsurf;
 
-TYPED_TEST(IntervalExchangeTransformationTest, Square) {
-  auto square = makeSquare<TypeParam>();
+TEMPLATE_TEST_CASE("Interval Exchange Transformation", "[interval_exchange_transformation]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+  using R2 = Vector<T>;
 
-  for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(square, Bound(10))) {
-    auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(*square, sc->vector());
-  }
-}
-
-TYPED_TEST(IntervalExchangeTransformationTest, Hexagon) {
-  if constexpr (std::is_same_v<TypeParam, Vector<long long>>) {
-    ;
+  int bound;
+  std::shared_ptr<FlatTriangulation<T>> surface;
+  if constexpr (std::is_same_v<T, long long> || std::is_same_v<T, mpq_class> || std::is_same_v<T, exactreal::Element<exactreal::IntegerRing>>) {
+    surface = GENERATE(makeSquare<R2>(), makeL<R2>());
+    bound = 8;
   } else {
-    auto hexagon = makeHexagon<TypeParam>();
+    surface = GENERATE(makeSquare<R2>(), makeL<R2>(), make1221<R2>(), makeHexagon<R2>(), makeHeptagonL<R2>(), makeGoldenL<R2>());
+    bound = 3;
+  }
 
-    for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(hexagon, Bound(10))) {
-      auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(*hexagon, sc->vector());
+  GIVEN("The " << *surface << " we can Compute Corresponding IETs") {
+    for (auto sc : SaddleConnections<FlatTriangulation<T>>(surface, Bound(bound))) {
+      auto iet = IntervalExchangeTransformation<T>(*surface, sc->vector());
     }
   }
 }
 
-TYPED_TEST(IntervalExchangeTransformationTest, HeptagonL) {
-  if constexpr (std::is_same_v<TypeParam, Vector<long long>>) {
-    ;
-  } else if constexpr (std::is_same_v<TypeParam, Vector<Element<NumberField>>>) {
-    ;
-  } else {
-    auto heptagonL = makeHeptagonL<TypeParam>();
-
-    for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(heptagonL, Bound(5))) {
-      auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(*heptagonL, sc->vector());
-    }
-  }
 }
-
-TYPED_TEST(IntervalExchangeTransformationTest, GoldenL) {
-  if constexpr (std::is_same_v<TypeParam, Vector<long long>>) {
-    ;
-  } else if constexpr (std::is_same_v<TypeParam, Vector<Element<NumberField>>>) {
-    ;
-  } else {
-    auto goldenL = makeGoldenL<TypeParam>();
-
-    for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(goldenL, Bound(10))) {
-      auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(*goldenL, sc->vector());
-    }
-  }
-}
-
-TYPED_TEST(IntervalExchangeTransformationTest, _1221) {
-  if constexpr (std::is_same_v<TypeParam, Vector<long long>>) {
-    ;
-  } else {
-    auto _1221 = make1221<TypeParam>();
-
-    for (auto sc : SaddleConnections<FlatTriangulation<typename TypeParam::Coordinate>>(_1221, Bound(5))) {
-      auto iet = IntervalExchangeTransformation<typename TypeParam::Coordinate>(*_1221, sc->vector());
-    }
-  }
-}
-
-}  // namespace
-
-#include "main.hpp"

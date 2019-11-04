@@ -18,29 +18,32 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <gtest/gtest.h>
-#include <boost/lexical_cast.hpp>
+#include "catch.hpp"
 
 #include <exact-real/element.hpp>
-#include <exact-real/integer_ring.hpp>
-#include <exact-real/module.hpp>
+#include <exact-real/number_field.hpp>
 #include <exact-real/real_number.hpp>
+#include <exact-real/module.hpp>
+
 #include <flatsurf/vector.hpp>
-#include <intervalxt/length.hpp>
+#include <flatsurf/bound.hpp>
 
-using std::vector;
-using testing::Test;
-using testing::Types;
-using namespace exactreal;
-using namespace flatsurf;
+namespace flatsurf::test {
 
-TEST(VectorExactRealTest, Comparison) {
-  auto m = Module<IntegerRing>::make({RealNumber::rational(1), RealNumber::random()});
-  auto vector = Vector<Element<IntegerRing>>(3 * m->gen(0), 4 * m->gen(0));
+TEMPLATE_TEST_CASE("Vector<exactreal::Element<...>>", "[vector_exact_real]", (exactreal::IntegerRing), (exactreal::RationalField), (exactreal::NumberField)) {
+  using exactreal::Element;
+  using exactreal::Module;
+  using exactreal::RealNumber;
 
-  EXPECT_FALSE(vector > Bound(5));
-  EXPECT_FALSE(vector < Bound(5));
-  EXPECT_TRUE(vector < Bound(6));
+  using V = Vector<Element<TestType>>;
+
+  auto m = Module<TestType>::make({RealNumber::rational(1), RealNumber::random()});
+
+  auto v = V(3, 4);
+
+  REQUIRE(!(v < Bound(5)));
+  REQUIRE(!(v > Bound(5)));
+  REQUIRE(v < Bound(6));
 }
 
-#include "main.hpp"
+}

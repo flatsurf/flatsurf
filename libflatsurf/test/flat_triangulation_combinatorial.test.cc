@@ -18,8 +18,7 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <gtest/gtest.h>
-#include <boost/lexical_cast.hpp>
+#include "catch.hpp"
 
 #include <e-antic/renfxx_fwd.h>
 #include <exact-real/element.hpp>
@@ -34,40 +33,37 @@
 
 #include "surfaces.hpp"
 
-using namespace flatsurf;
-using eantic::renf_class;
-using eantic::renf_elem_class;
-using std::vector;
-using testing::Test;
-using testing::Types;
+namespace flatsurf::test {
 
-namespace {
-class FlatTriangulationCombinatorialTest : public Test {};
-
-TEST(FlatTriangulationCombinatorialTest, Comparison) {
+TEST_CASE("Flat Triangulation Comparisons", "[flat_triangulation][operator==]") {
   auto square = makeSquareCombinatorial();
-  EXPECT_EQ(square, *square.clone());
-
-  square = makeSquareWithBoundaryCombinatorial();
-  EXPECT_EQ(square, *square.clone());
-  EXPECT_NE(square, makeSquareCombinatorial());
+  GIVEN("The Square " << square) {
+    REQUIRE(square == *square.clone());
+    REQUIRE(square != makeSquareWithBoundaryCombinatorial());
+  }
 }
 
-TEST(FlatTriangulationCombinatorialTest, Insert) {
+TEST_CASE("Flat Triangulation Insertions", "[flat_triangulation][insert]") {
   auto square = makeSquareCombinatorial();
-  auto e = square.halfEdges()[0];
-  auto square_ = square.insertAt(e);
 
-  ASSERT_NE(square, *square_);
-  ASSERT_EQ(square.vertices().size() + 1, square_->vertices().size());
-  ASSERT_EQ(square.halfEdges().size() + 6, square_->halfEdges().size());
+  GIVEN("The Square " << square) {
+    auto e = square.halfEdges()[0];
 
-  auto a = -square_->nextAtVertex(e);
-  ASSERT_NE(a, -square.nextAtVertex(e));
+    WHEN("We Insert a Vertex Next to " << e) {
+      auto square_ = square.insertAt(e);
+      CAPTURE(*square_);
 
-  EXPECT_EQ(square_->nextAtVertex(square_->nextAtVertex(square_->nextAtVertex(a))), a);
+      THEN("The Combinatorics Have Changed in the Expected Way") {
+        REQUIRE(square != *square_);
+        REQUIRE(square.vertices().size() + 1 == square_->vertices().size());
+        REQUIRE(square.halfEdges().size() + 6 == square_->halfEdges().size());
+
+        auto a = -square_->nextAtVertex(e);
+        REQUIRE(a != -square.nextAtVertex(e));
+        REQUIRE(square_->nextAtVertex(square_->nextAtVertex(square_->nextAtVertex(a))) == a);
+      }
+    }
+  }
 }
 
 }  // namespace
-
-#include "main.hpp"

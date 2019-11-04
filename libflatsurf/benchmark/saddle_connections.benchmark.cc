@@ -32,18 +32,20 @@
 
 #include "surfaces.hpp"
 
-using namespace flatsurf;
 using eantic::renf_class;
+using benchmark::State;
+using benchmark::DoNotOptimize;
 
-namespace {
+namespace flatsurf::benchmark {
+using namespace flatsurf::test;
 
 template <class R2>
-void SaddleConnectionsSquare(benchmark::State& state) {
+void SaddleConnectionsSquare(State& state) {
   auto square = makeSquare<R2>();
   auto bound = Bound(state.range(0));
   for (auto _ : state) {
     auto connections = SaddleConnections(square, bound);
-    benchmark::DoNotOptimize(std::distance(connections.begin(), connections.end()));
+    DoNotOptimize(std::distance(connections.begin(), connections.end()));
   }
 }
 BENCHMARK_TEMPLATE(SaddleConnectionsSquare, Vector<long long>)->Range(1, 1<<8);
@@ -52,7 +54,7 @@ BENCHMARK_TEMPLATE(SaddleConnectionsSquare, Vector<eantic::renf_elem_class>)->Ra
 BENCHMARK_TEMPLATE(SaddleConnectionsSquare, Vector<exactreal::Element<exactreal::IntegerRing>>)->Range(1, 1<<8);
 
 template <class R2>
-void SaddleConnectionsL(benchmark::State& state) {
+void SaddleConnectionsL(State& state) {
   auto L = makeL<R2>();
   auto bound = Bound(state.range(0));
 
@@ -60,7 +62,7 @@ void SaddleConnectionsL(benchmark::State& state) {
 
   for (auto _ : state) {
     auto connections = SaddleConnections(L, bound, e);
-    benchmark::DoNotOptimize(std::distance(connections.begin(), connections.end()));
+    DoNotOptimize(std::distance(connections.begin(), connections.end()));
   }
 }
 BENCHMARK_TEMPLATE(SaddleConnectionsL, Vector<long long>)->Range(1, 1<<8);
@@ -69,7 +71,7 @@ BENCHMARK_TEMPLATE(SaddleConnectionsL, Vector<eantic::renf_elem_class>)->Range(1
 BENCHMARK_TEMPLATE(SaddleConnectionsL, Vector<exactreal::Element<exactreal::IntegerRing>>)->Range(1, 1<<8);
 
 template <class R2>
-void SaddleConnectionsLWithSlot(benchmark::State& state) {
+void SaddleConnectionsLWithSlot(State& state) {
   auto L = makeL<R2>();
 
   auto bound = Bound(state.range(0));
@@ -81,7 +83,7 @@ void SaddleConnectionsLWithSlot(benchmark::State& state) {
 
   for (auto _ : state) {
     auto connections = SaddleConnections(LWithSlot, bound, Vertex::source(e, *LWithSlot));
-    benchmark::DoNotOptimize(std::distance(connections.begin(), connections.end()));
+    DoNotOptimize(std::distance(connections.begin(), connections.end()));
   }
 }
 BENCHMARK_TEMPLATE(SaddleConnectionsLWithSlot, Vector<mpq_class>)->Range(1, 1<<8);

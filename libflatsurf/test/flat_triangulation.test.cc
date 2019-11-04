@@ -18,10 +18,9 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <numeric>
+#include "catch.hpp"
 
-#include <gtest/gtest.h>
-#include <boost/lexical_cast.hpp>
+#include <numeric>
 
 #include <e-antic/renfxx_fwd.h>
 #include <exact-real/element.hpp>
@@ -36,50 +35,41 @@
 
 #include "surfaces.hpp"
 
-using namespace flatsurf;
-using eantic::renf_class;
-using eantic::renf_elem_class;
-using std::vector;
-using testing::Test;
-using testing::Types;
-
-namespace {
-template <class R2>
-class FlatTriangulationTest : public Test {};
-
-using ExactVectors = Types<Vector<long long>, Vector<renf_elem_class>, Vector<exactreal::Element<exactreal::NumberField>>>;
-TYPED_TEST_CASE(FlatTriangulationTest, ExactVectors);
-
-TYPED_TEST(FlatTriangulationTest, FlipSquare) {
-  auto square = makeSquare<TypeParam>();
-
+namespace flatsurf::test {
+TEMPLATE_TEST_CASE("Flip in a Flat Triangulation", "[flat_triangulation][flip]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+  using R2 = Vector<TestType>;
+  auto square = makeSquare<R2>();
   auto vertices = square->vertices();
 
-  for (auto halfEdge : square->halfEdges()) {
-    const auto vector = square->fromEdge(halfEdge);
-    square->flip(halfEdge);
-    EXPECT_NE(vector, square->fromEdge(halfEdge));
-    square->flip(halfEdge);
-    EXPECT_EQ(vector, -square->fromEdge(halfEdge));
-    square->flip(halfEdge);
-    square->flip(halfEdge);
-    EXPECT_EQ(vector, square->fromEdge(halfEdge));
+  GIVEN("The Square " << *square) {
+    auto halfEdge = GENERATE(as<HalfEdge>{}, 1, 2, 3, -1, -2, -3);
+    THEN("Four Flips of a Half Edge Restore the Initial Surface") {
+      const auto vector = square->fromEdge(halfEdge);
+      square->flip(halfEdge);
+      REQUIRE(vector != square->fromEdge(halfEdge));
+      square->flip(halfEdge);
+      REQUIRE(vector == -square->fromEdge(halfEdge));
+      square->flip(halfEdge);
+      square->flip(halfEdge);
+      REQUIRE(vector == square->fromEdge(halfEdge));
 
-    // a square (torus) has only a single vertex so it won't change; in general
-    // it should not change, however, the representatives attached to a vertex
-    // are currently not properly updated: https://github.com/flatsurf/flatsurf/issues/100
-    EXPECT_EQ(vertices, square->vertices());
+      // a square (torus) has only a single vertex so it won't change; in general
+      // it should not change, however, the representatives attached to a vertex
+      // are currently not properly updated: https://github.com/flatsurf/flatsurf/issues/100
+      REQUIRE(vertices == square->vertices());
+    }
   }
 }
 
-TYPED_TEST(FlatTriangulationTest, Insert) {
-  auto square = makeSquare<TypeParam>();
-  auto square3 = square->scale(3);
+TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[flat_triangulation][insert][slot]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+  using R2 = Vector<TestType>;
+  auto square = makeSquare<R2>()->scale(3);
 
-  HalfEdge e(1);
+  GIVEN("The Square " << *square) {
+    auto x = GENERATE(range(1, 32));
+    auto y = GENERATE(range(1, 32));
 
-  for (int x = 1; x < 64; x++) {
-    for (int y = x + 1; y < 64; y++) {
+    if (x < y ) {
       bool crossesSingularity = false;
       int xx = x / std::gcd(x, y);
       int yy = y / std::gcd(x, y);
@@ -87,42 +77,31 @@ TYPED_TEST(FlatTriangulationTest, Insert) {
         if (xx * n % 3 == 0 && yy * n % 3 == 0)
           crossesSingularity = true;
       }
-      if (crossesSingularity) continue;
-      TypeParam v = x * square->fromEdge(HalfEdge(1)) + y * square->fromEdge(HalfEdge(3));
-      HalfEdge ee = e;
-      auto surf = square3->insertAt(ee, v);
 
-      ASSERT_NE(*square3, *surf);
-      EXPECT_EQ(surf->fromEdge(surf->nextAtVertex(ee)), v);
-    }
-  }
-}
+      if (!crossesSingularity) {
+        R2 v = R2(x, y);
+        HalfEdge e(3);
+        WHEN("We Insert a Vertex at " << v << " next to " << e) {
+          auto surf = square->insertAt(e, v);
 
-TYPED_TEST(FlatTriangulationTest, Slot) {
-  auto l = makeL<TypeParam>();
-  auto l3 = l->scale(3);
+          CAPTURE(*surf);
+  
+          THEN("The Surface has Changed in the Right Way") {
+            REQUIRE(*square != *surf);
+            REQUIRE(surf->fromEdge(surf->nextAtVertex(e)) == v);
+          }
 
-  HalfEdge e(2);
+          AND_WHEN("We Make a Slot There") {
+            surf = surf->slot(e);
 
-  for (int x = 1; x < 64; x++) {
-    for (int y = x + 1; y < 64; y++) {
-      bool crossesSingularity = false;
-      int xx = x / std::gcd(x, y);
-      int yy = y / std::gcd(x, y);
-      for (int n = 1; xx * n <= x; n++) {
-        if (xx * n % 3 == 0 && yy * n % 3 == 0)
-          crossesSingularity = true;
+            THEN("There is a Boundary at " << e) {
+              REQUIRE(surf->boundary(e));
+            }
+          }
+        }
       }
-      if (crossesSingularity) continue;
-      TypeParam v = x * l->fromEdge(HalfEdge(1)) + y * l->fromEdge(HalfEdge(3));
-      HalfEdge ee = e;
-      auto surf = l3->insertAt(ee, v)->slot(ee);
-
-      ASSERT_TRUE(surf->boundary(ee));
     }
   }
 }
 
-}  // namespace
-
-#include "main.hpp"
+}
