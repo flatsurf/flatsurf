@@ -28,7 +28,7 @@
 #include <flatsurf/saddle_connections.hpp>
 #include <flatsurf/vector.hpp>
 #include <flatsurf/vector_along_triangulation.hpp>
-#include <intervalxt/length.hpp>
+#include <flatsurf/bound.hpp>
 
 #include "surfaces.hpp"
 

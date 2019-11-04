@@ -23,12 +23,12 @@
 #include <exact-real/element.hpp>
 #include <exact-real/integer_ring.hpp>
 #include <exact-real/number_field.hpp>
-#include <intervalxt/length.hpp>
 
 #include <flatsurf/interval_exchange_transformation.hpp>
 #include <flatsurf/saddle_connection.hpp>
 #include <flatsurf/saddle_connections.hpp>
 #include <flatsurf/vector.hpp>
+#include <flatsurf/bound.hpp>
 
 #include "surfaces.hpp"
 

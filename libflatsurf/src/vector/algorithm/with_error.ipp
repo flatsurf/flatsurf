@@ -21,8 +21,9 @@
 #define LIBFLATSURF_VECTOR_ALGORITHM_WITH_ERROR_IPP
 
 #include <exact-real/arb.hpp>
-#include <intervalxt/length.hpp>
 #include <optional>
+
+#include "../../flatsurf/bound.hpp"
 
 #include "../storage/cartesian.ipp"
 #include "../storage/forward.ipp"

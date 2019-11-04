@@ -18,9 +18,9 @@
  *********************************************************************/
 
 #include <exact-real/arb.hpp>
-#include <intervalxt/length.hpp>
 #include <stack>
 
+#include "flatsurf/bound.hpp"
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/half_edge.hpp"
 #include "flatsurf/saddle_connection.hpp"

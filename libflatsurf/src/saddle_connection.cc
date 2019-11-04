@@ -22,9 +22,9 @@
 
 #include <boost/lexical_cast.hpp>
 #include <climits>
-#include <intervalxt/length.hpp>
 #include <ostream>
 
+#include "flatsurf/bound.hpp"
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/saddle_connection.hpp"
 #include "flatsurf/saddle_connections.hpp"

@@ -20,8 +20,9 @@
 #ifndef LIBFLATSURF_VECTOR_ALGORITHM_EXACT_IPP
 #define LIBFLATSURF_VECTOR_ALGORITHM_EXACT_IPP
 
-#include <intervalxt/length.hpp>
 #include <optional>
+
+#include "../../flatsurf/bound.hpp"
 
 #include "../storage/cartesian.ipp"
 #include "../storage/forward.ipp"

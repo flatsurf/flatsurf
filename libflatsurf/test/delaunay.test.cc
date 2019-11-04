@@ -21,10 +21,10 @@
 #include "catch.hpp"
 
 #include <exact-real/element.hpp>
-#include <intervalxt/length.hpp>
 
 #include <flatsurf/delaunay_triangulation.hpp>
 #include <flatsurf/half_edge.hpp>
+#include <flatsurf/bound.hpp>
 
 #include "surfaces.hpp"
 

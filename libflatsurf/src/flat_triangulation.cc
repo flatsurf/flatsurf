@@ -28,7 +28,7 @@
 #include "flatsurf/saddle_connection.hpp"
 #include "flatsurf/saddle_connections.hpp"
 #include "flatsurf/vector.hpp"
-#include "intervalxt/length.hpp"
+#include "flatsurf/bound.hpp"
 #include "util/as_vector.ipp"
 #include "util/assert.ipp"
 
