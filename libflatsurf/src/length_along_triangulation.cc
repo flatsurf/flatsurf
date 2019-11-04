@@ -79,6 +79,8 @@ class LengthAlongTriangulation<T>::Implementation {
       approximation = Arb(mpz_class(lexical_cast<std::string>(ret)));
     } else if constexpr (std::is_same_v<T, eantic::renf_elem_class>) {
       approximation = Arb(ret, ARB_PRECISION_FAST);
+    } else if constexpr (std::is_same_v<T, mpq_class>) {
+      approximation = Arb(ret, ARB_PRECISION_FAST);
     } else {
       approximation = ret.arb(ARB_PRECISION_FAST);
     }
@@ -200,7 +202,8 @@ typename LengthAlongTriangulation<T>::Quotient LengthAlongTriangulation<T>::oper
     return mpz_class(0);
   }
 
-  mpz_class quo = static_cast<Arb>((impl->approximation / rhs.impl->approximation)(ARB_PRECISION_FAST)).floor();
+  Arb div = static_cast<Arb>((impl->approximation / rhs.impl->approximation)(ARB_PRECISION_FAST));
+  mpz_class quo = static_cast<std::pair<exactreal::Arf, exactreal::Arf>>(div).first.floor();
 
   while (rhs * quo < *this) {
     quo++;
@@ -236,6 +239,8 @@ using exactreal::RationalField;
 
 template class LengthAlongTriangulation<long long>;
 template std::ostream& operator<<(std::ostream&, const LengthAlongTriangulation<long long>&);
+template class LengthAlongTriangulation<mpq_class>;
+template std::ostream& operator<<(std::ostream&, const LengthAlongTriangulation<mpq_class>&);
 template class LengthAlongTriangulation<renf_elem_class>;
 template std::ostream& operator<<(std::ostream&, const LengthAlongTriangulation<renf_elem_class>&);
 template class LengthAlongTriangulation<Element<IntegerRing>>;

@@ -98,12 +98,16 @@ TRIANGLE classifyFace(HalfEdge face, const FlatTriangulation<T>& parent, const V
   }
 }
 
+// Return whether e is a large edge, i.e., whether it is the wide edge of both
+// of its adjacent triangles. We only return true for the one half edge that
+// has the backward triangle on its counter-clockwise side, and the forward
+// triangle on its clockwise side.
 template <typename T>
 bool large(HalfEdge e, const FlatTriangulation<T>& parent, const Vector<T>& vertical) {
   // Ideally, large would not special case verticals, https://github.com/flatsurf/flatsurf/issues/71
   return vertical.ccw(parent.fromEdge(e)) == CCW::CLOCKWISE &&
-         (((classifyFace(e, parent, vertical) == TRIANGLE::BACKWARD || classifyFace(e, parent, vertical) == TRIANGLE::LEFT_VERTICAL) &&
-           (classifyFace(-e, parent, vertical) == TRIANGLE::FORWARD || classifyFace(-e, parent, vertical) == TRIANGLE::RIGHT_VERTICAL)));
+         ((classifyFace(e, parent, vertical) == TRIANGLE::BACKWARD || classifyFace(e, parent, vertical) == TRIANGLE::LEFT_VERTICAL) &&
+           (classifyFace(-e, parent, vertical) == TRIANGLE::FORWARD || classifyFace(-e, parent, vertical) == TRIANGLE::RIGHT_VERTICAL));
 }
 
 template <typename T>
@@ -311,6 +315,8 @@ using namespace flatsurf;
 
 template class flatsurf::IntervalExchangeTransformation<long long>;
 template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<long long>&);
+template class flatsurf::IntervalExchangeTransformation<mpq_class>;
+template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<mpq_class>&);
 template class flatsurf::IntervalExchangeTransformation<eantic::renf_elem_class>;
 template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<eantic::renf_elem_class>&);
 template class flatsurf::IntervalExchangeTransformation<exactreal::Element<exactreal::IntegerRing>>;
