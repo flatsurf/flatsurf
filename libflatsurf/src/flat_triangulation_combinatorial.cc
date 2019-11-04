@@ -235,6 +235,8 @@ std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::
 vector<HalfEdge> FlatTriangulationCombinatorial::atVertex(const Vertex v) const {
   vector<HalfEdge> ret{v.representative};
   while (true) {
+    if (boundary(ret[ret.size() - 1]))
+      return ret;
     HalfEdge next = nextAtVertex(ret[ret.size() - 1]);
     if (next == ret[0])
       return ret;
