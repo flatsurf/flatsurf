@@ -18,8 +18,12 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#ifndef LIBFLATSURF_TEST_CEREAL_HELPERS_HPP
+#define LIBFLATSURF_TEST_CEREAL_HELPERS_HPP
+
+#include "./surfaces.hpp"
+
 namespace flatsurf::test {
-namespace {
 
 template <typename T>
 struct factory {
@@ -74,5 +78,6 @@ struct comparer<SaddleConnection<Surface>> {
   }
 };
 
-}  // namespace
 }  // namespace flatsurf::test
+
+#endif

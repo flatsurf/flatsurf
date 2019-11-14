@@ -18,6 +18,9 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#ifndef LIBFLATSURF_TEST_SURFACES_HPP
+#define LIBFLATSURF_TEST_SURFACES_HPP
+
 #include <vector>
 
 #include <e-antic/renfxx.h>
@@ -135,3 +138,5 @@ auto make1221() {
 }
 
 }  // namespace flatsurf::test
+
+#endif
