@@ -34,10 +34,8 @@ TEMPLATE_TEST_CASE("Length along Triangulation", "[length_along_triangulation]",
 
   auto square = makeSquare<Vector>();
   GIVEN("The Square " << *square) {
-
     auto horizontal = Vector(7, -3);
     WHEN("We Fix the Vertical Direction Given by the Horizontal " << horizontal) {
-
       THEN("Lengths Relative to this Direction are as Expected") {
         auto v10 = Length(square, &horizontal, HalfEdge(1));
         auto v01 = Length(square, &horizontal, HalfEdge(-2));
@@ -53,4 +51,4 @@ TEMPLATE_TEST_CASE("Length along Triangulation", "[length_along_triangulation]",
     }
   }
 }  // namespace
-}
+}  // namespace flatsurf::test

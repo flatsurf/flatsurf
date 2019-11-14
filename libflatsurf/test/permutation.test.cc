@@ -39,4 +39,4 @@ TEST_CASE("Permutation", "[permutation]") {
     }
   }
 }  // namespace flatsurf
-}
+}  // namespace flatsurf::test

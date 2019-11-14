@@ -22,24 +22,24 @@
 #include <memory>
 
 #include <exact-real/integer_ring.hpp>
+#include <flatsurf/bound.hpp>
 #include <flatsurf/flat_triangulation.hpp>
 #include <flatsurf/half_edge.hpp>
 #include <flatsurf/saddle_connection.hpp>
 #include <flatsurf/saddle_connections.hpp>
 #include <flatsurf/vector.hpp>
 #include <flatsurf/vector_along_triangulation.hpp>
-#include <flatsurf/bound.hpp>
 
 #include "surfaces.hpp"
 
-using eantic::renf_class;
-using benchmark::State;
 using benchmark::DoNotOptimize;
+using benchmark::State;
+using eantic::renf_class;
 
 namespace flatsurf::benchmark {
 using namespace flatsurf::test;
 
-const int LIMIT=1<<8;
+const int LIMIT = 1 << 8;
 
 template <class R2>
 void SaddleConnectionsSquare(State& state) {
@@ -90,4 +90,4 @@ void SaddleConnectionsLWithSlot(State& state) {
 BENCHMARK_TEMPLATE(SaddleConnectionsLWithSlot, Vector<mpq_class>)->Range(1, LIMIT);
 BENCHMARK_TEMPLATE(SaddleConnectionsLWithSlot, Vector<eantic::renf_elem_class>)->Range(1, LIMIT);
 
-}  // namespace
+}  // namespace flatsurf::benchmark

@@ -26,8 +26,8 @@
 
 #include <flatsurf/cereal.hpp>
 
-#include "surfaces.hpp"
 #include "cereal.helpers.hpp"
+#include "surfaces.hpp"
 
 namespace flatsurf::test {
 
@@ -59,7 +59,6 @@ static void testRoundtrip(const T& x) {
   REQUIRE(comparer<T>::eq(x, *y));
 }
 
-
 TEST_CASE("Serialization of a HalfEdge", "[cereal]") {
   testRoundtrip(HalfEdge(1337));
 }
@@ -85,4 +84,4 @@ TEST_CASE("Serialization of a SaddleConnection", "[cereal]") {
   testRoundtrip(**sc.begin());
 }
 
-}
+}  // namespace flatsurf::test

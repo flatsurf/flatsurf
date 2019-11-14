@@ -22,9 +22,9 @@
 
 #include <exact-real/element.hpp>
 
+#include <flatsurf/bound.hpp>
 #include <flatsurf/delaunay_triangulation.hpp>
 #include <flatsurf/half_edge.hpp>
-#include <flatsurf/bound.hpp>
 
 #include "surfaces.hpp"
 
@@ -36,7 +36,7 @@ TEMPLATE_TEST_CASE("Delaunay Triangulation", "[delaunay]", (long long), (mpq_cla
 
   GIVEN("A Flat Triangulation of a Square") {
     auto square = makeSquare<Vector>();
-  
+
     for (auto halfEdge : square->halfEdges()) {
       WHEN("We Flip Edge " << halfEdge) {
         square->flip(halfEdge);
@@ -52,4 +52,4 @@ TEMPLATE_TEST_CASE("Delaunay Triangulation", "[delaunay]", (long long), (mpq_cla
   }
 }
 
-}  // namespace
+}  // namespace flatsurf::test

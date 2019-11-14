@@ -24,11 +24,11 @@
 #include <exact-real/integer_ring.hpp>
 #include <exact-real/number_field.hpp>
 
+#include <flatsurf/bound.hpp>
 #include <flatsurf/interval_exchange_transformation.hpp>
 #include <flatsurf/saddle_connection.hpp>
 #include <flatsurf/saddle_connections.hpp>
 #include <flatsurf/vector.hpp>
-#include <flatsurf/bound.hpp>
 
 #include "surfaces.hpp"
 
@@ -60,4 +60,4 @@ TEMPLATE_TEST_CASE("Interval Exchange Transformation", "[interval_exchange_trans
   }
 }
 
-}
+}  // namespace flatsurf::test

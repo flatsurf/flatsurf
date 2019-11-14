@@ -69,7 +69,7 @@ TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[flat_triangulation][ins
     auto x = GENERATE(range(1, 32));
     auto y = GENERATE(range(1, 32));
 
-    if (x < y ) {
+    if (x < y) {
       bool crossesSingularity = false;
       int xx = x / std::gcd(x, y);
       int yy = y / std::gcd(x, y);
@@ -85,7 +85,7 @@ TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[flat_triangulation][ins
           auto surf = square->insertAt(e, v);
 
           CAPTURE(*surf);
-  
+
           THEN("The Surface has Changed in the Right Way") {
             REQUIRE(*square != *surf);
             REQUIRE(surf->fromEdge(surf->nextAtVertex(e)) == v);
@@ -104,4 +104,4 @@ TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[flat_triangulation][ins
   }
 }
 
-}
+}  // namespace flatsurf::test

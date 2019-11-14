@@ -66,4 +66,4 @@ TEST_CASE("Flat Triangulation Insertions", "[flat_triangulation][insert]") {
   }
 }
 
-}  // namespace
+}  // namespace flatsurf::test

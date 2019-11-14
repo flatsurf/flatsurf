@@ -43,4 +43,4 @@ TEST_CASE("Vector<long long>", "[vector_long_long]") {
     }
   }
 }
-}
+}  // namespace flatsurf::test

@@ -21,12 +21,12 @@
 #include "catch.hpp"
 
 #include <exact-real/element.hpp>
+#include <exact-real/module.hpp>
 #include <exact-real/number_field.hpp>
 #include <exact-real/real_number.hpp>
-#include <exact-real/module.hpp>
 
-#include <flatsurf/vector.hpp>
 #include <flatsurf/bound.hpp>
+#include <flatsurf/vector.hpp>
 
 namespace flatsurf::test {
 
@@ -46,4 +46,4 @@ TEMPLATE_TEST_CASE("Vector<exactreal::Element<...>>", "[vector_exact_real]", (ex
   REQUIRE(v < Bound(6));
 }
 
-}
+}  // namespace flatsurf::test

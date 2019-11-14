@@ -134,4 +134,4 @@ auto make1221() {
   return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(make1221Combinatorial(), vectors);
 }
 
-}  // namespace
+}  // namespace flatsurf::test

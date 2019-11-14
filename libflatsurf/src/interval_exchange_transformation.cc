@@ -107,7 +107,7 @@ bool large(HalfEdge e, const FlatTriangulation<T>& parent, const Vector<T>& vert
   // Ideally, large would not special case verticals, https://github.com/flatsurf/flatsurf/issues/71
   return vertical.ccw(parent.fromEdge(e)) == CCW::CLOCKWISE &&
          ((classifyFace(e, parent, vertical) == TRIANGLE::BACKWARD || classifyFace(e, parent, vertical) == TRIANGLE::LEFT_VERTICAL) &&
-           (classifyFace(-e, parent, vertical) == TRIANGLE::FORWARD || classifyFace(-e, parent, vertical) == TRIANGLE::RIGHT_VERTICAL));
+          (classifyFace(-e, parent, vertical) == TRIANGLE::FORWARD || classifyFace(-e, parent, vertical) == TRIANGLE::RIGHT_VERTICAL));
 }
 
 template <typename T>

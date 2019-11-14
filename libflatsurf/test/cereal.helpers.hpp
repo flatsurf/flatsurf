@@ -74,5 +74,5 @@ struct comparer<SaddleConnection<Surface>> {
   }
 };
 
-}
-}
+}  // namespace
+}  // namespace flatsurf::test
