@@ -19,9 +19,8 @@
 
 #include <ostream>
 
-#include "flatsurf/half_edge.hpp"
-#include "flatsurf/half_edge_map.hpp"
-#include "flatsurf/permutation.hpp"
+#include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/permutation.hpp"
 #include "util/assert.ipp"
 
 using std::ostream;
@@ -49,15 +48,21 @@ bool HalfEdge::operator==(const HalfEdge &rhs) const {
 }
 
 bool HalfEdge::operator<(const HalfEdge &rhs) const {
-  return this->id < rhs.id;
+  return index() < rhs.index();
+}
+
+size_t HalfEdge::index() const noexcept {
+  const int id = this->id;
+  assert(id != 0 && "a valid half edge must have a non-zero id");
+  if (id < 0) {
+    return static_cast<size_t>(-2 * id - 1);
+  } else {
+    return static_cast<size_t>(2 * id - 2);
+  }
 }
 
 ostream &operator<<(ostream &os, const HalfEdge &self) { return os << self.id; }
 
-template <>
-size_t Permutation<HalfEdge>::index(const HalfEdge &e) const {
-  return HalfEdgeMap<int>::index(e);
-}
 }  // namespace flatsurf
 
 size_t std::hash<flatsurf::HalfEdge>::operator()(const flatsurf::HalfEdge &e) const noexcept {

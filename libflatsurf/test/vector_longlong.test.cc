@@ -20,9 +20,9 @@
 
 #include <boost/lexical_cast.hpp>
 
-#include "catch.hpp"
+#include "external/catch2/single_include/catch2/catch.hpp"
 
-#include <flatsurf/vector.hpp>
+#include "../flatsurf/vector.hpp"
 
 namespace flatsurf::test {
 using namespace flatsurf;

@@ -18,13 +18,13 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "catch.hpp"
+#include "external/catch2/single_include/catch2/catch.hpp"
 
 #include <exact-real/element.hpp>
 
-#include <flatsurf/bound.hpp>
-#include <flatsurf/delaunay_triangulation.hpp>
-#include <flatsurf/half_edge.hpp>
+#include "../flatsurf/bound.hpp"
+#include "../flatsurf/delaunay_triangulation.hpp"
+#include "../flatsurf/half_edge.hpp"
 
 #include "surfaces.hpp"
 
@@ -37,14 +37,18 @@ TEMPLATE_TEST_CASE("Delaunay Triangulation", "[delaunay]", (long long), (mpq_cla
   GIVEN("A Flat Triangulation of a Square") {
     auto square = makeSquare<Vector>();
 
+    auto bound = Bound(2, 0);
+
     for (auto halfEdge : square->halfEdges()) {
       WHEN("We Flip Edge " << halfEdge) {
         square->flip(halfEdge);
         THEN("The Delaunay Condition holds after performing Delaunay Triangulation") {
           DelaunayTriangulation<T>::transform(*square);
+          CAPTURE(*square);
           for (auto edge : square->halfEdges()) {
+            CAPTURE(edge);
             REQUIRE(DelaunayTriangulation<T>::test(*square, edge));
-            REQUIRE(square->fromEdge(edge) < Bound(2));
+            REQUIRE(square->fromEdge(edge) < bound);
           }
         }
       }

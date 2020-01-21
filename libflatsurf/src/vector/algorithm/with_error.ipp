@@ -23,7 +23,7 @@
 #include <exact-real/arb.hpp>
 #include <optional>
 
-#include "../../flatsurf/bound.hpp"
+#include "../../../flatsurf/bound.hpp"
 
 #include "../storage/cartesian.ipp"
 #include "../storage/forward.ipp"
@@ -113,7 +113,7 @@ optional<bool> VectorWithError<Vector>::operator<(Bound bound) const noexcept {
   } else if constexpr (is_forward_v<Implementation>) {
     return self.impl->vector < bound;
   } else if constexpr (is_cartesian_v<Implementation>) {
-    return self.impl->x * self.impl->x + self.impl->y * self.impl->y < bound.length() * bound.length();
+    return std::make_pair(self.impl->x, self.impl->y) < bound;
   } else {
     static_assert(false_type_v<Implementation>, "Implementation is missing operator<(Bound).");
   }
@@ -129,7 +129,7 @@ optional<bool> VectorWithError<Vector>::operator>(Bound bound) const noexcept {
   } else if constexpr (is_forward_v<Implementation>) {
     return self.impl->vector > bound;
   } else if constexpr (is_cartesian_v<Implementation>) {
-    return self.impl->x * self.impl->x + self.impl->y * self.impl->y > bound.length() * bound.length();
+    return std::make_pair(self.impl->x, self.impl->y) > bound;
   } else {
     static_assert(false_type_v<Implementation>, "Implementation is missing operator>(Bound).");
   }

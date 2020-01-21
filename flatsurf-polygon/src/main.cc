@@ -24,10 +24,10 @@
 #include <boost/numeric/conversion/cast.hpp>
 #include <exact-real/number_field.hpp>
 #include <fstream>
-#include <intervalxt/length.hpp>
 #include <iostream>
 
 #include "flatsurf/ccw.hpp"
+#include "flatsurf/bound.hpp"
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/half_edge.hpp"
 #include "flatsurf/orientation.hpp"

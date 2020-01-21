@@ -22,7 +22,9 @@
 
 #include <optional>
 
-#include "../../flatsurf/bound.hpp"
+#include "../../external/gmpxxll/mpz_class.hpp"
+
+#include "../../../flatsurf/bound.hpp"
 
 #include "../storage/cartesian.ipp"
 #include "../storage/forward.ipp"
@@ -71,8 +73,10 @@ bool VectorExact<Vector, T>::operator<(Bound bound) const noexcept {
     if (maybe)
       return *maybe;
     return static_cast<const typename Implementation::Exact>(*self.impl) < bound;
+  } else if constexpr (std::is_integral_v<T>) {
+    return self.x() * self.x() + self.y() * self.y() < bound.squared();
   } else {
-    return self.x() * self.x() + self.y() * self.y() < bound.length() * bound.length();
+    return self.x() * self.x() + self.y() * self.y() < ::gmpxxll::mpz_class(bound.squared());
   }
 }
 
@@ -90,8 +94,10 @@ bool VectorExact<Vector, T>::operator>(Bound bound) const noexcept {
     if (maybe)
       return *maybe;
     return static_cast<const typename Implementation::Exact>(*self.impl) > bound;
+  } else if constexpr (std::is_integral_v<T>) {
+    return self.x() * self.x() + self.y() * self.y() > bound.squared();
   } else {
-    return self.x() * self.x() + self.y() * self.y() > bound.length() * bound.length();
+    return self.x() * self.x() + self.y() * self.y() > ::gmpxxll::mpz_class(bound.squared());
   }
 }
 

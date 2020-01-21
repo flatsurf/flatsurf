@@ -2,7 +2,7 @@ noinst_PROGRAMS = benchmark
 
 benchmark_SOURCES = main.cc saddle_connections.benchmark.cc surfaces.hpp
 
-AM_CPPFLAGS = -I $(srcdir)/../src -I $(builddir)/../src
+AM_CPPFLAGS = -I $(srcdir)/.. -I $(builddir)/..
 AM_LDFLAGS = $(builddir)/../src/libflatsurf.la
 # we use gmpxx & flint through exact-real's arb/arf wrappers; since we include
 # gmpxx.h, we need to link in gmp since it depends on it

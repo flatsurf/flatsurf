@@ -70,7 +70,7 @@ AS_IF([test "x$with_benchmark" != "xno"],
       ], [])
 AM_CONDITIONAL([HAVE_BENCHMARK], [test "x$with_benchmark" = "xyes"])
 
-AC_CONFIG_HEADERS([src/flatsurf/config.h])
+AC_CONFIG_HEADERS([flatsurf/config.h])
 AC_CONFIG_FILES([Makefile src/Makefile test/Makefile benchmark/Makefile])
 
 AC_OUTPUT

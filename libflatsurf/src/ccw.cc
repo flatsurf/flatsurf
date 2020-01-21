@@ -17,7 +17,7 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "flatsurf/ccw.hpp"
+#include "../flatsurf/ccw.hpp"
 
 namespace flatsurf {
 CCW operator-(CCW ccw) { return static_cast<CCW>(-static_cast<int>(ccw)); }

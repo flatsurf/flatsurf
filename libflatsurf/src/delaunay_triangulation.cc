@@ -20,10 +20,10 @@
 #include <ostream>
 #include <vector>
 
-#include "flatsurf/delaunay_triangulation.hpp"
-#include "flatsurf/flat_triangulation.hpp"
-#include "flatsurf/half_edge.hpp"
-#include "flatsurf/vector.hpp"
+#include "../flatsurf/delaunay_triangulation.hpp"
+#include "../flatsurf/flat_triangulation.hpp"
+#include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/vector.hpp"
 
 namespace {
 template <typename T, typename S>

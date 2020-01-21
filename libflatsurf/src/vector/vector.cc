@@ -23,10 +23,15 @@
 #include <exact-real/number_field.hpp>
 #include <exact-real/rational_field.hpp>
 #include <exact-real/yap/arb.hpp>
+#include <exact-real/arf.hpp>
 
-#include "flatsurf/vector.hpp"
+#include "../../flatsurf/vector.hpp"
 
 #include "../util/assert.ipp"
+#include "../util/hash.ipp"
+
+#include "../external/gmpxxll/mpz_class.hpp"
+
 #include "algorithm/exact.ipp"
 #include "algorithm/with_error.ipp"
 #include "storage/cartesian.ipp"
@@ -41,6 +46,7 @@ using boost::lexical_cast;
 // here. However, it is a bit unclear whether there is a reasonable choice of
 // precision for that.
 using exactreal::Arb;
+using exactreal::Arf;
 using exactreal::ARB_PRECISION_FAST;
 
 template <bool Condition>
@@ -69,7 +75,7 @@ inline constexpr bool IsLongLong = Similar<T, long long>;
 
 namespace flatsurf {
 template <typename T>
-class Vector<T>::Implementation : public Cartesian<T> {
+class Implementation<Vector<T>> : public Cartesian<T> {
  public:
   using Cartesian<T>::Cartesian;
   using Vector = flatsurf::Vector<T>;
@@ -94,10 +100,11 @@ class Vector<T>::Implementation : public Cartesian<T> {
 
   template <typename S, bool Enable = IsLongLong<T>&& IsMPZ<S>, If<Enable> = true, typename = void>
   Implementation& operator*=(const S& rhs) {
-    assert(rhs * mpz_class(lexical_cast<std::string>(this->x)) <= mpz_class(lexical_cast<std::string>(LONG_LONG_MAX)) && "Multiplication overflow");
-    assert(rhs * mpz_class(lexical_cast<std::string>(this->y)) <= mpz_class(lexical_cast<std::string>(LONG_LONG_MAX)) && "Multiplication overflow");
-    this->x *= lexical_cast<long long>(lexical_cast<std::string>(rhs));
-    this->y *= lexical_cast<long long>(lexical_cast<std::string>(rhs));
+    using gmpxxll::mpz_class;
+    ASSERT(rhs * mpz_class(this->x) <= mpz_class(LONG_LONG_MAX), "Multiplication overflow");
+    ASSERT(rhs * mpz_class(this->y) <= mpz_class(LONG_LONG_MAX), "Multiplication overflow");
+    this->x *= static_cast<long long>(mpz_class(rhs));
+    this->y *= static_cast<long long>(mpz_class(rhs));
     return *this;
   }
 
@@ -153,20 +160,10 @@ class Vector<T>::Implementation : public Cartesian<T> {
     return size < bound.squared();
   }
 
-  template <bool Enable = IsMPZ<T> || IsMPQ<T>, If<Enable> = true, typename = void>
-  bool operator<(const Bound bound) const noexcept {
-    return this->x * this->x + this->y * this->y < mpz_class(boost::lexical_cast<std::string>(bound.squared()));
-  }
-
   template <bool Enable = IsArb<T>, If<Enable> = true>
   std::optional<bool> operator>(const Bound bound) const noexcept {
     Arb size = (this->x * this->x + this->y * this->y)(ARB_PRECISION_FAST);
     return size > bound.squared();
-  }
-
-  template <bool Enable = IsMPZ<T> || IsMPQ<T>, If<Enable> = true, typename = void>
-  bool operator>(const Bound bound) const noexcept {
-    return this->x * this->x + this->y * this->y > mpz_class(boost::lexical_cast<std::string>(bound.squared()));
   }
 
   template <bool Enable = IsArb<T>, If<Enable> = true>
@@ -215,62 +212,55 @@ typename Vector<T>::Coordinate Vector<T>::x() const noexcept { return impl->x; }
 
 template <typename T>
 typename Vector<T>::Coordinate Vector<T>::y() const noexcept { return impl->y; }
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const Vector<T>& self) {
+  using Implementation = typename Vector<T>::Implementation;
+  const Vector<T>& s = static_cast<const Vector<T>&>(self);
+
+  if constexpr (has_ostream_lshift<Implementation>) {
+    return os << s.impl;
+  } else if constexpr (is_forward_v<Implementation>) {
+    return os << s.impl->vector;
+  } else if constexpr (has_approximation_v<Implementation>) {
+    return os << s.impl->approximation();
+  } else if constexpr (is_cartesian_v<Implementation>) {
+    return os << "(" << s.impl->x << ", " << s.impl->y << ")";
+  } else {
+    static_assert(false_type_v<Implementation>, "Implementation is missing operator<<.");
+  }
+}
 }  // namespace flatsurf
+
+namespace std {
+
+using namespace flatsurf;
+
+template <typename T>
+size_t hash<Vector<T>>::operator()(const Vector<T>&) const noexcept {
+  return 0;
+  // TODO: Teach coefficients how to hash.
+  // return hash_combine(self.x(), self.y());
+}
+
+}
 
 // Instantiations of templates so implementations are generated for the linker
 // (unfortunately, we also need to explicitly instantiate the base classes,
 // https://stackoverflow.com/q/3705000/812379).
-#include <e-antic/renfxx.h>
-#include <exact-real/arb.hpp>
+#include "util/instantiate.ipp"
 
-namespace flatsurf {
-using eantic::renf_elem_class;
-using exactreal::Arb;
-using exactreal::Element;
-using exactreal::IntegerRing;
-using exactreal::NumberField;
-using exactreal::RationalField;
+#define LIBFLATSURF_INSTANTIATE_THIS(T) \
+  LIBFLATSURF_INSTANTIATE_HASH((Vector<T>)) \
+  LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION((Vector<T>)) \
+  namespace flatsurf::detail { \
+    template class VectorExact<Vector<T>, T>; \
+    template class VectorBase<Vector<T>>; \
+  }
 
-template class Vector<Arb>;
-template class Vector<long long>;
-template class Vector<mpz_class>;
-template class Vector<mpq_class>;
-template class Vector<renf_elem_class>;
-template class Vector<Element<IntegerRing>>;
-template class Vector<Element<RationalField>>;
-template class Vector<Element<NumberField>>;
+LIBFLATSURF_INSTANTIATE_MANY((LIBFLATSURF_INSTANTIATE_THIS), LIBFLATSURF_REAL_TYPES)
 
-namespace detail {
-template class VectorWithError<Vector<Arb>>;
-template class VectorBase<Vector<Arb>>;
-template std::ostream& operator<<(std::ostream&, const VectorBase<Vector<Arb>>&);
-
-template class VectorExact<Vector<long long>, long long>;
-template class VectorBase<Vector<long long>>;
-template std::ostream& operator<<(std::ostream&, const VectorBase<Vector<long long>>&);
-
-template class VectorExact<Vector<mpz_class>, mpz_class>;
-template class VectorBase<Vector<mpz_class>>;
-template std::ostream& operator<<(std::ostream&, const VectorBase<Vector<mpz_class>>&);
-
-template class VectorExact<Vector<mpq_class>, mpq_class>;
-template class VectorBase<Vector<mpq_class>>;
-template std::ostream& operator<<(std::ostream&, const VectorBase<Vector<mpq_class>>&);
-
-template class VectorExact<Vector<renf_elem_class>, renf_elem_class>;
-template class VectorBase<Vector<renf_elem_class>>;
-template std::ostream& operator<<(std::ostream&, const VectorBase<Vector<renf_elem_class>>&);
-
-template class VectorExact<Vector<Element<IntegerRing>>, Element<IntegerRing>>;
-template class VectorBase<Vector<Element<IntegerRing>>>;
-template std::ostream& operator<<(std::ostream&, const VectorBase<Vector<Element<IntegerRing>>>&);
-
-template class VectorExact<Vector<Element<RationalField>>, Element<RationalField>>;
-template class VectorBase<Vector<Element<RationalField>>>;
-template std::ostream& operator<<(std::ostream&, const VectorBase<Vector<Element<RationalField>>>&);
-
-template class VectorExact<Vector<Element<NumberField>>, Element<NumberField>>;
-template class VectorBase<Vector<Element<NumberField>>>;
-template std::ostream& operator<<(std::ostream&, const VectorBase<Vector<Element<NumberField>>>&);
-}  // namespace detail
-}  // namespace flatsurf
+template class ::flatsurf::Vector<Arb>;
+template class ::flatsurf::detail::VectorWithError<::flatsurf::Vector<Arb>>;
+template class ::flatsurf::detail::VectorBase<::flatsurf::Vector<Arb>>;
+template std::ostream& ::flatsurf::operator<<(std::ostream&, const ::flatsurf::Vector<Arb>&);

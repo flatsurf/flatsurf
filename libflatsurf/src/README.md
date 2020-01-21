@@ -6,7 +6,7 @@ libflatsurf library.
 
 To understand how this library works, it's probably best to have a look at some
 example usage in the [binder notebook](../../binder/Sample.libflatsurf.ipynb)
-or in our [unit tests](../../test/libflatsurf) first.
+or in our [unit tests](../test) first.
 
 To see the full API, you should have a look at the header files which reside in
-[flatsurf/](./flatsurf/).
+[flatsurf/](./../flatsurf/).

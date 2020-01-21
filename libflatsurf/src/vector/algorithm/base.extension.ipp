@@ -20,7 +20,7 @@
 #ifndef LIBFLATSURF_VECTOR_ALGORITHM_BASE_EXTENSION_IPP
 #define LIBFLATSURF_VECTOR_ALGORITHM_BASE_EXTENSION_IPP
 
-#include "flatsurf/detail/vector_base.hpp"
+#include "../../../flatsurf/detail/vector_base.hpp"
 
 #include <boost/type_traits/is_detected.hpp>
 #include <boost/type_traits/is_detected_exact.hpp>

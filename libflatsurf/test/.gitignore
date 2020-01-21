@@ -42,6 +42,9 @@
 /cereal
 /flat_triangulation
 /flat_triangulation_combinatorial
+/flat_triangulation_collapsed
+/contour_decomposition
+/flow_decomposition
 
 ### Autotools Generated Files
 .deps

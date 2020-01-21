@@ -18,10 +18,10 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "catch.hpp"
+#include "external/catch2/single_include/catch2/catch.hpp"
 
-#include <flatsurf/half_edge.hpp>
-#include <flatsurf/permutation.hpp>
+#include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/permutation.hpp"
 
 namespace flatsurf::test {
 TEST_CASE("Permutation", "[permutation]") {

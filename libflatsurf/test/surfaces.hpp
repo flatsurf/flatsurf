@@ -30,8 +30,8 @@
 #include <exact-real/number_field.hpp>
 #include <exact-real/real_number.hpp>
 
-#include <flatsurf/flat_triangulation.hpp>
-#include <flatsurf/vector.hpp>
+#include "../flatsurf/flat_triangulation.hpp"
+#include "../flatsurf/vector.hpp"
 
 using namespace flatsurf;
 using namespace exactreal;

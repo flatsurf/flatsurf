@@ -25,7 +25,7 @@
 #include <boost/type_traits/is_detected.hpp>
 #include <boost/type_traits/is_detected_exact.hpp>
 
-#include "flatsurf/detail/vector_base.hpp"
+#include "../../../flatsurf/detail/vector_base.hpp"
 
 #include "exact.extension.ipp"
 

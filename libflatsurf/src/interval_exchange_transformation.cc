@@ -17,311 +17,233 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <algorithm>
-#include <map>
-#include <memory>
-#include <ostream>
+// TODO
+#include <iostream>
+
 #include <vector>
+#include <ostream>
+#include <memory>
 
-#include <boost/lexical_cast.hpp>
-#include <boost/range/adaptors.hpp>
-#include <intervalxt/interval_exchange_transformation.hpp>
+#include <boost/type_erasure/any_cast.hpp>
+
 #include <intervalxt/label.hpp>
+#include <intervalxt/interval_exchange_transformation.hpp>
 
-#include "flatsurf/ccw.hpp"
-#include "flatsurf/flat_triangulation.hpp"
-#include "flatsurf/half_edge.hpp"
-#include "flatsurf/interval_exchange_transformation.hpp"
-#include "flatsurf/length_along_triangulation.hpp"
-#include "flatsurf/orientation.hpp"
-#include "flatsurf/vector.hpp"
-#include "flatsurf/vector_along_triangulation.hpp"
-#include "util/as_vector.ipp"
+// TODO: Remove range-v3/boost ranges everywhere
+#include "external/rx-ranges/include/rx/ranges.hpp"
 
-#include "util/union_join.ipp"
+#include "../flatsurf/edge_set.hpp"
+#include "../flatsurf/tracking_half_edge.hpp"
 
-using std::any_of;
-using std::back_insert_iterator;
-using std::back_inserter;
-using std::find_if;
-using std::map;
-using std::next;
+#include "impl/interval_exchange_transformation.impl.hpp"
+#include "impl/vertical.impl.hpp"
+#include "impl/flat_triangulation_collapsed.impl.hpp"
+#include "impl/contour_component.impl.hpp"
+
+#include "util/assert.ipp"
+
 using std::ostream;
-using std::shared_ptr;
+using std::string;
 using std::vector;
-
-using boost::adaptors::transformed;
+using rx::transform;
+using rx::to_vector;
 
 namespace flatsurf {
-namespace {
-enum class TRIANGLE {
-  BACKWARD,
-  FORWARD,
-  LEFT_VERTICAL,
-  RIGHT_VERTICAL,
-};
 
-template <typename T>
-TRIANGLE classifyFace(HalfEdge face, const FlatTriangulation<T>& parent, const Vector<T>& vertical) {
-  // Ideally, we collapse vertical edges, https://github.com/flatsurf/flatsurf/issues/71 so vertical would never be an option.
-  // In any case, we should only consider the horizontal part so the CCW computations should go away.
-  int topEdges = 0;
-
-  for (int i = 0; i < 3; i++) {
-    switch (vertical.ccw(parent.fromEdge(face))) {
-      case CCW::COLLINEAR:
-        switch (vertical.orientation(parent.fromEdge(face))) {
-          case ORIENTATION::SAME:
-            return TRIANGLE::LEFT_VERTICAL;
-          case ORIENTATION::OPPOSITE:
-            return TRIANGLE::RIGHT_VERTICAL;
-          default:
-            throw std::logic_error(
-                "edge vector cannot be collinear and orthogonal at the same "
-                "time");
-        }
-      case CCW::CLOCKWISE:
-        break;
-      case CCW::COUNTERCLOCKWISE:
-        topEdges++;
-        break;
-    }
-
-    face = parent.nextInFace(face);
-  }
-
-  if (topEdges == 1) {
-    return TRIANGLE::FORWARD;
-  } else {
-    assert(topEdges == 2);
-    return TRIANGLE::BACKWARD;
-  }
+template <typename Surface>
+IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(std::shared_ptr<const Surface> surface, const Vector& vertical, const vector<HalfEdge>& top, const vector<HalfEdge>& bottom) :
+  impl(spimpl::make_unique_impl<Implementation>(surface, vertical, top, bottom)) {
+  std::cout << "Built IET " << *this << std::endl;
 }
 
-// Return whether e is a large edge, i.e., whether it is the wide edge of both
-// of its adjacent triangles. We only return true for the one half edge that
-// has the backward triangle on its counter-clockwise side, and the forward
-// triangle on its clockwise side.
-template <typename T>
-bool large(HalfEdge e, const FlatTriangulation<T>& parent, const Vector<T>& vertical) {
-  // Ideally, large would not special case verticals, https://github.com/flatsurf/flatsurf/issues/71
-  return vertical.ccw(parent.fromEdge(e)) == CCW::CLOCKWISE &&
-         ((classifyFace(e, parent, vertical) == TRIANGLE::BACKWARD || classifyFace(e, parent, vertical) == TRIANGLE::LEFT_VERTICAL) &&
-          (classifyFace(-e, parent, vertical) == TRIANGLE::FORWARD || classifyFace(-e, parent, vertical) == TRIANGLE::RIGHT_VERTICAL));
-}
+template <typename Surface>
+IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(std::shared_ptr<const Surface> surface, const Vector& vertical, HalfEdge large) :
+  impl([&]() {
+    CHECK_ARGUMENT(Vertical(surface, vertical).large(large), "can only construct IntervalExchangeTransformation from a large half edge");
 
-template <typename T>
-void makeContour(back_insert_iterator<vector<HalfEdge>> target,
-                 const HalfEdge source, const FlatTriangulation<T>& parent,
-                 const Vector<T>& vertical, std::set<HalfEdge>& contourEdges) {
-  auto addToContour = [&]() {
-    assert(vertical.ccw(parent.fromEdge(source)) == CCW::CLOCKWISE && "Contour must be in positive direction with respect to the vertical.");
-    target = source;
-    // If we ever stumble upon this edge or its reverse, it must be part of the
-    // contour.
-    contourEdges.insert(source);
-    contourEdges.insert(-source);
-  };
+    vector<HalfEdge> top, bottom;
 
-  if (contourEdges.find(source) != contourEdges.end()) {
-    addToContour();
-    return;
-  }
+    // TODO: Can we use ContourComponent directly instead?
+    ::flatsurf::Implementation<ContourComponent<Surface>>::makeContour(back_inserter(top), large, *surface, Vertical(surface, vertical));
 
-  switch (classifyFace(source, parent, vertical)) {
-    case TRIANGLE::BACKWARD:
-      // In a backward triangle, we recurse into both edges on the top.
-      makeContour(target, -parent.nextInFace(parent.nextInFace(source)), parent, vertical, contourEdges);
-      makeContour(target, -parent.nextInFace(source), parent, vertical, contourEdges);
-      break;
-    case TRIANGLE::FORWARD:
-      // In a forward triangle, we backtrack but log the edge we just crossed.
-      addToContour();
-      break;
-    case TRIANGLE::LEFT_VERTICAL:
-      // If we happen to see source again in the same direction, the surface is
-      // a cylinder of vertical faces. Make sure we abort the recursion then.
-      contourEdges.insert(source);
-      makeContour(target, -parent.nextInFace(parent.nextInFace(source)), parent, vertical, contourEdges);
-      break;
-    case TRIANGLE::RIGHT_VERTICAL:
-      // If we happen to see source again in the same direction, the surface is
-      // a cylinder of vertical faces. Make sure we abort the recursion then.
-      contourEdges.insert(source);
-      makeContour(target, -parent.nextInFace(source), parent, vertical, contourEdges);
-      break;
-  }
-}
-
-template <typename T>
-std::vector<std::set<HalfEdge>> verticalComponents(const FlatTriangulation<T>& parent, const Vector<T>& vertical, const std::set<HalfEdge>& component) {
-  // Check whether vertical edges disconnect the surface
-  map<HalfEdge, std::unique_ptr<UnionJoin<HalfEdge>>> components;
-  for (auto e : component)
-    components[e] = std::make_unique<UnionJoin<HalfEdge>>(e);
-  for (auto e : component) {
-    // Each half edge is in the same component as the other half edges in
-    // its face.
-    components[e]->join(*components[parent.nextInFace(e)]);
-    components[e]->join(*components[parent.nextInFace(parent.nextInFace(e))]);
-    // If the edge is not vertical, the two opposite half edges are in the
-    // same component.
-    if (parent.fromEdge(e).ccw(vertical) != CCW::COLLINEAR) {
-      components[e]->join(*components[-e]);
-    }
-  }
-
-  std::map<HalfEdge, std::set<HalfEdge>> newComponents;
-  for (auto e : component) {
-    newComponents[components[e]->representative()].insert(e);
-  }
-
-  std::vector<std::set<HalfEdge>> ret;
-  for (auto c : newComponents) {
-    ret.push_back(c.second);
-  }
-  return ret;
-}
-
-template <typename T>
-HalfEdge makeUniqueLargeEdge(FlatTriangulation<T>& parent, const Vector<T>& vertical, const std::set<HalfEdge>& component) {
-  assert(component.size());
-  auto source =
-      find_if(component.begin(), component.end(),
-              [&](const HalfEdge e) {
-                // We can start from an edge at the bottom of its face if it is:
-                // * A large edge
-                // * A non-vertical edge in a right vertical triangle
-                return large(e, parent, vertical);
-              });
-
-  if (source == component.end())
-    throw std::logic_error("not implemented: no large edges & no vertical edges; something is wrong.");
-
-  // Eliminate other large edges
-  while (true) {
-    auto largeEdge = find_if(component.begin(), component.end(),
-                             [&](const HalfEdge e) {
-                               return e != *source && e != -*source &&
-                                      large(e, parent, vertical);
-                             });
-
-    if (largeEdge == component.end()) break;
-
-    // We do not want to check for this in every iteration, see https://github.com/flatsurf/flatsurf/issues/71
-    if (verticalComponents(parent, vertical, component).size() > 1) {
-      break;
-    }
-
-    parent.flip(*largeEdge);
-
-    assert(!large(*largeEdge, parent, vertical));
-  }
-
-  return *source;
-}
-
-}  // namespace
-
-template <typename T>
-class IntervalExchangeTransformation<T>::Implementation {
-  using Length = LengthAlongTriangulation<T>;
-  using Label = intervalxt::Label<Length>;
-  using IET = intervalxt::IntervalExchangeTransformation<Length>;
-  std::shared_ptr<FlatTriangulation<T>> parent;
-  Vector<T> horizontal;
-  std::vector<IET> iets;
-
-  static std::vector<IET> create(std::shared_ptr<FlatTriangulation<T>> parent, Vector<T> const* horizontal, const std::set<HalfEdge>& component) {
-    auto vertical = horizontal->perpendicular();
-    HalfEdge source = makeUniqueLargeEdge(*parent, vertical, component);
-
-    auto components = verticalComponents(*parent, vertical, component);
-    // If vertical edges disconnect the surface, we call ourself for each component.
-    if (components.size() > 1) {
-      std::vector<IET> ret;
-      for (auto c : components) {
-        for (auto&& iet : create(parent, horizontal, c)) {
-          ret.emplace_back(std::move(iet));
-        }
-      }
-      return ret;
-    }
-
-    // We build the top contour by starting from our single wide edge and going
-    // up. When we enter a backward triangle, we cross over the two top edges
-    // and recurse. When we enter a forward triangle, we have found a piece of
-    // the contour; the opposite search, going from the wide edge down instead
-    // of up, will stop at the same edge.
-    // This discussion ignores vertical edges so far which make this much more
-    // complicated. In general, we treat faces with a vertical edge as backward
-    // faces and recurse across the non-vertical edge. However, there are two
-    // problems with this: for one, the top and the bottom contour now don't
-    // contain the same edges anymore, as they find different forward faces in
-    // sequences of vertical faces. And then, if all faces are vertical, the
-    // recursion just won't stop. Therefore we need to identify edges of
-    // vertical faces and do some extra bookkeeping to work around these two
-    // issues.
-    std::set<HalfEdge> verticalFaces;
-
-    std::vector<HalfEdge> top;
-    makeContour(back_inserter(top), source, *parent, vertical, verticalFaces);
-
-    std::vector<HalfEdge> bottom;
-    makeContour(back_inserter(bottom), -source, *parent, -vertical, verticalFaces);
+    ::flatsurf::Implementation<ContourComponent<Surface>>::makeContour(back_inserter(bottom), -large, *surface, Vertical(surface, -vertical));
     reverse(bottom.begin(), bottom.end());
-    transform(bottom.begin(), bottom.end(), bottom.begin(), [](HalfEdge e) { return -e; });
+    std::transform(bottom.begin(), bottom.end(), bottom.begin(), [](HalfEdge e) { return -e; });
     assert(std::set<HalfEdge>(bottom.begin(), bottom.end()) == std::set<HalfEdge>(top.begin(), top.end()) && "top & bottom contour must contain the same half edges");
 
-    // For the final IntervalExchangeTransformation, the top/bottom intervals
-    // are labelled by the horizontal sections of the top/bottom contour.
-    map<HalfEdge, Label> labels;
-    auto label = [&](const HalfEdge e) {
-      if (labels.find(e) == labels.end()) {
-        labels[e] = Label(Length(parent, horizontal, e));
-      }
-      return labels[e];
-    };
-
-    auto ret = std::vector<IET>();
-    ret.emplace_back(IET(
-        as_vector(top | transformed([&](HalfEdge e) { return label(e); })),
-        as_vector(bottom | transformed([&](HalfEdge e) { return label(e); }))));
-    return ret;
-  }
-
- public:
-  Implementation(const FlatTriangulation<T>& parent, const Vector<T>& vertical) : parent(parent.clone()), horizontal(-vertical.perpendicular()), iets(create(this->parent, &this->horizontal, std::set<HalfEdge>(this->parent->halfEdges().begin(), this->parent->halfEdges().end()))) {}
-};
-
-template <typename T>
-IntervalExchangeTransformation<T>::IntervalExchangeTransformation(const FlatTriangulation<T>& parent, const Vector<T>& vertical)
-    : impl(spimpl::make_unique_impl<Implementation>(parent, vertical)) {}
-
-template <typename T>
-ostream& operator<<(ostream&, const IntervalExchangeTransformation<T>&) {
-  throw std::logic_error("not implemented IntervalExchangeTransformation::operator<<");
+    return spimpl::make_unique_impl<Implementation>(surface, vertical, top, bottom);
+  }()){
+  std::cout << "Built IET " << *this << std::endl;
 }
-}  // namespace flatsurf
+
+template <typename Surface>
+void IntervalExchangeTransformation<Surface>::makeUniqueLargeEdges(Surface& surface, const typename Surface::Vector& vertical_) {
+  const typename EdgeSet::FlipHandler nopFlip = [](EdgeSet& self, HalfEdge e) {
+    assert(!self.contains(e) && "must not flip source edge");
+  };
+  const typename EdgeSet::CollapseHandler nopCollapse = [](EdgeSet& self, Edge e) {
+    assert(!self.contains(e) && "must not collapse source edge");
+  };
+  EdgeSet sources(&surface, [](Edge) { return false; }, nopFlip, nopCollapse);
+
+  const bool splitContours = true;
+
+  Vertical<Surface> vertical(surface.shared_from_this(), vertical_);
+
+  while(true) {
+    bool stalled = true;
+    for (auto source: surface.halfEdges()) {
+      if (sources.contains(source))
+        continue;
+      if (!vertical.large(source))
+        continue;
+      if (vertical.perpendicular(surface.fromEdge(source)) < 0)
+        continue;
+      auto component = makeUniqueLargeEdge(surface, vertical_, source);
+
+      if (splitContours) {
+        bool trivial, trivialStart, trivialEnd;
+        {
+          // Currently, LengthAlongTriangulation cannot handle a collapse.
+          // Therefore, we need to scope iet, so it is definitely gone when the
+          // collapse below happens.
+          auto fromContour = IntervalExchangeTransformation(surface.shared_from_this(), vertical_, source);
+          auto& iet = fromContour.intervalExchangeTransformation();
+          trivial = iet.top().size() == 1;
+          trivialStart = *iet.top().begin() == *iet.bottom().begin();
+          trivialEnd = *iet.top().rbegin() == *iet.bottom().rbegin();
+        }
+
+        if (!trivial && (trivialStart || trivialEnd)) {
+          // Since the first half edge of the top and bottom contour have the
+          // same length, flipping the source eventually splits the surface.
+          surface.flip(source);
+          stalled = false;
+          break;
+        }
+      }
+
+      sources.insert(source);
+      stalled = false;
+      break;
+    }
+    if (stalled) {
+      return;
+    }
+  }
+}
+
+template <typename Surface>
+const typename IntervalExchangeTransformation<Surface>::IET& IntervalExchangeTransformation<Surface>::intervalExchangeTransformation() const noexcept { return impl->iet; }
+
+template <typename Surface>
+typename IntervalExchangeTransformation<Surface>::IET& IntervalExchangeTransformation<Surface>::intervalExchangeTransformation() noexcept { return impl->iet; }
+
+template <typename Surface>
+std::set<HalfEdge> IntervalExchangeTransformation<Surface>::makeUniqueLargeEdge(Surface& surface, const Vector& vertical_, HalfEdge& unique_) {
+  TrackingHalfEdge unique(&surface, unique_);
+
+  Vertical<Surface> vertical(surface.shared_from_this(), vertical_); 
+
+  ASSERT_ARGUMENT(vertical.large(unique), "edge must already be large");
+  if (vertical.perpendicular(surface.fromEdge(unique)) < 0)
+    unique = -unique;
+
+  // Eliminate other large edges
+  while(true) {
+    std::set<HalfEdge> component;
+    if (Vertical<Surface>::Implementation::visit(vertical, unique, component, [&](HalfEdge e) {
+      if (e == unique || e == -unique)
+        return true;
+
+      if (vertical.large(e)) {
+        if constexpr (std::is_const_v<Surface>) {
+          throw std::logic_error("cannot flip on const surface");
+        } else {
+          surface.flip(e);
+          return false;
+        }
+      }
+
+      return true;
+    })) {
+      assert(component.size() >= 2);
+      unique_ = unique;
+      return component;
+    }
+  }
+}
+
+template <typename Surface>
+Edge IntervalExchangeTransformation<Surface>::edge(const Label& label) const {
+  return impl->lengths->fromLabel(label);
+}
+
+template <typename Surface>
+typename Surface::SaddleConnection IntervalExchangeTransformation<Surface>::connection(const intervalxt::Label& label) const {
+  return impl->lengths->lengths.get(impl->lengths->fromLabel(label));
+}
+
+template <typename Surface>
+Implementation<IntervalExchangeTransformation<Surface>>::Implementation(std::shared_ptr<const Surface> surface, const Vector& vertical, const vector<HalfEdge>& top, const vector<HalfEdge>& bottom) :
+  surface(surface) {
+  const auto uncollapsed = [&]() { 
+    if constexpr (std::is_same_v<Surface, FlatTriangulation<typename Surface::Coordinate>>)
+      return surface;
+    else
+      return surface->uncollapsed();
+  }();
+
+  const auto erasedLengths = std::make_shared<intervalxt::Lengths>(Lengths<Surface>(std::make_shared<Vertical<FlatTriangulation<typename Surface::Coordinate>>>(uncollapsed, vertical), EdgeMap<typename Surface::SaddleConnection>(surface.get(), [&](const Edge& e) {
+    if (std::find(begin(top), end(top), e.positive()) != end(top)) {
+      if constexpr (std::is_same_v<Surface, FlatTriangulation<typename Surface::Coordinate>>)
+        return Surface::SaddleConnection::fromEdge(surface, e.positive());
+      else
+        return surface->fromEdge(e.positive());
+    } else if (std::find(begin(top), end(top), e.negative()) != end(top)) {
+        if constexpr (std::is_same_v<Surface, FlatTriangulation<typename Surface::Coordinate>>)
+          return Surface::SaddleConnection::fromEdge(surface, e.negative());
+        else
+          return surface->fromEdge(e.negative());
+    }
+
+    return typename Surface::SaddleConnection();
+  })));
+
+  iet = intervalxt::IntervalExchangeTransformation(
+    erasedLengths,
+    top | transform([&](Edge e) { return intervalxt::Label(e.index()); }) | to_vector(),
+    bottom | transform([&](Edge e) { return intervalxt::Label(e.index()); }) | to_vector());
+
+  lengths = boost::type_erasure::any_cast<Lengths<Surface>*>(erasedLengths.get());
+
+  ASSERT(lengths != nullptr, "Setting lengths from erasedLengths should produce the original length type again");
+
+  const auto connected = [&](const vector<HalfEdge>& contour) {
+    for (auto it = contour.begin(); it != contour.end() - 1; it++)
+      if (Vertex::target(*it, *surface) != Vertex::source(*(it + 1), *surface)) return false;
+    return true;
+  };
+
+  CHECK_ARGUMENT(std::multiset<HalfEdge>(top.begin(), top.end()) == std::multiset<HalfEdge>(bottom.begin(), bottom.end()), "top and bottom contour must contain the same half edges");
+  CHECK_ARGUMENT(connected(top), "top contour must be connected");
+  CHECK_ARGUMENT(connected(bottom), "bottom contour must be connected");
+  ASSERT(std::all_of(begin(top), end(top), [&](Edge e) { return lengths->get(intervalxt::Label(e.index())) > 0; }), "lengths in contour must be positive");
+}
+
+template <typename Surface>
+void Implementation<IntervalExchangeTransformation<Surface>>::registerDecomposition(const IntervalExchangeTransformation<Surface>& iet, std::shared_ptr<FlowDecompositionState<FlatTriangulation<typename Surface::Coordinate>>> state) {
+  iet.impl->lengths->registerDecomposition(state);
+}
+
+template <typename Surface>
+ostream& operator<<(ostream& os, const IntervalExchangeTransformation<Surface>& self) {
+  return os << self.intervalExchangeTransformation();
+}
+
+}
 
 // Instantiations of templates so implementations are generated for the linker
-#include <e-antic/renfxx.h>
-#include <exact-real/element.hpp>
-#include <exact-real/integer_ring.hpp>
-#include <exact-real/number_field.hpp>
-#include <exact-real/rational_field.hpp>
+#include "util/instantiate.ipp"
 
-using namespace flatsurf;
-
-template class flatsurf::IntervalExchangeTransformation<long long>;
-template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<long long>&);
-template class flatsurf::IntervalExchangeTransformation<mpq_class>;
-template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<mpq_class>&);
-template class flatsurf::IntervalExchangeTransformation<eantic::renf_elem_class>;
-template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<eantic::renf_elem_class>&);
-template class flatsurf::IntervalExchangeTransformation<exactreal::Element<exactreal::IntegerRing>>;
-template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<exactreal::Element<exactreal::IntegerRing>>&);
-template class flatsurf::IntervalExchangeTransformation<exactreal::Element<exactreal::RationalField>>;
-template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<exactreal::Element<exactreal::RationalField>>&);
-template class flatsurf::IntervalExchangeTransformation<exactreal::Element<exactreal::NumberField>>;
-template ostream& flatsurf::operator<<(ostream&, const IntervalExchangeTransformation<exactreal::Element<exactreal::NumberField>>&);
+LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), IntervalExchangeTransformation, LIBFLATSURF_SURFACE_TYPES)

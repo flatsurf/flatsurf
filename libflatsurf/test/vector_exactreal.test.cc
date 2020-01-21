@@ -18,15 +18,15 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "catch.hpp"
+#include "external/catch2/single_include/catch2/catch.hpp"
 
 #include <exact-real/element.hpp>
 #include <exact-real/module.hpp>
 #include <exact-real/number_field.hpp>
 #include <exact-real/real_number.hpp>
 
-#include <flatsurf/bound.hpp>
-#include <flatsurf/vector.hpp>
+#include "../flatsurf/bound.hpp"
+#include "../flatsurf/vector.hpp"
 
 namespace flatsurf::test {
 
@@ -41,9 +41,9 @@ TEMPLATE_TEST_CASE("Vector<exactreal::Element<...>>", "[vector_exact_real]", (ex
 
   auto v = V(3, 4);
 
-  REQUIRE(!(v < Bound(5)));
-  REQUIRE(!(v > Bound(5)));
-  REQUIRE(v < Bound(6));
+  REQUIRE(!(v < Bound(5, 0)));
+  REQUIRE(!(v > Bound(5, 0)));
+  REQUIRE(v < Bound(6, 0));
 }
 
 }  // namespace flatsurf::test

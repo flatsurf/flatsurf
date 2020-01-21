@@ -21,6 +21,11 @@
 #ifndef LIBFLATSURF_TEST_CEREAL_HELPERS_HPP
 #define LIBFLATSURF_TEST_CEREAL_HELPERS_HPP
 
+#include <memory>
+
+#include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/vertex.hpp"
+
 #include "./surfaces.hpp"
 
 namespace flatsurf::test {
@@ -40,9 +45,10 @@ struct factory<Vertex> {
 
 template <typename Surface>
 struct factory<SaddleConnection<Surface>> {
-  static std::unique_ptr<SaddleConnection<Surface>> make() {
+  static std::shared_ptr<SaddleConnection<Surface>> make() {
     auto square = makeSquare<typename Surface::Vector>();
-    return *SaddleConnections<Surface>(square, Bound(8)).begin();
+    const HalfEdge e(1);
+    return std::make_shared<SaddleConnection<Surface>>(SaddleConnection<Surface>::fromEdge(square, e));
   }
 };
 
@@ -69,13 +75,6 @@ struct comparer {
 template <typename T>
 struct comparer<std::shared_ptr<T>> {
   static bool eq(const std::shared_ptr<T>& x, const std::shared_ptr<T>& y) { return *x == *y; }
-};
-
-template <typename Surface>
-struct comparer<SaddleConnection<Surface>> {
-  static bool eq(const SaddleConnection<Surface>& x, const SaddleConnection<Surface>& y) {
-    return x.surface() == y.surface() && x.source() == y.source() && x.target() == y.target() && x.vector() == y.vector();
-  }
 };
 
 }  // namespace flatsurf::test

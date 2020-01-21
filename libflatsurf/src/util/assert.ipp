@@ -20,23 +20,35 @@
 #ifndef LIBFLATSURF_UTIL_ASSERT_IPP
 #define LIBFLATSURF_UTIL_ASSERT_IPP
 
+#include <sstream>
+
 #include <boost/preprocessor/stringize.hpp>
 
-#include "false.ipp"
+namespace flatsurf {
+
+// A throw statement that can be used in noexcept marked blocks without
+// triggering compiler warnings.
+template <typename E>
+void throw_for_assert(const E& e) { throw e; }
+
+}
+
+#define ASSERT_(CONDITION, EXCEPTION, MESSAGE)                                                   \
+  while (not(CONDITION)) {                                                                       \
+    std::stringstream user_message, assertion_message;                                           \
+    user_message << MESSAGE;                                                                     \
+    assertion_message << (#CONDITION " does not hold");                                          \
+    if (user_message.str().size()) assertion_message << ": " << user_message.str();              \
+    else assertion_message << " ";                                                               \
+    assertion_message << " in " __FILE__ ":" BOOST_PP_STRINGIZE(__LINE__);                       \
+    ::flatsurf::throw_for_assert(EXCEPTION(assertion_message.str().c_str()));                                \
+  }
 
 // Run a (cheap) check that a (user provided) argument is valid.
 // If the check should be disabled when NDEBUG is defined, e.g., because it
 // occurs in a hotspot, use ASSERT_ARGUMENT instead.
-#define CHECK_ARGUMENT_(CONDITION)                                                               \
-  while (not(CONDITION)) {                                                                       \
-    throw std::invalid_argument(#CONDITION                                                       \
-                                " does not hold in " __FILE__ ":" BOOST_PP_STRINGIZE(__LINE__)); \
-  }
-#define CHECK_ARGUMENT(CONDITION, MESSAGE)                                                       \
-  while (not(CONDITION)) {                                                                       \
-    throw std::invalid_argument(                                                                 \
-        #CONDITION " does not hold: " MESSAGE " in " __FILE__ ":" BOOST_PP_STRINGIZE(__LINE__)); \
-  }
+#define CHECK_ARGUMENT_(CONDITION) ASSERT_(CONDITION, std::invalid_argument, "")
+#define CHECK_ARGUMENT(CONDITION, MESSAGE) ASSERT_(CONDITION, std::invalid_argument, MESSAGE)
 
 #ifdef NDEBUG
 #define ASSERT_ARGUMENT_(CONDITION) \
@@ -45,14 +57,14 @@
 #define ASSERT_ARGUMENT(CONDITION, MESSAGE) \
   while (false) {                           \
   }
+#define ASSERT(CONDITION, MESSAGE) \
+  while (false) {                  \
+  }
 #else
 #define ASSERT_ARGUMENT_(CONDITION) CHECK_ARGUMENT_(CONDITION)
 #define ASSERT_ARGUMENT(CONDITION, MESSAGE) CHECK_ARGUMENT(CONDITION, MESSAGE)
 #endif
 
-template <typename _ = void>
-inline void assert_unreachable() {
-  static_assert(flatsurf::false_value_v<_>, "This code path can not get instantiated by the compiler…or at least that's what we thought.");
-}
+#define ASSERT(CONDITION, MESSAGE) ASSERT_(CONDITION, std::logic_error, MESSAGE)
 
 #endif

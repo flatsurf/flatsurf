@@ -20,13 +20,13 @@
 #include <exact-real/arb.hpp>
 #include <stack>
 
-#include "flatsurf/bound.hpp"
-#include "flatsurf/flat_triangulation.hpp"
-#include "flatsurf/half_edge.hpp"
-#include "flatsurf/saddle_connection.hpp"
-#include "flatsurf/saddle_connections.hpp"
-#include "flatsurf/vector.hpp"
-#include "flatsurf/vector_along_triangulation.hpp"
+#include "../flatsurf/bound.hpp"
+#include "../flatsurf/flat_triangulation.hpp"
+#include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/saddle_connections.hpp"
+#include "../flatsurf/vector.hpp"
+#include "../flatsurf/chain.hpp"
 
 #include "util/assert.ipp"
 
@@ -66,10 +66,14 @@ class SaddleConnections<Surface>::Implementation {
 
 template <typename Surface>
 class SaddleConnections<Surface>::Iterator::Implementation {
-  using AlongTriangulation = VectorAlongTriangulation<typename Surface::Vector::Coordinate, std::conditional_t<std::is_same_v<typename Surface::Vector::Coordinate, long long>, void, exactreal::Arb>>;
-
  public:
-  Implementation(const std::shared_ptr<const Surface>& surface, const Bound searchRadius, const vector<HalfEdge> searchSectors) : surface(std::move(surface)), searchRadius(searchRadius), sectors(std::move(searchSectors)), sector(0), boundary{AlongTriangulation(this->surface), AlongTriangulation(this->surface)}, nextEdgeEnd(AlongTriangulation(this->surface)) {
+  Implementation(const std::shared_ptr<const Surface>& surface, const Bound searchRadius, const vector<HalfEdge> searchSectors) :
+    surface(std::move(surface)),
+    searchRadius(searchRadius),
+    sectors(std::make_shared<vector<HalfEdge>>(searchSectors)),
+    sector(this->sectors->begin()),
+    nextEdgeEnd(this->surface),
+    connection(SaddleConnection<Surface>::fromEdge(this->surface, surface->halfEdges()[0])) {
     prepareSearch();
   }
 
@@ -78,11 +82,11 @@ class SaddleConnections<Surface>::Iterator::Implementation {
     assert(tmp.size() == 0);
     assert(moves.size() == 0);
 
-    if (sector == sectors.size()) {
+    if (sector == sectors->end()) {
       return;
     }
 
-    const HalfEdge e = sectors[sector];
+    const HalfEdge e = *sector;
 
     if (surface->boundary(e)) {
       sector++;
@@ -90,10 +94,10 @@ class SaddleConnections<Surface>::Iterator::Implementation {
       return;
     }
 
-    boundary[0] = AlongTriangulation(surface, vector<HalfEdge>{e});
+    boundary[0] = surface->fromEdge(e);
     nextEdge = surface->nextInFace(e);
-    boundary[1] = boundary[0] + nextEdge;
-    nextEdgeEnd = boundary[1];
+    boundary[1] = boundary[0] + surface->fromEdge(nextEdge);
+    nextEdgeEnd = (Chain<Surface>(surface) += e) += nextEdge;
     state.push(State::END);
     state.push(State::START);
 
@@ -107,21 +111,22 @@ class SaddleConnections<Surface>::Iterator::Implementation {
 
   std::shared_ptr<const Surface> surface;
   const Bound searchRadius;
-  const vector<HalfEdge> sectors;
+  const std::shared_ptr<const vector<HalfEdge>> sectors;
+
   // The half edge nextEdge, to which we are currently changing, points into
   // sectors. Advanced when we are done searching an entire such sector for all
-  // saddle connections. (An index into sectors.)
-  size_t sector;
+  // saddle connections. (Note: We need to store sectors as a smart pointer so
+  // when this class is copied, this iterator does not only point into the
+  // sectors of the original.)
+  vector<HalfEdge>::const_iterator sector;
 
-  // The rays that enclose the search sector, in counterclockwise order. They
-  // themselves come from saddle connections, starting at the search origin and
-  // pointing to a vertex of the flat triangulation.
-  AlongTriangulation boundary[2];
+  // The rays that enclose the search sector, in counterclockwise order.
+  typename Surface::Vector boundary[2]; 
   // The half-edge that we are about to cross, seen from the search origin,
   // i.e., oriented so that it starts on the side of boundary[0]
   HalfEdge nextEdge;
   // The vector to the target of nextEdge
-  AlongTriangulation nextEdgeEnd;
+  Chain<Surface> nextEdgeEnd;
 
   // The call stack for increment().
   // As of early 2019, C++ lacks stackless coroutines. This code would be much
@@ -142,11 +147,14 @@ class SaddleConnections<Surface>::Iterator::Implementation {
 
   // Storage space for temporary values of boundary, when we descend
   // recursively into a subsector.
-  std::stack<AlongTriangulation> tmp;
+  std::stack<typename Surface::Vector> tmp;
+
+  // The current connection so we can return it in dereference by reference.
+  mutable SaddleConnection<Surface> connection;
 
   bool increment() {
     assert(state.size());
-    assert(sector != sectors.size());
+    assert(sector != sectors->end());
     assert(boundary[0].ccw(boundary[1]) == CCW::COUNTERCLOCKWISE);
 
     const auto s = state.top();
@@ -155,7 +163,7 @@ class SaddleConnections<Surface>::Iterator::Implementation {
       case State::END:
         applyMoves();
         sector++;
-        if (sector != sectors.size()) {
+        if (sector != sectors->end()) {
           prepareSearch();
         }
         return true;
@@ -263,8 +271,7 @@ class SaddleConnections<Surface>::Iterator::Implementation {
   }
 
   void skipSector(CCW sector) {
-    ASSERT_ARGUMENT(sector != CCW::COLLINEAR,
-                    "There is no such thing like a collinear sector.");
+    ASSERT_ARGUMENT(sector != CCW::COLLINEAR, "There is no such thing like a collinear sector.");
     assert(state.size() && "cannot skip a sector in a completed search");
 
     if (state.top() == State::SADDLE_CONNECTION_FOUND) {
@@ -293,14 +300,14 @@ class SaddleConnections<Surface>::Iterator::Implementation {
         state.push(State::START);
       }
     } else if (state.top() == State::START && state.size() == 2) {
-      if (sector == CCW::CLOCKWISE) {
+      if (sector == CCW::COUNTERCLOCKWISE) {
         // We are in the initial state, the reported saddle connection is on
-        // the counterclockwise end of the search vector. If we skip the
-        // clockwise sector, then we skip everything.
+        // the clockwise end of the search sector. If we skip the
+        // counterclockwise sector, then we skip everything.
         state.pop();
         assert(state.top() == State::END);
       } else {
-        // We are skipping the counterclockwise sector anyway.
+        // We are skipping the clockwise sector anyway.
         ;
       }
     } else {
@@ -410,10 +417,10 @@ class SaddleConnections<Surface>::Iterator::Implementation {
   }
 
   friend std::ostream& operator<<(std::ostream& os, const Implementation& self) {
-    if (self.sector == self.sectors.size()) {
+    if (self.sector == self.sectors->end()) {
       return os << "Iterator(END)";
     }
-    return os << "Iterator(sector = " << self.sectors[self.sector] << ", connection = " << self.nextEdgeEnd << ")";
+    return os << "Iterator(sector = " << *self.sector << ", connection = " << self.nextEdgeEnd << ")";
   }
 };
 
@@ -437,7 +444,7 @@ typename SaddleConnections<Surface>::Iterator SaddleConnections<Surface>::begin(
 template <typename Surface>
 typename SaddleConnections<Surface>::Iterator SaddleConnections<Surface>::end() const {
   Iterator ret = impl->begin;
-  ret.impl->sector = ret.impl->sectors.size();
+  ret.impl->sector = ret.impl->sectors->end();
   return ret;
 }
 
@@ -446,10 +453,10 @@ SaddleConnections<Surface>::Iterator::Iterator(spimpl::impl_ptr<Implementation>&
 
 template <typename Surface>
 bool SaddleConnections<Surface>::Iterator::equal(const SaddleConnections<Surface>::Iterator& other) const {
-  if (impl->surface != other.impl->surface || impl->sectors != other.impl->sectors || impl->searchRadius != other.impl->searchRadius || impl->sector != other.impl->sector)
+  if (impl->surface != other.impl->surface || impl->sectors != other.impl->sectors || impl->searchRadius != other.impl->searchRadius || (impl->sector - impl->sectors->begin()) != (other.impl->sector - other.impl->sectors->begin()))
     return false;
 
-  if (impl->sector == impl->sectors.size())
+  if (impl->sector == impl->sectors->end())
     return true;
 
   return impl->boundary[0] == other.impl->boundary[0] && impl->boundary[1] == other.impl->boundary[1] && impl->nextEdgeEnd == other.impl->nextEdgeEnd && impl->nextEdge == other.impl->nextEdge;
@@ -468,10 +475,10 @@ void SaddleConnections<Surface>::Iterator::skipSector(CCW ccw) {
 
 template <typename Surface>
 std::optional<HalfEdge> SaddleConnections<Surface>::Iterator::incrementWithCrossings() {
-  assert(impl->sector != impl->sectors.size() && "cannot increment beyond the end");
+  ASSERT(impl->sector != impl->sectors->end(), "iterator is at end()");
 
   while (true) {
-    if (impl->sector == impl->sectors.size()) {
+    if (impl->sector == impl->sectors->end()) {
       return {};
     } else if (impl->state.top() == State::START) {
       impl->applyMoves();
@@ -487,11 +494,20 @@ std::optional<HalfEdge> SaddleConnections<Surface>::Iterator::incrementWithCross
 }
 
 template <typename Surface>
-std::unique_ptr<SaddleConnection<Surface>> SaddleConnections<Surface>::Iterator::dereference() const {
-  if (impl->sector == impl->sectors.size()) {
-    throw std::out_of_range("iterator is at end()");
+const SaddleConnection<Surface>& SaddleConnections<Surface>::Iterator::dereference() const {
+  ASSERT(impl->sector != impl->sectors->end(), "iterator is at end()");
+
+  switch(impl->state.top()) {
+    case State::START:
+      impl->connection = SaddleConnection<Surface>::fromEdge(impl->surface, *impl->sector);
+      break;
+    case State::SADDLE_CONNECTION_FOUND:
+      impl->connection = SaddleConnection<Surface>(impl->surface, *impl->sector, -impl->nextEdge, impl->nextEdgeEnd);
+      break;
+    default:
+      ASSERT(false, "iterator cannot hold in this state");
   }
-  return std::unique_ptr<SaddleConnection<Surface>>(new SaddleConnection<Surface>(impl->surface, impl->sectors[impl->sector], impl->nextEdge, static_cast<typename Surface::Vector>(impl->nextEdgeEnd)));
+  return impl->connection;
 }
 
 template <typename Surface>
@@ -517,6 +533,8 @@ std::ostream& operator<<(std::ostream& os, const typename SaddleConnections<Flat
 std::ostream& operator<<(std::ostream& os, const typename SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::RationalField>>>::Iterator& self) { return os << *self.impl; }
 std::ostream& operator<<(std::ostream& os, const typename SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::NumberField>>>::Iterator& self) { return os << *self.impl; }
 
+template class SaddleConnections<FlatTriangulation<mpz_class>>;
+template std::ostream& operator<<(std::ostream&, const SaddleConnections<FlatTriangulation<mpz_class>>&);
 template class SaddleConnections<FlatTriangulation<mpq_class>>;
 template std::ostream& operator<<(std::ostream&, const SaddleConnections<FlatTriangulation<mpq_class>>&);
 template class SaddleConnections<FlatTriangulation<long long>>;

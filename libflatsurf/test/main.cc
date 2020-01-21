@@ -21,4 +21,4 @@
 // Shared entry point of all test binaries
 
 #define CATCH_CONFIG_MAIN
-#include "catch.hpp"
+#include "external/catch2/single_include/catch2/catch.hpp"

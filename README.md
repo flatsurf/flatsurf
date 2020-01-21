@@ -79,7 +79,7 @@ Additionally, you might want to run with configure with ` --disable-static`
 which improves the build time.
 
 [perf](https://perf.wiki.kernel.org/index.php/Main_Page) works well to profile
-when you make sure that `CXXFLAGS` contains `-fno-omit-framepointer`. You can
+when you make sure that `CXXFLAGS` contains `-fno-omit-frame-pointer`. You can
 then for example run our test suite with `perf record --call-graph dwarf make
 check` Apart from perf itself there are several ways to analyze the output,
 [hotspot](https://github.com/KDAB/hotspot) might be the most convenient one at

@@ -18,18 +18,18 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "catch.hpp"
+#include "external/catch2/single_include/catch2/catch.hpp"
 
 #include <exact-real/element.hpp>
 #include <exact-real/number_field.hpp>
 
-#include <flatsurf/bound.hpp>
-#include <flatsurf/flat_triangulation.hpp>
-#include <flatsurf/half_edge.hpp>
-#include <flatsurf/saddle_connection.hpp>
-#include <flatsurf/saddle_connections.hpp>
-#include <flatsurf/vector.hpp>
-#include <flatsurf/vector_along_triangulation.hpp>
+#include "../flatsurf/bound.hpp"
+#include "../flatsurf/flat_triangulation.hpp"
+#include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/saddle_connections.hpp"
+#include "../flatsurf/vector.hpp"
+#include "../flatsurf/vector_along_triangulation.hpp"
 
 #include "surfaces.hpp"
 
@@ -48,7 +48,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Torus", "[saddle_connections]", (lon
           if (x * x + y * y < bound * bound && std::gcd(x, y) == 1)
             expected++;
 
-      auto connections = SaddleConnections(square, bound);
+      auto connections = SaddleConnections(square, Bound(bound, 0));
       auto count = std::distance(connections.begin(), connections.end());
 
       REQUIRE(count == expected * 8);
@@ -57,7 +57,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Torus", "[saddle_connections]", (lon
         auto [edge, required] = GENERATE_REF(table<HalfEdge, int>({{HalfEdge(1), expected}, {HalfEdge(2), 2 * expected}, {HalfEdge(3), expected}, {HalfEdge(-1), expected}, {HalfEdge(-2), 2 * expected}, {HalfEdge(-3), expected}}));
 
         CAPTURE(edge);
-        connections = SaddleConnections(square, bound, edge);
+        connections = SaddleConnections(square, Bound(bound, 0), edge);
         count = std::distance(connections.begin(), connections.end());
         REQUIRE(count == required);
       }
@@ -72,7 +72,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Square With Boundary", "[saddle_conn
   GIVEN("The Square With Boundaries " << *square) {
     auto bound = GENERATE(2, 16);
     THEN("Saddle Connections Within a Bound of " << bound << " Are Essentially Trivial") {
-      auto connections = SaddleConnections(square, bound);
+      auto connections = SaddleConnections(square, Bound(bound, 0));
       auto count = std::distance(connections.begin(), connections.end());
 
       REQUIRE(count == bound * 4);
@@ -80,7 +80,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Square With Boundary", "[saddle_conn
       auto [edge, required] = GENERATE_REF(table<HalfEdge, int>({{HalfEdge(2), 0}, {HalfEdge(-4), 0}, {HalfEdge(1), 1}, {HalfEdge(-1), 1}, {HalfEdge(3), bound - 1}, {HalfEdge(-3), bound - 1}, {HalfEdge(-2), bound}, {HalfEdge(4), bound}}));
 
       CAPTURE(edge);
-      connections = SaddleConnections(square, bound, edge);
+      connections = SaddleConnections(square, Bound(bound, 0), edge);
       count = std::distance(connections.begin(), connections.end());
       REQUIRE(count == required);
     }
@@ -92,7 +92,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Hexagon", "[saddle_connections]", (r
   auto hexagon = makeHexagon<R2>();
 
   GIVEN("The Hexagon " << *hexagon) {
-    auto bound = Bound(16);
+    auto bound = Bound(16, 0);
     auto [edge, required] = GENERATE(table<HalfEdge, int>({{HalfEdge(1), 10}, {HalfEdge(2), 36}, {HalfEdge(3), 26}, {HalfEdge(4), 18}, {HalfEdge(5), 8}, {HalfEdge(6), 10}}));
 
     CAPTURE(edge);

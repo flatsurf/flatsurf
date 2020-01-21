@@ -22,8 +22,10 @@
 
 #include <iosfwd>
 
-#include "flatsurf/detail/vector_base.hpp"
-#include "flatsurf/vector.hpp"
+#include "../../../flatsurf/detail/vector_base.hpp"
+#include "../../../flatsurf/vector.hpp"
+
+#include <exact-real/arb.hpp>
 
 #include "../../util/false.ipp"
 #include "../storage/cartesian.ipp"
@@ -36,26 +38,6 @@
 using namespace flatsurf::detail;
 
 namespace flatsurf {
-namespace detail {
-template <typename Vector>
-std::ostream& operator<<(std::ostream& os, const VectorBase<Vector>& self) {
-  using Implementation = typename Vector::Implementation;
-  const Vector& s = static_cast<const Vector&>(self);
-
-  if constexpr (has_ostream_lshift<Implementation>) {
-    return os << s.impl;
-  } else if constexpr (is_forward_v<Implementation>) {
-    return os << s.impl->vector;
-  } else if constexpr (has_approximation_v<Implementation>) {
-    return os << s.impl->approximation();
-  } else if constexpr (is_cartesian_v<Implementation>) {
-    return os << "(" << s.impl->x << ", " << s.impl->y << ")";
-  } else {
-    static_assert(false_type_v<Implementation>, "Implementation is missing operator<<.");
-  }
-}
-}  // namespace detail
-
 template <typename Vector>
 Vector& VectorBase<Vector>::operator+=(const Vector& rhs) {
   using Implementation = typename Vector::Implementation;

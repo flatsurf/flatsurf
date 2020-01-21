@@ -18,18 +18,18 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "catch.hpp"
+#include "external/catch2/single_include/catch2/catch.hpp"
 
 #include <e-antic/renfxx_fwd.h>
 #include <exact-real/element.hpp>
 #include <exact-real/number_field.hpp>
 
-#include <flatsurf/flat_triangulation.hpp>
-#include <flatsurf/half_edge.hpp>
-#include <flatsurf/saddle_connection.hpp>
-#include <flatsurf/saddle_connections.hpp>
-#include <flatsurf/vector.hpp>
-#include <flatsurf/vector_along_triangulation.hpp>
+#include "../flatsurf/flat_triangulation.hpp"
+#include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/saddle_connections.hpp"
+#include "../flatsurf/vector.hpp"
+#include "../flatsurf/vector_along_triangulation.hpp"
 
 #include "surfaces.hpp"
 

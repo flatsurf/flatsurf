@@ -17,21 +17,39 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "flatsurf/edge.hpp"
+#include <ostream>
+
+#include "../flatsurf/edge.hpp"
+#include "../flatsurf/half_edge.hpp"
 
 namespace flatsurf {
-Edge::Edge(size_t id) : id(id) {}
 
-std::pair<HalfEdge, HalfEdge> Edge::halfEdges() const {
-  const int halfEdgeId = static_cast<int>(id) + 1;
-  return std::make_pair(HalfEdge(halfEdgeId), HalfEdge(-halfEdgeId));
+Edge::Edge() : Edge(HalfEdge()) {}
+
+Edge::Edge(int id) : Edge(HalfEdge(id)) {}
+
+Edge::Edge(HalfEdge e) : id(e.id >= (-e).id ? e : -e) {}
+
+HalfEdge Edge::positive() const { return id; }
+
+HalfEdge Edge::negative() const { return -id; }
+
+size_t Edge::index() const {
+  assert(id.id != 0 && "Edge 0 is not a valid edge");
+  assert(id.id > 0 && "Edge should have been automatically set to its positive HalfEdge representative");
+  return static_cast<size_t>(id.id) - 1;
 }
 
-std::vector<Edge> Edge::makeEdges(size_t nedges) {
-  std::vector<Edge> ret;
-  while (ret.size() < nedges) {
-    ret.push_back(Edge(ret.size()));
-  }
-  return ret;
+bool Edge::operator==(const Edge& rhs) const {
+  return id == rhs.id;
 }
+
+bool Edge::operator<(const Edge& rhs) const {
+  return index() < rhs.index();
+}
+
+std::ostream& operator<<(std::ostream& os, const Edge& e) {
+  return os << e.id;
+}
+
 }  // namespace flatsurf
