@@ -37,11 +37,14 @@ Chain<Surface>::Chain(std::shared_ptr<const Surface> surface) :
 
 template <typename Surface>
 Chain<Surface>::operator typename Surface::Vector() const {
-  typename Surface::Vector vector;
-  impl->coefficients.apply([&](const Edge& edge, const mpz_class& c) {
-    vector += c * impl->surface->fromEdge(edge.positive());
-  });
-  return vector;
+  if (!impl->vector) {
+    impl->vector.emplace();
+    impl->coefficients.apply([&](const Edge& edge, const mpz_class& c) {
+      *impl->vector += c * impl->surface->fromEdge(edge.positive());
+    });
+  }
+
+  return *impl->vector;
 }
 
 template <typename Surface>
@@ -51,9 +54,14 @@ const Surface& Chain<Surface>::surface() const {
 
 template <typename Surface>
 Chain<Surface>& Chain<Surface>::operator+=(const Chain<Surface>& rhs) {
+  if (impl->vector) {
+    *impl->vector += static_cast<typename Surface::Vector>(rhs);
+  }
+
   rhs.impl->coefficients.apply([&](const auto& edge, const auto& c) {
     impl->coefficients.get(edge) += c;
   });
+
   return *this;
 }
 
@@ -64,19 +72,29 @@ Chain<Surface>& Chain<Surface>::operator-=(const Chain<Surface>& rhs) {
 
 template <typename Surface>
 Chain<Surface>& Chain<Surface>::operator+=(HalfEdge rhs) {
-  Edge edge(rhs);
+  if (impl->vector) {
+    *impl->vector += impl->surface->fromEdge(rhs);
+  }
+
+  const Edge edge(rhs);
   if (rhs == edge.positive())
     impl->coefficients.get(edge)++;
   else
     impl->coefficients.get(edge)--;
+
   return *this;
 }
 
 template <typename Surface>
 Chain<Surface>& Chain<Surface>::operator*=(const mpz_class& rhs) {
+  if (impl->vector) {
+    *impl->vector *= rhs;
+  }
+
   impl->coefficients.apply([&](const Edge& edge, const mpz_class& c) {
     impl->coefficients.set(edge, c * rhs);
   });
+
   return *this;
 }
 
@@ -108,18 +126,26 @@ bool Chain<Surface>::operator>(const Bound rhs) const {
 template <typename Surface>
 Chain<Surface> Chain<Surface>::operator-() const {
   Chain<Surface> neg(impl->surface);
+
+  if (impl->vector) {
+    neg.impl->vector = -*impl->vector;
+  }
+
   impl->coefficients.apply([&](const Edge& edge, const mpz_class& c) {
     neg.impl->coefficients.set(edge, -c);
   });
+
   return neg;
 }
 
 template <typename Surface>
 Chain<Surface>::operator bool() const {
   bool zero = true;
+
   impl->coefficients.apply([&](const Edge&, const mpz_class& c) {
     if (c) zero = false;
   });
+
   return !zero;
 }
 

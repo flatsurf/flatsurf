@@ -21,6 +21,8 @@
 #define LIBFLATSURF_CHAIN_IMPL_HPP
 
 #include <memory>
+#include <optional>
+
 #include <gmpxx.h>
 
 #include "../../flatsurf/chain.hpp"
@@ -37,6 +39,7 @@ class Implementation<Chain<Surface>> {
 
   std::shared_ptr<const Surface> surface;
   EdgeMap<mpz_class> coefficients;
+  mutable std::optional<typename Surface::Vector> vector;
 };
 
 }
