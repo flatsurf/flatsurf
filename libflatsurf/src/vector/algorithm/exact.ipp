@@ -22,7 +22,7 @@
 
 #include <optional>
 
-#include "../../external/gmpxxll/mpz_class.hpp"
+#include "../../external/gmpxxll/gmpxxll/mpz_class.hpp"
 
 #include "../../../flatsurf/bound.hpp"
 

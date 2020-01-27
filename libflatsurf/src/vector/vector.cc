@@ -30,7 +30,7 @@
 #include "../util/assert.ipp"
 #include "../util/hash.ipp"
 
-#include "../external/gmpxxll/mpz_class.hpp"
+#include "../external/gmpxxll/gmpxxll/mpz_class.hpp"
 
 #include "algorithm/exact.ipp"
 #include "algorithm/with_error.ipp"
@@ -103,8 +103,8 @@ class Implementation<Vector<T>> : public Cartesian<T> {
     using gmpxxll::mpz_class;
     ASSERT(rhs * mpz_class(this->x) <= mpz_class(LONG_LONG_MAX), "Multiplication overflow");
     ASSERT(rhs * mpz_class(this->y) <= mpz_class(LONG_LONG_MAX), "Multiplication overflow");
-    this->x *= static_cast<long long>(mpz_class(rhs));
-    this->y *= static_cast<long long>(mpz_class(rhs));
+    this->x *= mpz_class(rhs).get_sll();
+    this->y *= mpz_class(rhs).get_sll();
     return *this;
   }
 

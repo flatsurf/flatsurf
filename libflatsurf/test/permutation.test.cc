@@ -38,5 +38,5 @@ TEST_CASE("Permutation", "[permutation]") {
       REQUIRE(p == Permutation<HalfEdge>(p.cycles()));
     }
   }
-}  // namespace flatsurf
+}
 }  // namespace flatsurf::test
