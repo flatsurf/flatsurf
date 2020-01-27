@@ -1,8 +1,8 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Vincent Delecroix
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Vincent Delecroix
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,13 +22,13 @@
 #include <memory>
 
 #include <exact-real/integer_ring.hpp>
-#include <flatsurf/bound.hpp>
-#include <flatsurf/flat_triangulation.hpp>
-#include <flatsurf/half_edge.hpp>
-#include <flatsurf/saddle_connection.hpp>
-#include <flatsurf/saddle_connections.hpp>
-#include <flatsurf/vector.hpp>
-#include <flatsurf/vector_along_triangulation.hpp>
+#include "../flatsurf/bound.hpp"
+#include "../flatsurf/flat_triangulation.hpp"
+#include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/saddle_connections.hpp"
+#include "../flatsurf/vector.hpp"
+#include "../flatsurf/vector_along_triangulation.hpp"
 
 #include "surfaces.hpp"
 
@@ -44,7 +44,7 @@ const int LIMIT = 1 << 8;
 template <class R2>
 void SaddleConnectionsSquare(State& state) {
   auto square = makeSquare<R2>();
-  auto bound = Bound(state.range(0));
+  auto bound = Bound(state.range(0), 0);
   for (auto _ : state) {
     auto connections = SaddleConnections(square, bound);
     DoNotOptimize(std::distance(connections.begin(), connections.end()));
@@ -58,7 +58,7 @@ BENCHMARK_TEMPLATE(SaddleConnectionsSquare, Vector<exactreal::Element<exactreal:
 template <class R2>
 void SaddleConnectionsL(State& state) {
   auto L = makeL<R2>();
-  auto bound = Bound(state.range(0));
+  auto bound = Bound(state.range(0), 0);
 
   HalfEdge e(1);
 
@@ -75,7 +75,7 @@ BENCHMARK_TEMPLATE(SaddleConnectionsL, Vector<exactreal::Element<exactreal::Inte
 template <class R2>
 void SaddleConnectionsLWithSlot(State& state) {
   auto L = makeL<R2>();
-  auto bound = Bound(state.range(0));
+  auto bound = Bound(state.range(0), 0);
   R2 vector({mpq_class(1009, 1361), 3});
 
   HalfEdge e(2);
