@@ -21,6 +21,8 @@
 #ifndef LIBFLATSURF_CEREAL_HPP
 #define LIBFLATSURF_CEREAL_HPP
 
+#include <boost/lexical_cast.hpp>
+
 #include <cereal/types/map.hpp>
 #include <cereal/types/memory.hpp>
 #include <cereal/types/utility.hpp>
@@ -28,6 +30,7 @@
 
 #include "flat_triangulation_combinatorial.hpp"
 #include "half_edge.hpp"
+#include "edge.hpp"
 #include "permutation.hpp"
 #include "vertex.hpp"
 #include "bound.hpp"
@@ -154,12 +157,22 @@ template <typename Surface>
 struct Serialization<Chain<Surface>> {
   template <typename Archive>
   void save(Archive& archive, const Chain<Surface>& self) {
-    throw std::logic_error("not implemented: serialization of Chain");
+    std::vector<std::string> coefficients;
+    for (auto edge : self.surface().edges())
+      coefficients.push_back(boost::lexical_cast<std::string>(self[edge]));
+    archive(cereal::make_nvp("surface", self.surface().shared_from_this()));
+    archive(cereal::make_nvp("coefficients", coefficients));
   }
   
   template <typename Archive>
   void load(Archive& archive, Chain<Surface>& self) {
-    throw std::logic_error("not implemented: serialization of Chain");
+    std::shared_ptr<const Surface> surface;
+    archive(cereal::make_nvp("surface", surface));
+    self = Chain(surface);
+    std::vector<std::string> coefficients;
+    archive(cereal::make_nvp("coefficients", coefficients));
+    for (size_t i = 0; i < coefficients.size(); i++)
+      self += ((Chain(surface) += surface->edges()[i].positive()) *= mpz_class(coefficients[i]));
   }
 };
 

@@ -1,18 +1,19 @@
-check_PROGRAMS = vector_longlong contour_decomposition delaunay saddle_connections vector_exactreal cereal permutation flat_triangulation_combinatorial flat_triangulation flow_decomposition flat_triangulation_collapsed
+check_PROGRAMS = chain vector_longlong contour_decomposition delaunay saddle_connections vector_exactreal cereal permutation flat_triangulation_combinatorial flat_triangulation flow_decomposition flat_triangulation_collapsed
 
 TESTS = $(check_PROGRAMS)
 
+cereal_SOURCES = cereal.test.cc cereal.helpers.hpp main.cc surfaces.hpp
+chain_SOURCES = chain.test.cc main.cc
+contour_decomposition_SOURCES = contour_decomposition.test.cc main.cc surfaces.hpp
+delaunay_SOURCES = delaunay.test.cc main.cc
+flat_triangulation_SOURCES = flat_triangulation.test.cc main.cc surfaces.hpp
+flat_triangulation_collapsed_SOURCES = flat_triangulation_collapsed.test.cc main.cc surfaces.hpp
+flat_triangulation_combinatorial_SOURCES = flat_triangulation_combinatorial.test.cc main.cc surfaces.hpp
+flow_decomposition_SOURCES = flow_decomposition.test.cc main.cc surfaces.hpp
+permutation_SOURCES = permutation.test.cc main.cc
 saddle_connections_SOURCES = saddle_connections.test.cc main.cc surfaces.hpp
 vector_exactreal_SOURCES = vector_exactreal.test.cc main.cc
-delaunay_SOURCES = delaunay.test.cc main.cc
-contour_decomposition_SOURCES = contour_decomposition.test.cc main.cc surfaces.hpp
 vector_longlong_SOURCES = vector_longlong.test.cc main.cc
-cereal_SOURCES = cereal.test.cc cereal.helpers.hpp main.cc surfaces.hpp
-permutation_SOURCES = permutation.test.cc main.cc
-flat_triangulation_combinatorial_SOURCES = flat_triangulation_combinatorial.test.cc main.cc surfaces.hpp
-flat_triangulation_SOURCES = flat_triangulation.test.cc main.cc surfaces.hpp
-flow_decomposition_SOURCES = flow_decomposition.test.cc main.cc surfaces.hpp
-flat_triangulation_collapsed_SOURCES = flat_triangulation_collapsed.test.cc main.cc surfaces.hpp
 
 # We vendor the header-only library Cereal (serialization with C++ to be able
 # to run the tests even when cereal is not installed.

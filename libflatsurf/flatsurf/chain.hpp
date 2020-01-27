@@ -24,6 +24,7 @@
 #include <memory>
 
 #include <boost/operators.hpp>
+#include <gmpxx.h>
 
 #include "serializable.hpp"
 #include "copyable.hpp"
@@ -35,8 +36,9 @@ class Chain :
   public Serializable<Chain<Surface>>,
   boost::equality_comparable<Chain<Surface>>,
   boost::less_than_comparable<Chain<Surface>, Bound>,
-  boost::addable<Chain<Surface>, HalfEdge>,
-  boost::addable<Chain<Surface>> {
+  boost::additive<Chain<Surface>, HalfEdge>,
+  boost::additive<Chain<Surface>>,
+  boost::multipliable<Chain<Surface>, mpz_class> {
 
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
   
@@ -46,10 +48,16 @@ public:
 
   operator typename Surface::Vector() const;
 
+  const Surface& surface() const;
+
   Chain<Surface>& operator+=(const Chain&);
   Chain<Surface>& operator-=(const Chain&);
   Chain<Surface>& operator+=(HalfEdge);
   Chain<Surface>& operator-=(HalfEdge);
+
+  Chain<Surface>& operator*=(const mpz_class&);
+
+  mpz_class operator[](const Edge&) const;
 
   bool operator==(const Chain& rhs) const;
 

@@ -45,6 +45,11 @@ Chain<Surface>::operator typename Surface::Vector() const {
 }
 
 template <typename Surface>
+const Surface& Chain<Surface>::surface() const {
+  return *impl->surface;
+}
+
+template <typename Surface>
 Chain<Surface>& Chain<Surface>::operator+=(const Chain<Surface>& rhs) {
   rhs.impl->coefficients.apply([&](const auto& edge, const auto& c) {
     impl->coefficients.get(edge) += c;
@@ -65,6 +70,19 @@ Chain<Surface>& Chain<Surface>::operator+=(HalfEdge rhs) {
   else
     impl->coefficients.get(edge)--;
   return *this;
+}
+
+template <typename Surface>
+Chain<Surface>& Chain<Surface>::operator*=(const mpz_class& rhs) {
+  impl->coefficients.apply([&](const Edge& edge, const mpz_class& c) {
+    impl->coefficients.set(edge, c * rhs);
+  });
+  return *this;
+}
+
+template <typename Surface>
+mpz_class Chain<Surface>::operator[](const Edge& edge) const {
+  return impl->coefficients.get(edge);
 }
 
 template <typename Surface>
