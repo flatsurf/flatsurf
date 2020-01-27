@@ -125,17 +125,19 @@ std::vector<K> TrackingStorage<SELF, K, V>::keys() const {
   // parent is still around (and it is almost always.)
   if constexpr (std::is_same_v<K, HalfEdge>) {
     for (size_t i = 0; i < data.size(); i++) {
-      keys.push_back(HalfEdge(i % 2 ? -(i/2 + 1) : (i/2 + 1)));
+      const int edge = static_cast<int>(i)/2 + 1;
+      keys.push_back(HalfEdge(i % 2 ? -edge : edge));
       ASSERT(rbegin(keys)->index() == i, "HalfEdge indexing out of sync with TrackingStorage");
     }
   } else if constexpr (std::is_same_v<K, Edge>) {
     for (size_t i = 0; i < data.size(); i++) {
-      keys.push_back(Edge(i + 1));
+      const int edge = static_cast<int>(i) + 1;
+      keys.push_back(Edge(edge));
       ASSERT(rbegin(keys)->index() == i, "Edge indexing out of sync with TrackingStorage");
     }
   } else if constexpr (std::is_same_v<K, Vertex>) {
-    for (auto [key, value] : data)
-      keys.push_back(key);
+    for (auto keyValue : data)
+      keys.push_back(keyValue.first);
   } else {
     throw std::logic_error("not implemented: keys()");
   }
