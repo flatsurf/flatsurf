@@ -38,7 +38,6 @@
 #include "saddle_connection.hpp"
 #include "saddle_connections.hpp"
 #include "vector.hpp"
-#include "vector_along_triangulation.hpp"
 #include "chain.hpp"
 
 namespace flatsurf {

@@ -239,6 +239,10 @@ void FlatTriangulationCombinatorial::flip(HalfEdge e) {
   impl->check();
 }
 
+size_t FlatTriangulationCombinatorial::size() const noexcept {
+  return impl->edges.size();
+}
+
 std::pair<HalfEdge, HalfEdge> FlatTriangulationCombinatorial::collapse(HalfEdge collapse) {
   if (this->boundary(collapse) || this->boundary(-collapse))
     throw std::logic_error("not implemented: cannot collapse boundary edge yet");

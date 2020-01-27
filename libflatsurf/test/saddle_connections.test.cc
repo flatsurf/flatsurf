@@ -29,7 +29,6 @@
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
-#include "../flatsurf/vector_along_triangulation.hpp"
 
 #include "surfaces.hpp"
 

@@ -20,7 +20,6 @@ libflatsurf_la_SOURCES =                                            \
 	flow_connection.cc                                          \
 	vertex.cc                                                   \
 	vector/vector.cc                                            \
-	vector/vector_along_triangulation.cc                        \
 	flow_decomposition.cc                                       \
 	vertical.cc                                                 \
 	flat_triangulation_collapsed.cc                             \
@@ -61,7 +60,6 @@ nobase_include_HEADERS =                                            \
 	../flatsurf/saddle_connections.hpp                          \
 	../flatsurf/saddle_connection.hpp                           \
 	../flatsurf/vector.hpp                                      \
-	../flatsurf/vector_along_triangulation.hpp                  \
 	../flatsurf/cereal.hpp                                      \
 	../flatsurf/vertex.hpp                                      \
 	../flatsurf/vertical.hpp                                    \

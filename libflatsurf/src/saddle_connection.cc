@@ -28,7 +28,6 @@
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertical.hpp"
 #include "../flatsurf/half_edge_map.hpp"
-#include "../flatsurf/vector_along_triangulation.hpp"
 
 #include "impl/saddle_connection.impl.hpp"
 

@@ -113,7 +113,7 @@ class Implementation<Vector<T>> : public Cartesian<T> {
     const Arb a = (this->x * rhs.impl->y)(ARB_PRECISION_FAST);
     const Arb b = (rhs.impl->x * this->y)(ARB_PRECISION_FAST);
 
-    bool overlaps = arb_overlaps(a.arb_t(), b.arb_t());
+    const bool overlaps = arb_overlaps(a.arb_t(), b.arb_t());
     if (overlaps) {
       if (arb_is_exact(a.arb_t()) && arb_is_exact(b.arb_t())) {
         if (a.equal(b)) {

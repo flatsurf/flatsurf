@@ -94,9 +94,9 @@ class SaddleConnections<Surface>::Iterator::Implementation {
       return;
     }
 
-    boundary[0] = surface->fromEdge(e);
+    boundary[0] = (Chain(surface) + e);
     nextEdge = surface->nextInFace(e);
-    boundary[1] = boundary[0] + surface->fromEdge(nextEdge);
+    boundary[1] = boundary[0] + nextEdge;
     nextEdgeEnd = (Chain<Surface>(surface) += e) += nextEdge;
     state.push(State::END);
     state.push(State::START);
@@ -107,6 +107,12 @@ class SaddleConnections<Surface>::Iterator::Implementation {
       while (!increment())
         ;
     }
+  }
+
+  static CCW ccw(const Chain<Surface>& lhs, const Chain<Surface>& rhs) {
+    auto ccw = static_cast<const Vector<exactreal::Arb>&>(lhs).ccw(static_cast<const Vector<exactreal::Arb>&>(rhs));
+    if (ccw) return *ccw;
+    return static_cast<const typename Surface::Vector&>(lhs).ccw(static_cast<const typename Surface::Vector&>(rhs));
   }
 
   std::shared_ptr<const Surface> surface;
@@ -121,7 +127,7 @@ class SaddleConnections<Surface>::Iterator::Implementation {
   vector<HalfEdge>::const_iterator sector;
 
   // The rays that enclose the search sector, in counterclockwise order.
-  typename Surface::Vector boundary[2]; 
+  Chain<Surface> boundary[2];
   // The half-edge that we are about to cross, seen from the search origin,
   // i.e., oriented so that it starts on the side of boundary[0]
   HalfEdge nextEdge;
@@ -147,7 +153,7 @@ class SaddleConnections<Surface>::Iterator::Implementation {
 
   // Storage space for temporary values of boundary, when we descend
   // recursively into a subsector.
-  std::stack<typename Surface::Vector> tmp;
+  std::stack<Chain<Surface>> tmp;
 
   // The current connection so we can return it in dereference by reference.
   mutable SaddleConnection<Surface> connection;
@@ -155,7 +161,7 @@ class SaddleConnections<Surface>::Iterator::Implementation {
   bool increment() {
     assert(state.size());
     assert(sector != sectors->end());
-    assert(boundary[0].ccw(boundary[1]) == CCW::COUNTERCLOCKWISE);
+    assert(ccw(boundary[0], boundary[1]) == CCW::COUNTERCLOCKWISE);
 
     const auto s = state.top();
     state.pop();
@@ -400,12 +406,12 @@ class SaddleConnections<Surface>::Iterator::Implementation {
   }
 
   Classification classifyHalfEdgeEnd() const {
-    switch (boundary[0].ccw(nextEdgeEnd)) {
+    switch (ccw(boundary[0], nextEdgeEnd)) {
       case CCW::CLOCKWISE:
       case CCW::COLLINEAR:
         return Classification::OUTSIDE_SEARCH_SECTOR_CLOCKWISE;
       case CCW::COUNTERCLOCKWISE:
-        switch (boundary[1].ccw(nextEdgeEnd)) {
+        switch (ccw(boundary[1], nextEdgeEnd)) {
           case CCW::CLOCKWISE:
             return Classification::SADDLE_CONNECTION;
           case CCW::COUNTERCLOCKWISE:

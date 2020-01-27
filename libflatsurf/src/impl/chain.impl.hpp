@@ -23,10 +23,12 @@
 #include <memory>
 #include <optional>
 
+#include <exact-real/arb.hpp>
 #include <gmpxx.h>
 
 #include "../../flatsurf/chain.hpp"
 #include "../../flatsurf/edge_map.hpp"
+#include "../../flatsurf/vector.hpp"
 
 namespace flatsurf {
 
@@ -34,12 +36,22 @@ template <typename Surface>
 class Implementation<Chain<Surface>> {
   static void updateAfterFlip(EdgeMap<mpz_class>&, HalfEdge);
 
+  using Move = std::variant<Chain<Surface>, HalfEdge>;
+
  public:
   Implementation(std::shared_ptr<const Surface> surface);
 
+  void recordMove(const Move&) const;
+
   std::shared_ptr<const Surface> surface;
+
   EdgeMap<mpz_class> coefficients;
+
   mutable std::optional<typename Surface::Vector> vector;
+  mutable std::vector<Move> pendingVectorMoves;
+
+  mutable std::optional<Vector<exactreal::Arb>> approximateVector;
+  mutable std::vector<Move> pendingApproximateVectorMoves;
 };
 
 }

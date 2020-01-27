@@ -24,6 +24,7 @@
 #include <memory>
 
 #include <boost/operators.hpp>
+#include <exact-real/arb.hpp>
 #include <gmpxx.h>
 
 #include "serializable.hpp"
@@ -46,7 +47,8 @@ public:
   Chain();
   explicit Chain(std::shared_ptr<const Surface>);
 
-  operator typename Surface::Vector() const;
+  operator const typename Surface::Vector&() const;
+  operator const Vector<exactreal::Arb>&() const;
 
   const Surface& surface() const;
 

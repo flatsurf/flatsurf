@@ -20,6 +20,7 @@
 
 #include "external/catch2/single_include/catch2/catch.hpp"
 
+#include <e-antic/renfxx.h>
 #include <exact-real/element.hpp>
 #include <exact-real/module.hpp>
 #include <exact-real/number_field.hpp>
