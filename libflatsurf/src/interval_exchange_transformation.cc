@@ -17,9 +17,6 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-// TODO
-#include <iostream>
-
 #include <vector>
 #include <ostream>
 #include <memory>
@@ -53,7 +50,6 @@ namespace flatsurf {
 template <typename Surface>
 IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(std::shared_ptr<const Surface> surface, const Vector& vertical, const vector<HalfEdge>& top, const vector<HalfEdge>& bottom) :
   impl(spimpl::make_unique_impl<Implementation>(surface, vertical, top, bottom)) {
-  std::cout << "Built IET " << *this << std::endl;
 }
 
 template <typename Surface>
@@ -73,7 +69,6 @@ IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(std::sha
 
     return spimpl::make_unique_impl<Implementation>(surface, vertical, top, bottom);
   }()){
-  std::cout << "Built IET " << *this << std::endl;
 }
 
 template <typename Surface>

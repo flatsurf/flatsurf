@@ -61,9 +61,12 @@ Lengths<Surface>::Lengths(std::shared_ptr<const Vertical<Uncollapsed>> vertical,
   vertical(vertical),
   lengths(lengths),
   stack(),
-  sum() {
+  sum(),
+  degree(0) {
   lengths.apply([&](const auto& edge, const auto& connection) {
     CHECK_ARGUMENT(!connection || vertical->perpendicular(connection) > 0, "nontrivial length must be positive but " << edge << " is " << connection);
+    if (connection)
+      degree = std::max(degree, coefficients(toLabel(edge)).size());
   });
 }
 
@@ -221,7 +224,15 @@ Label Lengths<Surface>::subtractRepeated(Label minuend) {
 
 template <typename Surface>
 std::vector<mpq_class> Lengths<Surface>::coefficients(Label label) const {
-  return intervalxt::sample::Arithmetic<typename Surface::Coordinate>::coefficients(length(label));
+  auto coefficients = intervalxt::sample::Arithmetic<typename Surface::Coordinate>::coefficients(length(label));
+  if (coefficients.size() == 0 || coefficients.size() == 1) {
+    // TODO: We are assuming that 0/1 lengths means zero/rational. Is that
+    // sane? Probably, yes, but we should assert somewhere else…
+    // It's also really weird that we call this from the constructor.
+    while(coefficients.size() < degree)
+      coefficients.emplace_back();
+  }
+  return coefficients;
 }
 
 template <typename Surface>

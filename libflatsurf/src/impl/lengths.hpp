@@ -75,6 +75,8 @@ class Lengths {
   std::deque<intervalxt::Label> stack;
   typename Surface::Coordinate sum;
 
+  size_t degree;
+
   friend IntervalExchangeTransformation<Surface>;
 };
 
