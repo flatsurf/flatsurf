@@ -51,6 +51,7 @@ void throw_for_assert(const E& e) { throw e; }
 #define CHECK_ARGUMENT(CONDITION, MESSAGE) ASSERT_(CONDITION, std::invalid_argument, MESSAGE)
 
 #ifdef NDEBUG
+
 #define ASSERT_ARGUMENT_(CONDITION) \
   while (false) {                   \
   }
@@ -60,11 +61,14 @@ void throw_for_assert(const E& e) { throw e; }
 #define ASSERT(CONDITION, MESSAGE) \
   while (false) {                  \
   }
+
 #else
+
 #define ASSERT_ARGUMENT_(CONDITION) CHECK_ARGUMENT_(CONDITION)
 #define ASSERT_ARGUMENT(CONDITION, MESSAGE) CHECK_ARGUMENT(CONDITION, MESSAGE)
+#define ASSERT(CONDITION, MESSAGE) ASSERT_(CONDITION, std::logic_error, MESSAGE)
+
 #endif
 
-#define ASSERT(CONDITION, MESSAGE) ASSERT_(CONDITION, std::logic_error, MESSAGE)
 
 #endif
