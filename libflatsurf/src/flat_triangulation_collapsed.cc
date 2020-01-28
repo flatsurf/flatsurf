@@ -17,9 +17,6 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-// TODO
-#include <iostream>
-
 #include <vector>
 #include <map>
 #include <ostream>
@@ -106,11 +103,7 @@ void FlatTriangulationCollapsed<T>::flip(HalfEdge e) {
   if (vertical().perpendicular(fromEdge(e)) < 0)
     e = -e;
 
-  // TODO
-  // std::cout << "Flipping " << e << " in " << *this << std::endl;
   FlatTriangulationCombinatorial::flip(e);
-  // TODO
-  // std::cout << "Flipped " << e << " in " << *this << std::endl;
 
   if (vertical().parallel(e)) {
     collapse(e);
@@ -121,11 +114,7 @@ void FlatTriangulationCollapsed<T>::flip(HalfEdge e) {
 
 template <typename T>
 std::pair<HalfEdge, HalfEdge> FlatTriangulationCollapsed<T>::collapse(HalfEdge e) {
-  // TODO
-  // std::cout << "Collapsing " << e << " in " << *this << std::endl;
   auto ret = FlatTriangulationCombinatorial::collapse(e);
-  // TODO
-  // std::cout << "Collapsed " << e << " in " << *this << std::endl;
 
   impl->check(*this);
 

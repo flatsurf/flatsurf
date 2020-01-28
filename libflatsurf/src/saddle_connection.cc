@@ -203,8 +203,6 @@ std::vector<HalfEdge> SaddleConnection<Surface>::crossings() const {
     while (true) {
       auto crossing = it.incrementWithCrossings();
       if (crossing.has_value()) {
-        // TODO: Remove
-        // ASSERT(ret.size() < 10000, "Failed to find " << *this << " in its source sector");
         ret.push_back(*crossing);
       } else {
         break;
