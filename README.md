@@ -51,8 +51,8 @@ You can try out the projects in this repository in a very limited environment on
 ## Build from the Source Code Repository
 
 We are following a standard autoconf setup, i.e., you can create the library
-`src/libflatsurf`, the Python wrapper `src/pyflatsurf`, and the binary
-`src/flatsurf-polygon/flatsurf-polygon` with the following:
+`libflatsurf/src`, the Python wrapper `pyflatsurf/src`, and the binary
+`flatsurf-polygon/src/flatsurf-polygon` with the following:
 
 ```
 git clone --recurse-submodules https://github.com/flatsurf/flatsurf.git
@@ -96,7 +96,7 @@ then run
 ```
 conda config --add channels conda-forge
 conda config --add channels flatsurf # if you want to pull in the latest version of dependencies
-conda create -n flatsurf-build cxx-compiler libtool automake boost-cpp libexactreal gtest benchmark ccache
+conda create -n flatsurf-build cxx-compiler libtool automake boost-cpp libexactreal gtest benchmark ccache pytest sage cppyy
 conda activate flatsurf-build
 export CPPFLAGS="-isystem $CONDA_PREFIX/include"
 export CFLAGS="$CPPFLAGS"
