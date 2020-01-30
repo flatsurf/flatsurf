@@ -1,5 +1,7 @@
 #!/bin/sh
 
-export PYFLATSURF_INCLUDE="@srcdir@/../../libflatsurf/src:@builddir@/../../libflatsurf/src"
+# Resolve #include <flatsurf/*.hpp> relative to libflatsurf in the source tree and
+# resolve #include "flatsurf.hpp" relative to libflatsurf/flatsurf in the build tree.
+export PYFLATSURF_INCLUDE="@srcdir@/../../libflatsurf:@builddir@/../../libflatsurf/flatsurf"
 export LD_LIBRARY_PATH="@builddir@/../../libflatsurf/src/.libs/"
 export PYTHONPATH="@srcdir@/../src/:@pythondir@"
