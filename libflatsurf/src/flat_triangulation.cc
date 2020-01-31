@@ -17,6 +17,7 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <intervalxt/sample/arithmetic.hpp>
 #include <ostream>
 #include <vector>
 #include <map>
@@ -41,6 +42,41 @@ using std::ostream;
 using std::vector;
 
 namespace flatsurf {
+
+template <typename T>
+Vector<T> FlatTriangulation<T>::shortest() const {
+  const auto edges = this->edges();
+  Edge shortest = *std::min_element(begin(edges), end(edges), [&](const auto& a, const auto& b) {
+    const Vector x = fromEdge(a.positive());
+    const Vector y = fromEdge(b.positive());
+    return x*x < y*y;
+  });
+  return fromEdge(shortest.positive());
+}
+
+// TODO: Move to the appropriate places
+template <typename T>
+T abs(const T& x) {
+  return x < 0 ? -x : x;
+}
+
+template <typename T>
+Vector<T> FlatTriangulation<T>::shortest(const Vector& direction) const {
+  const auto edges = this->edges();
+  Edge shortest = *std::min_element(begin(edges), end(edges), [&](const auto& a, const auto& b) {
+    const Vector x = fromEdge(a.positive());
+    const Vector y = fromEdge(b.positive());
+
+    const auto xlen = x * direction;
+    const auto ylen = y * direction;
+
+    if (!xlen) return false;
+    if (!ylen) return true;
+    return abs(xlen) < abs(ylen);
+  });
+  return fromEdge(shortest.positive());
+}
+
 template <typename T>
 Implementation<FlatTriangulation<T>>::Implementation(const FlatTriangulationCombinatorial& combinatorial, const std::function<Vector(HalfEdge)>& vectors) :
   vectors(&combinatorial, vectors, Implementation::updateAfterFlip),

@@ -68,7 +68,7 @@ class FlatTriangulationCollapsed :
 
   // Note that only the horizontal part of this vector is meaningful. Rather,
   // the vertical part of the vectors are only consistent inside their faces.
-  SaddleConnection fromEdge(HalfEdge) const;
+  const SaddleConnection &fromEdge(HalfEdge) const;
 
   bool inSector(HalfEdge, const Vector&) const;
   bool inSector(HalfEdge, const Vertical<FlatTriangulationCollapsed<T>>&) const;

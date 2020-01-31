@@ -17,9 +17,10 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <boost/lexical_cast.hpp>
 #include <climits>
 #include <ostream>
+
+#include <boost/lexical_cast.hpp>
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
@@ -222,17 +223,20 @@ ORIENTATION SaddleConnection<Surface>::orientation(const typename SaddleConnecti
 
 template <typename Surface>
 CCW SaddleConnection<Surface>::ccw(const typename SaddleConnection::Vector& rhs) const {
-  return static_cast<typename Surface::Vector>(*this).ccw(rhs);
+  return static_cast<const typename Surface::Vector&>(*this).ccw(rhs);
 }
 
 template <typename Surface>
-SaddleConnection<Surface>::operator typename Surface::Vector() const {
-  return static_cast<Chain<Surface>>(*this);
+SaddleConnection<Surface>::operator const typename Surface::Vector&() const {
+  return static_cast<const typename Surface::Vector&>(static_cast<const Chain<Surface>&>(*this));
 }
 
 template <typename Surface>
-SaddleConnection<Surface>::operator Chain<Surface>() const {
-  if (!*this) return Chain<Surface>();
+SaddleConnection<Surface>::operator const Chain<Surface>&() const {
+  if (!*this) {
+    static Chain<Surface> zero;
+    return zero;
+  }
   return impl->chain;
 }
 
@@ -277,7 +281,7 @@ void Implementation<SaddleConnection<Surface>>::normalize() {
   normalize(this->target, -vector);
 }
 
-
+// TODO: Deleteme
 template <typename Surface>
 void Implementation<SaddleConnection<Surface>>::check(const SaddleConnection& connection) {
   // Run checks in constructor

@@ -74,6 +74,10 @@ class FlatTriangulation :
   // half edges there.
   std::unique_ptr<FlatTriangulation<T>> slot(const HalfEdge e) const;
 
+  Vector shortest() const;
+  // Return the shortest vector relative to this direction which is not orthogonal to it.
+  Vector shortest(const Vector&) const;
+
   void flip(HalfEdge);
 
   T area() const;

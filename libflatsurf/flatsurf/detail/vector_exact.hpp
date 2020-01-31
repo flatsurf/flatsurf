@@ -20,6 +20,7 @@
 #ifndef LIBFLATSURF_DETAIL_VECTOR_EXACT_HPP
 #define LIBFLATSURF_DETAIL_VECTOR_EXACT_HPP
 
+#include <gmpxx.h>
 #include <boost/core/empty_value.hpp>
 #include <intervalxt/forward.hpp>
 

@@ -65,7 +65,10 @@ class Implementation<FlatTriangulationCollapsed<T>> {
     friend std::ostream& operator<<(std::ostream& os, const AsymmetricConnection& self) { return os << self.value; }
   };
 
-  static void check(const FlatTriangulationCollapsed<T>& self);
+  // Explicitly compute the area of this triangulation.
+  static T area(const FlatTriangulationCollapsed<T>&);
+  // Check that the face of this half edge is actually closed.
+  static bool faceClosed(const FlatTriangulationCollapsed<T>&, HalfEdge);
 
   static void updateAfterFlip(HalfEdgeMap<AsymmetricConnection>&, HalfEdge);
   static void updateBeforeCollapse(HalfEdgeMap<AsymmetricConnection>&, Edge);

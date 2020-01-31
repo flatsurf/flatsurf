@@ -82,6 +82,7 @@ template <typename Implementation>
 using scalar_product_t = decltype(std::declval<const Implementation>() * (std::declval<const typename Implementation::Vector&>()));
 template <typename Implementation>
 static constexpr bool has_scalar_product = boost::is_detected_exact_v<typename Implementation::Vector::Coordinate, scalar_product_t, Implementation>;
+
 }  // namespace
 }  // namespace flatsurf::detail
 

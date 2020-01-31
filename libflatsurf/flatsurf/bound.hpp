@@ -20,6 +20,7 @@
 #ifndef LIBFLATSURF_BOUND_HPP
 #define LIBFLATSURF_BOUND_HPP
 
+#include <gmpxx.h>
 #include <boost/operators.hpp>
 
 #include "forward.hpp"
@@ -28,14 +29,23 @@ namespace flatsurf {
 
 class Bound : boost::equality_comparable<Bound> {
  public:
-  Bound(long x, long y);
+  Bound(const mpz_class& x, const mpz_class& y);
 
-  long long squared() const noexcept;
+  template <typename T>
+  static Bound lower(const Vector<T>&);
+
+  template <typename T>
+  static Bound upper(const Vector<T>&);
+
+  const mpz_class& squared() const noexcept;
 
   bool operator==(const Bound&) const noexcept;
 
+  // Return the floor division by this bound.
+  mpz_class operator/(const Bound&) const;
+
  private:
-  long long square;
+  mpz_class square;
 };
 
 }

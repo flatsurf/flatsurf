@@ -98,7 +98,7 @@ class Implementation<Vector<T>> : public Cartesian<T> {
     return *this;
   }
 
-  template <typename S, bool Enable = IsLongLong<T>&& IsMPZ<S>, If<Enable> = true, typename = void>
+  template <typename S, bool Enable = IsLongLong<T> && IsMPZ<S>, If<Enable> = true, typename = void>
   Implementation& operator*=(const S& rhs) {
     using gmpxxll::mpz_class;
     ASSERT(rhs * mpz_class(this->x) <= mpz_class(LONG_LONG_MAX), "Multiplication overflow");
@@ -248,7 +248,7 @@ size_t hash<Vector<T>>::operator()(const Vector<T>&) const noexcept {
 // Instantiations of templates so implementations are generated for the linker
 // (unfortunately, we also need to explicitly instantiate the base classes,
 // https://stackoverflow.com/q/3705000/812379).
-#include "util/instantiate.ipp"
+#include "../util/instantiate.ipp"
 
 #define LIBFLATSURF_INSTANTIATE_THIS(T) \
   LIBFLATSURF_INSTANTIATE_HASH((Vector<T>)) \

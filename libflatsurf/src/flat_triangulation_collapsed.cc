@@ -22,10 +22,15 @@
 #include <ostream>
 #include <unordered_set>
 
+#include <gmpxx.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <intervalxt/sample/e-antic-arithmetic.hpp>
+#include <intervalxt/sample/exact-real-arithmetic.hpp>
+#include <intervalxt/sample/rational-arithmetic.hpp>
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
+#include "external/gmpxxll/gmpxxll/mpz_class.hpp"
 
 #include "../flatsurf/flat_triangulation_collapsed.hpp"
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
@@ -36,6 +41,7 @@
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/half_edge_map.hpp"
 #include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/bound.hpp"
 
 #include "impl/flat_triangulation_collapsed.impl.hpp"
 // TODO: Maybe better use subdirectories
@@ -74,8 +80,6 @@ std::shared_ptr<FlatTriangulationCollapsed<T>> FlatTriangulationCollapsed<T>::ma
     return false;
   }());
 
-  Implementation::check(*ret);
-
   return ret;
 }
 
@@ -95,6 +99,19 @@ bool FlatTriangulationCollapsed<T>::inSector(HalfEdge sector, const Vertical<Fla
   return inSector(sector, vector.vertical());
 }
 
+// TODO: Move to the appropriate places
+template <typename T>
+T abs(const T& x) {
+  return x < 0 ? -x : x;
+}
+
+// TODO: Move to vector?
+template <typename T>
+mpz_class relativeLength(const Vector<T>& divident, const Vector<T>& divisor) {
+  // TODO: Arithmetic is not a good pattern mostly. Instead, these should be free functions in a fixed namespace.
+  return sqrt(::intervalxt::sample::Arithmetic<T>::floorDivision((divident*divident) * (divident*divident), abs(divisor * divident)));
+}
+
 template <typename T>
 void FlatTriangulationCollapsed<T>::flip(HalfEdge e) {
   CHECK_ARGUMENT(vertical().large(e), "in a CollapsedSurface, only large edges can be flipped");
@@ -105,24 +122,50 @@ void FlatTriangulationCollapsed<T>::flip(HalfEdge e) {
 
   FlatTriangulationCombinatorial::flip(e);
 
+  ASSERT(Implementation::area(*this) == area(), "Area inconsistent after flip of edge. Area is " << Implementation::area(*this) << " but should still be " << area());
+  ASSERT(Implementation::faceClosed(*this, e), "Face attached to " << e << " not closed after flip in " << *this);
+  ASSERT(([&]() {
+    static Amortized cost;
+    // TODO: It would maybe be better to estimate the cost by looking at the shortest vector in direction of e.
+    const auto connection = fromEdge(e);
+    if (!cost.pay(relativeLength(static_cast<const Vector&>(connection), impl->original->shortest(connection)) + 1)) return true;
+    return connection == SaddleConnection::inSector(impl->original, connection.source(), connection);
+  }()), "Edges of Triangulation inconsistent after flip. The half edge " << e << " in the collapsed surface " << *this << " claims to correspond to the " << fromEdge(e) << ", however, there is no such saddle connection in the original surface " << *impl->original << ".");
+
   if (vertical().parallel(e)) {
     collapse(e);
   }
 
-  impl->check(*this);
 }
 
 template <typename T>
 std::pair<HalfEdge, HalfEdge> FlatTriangulationCollapsed<T>::collapse(HalfEdge e) {
   auto ret = FlatTriangulationCombinatorial::collapse(e);
 
-  impl->check(*this);
+  ASSERT(Implementation::area(*this) == area(), "Area inconsistent after collapse of edge. Area is " << Implementation::area(*this) << " but should still be " << area());
+  ASSERT(halfEdges() | rx::all_of([&](const auto e) { return Implementation::faceClosed(*this, e); }), "Some faces are not closed after collapse of edge in " << *this);
+  ASSERT(([&]() {
+    static Amortized cost;
+
+    for (auto halfEdge : { ret.first, ret.second }) {
+      const auto connection = fromEdge(halfEdge);
+      if (!cost.pay(relativeLength(static_cast<const Vector&>(connection), impl->original->shortest(connection)) + 1)) return true;
+      const auto reconstruction = SaddleConnection::inSector(impl->original, connection.source(), connection);
+      ASSERT(connection == reconstruction, "Edges of Triangulation inconsistent after collapse. The half edge " << e << " in the collapsed surface " << *this << " claims to correspond to the " << connection << ", however, there is no such saddle connection in the original surface " << *impl->original << " instead it should probably be " << reconstruction);
+    }
+    return true;
+  }()), "(the above can never return false)");
 
   return ret;
 }
 
 template <typename T>
-SaddleConnection<FlatTriangulation<T>> FlatTriangulationCollapsed<T>::fromEdge(HalfEdge e) const {
+T FlatTriangulationCollapsed<T>::area() const noexcept {
+  return impl->original->area();
+}
+
+template <typename T>
+const SaddleConnection<FlatTriangulation<T>>& FlatTriangulationCollapsed<T>::fromEdge(HalfEdge e) const {
   return impl->vectors.get(e).value;
 }
 
@@ -177,41 +220,6 @@ Implementation<FlatTriangulationCollapsed<T>>::Implementation(const FlatTriangul
 }
 
 template <typename T>
-void Implementation<FlatTriangulationCollapsed<T>>::check(const FlatTriangulationCollapsed<T>& self) {
-  // TODO: Disable with DNDEBUG
-
-  // Verify that all faces are closed.
-  for (auto e : self.halfEdges()) {
-    if (self.boundary(e))
-      continue;
-    if (self.nextInFace(e) == -e)
-      continue;
-    T zero = self.vertical().perpendicular(self.fromEdge(e))
-      + self.vertical().perpendicular(self.fromEdge(self.nextInFace(e)))
-      + self.vertical().perpendicular(self.fromEdge(self.previousInFace(e)));
-    ASSERT(zero == 0, "the face of " << e << " of " << self << " is not closed");
-  }
-
-  // Verify that area has not changed
-  T area = T();
-  for (auto e : self.halfEdges()) {
-    if (self.boundary(e)) throw std::logic_error("not implemented: area with boundary");
-    if (self.nextInFace(e) != self.previousInFace(e)) {
-      area += Implementation<FlatTriangulation<T>>::area(self.fromEdge(e), self.fromEdge(self.nextInFace(e)), self.fromEdge(self.previousInFace(e)));
-    }
-    for (auto connection : self.cross(e)) {
-      area += 3 * Implementation<FlatTriangulation<T>>::area(connection, static_cast<Vector>(self.fromEdge(e)) - connection, -self.fromEdge(e));
-    }
-  }
-  ASSERT(area == self.impl->original->area(), "6 * area of " << self << " was " << area << " but it should be the same as for the uncollapsed surface " << *self.impl->original << " whose 6*area is " << self.impl->original->area());
-
-  // Verify that all edges can be used to obtain valid saddle connections.
-  for (auto e : self.halfEdges()) {
-    flatsurf::Implementation<SaddleConnection>::check(self.impl->vectors.get(e));
-  }
-}
-
-template <typename T>
 template <typename M>
 void Implementation<FlatTriangulationCollapsed<T>>::handleFlip(M& map, HalfEdge flip, const std::function<void(const FlatTriangulationCollapsed<T>&, HalfEdge, HalfEdge, HalfEdge, HalfEdge)>& handler) {
   const auto &surface = static_cast<const FlatTriangulationCollapsed<typename Vector::Coordinate>&>(map.parent());
@@ -237,6 +245,36 @@ void Implementation<FlatTriangulationCollapsed<T>>::handleCollapse(M& map, Edge 
     collapse = -collapse;
 
   handler(surface, collapse);
+}
+
+template <typename T>
+T Implementation<FlatTriangulationCollapsed<T>>::area(const FlatTriangulationCollapsed<T>& self) {
+  T area = T();
+
+  for (auto e : self.halfEdges()) {
+    if (self.boundary(e)) throw std::logic_error("not implemented: area with boundary");
+
+    if (self.nextInFace(e) != self.previousInFace(e)) {
+       area += Implementation<FlatTriangulation<T>>::area(self.fromEdge(e), self.fromEdge(self.nextInFace(e)), self.fromEdge(self.previousInFace(e)));
+     }
+     for (auto connection : self.cross(e)) {
+       area += 3 * Implementation<FlatTriangulation<T>>::area(connection, static_cast<Vector>(self.fromEdge(e)) - connection, -self.fromEdge(e));
+     }
+   }
+
+   return area;
+}
+
+template <typename T>
+bool Implementation<FlatTriangulationCollapsed<T>>::faceClosed(const FlatTriangulationCollapsed<T>& self, HalfEdge face) {
+  if (self.boundary(face))
+    return true;
+  if (self.nextInFace(face) == -face)
+    return true;
+  T zero = self.vertical().perpendicular(self.fromEdge(face))
+    + self.vertical().perpendicular(self.fromEdge(self.nextInFace(face)))
+    + self.vertical().perpendicular(self.fromEdge(self.previousInFace(face)));
+  return zero == 0;
 }
 
 // TODO: Can I get rid of all of the .value here?

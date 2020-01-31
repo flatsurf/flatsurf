@@ -21,24 +21,10 @@
 
 namespace flatsurf {
 
-Bound::Bound(long x, long y) :
-  square(0) {
-    long long a=0, b=0;
-  {
-    bool overflow = __builtin_smulll_overflow(x, x, &a);
-    assert(!overflow && "long long overflow in Bound computation");
-  }
-  {
-    bool overflow = __builtin_smulll_overflow(y, y, &b);
-    assert(!overflow && "long long overflow in Bound computation");
-  }
-  {
-    bool overflow = __builtin_saddll_overflow(a, b, &square);
-    assert(!overflow && "long long overflow in Bound computation");
-  }
-}
+Bound::Bound(const mpz_class& x, const mpz_class& y) :
+  square(x*x + y*y) {}
 
-long long Bound::squared() const noexcept {
+const mpz_class& Bound::squared() const noexcept {
   return square;
 }
 
