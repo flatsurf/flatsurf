@@ -97,6 +97,25 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Square With Boundary", "[saddle_conn
   }
 }
 
+TEMPLATE_TEST_CASE("Saddle Connections on an L with an Added Slit", "[saddle_connections][slit]", (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using R2 = Vector<TestType>;
+  auto L = makeL<R2>();
+
+  auto slit = R2(TestType(3) / 13371337, TestType(2) / 13371337);
+  auto source = HalfEdge(1);
+
+  L = L->insertAt(source, slit);
+  L = L->slot(L->nextAtVertex(source));
+
+  GIVEN("The L with Slit " << *L) {
+    auto bound = GENERATE(2, 16);
+    THEN("We can count Saddle Connections Within the Bound of " << bound) {
+      auto connections = SaddleConnections(L, Bound(bound, 0));
+      (void)std::distance(begin(connections), end(connections));
+    }
+  }
+}
+
 TEMPLATE_TEST_CASE("Saddle Connections on a Hexagon", "[saddle_connections]", (renf_elem_class), (exactreal::Element<exactreal::NumberField>)) {
   using R2 = Vector<TestType>;
   auto hexagon = makeHexagon<R2>();

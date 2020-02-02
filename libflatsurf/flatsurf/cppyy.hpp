@@ -42,6 +42,17 @@ auto makeFlatTriangulation(const T &vertices, const std::vector<V> &vectors) {
   return std::make_shared<FlatTriangulation<typename V::Coordinate>>(FlatTriangulationCombinatorial(vertices), vectors);
 }
 
+// cppyy gets the lifetime of the surfaces wrong when methods return a unique_ptr<Surface>
+template <typename T>
+std::shared_ptr<FlatTriangulation<T>> insertAt(const FlatTriangulation<T>& surface, HalfEdge &e, const Vector<T>& v) {
+  return surface.insertAt(e, v);
+}
+
+template <typename T>
+std::shared_ptr<FlatTriangulation<T>> slot(const FlatTriangulation<T>& surface, HalfEdge e) {
+  return surface.slot(e);
+}
+
 // Work around https://bitbucket.org/wlav/cppyy/issues/96/cannot-make-wrapper-for-a-function
 extern template std::ostream &operator<<(std::ostream &, const Permutation<HalfEdge> &);
 extern template std::ostream &operator<<(std::ostream &, const FlatTriangulation<long long> &);

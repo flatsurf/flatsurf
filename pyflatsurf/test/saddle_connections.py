@@ -45,17 +45,20 @@ def test_L_mpq():
 
 def test_L_with_slit_mpq():
     import cppyy
+
     mpq = cppyy.gbl.mpq_class
     R2 = flatsurf.Vector[mpq]
     surface = surfaces.L(R2)
-    slit = R2(mpq(2, 1337), mpq(1, 1337))
+    slit = R2(mpq(5, 3), mpq(4, 3))
     e = flatsurf.HalfEdge(1)
-    surface = surface.insertAt(e, slit)
+    # TODO: Patch the Python wrapper of FlatTriangulation instead of having to call this explicitly.
+    surface = cppyy.gbl.flatsurf.insertAt(surface, e, slit)
+    assert e != flatsurf.HalfEdge(1), "HalfEdge& not updated correctly in " + repr(surface)
     e = surface.nextAtVertex(e)
-    surface = surface.slot(e)
+    surface = cppyy.gbl.flatsurf.slot(surface, e)
 
     connections = surface.saddle_connections(flatsurf.Bound(16, 0), flatsurf.HalfEdge(1))
-    assert len([1 for c in connections]) == 49
+    assert len([1 for c in connections]) == 15
 
 def test_hexagon_eantic():
     surface = surfaces.hexagon()
