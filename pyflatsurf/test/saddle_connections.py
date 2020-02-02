@@ -29,7 +29,7 @@ import surfaces
 
 def test_square_longlong():
     surface = surfaces.square(flatsurf.Vector['long long'])
-    connections = surface.saddleConnections(flatsurf.Bound(16), flatsurf.HalfEdge(1))
+    connections = surface.saddleConnections(flatsurf.Bound(16, 0), flatsurf.HalfEdge(1))
     # https://bitbucket.org/wlav/cppyy/issues/103/std-distance-returns-random-output
     # assert len(connections) == 60
     # This does not work, the iterator that backs connections returns
@@ -40,13 +40,13 @@ def test_square_longlong():
 
 def test_hexagon_eantic():
     surface = surfaces.hexagon()
-    connections = surface.saddleConnections(flatsurf.Bound(16), flatsurf.HalfEdge(1))
+    connections = surface.saddleConnections(flatsurf.Bound(16, 0), flatsurf.HalfEdge(1))
     assert len([1 for c in connections]) == 10
 
 def test_hexagon_exactreal():
     from pyexactreal import exactreal
     surface = surfaces.random_hexagon()
-    connections = surface.saddleConnections(flatsurf.Bound(16), flatsurf.HalfEdge(1))
+    connections = surface.saddleConnections(flatsurf.Bound(16, 0), flatsurf.HalfEdge(1))
     # This is very slow at the moment, see https://github.com/flatsurf/exact-real/issues/37
     # assert len([1 for c in connections]) >= 10
 

@@ -91,5 +91,4 @@ void throw_for_assert(const E& e) { throw e; }
 
 #endif
 
-
 #endif

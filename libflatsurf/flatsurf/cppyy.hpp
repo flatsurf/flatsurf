@@ -33,7 +33,7 @@
 #include "saddle_connection.hpp"
 #include "saddle_connections.hpp"
 #include "vector.hpp"
-#include "vector_along_triangulation.hpp"
+#include "bound.hpp"
 
 namespace flatsurf {
 // cppyy sometimes has trouble with rvalues, let's help it to create a FlatTriangulation

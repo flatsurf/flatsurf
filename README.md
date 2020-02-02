@@ -96,7 +96,7 @@ then run
 ```
 conda config --add channels conda-forge
 conda config --add channels flatsurf # if you want to pull in the latest version of dependencies
-conda create -n flatsurf-build cxx-compiler libtool automake boost-cpp libexactreal gtest benchmark ccache pytest sage cppyy
+conda create -n flatsurf-build cxx-compiler libtool automake boost-cpp libexactreal pyexactreal libintervalxt pyintervalxt benchmark ccache pytest sage cppyy eigen fmt cppyythonizations sage-flatsurf
 conda activate flatsurf-build
 export CPPFLAGS="-isystem $CONDA_PREFIX/include"
 export CFLAGS="$CPPFLAGS"

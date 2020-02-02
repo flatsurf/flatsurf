@@ -171,7 +171,7 @@ struct Serialization<Chain<Surface>> {
     std::vector<std::string> coefficients;
     archive(cereal::make_nvp("coefficients", coefficients));
     for (size_t i = 0; i < coefficients.size(); i++)
-      self += ((Chain(surface) += surface->edges()[i].positive()) *= mpz_class(coefficients[i]));
+      self += ((Chain<Surface>(surface) += surface->edges()[i].positive()) *= mpz_class(coefficients[i]));
   }
 };
 
