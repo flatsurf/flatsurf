@@ -53,6 +53,11 @@ std::vector<ContourComponent<Surface>> ContourDecomposition<Surface>::components
 }
 
 template <typename Surface>
+std::shared_ptr<const typename Surface::Collapsed> ContourDecomposition<Surface>::collapsed() const {
+  return impl->state->surface;
+}
+
+template <typename Surface>
 Implementation<ContourDecomposition<Surface>>::Implementation(std::unique_ptr<Surface> surface, const Vector<typename Surface::Coordinate>& vertical) :
   state(new DecompositionState(std::move(surface), vertical)) {}
 

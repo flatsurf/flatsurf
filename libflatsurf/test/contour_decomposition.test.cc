@@ -79,10 +79,11 @@ TEMPLATE_TEST_CASE("Connections and IET from Contour Decomposition", "[contour_d
     using  SaddleConnection = SaddleConnection<FlatTriangulation<T>>;
 
     for (auto sc : SaddleConnections<FlatTriangulation<T>>(surface, Bound(bound, 0))) {
-      // TODO: Raises assertion in Catch
-      // THEN("We can compute a ContourDecomposition in direction " << sc) {
+      THEN("We can compute a ContourDecomposition in direction " << static_cast<R2>(sc)) {
         auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), sc);
-        AND_THEN("All connections show up once with both signs in this decomposition") {
+        auto vertical = decomposition.collapsed()->vertical();
+        // All connections show up once with both signs in the decomposition.
+        {
           std::unordered_map<SaddleConnection, int> connections;
 
           auto track = [&](const SaddleConnection& connection) {
@@ -101,21 +102,31 @@ TEMPLATE_TEST_CASE("Connections and IET from Contour Decomposition", "[contour_d
           for (auto component : decomposition.components()) {
             CAPTURE(component);
             for (auto contourConnection : component.perimeter()) {
+              const bool top = contourConnection.top();
+              CAPTURE(contourConnection);
+              REQUIRE(vertical.perpendicular(contourConnection.connection()) != 0);
               track(contourConnection.connection());
-              for (auto connection : contourConnection.left())
-                track(connection);
-              for (auto connection : contourConnection.right())
-                track(connection);
+              for (auto connection : contourConnection.left()) {
+                REQUIRE(vertical.perpendicular(connection) == 0);
+                REQUIRE(vertical.parallel(top ? -connection : connection) > 0);
+                track(top ? connection : -connection);
+              }
+              for (auto connection : contourConnection.right()) {
+                REQUIRE(vertical.perpendicular(connection) == 0);
+                REQUIRE(vertical.parallel(top ? -connection : connection) > 0);
+                track(top ? -connection : connection);
+              }
             }
           }
         }
 
-        AND_THEN("We can compute IETs in this direction") {
+        // We can construct the IETs for the components.
+        {
           for (auto component : decomposition.components()) {
             auto iet = component.intervalExchangeTransformation();
           }
         }
-      //}
+      }
     }
   }
 }
