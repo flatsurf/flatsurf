@@ -226,79 +226,58 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &n
     }
   };
 
-  // Whether the next half edge that the ray to v crosses is further away
-  // than v's length.
-  bool nextCrossingBeyondBound = false;
-  while (true) {
-    if (surface->fromEdge(nextTo).ccw(slot) == CCW::COLLINEAR) {
-      check_orientation(surface->fromEdge(nextTo));
-      break;
-    }
-    assert(surface->fromEdge(nextTo).ccw(slot) == CCW::COUNTERCLOCKWISE);
-
-    // flip edges so all of v is in one face
-    auto connections = SaddleConnections<FlatTriangulation<T>>(surface, Bound(INT_MAX, 0), nextTo);
-    auto search = connections.begin();
-
-    std::optional<HalfEdge> crossing;
-    Vector base;
+  // Search for half edges that slot would be crossing and flip them.
+  [&]() {
     while (true) {
-      auto ccw = static_cast<Vector>(*search).ccw(slot);
-      if (ccw == CCW::COLLINEAR) {
-        check_orientation(*search);
-        nextCrossingBeyondBound = true;
-        break;
+      if (surface->fromEdge(nextTo).ccw(slot) == CCW::COLLINEAR) {
+        check_orientation(surface->fromEdge(nextTo));
+        // Slot is on an existing HalfEdge but does not cross a vertex.
+        return;
       }
+      assert(surface->fromEdge(nextTo).ccw(slot) == CCW::COUNTERCLOCKWISE);
 
-      search.skipSector(-ccw);
+      // The half edge that slot is potentially crossing
+      const HalfEdge crossing = surface->nextInFace(nextTo);
+      // The base point of crossing half edge
+      const Vector base = surface->fromEdge(nextTo);
 
-      base = static_cast<Vector>(*search) + surface->fromEdge(surface->nextAtVertex(search->target()));
-      crossing = search.incrementWithCrossings();
-      if (crossing.has_value()) {
-        break;
-      }
-    }
+      // Check whether slot is actually crossing crossing. It would be enough
+      // to check whether this is != CLOCKWISE. However, we do not allow slot
+      // to end on an edge other than nextTo. So we perform one additional
+      // flip in that case so slot is actually inside of a face.
+      if(surface->fromEdge(crossing).ccw(slot - base) == CCW::COUNTERCLOCKWISE)
+        return;
 
-    if (nextCrossingBeyondBound)
-      break;
+      std::function<void(HalfEdge)> flip = [&](HalfEdge e) {
+        assert(e != nextTo && e != -nextTo && e != surface->nextAtVertex(nextTo) && e != -surface->nextAtVertex(nextTo));
 
-    // potentially crossing *crossing at base
-    auto edge = surface->fromEdge(*crossing);
-    auto relative = slot - base;
-    nextCrossingBeyondBound = edge.ccw(relative) == CCW::COUNTERCLOCKWISE;
+        auto canFlip = [&](HalfEdge g) {
+          return e != nextTo && e != -nextTo && e != surface->nextAtVertex(nextTo) && e != -surface->nextAtVertex(nextTo) &&
+                 surface->fromEdge(surface->previousAtVertex(g)).ccw(surface->fromEdge(surface->nextAtVertex(g))) == CCW::COUNTERCLOCKWISE && surface->fromEdge(surface->previousAtVertex(-g)).ccw(surface->fromEdge(surface->nextAtVertex(-g))) == CCW::COUNTERCLOCKWISE;
+        };
 
-    if (nextCrossingBeyondBound)
-      break;
+        while (!canFlip(e)) {
+          // f is blocked by a forward triangle on top of it so we flip its top edge.
+          if (slot.ccw(surface->fromEdge(surface->previousAtVertex(e))) != CCW::COUNTERCLOCKWISE) {
+            flip(-surface->nextAtVertex(-e));
+            continue;
+          } else {
+            assert(slot.ccw(surface->fromEdge(surface->nextAtVertex(-e))) != CCW::CLOCKWISE);
+            flip(surface->previousAtVertex(e));
+            continue;
+          }
+        }
 
-    std::function<void(HalfEdge)> flip = [&](HalfEdge e) {
-      assert(e != nextTo && e != -nextTo && e != surface->nextAtVertex(nextTo) && e != -surface->nextAtVertex(nextTo));
-
-      auto canFlip = [&](HalfEdge g) {
-        return e != nextTo && e != -nextTo && e != surface->nextAtVertex(nextTo) && e != -surface->nextAtVertex(nextTo) &&
-               surface->fromEdge(surface->previousAtVertex(g)).ccw(surface->fromEdge(surface->nextAtVertex(g))) == CCW::COUNTERCLOCKWISE && surface->fromEdge(surface->previousAtVertex(-g)).ccw(surface->fromEdge(surface->nextAtVertex(-g))) == CCW::COUNTERCLOCKWISE;
+        surface->flip(e);
       };
 
-      while (!canFlip(e)) {
-        // f is blocked by a forward triangle on top of it so we flip its top edge.
-        if (slot.ccw(surface->fromEdge(surface->previousAtVertex(e))) != CCW::COUNTERCLOCKWISE) {
-          flip(-surface->nextAtVertex(-e));
-          continue;
-        } else {
-          assert(slot.ccw(surface->fromEdge(surface->nextAtVertex(-e))) != CCW::CLOCKWISE);
-          flip(surface->previousAtVertex(e));
-          continue;
-        }
-      }
-
-      surface->flip(e);
-    };
-
-    // v crosses crossing, so flip it and replace e if v is then not next to e anymore.
-    flip(*crossing);
-    assert(surface->fromEdge(nextTo).ccw(slot) == CCW::COUNTERCLOCKWISE);
-    while (surface->fromEdge(surface->nextAtVertex(nextTo)).ccw(slot) != CCW::CLOCKWISE)
-      nextTo = surface->nextAtVertex(nextTo);
-  }
+      // slot crosses crossing, so flip it and replace nextTo if slot is then not next to nextTo anymore.
+      flip(crossing);
+      assert(surface->fromEdge(nextTo).ccw(slot) == CCW::COUNTERCLOCKWISE);
+      while (surface->fromEdge(surface->nextAtVertex(nextTo)).ccw(slot) != CCW::CLOCKWISE)
+        nextTo = surface->nextAtVertex(nextTo);
+    }
+  }();
 
   auto symmetric = [](HalfEdge x, HalfEdge e, const Vector& v) {
     assert(x == e || x == -e);
