@@ -38,7 +38,6 @@
 #include "./uedge.h"
 #include "./vertex.h"
 
-#include "../../libflatsurf/src/util/as_vector.ipp"
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/half_edge.hpp"
 #include "flatsurf/half_edge_map.hpp"
@@ -82,12 +81,7 @@ TwoComplex::operator FlatTriangulation<exactreal::Element<exactreal::NumberField
   auto combinatorial = static_cast<FlatTriangulationCombinatorial>(*this);
   auto vectors = HalfEdgeMap<Vector<exactreal::Element<exactreal::NumberField>>>(
       &combinatorial,
-      vector<Vector<exactreal::Element<exactreal::NumberField>>>(uedges.size(), zero),
-      [](HalfEdgeMap<Vector<exactreal::Element<exactreal::NumberField>>> &map,
-         HalfEdge halfEdge, const FlatTriangulationCombinatorial &parent) {
-        map.set(halfEdge, map.get(-parent.nextInFace(halfEdge)) +
-                              map.get(parent.nextAtVertex(halfEdge)));
-      });
+      [&](HalfEdge) { return zero; });
 
   for (auto uedge : uedges) {
     auto oedge = OEdge(uedge, 1);
@@ -96,16 +90,17 @@ TwoComplex::operator FlatTriangulation<exactreal::Element<exactreal::NumberField
     vectors.set(static_cast<HalfEdge>(oedge), {x, y});
   }
 
-  return {std::move(combinatorial), std::move(vectors)};
+  return {std::move(combinatorial), [&](HalfEdge halfEdge) { return vectors.get(halfEdge); }};
 }
 
 TwoComplex::operator FlatTriangulationCombinatorial() const {
-  return {Permutation<HalfEdge>(as_vector(
-      vertices | transformed([](const auto &v) {
-        return as_vector(v->out_edges | transformed([](const auto &e) {
-                           return static_cast<HalfEdge>(*e);
-                         }));
-      })))};
+  auto out = vertices | transformed([](const auto &v) {
+    auto tmp = v->out_edges | transformed([](const auto &e) {
+                       return static_cast<HalfEdge>(*e);
+                     });
+    return std::vector<HalfEdge>(begin(tmp), end(tmp));
+  });
+  return {Permutation<HalfEdge>(std::vector<std::vector<HalfEdge>>(begin(out), end(out)))};
 }
 
 size_t TwoComplex::nedges() { return (uedges.size()); }

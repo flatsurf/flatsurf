@@ -34,6 +34,7 @@
 #include "./vertex.h"
 #include "flatsurf/flat_triangulation_combinatorial.hpp"
 #include "flatsurf/vertex.hpp"
+#include "flatsurf/half_edge.hpp"
 
 using boost::math::iround;
 using boost::math::constants::pi;

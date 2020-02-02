@@ -69,4 +69,4 @@ AM_LDFLAGS += -larb
 AM_LDFLAGS += -lgmp -lgmpxx
 # we are using NTL's LLL
 AM_LDFLAGS += -lntl
-AM_CPPFLAGS = -I $(srcdir)/../../libflatsurf -I $(builddir)/../../libflatsurf
+AM_CPPFLAGS = -I $(srcdir)/../../libflatsurf -I $(builddir)/../../libflatsurf/flatsurf

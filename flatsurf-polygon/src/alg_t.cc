@@ -32,7 +32,6 @@
 #include <ostream>
 #include <vector>
 
-#include "../../libflatsurf/src/util/as_vector.ipp"
 #include "./algebraic.h"
 #include "./defs.h"
 #include "./globals.h"
@@ -366,9 +365,11 @@ std::vector<algebraic<T>> to_algebraic_coeffs(const flatsurf::Vector<exactreal::
   y.promote(x.module());
   assert(&*x.module() == &*y.module());
 
-  return as_vector(irange(0l, x.module()->rank()) | transformed([&](int i) {
+  using std::begin, std::end;
+  auto coeffs = irange(0l, x.module()->rank()) | transformed([&](int i) {
                      return algebraic<T>(x[i], y[i]);
-                   }));
+                   });
+  return std::vector<algebraic<T>>(begin(coeffs), end(coeffs));
 }
 }  // namespace
 
@@ -541,18 +542,14 @@ bool colinear(const alg_t<T> &p1, const alg_t<T> &p2) {
 
 template <typename T>
 Element<exactreal::NumberField> alg_t<T>::real() const {
-  return Element<exactreal::NumberField>(
-      Params::module(), as_vector(coeffs | transformed([](const auto &coeff) {
-                                    return coeff.real();
-                                  })));
+  auto reals = coeffs | transformed([](const auto &coeff) { return coeff.real(); });
+  return Element<exactreal::NumberField>(Params::module(), std::vector<eantic::renf_elem_class>(begin(reals), end(reals)));
 }
 
 template <typename T>
 Element<exactreal::NumberField> alg_t<T>::imag() const {
-  return Element<exactreal::NumberField>(
-      Params::module(), as_vector(coeffs | transformed([](const auto &coeff) {
-                                    return coeff.imag();
-                                  })));
+  auto imags = coeffs | transformed([](const auto &coeff) {return coeff.imag(); });
+  return Element<exactreal::NumberField>(Params::module(), std::vector<eantic::renf_elem_class>(begin(imags), end(imags)));;
 }
 
 template <typename T>
