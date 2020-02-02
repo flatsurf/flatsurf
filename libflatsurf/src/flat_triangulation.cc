@@ -115,13 +115,13 @@ void Implementation<FlatTriangulation<T>>::check(const FlatTriangulation<T>& sel
     zero += self.fromEdge(edge);
     edge = self.nextInFace(edge);
     zero += self.fromEdge(edge);
-    CHECK_ARGUMENT(!zero, "a face is not closed");
+    CHECK_ARGUMENT(!zero, "face at " << edge << " is not closed in " << self);
   }
   // check that faces are oriented correctly
   for (auto edge : self.halfEdges()) {
     if (self.boundary(edge)) continue;
     auto next = self.nextInFace(edge);
-    CHECK_ARGUMENT(self.fromEdge(edge).ccw(self.fromEdge(next)) == CCW::COUNTERCLOCKWISE, "a face is not oriented correctly");
+    CHECK_ARGUMENT(self.fromEdge(edge).ccw(self.fromEdge(next)) == CCW::COUNTERCLOCKWISE, "face at " << edge << " is not oriented correctly in " << self);
   }
 }
 
@@ -321,7 +321,6 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &n
       if (Edge(e) == c) return symmetric(e, c, surface->fromEdge(surface->nextAtVertex(nextTo)) - slot);
       return surface->fromEdge(e);
     });
-
   } else {
     // After the flips we did, v is collinear with the half edge e (but shorter.)
 

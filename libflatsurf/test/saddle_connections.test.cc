@@ -20,6 +20,8 @@
 
 #include "external/catch2/single_include/catch2/catch.hpp"
 
+#include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <exact-real/element.hpp>
 #include <exact-real/number_field.hpp>
 
@@ -39,8 +41,17 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Torus", "[saddle_connections]", (lon
   auto square = makeSquare<R2>();
 
   GIVEN("The Square " << *square) {
-    auto bound = GENERATE(0, 2, 16);
-    THEN("Saddle Connections Within a Bound of " << bound << " Correspond to Coprime Coordinates") {
+    THEN("Saddle Connections in a Sector are between the Starting Half Edge (inclusive) and the Ending Half Edge (exclusive)") {
+      const auto connections = SaddleConnections(square, Bound(2, 0), HalfEdge(1));
+      auto search = begin(connections);
+
+      REQUIRE(fmt::format("{}", *search) == "SaddleConnection((1, 0) from 1)");
+      REQUIRE(++search == end(connections));
+    }
+
+    THEN("Saddle Connections Within a Fixed Bound Correspond to Coprime Coordinates") {
+      auto bound = GENERATE(0, 2, 16);
+
       int expected = 0;
       for (int x = 1; x < bound + 1; x++)
         for (int y = 1; y <= x; y++)
@@ -48,7 +59,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Torus", "[saddle_connections]", (lon
             expected++;
 
       auto connections = SaddleConnections(square, Bound(bound, 0));
-      auto count = std::distance(connections.begin(), connections.end());
+      auto count = std::distance(begin(connections), end(connections));
 
       REQUIRE(count == expected * 8);
 
@@ -57,7 +68,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Torus", "[saddle_connections]", (lon
 
         CAPTURE(edge);
         connections = SaddleConnections(square, Bound(bound, 0), edge);
-        count = std::distance(connections.begin(), connections.end());
+        count = std::distance(begin(connections), end(connections));
         REQUIRE(count == required);
       }
     }
@@ -72,7 +83,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Square With Boundary", "[saddle_conn
     auto bound = GENERATE(2, 16);
     THEN("Saddle Connections Within a Bound of " << bound << " Are Essentially Trivial") {
       auto connections = SaddleConnections(square, Bound(bound, 0));
-      auto count = std::distance(connections.begin(), connections.end());
+      auto count = std::distance(begin(connections), end(connections));
 
       REQUIRE(count == bound * 4);
 
@@ -80,7 +91,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Square With Boundary", "[saddle_conn
 
       CAPTURE(edge);
       connections = SaddleConnections(square, Bound(bound, 0), edge);
-      count = std::distance(connections.begin(), connections.end());
+      count = std::distance(begin(connections), end(connections));
       REQUIRE(count == required);
     }
   }
@@ -96,7 +107,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Hexagon", "[saddle_connections]", (r
 
     CAPTURE(edge);
     auto connections = SaddleConnections(hexagon, bound, edge);
-    auto count = std::distance(connections.begin(), connections.end());
+    auto count = std::distance(begin(connections), end(connections));
     REQUIRE(count == required);
   }
 }

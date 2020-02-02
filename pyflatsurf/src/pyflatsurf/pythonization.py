@@ -65,4 +65,3 @@ def add_saddle_connections(proxy, name):
         def saddle_connections(self, *args):
             return cppyy.gbl.flatsurf.SaddleConnections[type(self)](self, *args)
         proxy.saddle_connections = saddle_connections
-

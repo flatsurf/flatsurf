@@ -21,7 +21,10 @@
 #include "external/catch2/single_include/catch2/catch.hpp"
 
 #include <numeric>
+#include <memory>
 
+#include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <e-antic/renfxx_fwd.h>
 #include <exact-real/element.hpp>
 #include <exact-real/number_field.hpp>
