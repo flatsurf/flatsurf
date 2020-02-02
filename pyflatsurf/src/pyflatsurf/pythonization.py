@@ -62,12 +62,7 @@ def enable_vector_print(proxy, name):
 
 def add_saddle_connections(proxy, name):
     if name.startswith("FlatTriangulation<"):
-        def saddle_connections(self, bound, source = None):
-            # Strangely, a T fails to convert implicitly to a Length<T> even
-            # though there is a non-explicit constructor Length(const T&).
-            # Therefore, we need to cast bound explicitly:
-            bound = cppyy.gbl.intervalxt.Length['long long'](bound)
-            sc = cppyy.gbl.flatsurf.SaddleConnections[type(self)]
-            return sc(self, bound) if source is None else sc(self, bound, source)
+        def saddle_connections(self, *args):
+            return cppyy.gbl.flatsurf.SaddleConnections[type(self)](self, *args)
         proxy.saddle_connections = saddle_connections
 

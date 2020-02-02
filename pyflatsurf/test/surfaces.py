@@ -35,6 +35,11 @@ def square(R2):
     vertices = [[1, 3, 2, -1, -3, -2]]
     return Surface(vertices, vectors)
 
+def L(R2):
+    vectors = [R2(1, 0), R2(1, 1), R2(0, 1), R2(-1, 0), R2(-1, -1), R2(1, 0), R2(1, 1), R2(0, 1), R2(0, -1)]
+    vertices = [[1, 2, 3, 4, 5, -3, 6, 7, 8, -6, -2, 9, -4, -5, -9, -1, -7, -8]]
+    return Surface(vertices, vectors)
+
 def hexagon():
     R2 = flatsurf.Vector['eantic::renf_elem_class']
     x = K.gen()

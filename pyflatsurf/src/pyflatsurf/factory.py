@@ -26,9 +26,7 @@ def make_FlatTriangulation(vertices, vectors):
     R2 = type(vectors[0])
     vectors = cppyy.gbl.std.vector[R2](vectors)
     combinatorial = flatsurf.FlatTriangulationCombinatorial(vertices)
-    ret = cppyy.gbl.flatsurf.makeFlatTriangulation(vertices, vectors);
-    ret.saddleConnections = lambda *args: flatsurf.SaddleConnections[type(ret)](ret, *args)
-    return ret
+    return cppyy.gbl.flatsurf.makeFlatTriangulation(vertices, vectors);
 
 def make_surface(surface_or_vertices, vectors = None):
     from collections.abc import Iterable

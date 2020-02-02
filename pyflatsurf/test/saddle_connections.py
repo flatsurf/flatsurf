@@ -29,7 +29,7 @@ import surfaces
 
 def test_square_longlong():
     surface = surfaces.square(flatsurf.Vector['long long'])
-    connections = surface.saddleConnections(flatsurf.Bound(16, 0), flatsurf.HalfEdge(1))
+    connections = surface.saddle_connections(flatsurf.Bound(16, 0), flatsurf.HalfEdge(1))
     # https://bitbucket.org/wlav/cppyy/issues/103/std-distance-returns-random-output
     # assert len(connections) == 60
     # This does not work, the iterator that backs connections returns
@@ -38,15 +38,34 @@ def test_square_longlong():
     # assert len(list(connections))
     assert len([1 for c in connections]) == 60
 
+def test_L_mpq():
+    surface = surfaces.L(flatsurf.Vector['mpq_class'])
+    connections = surface.saddle_connections(flatsurf.Bound(16, 0), flatsurf.HalfEdge(1))
+    assert len([1 for c in connections]) == 60
+
+def test_L_with_slit_mpq():
+    import cppyy
+    mpq = cppyy.gbl.mpq_class
+    R2 = flatsurf.Vector[mpq]
+    surface = surfaces.L(R2)
+    slit = R2(mpq(2, 1337), mpq(1, 1337))
+    e = flatsurf.HalfEdge(1)
+    surface = surface.insertAt(e, slit)
+    e = surface.nextAtVertex(e)
+    surface = surface.slot(e)
+
+    connections = surface.saddle_connections(flatsurf.Bound(16, 0), flatsurf.HalfEdge(1))
+    assert len([1 for c in connections]) == 49
+
 def test_hexagon_eantic():
     surface = surfaces.hexagon()
-    connections = surface.saddleConnections(flatsurf.Bound(16, 0), flatsurf.HalfEdge(1))
+    connections = surface.saddle_connections(flatsurf.Bound(16, 0), flatsurf.HalfEdge(1))
     assert len([1 for c in connections]) == 10
 
 def test_hexagon_exactreal():
     from pyexactreal import exactreal
     surface = surfaces.random_hexagon()
-    connections = surface.saddleConnections(flatsurf.Bound(16, 0), flatsurf.HalfEdge(1))
+    connections = surface.saddle_connections(flatsurf.Bound(16, 0), flatsurf.HalfEdge(1))
     # This is very slow at the moment, see https://github.com/flatsurf/exact-real/issues/37
     # assert len([1 for c in connections]) >= 10
 

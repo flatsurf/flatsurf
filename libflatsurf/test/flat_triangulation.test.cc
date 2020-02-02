@@ -91,10 +91,10 @@ TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[flat_triangulation][ins
           }
 
           AND_WHEN("We Make a Slot There") {
-            surf = surf->slot(e);
+            surf = surf->slot(surf->nextAtVertex(e));
 
             THEN("There is a Boundary at " << e) {
-              REQUIRE(surf->boundary(e));
+              REQUIRE(surf->boundary(surf->nextAtVertex(e)));
             }
           }
         }
