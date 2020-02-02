@@ -20,6 +20,8 @@
 #ifndef LIBFLATSURF_BOUND_HPP
 #define LIBFLATSURF_BOUND_HPP
 
+#include <iosfwd>
+
 #include <gmpxx.h>
 #include <boost/operators.hpp>
 
@@ -43,6 +45,8 @@ class Bound : boost::equality_comparable<Bound> {
 
   // Return the floor division by this bound.
   mpz_class operator/(const Bound&) const;
+
+  friend std::ostream &operator<<(std::ostream &, const Bound &);
 
  private:
   mpz_class square;

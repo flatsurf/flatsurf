@@ -17,6 +17,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <ostream>
+
 #include "../flatsurf/bound.hpp"
 
 namespace flatsurf {
@@ -30,6 +32,10 @@ const mpz_class& Bound::squared() const noexcept {
 
 bool Bound::operator==(const Bound& rhs) const noexcept {
   return square == rhs.square;
+}
+
+std::ostream &operator<<(std::ostream & os, const Bound & self) {
+  return os << "√(" << self.squared() << ")";
 }
 
 }
