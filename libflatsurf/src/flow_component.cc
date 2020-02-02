@@ -17,9 +17,6 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-// TODO
-#include <iostream>
-
 #include <memory>
 #include <ostream>
 #include <unordered_set>
@@ -34,8 +31,10 @@
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
-#include "../flatsurf/vertical.hpp"
+#include "../flatsurf/ccw.hpp"
 #include "../flatsurf/flow_component.hpp"
+#include "../flatsurf/orientation.hpp"
+#include "../flatsurf/vertical.hpp"
 
 #include "impl/flow_connection.impl.hpp"
 #include "impl/flow_component.impl.hpp"
@@ -70,7 +69,6 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
       return false;
     }
     if (step.equivalent) {
-      std::cout << "Registering detected connection for " << *step.connection << std::endl;
       const auto surface = ::flatsurf::Implementation<FlowConnection<Surface>>::make(impl->state, *this, *begin(*step.equivalent)).saddleConnection().surface().shared_from_this();
 
       // Register the saddle connection we just discovered
@@ -79,14 +77,11 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
         auto flowConnection = ::flatsurf::Implementation<FlowConnection<Surface>>::make(impl->state, *this, connection);
         // TODO: Unfortunately, non-verticals are not correctly oriented in intervalxt (i.e., a positive HalfEdge is a top half edge, a negative one is bottom; however, we assume things to be in a counter-clockwise context and there is currently no way to write things in a clockwise context. I guess, intervalxt should simply report the equivalent of -connection instead.)
         if (!flowConnection.vertical()) {
-          std::cout << vector << " -= " << connection << std::endl;
           vector -= flowConnection.saddleConnection();
         } else {
-          std::cout << vector << " += " << connection << std::endl;
           vector += flowConnection.saddleConnection();
         }
         // TODO: Rename Implementation to ImplementationOf to simplify these things
-        std::cout << "= " << vector << std::endl;
       }
       ASSERT(vector, "SaddleConnection must not be the zero vector");
       ASSERT(!vertical().perpendicular(vector), "SaddleConnection must be vertical");
@@ -126,7 +121,6 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
 
       // auto connection = SaddleConnection<Surface>::clockwise(clockwiseFrom, vector);
       auto connection = SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>(surface, source, target, vector);
-      std::cout << "clockwise from " << clockwiseFrom << " => " << connection << std::endl;
       
       // TODO: This is nice but too expensive for large vectors.
       // ::flatsurf::Implementation<SaddleConnection<Surface>>::check(connection);

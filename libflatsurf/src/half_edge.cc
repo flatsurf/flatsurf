@@ -21,6 +21,7 @@
 
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/permutation.hpp"
+
 #include "util/assert.ipp"
 
 using std::ostream;
@@ -53,7 +54,7 @@ bool HalfEdge::operator<(const HalfEdge &rhs) const {
 
 size_t HalfEdge::index() const noexcept {
   const int id = this->id;
-  assert(id != 0 && "a valid half edge must have a non-zero id");
+  ASSERT(id != 0, "a valid half edge must have a non-zero id");
   if (id < 0) {
     return static_cast<size_t>(-2 * id - 1);
   } else {

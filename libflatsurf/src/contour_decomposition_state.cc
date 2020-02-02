@@ -23,6 +23,8 @@
 #include "../flatsurf/vertical.hpp"
 #include "../flatsurf/half_edge.hpp"
 
+#include "util/assert.ipp"
+
 #include "impl/contour_decomposition_state.hpp"
 
 namespace flatsurf {

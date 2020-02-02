@@ -17,9 +17,6 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-// TODO
-#include <iostream>
-
 #include <memory>
 #include <ostream>
 #include <unordered_map>
@@ -33,13 +30,15 @@
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
-#include "../flatsurf/flow_component.hpp"
-#include "../flatsurf/contour_decomposition.hpp"
+#include "../flatsurf/ccw.hpp"
 #include "../flatsurf/contour_component.hpp"
-#include "../flatsurf/flow_connection.hpp"
 #include "../flatsurf/contour_connection.hpp"
-#include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/contour_decomposition.hpp"
+#include "../flatsurf/flow_component.hpp"
+#include "../flatsurf/flow_connection.hpp"
 #include "../flatsurf/interval_exchange_transformation.hpp"
+#include "../flatsurf/orientation.hpp"
+#include "../flatsurf/saddle_connection.hpp"
 
 #include "impl/flow_decomposition_state.hpp"
 #include "impl/flow_component_state.hpp"
@@ -81,13 +80,11 @@ FlowDecompositionState<Surface>::FlowDecompositionState(std::unique_ptr<Surface>
         assert(rightInjected.size() == injectRight.size());
 
         for (const auto& [vertical, injected] : rx::zip(leftVerticals, leftInjected)) {
-          std::cout << "injecting " << vertical << " as " << injected << std::endl;
           this->injectedConnections.emplace(injected, vertical);
           ASSERT(vertical.ccw(direction) == CCW::COLLINEAR, "Injected verticals must be collinear with flow direction but " << vertical << " is not.");;
           ASSERT(direction.orientation(vertical) == ORIENTATION::OPPOSITE, "Injected left verticals must be antiparallel with flow direction but " << vertical << " is not.");
         }
         for (const auto& [vertical, injected] : rx::zip(rightVerticals, rightInjected)) {
-          std::cout << "injecting " << vertical << " as " << injected << std::endl;
           this->injectedConnections.emplace(injected, vertical);
           ASSERT(vertical.ccw(direction) == CCW::COLLINEAR, "Injected verticals must be collinear with flow direction but " << vertical << " is not.");;
           ASSERT(direction.orientation(vertical) == ORIENTATION::SAME, "Injected right verticals must be parallel with flow direction but " << vertical << " is not.");

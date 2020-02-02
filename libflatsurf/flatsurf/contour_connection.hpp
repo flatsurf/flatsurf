@@ -22,6 +22,8 @@
 
 #include <list>
 
+#include <boost/operators.hpp>
+
 #include "external/spimpl/spimpl.h"
 
 #include "forward.hpp"

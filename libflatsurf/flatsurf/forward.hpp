@@ -27,10 +27,11 @@
 
 #include "local.hpp"
 
-#include "ccw.hpp"
-#include "orientation.hpp"
-
 namespace flatsurf {
+enum class CCW;
+
+enum class ORIENTATION;
+
 template <typename T>
 class Vector;
 
@@ -147,6 +148,10 @@ template <typename T>
 class Implementation;
 
 }  // namespace flatsurf
+
+// TODO: Move to cppyy.hpp?
+
+#include <iosfwd>
 
 // The following block of forward declarations is a bit odd. It only exists to
 // work around bugs in cppyy.

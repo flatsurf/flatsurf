@@ -22,6 +22,8 @@
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/half_edge.hpp"
 
+#include "util/assert.ipp"
+
 namespace flatsurf {
 
 Edge::Edge() : Edge(HalfEdge()) {}
@@ -35,8 +37,8 @@ HalfEdge Edge::positive() const { return id; }
 HalfEdge Edge::negative() const { return -id; }
 
 size_t Edge::index() const {
-  assert(id.id != 0 && "Edge 0 is not a valid edge");
-  assert(id.id > 0 && "Edge should have been automatically set to its positive HalfEdge representative");
+  ASSERT(id.id != 0, "Edge 0 is not a valid edge");
+  ASSERT(id.id > 0, "Edge should have been automatically set to its positive HalfEdge representative");
   return static_cast<size_t>(id.id) - 1;
 }
 

@@ -20,9 +20,12 @@
 #ifndef LIBFLATSURF_TRACKING_SET_HPP
 #define LIBFLATSURF_TRACKING_SET_HPP
 
-#include <boost/operators.hpp>
 #include <functional>
 #include <iosfwd>
+
+#include <boost/operators.hpp>
+
+#include "external/spimpl/spimpl.h"
 
 #include "forward.hpp"
 

@@ -25,6 +25,8 @@
 #include "../../external/gmpxxll/gmpxxll/mpz_class.hpp"
 
 #include "../../../flatsurf/bound.hpp"
+#include "../../../flatsurf/ccw.hpp"
+#include "../../../flatsurf/orientation.hpp"
 
 #include "../storage/cartesian.ipp"
 #include "../storage/forward.ipp"

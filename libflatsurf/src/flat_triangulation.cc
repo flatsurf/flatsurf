@@ -25,14 +25,19 @@
 #include <exact-real/arb.hpp>
 
 #include "../flatsurf/bound.hpp"
+#include "../flatsurf/ccw.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/half_edge_map.hpp"
+#include "../flatsurf/orientation.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertical.hpp"
+
+#include <functional>
+#include <iosfwd>
 #include "util/assert.ipp"
 
 #include "impl/flat_triangulation.impl.hpp"

@@ -31,6 +31,7 @@
 #include <intervalxt/interval_exchange_transformation.hpp>
 
 #include "../flatsurf/bound.hpp"
+#include "../flatsurf/vertical.hpp"
 #include "../flatsurf/flat_triangulation_collapsed.hpp"
 #include "../flatsurf/contour_decomposition.hpp"
 #include "../flatsurf/contour_component.hpp"

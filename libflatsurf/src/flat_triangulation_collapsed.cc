@@ -32,16 +32,18 @@
 #include "external/rx-ranges/include/rx/ranges.hpp"
 #include "external/gmpxxll/gmpxxll/mpz_class.hpp"
 
+#include "../flatsurf/bound.hpp"
+#include "../flatsurf/ccw.hpp"
+#include "../flatsurf/edge.hpp"
+#include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/flat_triangulation_collapsed.hpp"
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
-#include "../flatsurf/flat_triangulation.hpp"
-#include "../flatsurf/vertical.hpp"
-#include "../flatsurf/vector.hpp"
 #include "../flatsurf/half_edge.hpp"
-#include "../flatsurf/edge.hpp"
 #include "../flatsurf/half_edge_map.hpp"
+#include "../flatsurf/orientation.hpp"
 #include "../flatsurf/saddle_connection.hpp"
-#include "../flatsurf/bound.hpp"
+#include "../flatsurf/vector.hpp"
+#include "../flatsurf/vertical.hpp"
 
 #include "impl/flat_triangulation_collapsed.impl.hpp"
 // TODO: Maybe better use subdirectories

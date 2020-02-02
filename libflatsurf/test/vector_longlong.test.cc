@@ -22,6 +22,7 @@
 
 #include "external/catch2/single_include/catch2/catch.hpp"
 
+#include "../flatsurf/ccw.hpp"
 #include "../flatsurf/vector.hpp"
 
 namespace flatsurf::test {

@@ -26,6 +26,8 @@
 #include <memory>
 #include <type_traits>
 
+#include <boost/operators.hpp>
+
 #include "external/spimpl/spimpl.h"
 
 #include "forward.hpp"

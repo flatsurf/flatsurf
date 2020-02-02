@@ -23,7 +23,9 @@
 #include <boost/lexical_cast.hpp>
 
 #include "../flatsurf/bound.hpp"
+#include "../flatsurf/ccw.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
+#include "../flatsurf/orientation.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"

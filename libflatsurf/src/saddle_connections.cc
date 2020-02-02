@@ -21,12 +21,13 @@
 #include <stack>
 
 #include "../flatsurf/bound.hpp"
+#include "../flatsurf/ccw.hpp"
+#include "../flatsurf/chain.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
-#include "../flatsurf/chain.hpp"
 
 #include "util/assert.ipp"
 
