@@ -56,9 +56,11 @@ class SaddleConnection :
   static SaddleConnection<Surface> clockwise(const SaddleConnection& from, const Vector&);
   static SaddleConnection<Surface> fromEdge(std::shared_ptr<const Surface>, HalfEdge);
 
-  // TODO: Does this also give me an implicit cast to Vector? If not, we should add this explicitly.
+  // TODO: Does this also give me an implicit cast to Vector? If not, we should add this explicitly; the explicit vector() seems more sane anyway.
   operator const Vector&() const;
   operator const Chain<Surface>&() const;
+
+  const Vector& vector() const;
 
   explicit operator bool() const;
 

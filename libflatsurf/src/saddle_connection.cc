@@ -234,6 +234,11 @@ SaddleConnection<Surface>::operator const typename Surface::Vector&() const {
 }
 
 template <typename Surface>
+const typename Surface::Vector& SaddleConnection<Surface>::vector() const {
+  return *this;
+}
+
+template <typename Surface>
 SaddleConnection<Surface>::operator const Chain<Surface>&() const {
   if (!*this) {
     static Chain<Surface> zero;
