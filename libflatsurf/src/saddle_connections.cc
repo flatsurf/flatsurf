@@ -105,9 +105,9 @@ class SaddleConnections<Surface>::Iterator::Implementation {
     state.push(State::END);
     state.push(State::START_INSIDE_SEARCH_RADIUS);
 
-    // Report nextEdgeEnd as a saddle connection unless it's already outside
-    // of the search radius.
-    if (nextEdgeEnd > searchRadius) {
+    // Report sector as a saddle connection unless it is already outside of
+    // the search radius.
+    if (boundary[0] > searchRadius) {
       while (!increment())
         ;
     }
@@ -543,16 +543,20 @@ const SaddleConnection<Surface>& SaddleConnections<Surface>::Iterator::dereferen
 
   switch(impl->state.top()) {
     case State::START_INSIDE_SEARCH_RADIUS:
-    case State::START_OUTSIDE_SEARCH_RADIUS:
       // This makes the first reported connection work: It is not nextEdgeEnd but the sector boundary.
       impl->connection = SaddleConnection<Surface>::fromEdge(impl->surface, *impl->sector);
       break;
     case State::SADDLE_CONNECTION_FOUND:
       impl->connection = SaddleConnection<Surface>(impl->surface, *impl->sector, -impl->nextEdge, impl->nextEdgeEnd);
       break;
+    case State::START_OUTSIDE_SEARCH_RADIUS:
+      ASSERT(false, "iterator must be at end when in this state");
     default:
       ASSERT(false, "iterator cannot hold in this state");
   }
+
+  ASSERT(impl->connection <= impl->searchRadius, "Iterator stopped at connection " << impl->connection << " which is beyond the search radius " << impl->searchRadius);
+
   return impl->connection;
 }
 
