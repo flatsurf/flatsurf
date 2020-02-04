@@ -41,8 +41,6 @@ class FlowConnection :
 
   FlowConnection<Surface> operator-() const;
 
-  // TODO: Globally rename circumference to perimeter.
-
   // If this is a vertical connection, return the MaybeVerticalFlowConnection
   // from which this connection was created.
   MaybeVerticalFlowConnection<Surface> source() const;
@@ -57,9 +55,9 @@ class FlowConnection :
   // connection.
   MaybeVerticalFlowConnection<Surface> previousAtSingularity();
 
-  FlowConnection<Surface> nextInCircumference() const noexcept;
+  FlowConnection<Surface> nextInPerimeter() const noexcept;
 
-  FlowConnection<Surface> previousInCircumference() const noexcept;
+  FlowConnection<Surface> previousInPerimeter() const noexcept;
 
   // Return whether this is a vertical (parallel or antiparallel) connection
   // with respect to the fixed vertical direction.
