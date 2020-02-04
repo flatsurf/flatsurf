@@ -60,6 +60,7 @@ class FlowDecomposition {
   Moveable<Implementation> impl;
   friend Implementation;
 };
+
 }  // namespace flatsurf
 
 #endif

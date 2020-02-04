@@ -43,7 +43,6 @@
 #include "half_edge_map.hpp"
 #include "half_edge_set.hpp"
 #include "interval_exchange_transformation.hpp"
-#include "length_along_triangulation.hpp"
 #include "local.hpp"
 #include "moveable.hpp"
 #include "orientation.hpp"

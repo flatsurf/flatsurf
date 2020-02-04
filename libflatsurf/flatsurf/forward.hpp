@@ -178,6 +178,8 @@ template <typename Surface, typename _ = typename Surface::Vector>
 std::ostream &operator<<(std::ostream &, const SaddleConnection<Surface> &);
 template <typename Surface>
 std::ostream &operator<<(std::ostream &, const SaddleConnections<Surface> &);
+template <typename Surface>
+std::ostream &operator<<(std::ostream &, const FlowComponent<Surface> &);
 
 // This does not work due to https://bitbucket.org/wlav/cppyy/issues/112/operator-for-a-base-class-is-not-found
 // namespace detail {

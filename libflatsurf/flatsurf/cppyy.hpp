@@ -34,6 +34,8 @@
 #include "saddle_connections.hpp"
 #include "vector.hpp"
 #include "bound.hpp"
+#include "flow_decomposition.hpp"
+#include "flow_component.hpp"
 
 namespace flatsurf {
 // cppyy sometimes has trouble with rvalues, let's help it to create a FlatTriangulation
@@ -43,6 +45,7 @@ auto makeFlatTriangulation(const T &vertices, const std::vector<V> &vectors) {
 }
 
 // cppyy gets the lifetime of the surfaces wrong when methods return a unique_ptr<Surface>
+// TODO: Report this upstream
 template <typename T>
 std::shared_ptr<FlatTriangulation<T>> insertAt(const FlatTriangulation<T>& surface, HalfEdge &e, const Vector<T>& v) {
   return surface.insertAt(e, v);
@@ -53,6 +56,18 @@ std::shared_ptr<FlatTriangulation<T>> slot(const FlatTriangulation<T>& surface, 
   return surface.slot(e);
 }
 
+template <typename T>
+FlowDecomposition<FlatTriangulation<T>> makeFlowDecomposition(const FlatTriangulation<T>& surface, const Vector<T>& v) {
+  return FlowDecomposition<FlatTriangulation<T>>(surface.clone(), v);
+}
+
+// cppyy has trouble with std::function arguments in headers
+// TODO: Report this upstream
+template <typename T>
+void decomposeFlowDecomposition(FlowDecomposition<T>& decomposition, int limit=-1) {
+  decomposition.decompose();
+}
+
 // Work around https://bitbucket.org/wlav/cppyy/issues/96/cannot-make-wrapper-for-a-function
 extern template std::ostream &operator<<(std::ostream &, const Permutation<HalfEdge> &);
 extern template std::ostream &operator<<(std::ostream &, const FlatTriangulation<long long> &);
@@ -61,6 +76,7 @@ extern template std::ostream &operator<<(std::ostream &, const SaddleConnection<
 extern template std::ostream &operator<<(std::ostream &, const SaddleConnection<FlatTriangulation<eantic::renf_elem_class>> &);
 extern template std::ostream &operator<<(std::ostream &, const SaddleConnections<FlatTriangulation<long long>> &);
 extern template std::ostream &operator<<(std::ostream &, const SaddleConnections<FlatTriangulation<eantic::renf_elem_class>> &);
+extern template std::ostream &operator<<(std::ostream &, const FlowComponent<FlatTriangulation<eantic::renf_elem_class>> &);
 std::ostream &operator<<(std::ostream &, const Vertex &);
 }  // namespace flatsurf
 
