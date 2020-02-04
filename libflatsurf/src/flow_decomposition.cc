@@ -53,7 +53,7 @@ namespace flatsurf {
 template <typename Surface>
 FlowDecomposition<Surface>::FlowDecomposition(std::unique_ptr<Surface> surface, const Vector<T>& vertical)
   : impl(spimpl::make_unique_impl<Implementation>(std::move(surface), vertical)) {
-  std::cout << *this << " with respect to " << vertical << std::endl;
+  // std::cout << *this << " with respect to " << vertical << std::endl;
 }
 
 template <typename Surface>

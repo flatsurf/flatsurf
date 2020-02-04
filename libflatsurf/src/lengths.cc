@@ -87,7 +87,7 @@ void Lengths<Surface>::pop() {
 
 template <typename Surface>
 void Lengths<Surface>::subtract(Label minuend) {
-  std::cout<<"Subtracting from " << fromLabel(minuend) << " when " << *this << std::endl;
+  // std::cout<<"Subtracting from " << fromLabel(minuend) << " when " << *this << std::endl;
 
   ASSERT(length(minuend) > 0, "lengths must be positive");
 
