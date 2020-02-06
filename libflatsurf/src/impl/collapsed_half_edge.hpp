@@ -22,15 +22,13 @@
 
 #include <memory>
 #include <list>
-#include <ostream>
-
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string/join.hpp>
+#include <iosfwd>
 
 #include "../../flatsurf/flat_triangulation.hpp"
 #include "../../flatsurf/saddle_connection.hpp"
 
 #include "./flat_triangulation_collapsed.impl.hpp"
+
 
 namespace flatsurf {
 

@@ -21,13 +21,14 @@
 #include <ostream>
 #include <unordered_set>
 
+#include <fmt/format.h>
+
 #include <boost/logic/tribool.hpp>
-// TODO: Replace with fmt; also lexical_cast.
-#include <boost/algorithm/string/join.hpp>
 
 #include <intervalxt/component.hpp>
 #include <intervalxt/decomposition_step.hpp>
 #include <intervalxt/label.hpp>
+#include <intervalxt/fmt.hpp>
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
@@ -35,6 +36,7 @@
 #include "../flatsurf/flow_component.hpp"
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/vertical.hpp"
+#include "../flatsurf/fmt.hpp"
 
 #include "impl/flow_connection.impl.hpp"
 #include "impl/flow_component.impl.hpp"
@@ -218,7 +220,7 @@ typename FlowComponent<Surface>::Perimeter FlowComponent<Surface>::perimeter() c
   for (const auto& side : impl->component->dynamicalComponent.perimeter())
     perimeter.push_back(::flatsurf::Implementation<FlowConnection<Surface>>::make(impl->state, *this, side));
 
-  ASSERT(std::unordered_set<FlowConnection<Surface>>(begin(perimeter), end(perimeter)).size() == perimeter.size(), "Perimeter of component can not contain duplicates. The perimeter provided by libintervalxt mapped to FlowConnections as follows: " << boost::algorithm::join(impl->component->dynamicalComponent.perimeter() | rx::transform([&](const auto& connection) { return boost::lexical_cast<std::string>(connection) + ": " + boost::lexical_cast<std::string>(::flatsurf::Implementation<FlowConnection<Surface>>::make(impl->state, *this, connection)); }) | rx::to_vector(), ", "));
+  ASSERT(std::unordered_set<FlowConnection<Surface>>(begin(perimeter), end(perimeter)).size() == perimeter.size(), fmt::format("Perimeter of component can not contain duplicates. The perimeter provided by libintervalxt mapped to FlowConnections as follows: {}", fmt::join(impl->component->dynamicalComponent.perimeter() | rx::transform([&](const auto& connection) { return fmt::format("{}: {}", connection, ::flatsurf::Implementation<FlowConnection<Surface>>::make(impl->state, *this, connection)); }) | rx::to_vector(), ", ")));
 
   return perimeter;
 }
@@ -251,11 +253,7 @@ ostream& operator<<(ostream& os, const FlowComponent<Surface>& self) {
     kind = "Component Without Periodic Trajectory";
   }
 
-  std::vector<string> items;
-  for (const auto& c : self.perimeter())
-    items.push_back(boost::lexical_cast<string>(c));
-
-  return os << kind << " with perimeter " << boost::algorithm::join(items, "→ ");
+  return os << fmt::format("{} with perimeter {}", kind, fmt::join(self.perimeter(), "→"));
 }
 
 }

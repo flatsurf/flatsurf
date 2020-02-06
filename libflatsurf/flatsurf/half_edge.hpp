@@ -21,7 +21,6 @@
 #define LIBFLATSURF_HALF_EDGE_HPP
 
 #include <iosfwd>
-#include <string>
 #include <functional>
 
 #include <stddef.h>

@@ -23,7 +23,7 @@
 #include <memory>
 #include <list>
 #include <functional>
-#include <ostream>
+#include <iosfwd>
 
 #include "../../flatsurf/flat_triangulation_collapsed.hpp"
 #include "../../flatsurf/flat_triangulation.hpp"

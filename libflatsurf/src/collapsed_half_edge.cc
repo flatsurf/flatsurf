@@ -19,6 +19,10 @@
 
 #include <ostream>
 
+#include <fmt/format.h>
+
+#include "../flatsurf/fmt.hpp"
+
 #include "impl/collapsed_half_edge.hpp"
 
 namespace flatsurf {
@@ -40,15 +44,9 @@ bool CollapsedHalfEdge<T>::operator==(const CollapsedHalfEdge& rhs) const {
 
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const CollapsedHalfEdge<T>& self) {
-  std::vector<std::string> items;
-  for (const auto& c : self.connections) {
-    items.push_back(boost::lexical_cast<std::string>(c));
-  }
-  if (items.size()) {
-    return os << "(" << boost::algorithm::join(items, "⇒") << ")";
-  } else {
-    return os;
-  }
+  if (self.connections.size())
+    os << fmt::format("({})", fmt::join(self.connections, "⇒"));
+  return os;
 }
 
 }

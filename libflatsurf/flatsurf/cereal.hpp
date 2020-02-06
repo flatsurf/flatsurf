@@ -21,7 +21,8 @@
 #ifndef LIBFLATSURF_CEREAL_HPP
 #define LIBFLATSURF_CEREAL_HPP
 
-#include <boost/lexical_cast.hpp>
+#include <fmt/format.h>
+#include <fmt/ostream.h>
 
 #include <cereal/types/map.hpp>
 #include <cereal/types/memory.hpp>
@@ -158,7 +159,7 @@ struct Serialization<Chain<Surface>> {
   void save(Archive& archive, const Chain<Surface>& self) {
     std::vector<std::string> coefficients;
     for (auto edge : self.surface().edges())
-      coefficients.push_back(boost::lexical_cast<std::string>(self[edge]));
+      coefficients.push_back(fmt::format("{}", self[edge]));
     archive(cereal::make_nvp("surface", self.surface().shared_from_this()));
     archive(cereal::make_nvp("coefficients", coefficients));
   }
