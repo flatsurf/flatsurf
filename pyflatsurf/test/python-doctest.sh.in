@@ -23,4 +23,4 @@
 set -ex
 
 TARGETS=`grep -l '>>>' @srcdir@/../src/pyflatsurf/*.py`
-pytest --doctest-modules $TARGETS
+pytest -vv --doctest-modules $TARGETS
