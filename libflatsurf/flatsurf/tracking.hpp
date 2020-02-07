@@ -27,7 +27,7 @@
 #include "flat_triangulation_combinatorial.hpp"
 
 namespace flatsurf {
-template<typename T>
+template <typename T>
 class Tracking {
  public:
   // A callback of this type is invoked after an edge is flipped.
@@ -44,7 +44,7 @@ class Tracking {
   // The parent does not need to remain valid. If it is destructed, it will
   // signal so that we removes its reference to it.
   // However, value must remain valid as long as this object is around.
-  Tracking(const FlatTriangulationCombinatorial *parent, T *value, const FlipHandler &updateAfterFlip=noFlip, const CollapseHandler &updateBeforeCollapse=noCollapse, const SwapHandler& updateBeforeSwap=noSwap, const EraseHandler& updateBeforeErase=noErase, const DestructionHandler& updateBeforeDestruction=forgetParent);
+  Tracking(const FlatTriangulationCombinatorial* parent, T* value, const FlipHandler& updateAfterFlip = noFlip, const CollapseHandler& updateBeforeCollapse = noCollapse, const SwapHandler& updateBeforeSwap = noSwap, const EraseHandler& updateBeforeErase = noErase, const DestructionHandler& updateBeforeDestruction = forgetParent);
 
   Tracking(const Tracking&) = delete;
   Tracking(Tracking&&);
@@ -55,7 +55,7 @@ class Tracking {
 
   T& get() const;
 
-  const FlatTriangulationCombinatorial &parent() const;
+  const FlatTriangulationCombinatorial& parent() const;
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const Tracking<S>&);
@@ -73,8 +73,3 @@ class Tracking {
 }  // namespace flatsurf
 
 #endif
-
-
-
-
-

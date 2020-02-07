@@ -35,6 +35,6 @@ class Implementation<FlowDecomposition<Surface>> {
   std::shared_ptr<FlowDecompositionState<Surface>> state;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

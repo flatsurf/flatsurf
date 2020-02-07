@@ -20,8 +20,8 @@
 #ifndef LIBFLATSURF_VERTICAL_IMPL_HPP
 #define LIBFLATSURF_VERTICAL_IMPL_HPP
 
-#include <memory>
 #include <functional>
+#include <memory>
 
 #include "../../flatsurf/vertical.hpp"
 
@@ -30,6 +30,7 @@ namespace flatsurf {
 template <typename Surface>
 class Implementation<Vertical<Surface>> {
   using Vertical = ::flatsurf::Vertical<Surface>;
+
  public:
   Implementation(std::shared_ptr<const Surface>, const typename Surface::Vector&);
 
@@ -40,7 +41,6 @@ class Implementation<Vertical<Surface>> {
   typename Surface::Vector horizontal;
 };
 
-}
+}  // namespace flatsurf
 
 #endif
-

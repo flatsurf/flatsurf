@@ -21,14 +21,14 @@
 #define LIBFLATSURF_COMPONENT_HPP
 
 #include <functional>
-#include <vector>
 #include <list>
 #include <variant>
+#include <vector>
 
 #include <boost/logic/tribool_fwd.hpp>
 
-#include "vector.hpp"
 #include "copyable.hpp"
+#include "vector.hpp"
 
 namespace flatsurf {
 
@@ -49,15 +49,15 @@ class FlowComponent {
   boost::logic::tribool withoutPeriodicTrajectory() const noexcept;
   boost::logic::tribool keane() const noexcept;
 
-  DecompositionStep<Surface> decompositionStep(int limit= -1);
+  DecompositionStep<Surface> decompositionStep(int limit = -1);
 
   // Return whether all resulting components satisfy target, i.e., the limit
   // was not reached.
   bool decompose(
-    std::function<bool(const FlowComponent&)> target=[](const auto& c) {
-      return (c.cylinder() || c.withoutPeriodicTrajectory()) ? true : false;
-    },
-    int limit=-1);
+      std::function<bool(const FlowComponent&)> target = [](const auto& c) {
+        return (c.cylinder() || c.withoutPeriodicTrajectory()) ? true : false;
+      },
+      int limit = -1);
 
   // A walk around this component in counter clockwise order along saddle connections.
   Perimeter perimeter() const;

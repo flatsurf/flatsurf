@@ -35,8 +35,12 @@ class Cartesian {
  public:
   using CartesianCoordinate = T;
 
-  Cartesian(const T& x, const T& y) : x(x), y(y) {}
-  Cartesian(T&& x, T&& y) : x(std::move(x)), y(std::move(y)) {}
+  Cartesian(const T& x, const T& y) :
+    x(x),
+    y(y) {}
+  Cartesian(T&& x, T&& y) :
+    x(std::move(x)),
+    y(std::move(y)) {}
 
   T x, y;
 };

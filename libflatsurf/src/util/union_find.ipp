@@ -44,7 +44,8 @@ class UnionFind : boost::equality_comparable<UnionFind<T>> {
   }
 
  public:
-  UnionFind(const T representative) : repr(representative) {
+  UnionFind(const T representative) :
+    repr(representative) {
     parent = this;
   }
 

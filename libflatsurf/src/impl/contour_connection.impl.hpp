@@ -47,7 +47,7 @@ class Implementation<ContourConnection<Surface>> {
   // The connections are split in two buckets of continuous connections, the
   // ones attached to from and the ones attached to to.
   // The connections are oriented such they all point towards the interior.
-  static std::pair<std::list<typename Surface::SaddleConnection>,std::list<typename Surface::SaddleConnection>> cross(const ContourConnection<Surface>& from, const ContourConnection<Surface>& to);
+  static std::pair<std::list<typename Surface::SaddleConnection>, std::list<typename Surface::SaddleConnection>> cross(const ContourConnection<Surface>& from, const ContourConnection<Surface>& to);
 
   std::shared_ptr<ContourDecompositionState<Surface>> state;
   ContourComponent<Surface> component;
@@ -56,6 +56,6 @@ class Implementation<ContourConnection<Surface>> {
   Contour contour;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

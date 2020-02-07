@@ -23,8 +23,8 @@
 #include <memory>
 #include <optional>
 
-#include <exact-real/arb.hpp>
 #include <gmpxx.h>
+#include <exact-real/arb.hpp>
 
 #include "../../flatsurf/chain.hpp"
 #include "../../flatsurf/edge_map.hpp"
@@ -54,6 +54,6 @@ class Implementation<Chain<Surface>> {
   mutable std::vector<Move> pendingApproximateVectorMoves;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

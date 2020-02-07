@@ -38,7 +38,8 @@ class Vector : public std::conditional_t<std::is_same_v<T, exactreal::Arb>, deta
   Vector(const Coordinate& x, const Coordinate& y);
 
   template <typename X, typename Y>
-  Vector(const X& x, const Y& y) : Vector(static_cast<Coordinate>(x), static_cast<Coordinate>(y)) {}
+  Vector(const X& x, const Y& y) :
+    Vector(static_cast<Coordinate>(x), static_cast<Coordinate>(y)) {}
 
   Coordinate x() const noexcept;
   Coordinate y() const noexcept;
@@ -68,6 +69,6 @@ namespace std {
 template <typename T>
 struct hash<::flatsurf::Vector<T>> { size_t operator()(const ::flatsurf::Vector<T>&) const noexcept; };
 
-}
+}  // namespace std
 
 #endif

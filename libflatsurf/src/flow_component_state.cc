@@ -35,7 +35,7 @@ std::ostream& operator<<(std::ostream&, const FlowComponentState<Surface>&) {
   throw std::logic_error("not implemented: ostream << FlowComponentState");
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

@@ -46,12 +46,12 @@ class Bound : boost::equality_comparable<Bound> {
   // Return the floor division by this bound.
   mpz_class operator/(const Bound&) const;
 
-  friend std::ostream &operator<<(std::ostream &, const Bound &);
+  friend std::ostream& operator<<(std::ostream&, const Bound&);
 
  private:
   mpz_class square;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

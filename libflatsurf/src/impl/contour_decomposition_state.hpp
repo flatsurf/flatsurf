@@ -20,8 +20,8 @@
 #ifndef LIBFLATSURF_CONTOUR_DECOMPOSITION_STATE_HPP
 #define LIBFLATSURF_CONTOUR_DECOMPOSITION_STATE_HPP
 
-#include <memory>
 #include <list>
+#include <memory>
 
 #include "contour_decomposition.impl.hpp"
 #include "forward.hpp"
@@ -31,6 +31,7 @@ namespace flatsurf {
 template <typename Surface>
 class ContourDecompositionState : public std::enable_shared_from_this<ContourDecompositionState<Surface>> {
   using ComponentState = ContourComponentState<Surface>;
+
  public:
   using Collapsed = std::conditional_t<std::is_same_v<Surface, FlatTriangulationCollapsed<typename Surface::Coordinate>>, Surface, typename Surface::Collapsed>;
 
@@ -45,6 +46,6 @@ class ContourDecompositionState : public std::enable_shared_from_this<ContourDec
   friend std::ostream& operator<<(std::ostream&, const ContourDecompositionState<S>&);
 };
 
-}
+}  // namespace flatsurf
 
 #endif

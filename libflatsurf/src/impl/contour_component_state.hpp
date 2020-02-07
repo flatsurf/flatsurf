@@ -31,7 +31,6 @@ class ContourComponentState {
  public:
   std::set<HalfEdge> component;
 };
-}
+}  // namespace flatsurf
 
 #endif
-

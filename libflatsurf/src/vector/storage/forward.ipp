@@ -36,8 +36,10 @@ class Forward {
   using ForwardTo = Vector;
 
   Forward() {}
-  explicit Forward(const Vector& vector) : vector(vector) {}
-  explicit Forward(Vector&& vector) : vector(std::move(vector)) {}
+  explicit Forward(const Vector& vector) :
+    vector(vector) {}
+  explicit Forward(Vector&& vector) :
+    vector(std::move(vector)) {}
 
   Vector vector;
 };

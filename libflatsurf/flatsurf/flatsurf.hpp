@@ -61,4 +61,3 @@
 #include "vertical.hpp"
 
 #endif
-

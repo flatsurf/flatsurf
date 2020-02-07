@@ -17,11 +17,11 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <ostream>
 #include <memory>
+#include <ostream>
 
-#include "../flatsurf/vertical.hpp"
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/vertical.hpp"
 
 #include "util/assert.ipp"
 
@@ -60,7 +60,7 @@ std::ostream& operator<<(std::ostream&, const ContourDecompositionState<Surface>
   throw std::logic_error("not implemented: ostream << ContourDecompositionState");
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

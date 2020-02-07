@@ -38,7 +38,7 @@ class Implementation<Tracking<T>> {
   using EraseHandler = typename Tracking<T>::EraseHandler;
   using DestructionHandler = typename Tracking<T>::DestructionHandler;
 
-  Implementation(const FlatTriangulationCombinatorial *parent, T* value, const FlipHandler &updateAfterFlip=Tracking<T>::noFlip, const CollapseHandler &updateBeforeCollapse=Tracking<T>::noCollapse, const SwapHandler& updateBeforeSwap=Tracking<T>::noSwap, const EraseHandler& updateBeforeErase=Tracking<T>::noErase, const DestructionHandler& updateBeforeDestruction=Tracking<T>::forgetParent);
+  Implementation(const FlatTriangulationCombinatorial* parent, T* value, const FlipHandler& updateAfterFlip = Tracking<T>::noFlip, const CollapseHandler& updateBeforeCollapse = Tracking<T>::noCollapse, const SwapHandler& updateBeforeSwap = Tracking<T>::noSwap, const EraseHandler& updateBeforeErase = Tracking<T>::noErase, const DestructionHandler& updateBeforeDestruction = Tracking<T>::forgetParent);
   ~Implementation();
 
   // We keep a reference to the triangulation that we were created with so that
@@ -46,7 +46,7 @@ class Implementation<Tracking<T>> {
   // future flips/collapses anymore.
   // Note that this reference can never be dangling as our parent will instruct
   // us about its destruction in its destructor.
-  mutable const FlatTriangulationCombinatorial *parent;
+  mutable const FlatTriangulationCombinatorial* parent;
 
   T* value;
 
@@ -63,6 +63,6 @@ class Implementation<Tracking<T>> {
   boost::signals2::connection onAfterMove;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

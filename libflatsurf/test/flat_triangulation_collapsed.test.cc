@@ -26,11 +26,11 @@
 #include <exact-real/element.hpp>
 #include <exact-real/number_field.hpp>
 
-#include "../flatsurf/flat_triangulation_collapsed.hpp"
-#include "../flatsurf/edge.hpp"
 #include "../flatsurf/bound.hpp"
-#include "../flatsurf/saddle_connections.hpp"
+#include "../flatsurf/edge.hpp"
+#include "../flatsurf/flat_triangulation_collapsed.hpp"
 #include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/saddle_connections.hpp"
 
 #include "surfaces.hpp"
 
@@ -43,7 +43,7 @@ TEMPLATE_TEST_CASE("Collapse in a Flat Triangulation", "[flat_triangulation_coll
       return surf->fromEdge(e) == vector;
     });
   };
-  
+
   {
     auto surface = makeSquare<R2>();
 
@@ -56,12 +56,12 @@ TEMPLATE_TEST_CASE("Collapse in a Flat Triangulation", "[flat_triangulation_coll
             THEN("We end up with " << *collapsed << " where everything is collapsed into a single edge") {
               REQUIRE(collapsed->edges().size() == 1);
               REQUIRE(collapsed->fromEdge(HalfEdge(1)) == -collapsed->fromEdge(HalfEdge(-1)));
-              
+
               auto cross = collapsed->cross(HalfEdge(1));
               REQUIRE(cross.size() == 1);
               CAPTURE(*cross.begin());
               REQUIRE((*cross.begin() == sc || *cross.begin() == -sc));
-    
+
               cross = collapsed->cross(HalfEdge(-1));
               REQUIRE(cross.size() == 1);
               CAPTURE(*cross.begin());
@@ -107,4 +107,3 @@ TEMPLATE_TEST_CASE("Collapse in a Flat Triangulation", "[flat_triangulation_coll
 }
 
 }  // namespace flatsurf::test
-

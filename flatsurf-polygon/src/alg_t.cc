@@ -134,7 +134,7 @@ T(NTL::conv<long>(c)); }).toVector());
 // ξ is a primitive n-th root of unity; together with the elements Re(ξ) and
 // Im(ξ).
 std::tuple<std::shared_ptr<const eantic::renf_class>, eantic::renf_elem_class,
-           eantic::renf_elem_class>
+    eantic::renf_elem_class>
 real_cyclotomic_field(size_t n) {
   /*
    Currently, we use hard coded minimal polynomials of these number fields.
@@ -181,84 +181,84 @@ im.change_ring(M).roots(multiplicities=False))
 */
   vector<vector<std::string>> totally_real_data(
       {{"x", "0.000000000000000", "1", "0"},
-       {"x", "0.000000000000000", "1", "0"},
-       {"x", "0.000000000000000", "-1", "0"},
-       {"x^2 - 3", "-1.73205080756888", "-1/2", "-1/2*x"},
-       {"x - 1", "1.00000000000000", "0", "1"},
-       {"x^4 - 5*x^2 + 5", "-1.90211303259031", "1/2*x^2 - 3/2", "-1/2*x"},
-       {"x^2 - 3", "-1.73205080756888", "1/2", "-1/2*x"},
-       {"x^6 - 7*x^4 + 14*x^2 - 7", "-1.94985582436365", "1/2*x^4 - 2*x^2 + 1",
-        "-1/2*x^3 + 3/2*x"},
-       {"x^2 - 2", "-1.41421356237310", "-1/2*x", "-1/2*x"},
-       {"x^6 - 6*x^4 + 9*x^2 - 3", "-1.96961550602442", "1/2*x^4 - 2*x^2 + 1",
-        "-1/2*x^5 + 5/2*x^3 - 5/2*x"},
-       {"x^4 - 5*x^2 + 5", "-1.90211303259031", "1/2*x^2 - 1",
-        "-1/2*x^3 + 3/2*x"},
-       {"x^10 - 11*x^8 + 44*x^6 - 77*x^4 + 55*x^2 - 11", "-1.97964288376187",
-        "1/2*x^4 - 2*x^2 + 1", "-1/2*x^7 + 7/2*x^5 - 7*x^3 + 7/2*x"},
-       {"x^2 - 3", "-1.73205080756888", "-1/2*x", "1/2"},
-       {"x^12 - 13*x^10 + 65*x^8 - 156*x^6 + 182*x^4 - 91*x^2 + 13",
-        "-1.98541774819611", "1/2*x^4 - 2*x^2 + 1",
-        "-1/2*x^9 + 9/2*x^7 - 27/2*x^5 + 15*x^3 - 9/2*x"},
-       {"x^6 - 7*x^4 + 14*x^2 - 7", "-1.94985582436365", "1/2*x^2 - 1",
-        "-1/2*x^5 + 5/2*x^3 - 5/2*x"},
-       {"x^8 - 7*x^6 + 14*x^4 - 8*x^2 + 1", "-1.98904379073655",
-        "1/2*x^4 - 2*x^2 + 1", "-x^7 + 13/2*x^5 - 11*x^3 + 7/2*x"},
-       {"x^4 - 4*x^2 + 2", "-1.84775906502257", "-1/2*x", "-1/2*x^3 + 3/2*x"},
-       {"x^16 - 17*x^14 + 119*x^12 - 442*x^10 + 935*x^8 - 1122*x^6 + 714*x^4 - "
-        "204*x^2 + 17",
-        "-1.99146835259007", "1/2*x^4 - 2*x^2 + 1",
-        "-1/2*x^13 + 13/2*x^11 - 65/2*x^9 + 78*x^7 - 91*x^5 + 91/2*x^3 - "
-        "13/2*x"},
-       {"x^6 - 6*x^4 + 9*x^2 - 3", "-1.96961550602442", "1/2*x^2 - 1",
-        "1/2*x^5 - 5/2*x^3 + 2*x"},
-       {"x^18 - 19*x^16 + 152*x^14 - 665*x^12 + 1729*x^10 - 2717*x^8 + "
-        "2508*x^6 - 1254*x^4 + 285*x^2 - 19",
-        "-1.99316898601334", "1/2*x^4 - 2*x^2 + 1",
-        "-1/2*x^15 + 15/2*x^13 - 45*x^11 + 275/2*x^9 - 225*x^7 + 189*x^5 - "
-        "70*x^3 + 15/2*x"},
-       {"x^4 - 5*x^2 + 5", "-1.90211303259031", "-1/2*x", "1/2*x^2 - 3/2"},
-       {"x^12 - 11*x^10 + 44*x^8 - 78*x^6 + 60*x^4 - 16*x^2 + 1",
-        "-1.99440759436236", "1/2*x^4 - 2*x^2 + 1",
-        "1/2*x^11 - 11/2*x^9 + 22*x^7 - 77/2*x^5 + 27*x^3 - 4*x"},
-       {"x^10 - 11*x^8 + 44*x^6 - 77*x^4 + 55*x^2 - 11", "-1.97964288376187",
-        "1/2*x^2 - 1", "-1/2*x^9 + 9/2*x^7 - 27/2*x^5 + 15*x^3 - 9/2*x"},
-       {"x^22 - 23*x^20 + 230*x^18 - 1311*x^16 + 4692*x^14 - 10948*x^12 + "
-        "16744*x^10 - 16445*x^8 + 9867*x^6 - 3289*x^4 + 506*x^2 - 23",
-        "-1.99533753838108", "1/2*x^4 - 2*x^2 + 1",
-        "-1/2*x^19 + 19/2*x^17 - 76*x^15 + 665/2*x^13 - 1729/2*x^11 + "
-        "2717/2*x^9 - 1254*x^7 + 627*x^5 - 285/2*x^3 + 19/2*x"},
-       {"x^4 - 4*x^2 + 1", "-1.93185165257814", "-1/2*x", "1/2*x^3 - 2*x"},
-       {"x^20 - 20*x^18 + 170*x^16 - 800*x^14 + 2275*x^12 - 4005*x^10 + "
-        "4300*x^8 - 2675*x^6 + 875*x^4 - 125*x^2 + 5",
-        "-1.99605345685654", "1/2*x^4 - 2*x^2 + 1",
-        "1/2*x^19 - 19/2*x^17 + 76*x^15 - 665/2*x^13 + 864*x^11 - 2707/2*x^9 + "
-        "2473/2*x^7 - 602*x^5 + 130*x^3 - 8*x"},
-       {"x^12 - 13*x^10 + 65*x^8 - 156*x^6 + 182*x^4 - 91*x^2 + 13",
-        "-1.98541774819611", "1/2*x^2 - 1",
-        "-1/2*x^11 + 11/2*x^9 - 22*x^7 + 77/2*x^5 - 55/2*x^3 + 11/2*x"},
-       {"x^18 - 18*x^16 + 135*x^14 - 546*x^12 + 1287*x^10 - 1782*x^8 + "
-        "1386*x^6 - 540*x^4 + 81*x^2 - 3",
-        "-1.99661631654254", "1/2*x^4 - 2*x^2 + 1",
-        "1/2*x^13 - 13/2*x^11 + 65/2*x^9 - 78*x^7 + 181/2*x^5 - 43*x^3 + 4*x"},
-       {"x^6 - 7*x^4 + 14*x^2 - 7", "-1.94985582436365", "-1/2*x",
-        "1/2*x^4 - 5/2*x^2 + 5/2"},
-       {"x^28 - 29*x^26 + 377*x^24 - 2900*x^22 + 14674*x^20 - 51359*x^18 + "
-        "127281*x^16 - 224808*x^14 + 281010*x^12 - 243542*x^10 + 140998*x^8 - "
-        "51272*x^6 + 10556*x^4 - 1015*x^2 + 29",
-        "-1.99706682770225", "1/2*x^4 - 2*x^2 + 1",
-        "-1/2*x^25 + 25/2*x^23 - 275/2*x^21 + 875*x^19 - 7125/2*x^17 + "
-        "9690*x^15 - 17850*x^13 + 22100*x^11 - 17875*x^9 + 17875/2*x^7 - "
-        "5005/2*x^5 + 325*x^3 - 25/2*x"},
-       {"x^8 - 7*x^6 + 14*x^4 - 8*x^2 + 1", "-1.98904379073655", "1/2*x^2 - 1",
-        "1/2*x^7 - 7/2*x^5 + 13/2*x^3 - 2*x"},
-       {"x^30 - 31*x^28 + 434*x^26 - 3627*x^24 + 20150*x^22 - 78430*x^20 + "
-        "219604*x^18 - 447051*x^16 + 660858*x^14 - 700910*x^12 + 520676*x^10 - "
-        "260338*x^8 + 82212*x^6 - 14756*x^4 + 1240*x^2 - 31",
-        "-1.99743301434211", "1/2*x^4 - 2*x^2 + 1",
-        "-1/2*x^27 + 27/2*x^25 - 162*x^23 + 2277/2*x^21 - 10395/2*x^19 + "
-        "32319/2*x^17 - 34884*x^15 + 52326*x^13 - 53703*x^11 + 36465*x^9 - "
-        "15444*x^7 + 7371/2*x^5 - 819/2*x^3 + 27/2*x"}});
+          {"x", "0.000000000000000", "1", "0"},
+          {"x", "0.000000000000000", "-1", "0"},
+          {"x^2 - 3", "-1.73205080756888", "-1/2", "-1/2*x"},
+          {"x - 1", "1.00000000000000", "0", "1"},
+          {"x^4 - 5*x^2 + 5", "-1.90211303259031", "1/2*x^2 - 3/2", "-1/2*x"},
+          {"x^2 - 3", "-1.73205080756888", "1/2", "-1/2*x"},
+          {"x^6 - 7*x^4 + 14*x^2 - 7", "-1.94985582436365", "1/2*x^4 - 2*x^2 + 1",
+              "-1/2*x^3 + 3/2*x"},
+          {"x^2 - 2", "-1.41421356237310", "-1/2*x", "-1/2*x"},
+          {"x^6 - 6*x^4 + 9*x^2 - 3", "-1.96961550602442", "1/2*x^4 - 2*x^2 + 1",
+              "-1/2*x^5 + 5/2*x^3 - 5/2*x"},
+          {"x^4 - 5*x^2 + 5", "-1.90211303259031", "1/2*x^2 - 1",
+              "-1/2*x^3 + 3/2*x"},
+          {"x^10 - 11*x^8 + 44*x^6 - 77*x^4 + 55*x^2 - 11", "-1.97964288376187",
+              "1/2*x^4 - 2*x^2 + 1", "-1/2*x^7 + 7/2*x^5 - 7*x^3 + 7/2*x"},
+          {"x^2 - 3", "-1.73205080756888", "-1/2*x", "1/2"},
+          {"x^12 - 13*x^10 + 65*x^8 - 156*x^6 + 182*x^4 - 91*x^2 + 13",
+              "-1.98541774819611", "1/2*x^4 - 2*x^2 + 1",
+              "-1/2*x^9 + 9/2*x^7 - 27/2*x^5 + 15*x^3 - 9/2*x"},
+          {"x^6 - 7*x^4 + 14*x^2 - 7", "-1.94985582436365", "1/2*x^2 - 1",
+              "-1/2*x^5 + 5/2*x^3 - 5/2*x"},
+          {"x^8 - 7*x^6 + 14*x^4 - 8*x^2 + 1", "-1.98904379073655",
+              "1/2*x^4 - 2*x^2 + 1", "-x^7 + 13/2*x^5 - 11*x^3 + 7/2*x"},
+          {"x^4 - 4*x^2 + 2", "-1.84775906502257", "-1/2*x", "-1/2*x^3 + 3/2*x"},
+          {"x^16 - 17*x^14 + 119*x^12 - 442*x^10 + 935*x^8 - 1122*x^6 + 714*x^4 - "
+           "204*x^2 + 17",
+              "-1.99146835259007", "1/2*x^4 - 2*x^2 + 1",
+              "-1/2*x^13 + 13/2*x^11 - 65/2*x^9 + 78*x^7 - 91*x^5 + 91/2*x^3 - "
+              "13/2*x"},
+          {"x^6 - 6*x^4 + 9*x^2 - 3", "-1.96961550602442", "1/2*x^2 - 1",
+              "1/2*x^5 - 5/2*x^3 + 2*x"},
+          {"x^18 - 19*x^16 + 152*x^14 - 665*x^12 + 1729*x^10 - 2717*x^8 + "
+           "2508*x^6 - 1254*x^4 + 285*x^2 - 19",
+              "-1.99316898601334", "1/2*x^4 - 2*x^2 + 1",
+              "-1/2*x^15 + 15/2*x^13 - 45*x^11 + 275/2*x^9 - 225*x^7 + 189*x^5 - "
+              "70*x^3 + 15/2*x"},
+          {"x^4 - 5*x^2 + 5", "-1.90211303259031", "-1/2*x", "1/2*x^2 - 3/2"},
+          {"x^12 - 11*x^10 + 44*x^8 - 78*x^6 + 60*x^4 - 16*x^2 + 1",
+              "-1.99440759436236", "1/2*x^4 - 2*x^2 + 1",
+              "1/2*x^11 - 11/2*x^9 + 22*x^7 - 77/2*x^5 + 27*x^3 - 4*x"},
+          {"x^10 - 11*x^8 + 44*x^6 - 77*x^4 + 55*x^2 - 11", "-1.97964288376187",
+              "1/2*x^2 - 1", "-1/2*x^9 + 9/2*x^7 - 27/2*x^5 + 15*x^3 - 9/2*x"},
+          {"x^22 - 23*x^20 + 230*x^18 - 1311*x^16 + 4692*x^14 - 10948*x^12 + "
+           "16744*x^10 - 16445*x^8 + 9867*x^6 - 3289*x^4 + 506*x^2 - 23",
+              "-1.99533753838108", "1/2*x^4 - 2*x^2 + 1",
+              "-1/2*x^19 + 19/2*x^17 - 76*x^15 + 665/2*x^13 - 1729/2*x^11 + "
+              "2717/2*x^9 - 1254*x^7 + 627*x^5 - 285/2*x^3 + 19/2*x"},
+          {"x^4 - 4*x^2 + 1", "-1.93185165257814", "-1/2*x", "1/2*x^3 - 2*x"},
+          {"x^20 - 20*x^18 + 170*x^16 - 800*x^14 + 2275*x^12 - 4005*x^10 + "
+           "4300*x^8 - 2675*x^6 + 875*x^4 - 125*x^2 + 5",
+              "-1.99605345685654", "1/2*x^4 - 2*x^2 + 1",
+              "1/2*x^19 - 19/2*x^17 + 76*x^15 - 665/2*x^13 + 864*x^11 - 2707/2*x^9 + "
+              "2473/2*x^7 - 602*x^5 + 130*x^3 - 8*x"},
+          {"x^12 - 13*x^10 + 65*x^8 - 156*x^6 + 182*x^4 - 91*x^2 + 13",
+              "-1.98541774819611", "1/2*x^2 - 1",
+              "-1/2*x^11 + 11/2*x^9 - 22*x^7 + 77/2*x^5 - 55/2*x^3 + 11/2*x"},
+          {"x^18 - 18*x^16 + 135*x^14 - 546*x^12 + 1287*x^10 - 1782*x^8 + "
+           "1386*x^6 - 540*x^4 + 81*x^2 - 3",
+              "-1.99661631654254", "1/2*x^4 - 2*x^2 + 1",
+              "1/2*x^13 - 13/2*x^11 + 65/2*x^9 - 78*x^7 + 181/2*x^5 - 43*x^3 + 4*x"},
+          {"x^6 - 7*x^4 + 14*x^2 - 7", "-1.94985582436365", "-1/2*x",
+              "1/2*x^4 - 5/2*x^2 + 5/2"},
+          {"x^28 - 29*x^26 + 377*x^24 - 2900*x^22 + 14674*x^20 - 51359*x^18 + "
+           "127281*x^16 - 224808*x^14 + 281010*x^12 - 243542*x^10 + 140998*x^8 - "
+           "51272*x^6 + 10556*x^4 - 1015*x^2 + 29",
+              "-1.99706682770225", "1/2*x^4 - 2*x^2 + 1",
+              "-1/2*x^25 + 25/2*x^23 - 275/2*x^21 + 875*x^19 - 7125/2*x^17 + "
+              "9690*x^15 - 17850*x^13 + 22100*x^11 - 17875*x^9 + 17875/2*x^7 - "
+              "5005/2*x^5 + 325*x^3 - 25/2*x"},
+          {"x^8 - 7*x^6 + 14*x^4 - 8*x^2 + 1", "-1.98904379073655", "1/2*x^2 - 1",
+              "1/2*x^7 - 7/2*x^5 + 13/2*x^3 - 2*x"},
+          {"x^30 - 31*x^28 + 434*x^26 - 3627*x^24 + 20150*x^22 - 78430*x^20 + "
+           "219604*x^18 - 447051*x^16 + 660858*x^14 - 700910*x^12 + 520676*x^10 - "
+           "260338*x^8 + 82212*x^6 - 14756*x^4 + 1240*x^2 - 31",
+              "-1.99743301434211", "1/2*x^4 - 2*x^2 + 1",
+              "-1/2*x^27 + 27/2*x^25 - 162*x^23 + 2277/2*x^21 - 10395/2*x^19 + "
+              "32319/2*x^17 - 34884*x^15 + 52326*x^13 - 53703*x^11 + 36465*x^9 - "
+              "15444*x^7 + 7371/2*x^5 - 819/2*x^3 + 27/2*x"}});
 
   if (n >= totally_real_data.size()) {
     throw new std::logic_error(
@@ -292,10 +292,10 @@ NumberField<T> *InitCyclotomic(int n) {
 
   auto real_field = real_cyclotomic_field(numeric_cast<size_t>(n));
   F = new NumberField<T>(&coeffs[0], numeric_cast<size_t>(cyc.degree()),
-                         nth_rootofunity, std::move(std::get<0>(real_field)),
-                         std::complex<eantic::renf_elem_class>(
-                             std::move(std::get<1>(real_field)),
-                             std::move(std::get<2>(real_field))));
+      nth_rootofunity, std::move(std::get<0>(real_field)),
+      std::complex<eantic::renf_elem_class>(
+          std::move(std::get<1>(real_field)),
+          std::move(std::get<2>(real_field))));
   F->store_conjugate(algebraic<T>(1, F).pow(n - 1));
 
   return (F);
@@ -349,7 +349,8 @@ void alg_t<T>::pad_coeffs(int n) {
 }
 
 template <typename T>
-alg_t<T>::alg_t(vector<algebraic<T>> c) : coeffs(c) {
+alg_t<T>::alg_t(vector<algebraic<T>> c) :
+  coeffs(c) {
   if (c.size() != Params::nbr_params() + 1) {
     ERR_RET("alg_t: initialization with wrong length vector");
   }
@@ -367,16 +368,16 @@ std::vector<algebraic<T>> to_algebraic_coeffs(const flatsurf::Vector<exactreal::
 
   using std::begin, std::end;
   auto coeffs = irange(0l, x.module()->rank()) | transformed([&](int i) {
-                     return algebraic<T>(x[i], y[i]);
-                   });
+    return algebraic<T>(x[i], y[i]);
+  });
   return std::vector<algebraic<T>>(begin(coeffs), end(coeffs));
 }
 }  // namespace
 
 template <typename T>
 template <typename Ring>
-alg_t<T>::alg_t(const flatsurf::Vector<exactreal::Element<Ring>> &v)
-    : alg_t(to_algebraic_coeffs<T, Ring>(v)) {}
+alg_t<T>::alg_t(const flatsurf::Vector<exactreal::Element<Ring>> &v) :
+  alg_t(to_algebraic_coeffs<T, Ring>(v)) {}
 
 template <typename T>
 alg_t<T> alg_t<T>::operator-() const {
@@ -548,8 +549,9 @@ Element<exactreal::NumberField> alg_t<T>::real() const {
 
 template <typename T>
 Element<exactreal::NumberField> alg_t<T>::imag() const {
-  auto imags = coeffs | transformed([](const auto &coeff) {return coeff.imag(); });
-  return Element<exactreal::NumberField>(Params::module(), std::vector<eantic::renf_elem_class>(begin(imags), end(imags)));;
+  auto imags = coeffs | transformed([](const auto &coeff) { return coeff.imag(); });
+  return Element<exactreal::NumberField>(Params::module(), std::vector<eantic::renf_elem_class>(begin(imags), end(imags)));
+  ;
 }
 
 template <typename T>
@@ -579,7 +581,8 @@ BigPoint<T>::BigPoint(int a, int b) {
 }
 
 template <typename T>
-BigPoint<T>::BigPoint(alg_t<T> u) : algt(u) {
+BigPoint<T>::BigPoint(alg_t<T> u) :
+  algt(u) {
   cx = u.tocomplex();
 }
 
@@ -743,17 +746,17 @@ template bool colinear(const alg_t<bigrat> &p1, const alg_t<bigrat> &p2);
 template ostream &operator<<(ostream &outputStream, const alg_t<bigrat> &u);
 
 template BigPoint<bigrat> operator+(BigPoint<bigrat> p,
-                                    const BigPoint<bigrat> &q);
+    const BigPoint<bigrat> &q);
 template BigPoint<bigrat> operator-(BigPoint<bigrat> p,
-                                    const BigPoint<bigrat> &q);
+    const BigPoint<bigrat> &q);
 template BigPoint<bigrat> operator*(const algebraic<bigrat> &p,
-                                    BigPoint<bigrat> q);
+    BigPoint<bigrat> q);
 template BigPoint<bigrat> operator*(BigPoint<bigrat> q,
-                                    const algebraic<bigrat> &p);
+    const algebraic<bigrat> &p);
 template BigPoint<bigrat> operator*(int p, BigPoint<bigrat> q);
 template BigPoint<bigrat> operator*(BigPoint<bigrat> q, int p);
 template BigPoint<bigrat> operator/(BigPoint<bigrat> q,
-                                    const algebraic<bigrat> &p);
+    const algebraic<bigrat> &p);
 template BigPoint<bigrat> operator/(BigPoint<bigrat> q, int p);
 template bool operator==(const BigPoint<bigrat> &p, const BigPoint<bigrat> &q);
 template ostream &operator<<(ostream &outputStream, const BigPoint<bigrat> &p);
@@ -770,13 +773,13 @@ template alg_t<int64_t>::alg_t(const flatsurf::Vector<exactreal::Element<exactre
 template alg_t<int64_t> operator+(alg_t<int64_t> p, const alg_t<int64_t> &q);
 template alg_t<int64_t> operator-(alg_t<int64_t> p, const alg_t<int64_t> &q);
 template alg_t<int64_t> operator*(const algebraic<int64_t> &p,
-                                  alg_t<int64_t> &q);
+    alg_t<int64_t> &q);
 template alg_t<int64_t> operator*(alg_t<int64_t> q,
-                                  const algebraic<int64_t> &p);
+    const algebraic<int64_t> &p);
 template alg_t<int64_t> operator*(int p, alg_t<int64_t> &q);
 template alg_t<int64_t> operator*(alg_t<int64_t> &q, int p);
 template alg_t<int64_t> operator/(alg_t<int64_t> &q,
-                                  const algebraic<int64_t> &p);
+    const algebraic<int64_t> &p);
 template alg_t<int64_t> operator/(alg_t<int64_t> &q, int p);
 template bool operator==(const alg_t<int64_t> &p, const alg_t<int64_t> &q);
 template bool operator!=(const alg_t<int64_t> &p, const alg_t<int64_t> &q);
@@ -784,19 +787,19 @@ template bool colinear(const alg_t<int64_t> &p1, const alg_t<int64_t> &p2);
 template ostream &operator<<(ostream &outputStream, const alg_t<int64_t> &u);
 
 template BigPoint<int64_t> operator+(BigPoint<int64_t> p,
-                                     const BigPoint<int64_t> &q);
+    const BigPoint<int64_t> &q);
 template BigPoint<int64_t> operator-(BigPoint<int64_t> p,
-                                     const BigPoint<int64_t> &q);
+    const BigPoint<int64_t> &q);
 template BigPoint<int64_t> operator*(const algebraic<int64_t> &p,
-                                     BigPoint<int64_t> q);
+    BigPoint<int64_t> q);
 template BigPoint<int64_t> operator*(BigPoint<int64_t> q,
-                                     const algebraic<int64_t> &p);
+    const algebraic<int64_t> &p);
 template BigPoint<int64_t> operator*(int p, BigPoint<int64_t> q);
 template BigPoint<int64_t> operator*(BigPoint<int64_t> q, int p);
 template BigPoint<int64_t> operator/(BigPoint<int64_t> q,
-                                     const algebraic<int64_t> &p);
+    const algebraic<int64_t> &p);
 template BigPoint<int64_t> operator/(BigPoint<int64_t> q, int p);
 template bool operator==(const BigPoint<int64_t> &p,
-                         const BigPoint<int64_t> &q);
+    const BigPoint<int64_t> &q);
 template ostream &operator<<(ostream &outputStream, const BigPoint<int64_t> &p);
 }  // namespace polygon

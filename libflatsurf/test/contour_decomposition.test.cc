@@ -31,20 +31,20 @@
 #include <intervalxt/interval_exchange_transformation.hpp>
 
 #include "../flatsurf/bound.hpp"
-#include "../flatsurf/vertical.hpp"
-#include "../flatsurf/flat_triangulation_collapsed.hpp"
-#include "../flatsurf/contour_decomposition.hpp"
 #include "../flatsurf/contour_component.hpp"
 #include "../flatsurf/contour_connection.hpp"
+#include "../flatsurf/contour_decomposition.hpp"
+#include "../flatsurf/flat_triangulation_collapsed.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
+#include "../flatsurf/vertical.hpp"
 
 #include "surfaces.hpp"
 
+using boost::lexical_cast;
 using eantic::renf_class;
 using eantic::renf_elem_class;
-using boost::lexical_cast;
 
 namespace flatsurf::test {
 
@@ -76,7 +76,7 @@ TEMPLATE_TEST_CASE("Connections and IET from Contour Decomposition", "[contour_d
   }
 
   GIVEN("The surface " << *surface) {
-    using  SaddleConnection = SaddleConnection<FlatTriangulation<T>>;
+    using SaddleConnection = SaddleConnection<FlatTriangulation<T>>;
 
     for (auto sc : SaddleConnections<FlatTriangulation<T>>(surface, Bound(bound, 0))) {
       THEN("We can compute a ContourDecomposition in direction " << static_cast<R2>(sc)) {

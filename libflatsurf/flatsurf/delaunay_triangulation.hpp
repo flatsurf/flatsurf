@@ -25,7 +25,6 @@
 namespace flatsurf {
 template <typename T>
 class DelaunayTriangulation {
-
   static_assert(std::is_same_v<T, std::decay_t<T>>, "type must not have modifiers such as const");
 
  public:

@@ -20,9 +20,9 @@
 #ifndef LIBFLATSURF_FLOW_DECOMPOSITION_STATE_HPP
 #define LIBFLATSURF_FLOW_DECOMPOSITION_STATE_HPP
 
-#include <memory>
-#include <list>
 #include <iosfwd>
+#include <list>
+#include <memory>
 
 #include <intervalxt/connection.hpp>
 
@@ -44,7 +44,6 @@ class FlowDecompositionState : public std::enable_shared_from_this<FlowDecomposi
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const FlowDecompositionState<S>&);
 };
-}
+}  // namespace flatsurf
 
 #endif
-

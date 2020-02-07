@@ -26,8 +26,8 @@
 
 namespace polygon {
 bool is_alg_quotient(const alg_t<int64_t> &p1, const alg_t<int64_t> &p2,
-                     algebraicQ &ratio)  // if p1/p2 is algebraic, return true
-                                         // and put it in ratio.
+    algebraicQ &ratio)  // if p1/p2 is algebraic, return true
+                        // and put it in ratio.
 {
   size_t i;
   algebraicI q(p1.coeffs[0].field());

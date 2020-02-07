@@ -32,7 +32,6 @@ namespace flatsurf {
 template <typename T>
 using Copyable = spimpl::impl_ptr<T>;
 
-}
+}  // namespace flatsurf
 
 #endif
-

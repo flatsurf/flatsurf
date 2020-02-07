@@ -62,7 +62,7 @@ class ContourConnection : boost::equality_comparable<ContourComponent<Surface>> 
 
   ContourConnection<Surface> operator-() const;
 
-  bool operator==(const ContourConnection<Surface>&) const;
+  bool operator==(const ContourConnection<Surface> &) const;
 
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const ContourConnection<S> &);

@@ -17,20 +17,20 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <map>
 #include <memory>
 #include <set>
-#include <map>
 
 #include <intervalxt/interval_exchange_transformation.hpp>
 #include <intervalxt/label.hpp>
 
-#include "../flatsurf/vertical.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/flat_triangulation_collapsed.hpp"
-#include "../flatsurf/vector.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/interval_exchange_transformation.hpp"
 #include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/vector.hpp"
+#include "../flatsurf/vertical.hpp"
 
 #include "impl/vertical.impl.hpp"
 
@@ -175,7 +175,7 @@ template <typename Surface>
 bool Implementation<Vertical<Surface>>::visit(const Vertical& self, HalfEdge start, std::set<HalfEdge>& component, std::function<bool(HalfEdge)> visitor) {
   if (component.find(start) != component.end())
     return true;
-  
+
   component.insert(start);
 
   if (!visitor(start))
@@ -187,11 +187,11 @@ bool Implementation<Vertical<Surface>>::visit(const Vertical& self, HalfEdge sta
 
   // Visit all connected half edges.
   return visit(self, -start, component, visitor) &&
-    visit(self, self.impl->surface->nextInFace(start), component, visitor) &&
-    visit(self, self.impl->surface->previousInFace(start), component, visitor);
+         visit(self, self.impl->surface->nextInFace(start), component, visitor) &&
+         visit(self, self.impl->surface->previousInFace(start), component, visitor);
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

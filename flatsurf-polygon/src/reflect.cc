@@ -279,7 +279,7 @@ void TwoComplex::CompleteInternal(UEdge *e) {
     if (k == uedges.end()) break;
 
     ReflectFace(e,
-                (*k)->this_edge((*k)->boundary_face())->from_edge->in_face());
+        (*k)->this_edge((*k)->boundary_face())->from_edge->in_face());
 
     j++;
     sprintf(buf, "movie%d", j);

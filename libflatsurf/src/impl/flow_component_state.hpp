@@ -22,13 +22,13 @@
 
 #include <iosfwd>
 
-#include <memory>
 #include <list>
+#include <memory>
 
 #include <intervalxt/component.hpp>
 
-#include "../../flatsurf/interval_exchange_transformation.hpp"
 #include "../../flatsurf/contour_component.hpp"
+#include "../../flatsurf/interval_exchange_transformation.hpp"
 
 namespace flatsurf {
 template <typename Surface>
@@ -47,9 +47,6 @@ class FlowComponentState {
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const FlowComponentState<S>&);
 };
-}
+}  // namespace flatsurf
 
 #endif
-
-
-

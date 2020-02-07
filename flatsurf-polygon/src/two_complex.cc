@@ -61,7 +61,9 @@ using std::vector;
 namespace {}
 
 namespace polygon {
-TwoComplex::TwoComplex() : area(-1.0), scale_factor(1.0) {
+TwoComplex::TwoComplex() :
+  area(-1.0),
+  scale_factor(1.0) {
   cur_vertex_id = 0;
   cur_face_id = 0;
   cur_uedge_id = 0;
@@ -76,7 +78,7 @@ TwoComplex::~TwoComplex() {
 
 TwoComplex::operator FlatTriangulation<exactreal::Element<exactreal::NumberField>>() const {
   Vector<exactreal::Element<exactreal::NumberField>> zero{alg_t<bigrat>().real(),
-                                                          alg_t<bigrat>().imag()};
+      alg_t<bigrat>().imag()};
 
   auto combinatorial = static_cast<FlatTriangulationCombinatorial>(*this);
   auto vectors = HalfEdgeMap<Vector<exactreal::Element<exactreal::NumberField>>>(
@@ -96,8 +98,8 @@ TwoComplex::operator FlatTriangulation<exactreal::Element<exactreal::NumberField
 TwoComplex::operator FlatTriangulationCombinatorial() const {
   auto out = vertices | transformed([](const auto &v) {
     auto tmp = v->out_edges | transformed([](const auto &e) {
-                       return static_cast<HalfEdge>(*e);
-                     });
+      return static_cast<HalfEdge>(*e);
+    });
     return std::vector<HalfEdge>(begin(tmp), end(tmp));
   });
   return {Permutation<HalfEdge>(std::vector<std::vector<HalfEdge>>(begin(out), end(out)))};
@@ -496,7 +498,7 @@ COORD TwoComplex::MinSaddle(Dir<Point> &the_shortest) {
 }
 
 void TwoComplex::issueFinalReport(Summary &fsm, ostream &out, int start_vertex,
-                                  double part_done, double part_group) {
+    double part_done, double part_group) {
   out << "File = " << filename_ << " depth = " << depth
       << " follow_depth = " << follow_depth
       << " perturb = " << perturb_magnitude << endl;

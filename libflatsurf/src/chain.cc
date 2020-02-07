@@ -19,9 +19,9 @@
 
 #include <gmpxx.h>
 
+#include "../flatsurf/bound.hpp"
 #include "../flatsurf/chain.hpp"
 #include "../flatsurf/edge.hpp"
-#include "../flatsurf/bound.hpp"
 #include "../flatsurf/vector.hpp"
 
 #include "impl/chain.impl.hpp"
@@ -31,7 +31,8 @@
 namespace flatsurf {
 
 template <typename Surface>
-Chain<Surface>::Chain() : Chain(std::make_shared<Surface>()) {}
+Chain<Surface>::Chain() :
+  Chain(std::make_shared<Surface>()) {}
 
 template <typename Surface>
 Chain<Surface>::Chain(std::shared_ptr<const Surface> surface) :
@@ -225,7 +226,8 @@ std::ostream& operator<<(std::ostream& os, const Chain<Surface>& chain) {
 template <typename Surface>
 Implementation<Chain<Surface>>::Implementation(std::shared_ptr<const Surface> surface) :
   surface(surface),
-  coefficients(surface.get(), [&](const Edge&) { return 0; }, updateAfterFlip),
+  coefficients(
+      surface.get(), [&](const Edge&) { return 0; }, updateAfterFlip),
   vector(typename Surface::Vector()),
   approximateVector(Vector<exactreal::Arb>()) {}
 
@@ -268,7 +270,7 @@ void Implementation<Chain<Surface>>::updateAfterFlip(EdgeMap<mpz_class>& map, Ha
   set(flip, 0);
 }
 
-}
+}  // namespace flatsurf
 
 namespace std {
 
@@ -279,8 +281,7 @@ size_t hash<Chain<Surface>>::operator()(const Chain<Surface>& self) const noexce
   return hash<EdgeMap<mpz_class>>()(self.impl->coefficients);
 }
 
-}
-
+}  // namespace std
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

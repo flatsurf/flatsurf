@@ -20,10 +20,10 @@
 #ifndef LIBFLATSURF_FLAT_TRIANGULATION_COLLAPSED_HPP
 #define LIBFLATSURF_FLAT_TRIANGULATION_COLLAPSED_HPP
 
+#include <boost/operators.hpp>
 #include <iosfwd>
 #include <memory>
 #include <vector>
-#include <boost/operators.hpp>
 
 #include "flat_triangulation_combinatorial.hpp"
 #include "moveable.hpp"
@@ -32,14 +32,12 @@
 namespace flatsurf {
 
 template <class T>
-class FlatTriangulationCollapsed :
-  public FlatTriangulationCombinatorial,
-  public Serializable<FlatTriangulationCollapsed<T>>,
-  boost::equality_comparable<FlatTriangulationCollapsed<T>> {
-
+class FlatTriangulationCollapsed : public FlatTriangulationCombinatorial,
+                                   public Serializable<FlatTriangulationCollapsed<T>>,
+                                   boost::equality_comparable<FlatTriangulationCollapsed<T>> {
   static_assert(std::is_same_v<T, std::decay_t<T>>, "type must not have modifiers such as const");
 
-  FlatTriangulationCollapsed(std::unique_ptr<FlatTriangulation<T>>, const flatsurf::Vector<T>& vertical);
+  FlatTriangulationCollapsed(std::unique_ptr<FlatTriangulation<T>>, const flatsurf::Vector<T> &vertical);
 
  public:
   using Coordinate = T;
@@ -48,7 +46,7 @@ class FlatTriangulationCollapsed :
   using SaddleConnection = ::flatsurf::SaddleConnection<FlatTriangulation<T>>;
   using Collapsed = FlatTriangulationCollapsed;
 
-  static std::shared_ptr<FlatTriangulationCollapsed<T>> make(std::unique_ptr<FlatTriangulation<T>>, const Vector& vertical);
+  static std::shared_ptr<FlatTriangulationCollapsed<T>> make(std::unique_ptr<FlatTriangulation<T>>, const Vector &vertical);
 
   Vertical<FlatTriangulationCollapsed<T>> vertical() const;
 
@@ -70,8 +68,8 @@ class FlatTriangulationCollapsed :
   // the vertical part of the vectors are only consistent inside their faces.
   const SaddleConnection &fromEdge(HalfEdge) const;
 
-  bool inSector(HalfEdge, const Vector&) const;
-  bool inSector(HalfEdge, const Vertical<FlatTriangulationCollapsed<T>>&) const;
+  bool inSector(HalfEdge, const Vector &) const;
+  bool inSector(HalfEdge, const Vertical<FlatTriangulationCollapsed<T>> &) const;
 
   // Return the saddle connections to go from this half edge's source to its negative's target.
   std::vector<SaddleConnection> cross(HalfEdge) const;
@@ -87,7 +85,7 @@ class FlatTriangulationCollapsed :
   bool operator==(const FlatTriangulationCollapsed<T> &) const noexcept;
 
   template <typename S>
-  friend std::ostream &operator<<(std::ostream &, const FlatTriangulationCollapsed<S>&);
+  friend std::ostream &operator<<(std::ostream &, const FlatTriangulationCollapsed<S> &);
 
  private:
   using Implementation = ::flatsurf::Implementation<FlatTriangulationCollapsed>;

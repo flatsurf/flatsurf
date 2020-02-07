@@ -77,7 +77,8 @@ poly<T>::poly() {
 }
 
 template <class T>
-poly<T>::poly(vector<T> c) : coefficients(c) {
+poly<T>::poly(vector<T> c) :
+  coefficients(c) {
   reduce();
 }
 
@@ -236,7 +237,7 @@ inline bool is_unit(const poly<bigrat> &p) {
 // f and g are inputs
 template <class T>
 void divide(poly<T> &quotient, poly<T> &remainder, const poly<T> &f,
-            const poly<T> &g) {
+    const poly<T> &g) {
   int m = f.degree();
   int n = g.degree();
   if (!is_unit(g)) {
@@ -316,11 +317,11 @@ template <class T>
 NumberField<T>::NumberField(
     T p[], size_t deg, complex<COORD> emb,
     std::shared_ptr<const eantic::renf_class> totally_real_field,
-    const complex<renf_elem_class> &&gen)
-    : degree(deg),
-      gen(std::move(gen)),
-      embedding(emb),
-      totally_real_field(totally_real_field) {
+    const complex<renf_elem_class> &&gen) :
+  degree(deg),
+  gen(std::move(gen)),
+  embedding(emb),
+  totally_real_field(totally_real_field) {
   vector<T> coefficients;
   for (size_t i = 0; i <= degree; i++) coefficients.push_back(p[i]);
   minimal_poly = poly<T>(coefficients);
@@ -380,7 +381,8 @@ template <class T>
 algebraic<T>::algebraic() {}
 
 template <class T>
-algebraic<T>::algebraic(NumberField<T> *field) : in_field(field) {
+algebraic<T>::algebraic(NumberField<T> *field) :
+  in_field(field) {
   vector<T> v(field->degree);
   coords = v;
 }
@@ -394,19 +396,20 @@ algebraic<T>::algebraic(size_t n, NumberField<T> *field) {
 }
 
 template <class T>
-algebraic<T>::algebraic(vector<T> newcoords, NumberField<T> *field)
-    : coords(newcoords), in_field(field) {}
+algebraic<T>::algebraic(vector<T> newcoords, NumberField<T> *field) :
+  coords(newcoords),
+  in_field(field) {}
 
 template <class T>
-algebraic<T>::algebraic(T newcoords[], NumberField<T> *field)
-    : in_field(field) {
+algebraic<T>::algebraic(T newcoords[], NumberField<T> *field) :
+  in_field(field) {
   for (size_t i = 0; i < field->degree; i++) coords.push_back(newcoords[i]);
 }
 
 namespace {
 template <typename T>
 std::vector<T> to_coords(const renf_elem_class &real,
-                         const renf_elem_class &imag) {
+    const renf_elem_class &imag) {
   using M = Eigen::Matrix<mpq_class, Eigen::Dynamic, Eigen::Dynamic>;
   using V = Eigen::Matrix<mpq_class, Eigen::Dynamic, 1>;
 
@@ -429,7 +432,7 @@ std::vector<T> to_coords(const renf_elem_class &real,
     } else {
       for (long j = 0; j < real_rows; j++) {
         A(j, i) = mpq_class(pow.real().num_vector()[numeric_cast<size_t>(j)],
-                            pow.real().den());
+            pow.real().den());
       }
     }
     if (pow.imag().is_fmpq()) {
@@ -474,8 +477,8 @@ std::vector<T> to_coords(const renf_elem_class &real,
 }  // namespace
 
 template <class T>
-algebraic<T>::algebraic(const renf_elem_class &re, const renf_elem_class &im)
-    : algebraic(to_coords<T>(re, im), NumberField<T>::F) {
+algebraic<T>::algebraic(const renf_elem_class &re, const renf_elem_class &im) :
+  algebraic(to_coords<T>(re, im), NumberField<T>::F) {
   assert(re == real());
   assert(im == imag());
 }
@@ -796,7 +799,7 @@ template class algebraic<bigrat>;
 template class poly<bigrat>;
 
 template void gcd_extended(poly<bigrat> &x, poly<bigrat> &y,
-                           const poly<bigrat> &a, const poly<bigrat> &b);
+    const poly<bigrat> &a, const poly<bigrat> &b);
 template poly<bigrat> operator*(poly<bigrat> p, const poly<bigrat> &q);
 template poly<bigrat> operator+(poly<bigrat> p, const poly<bigrat> &q);
 template poly<bigrat> operator-(poly<bigrat> p, const poly<bigrat> &q);
@@ -804,32 +807,32 @@ template poly<bigrat> operator*(bigrat r, poly<bigrat> p);
 template bool operator==(const poly<bigrat> &p, const poly<bigrat> &q);
 template bool operator!=(const poly<bigrat> &p, const poly<bigrat> &q);
 template void divide(poly<bigrat> &quotient, poly<bigrat> &remainder,
-                     const poly<bigrat> &f, const poly<bigrat> &g);
+    const poly<bigrat> &f, const poly<bigrat> &g);
 
 template poly<bigrat> operator%(const poly<bigrat> &p, const poly<bigrat> &q);
 template ostream &operator<<(ostream &outputStream, const poly<bigrat> &p);
 template algebraic<bigrat> operator+(algebraic<bigrat> a,
-                                     const algebraic<bigrat> &b);
+    const algebraic<bigrat> &b);
 template algebraic<bigrat> operator-(algebraic<bigrat> a,
-                                     const algebraic<bigrat> &b);
+    const algebraic<bigrat> &b);
 template algebraic<bigrat> operator/(algebraic<bigrat> a,
-                                     const algebraic<bigrat> &b);
+    const algebraic<bigrat> &b);
 template algebraic<bigrat> operator*(algebraic<bigrat> a,
-                                     const algebraic<bigrat> &b);
+    const algebraic<bigrat> &b);
 template algebraic<bigrat> operator*(bigrat q, algebraic<bigrat> r);
 template algebraic<bigrat> operator*(algebraic<bigrat> r, bigrat q);
 template algebraic<bigrat> operator/(algebraic<bigrat> a, bigrat b);
 template bool operator==(const algebraic<bigrat> &p,
-                         const algebraic<bigrat> &q);
+    const algebraic<bigrat> &q);
 template bool operator!=(const algebraic<bigrat> &p,
-                         const algebraic<bigrat> &q);
+    const algebraic<bigrat> &q);
 template algebraic<bigrat> operator-(const algebraic<bigrat> &r);
 template ostream &operator<<(ostream &outputStream,
-                             const algebraic<bigrat> &num);
+    const algebraic<bigrat> &num);
 template vector<bigrat> operator+(vector<bigrat> v, vector<bigrat> w);
 template vector<bigrat> operator*(bigrat v, vector<bigrat> w);
 template algebraic<bigrat> cross_product(const algebraic<bigrat> &u,
-                                         const algebraic<bigrat> &v);
+    const algebraic<bigrat> &v);
 }  // namespace polygon
 
 // Explicit template instantiations for int64
@@ -839,7 +842,7 @@ template class algebraic<int64_t>;
 template class poly<int64_t>;
 
 template void gcd_extended(poly<int64_t> &x, poly<int64_t> &y,
-                           const poly<int64_t> &a, const poly<int64_t> &b);
+    const poly<int64_t> &a, const poly<int64_t> &b);
 template poly<int64_t> operator*(poly<int64_t> p, const poly<int64_t> &q);
 template poly<int64_t> operator+(poly<int64_t> p, const poly<int64_t> &q);
 template poly<int64_t> operator-(poly<int64_t> p, const poly<int64_t> &q);
@@ -847,31 +850,31 @@ template poly<int64_t> operator*(int64_t r, poly<int64_t> p);
 template bool operator==(const poly<int64_t> &p, const poly<int64_t> &q);
 template bool operator!=(const poly<int64_t> &p, const poly<int64_t> &q);
 template void divide(poly<int64_t> &quotient, poly<int64_t> &remainder,
-                     const poly<int64_t> &f, const poly<int64_t> &g);
+    const poly<int64_t> &f, const poly<int64_t> &g);
 
 template poly<int64_t> operator%(const poly<int64_t> &p,
-                                 const poly<int64_t> &q);
+    const poly<int64_t> &q);
 template ostream &operator<<(ostream &outputStream, const poly<int64_t> &p);
 template algebraic<int64_t> operator+(algebraic<int64_t> a,
-                                      const algebraic<int64_t> &b);
+    const algebraic<int64_t> &b);
 template algebraic<int64_t> operator-(algebraic<int64_t> a,
-                                      const algebraic<int64_t> &b);
+    const algebraic<int64_t> &b);
 template algebraic<int64_t> operator/(algebraic<int64_t> a,
-                                      const algebraic<int64_t> &b);
+    const algebraic<int64_t> &b);
 template algebraic<int64_t> operator*(algebraic<int64_t> a,
-                                      const algebraic<int64_t> &b);
+    const algebraic<int64_t> &b);
 template algebraic<int64_t> operator*(int64_t q, algebraic<int64_t> r);
 template algebraic<int64_t> operator*(algebraic<int64_t> r, int64_t q);
 template bool operator==(const algebraic<int64_t> &p,
-                         const algebraic<int64_t> &q);
+    const algebraic<int64_t> &q);
 template bool operator!=(const algebraic<int64_t> &p,
-                         const algebraic<int64_t> &q);
+    const algebraic<int64_t> &q);
 template algebraic<int64_t> operator-(const algebraic<int64_t> &r);
 template ostream &operator<<(ostream &outputStream,
-                             const algebraic<int64_t> &num);
+    const algebraic<int64_t> &num);
 template vector<int64_t> operator+(vector<int64_t> v, vector<int64_t> w);
 template vector<int64_t> operator*(int64_t v, vector<int64_t> w);
 template algebraic<int64_t> cross_product(const algebraic<int64_t> &u,
-                                          const algebraic<int64_t> &v);
+    const algebraic<int64_t> &v);
 
 }  // namespace polygon

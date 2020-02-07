@@ -242,14 +242,14 @@ int VertPattern::nbr_same() {
 
 void VertPattern::normalize() { base.v = S->GetVertex(v_id); }
 
-SaddleConf::SaddleConf()
-    : shortest_occurence(-1.0),
-      shortest_cyl_occurence(-1.0),
-      longest_occurence(-1.0),
-      smallest_total_area(-1.0),
-      largest_total_area(-1.0),
-      original_min_cylinder_length(-1.0),
-      original_shortest_length(-1.0) {
+SaddleConf::SaddleConf() :
+  shortest_occurence(-1.0),
+  shortest_cyl_occurence(-1.0),
+  longest_occurence(-1.0),
+  smallest_total_area(-1.0),
+  largest_total_area(-1.0),
+  original_min_cylinder_length(-1.0),
+  original_shortest_length(-1.0) {
   n_vp = 0;
   next_id = 1;
   count = 0;
@@ -335,7 +335,7 @@ COORD SaddleConf::get_orig_min_saddle_length() {
 }
 
 void SaddleConf::get_saddle_by_id(int id, int &in_vp_index, int &in_at,
-                                  int &out_vp_index, int &out_at) {
+    int &out_vp_index, int &out_at) {
   bool found_in = false;
   bool found_out = false;
 
@@ -717,17 +717,17 @@ void SaddleConf::output_cylinders(FILE *fp) {
   for (int i = 0; i < n_cyl; i++) {
 #ifdef USE_QUAD
     fprintf(fp, "|(%s,%s)(%s,%s)", cyl[i].vec.real().str(24).c_str(),
-            cyl[i].vec.imag().str(24).c_str(),
-            cyl[i].cross_saddle.vec.real().str(24).c_str(),
-            cyl[i].cross_saddle.vec.imag().str(24).c_str());
+        cyl[i].vec.imag().str(24).c_str(),
+        cyl[i].cross_saddle.vec.real().str(24).c_str(),
+        cyl[i].cross_saddle.vec.imag().str(24).c_str());
 #elif defined USE_LONG_DOUBLE
     fprintf(fp, "|(%.24Lf,%.24Lf)(%.24Lf,%.24Lf)", cyl[i].vec.real(),
-            cyl[i].vec.imag(), cyl[i].cross_saddle.vec.real(),
-            cyl[i].cross_saddle.vec.imag());
+        cyl[i].vec.imag(), cyl[i].cross_saddle.vec.real(),
+        cyl[i].cross_saddle.vec.imag());
 #else
     fprintf(fp, "|(%.24f,%.24f)(%.24f,%.24f)", cyl[i].vec.real(),
-            cyl[i].vec.imag(), cyl[i].cross_saddle.vec.real(),
-            cyl[i].cross_saddle.vec.imag());
+        cyl[i].vec.imag(), cyl[i].cross_saddle.vec.real(),
+        cyl[i].cross_saddle.vec.imag());
 #endif
   }
   fprintf(fp, "|\n");
@@ -742,7 +742,7 @@ void SaddleConf::CheckCrossSaddles() {
 }
 
 void SaddleConf::check_cross_saddle(COORD cyl_len,
-                                    Dir<Point> cross_saddle_Dir) {
+    Dir<Point> cross_saddle_Dir) {
   int vert = find_vert(cross_saddle_Dir.v);
   COORD a = vp[vert].base.AngleF(cross_saddle_Dir);
 
@@ -837,7 +837,7 @@ void SaddleConf::check_cross_saddle(COORD cyl_len,
 }
 
 int SaddleConf::add_saddle(Dir<Point> start, Dir<Point> end,
-                           const alg_tI &algt) {
+    const alg_tI &algt) {
   // std::cout << "add_saddle: " << static_cast<flatsurf::Vertex>(*start.v) << "
   // ("
   //           << "(" << start.vec << ", "
@@ -952,7 +952,7 @@ bool SaddleConf::isom(SaddleConf &sc, int *s_matched) {
 }
 
 bool SaddleConf::isomInternal(SaddleConf &sc, int next_vp, int *v_matched,
-                              int *s_matched) {
+    int *s_matched) {
   if (next_vp >= sc.n_vp) {
     return (true);
   }
@@ -1086,7 +1086,7 @@ void Summary::normalize() {
 }
 
 void Summary::print(ostream &output_stream, COORD part_total, COORD part_group,
-                    COORD volume, COORD depth_, int start_vertex) {
+    COORD volume, COORD depth_, int start_vertex) {
   int symmetry_factor;
 
   bool final_report = false;
@@ -1145,11 +1145,11 @@ void Summary::print(ostream &output_stream, COORD part_total, COORD part_group,
       output_stream << "\n    total: "
                     << scf[i].count * volume * pi<COORD>() /
                            (6.0 * depth_ * depth_ * part_total *
-                            symmetry_factor)
+                               symmetry_factor)
                     << " "
                     << scf[i].count * volume /
                            (pi<COORD>() * depth_ * depth_ * part_total *
-                            symmetry_factor);
+                               symmetry_factor);
       output_stream << " sym = " << symmetry_factor << endl;
       output_stream << "    raw = " << scf[i].count
                     << " short saddle = " << scf[i].shortest_occurence;
@@ -1322,7 +1322,7 @@ void Summary::merge(Summary &sm2) {
 
   fprintf(out_f, "finished %d of %d slices\n", SA.n_finished(), n_slices);
   fprintf(out_f, "in progress = %d, unassigned = %d\n", SA.n_in_progress(),
-          SA.n_unassigned());
+      SA.n_unassigned());
 
   fprintf(out_f, "merging. summary1:\n");
   summary1->print(std::cout, 1.0 / n_slices, 1.0, S->volume(), depth);
@@ -1342,7 +1342,7 @@ void Summary::merge(Summary &sm2) {
   }
   fprintf(out_f, "merged: ");
   summary2->print(std::cout, 1.0 * SA.n_finished() / n_slices,
-                  1.0 * SA.n_finished() / n_slices, S->volume(), depth);
+      1.0 * SA.n_finished() / n_slices, S->volume(), depth);
   fprintf(out_f, "-----------------------------------------\n");
 }
 #endif
@@ -1355,7 +1355,7 @@ MPI_Datatype mpi_smry_type;
 MPI_Op mpi_merge;
 
 void mpi_merge_smry(void *sm1, void *sm2, int *len,
-                    MPI_Datatype *mpi_smry_type) {
+    MPI_Datatype *mpi_smry_type) {
   if (*len != 1) {
     ERR_RET("merge: *len not 1");
   }
@@ -1392,7 +1392,7 @@ void mpi_merge_smry(void *sm1, void *sm2, int *len,
   }
   fprintf(out_f, "merged: ");
   summary2->print(std::cout, 1.0 * SA.n_finished() / n_slices,
-                  1.0 * SA.n_finished() / n_slices, S->volume(), depth);
+      1.0 * SA.n_finished() / n_slices, S->volume(), depth);
   fprintf(out_f, "-----------------------------------------\n");
 }
 

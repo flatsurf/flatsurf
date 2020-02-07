@@ -20,15 +20,15 @@
 #ifndef LIBFLATSURF_LENGTH_ALONG_TRIANGULATION_IMPL_HPP
 #define LIBFLATSURF_LENGTH_ALONG_TRIANGULATION_IMPL_HPP
 
-#include <optional>
 #include <functional>
 #include <memory>
+#include <optional>
 
 #include <exact-real/arb.hpp>
 
+#include "../../flatsurf/edge_map.hpp"
 #include "../../flatsurf/length_along_triangulation.hpp"
 #include "../../flatsurf/vertical.hpp"
-#include "../../flatsurf/edge_map.hpp"
 
 namespace flatsurf {
 
@@ -61,7 +61,6 @@ class Implementation<LengthAlongTriangulation<Surface>> {
   mutable exactreal::Arb approximation;
 };
 
-
-}
+}  // namespace flatsurf
 
 #endif

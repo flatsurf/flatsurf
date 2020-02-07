@@ -18,8 +18,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <memory>
 #include <boost/lexical_cast.hpp>
+#include <memory>
 
 #include "external/catch2/single_include/catch2/catch.hpp"
 

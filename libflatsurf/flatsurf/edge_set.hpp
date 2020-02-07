@@ -20,7 +20,7 @@
 #ifndef LIBFLATSURF_EDGE_SET_HPP
 #define LIBFLATSURF_EDGE_SET_HPP
 
-#include "tracking_set.hpp"
 #include "edge.hpp"
+#include "tracking_set.hpp"
 
 #endif

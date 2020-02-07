@@ -20,11 +20,11 @@
 #ifndef LIBFLATSURF_INTERVAL_EXCHANGE_TRANSFORMATION_HPP
 #define LIBFLATSURF_INTERVAL_EXCHANGE_TRANSFORMATION_HPP
 
-#include <vector>
 #include <set>
+#include <vector>
 
-#include "intervalxt/forward.hpp"
 #include "external/spimpl/spimpl.h"
+#include "intervalxt/forward.hpp"
 
 #include "forward.hpp"
 
@@ -72,6 +72,6 @@ class IntervalExchangeTransformation {
   friend Implementation;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

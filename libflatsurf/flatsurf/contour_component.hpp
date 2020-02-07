@@ -20,9 +20,9 @@
 #ifndef LIBFLATSURF_CONTOUR_COMPONENT_HPP
 #define LIBFLATSURF_CONTOUR_COMPONENT_HPP
 
+#include <list>
 #include <memory>
 #include <vector>
-#include <list>
 
 #include <boost/operators.hpp>
 
@@ -56,12 +56,12 @@ class ContourComponent : boost::equality_comparable<ContourComponent<Surface>> {
   // The saddle connections going around this component in counter-clockwise order, i.e., bottom + top.
   Contour perimeter() const;
 
-  bool operator==(const ContourComponent<Surface>&) const;
+  bool operator==(const ContourComponent<Surface> &) const;
 
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const ContourComponent<S> &);
 
- // TODO: find a better solution for this
+  // TODO: find a better solution for this
  public:
   using Implementation = ::flatsurf::Implementation<ContourComponent>;
   spimpl::impl_ptr<Implementation> impl;

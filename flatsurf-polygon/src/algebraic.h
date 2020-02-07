@@ -64,9 +64,9 @@ class [[deprecated("Use renf_elem_class instead.")]] algebraic {
   explicit algebraic(NumberField<T> *);  // zero element of NumberField
 
   algebraic(size_t n,
-            NumberField<T> *);  // standard basis element e_n in NumberField
+      NumberField<T> *);  // standard basis element e_n in NumberField
   algebraic(std::vector<T> coords,
-            NumberField<T> *);  // vector with coeffients coords in NumberField
+      NumberField<T> *);  // vector with coeffients coords in NumberField
   algebraic(T coords[], NumberField<T> *);
   algebraic(const eantic::renf_elem_class &re, const eantic::renf_elem_class &im);
   std::complex<COORD> tocomplex() const;
@@ -93,13 +93,13 @@ class [[deprecated("Use renf_elem_class instead.")]] algebraic {
   friend algebraic<T> operator-<>(const algebraic<T> &r);
   // friend  algebraic<T> operator ^(algebraic<T>, int);
   friend std::ostream &operator<<<>(std::ostream &outputStream,
-                                    const algebraic<T> &num);
+      const algebraic<T> &num);
   friend bool operator==<>(const algebraic<T> &, const algebraic<T> &);
   friend bool operator!=<>(const algebraic<T> &, const algebraic<T> &);
 
   friend algebraic<bigrat> to_rational(const algebraic<int64_t> &p);
   friend algebraic<T> cross_product<>(const algebraic<T> &u,
-                                      const algebraic<T> &v);
+      const algebraic<T> &v);
 
   eantic::renf_elem_class real() const;
   eantic::renf_elem_class imag() const;

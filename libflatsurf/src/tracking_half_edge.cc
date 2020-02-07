@@ -18,9 +18,9 @@
  *********************************************************************/
 
 #include "../flatsurf/tracking_half_edge.hpp"
-#include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
+#include "../flatsurf/half_edge.hpp"
 
 #include "impl/tracking_half_edge.impl.hpp"
 
@@ -51,11 +51,11 @@ TrackingHalfEdge& TrackingHalfEdge::operator=(HalfEdge e) {
 }
 
 TrackingHalfEdge::Implementation::Implementation(const FlatTriangulationCombinatorial* parent, HalfEdge value, bool followFlip) :
-  value(parent, [&](HalfEdge e) { return e == value; }, followFlip ? Implementation::followFlip : Implementation::noFlip, Implementation::noCollapse) {
+  value(
+      parent, [&](HalfEdge e) { return e == value; }, followFlip ? Implementation::followFlip : Implementation::noFlip, Implementation::noCollapse) {
 }
 
-void TrackingHalfEdge::Implementation::followFlip(HalfEdgeSet&, HalfEdge) {\
-  // intentionally empty
+void TrackingHalfEdge::Implementation::followFlip(HalfEdgeSet&, HalfEdge) {  // intentionally empty
 }
 
 void TrackingHalfEdge::Implementation::noFlip(HalfEdgeSet& value, HalfEdge flip) {
@@ -70,4 +70,4 @@ void TrackingHalfEdge::Implementation::noCollapse(HalfEdgeSet& value, Edge colla
     throw std::logic_error("a TrackingHalfEdge cannot be collapsed");
 }
 
-}
+}  // namespace flatsurf

@@ -29,10 +29,11 @@ namespace flatsurf {
 template <typename K>
 class TrackingSet<K>::Implementation : public TrackingStorage<TrackingSet<K>, K, bool> {
   using Base = TrackingStorage<TrackingSet<K>, K, bool>;
+
  public:
   using Base::Base;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

@@ -41,14 +41,16 @@ using std::ostream;
 using std::vector;
 
 namespace polygon {
-Face::Face() : Simplex() {
+Face::Face() :
+  Simplex() {
   tag = 'F';
   from_face = nullptr;
   parent_face_ID = -1;
 }
 Face::~Face() {}
 
-Face::Face(const list<OEdge> &L) : Simplex() {
+Face::Face(const list<OEdge> &L) :
+  Simplex() {
   tag = 'F';
   SetOEdgeList(L);
   from_face = nullptr;
@@ -303,7 +305,7 @@ bool Face::self_intersecting() {
     Point s = Point(0, 0);
     for (auto k = oedges.begin(); k != oedges.end(); ++k) {
       if (k != i && intersect_segment_interior(s1, (*i).vec_cx(), s,
-                                               (*k).vec_cx(), intersection)) {
+                        (*k).vec_cx(), intersection)) {
         Simplex::Print(std::cout);
         std::cout << " intersecting edges ";
         std::cout << *i;

@@ -32,6 +32,6 @@ namespace flatsurf {
 template <typename T>
 using Moveable = spimpl::unique_impl_ptr<T>;
 
-}
+}  // namespace flatsurf
 
 #endif

@@ -39,7 +39,7 @@ namespace flatsurf::test {
 
 using namespace flatsurf;
 
-TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (long long), (mpq_class), (renf_elem_class) ,(exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using R2 = Vector<T>;
 
@@ -74,11 +74,9 @@ TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (long long), (m
 
         CAPTURE(flowDecomposition);
         REQUIRE(area(flowDecomposition) == scale * surface->area());
-
       }
     }
   }
 }
 
 }  // namespace flatsurf::test
-

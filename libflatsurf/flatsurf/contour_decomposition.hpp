@@ -30,11 +30,10 @@
 namespace flatsurf {
 template <class Surface>
 class ContourDecomposition {
-
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
  public:
-  ContourDecomposition(std::unique_ptr<Surface>, const Vector<typename Surface::Coordinate>& vertical);
+  ContourDecomposition(std::unique_ptr<Surface>, const Vector<typename Surface::Coordinate> &vertical);
 
   std::vector<ContourComponent<Surface>> components() const;
 

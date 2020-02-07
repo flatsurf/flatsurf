@@ -20,8 +20,8 @@
 #ifndef LIBFLATSURF_INTERVAL_EXCHANGE_TRANSFORMATION_IMPL_HPP
 #define LIBFLATSURF_INTERVAL_EXCHANGE_TRANSFORMATION_IMPL_HPP
 
-#include <vector>
 #include <map>
+#include <vector>
 
 #include <intervalxt/interval_exchange_transformation.hpp>
 
@@ -46,6 +46,6 @@ class Implementation<IntervalExchangeTransformation<Surface>> {
   Lengths<Surface>* lengths;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

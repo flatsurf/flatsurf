@@ -26,11 +26,11 @@
 #include <boost/operators.hpp>
 #include <boost/type_traits/is_detected_exact.hpp>
 
-#include "flat_triangulation_combinatorial.hpp"
 #include "edge.hpp"
+#include "flat_triangulation_combinatorial.hpp"
 
 namespace flatsurf {
-template<typename K, typename V>
+template <typename K, typename V>
 class TrackingMap : boost::equality_comparable<TrackingMap<K, V>> {
   template <typename T>
   using negate_t = decltype(-std::declval<T>());
@@ -46,12 +46,11 @@ class TrackingMap : boost::equality_comparable<TrackingMap<K, V>> {
   // In an odd map, map[-k] == -map[k] automatically holds; most prominently
   // this happens for a HalfEdgeMap<Vector> since both the keys (HalfEdge) and
   // the values (Vector) support the operator-.
-  static constexpr bool odd = boost::is_detected_exact_v<K, negate_t, K> 
-    && boost::is_detected_exact_v<V, negate_t, V>;
+  static constexpr bool odd = boost::is_detected_exact_v<K, negate_t, K> && boost::is_detected_exact_v<V, negate_t, V>;
 
   // The parent does not need to remain valid. If it is destructed, it will
   // signal so that we removes its reference to it.
-  TrackingMap(const FlatTriangulationCombinatorial *parent, const std::function<V(const K&)>& values, const FlipHandler &updateAfterFlip=noFlip, const CollapseHandler &updateBeforeCollapse=noCollapse);
+  TrackingMap(const FlatTriangulationCombinatorial* parent, const std::function<V(const K&)>& values, const FlipHandler& updateAfterFlip = noFlip, const CollapseHandler& updateBeforeCollapse = noCollapse);
 
   TrackingMap(const TrackingMap&);
   TrackingMap(TrackingMap&&);
@@ -66,13 +65,13 @@ class TrackingMap : boost::equality_comparable<TrackingMap<K, V>> {
   void apply(std::function<void(const K&, const V&)>) const;
 
   template <typename KK, typename VV>
-  friend std::ostream &operator<<(std::ostream&, const TrackingMap<KK, VV>&);
+  friend std::ostream& operator<<(std::ostream&, const TrackingMap<KK, VV>&);
 
   bool operator==(const TrackingMap&) const;
 
   const FlatTriangulationCombinatorial& parent() const;
 
- // TODO: I need to find a better solution for this.
+  // TODO: I need to find a better solution for this.
  public:
   using Implementation = ::flatsurf::Implementation<TrackingMap>;
   spimpl::unique_impl_ptr<Implementation> impl;
@@ -87,9 +86,6 @@ namespace std {
 template <typename K, typename V>
 struct hash<::flatsurf::TrackingMap<K, V>> { size_t operator()(const ::flatsurf::TrackingMap<K, V>&) const noexcept; };
 
-}
+}  // namespace std
 
 #endif
-
-
-

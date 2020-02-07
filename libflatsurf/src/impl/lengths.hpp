@@ -20,11 +20,11 @@
 #ifndef LIBFLATSURF_IMPL_LENGTHS_HPP
 #define LIBFLATSURF_IMPL_LENGTHS_HPP
 
-#include <memory>
-#include <vector>
+#include <gmpxx.h>
 #include <deque>
 #include <iosfwd>
-#include <gmpxx.h>
+#include <memory>
+#include <vector>
 
 #include <intervalxt/label.hpp>
 
@@ -80,6 +80,6 @@ class Lengths {
   friend IntervalExchangeTransformation<Surface>;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

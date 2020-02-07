@@ -24,9 +24,9 @@
 #include <functional>
 #include <iosfwd>
 #include <map>
-#include <vector>
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "forward.hpp"
 
@@ -36,7 +36,8 @@ namespace flatsurf {
 // compiled with -flto.
 template <typename T>
 class Permutation : boost::equality_comparable<Permutation<T>>, boost::multipliable<Permutation<T>> {
-  Permutation(const std::vector<T>&);
+  Permutation(const std::vector<T> &);
+
  public:
   Permutation();
   explicit Permutation(const std::vector<std::vector<T>> &cycles);
@@ -45,14 +46,14 @@ class Permutation : boost::equality_comparable<Permutation<T>>, boost::multiplia
   static Permutation<T> random(const std::vector<T> &domain);
 
   const T &operator()(const T &) const;
-  const T &preimage(const T&) const;
+  const T &preimage(const T &) const;
 
   template <typename S>
   friend Permutation<S> &operator*=(const std::vector<S> &cycle, Permutation<S> &);
   template <typename S>
-  friend Permutation<S> &operator*=(Permutation<S>&, const std::vector<S> &cycle);
+  friend Permutation<S> &operator*=(Permutation<S> &, const std::vector<S> &cycle);
 
-  Permutation<T> &operator*=(const Permutation<T>&);
+  Permutation<T> &operator*=(const Permutation<T> &);
   Permutation<T> operator~() const;
 
   template <typename S>
@@ -60,7 +61,7 @@ class Permutation : boost::equality_comparable<Permutation<T>>, boost::multiplia
   size_t size() const noexcept;
   const std::vector<T> &domain() const noexcept;
   std::vector<std::vector<T>> cycles() const noexcept;
-  void drop(const std::set<T>&);
+  void drop(const std::set<T> &);
 
   bool trivial() const noexcept;
 

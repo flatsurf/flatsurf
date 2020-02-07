@@ -27,11 +27,13 @@
 using std::ostream;
 
 namespace flatsurf {
-HalfEdge::HalfEdge(const int id) : id(id) {
+HalfEdge::HalfEdge(const int id) :
+  id(id) {
   ASSERT_ARGUMENT(id != 0, "id must be non-zero");
 }
 
-HalfEdge::HalfEdge() : id(0) {}
+HalfEdge::HalfEdge() :
+  id(0) {}
 
 HalfEdge HalfEdge::operator-() const {
   ASSERT_ARGUMENT(id != 0, "id must be non-zero");

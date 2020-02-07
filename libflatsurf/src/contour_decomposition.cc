@@ -17,9 +17,9 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <vector>
 #include <memory>
 #include <ostream>
+#include <vector>
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -37,12 +37,12 @@
 
 namespace flatsurf {
 
-using std::vector;
 using std::ostream;
-  
+using std::vector;
+
 template <typename Surface>
-ContourDecomposition<Surface>::ContourDecomposition(std::unique_ptr<Surface> surface, const Vector<typename Surface::Coordinate>& vertical)
-  : impl(spimpl::make_unique_impl<Implementation>(std::move(surface), vertical)) {}
+ContourDecomposition<Surface>::ContourDecomposition(std::unique_ptr<Surface> surface, const Vector<typename Surface::Coordinate>& vertical) :
+  impl(spimpl::make_unique_impl<Implementation>(std::move(surface), vertical)) {}
 
 template <typename Surface>
 std::vector<ContourComponent<Surface>> ContourDecomposition<Surface>::components() const {

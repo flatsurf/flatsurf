@@ -24,4 +24,3 @@
 #include "vertex.hpp"
 
 #endif
-

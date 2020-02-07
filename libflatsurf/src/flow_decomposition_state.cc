@@ -25,8 +25,8 @@
 #include <fmt/ostream.h>
 
 #include <intervalxt/dynamical_decomposition.hpp>
-#include <intervalxt/label.hpp>
 #include <intervalxt/interval_exchange_transformation.hpp>
+#include <intervalxt/label.hpp>
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
@@ -40,12 +40,12 @@
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 
-#include "impl/flow_decomposition_state.hpp"
 #include "impl/flow_component_state.hpp"
+#include "impl/flow_decomposition_state.hpp"
 #include "impl/interval_exchange_transformation.impl.hpp"
 
-#include "util/instantiate.ipp"
 #include "util/assert.ipp"
+#include "util/instantiate.ipp"
 
 namespace flatsurf {
 
@@ -67,7 +67,7 @@ FlowDecompositionState<Surface>::FlowDecompositionState(std::unique_ptr<Surface>
 
   using Injection = std::pair<::intervalxt::Label, ::intervalxt::Label>;
 
-  for (auto right : { true, false }) {
+  for (auto right : {true, false}) {
     for (auto& component : components) {
       auto& dynamicalComponent = component.dynamicalComponent;
       auto& contourComponent = component.contourComponent;
@@ -81,12 +81,14 @@ FlowDecompositionState<Surface>::FlowDecompositionState(std::unique_ptr<Surface>
 
         for (const auto& [vertical, injected] : rx::zip(leftVerticals, leftInjected)) {
           this->injectedConnections.emplace(injected, vertical);
-          ASSERT(vertical.ccw(direction) == CCW::COLLINEAR, "Injected verticals must be collinear with flow direction but " << vertical << " is not.");;
+          ASSERT(vertical.ccw(direction) == CCW::COLLINEAR, "Injected verticals must be collinear with flow direction but " << vertical << " is not.");
+          ;
           ASSERT(direction.orientation(vertical) == ORIENTATION::OPPOSITE, "Injected left verticals must be antiparallel with flow direction but " << vertical << " is not.");
         }
         for (const auto& [vertical, injected] : rx::zip(rightVerticals, rightInjected)) {
           this->injectedConnections.emplace(injected, vertical);
-          ASSERT(vertical.ccw(direction) == CCW::COLLINEAR, "Injected verticals must be collinear with flow direction but " << vertical << " is not.");;
+          ASSERT(vertical.ccw(direction) == CCW::COLLINEAR, "Injected verticals must be collinear with flow direction but " << vertical << " is not.");
+          ;
           ASSERT(direction.orientation(vertical) == ORIENTATION::SAME, "Injected right verticals must be parallel with flow direction but " << vertical << " is not.");
         }
       };
@@ -138,11 +140,11 @@ FlowDecompositionState<Surface>::FlowDecompositionState(std::unique_ptr<Surface>
 template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const FlowDecompositionState<Surface>& self) {
   return os << fmt::format("FlowDecompositionState(injected={}, detected={})",
-    fmt::join(self.injectedConnections | rx::transform([&](const auto& connection) { return fmt::format("{}: {}", connection.first, connection.second); }) | rx::to_vector(), ", "),
-    fmt::join(self.detectedConnections | rx::transform([&](const auto& connection) { return fmt::format("{}: {}", connection.first, connection.second); }) | rx::to_vector(), ", "));
+             fmt::join(self.injectedConnections | rx::transform([&](const auto& connection) { return fmt::format("{}: {}", connection.first, connection.second); }) | rx::to_vector(), ", "),
+             fmt::join(self.detectedConnections | rx::transform([&](const auto& connection) { return fmt::format("{}: {}", connection.first, connection.second); }) | rx::to_vector(), ", "));
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION), FlowDecompositionState, LIBFLATSURF_FLAT_TRIANGULATION_TYPES)

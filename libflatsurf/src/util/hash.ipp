@@ -22,8 +22,8 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <type_traits>
 #include <functional>
+#include <type_traits>
 
 #include "false.ipp"
 
@@ -63,6 +63,6 @@ inline size_t hash_combine(const S& s, const T& t, Args... args) {
   }
 }
 
-}
+}  // namespace flatsurf
 
 #endif

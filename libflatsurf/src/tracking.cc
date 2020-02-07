@@ -17,16 +17,16 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <set>
 #include <ostream>
+#include <set>
 
-#include "impl/tracking.impl.hpp"
 #include "impl/flat_triangulation_combinatorial.impl.hpp"
+#include "impl/tracking.impl.hpp"
 
 namespace flatsurf {
 
 template <typename T>
-Tracking<T>::Tracking(const FlatTriangulationCombinatorial *parent, T *value, const FlipHandler &updateAfterFlip, const CollapseHandler &updateBeforeCollapse, const SwapHandler& updateBeforeSwap, const EraseHandler& updateBeforeErase, const DestructionHandler& updateBeforeDestruction) :
+Tracking<T>::Tracking(const FlatTriangulationCombinatorial* parent, T* value, const FlipHandler& updateAfterFlip, const CollapseHandler& updateBeforeCollapse, const SwapHandler& updateBeforeSwap, const EraseHandler& updateBeforeErase, const DestructionHandler& updateBeforeDestruction) :
   impl(spimpl::make_unique_impl<Implementation>(parent, value, updateAfterFlip, updateBeforeCollapse, updateBeforeSwap, updateBeforeErase, updateBeforeDestruction)) {
 }
 
@@ -70,7 +70,7 @@ T& Tracking<T>::get() const {
 }
 
 template <typename T>
-Implementation<Tracking<T>>::Implementation(const FlatTriangulationCombinatorial *parent, T* value, const FlipHandler &updateAfterFlip, const CollapseHandler &updateBeforeCollapse, const SwapHandler& updateBeforeSwap, const EraseHandler& updateBeforeErase, const DestructionHandler& updateBeforeDestruction) :
+Implementation<Tracking<T>>::Implementation(const FlatTriangulationCombinatorial* parent, T* value, const FlipHandler& updateAfterFlip, const CollapseHandler& updateBeforeCollapse, const SwapHandler& updateBeforeSwap, const EraseHandler& updateBeforeErase, const DestructionHandler& updateBeforeDestruction) :
   parent(parent),
   value(value),
   updateAfterFlip(updateAfterFlip),
@@ -104,16 +104,16 @@ void Implementation<Tracking<T>>::connect() {
 
   // All these callbacks hold a reference to "this". This reference cannot be
   // dangling since we explicitly disconnect in ~Implementation.
-  onAfterFlip = parent->impl->afterFlip.connect([&](HalfEdge e){
+  onAfterFlip = parent->impl->afterFlip.connect([&](HalfEdge e) {
     updateAfterFlip(*value, *parent, e);
   });
-  onBeforeCollapse = parent->impl->beforeCollapse.connect([&](Edge e){
+  onBeforeCollapse = parent->impl->beforeCollapse.connect([&](Edge e) {
     updateBeforeCollapse(*value, *parent, e);
   });
   onBeforeSwap = parent->impl->beforeSwap.connect([&](HalfEdge a, HalfEdge b) {
     updateBeforeSwap(*value, *parent, a, b);
   });
-  onBeforeErase = parent->impl->beforeErase.connect([&](const std::set<Edge>& erase){
+  onBeforeErase = parent->impl->beforeErase.connect([&](const std::set<Edge>& erase) {
     updateBeforeErase(*value, *parent, erase);
   });
   onAfterMove = parent->impl->afterMove.connect([&](FlatTriangulationCombinatorial* parent) {
@@ -133,23 +133,23 @@ std::ostream& operator<<(std::ostream&, const Tracking<T>&) {
   throw std::logic_error("not implemented: ostream << Tracking");
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "impl/collapsed_half_edge.hpp"
 
 #include "util/instantiate.ipp"
 
-#define LIBFLATSURF_INSTANTIATE_THIS(T)                                                                                                                     \
-LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<HalfEdge, Vector<T>>>))                                                                    \
-LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<Edge, Vector<T>>>))                                                                        \
-LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<HalfEdge, T>>))                                                                            \
-LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<Edge, T>>))                                                                                \
-LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<Edge, SaddleConnection<FlatTriangulation<T>>>>))                                            \
-LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<HalfEdge, CollapsedHalfEdge<T>>>))                                                         \
-LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<HalfEdge, LengthAlongTriangulation<FlatTriangulation<T>>>>))                               \
-LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<HalfEdge, LengthAlongTriangulation<FlatTriangulationCollapsed<T>>>>))                      \
-LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<HalfEdge, typename Implementation<FlatTriangulationCollapsed<T>>::AsymmetricConnection>>))
+#define LIBFLATSURF_INSTANTIATE_THIS(T)                                                                                                   \
+  LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<HalfEdge, Vector<T>>>))                                               \
+  LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<Edge, Vector<T>>>))                                                   \
+  LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<HalfEdge, T>>))                                                       \
+  LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<Edge, T>>))                                                           \
+  LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<Edge, SaddleConnection<FlatTriangulation<T>>>>))                      \
+  LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<HalfEdge, CollapsedHalfEdge<T>>>))                                    \
+  LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<HalfEdge, LengthAlongTriangulation<FlatTriangulation<T>>>>))          \
+  LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<HalfEdge, LengthAlongTriangulation<FlatTriangulationCollapsed<T>>>>)) \
+  LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<HalfEdge, typename Implementation<FlatTriangulationCollapsed<T>>::AsymmetricConnection>>))
 
 LIBFLATSURF_INSTANTIATE_MANY((LIBFLATSURF_INSTANTIATE_THIS), LIBFLATSURF_REAL_TYPES)
 

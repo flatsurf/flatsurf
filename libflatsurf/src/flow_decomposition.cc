@@ -21,27 +21,27 @@
 #include <iostream>
 
 #include <memory>
-#include <vector>
 #include <ostream>
 #include <string>
+#include <vector>
 
 #include <boost/algorithm/string/join.hpp>
 #include <boost/lexical_cast.hpp>
 
 #include <intervalxt/dynamical_decomposition.hpp>
 
-#include "../flatsurf/flow_decomposition.hpp"
+#include "../flatsurf/contour_component.hpp"
+#include "../flatsurf/contour_decomposition.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/flat_triangulation_collapsed.hpp"
-#include "../flatsurf/vector.hpp"
-#include "../flatsurf/contour_decomposition.hpp"
-#include "../flatsurf/contour_component.hpp"
+#include "../flatsurf/flow_decomposition.hpp"
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/vector.hpp"
 
-#include "impl/flow_decomposition.impl.hpp"
-#include "impl/flow_decomposition_state.hpp"
 #include "impl/flow_component.impl.hpp"
 #include "impl/flow_component_state.hpp"
+#include "impl/flow_decomposition.impl.hpp"
+#include "impl/flow_decomposition_state.hpp"
 #include "impl/interval_exchange_transformation.impl.hpp"
 
 using std::ostream;
@@ -51,8 +51,8 @@ using intervalxt::DynamicalDecomposition;
 namespace flatsurf {
 
 template <typename Surface>
-FlowDecomposition<Surface>::FlowDecomposition(std::unique_ptr<Surface> surface, const Vector<T>& vertical)
-  : impl(spimpl::make_unique_impl<Implementation>(std::move(surface), vertical)) {
+FlowDecomposition<Surface>::FlowDecomposition(std::unique_ptr<Surface> surface, const Vector<T>& vertical) :
+  impl(spimpl::make_unique_impl<Implementation>(std::move(surface), vertical)) {
   // std::cout << *this << " with respect to " << vertical << std::endl;
 }
 
@@ -88,7 +88,7 @@ ostream& operator<<(ostream& os, const FlowDecomposition<Surface>& self) {
 
   return os << "FlowDecompsition(components=[" << boost::algorithm::join(components, ", ") << "])";
 }
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include <e-antic/renfxx.h>
@@ -110,4 +110,4 @@ template class FlowDecomposition<FlatTriangulation<exactreal::Element<exactreal:
 template ostream& operator<<(ostream&, const FlowDecomposition<FlatTriangulation<exactreal::Element<exactreal::RationalField>>>&);
 template class FlowDecomposition<FlatTriangulation<exactreal::Element<exactreal::NumberField>>>;
 template ostream& operator<<(ostream&, const FlowDecomposition<FlatTriangulation<exactreal::Element<exactreal::NumberField>>>&);
-}
+}  // namespace flatsurf

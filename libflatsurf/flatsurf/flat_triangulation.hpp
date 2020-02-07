@@ -20,11 +20,11 @@
 #ifndef LIBFLATSURF_FLAT_TRIANGULATION_HPP
 #define LIBFLATSURF_FLAT_TRIANGULATION_HPP
 
+#include <boost/operators.hpp>
+#include <functional>
 #include <iosfwd>
 #include <memory>
 #include <vector>
-#include <functional>
-#include <boost/operators.hpp>
 
 #include <gmpxx.h>
 
@@ -36,11 +36,9 @@
 
 namespace flatsurf {
 template <class T>
-class FlatTriangulation :
-  public FlatTriangulationCombinatorial,
-  Serializable<FlatTriangulation<T>>,
-  boost::equality_comparable<FlatTriangulation<T>> {
-
+class FlatTriangulation : public FlatTriangulationCombinatorial,
+                          Serializable<FlatTriangulation<T>>,
+                          boost::equality_comparable<FlatTriangulation<T>> {
   static_assert(std::is_same_v<T, std::decay_t<T>>, "type must not have modifiers such as const");
 
  public:
@@ -50,8 +48,8 @@ class FlatTriangulation :
   using SaddleConnection = ::flatsurf::SaddleConnection<FlatTriangulation<T>>;
 
   FlatTriangulation() noexcept;
-  FlatTriangulation(FlatTriangulationCombinatorial &&, const std::vector<Vector>& vectors);
-  FlatTriangulation(FlatTriangulationCombinatorial &&, const std::function<Vector(HalfEdge)>& vectors);
+  FlatTriangulation(FlatTriangulationCombinatorial &&, const std::vector<Vector> &vectors);
+  FlatTriangulation(FlatTriangulationCombinatorial &&, const std::function<Vector(HalfEdge)> &vectors);
   FlatTriangulation(FlatTriangulation<T> &&rhs) noexcept;
 
   // Create an independent clone of this triangulation that is built from the
@@ -76,7 +74,7 @@ class FlatTriangulation :
 
   Vector shortest() const;
   // Return the shortest vector relative to this direction which is not orthogonal to it.
-  Vector shortest(const Vector&) const;
+  Vector shortest(const Vector &) const;
 
   void flip(HalfEdge);
 
@@ -85,8 +83,8 @@ class FlatTriangulation :
   // Return whether the vector is in the sector counterclockwise next to the
   // half edge (including the half edge but not including the following half
   // edge.)
-  bool inSector(HalfEdge, const Vector&) const;
-  bool inSector(HalfEdge, const Vertical<FlatTriangulation<T>>&) const;
+  bool inSector(HalfEdge, const Vector &) const;
+  bool inSector(HalfEdge, const Vertical<FlatTriangulation<T>> &) const;
 
   const Vector &fromEdge(HalfEdge) const;
   const SaddleConnection alongEdge(HalfEdge) const;

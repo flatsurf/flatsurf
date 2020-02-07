@@ -27,23 +27,23 @@
 
 #include <intervalxt/component.hpp>
 #include <intervalxt/decomposition_step.hpp>
-#include <intervalxt/label.hpp>
 #include <intervalxt/fmt.hpp>
+#include <intervalxt/label.hpp>
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/flow_component.hpp"
+#include "../flatsurf/fmt.hpp"
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/vertical.hpp"
-#include "../flatsurf/fmt.hpp"
 
-#include "impl/flow_connection.impl.hpp"
-#include "impl/flow_component.impl.hpp"
-#include "impl/flat_triangulation_collapsed.impl.hpp"
+#include "impl/collapsed_half_edge.hpp"
 #include "impl/contour_component.impl.hpp"
 #include "impl/contour_decomposition_state.hpp"
-#include "impl/collapsed_half_edge.hpp"
+#include "impl/flat_triangulation_collapsed.impl.hpp"
+#include "impl/flow_component.impl.hpp"
+#include "impl/flow_connection.impl.hpp"
 #include "impl/saddle_connection.impl.hpp"
 
 #include "util/assert.ipp"
@@ -63,7 +63,7 @@ template <typename Surface>
 bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Surface>&)> target, int limit) {
   auto area = this->area();
 
-  while(!target(*this)) {
+  while (!target(*this)) {
     auto step = impl->component->dynamicalComponent.decompositionStep(limit);
     // TODO: If Cylinder, assert that the perimeter is actually a cylinder.
     if (step.result == intervalxt::DecompositionStep::Result::LIMIT_REACHED) {
@@ -75,7 +75,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
 
       // Register the saddle connection we just discovered
       Chain<FlatTriangulation<typename Surface::Coordinate>> vector(surface);
-      for(const auto& connection : *step.equivalent) {
+      for (const auto& connection : *step.equivalent) {
         auto flowConnection = ::flatsurf::Implementation<FlowConnection<Surface>>::make(impl->state, *this, connection);
         // TODO: Unfortunately, non-verticals are not correctly oriented in intervalxt (i.e., a positive HalfEdge is a top half edge, a negative one is bottom; however, we assume things to be in a counter-clockwise context and there is currently no way to write things in a clockwise context. I guess, intervalxt should simply report the equivalent of -connection instead.)
         if (!flowConnection.vertical()) {
@@ -104,18 +104,18 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
 
       auto source = [&]() {
         auto ret = clockwiseFrom.source();
-        while(vertical().parallel(surface->fromEdge(ret)) < 0)
+        while (vertical().parallel(surface->fromEdge(ret)) < 0)
           ret = surface->previousAtVertex(ret);
-        while(vertical().perpendicular(surface->fromEdge(ret)) < 0)
+        while (vertical().perpendicular(surface->fromEdge(ret)) < 0)
           ret = surface->previousAtVertex(ret);
         return ret;
       }();
 
       auto target = [&]() {
         auto ret = counterclockwiseTo.source();
-        while(vertical().parallel(surface->fromEdge(ret)) > 0)
+        while (vertical().parallel(surface->fromEdge(ret)) > 0)
           ret = surface->nextAtVertex(ret);
-        while(vertical().perpendicular(surface->fromEdge(ret)) <= 0)
+        while (vertical().perpendicular(surface->fromEdge(ret)) <= 0)
           ret = surface->nextAtVertex(ret);
         ret = surface->previousAtVertex(ret);
         return ret;
@@ -123,7 +123,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
 
       // auto connection = SaddleConnection<Surface>::clockwise(clockwiseFrom, vector);
       auto connection = SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>(surface, source, target, vector);
-      
+
       // TODO: This is nice but too expensive for large vectors.
       // ::flatsurf::Implementation<SaddleConnection<Surface>>::check(connection);
 
@@ -134,9 +134,9 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
     }
     if (step.additionalComponent) {
       impl->state->components.push_back({
-        impl->component->contourComponent,
-        impl->component->iet,
-        *step.additionalComponent,
+          impl->component->contourComponent,
+          impl->component->iet,
+          *step.additionalComponent,
       });
       auto additionalComponent = Implementation::make(impl->state, &*impl->state->components.rbegin());
       ASSERT(area == this->area() + additionalComponent.area(), "Area changed while creating additional component. Started as " << area << " but now is " << this->area() << " + " << additionalComponent.area() << " = " << this->area() + additionalComponent.area());
@@ -187,11 +187,11 @@ typename Surface::Coordinate FlowComponent<Surface>::area() const {
   T sum = T();
   auto vertical = this->vertical();
 
-  for(const auto& c : perimeter()) {
+  for (const auto& c : perimeter()) {
     auto vector = static_cast<typename Surface::Vector>(c.saddleConnection());
     auto x = vertical.perpendicular(vector);
     auto y = vertical.parallel(vector);
-    
+
     sum -= 2 * x * height;
     sum -= x * y;
 
@@ -205,7 +205,7 @@ template <typename Surface>
 typename Surface::Coordinate FlowComponent<Surface>::width() const {
   T sum = T();
   auto vertical = this->vertical();
-  for(const auto& c : perimeter()) {
+  for (const auto& c : perimeter()) {
     auto width = vertical.perpendicular(c.saddleConnection());
     if (width > 0)
       sum += width;
@@ -256,7 +256,7 @@ ostream& operator<<(ostream& os, const FlowComponent<Surface>& self) {
   return os << fmt::format("{} with perimeter {}", kind, fmt::join(self.perimeter(), "→"));
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include <e-antic/renfxx.h>
@@ -282,5 +282,4 @@ template ostream& operator<<(ostream&, const FlowComponent<FlatTriangulation<exa
 template class FlowComponent<FlatTriangulation<exactreal::Element<exactreal::NumberField>>>;
 template ostream& operator<<(ostream&, const FlowComponent<FlatTriangulation<exactreal::Element<exactreal::NumberField>>>&);
 
-}
-
+}  // namespace flatsurf

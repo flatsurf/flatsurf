@@ -21,10 +21,10 @@
 #define LIBFLATSURF_VERTICAL_HPP
 
 #include <iosfwd>
-#include <set>
-#include <vector>
 #include <memory>
+#include <set>
 #include <type_traits>
+#include <vector>
 
 #include <boost/operators.hpp>
 
@@ -37,11 +37,10 @@ namespace flatsurf {
 // like that and this subclass Vertical which is attached to a Surface.
 template <class Surface>
 class Vertical : boost::equality_comparable<Vertical<Surface>> {
-
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
  public:
-  Vertical(std::shared_ptr<const Surface>, const typename Surface::Vector& vertical);
+  Vertical(std::shared_ptr<const Surface>, const typename Surface::Vector &vertical);
 
   enum class TRIANGLE {
     BACKWARD = 1,
@@ -57,11 +56,11 @@ class Vertical : boost::equality_comparable<Vertical<Surface>> {
   // both of its adjacent triangles.
   bool large(HalfEdge) const;
 
-  const typename Surface::Vector& vertical() const;
-  const typename Surface::Vector& horizontal() const;
+  const typename Surface::Vector &vertical() const;
+  const typename Surface::Vector &horizontal() const;
 
-  typename Surface::Coordinate perpendicular(const typename Surface::Vector&) const;
-  typename Surface::Coordinate parallel(const typename Surface::Vector&) const;
+  typename Surface::Coordinate perpendicular(const typename Surface::Vector &) const;
+  typename Surface::Coordinate parallel(const typename Surface::Vector &) const;
   bool parallel(Edge) const;
   bool perpendicular(Edge) const;
   bool parallel(HalfEdge) const;
@@ -78,7 +77,7 @@ class Vertical : boost::equality_comparable<Vertical<Surface>> {
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const Vertical<S> &);
 
- // TODO
+  // TODO
  public:
   using Implementation = ::flatsurf::Implementation<Vertical>;
   spimpl::impl_ptr<Implementation> impl;
@@ -93,7 +92,7 @@ class Vertical : boost::equality_comparable<Vertical<Surface>> {
 };
 
 template <typename Surface>
-Vertical(std::shared_ptr<const Surface>, const typename Surface::Vector&) -> Vertical<Surface>;
+Vertical(std::shared_ptr<const Surface>, const typename Surface::Vector &)->Vertical<Surface>;
 }  // namespace flatsurf
 
 #endif

@@ -20,8 +20,8 @@
 #ifndef LIBFLATSURF_TRACKING_HALF_EDGE_IMPL_HPP
 #define LIBFLATSURF_TRACKING_HALF_EDGE_IMPL_HPP
 
-#include "../../flatsurf/tracking_half_edge.hpp"
 #include "../../flatsurf/half_edge_set.hpp"
+#include "../../flatsurf/tracking_half_edge.hpp"
 
 namespace flatsurf {
 
@@ -36,7 +36,6 @@ class TrackingHalfEdge::Implementation {
   HalfEdgeSet value;
 };
 
-}
+}  // namespace flatsurf
 
 #endif
-

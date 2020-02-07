@@ -24,18 +24,18 @@
 #include <iosfwd>
 #include <memory>
 
-#include "flat_triangulation_combinatorial.hpp"
-#include "half_edge.hpp"
-#include "permutation.hpp"
-#include "vertex.hpp"
+#include "bound.hpp"
 #include "flat_triangulation.hpp"
+#include "flat_triangulation_combinatorial.hpp"
+#include "flow_component.hpp"
+#include "flow_decomposition.hpp"
+#include "half_edge.hpp"
 #include "interval_exchange_transformation.hpp"
+#include "permutation.hpp"
 #include "saddle_connection.hpp"
 #include "saddle_connections.hpp"
 #include "vector.hpp"
-#include "bound.hpp"
-#include "flow_decomposition.hpp"
-#include "flow_component.hpp"
+#include "vertex.hpp"
 
 namespace flatsurf {
 // cppyy sometimes has trouble with rvalues, let's help it to create a FlatTriangulation
@@ -47,24 +47,24 @@ auto makeFlatTriangulation(const T &vertices, const std::vector<V> &vectors) {
 // cppyy gets the lifetime of the surfaces wrong when methods return a unique_ptr<Surface>
 // TODO: Report this upstream
 template <typename T>
-std::shared_ptr<FlatTriangulation<T>> insertAt(const FlatTriangulation<T>& surface, HalfEdge &e, const Vector<T>& v) {
+std::shared_ptr<FlatTriangulation<T>> insertAt(const FlatTriangulation<T> &surface, HalfEdge &e, const Vector<T> &v) {
   return surface.insertAt(e, v);
 }
 
 template <typename T>
-std::shared_ptr<FlatTriangulation<T>> slot(const FlatTriangulation<T>& surface, HalfEdge e) {
+std::shared_ptr<FlatTriangulation<T>> slot(const FlatTriangulation<T> &surface, HalfEdge e) {
   return surface.slot(e);
 }
 
 template <typename T>
-FlowDecomposition<FlatTriangulation<T>> makeFlowDecomposition(const FlatTriangulation<T>& surface, const Vector<T>& v) {
+FlowDecomposition<FlatTriangulation<T>> makeFlowDecomposition(const FlatTriangulation<T> &surface, const Vector<T> &v) {
   return FlowDecomposition<FlatTriangulation<T>>(surface.clone(), v);
 }
 
 // cppyy has trouble with std::function arguments in headers
 // TODO: Report this upstream
 template <typename T>
-void decomposeFlowDecomposition(FlowDecomposition<T>& decomposition, int limit=-1) {
+void decomposeFlowDecomposition(FlowDecomposition<T> &decomposition, int limit = -1) {
   decomposition.decompose();
 }
 

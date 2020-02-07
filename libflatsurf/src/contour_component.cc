@@ -24,22 +24,22 @@
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
-#include "../flatsurf/flat_triangulation_collapsed.hpp"
-#include "../flatsurf/vertical.hpp"
-#include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/contour_connection.hpp"
+#include "../flatsurf/flat_triangulation_collapsed.hpp"
+#include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/vertical.hpp"
 
 #include "impl/contour_component.impl.hpp"
-#include "impl/contour_connection.impl.hpp"
 #include "impl/contour_component_state.hpp"
+#include "impl/contour_connection.impl.hpp"
 #include "impl/contour_decomposition_state.hpp"
 
 #include "util/assert.ipp"
 
+using std::list;
 using std::ostream;
 using std::vector;
-using std::list;
 
 namespace flatsurf {
 
@@ -56,16 +56,18 @@ IntervalExchangeTransformation<typename Surface::Collapsed> ContourComponent<Sur
 template <typename Surface>
 std::list<ContourConnection<Surface>> ContourComponent<Surface>::top() const {
   vector<HalfEdge> topEdges;
-  
+
   ::flatsurf::Implementation<ContourComponent<typename ContourDecompositionState<Surface>::Collapsed>>::makeContour(back_inserter(topEdges), impl->large(), *impl->state->surface, impl->state->surface->vertical());
 
   auto top = topEdges | rx::transform([&](const HalfEdge e) {
     return -::flatsurf::Implementation<ContourConnection<Surface>>::make(impl->state, *this, e);
-  }) | rx::reverse() | rx::to_list();
+  }) | rx::reverse() |
+             rx::to_list();
 
   ASSERT(std::all_of(top.begin(), top.end(), [&](const auto& connection) {
     return impl->state->surface->vertical().perpendicular(connection.connection()) < 0;
-  }), "top connections must be negative, i.e., from right to left");
+  }),
+      "top connections must be negative, i.e., from right to left");
 
   return top;
 }
@@ -73,7 +75,7 @@ std::list<ContourConnection<Surface>> ContourComponent<Surface>::top() const {
 template <typename Surface>
 std::list<ContourConnection<Surface>> ContourComponent<Surface>::bottom() const {
   vector<HalfEdge> bottomEdges;
-  
+
   ::flatsurf::Implementation<ContourComponent<typename ContourDecompositionState<Surface>::Collapsed>>::makeContour(back_inserter(bottomEdges), -impl->large(), *impl->state->surface, -impl->state->surface->vertical());
 
   auto bottom = bottomEdges | rx::reverse() | rx::transform([&](const HalfEdge e) {
@@ -82,7 +84,8 @@ std::list<ContourConnection<Surface>> ContourComponent<Surface>::bottom() const 
 
   ASSERT(std::all_of(bottom.begin(), bottom.end(), [&](const auto& connection) {
     return impl->state->surface->vertical().perpendicular(connection.connection()) > 0;
-  }), "bottom connections must be positive, i.e., from left to right");
+  }),
+      "bottom connections must be positive, i.e., from left to right");
 
   return bottom;
 }
@@ -98,7 +101,7 @@ template <typename Surface>
 HalfEdge Implementation<ContourComponent<Surface>>::large() const {
   auto vertical = state->surface->vertical();
   HalfEdge large = *std::find_if(component->component.begin(), component->component.end(), [&](HalfEdge e) {
-   return vertical.large(e);
+    return vertical.large(e);
   });
 
   if (vertical.perpendicular(state->surface->fromEdge(large)) < 0)
@@ -116,8 +119,8 @@ ContourComponent<Surface> Implementation<ContourComponent<Surface>>::make(std::s
 
 template <typename Surface>
 void Implementation<ContourComponent<Surface>>::makeContour(std::back_insert_iterator<vector<HalfEdge>> target,
-                 const HalfEdge source, const Surface& parent,
-                 const Vertical<Surface>& vertical) {
+    const HalfEdge source, const Surface& parent,
+    const Vertical<Surface>& vertical) {
   ASSERT_ARGUMENT(!vertical.parallel(source), "vertical edges must have been collapsed before a contour can be built");
   ASSERT_ARGUMENT(vertical.perpendicular(parent.fromEdge(source)) > 0, "contour must procede in positive direction");
   switch (vertical.classifyFace(source)) {
@@ -141,8 +144,7 @@ void Implementation<ContourComponent<Surface>>::makeContour(std::back_insert_ite
 
 template <typename Surface>
 bool ContourComponent<Surface>::operator==(const ContourComponent<Surface>& rhs) const {
-  return impl->component->component == rhs.impl->component->component
-    && impl->state->surface == rhs.impl->state->surface;
+  return impl->component->component == rhs.impl->component->component && impl->state->surface == rhs.impl->state->surface;
 }
 
 template <typename Surface>
@@ -150,8 +152,7 @@ ostream& operator<<(ostream& os, const ContourComponent<Surface>& self) {
   return os << "ContourComponent(" << fmt::format("{}", fmt::join(self.perimeter() | rx::transform([&](const auto& connection) { return fmt::format("{}", connection); }) | rx::to_vector(), "→")) << ")";
 }
 
-}
-
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 

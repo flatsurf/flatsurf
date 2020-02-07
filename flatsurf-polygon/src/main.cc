@@ -26,8 +26,8 @@
 #include <fstream>
 #include <iostream>
 
-#include "flatsurf/ccw.hpp"
 #include "flatsurf/bound.hpp"
+#include "flatsurf/ccw.hpp"
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/half_edge.hpp"
 #include "flatsurf/orientation.hpp"
@@ -135,7 +135,7 @@ int main(int argc, char **argv) {
 
     int c;
     c = getopt_long(argc, argv, "f:s:e:d:v::lp::o:ti", long_options,
-                    &option_index);
+        &option_index);
     if (c == -1) break;
 
     switch (c) {

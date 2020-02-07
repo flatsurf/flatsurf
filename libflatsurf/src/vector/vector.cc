@@ -18,12 +18,12 @@
  *********************************************************************/
 
 #include <boost/lexical_cast.hpp>
+#include <exact-real/arf.hpp>
 #include <exact-real/element.hpp>
 #include <exact-real/integer_ring.hpp>
 #include <exact-real/number_field.hpp>
 #include <exact-real/rational_field.hpp>
 #include <exact-real/yap/arb.hpp>
-#include <exact-real/arf.hpp>
 
 #include "../../flatsurf/vector.hpp"
 
@@ -46,8 +46,8 @@ using boost::lexical_cast;
 // here. However, it is a bit unclear whether there is a reasonable choice of
 // precision for that.
 using exactreal::Arb;
-using exactreal::Arf;
 using exactreal::ARB_PRECISION_FAST;
+using exactreal::Arf;
 
 template <bool Condition>
 using If = std::enable_if_t<Condition, bool>;
@@ -98,7 +98,7 @@ class Implementation<Vector<T>> : public Cartesian<T> {
     return *this;
   }
 
-  template <typename S, bool Enable = IsLongLong<T> && IsMPZ<S>, If<Enable> = true, typename = void>
+  template <typename S, bool Enable = IsLongLong<T>&& IsMPZ<S>, If<Enable> = true, typename = void>
   Implementation& operator*=(const S& rhs) {
     using gmpxxll::mpz_class;
     ASSERT(rhs * mpz_class(this->x) <= mpz_class(LONG_LONG_MAX), "Multiplication overflow");
@@ -182,7 +182,7 @@ class Implementation<Vector<T>> : public Cartesian<T> {
   Vector projection(const Vector& rhs) const {
     Arb dot = *this * rhs;
     return make((dot * rhs.impl->x)(ARB_PRECISION_FAST),
-                (dot * rhs.impl->y)(ARB_PRECISION_FAST));
+        (dot * rhs.impl->y)(ARB_PRECISION_FAST));
   }
 
   template <bool Enable = IsArb<T>, If<Enable> = true>
@@ -202,10 +202,12 @@ class Implementation<Vector<T>> : public Cartesian<T> {
 };
 
 template <typename T>
-Vector<T>::Vector() : impl(spimpl::make_impl<Implementation>(T(), T())) {}
+Vector<T>::Vector() :
+  impl(spimpl::make_impl<Implementation>(T(), T())) {}
 
 template <typename T>
-Vector<T>::Vector(const T& x, const T& y) : impl(spimpl::make_impl<Implementation>(x, y)) {}
+Vector<T>::Vector(const T& x, const T& y) :
+  impl(spimpl::make_impl<Implementation>(x, y)) {}
 
 template <typename T>
 typename Vector<T>::Coordinate Vector<T>::x() const noexcept { return impl->x; }
@@ -243,19 +245,19 @@ size_t hash<Vector<T>>::operator()(const Vector<T>&) const noexcept {
   // return hash_combine(self.x(), self.y());
 }
 
-}
+}  // namespace std
 
 // Instantiations of templates so implementations are generated for the linker
 // (unfortunately, we also need to explicitly instantiate the base classes,
 // https://stackoverflow.com/q/3705000/812379).
 #include "../util/instantiate.ipp"
 
-#define LIBFLATSURF_INSTANTIATE_THIS(T) \
-  LIBFLATSURF_INSTANTIATE_HASH((Vector<T>)) \
+#define LIBFLATSURF_INSTANTIATE_THIS(T)                       \
+  LIBFLATSURF_INSTANTIATE_HASH((Vector<T>))                   \
   LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION((Vector<T>)) \
-  namespace flatsurf::detail { \
-    template class VectorExact<Vector<T>, T>; \
-    template class VectorBase<Vector<T>>; \
+  namespace flatsurf::detail {                                \
+  template class VectorExact<Vector<T>, T>;                   \
+  template class VectorBase<Vector<T>>;                       \
   }
 
 LIBFLATSURF_INSTANTIATE_MANY((LIBFLATSURF_INSTANTIATE_THIS), LIBFLATSURF_REAL_TYPES)

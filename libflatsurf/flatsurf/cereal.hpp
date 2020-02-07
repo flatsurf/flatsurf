@@ -29,17 +29,17 @@
 #include <cereal/types/utility.hpp>
 #include <cereal/types/vector.hpp>
 
+#include "bound.hpp"
+#include "chain.hpp"
+#include "edge.hpp"
+#include "flat_triangulation.hpp"
 #include "flat_triangulation_combinatorial.hpp"
 #include "half_edge.hpp"
-#include "edge.hpp"
 #include "permutation.hpp"
-#include "vertex.hpp"
-#include "bound.hpp"
-#include "flat_triangulation.hpp"
 #include "saddle_connection.hpp"
 #include "saddle_connections.hpp"
 #include "vector.hpp"
-#include "chain.hpp"
+#include "vertex.hpp"
 
 namespace flatsurf {
 
@@ -134,21 +134,21 @@ struct Serialization<FlatTriangulation<T>> {
   template <typename Archive>
   void save(Archive& archive, const FlatTriangulation<T>& self) {
     archive(cereal::make_nvp("combinatorial", static_cast<const FlatTriangulationCombinatorial&>(self)));
-  
+
     std::map<HalfEdge, typename FlatTriangulation<T>::Vector> vectors;
     for (auto& edge : self.halfEdges())
       vectors[edge] = self.fromEdge(edge);
-  
+
     archive(cereal::make_nvp("vectors", vectors));
   }
-  
+
   template <typename Archive>
   void load(Archive& archive, FlatTriangulation<T>& self) {
     FlatTriangulationCombinatorial combinatorial;
     archive(cereal::make_nvp("combinatorial", combinatorial));
     std::map<HalfEdge, typename FlatTriangulation<T>::Vector> map;
     archive(cereal::make_nvp("vectors", map));
-  
+
     self = FlatTriangulation<long long>(std::move(std::move(combinatorial)), [&](HalfEdge e) { return map.at(e); });
   }
 };
@@ -163,7 +163,7 @@ struct Serialization<Chain<Surface>> {
     archive(cereal::make_nvp("surface", self.surface().shared_from_this()));
     archive(cereal::make_nvp("coefficients", coefficients));
   }
-  
+
   template <typename Archive>
   void load(Archive& archive, Chain<Surface>& self) {
     std::shared_ptr<const Surface> surface;
@@ -186,7 +186,7 @@ struct Serialization<SaddleConnection<Surface>> {
     archive(cereal::make_nvp("chain", static_cast<Chain<Surface>>(self)));
     archive(cereal::make_nvp("crossings", self.crossings()));
   }
-  
+
   template <typename Archive>
   void load(Archive& archive, SaddleConnection<Surface>& self) {
     std::shared_ptr<Surface> surface;
@@ -196,7 +196,7 @@ struct Serialization<SaddleConnection<Surface>> {
     archive(cereal::make_nvp("target", target));
     Chain<Surface> chain;
     archive(cereal::make_nvp("chain", chain));
-  
+
     self = SaddleConnection<Surface>(surface, source, target, chain);
   }
 };
@@ -204,5 +204,3 @@ struct Serialization<SaddleConnection<Surface>> {
 }  // namespace flatsurf
 
 #endif
-
-

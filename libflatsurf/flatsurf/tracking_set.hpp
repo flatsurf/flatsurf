@@ -30,52 +30,48 @@
 #include "forward.hpp"
 
 namespace flatsurf {
-template<typename K>
+template <typename K>
 class TrackingSet : boost::equality_comparable<TrackingSet<K>> {
  public:
   // A callback of this type is invoked after an edge is flipped.
-  using FlipHandler = std::function<void(TrackingSet&, HalfEdge flip)>;
+  using FlipHandler = std::function<void(TrackingSet &, HalfEdge flip)>;
   // A callback of this type is invoked before an edge is collapsed.
-  using CollapseHandler = std::function<void(TrackingSet&, Edge collapse)>;
+  using CollapseHandler = std::function<void(TrackingSet &, Edge collapse)>;
 
   static constexpr bool odd = false;
 
   // The parent does not need to remain valid. If it is destructed, it will
   // signal so that we removes its reference to it.
-  TrackingSet(const FlatTriangulationCombinatorial *parent, const std::function<bool(const K&)>& values, const FlipHandler &updateAfterFlip=noFlip, const CollapseHandler &updateBeforeCollapse=noCollapse);
+  TrackingSet(const FlatTriangulationCombinatorial *parent, const std::function<bool(const K &)> &values, const FlipHandler &updateAfterFlip = noFlip, const CollapseHandler &updateBeforeCollapse = noCollapse);
 
-  TrackingSet(const TrackingSet&);
-  TrackingSet(TrackingSet&&);
-  TrackingSet& operator=(TrackingSet&&);
-  TrackingSet& operator=(const TrackingSet&) = delete;
+  TrackingSet(const TrackingSet &);
+  TrackingSet(TrackingSet &&);
+  TrackingSet &operator=(TrackingSet &&);
+  TrackingSet &operator=(const TrackingSet &) = delete;
 
   ~TrackingSet();
 
-  void insert(const K&);
-  void erase(const K&);
-  bool contains(const K&) const;
+  void insert(const K &);
+  void erase(const K &);
+  bool contains(const K &) const;
 
-  void apply(std::function<void(const K&)>) const;
+  void apply(std::function<void(const K &)>) const;
 
   template <typename KK>
-  friend std::ostream &operator<<(std::ostream&, const TrackingSet<KK>&);
+  friend std::ostream &operator<<(std::ostream &, const TrackingSet<KK> &);
 
-  bool operator==(const TrackingSet&) const;
+  bool operator==(const TrackingSet &) const;
 
   const FlatTriangulationCombinatorial &parent() const;
 
- // TODO: I need to find a better solution for this.
+  // TODO: I need to find a better solution for this.
  public:
   class Implementation;
   spimpl::unique_impl_ptr<Implementation> impl;
 
-  static void noFlip(TrackingSet&, HalfEdge);
-  static void noCollapse(TrackingSet&, Edge);
+  static void noFlip(TrackingSet &, HalfEdge);
+  static void noCollapse(TrackingSet &, Edge);
 };
 }  // namespace flatsurf
 
 #endif
-
-
-
-

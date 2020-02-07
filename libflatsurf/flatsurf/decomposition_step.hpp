@@ -20,15 +20,14 @@
 #ifndef LIBFLATSURF_DECOMPOSITION_STEP_HPP
 #define LIBFLATSURF_DECOMPOSITION_STEP_HPP
 
-#include <utility>
 #include <optional>
+#include <utility>
 
 #include "forward.hpp"
 
 namespace flatsurf {
 template <typename Surface>
 class DecompositionStep {
-
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
   enum class Result {
@@ -44,6 +43,6 @@ class DecompositionStep {
   std::optional<FlowConnection<Surface>> connection = {};
   std::optional<FlowComponent<Surface>> additionalComponent = {};
 };
-}
+}  // namespace flatsurf
 
 #endif

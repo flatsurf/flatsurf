@@ -25,10 +25,10 @@
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
 #include "../flatsurf/contour_connection.hpp"
-#include "../flatsurf/saddle_connection.hpp"
-#include "../flatsurf/vertical.hpp"
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vertex.hpp"
+#include "../flatsurf/vertical.hpp"
 
 #include "impl/contour_connection.impl.hpp"
 #include "impl/contour_decomposition_state.hpp"
@@ -107,9 +107,7 @@ ContourConnection<Surface> ContourConnection<Surface>::operator-() const {
 
 template <typename Surface>
 bool ContourConnection<Surface>::operator==(const ContourConnection<Surface>& rhs) const {
-  return impl->component == rhs.impl->component
-    && impl->e == rhs.impl->e
-    && impl->contour == rhs.impl->contour;
+  return impl->component == rhs.impl->component && impl->e == rhs.impl->e && impl->contour == rhs.impl->contour;
 }
 
 template <typename Surface>
@@ -201,13 +199,15 @@ std::pair<std::list<typename Surface::SaddleConnection>, std::list<typename Surf
   ASSERT(std::all_of(begin(atFrom), end(atFrom), [&](const auto& connection) {
     auto parallel = vertical.parallel(connection);
     return from.bottom() ? parallel > 0 : parallel < 0;
-  }), "Connections must be parallel");
+  }),
+      "Connections must be parallel");
   ASSERT(std::all_of(begin(atTo), end(atTo), [&](const auto& connection) {
     auto parallel = vertical.parallel(connection);
     return to.bottom() ? parallel > 0 : parallel < 0;
-  }), "Connections must be parallel");
+  }),
+      "Connections must be parallel");
 
-  return { atFrom, atTo };
+  return {atFrom, atTo};
 }
 
 template <typename Surface>
@@ -215,7 +215,7 @@ std::ostream& operator<<(std::ostream& os, const ContourConnection<Surface>& sel
   return os << fmt::format("ContourConnection({}←{}→{})", fmt::format("{}", fmt::join(self.left() | rx::transform([&](const auto& connection) { return fmt::format("{}", connection); }) | rx::to_vector(), "←")), self.connection(), fmt::join(self.right() | rx::transform([&](const auto& connection) { return fmt::format("{}", connection); }) | rx::to_vector(), "→"));
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

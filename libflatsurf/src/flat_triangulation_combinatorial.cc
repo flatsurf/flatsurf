@@ -25,9 +25,9 @@
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
+#include "../flatsurf/edge.hpp"
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../flatsurf/half_edge.hpp"
-#include "../flatsurf/edge.hpp"
 #include "../flatsurf/half_edge_map.hpp"
 #include "../flatsurf/permutation.hpp"
 #include "../flatsurf/vertex.hpp"
@@ -40,6 +40,10 @@
 
 namespace flatsurf {
 
+using rx::filter;
+using rx::to_set;
+using rx::to_vector;
+using rx::transform;
 using std::function;
 using std::ostream;
 using std::pair;
@@ -47,10 +51,6 @@ using std::set;
 using std::uintptr_t;
 using std::unordered_map;
 using std::vector;
-using rx::transform;
-using rx::filter;
-using rx::to_vector;
-using rx::to_set;
 
 HalfEdge FlatTriangulationCombinatorial::nextInFace(const HalfEdge e) const {
   ASSERT_ARGUMENT(!this->boundary(e), "boundary half edge has no successor since it is not on any face");
@@ -88,25 +88,26 @@ const vector<Edge>& FlatTriangulationCombinatorial::edges() const {
   return impl->edges;
 }
 
-FlatTriangulationCombinatorial::FlatTriangulationCombinatorial()
-    : FlatTriangulationCombinatorial(vector<vector<int>>()) {}
+FlatTriangulationCombinatorial::FlatTriangulationCombinatorial() :
+  FlatTriangulationCombinatorial(vector<vector<int>>()) {}
 
 FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(const vector<vector<int>>& vertices, const set<int>& boundaries) :
   impl(spimpl::make_unique_impl<Implementation>(
-    Permutation<HalfEdge>(vertices | transform([](const auto& cycle) {
-      return cycle | transform([](const auto& id) { return HalfEdge(id); }) | to_vector();
-    }) | to_vector()),
-    boundaries | transform([](int e) { return HalfEdge(e); }) | to_set())) {
-      for (auto& cycle : vertices)
-        for (auto it = cycle.rbegin(); it != cycle.rend(); it++)
-          CHECK_ARGUMENT(boundaries.find(*it) == boundaries.end() || it == cycle.rbegin(), "Boundary edges must be at the end of a vertex permutation");
+      Permutation<HalfEdge>(vertices | transform([](const auto& cycle) {
+        return cycle | transform([](const auto& id) { return HalfEdge(id); }) | to_vector();
+      }) | to_vector()),
+      boundaries | transform([](int e) { return HalfEdge(e); }) | to_set())) {
+  for (auto& cycle : vertices)
+    for (auto it = cycle.rbegin(); it != cycle.rend(); it++)
+      CHECK_ARGUMENT(boundaries.find(*it) == boundaries.end() || it == cycle.rbegin(), "Boundary edges must be at the end of a vertex permutation");
 }
 
 FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(const Permutation<HalfEdge>& vertices) :
   impl(spimpl::make_unique_impl<Implementation>(vertices, set<HalfEdge>())) {
 }
 
-FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(FlatTriangulationCombinatorial&& rhs) : FlatTriangulationCombinatorial() {
+FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(FlatTriangulationCombinatorial&& rhs) :
+  FlatTriangulationCombinatorial() {
   *this = std::move(rhs);
 }
 
@@ -119,8 +120,8 @@ FlatTriangulationCombinatorial& FlatTriangulationCombinatorial::operator=(FlatTr
 std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::clone() const {
   auto ret = std::make_unique<FlatTriangulationCombinatorial>();
   ret->impl = spimpl::make_unique_impl<Implementation>(
-    impl->vertices,
-    impl->faces.domain() | filter([&](auto& edge) { return this->boundary(edge); }) | to_set());
+      impl->vertices,
+      impl->faces.domain() | filter([&](auto& edge) { return this->boundary(edge); }) | to_set());
   return ret;
 }
 
@@ -152,8 +153,8 @@ std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::
 
   auto ret = std::make_unique<FlatTriangulationCombinatorial>();
   ret->impl = spimpl::make_unique_impl<Implementation>(
-    Permutation<HalfEdge>(cycles),
-    impl->faces.domain() | filter([&](auto& edge) { return this->boundary(edge); }) | to_set());
+      Permutation<HalfEdge>(cycles),
+      impl->faces.domain() | filter([&](auto& edge) { return this->boundary(edge); }) | to_set());
   return ret;
 }
 
@@ -198,8 +199,8 @@ std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::
 
   auto ret = std::make_unique<FlatTriangulationCombinatorial>();
   ret->impl = spimpl::make_unique_impl<Implementation>(
-    Permutation<HalfEdge>(vertices),
-    vertexPermutation.domain() | filter([&](auto& edge) { return edge == e || edge == -ee || (edge != ee && boundary(edge)); }) | to_set());
+      Permutation<HalfEdge>(vertices),
+      vertexPermutation.domain() | filter([&](auto& edge) { return edge == e || edge == -ee || (edge != ee && boundary(edge)); }) | to_set());
   return ret;
 }
 
@@ -259,7 +260,7 @@ std::pair<HalfEdge, HalfEdge> FlatTriangulationCombinatorial::collapse(HalfEdge 
   // identified edges. In this case, we have to make sure we do not drop the
   // entire gadget surrounding e out of existence.
   std::set<Edge> dropEdges{collapse};
-  
+
   {
     HalfEdge x = nextInFace(collapse);
     if (x == -previousInFace(collapse)) {
@@ -287,7 +288,7 @@ std::pair<HalfEdge, HalfEdge> FlatTriangulationCombinatorial::collapse(HalfEdge 
 
     int maxEdge = static_cast<int>(edges().size());
     for (auto d : originalDropEdges) {
-      while(maxEdge && dropEdges.find(Edge(maxEdge)) != dropEdges.end())
+      while (maxEdge && dropEdges.find(Edge(maxEdge)) != dropEdges.end())
         maxEdge--;
       if (d.index() < edges().size() - dropEdges.size()) {
         HalfEdge swap = Edge(maxEdge).positive();
@@ -367,19 +368,20 @@ std::pair<HalfEdge, HalfEdge> FlatTriangulationCombinatorial::collapse(HalfEdge 
   }
 }
 
-Implementation<FlatTriangulationCombinatorial>::Implementation(const Permutation<HalfEdge>& vertices, const set<HalfEdge>& boundaries)
-  : vertices(vertices),
-    faces(
+Implementation<FlatTriangulationCombinatorial>::Implementation(const Permutation<HalfEdge>& vertices, const set<HalfEdge>& boundaries) :
+  vertices(vertices),
+  faces(
       // In the triangulation, the order in which half edges are attached to a
       // vertex defines the faces, so we reconstruct the faces here.
       vertices.domain() | transform([&](const HalfEdge& e) {
         return boundaries.find(e) == boundaries.end()
-        ? pair<HalfEdge, HalfEdge>(-vertices(e), e)
-        // We mark boundary half edges by putting them into a trivial face
-        // which only contains that half edge.
-        : pair<HalfEdge, HalfEdge>(e, e);
-      }) | to_vector()),
-    vertexes() {
+                   ? pair<HalfEdge, HalfEdge>(-vertices(e), e)
+                   // We mark boundary half edges by putting them into a trivial face
+                   // which only contains that half edge.
+                   : pair<HalfEdge, HalfEdge>(e, e);
+      }) |
+      to_vector()),
+  vertexes() {
   CHECK_ARGUMENT(vertices.size() % 2 == 0, "half edges must come in pairs");
 
   resetVertexes();
@@ -457,7 +459,7 @@ void Implementation<FlatTriangulationCombinatorial>::swap(HalfEdge a, HalfEdge b
   if (a == b) return;
 
   beforeSwap(a, b);
-    
+
   vertices *= {a, b};
   std::vector{a, b} *= vertices;
 

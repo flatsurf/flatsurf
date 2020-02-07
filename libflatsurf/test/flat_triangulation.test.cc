@@ -20,12 +20,12 @@
 
 #include "external/catch2/single_include/catch2/catch.hpp"
 
-#include <numeric>
 #include <memory>
+#include <numeric>
 
+#include <e-antic/renfxx_fwd.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
-#include <e-antic/renfxx_fwd.h>
 #include <exact-real/element.hpp>
 #include <exact-real/number_field.hpp>
 
@@ -93,7 +93,7 @@ TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[flat_triangulation][ins
   }
 
   SECTION("Slit at Many Places in the First Sector") {
-    auto surface = GENERATE(values({ std::shared_ptr(makeSquare<R2>()->scale(3)), std::shared_ptr(makeL<R2>()->scale(3)) }));
+    auto surface = GENERATE(values({std::shared_ptr(makeSquare<R2>()->scale(3)), std::shared_ptr(makeL<R2>()->scale(3))}));
 
     GIVEN("The surface " << *surface) {
       auto x = GENERATE(range(1, 32));

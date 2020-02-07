@@ -20,9 +20,9 @@
 #ifndef LIBFLATSURF_CONTOUR_COMPONENT_IMPL_HPP
 #define LIBFLATSURF_CONTOUR_COMPONENT_IMPL_HPP
 
+#include <iterator>
 #include <memory>
 #include <vector>
-#include <iterator>
 
 #include "../../flatsurf/contour_component.hpp"
 
@@ -41,7 +41,9 @@ class Implementation<ContourComponent<Surface>> {
 
   HalfEdge large() const;
 
-  Implementation(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* component) : state(state), component(component) {}
+  Implementation(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* component) :
+    state(state),
+    component(component) {}
 
   static ContourComponent<Surface> make(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* component);
 
@@ -49,6 +51,5 @@ class Implementation<ContourComponent<Surface>> {
   ContourComponentState<Surface>* const component;
 };
 
-}
+}  // namespace flatsurf
 #endif
-

@@ -33,6 +33,6 @@ class Vertex::Implementation {
   std::set<HalfEdge> sources;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

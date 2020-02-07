@@ -20,15 +20,15 @@
 #ifndef LIBFLATSURF_FLAT_TRIANGULATION_COLLAPSED_IMPL_HPP
 #define LIBFLATSURF_FLAT_TRIANGULATION_COLLAPSED_IMPL_HPP
 
-#include <memory>
-#include <list>
 #include <functional>
 #include <iosfwd>
+#include <list>
+#include <memory>
 
-#include "../../flatsurf/flat_triangulation_collapsed.hpp"
 #include "../../flatsurf/flat_triangulation.hpp"
-#include "../../flatsurf/saddle_connection.hpp"
+#include "../../flatsurf/flat_triangulation_collapsed.hpp"
 #include "../../flatsurf/half_edge_map.hpp"
+#include "../../flatsurf/saddle_connection.hpp"
 #include "../../flatsurf/vector.hpp"
 #include "../../flatsurf/vertex_map.hpp"
 
@@ -51,7 +51,8 @@ class Implementation<FlatTriangulationCollapsed<T>> {
   // TODO: Move to its own file.
   // TODO: This is the same as TrackingStorage::Value; merge them
   struct AsymmetricConnection {
-    AsymmetricConnection(const SaddleConnection& value) : value(value) {}
+    AsymmetricConnection(const SaddleConnection& value) :
+      value(value) {}
     operator SaddleConnection() const { return value; }
 
     SaddleConnection value;
@@ -91,6 +92,6 @@ class Implementation<FlatTriangulationCollapsed<T>> {
   HalfEdgeMap<AsymmetricConnection> vectors;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

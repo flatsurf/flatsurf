@@ -26,8 +26,8 @@
 
 #include "../../flatsurf/vector.hpp"
 
-#include "contour_decomposition_state.hpp"
 #include "contour_component_state.hpp"
+#include "contour_decomposition_state.hpp"
 
 namespace flatsurf {
 template <typename Surface>
@@ -39,6 +39,6 @@ class Implementation<ContourDecomposition<Surface>> {
 
   std::shared_ptr<DecompositionState> state;
 };
-}
+}  // namespace flatsurf
 
 #endif

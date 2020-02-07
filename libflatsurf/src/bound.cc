@@ -24,7 +24,7 @@
 namespace flatsurf {
 
 Bound::Bound(const mpz_class& x, const mpz_class& y) :
-  square(x*x + y*y) {}
+  square(x * x + y * y) {}
 
 const mpz_class& Bound::squared() const noexcept {
   return square;
@@ -34,8 +34,8 @@ bool Bound::operator==(const Bound& rhs) const noexcept {
   return square == rhs.square;
 }
 
-std::ostream &operator<<(std::ostream & os, const Bound & self) {
+std::ostream& operator<<(std::ostream& os, const Bound& self) {
   return os << "√(" << self.squared() << ")";
 }
 
-}
+}  // namespace flatsurf

@@ -43,7 +43,7 @@ COORD d_point_line2(const Point &u, const Point &v) {
   return (Dist2(u, p * v));
 }
 COORD d_point_line2(__attribute__((unused)) const BigPointI &u,
-                    __attribute__((unused)) const BigPointI &v) {
+    __attribute__((unused)) const BigPointI &v) {
   ERR_RET("Call to d_point_line2 (BigPointI, BigPointI)");
 }
 
@@ -159,7 +159,7 @@ COORD angle(Point p, Point q) {
 }
 
 COORD angle(__attribute__((unused)) const BigPointI &p,
-            __attribute__((unused)) const BigPointI &q) {
+    __attribute__((unused)) const BigPointI &q) {
   ERR_RET("angle called on BigPointI arguments");
 }
 
@@ -182,7 +182,7 @@ COORD true_angle(Point p, Point q) {
 }
 
 bool intersect_segment(Point pb, Point pv, Point qb, Point qv,
-                       Point &intersection) {
+    Point &intersection) {
   COORD D;
   COORD x1, x1p, y1, y1p, x2, x2p, y2, y2p, t, tp;
 
@@ -222,7 +222,7 @@ bool intersect_segment(Point pb, Point pv, Point qb, Point qv,
 }
 
 bool intersect_segment_interior(Point pb, Point pv, Point qb, Point qv,
-                                Point &intersection) {
+    Point &intersection) {
   COORD D;
   COORD x1, x1p, y1, y1p, x2, x2p, y2, y2p, t, tp;
 

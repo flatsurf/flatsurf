@@ -64,7 +64,7 @@ class SaddleConnections {
     // needs to be reconstructed.
     std::optional<HalfEdge> incrementWithCrossings();
     bool equal(const Iterator &other) const;
-    const SaddleConnection<Surface>& dereference() const;
+    const SaddleConnection<Surface> &dereference() const;
 
     void skipSector(CCW sector);
 

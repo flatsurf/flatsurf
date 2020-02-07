@@ -85,7 +85,7 @@ void TwoComplex::TriangulateFace(Face *f) {
 
       //	    a = 0;
       a = min(true_angle((*i).vec_cx(), bs),
-              true_angle(bs, -(*i).prev_edge()->vec_cx()));
+          true_angle(bs, -(*i).prev_edge()->vec_cx()));
 
       a = min(a, true_angle(-bs, -(*j).prev_edge()->vec_cx()));
       a = min(a, true_angle((*j).vec_cx(), -bs));
@@ -103,8 +103,8 @@ void TwoComplex::TriangulateFace(Face *f) {
 #else
       printf("F%d V%d(E%d) V%d(E%d) a=%g, can_bisect=%d\n", f->id(),
 #endif
-             (*i).head()->id(), (*i).id(), (*j).head()->id(), (*j).id(), a,
-             f->can_bisect(i, j));
+          (*i).head()->id(), (*i).id(), (*j).head()->id(), (*j).id(), a,
+          f->can_bisect(i, j));
 
       if (a > best_angle && f->can_bisect(i, j)) {
         Candidate1 = i;
@@ -135,10 +135,10 @@ void TwoComplex::TriangulateFace(Face *f) {
 #else
     printf("F%d: Parent Face: F%d best_angle=%g", f->id(),
 #endif
-           f->parent_face_ID, best_angle);
+        f->parent_face_ID, best_angle);
     if (Candidate1 != NULL_OEdgeIter && Candidate2 != NULL_OEdgeIter) {
       printf(" Candidate1=E%d Candidate2=E%d", Candidate1->id(),
-             Candidate2->id());
+          Candidate2->id());
     }
     printf("\n");
     f->Print(cout);
@@ -179,8 +179,8 @@ void TwoComplex::TriangulateFace(Face *f) {
 }
 
 list<OEdge>::iterator TwoComplex::BisectFace(Face *f,
-                                             list<OEdge>::iterator e1_iter,
-                                             list<OEdge>::iterator e2_iter) {
+    list<OEdge>::iterator e1_iter,
+    list<OEdge>::iterator e2_iter) {
   /* head of e1 to head of e2 */
   /* return new oedge in face 1 (containing e1 ) */
 
@@ -333,7 +333,7 @@ bool Face::can_bisect(list<OEdge>::iterator i, list<OEdge>::iterator j) {
   for (auto k = oedges.begin(); k != oedges.end(); ++k) {
     if (k != i && k != j && k != prev_edge(i) && k != prev_edge(j) &&
         intersect_segment_interior(v1_offset, v2_offset - v1_offset, s,
-                                   (*k).vec_cx(), intersection)) {
+            (*k).vec_cx(), intersection)) {
       return (false);
     }
     s += (*k).vec_cx();
@@ -382,7 +382,7 @@ void TwoComplex::AddSteinerPoint(Face *f) {
   UEdge *new_uedge1 =
       AddUEdge(UNDEFINED, v1, v_steiner, p_steiner - edge01->vec_cx());
   UEdge *new_uedge2 = AddUEdge(UNDEFINED, v2, v_steiner,
-                               p_steiner - edge01->vec_cx() - edge12->vec_cx());
+      p_steiner - edge01->vec_cx() - edge12->vec_cx());
 
   list<OEdge> tmp_oedge_list;
   OEdge *e0_in = new OEdge(new_uedge0, 1);

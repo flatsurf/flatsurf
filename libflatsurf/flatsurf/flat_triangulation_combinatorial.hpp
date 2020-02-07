@@ -20,21 +20,20 @@
 #ifndef LIBFLATSURF_FLAT_TRIANGULATION_COMBINATORIAL_HPP
 #define LIBFLATSURF_FLAT_TRIANGULATION_COMBINATORIAL_HPP
 
+#include <boost/operators.hpp>
 #include <iosfwd>
 #include <memory>
 #include <set>
 #include <vector>
-#include <boost/operators.hpp>
 
 #include "moveable.hpp"
 #include "serializable.hpp"
 
 namespace flatsurf {
 
-class FlatTriangulationCombinatorial :
-  Serializable<FlatTriangulationCombinatorial>,
-  boost::equality_comparable<FlatTriangulationCombinatorial>,
-  public std::enable_shared_from_this<FlatTriangulationCombinatorial> {
+class FlatTriangulationCombinatorial : Serializable<FlatTriangulationCombinatorial>,
+                                       boost::equality_comparable<FlatTriangulationCombinatorial>,
+                                       public std::enable_shared_from_this<FlatTriangulationCombinatorial> {
  public:
   FlatTriangulationCombinatorial();
   FlatTriangulationCombinatorial(const std::vector<std::vector<int>> &vertices, const std::set<int> &boundaries = std::set<int>());
@@ -85,9 +84,9 @@ class FlatTriangulationCombinatorial :
   bool boundary(HalfEdge e) const;
 
   // TODO: Do we want to change all these to Tracking*? Then we would not need to reset() anymore.
-  const std::vector<Edge>& edges() const;
-  const std::vector<HalfEdge>& halfEdges() const;
-  const std::vector<Vertex>& vertices() const;
+  const std::vector<Edge> &edges() const;
+  const std::vector<HalfEdge> &halfEdges() const;
+  const std::vector<Vertex> &vertices() const;
   // Return the outgoing half edges from this vertex in ccw order.
   std::vector<HalfEdge> atVertex(Vertex) const;
 
@@ -116,7 +115,7 @@ class FlatTriangulationCombinatorial :
 
   friend std::ostream &operator<<(std::ostream &, const FlatTriangulationCombinatorial &);
 
- // TODO
+  // TODO
  public:
   // TODO: Use this everywhere
   using Implementation = ::flatsurf::Implementation<FlatTriangulationCombinatorial>;

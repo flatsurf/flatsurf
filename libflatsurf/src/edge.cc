@@ -26,11 +26,14 @@
 
 namespace flatsurf {
 
-Edge::Edge() : Edge(HalfEdge()) {}
+Edge::Edge() :
+  Edge(HalfEdge()) {}
 
-Edge::Edge(int id) : Edge(HalfEdge(id)) {}
+Edge::Edge(int id) :
+  Edge(HalfEdge(id)) {}
 
-Edge::Edge(HalfEdge e) : id(e.id >= (-e).id ? e : -e) {}
+Edge::Edge(HalfEdge e) :
+  id(e.id >= (-e).id ? e : -e) {}
 
 HalfEdge Edge::positive() const { return id; }
 

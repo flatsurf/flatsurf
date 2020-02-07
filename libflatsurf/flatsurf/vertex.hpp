@@ -39,11 +39,11 @@ class Vertex : boost::equality_comparable<Vertex> {
 
   // Note that this operator fails to distinguish equally labeled vertices on different surfaces.
   bool operator==(const Vertex &) const;
-  bool operator<(const Vertex&) const;
+  bool operator<(const Vertex &) const;
 
   friend std::ostream &operator<<(std::ostream &, const Vertex &);
 
- // TODO: Find a better solution for this.
+  // TODO: Find a better solution for this.
  public:
   // TODO: Can I make this protected in a private base class and use
   // specialization to implement Implementation differently in different
@@ -62,7 +62,8 @@ class Vertex : boost::equality_comparable<Vertex> {
 }  // namespace flatsurf
 
 // Makes Vertex hashable.
-template <> struct std::hash<flatsurf::Vertex> {
+template <>
+struct std::hash<flatsurf::Vertex> {
   size_t operator()(const flatsurf::Vertex &) const noexcept;
 };
 

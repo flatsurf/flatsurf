@@ -538,7 +538,7 @@ void TwoComplex::read_edge_line(FILE *fp, int line_number) {
   *s = '\0';
   s++;
   if (sscanf(buf, "E%d ( V%d V%d F%d F%d )", &ue_id, &v0_id, &v1_id, &f0_id,
-             &f1_id) != 5) {
+          &f1_id) != 5) {
     ERR_RET2("bad edge line: cant read edge data", line_number);
   }
 

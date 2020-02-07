@@ -22,23 +22,21 @@
 
 #include <boost/operators.hpp>
 #include <iosfwd>
+#include <memory>
 #include <optional>
 #include <vector>
-#include <memory>
 
 #include <gmpxx.h>
 
-#include "half_edge.hpp"
 #include "copyable.hpp"
+#include "half_edge.hpp"
 #include "serializable.hpp"
 
 namespace flatsurf {
 template <typename Surface>
-class SaddleConnection :
-  public Serializable<SaddleConnection<Surface>>,
-  boost::equality_comparable<SaddleConnection<Surface>>,
-  boost::less_than_comparable<SaddleConnection<Surface>, Bound> {
-
+class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
+                         boost::equality_comparable<SaddleConnection<Surface>>,
+                         boost::less_than_comparable<SaddleConnection<Surface>, Bound> {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
   using Vector = typename Surface::Vector;
@@ -49,18 +47,18 @@ class SaddleConnection :
 
   static SaddleConnection<Surface> inSector(std::shared_ptr<const Surface>, HalfEdge source, const Vector &);
   // TODO: Should we introduce a Direction primitive to not abuse vertical here? (Maybe a superclass of Vertical?)
-  static SaddleConnection<Surface> inSector(std::shared_ptr<const Surface>, HalfEdge source, const Vertical<Surface>&);
-  static SaddleConnection<Surface> inHalfPlane(std::shared_ptr<const Surface>, HalfEdge side, const Vertical<Surface>&, const Vector &);
-  static SaddleConnection<Surface> inPlane(std::shared_ptr<const Surface>, HalfEdge plane, const Vector&);
-  static SaddleConnection<Surface> alongVertical(std::shared_ptr<const Surface>, const Vertical<Surface>& direction, HalfEdge plane);
-  static SaddleConnection<Surface> clockwise(const SaddleConnection& from, const Vector&);
+  static SaddleConnection<Surface> inSector(std::shared_ptr<const Surface>, HalfEdge source, const Vertical<Surface> &);
+  static SaddleConnection<Surface> inHalfPlane(std::shared_ptr<const Surface>, HalfEdge side, const Vertical<Surface> &, const Vector &);
+  static SaddleConnection<Surface> inPlane(std::shared_ptr<const Surface>, HalfEdge plane, const Vector &);
+  static SaddleConnection<Surface> alongVertical(std::shared_ptr<const Surface>, const Vertical<Surface> &direction, HalfEdge plane);
+  static SaddleConnection<Surface> clockwise(const SaddleConnection &from, const Vector &);
   static SaddleConnection<Surface> fromEdge(std::shared_ptr<const Surface>, HalfEdge);
 
   // TODO: Does this also give me an implicit cast to Vector? If not, we should add this explicitly; the explicit vector() seems more sane anyway.
-  operator const Vector&() const;
-  operator const Chain<Surface>&() const;
+  operator const Vector &() const;
+  operator const Chain<Surface> &() const;
 
-  const Vector& vector() const;
+  const Vector &vector() const;
 
   explicit operator bool() const;
 
@@ -69,9 +67,9 @@ class SaddleConnection :
   // them must be less than 2π.
   // CCW ccw(const SaddleConnection&) const;
   // TODO: This is a convenience method with a somewhat dubious semantic.
-  CCW ccw(const Vector&) const;
+  CCW ccw(const Vector &) const;
   // TODO: This is a convenience method with a somewhat dubious semantic.
-  ORIENTATION orientation(const Vector&) const;
+  ORIENTATION orientation(const Vector &) const;
 
   // The saddle connection is leaving from the vertex at the source of source.
   // It is leaving in a direction that is contained in the sector next to
@@ -104,16 +102,16 @@ class SaddleConnection :
   friend Implementation;
 };
 
-template <typename Surface, typename ...T>
-SaddleConnection(std::shared_ptr<const Surface>, T&&...) -> SaddleConnection<Surface>;
+template <typename Surface, typename... T>
+SaddleConnection(std::shared_ptr<const Surface>, T &&...)->SaddleConnection<Surface>;
 
 }  // namespace flatsurf
 
 namespace std {
 
 template <typename Surface>
-struct hash<::flatsurf::SaddleConnection<Surface>> { size_t operator()(const ::flatsurf::SaddleConnection<Surface>&) const noexcept; };
+struct hash<::flatsurf::SaddleConnection<Surface>> { size_t operator()(const ::flatsurf::SaddleConnection<Surface> &) const noexcept; };
 
-}
+}  // namespace std
 
 #endif

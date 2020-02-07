@@ -31,16 +31,16 @@
 namespace polygon {
 extern void reflect_vector(BigPointQ p, BigPointQ vec, BigPointQ &reflection);
 extern void reflect_point(const Point &p, const Point &base, const Point &vec,
-                          Point &reflection);
+    Point &reflection);
 extern int test_congruent(std::list<OEdge>::iterator e0,
-                          std::list<OEdge>::iterator e1);
+    std::list<OEdge>::iterator e1);
 extern COORD angle(Point, Point);
 extern COORD angle(const BigPointI &, const BigPointI &);
 extern COORD true_angle(Point, Point);
 extern bool intersect_segment(Point pb, Point pv, Point qb, Point qv,
-                              Point &intersection);
+    Point &intersection);
 extern bool intersect_segment_interior(Point pb, Point pv, Point qb, Point qv,
-                                       Point &intersection);
+    Point &intersection);
 extern bool CCW3(const Point &p, const Point &q, const Point &r);
 extern bool CCW3(const BigPointI &p, const BigPointI &q, const BigPointI &r);
 
@@ -57,14 +57,15 @@ extern COORD d_point_line2(const Point &p, const Point &line);
 extern COORD d_point_line2(const BigPointI &p, const BigPointI &line);
 
 extern COORD det3(const std::vector<COORD> &x, const std::vector<COORD> &y,
-                  const std::vector<COORD> &z);
+    const std::vector<COORD> &z);
 extern bool in_circle(Point a, Point b, Point c, Point d);
 
 /* exceptions */
 struct vert_index_taken {};
 struct vert_bad_angle {
   COORD x;
-  explicit vert_bad_angle(COORD q) : x(q) {}
+  explicit vert_bad_angle(COORD q) :
+    x(q) {}
 };
 
 inline COORD Dist2(Point p, Point q) { return (norm(p - q)); }

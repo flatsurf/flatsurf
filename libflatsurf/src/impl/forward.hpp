@@ -28,6 +28,6 @@ class ContourComponentState;
 template <typename Surface>
 class ContourDecompositionState;
 
-}
+}  // namespace flatsurf
 
 #endif

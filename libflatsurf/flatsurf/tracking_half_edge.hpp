@@ -24,23 +24,23 @@
 
 #include <boost/operators.hpp>
 
-#include "vertex.hpp"
 #include "flat_triangulation_combinatorial.hpp"
+#include "vertex.hpp"
 
 namespace flatsurf {
 class TrackingHalfEdge : boost::equality_comparable<TrackingHalfEdge> {
  public:
   // The parent does not need to remain valid. If it is destructed, it will
   // signal the TrackingHalfEdge so that it removes its reference to it.
-  TrackingHalfEdge(const FlatTriangulationCombinatorial *parent, HalfEdge value, bool followFlip=true);
+  TrackingHalfEdge(const FlatTriangulationCombinatorial *parent, HalfEdge value, bool followFlip = true);
 
   ~TrackingHalfEdge();
 
   operator HalfEdge() const;
   operator Edge() const;
   HalfEdge operator-() const;
-  bool operator==(const TrackingHalfEdge&) const;
-  TrackingHalfEdge& operator=(HalfEdge);
+  bool operator==(const TrackingHalfEdge &) const;
+  TrackingHalfEdge &operator=(HalfEdge);
 
   friend std::ostream &operator<<(std::ostream &, const TrackingHalfEdge &);
 

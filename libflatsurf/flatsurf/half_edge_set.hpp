@@ -20,9 +20,7 @@
 #ifndef LIBFLATSURF_HALF_EDGE_SET_HPP
 #define LIBFLATSURF_HALF_EDGE_SET_HPP
 
-#include "tracking_set.hpp"
 #include "half_edge.hpp"
+#include "tracking_set.hpp"
 
 #endif
-
-

@@ -20,13 +20,13 @@
 #ifndef LIBFLATSURF_TRACKING_STORAGE_HPP
 #define LIBFLATSURF_TRACKING_STORAGE_HPP
 
+#include <functional>
+#include <map>
 #include <type_traits>
 #include <vector>
-#include <map>
-#include <functional>
 
-#include <boost/type_traits/is_detected_exact.hpp>
 #include <boost/operators.hpp>
+#include <boost/type_traits/is_detected_exact.hpp>
 
 #include "../../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../../flatsurf/tracking.hpp"
@@ -55,7 +55,7 @@ class TrackingStorage {
   using Tracker = Tracking<SELF>;
 
  public:
-  TrackingStorage(SELF* self, const FlatTriangulationCombinatorial* parent, const std::function<V(const K&)>& values, const typename SELF::FlipHandler &updateAfterFlip, const typename SELF::CollapseHandler& updateBeforeCollapse);
+  TrackingStorage(SELF* self, const FlatTriangulationCombinatorial* parent, const std::function<V(const K&)>& values, const typename SELF::FlipHandler& updateAfterFlip, const typename SELF::CollapseHandler& updateBeforeCollapse);
 
   bool operator==(const TrackingStorage&) const;
 
@@ -82,6 +82,6 @@ class TrackingStorage {
   Data data;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

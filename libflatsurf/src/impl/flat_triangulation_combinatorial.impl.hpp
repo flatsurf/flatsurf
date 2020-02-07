@@ -20,16 +20,16 @@
 #ifndef LIBFLATSURF_FLAT_TRIANGULATION_COMBINATORIAL_IMPL_HPP
 #define LIBFLATSURF_FLAT_TRIANGULATION_COMBINATORIAL_IMPL_HPP
 
+#include <functional>
 #include <set>
 #include <unordered_map>
-#include <functional>
 
 #include <boost/signals2.hpp>
 
-#include "../../flatsurf/flat_triangulation_combinatorial.hpp"
-#include "../../flatsurf/permutation.hpp"
 #include "../../flatsurf/edge.hpp"
+#include "../../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../../flatsurf/half_edge.hpp"
+#include "../../flatsurf/permutation.hpp"
 
 namespace flatsurf {
 
@@ -52,13 +52,13 @@ class Implementation<FlatTriangulationCombinatorial> {
   Permutation<HalfEdge> faces;
   std::vector<Vertex> vertexes;
 
-  boost::signals2::signal<void (HalfEdge)> afterFlip;
-  boost::signals2::signal<void (Edge)> beforeCollapse;
-  boost::signals2::signal<void (HalfEdge, HalfEdge)> beforeSwap;
-  boost::signals2::signal<void (const std::set<Edge>&)> beforeErase;
-  boost::signals2::signal<void (FlatTriangulationCombinatorial*)> afterMove;
+  boost::signals2::signal<void(HalfEdge)> afterFlip;
+  boost::signals2::signal<void(Edge)> beforeCollapse;
+  boost::signals2::signal<void(HalfEdge, HalfEdge)> beforeSwap;
+  boost::signals2::signal<void(const std::set<Edge>&)> beforeErase;
+  boost::signals2::signal<void(FlatTriangulationCombinatorial*)> afterMove;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

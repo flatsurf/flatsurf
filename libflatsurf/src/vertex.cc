@@ -45,12 +45,10 @@ inline void check(const HalfEdges& a, const HalfEdges& b) {
   check(a);
   check(b);
   assert((
-    (a == b)
-    || all_of(a.begin(), a.end(), [&](const auto& e) { return b.find(e) == b.end(); })
-    || all_of(b.begin(), b.end(), [&](const auto& e) { return a.find(e) == a.end(); })
-  ) && "cannot compare vertices that were created from different surfaces");
+             (a == b) || all_of(a.begin(), a.end(), [&](const auto& e) { return b.find(e) == b.end(); }) || all_of(b.begin(), b.end(), [&](const auto& e) { return a.find(e) == a.end(); })) &&
+         "cannot compare vertices that were created from different surfaces");
 }
-}
+}  // namespace
 
 Vertex::Vertex() :
   impl(spimpl::make_impl<Implementation>(HalfEdges())) {
@@ -66,14 +64,14 @@ bool Vertex::operator<(const Vertex& rhs) const {
   return impl->sources < rhs.impl->sources;
 }
 
-Vertex Vertex::source(const HalfEdge &e, const FlatTriangulationCombinatorial &surface) {
+Vertex Vertex::source(const HalfEdge& e, const FlatTriangulationCombinatorial& surface) {
   for (const auto& v : surface.vertices())
     if (v.impl->sources.find(e) != v.impl->sources.end())
       return v;
   assert(false && "half edge not in the surface");
 }
 
-Vertex Vertex::target(const HalfEdge &e, const FlatTriangulationCombinatorial &surface) {
+Vertex Vertex::target(const HalfEdge& e, const FlatTriangulationCombinatorial& surface) {
   return Vertex::source(-e, surface);
 }
 
@@ -89,4 +87,4 @@ ostream& operator<<(ostream& os, const Vertex& self) {
   return os << "Vertex(" << boost::algorithm::join(items, ", ") << ")";
 }
 
-} 
+}  // namespace flatsurf

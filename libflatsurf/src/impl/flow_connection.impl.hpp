@@ -25,8 +25,8 @@
 #include <intervalxt/connection.hpp>
 #include <intervalxt/half_edge.hpp>
 
-#include "../../flatsurf/flow_connection.hpp"
 #include "../../flatsurf/flow_component.hpp"
+#include "../../flatsurf/flow_connection.hpp"
 
 #include "flow_component_state.hpp"
 #include "flow_decomposition_state.hpp"
@@ -47,6 +47,6 @@ class Implementation<FlowConnection<Surface>> {
   typename Surface::SaddleConnection saddleConnection;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

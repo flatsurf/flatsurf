@@ -20,21 +20,21 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTION_IMPL_HPP
 #define LIBFLATSURF_SADDLE_CONNECTION_IMPL_HPP
 
-#include "../../flatsurf/saddle_connection.hpp"
+#include "../../flatsurf/chain.hpp"
 #include "../../flatsurf/flat_triangulation.hpp"
 #include "../../flatsurf/flat_triangulation_collapsed.hpp"
-#include "../../flatsurf/chain.hpp"
+#include "../../flatsurf/saddle_connection.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
 class Implementation<SaddleConnection<Surface>> {
- using SaddleConnection = flatsurf::SaddleConnection<Surface>;
+  using SaddleConnection = flatsurf::SaddleConnection<Surface>;
 
  public:
-  Implementation(std::shared_ptr<const Surface> &surface, HalfEdge source, HalfEdge target, const Chain<Surface>&vector);
+  Implementation(std::shared_ptr<const Surface> &surface, HalfEdge source, HalfEdge target, const Chain<Surface> &vector);
 
-  static void check(const SaddleConnection&);
+  static void check(const SaddleConnection &);
 
   void normalize();
 
@@ -44,5 +44,5 @@ class Implementation<SaddleConnection<Surface>> {
   Chain<Surface> chain;
 };
 
-}
+}  // namespace flatsurf
 #endif

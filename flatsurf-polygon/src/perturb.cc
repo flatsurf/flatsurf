@@ -206,7 +206,7 @@ void TwoComplex::PerturbAll(COORD max_perturb) {
       if (abs((*j)->total_angle() - 2 * pi<COORD>()) > EPSILON) --i;
     }
     fprintf(out_f, "rank = %ld #of parameters %ld\n", r,
-            numeric_cast<long>(N) - r - i);
+        numeric_cast<long>(N) - r - i);
   }
 
   Point *perturb_array = new Point[N + 1];
@@ -226,8 +226,8 @@ void TwoComplex::PerturbAll(COORD max_perturb) {
     perturb_array[i] =
         Point(max_perturb *
                   std::uniform_real_distribution<double>(0, 1)(random_engine),
-              max_perturb *
-                  std::uniform_real_distribution<double>(0, 1)(random_engine));
+            max_perturb *
+                std::uniform_real_distribution<double>(0, 1)(random_engine));
     ;
   }
 

@@ -17,14 +17,14 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <vector>
-#include <ostream>
 #include <memory>
+#include <ostream>
+#include <vector>
 
 #include <boost/type_erasure/any_cast.hpp>
 
-#include <intervalxt/label.hpp>
 #include <intervalxt/interval_exchange_transformation.hpp>
+#include <intervalxt/label.hpp>
 
 // TODO: Remove range-v3/boost ranges everywhere
 #include "external/rx-ranges/include/rx/ranges.hpp"
@@ -32,18 +32,18 @@
 #include "../flatsurf/edge_set.hpp"
 #include "../flatsurf/tracking_half_edge.hpp"
 
+#include "impl/contour_component.impl.hpp"
+#include "impl/flat_triangulation_collapsed.impl.hpp"
 #include "impl/interval_exchange_transformation.impl.hpp"
 #include "impl/vertical.impl.hpp"
-#include "impl/flat_triangulation_collapsed.impl.hpp"
-#include "impl/contour_component.impl.hpp"
 
 #include "util/assert.ipp"
 
+using rx::to_vector;
+using rx::transform;
 using std::ostream;
 using std::string;
 using std::vector;
-using rx::transform;
-using rx::to_vector;
 
 namespace flatsurf {
 
@@ -68,7 +68,7 @@ IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(std::sha
     assert(std::set<HalfEdge>(bottom.begin(), bottom.end()) == std::set<HalfEdge>(top.begin(), top.end()) && "top & bottom contour must contain the same half edges");
 
     return spimpl::make_unique_impl<Implementation>(surface, vertical, top, bottom);
-  }()){
+  }()) {
 }
 
 template <typename Surface>
@@ -79,15 +79,16 @@ void IntervalExchangeTransformation<Surface>::makeUniqueLargeEdges(Surface& surf
   const typename EdgeSet::CollapseHandler nopCollapse = [](EdgeSet& self, Edge e) {
     assert(!self.contains(e) && "must not collapse source edge");
   };
-  EdgeSet sources(&surface, [](Edge) { return false; }, nopFlip, nopCollapse);
+  EdgeSet sources(
+      &surface, [](Edge) { return false; }, nopFlip, nopCollapse);
 
   const bool splitContours = true;
 
   Vertical<Surface> vertical(surface.shared_from_this(), vertical_);
 
-  while(true) {
+  while (true) {
     bool stalled = true;
-    for (auto source: surface.halfEdges()) {
+    for (auto source : surface.halfEdges()) {
       if (sources.contains(source))
         continue;
       if (!vertical.large(source))
@@ -138,30 +139,30 @@ template <typename Surface>
 std::set<HalfEdge> IntervalExchangeTransformation<Surface>::makeUniqueLargeEdge(Surface& surface, const Vector& vertical_, HalfEdge& unique_) {
   TrackingHalfEdge unique(&surface, unique_);
 
-  Vertical<Surface> vertical(surface.shared_from_this(), vertical_); 
+  Vertical<Surface> vertical(surface.shared_from_this(), vertical_);
 
   ASSERT_ARGUMENT(vertical.large(unique), "edge must already be large");
   if (vertical.perpendicular(surface.fromEdge(unique)) < 0)
     unique = -unique;
 
   // Eliminate other large edges
-  while(true) {
+  while (true) {
     std::set<HalfEdge> component;
     if (Vertical<Surface>::Implementation::visit(vertical, unique, component, [&](HalfEdge e) {
-      if (e == unique || e == -unique)
-        return true;
+          if (e == unique || e == -unique)
+            return true;
 
-      if (vertical.large(e)) {
-        if constexpr (std::is_const_v<Surface>) {
-          throw std::logic_error("cannot flip on const surface");
-        } else {
-          surface.flip(e);
-          return false;
-        }
-      }
+          if (vertical.large(e)) {
+            if constexpr (std::is_const_v<Surface>) {
+              throw std::logic_error("cannot flip on const surface");
+            } else {
+              surface.flip(e);
+              return false;
+            }
+          }
 
-      return true;
-    })) {
+          return true;
+        })) {
       assert(component.size() >= 2);
       unique_ = unique;
       return component;
@@ -182,7 +183,7 @@ typename Surface::SaddleConnection IntervalExchangeTransformation<Surface>::conn
 template <typename Surface>
 Implementation<IntervalExchangeTransformation<Surface>>::Implementation(std::shared_ptr<const Surface> surface, const Vector& vertical, const vector<HalfEdge>& top, const vector<HalfEdge>& bottom) :
   surface(surface) {
-  const auto uncollapsed = [&]() { 
+  const auto uncollapsed = [&]() {
     if constexpr (std::is_same_v<Surface, FlatTriangulation<typename Surface::Coordinate>>)
       return surface;
     else
@@ -196,19 +197,19 @@ Implementation<IntervalExchangeTransformation<Surface>>::Implementation(std::sha
       else
         return surface->fromEdge(e.positive());
     } else if (std::find(begin(top), end(top), e.negative()) != end(top)) {
-        if constexpr (std::is_same_v<Surface, FlatTriangulation<typename Surface::Coordinate>>)
-          return Surface::SaddleConnection::fromEdge(surface, e.negative());
-        else
-          return surface->fromEdge(e.negative());
+      if constexpr (std::is_same_v<Surface, FlatTriangulation<typename Surface::Coordinate>>)
+        return Surface::SaddleConnection::fromEdge(surface, e.negative());
+      else
+        return surface->fromEdge(e.negative());
     }
 
     return typename Surface::SaddleConnection();
   })));
 
   iet = intervalxt::IntervalExchangeTransformation(
-    erasedLengths,
-    top | transform([&](Edge e) { return intervalxt::Label(e.index()); }) | to_vector(),
-    bottom | transform([&](Edge e) { return intervalxt::Label(e.index()); }) | to_vector());
+      erasedLengths,
+      top | transform([&](Edge e) { return intervalxt::Label(e.index()); }) | to_vector(),
+      bottom | transform([&](Edge e) { return intervalxt::Label(e.index()); }) | to_vector());
 
   lengths = boost::type_erasure::any_cast<Lengths<Surface>*>(erasedLengths.get());
 
@@ -236,7 +237,7 @@ ostream& operator<<(ostream& os, const IntervalExchangeTransformation<Surface>& 
   return os << self.intervalExchangeTransformation();
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

@@ -20,8 +20,7 @@
 #ifndef LIBFLATSURF_EDGE_MAP_HPP
 #define LIBFLATSURF_EDGE_MAP_HPP
 
-#include "tracking_map.hpp"
 #include "edge.hpp"
+#include "tracking_map.hpp"
 
 #endif
-

@@ -47,6 +47,6 @@ class Implementation<FlatTriangulation<T>> {
   const HalfEdgeMap<flatsurf::Vector<exactreal::Arb>> approximations;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

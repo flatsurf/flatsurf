@@ -21,14 +21,14 @@
 
 #include <intervalxt/label.hpp>
 
-#include "../flatsurf/flow_connection.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
+#include "../flatsurf/flow_connection.hpp"
 #include "../flatsurf/vertical.hpp"
 
-#include "impl/flow_connection.impl.hpp"
 #include "impl/flow_component.impl.hpp"
-#include "impl/saddle_connection.impl.hpp"
+#include "impl/flow_connection.impl.hpp"
 #include "impl/flow_decomposition_state.hpp"
+#include "impl/saddle_connection.impl.hpp"
 
 #include "util/assert.ipp"
 
@@ -39,7 +39,8 @@ namespace flatsurf {
 template <typename Surface>
 FlowConnection<Surface>::FlowConnection()
   // we assume that the caller is aware that impl has to be initialized explicitly.
-  : impl(nullptr) {
+  :
+  impl(nullptr) {
 }
 
 template <typename Surface>
@@ -144,7 +145,7 @@ ostream& operator<<(ostream& os, const FlowConnection<Surface>& self) {
   return os << self.saddleConnection();
 }
 
-}
+}  // namespace flatsurf
 
 namespace std {
 
@@ -155,7 +156,7 @@ size_t hash<FlowConnection<Surface>>::operator()(const FlowConnection<Surface>& 
   return std::hash<typename Surface::SaddleConnection>()(self.saddleConnection());
 }
 
-}
+}  // namespace std
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

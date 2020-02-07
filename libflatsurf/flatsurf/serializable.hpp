@@ -33,13 +33,12 @@ namespace flatsurf {
 template <typename T>
 class Serializable {
  public:
-
   template <typename Archive>
-  friend void save(Archive & archive, const T& self) { Serialization<T>().save(archive, self); }
+  friend void save(Archive& archive, const T& self) { Serialization<T>().save(archive, self); }
   template <typename Archive>
-  friend void load(Archive & archive, T& self) { Serialization<T>().load(archive, self); }
+  friend void load(Archive& archive, T& self) { Serialization<T>().load(archive, self); }
 };
 
-}
+}  // namespace flatsurf
 
 #endif

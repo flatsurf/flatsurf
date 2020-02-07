@@ -17,10 +17,10 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <boost/range/numeric.hpp>
 #include <cassert>
 #include <ostream>
 #include <set>
-#include <boost/range/numeric.hpp>
 
 #include "../flatsurf/permutation.hpp"
 #include "util/assert.ipp"
@@ -36,7 +36,7 @@ namespace flatsurf {
 
 namespace {
 template <typename T>
-size_t index(const T& t) { return t.index(); }
+size_t index(const T &t) { return t.index(); }
 
 template <typename T>
 void check(const Permutation<T> &permutation) {
@@ -58,49 +58,53 @@ void check(const Permutation<T> &permutation) {
 }  // namespace
 
 template <typename T>
-Permutation<T>::Permutation() : Permutation(vector<pair<T, T>>()) {}
+Permutation<T>::Permutation() :
+  Permutation(vector<pair<T, T>>()) {}
 
 template <typename T>
-Permutation<T>::Permutation(const vector<T>& permutation)
-  : permutation(permutation),
-    inverse(permutation) {
-  for (auto & v : permutation)
+Permutation<T>::Permutation(const vector<T> &permutation) :
+  permutation(permutation),
+  inverse(permutation) {
+  for (auto &v : permutation)
     inverse[index((*this)(v))] = v;
 
   check(*this);
 }
 
 template <typename T>
-Permutation<T>::Permutation(const vector<vector<T>> &cycles) : Permutation([&]() {
-  vector<T> data(accumulate(cycles, 0u, [](size_t sum, const auto &cycle) { return sum + cycle.size(); }));
-  for (const auto cycle : cycles) {
-    for (auto i = 0u; i < cycle.size(); i++) {
-      ASSERT_ARGUMENT(index(cycle[i]) < data.size(), "cycle contains an element beyond the size of the permutation");
-      data[index(cycle[i])] = cycle[(i + 1) % cycle.size()];
+Permutation<T>::Permutation(const vector<vector<T>> &cycles) :
+  Permutation([&]() {
+    vector<T> data(accumulate(cycles, 0u, [](size_t sum, const auto &cycle) { return sum + cycle.size(); }));
+    for (const auto cycle : cycles) {
+      for (auto i = 0u; i < cycle.size(); i++) {
+        ASSERT_ARGUMENT(index(cycle[i]) < data.size(), "cycle contains an element beyond the size of the permutation");
+        data[index(cycle[i])] = cycle[(i + 1) % cycle.size()];
+      }
     }
-  }
-  return data;
-}()) {}
+    return data;
+  }()) {}
 
 template <typename T>
-Permutation<T>::Permutation(const vector<pair<T, T>> &permutation) : Permutation([&]() {
-  vector<T> data(permutation.size());
-  for (auto ab : permutation) {
-    ASSERT_ARGUMENT(index(ab.first) < data.size(), "entry of permutation points to an element beoynd the size of the permutation");
-    data[index(ab.first)] = ab.second;
-  }
-  return data;
-}()) {}
+Permutation<T>::Permutation(const vector<pair<T, T>> &permutation) :
+  Permutation([&]() {
+    vector<T> data(permutation.size());
+    for (auto ab : permutation) {
+      ASSERT_ARGUMENT(index(ab.first) < data.size(), "entry of permutation points to an element beoynd the size of the permutation");
+      data[index(ab.first)] = ab.second;
+    }
+    return data;
+  }()) {}
 
 template <typename T>
-Permutation<T>::Permutation(const std::map<T, T> &permutation) : Permutation([&]() {
-  vector<T> data(permutation.size());
-  for (auto ab : permutation) {
-    ASSERT_ARGUMENT(index(ab.first) < data.size(), "entry of permutation points to an element beoynd the size of the permutation");
-    data[index(ab.first)] = ab.second;
-  }
-  return data;
-}()) {}
+Permutation<T>::Permutation(const std::map<T, T> &permutation) :
+  Permutation([&]() {
+    vector<T> data(permutation.size());
+    for (auto ab : permutation) {
+      ASSERT_ARGUMENT(index(ab.first) < data.size(), "entry of permutation points to an element beoynd the size of the permutation");
+      data[index(ab.first)] = ab.second;
+    }
+    return data;
+  }()) {}
 
 template <typename T>
 Permutation<T> Permutation<T>::random(const vector<T> &domain) {
@@ -120,7 +124,7 @@ const T &Permutation<T>::operator()(const T &t) const {
 }
 
 template <typename T>
-const T &Permutation<T>::preimage(const T& t) const {
+const T &Permutation<T>::preimage(const T &t) const {
   return inverse[index(t)];
 }
 
@@ -157,11 +161,11 @@ vector<vector<T>> Permutation<T>::cycles() const noexcept {
 }
 
 template <typename T>
-void Permutation<T>::drop(const set<T>& items) {
-  for (auto& item : items)
+void Permutation<T>::drop(const set<T> &items) {
+  for (auto &item : items)
     CHECK_ARGUMENT(items.find(this->operator()(item)) != items.end(), "items to remove must be in isolated cycles");
 
-  for (auto& item : items)
+  for (auto &item : items)
     CHECK_ARGUMENT(index(item) >= permutation.size() - items.size(), "items to remove must have maximal index");
 
   permutation.resize(permutation.size() - items.size());
@@ -174,7 +178,7 @@ Permutation<T> Permutation<T>::operator~() const {
 }
 
 template <typename T>
-Permutation<T> & Permutation<T>::operator*=(const Permutation<T>& rhs) {
+Permutation<T> &Permutation<T>::operator*=(const Permutation<T> &rhs) {
   CHECK_ARGUMENT(size() == rhs.size(), "permutations must have the same domain");
 
   vector<T> permutation(rhs.permutation);
@@ -185,7 +189,7 @@ Permutation<T> & Permutation<T>::operator*=(const Permutation<T>& rhs) {
 
 template <typename T>
 bool Permutation<T>::trivial() const noexcept {
-  for (auto& v : domain())
+  for (auto &v : domain())
     if ((*this)(v) != v)
       return false;
   return true;
@@ -194,7 +198,7 @@ bool Permutation<T>::trivial() const noexcept {
 template <typename T>
 Permutation<T> &operator*=(const vector<T> &cycle, Permutation<T> &self) {
   if (set<T>(cycle.begin(), cycle.end()).size() <= 1) return self;
-  
+
   CHECK_ARGUMENT(set<T>(cycle.begin(), cycle.end()).size() == cycle.size(), "cycle must consist of distinct entries");
 
   T tmp = self.preimage(cycle[0]);
@@ -211,7 +215,7 @@ Permutation<T> &operator*=(const vector<T> &cycle, Permutation<T> &self) {
 template <typename T>
 Permutation<T> &operator*=(Permutation<T> &self, const vector<T> &cycle) {
   if (set<T>(cycle.begin(), cycle.end()).size() <= 1) return self;
-  
+
   CHECK_ARGUMENT(set<T>(cycle.begin(), cycle.end()).size() == cycle.size(), "cycle must consist of distinct entries");
 
   T tmp = self(cycle[0]);
@@ -268,4 +272,3 @@ template class flatsurf::Permutation<HalfEdge>;
 template ostream &flatsurf::operator<<(ostream &os, const Permutation<HalfEdge> &self);
 template Permutation<HalfEdge> &flatsurf::operator*=(const vector<HalfEdge> &, Permutation<HalfEdge> &);
 template Permutation<HalfEdge> &flatsurf::operator*=(Permutation<HalfEdge> &, const vector<HalfEdge> &);
-

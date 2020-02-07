@@ -21,8 +21,8 @@
 #include "external/catch2/single_include/catch2/catch.hpp"
 
 #include "../flatsurf/chain.hpp"
-#include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
+#include "../flatsurf/half_edge.hpp"
 
 #include "surfaces.hpp"
 

@@ -18,17 +18,17 @@
  *********************************************************************/
 
 #include <intervalxt/sample/arithmetic.hpp>
+#include <map>
 #include <ostream>
 #include <vector>
-#include <map>
 
 #include <exact-real/arb.hpp>
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/ccw.hpp"
+#include "../flatsurf/edge.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
-#include "../flatsurf/edge.hpp"
 #include "../flatsurf/half_edge_map.hpp"
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/saddle_connection.hpp"
@@ -51,24 +51,24 @@ namespace flatsurf {
 template <typename T>
 Vector<T> FlatTriangulation<T>::shortest() const {
   const auto edges = this->edges();
-  Edge shortest = *std::min_element(begin(edges), end(edges), [&](const auto& a, const auto& b) {
+  Edge shortest = *std::min_element(begin(edges), end(edges), [&](const auto &a, const auto &b) {
     const Vector x = fromEdge(a.positive());
     const Vector y = fromEdge(b.positive());
-    return x*x < y*y;
+    return x * x < y * y;
   });
   return fromEdge(shortest.positive());
 }
 
 // TODO: Move to the appropriate places
 template <typename T>
-T abs(const T& x) {
+T abs(const T &x) {
   return x < 0 ? -x : x;
 }
 
 template <typename T>
-Vector<T> FlatTriangulation<T>::shortest(const Vector& direction) const {
+Vector<T> FlatTriangulation<T>::shortest(const Vector &direction) const {
   const auto edges = this->edges();
-  Edge shortest = *std::min_element(begin(edges), end(edges), [&](const auto& a, const auto& b) {
+  Edge shortest = *std::min_element(begin(edges), end(edges), [&](const auto &a, const auto &b) {
     const Vector x = fromEdge(a.positive());
     const Vector y = fromEdge(b.positive());
 
@@ -83,30 +83,30 @@ Vector<T> FlatTriangulation<T>::shortest(const Vector& direction) const {
 }
 
 template <typename T>
-Implementation<FlatTriangulation<T>>::Implementation(const FlatTriangulationCombinatorial& combinatorial, const std::function<Vector(HalfEdge)>& vectors) :
+Implementation<FlatTriangulation<T>>::Implementation(const FlatTriangulationCombinatorial &combinatorial, const std::function<Vector(HalfEdge)> &vectors) :
   vectors(&combinatorial, vectors, Implementation::updateAfterFlip),
   approximations(
-    &combinatorial,
-    [&](const HalfEdge e) {
-      return static_cast<flatsurf::Vector<exactreal::Arb>>(this->vectors.get(e));
-    },
-    Implementation::updateApproximationAfterFlip) {
+      &combinatorial,
+      [&](const HalfEdge e) {
+        return static_cast<flatsurf::Vector<exactreal::Arb>>(this->vectors.get(e));
+      },
+      Implementation::updateApproximationAfterFlip) {
 }
 
 template <typename T>
-void Implementation<FlatTriangulation<T>>::updateAfterFlip(HalfEdgeMap<Vector>& vectors, HalfEdge flip) {
-  const FlatTriangulationCombinatorial& parent = vectors.parent();
+void Implementation<FlatTriangulation<T>>::updateAfterFlip(HalfEdgeMap<Vector> &vectors, HalfEdge flip) {
+  const FlatTriangulationCombinatorial &parent = vectors.parent();
   vectors.set(flip, vectors.get(-parent.nextInFace(flip)) + vectors.get(-parent.previousInFace(flip)));
 }
 
 template <typename T>
-void Implementation<FlatTriangulation<T>>::updateApproximationAfterFlip(HalfEdgeMap<flatsurf::Vector<exactreal::Arb>>& vectors, HalfEdge flip) {
-  const auto& surface = static_cast<const FlatTriangulation<T> &>(vectors.parent());
+void Implementation<FlatTriangulation<T>>::updateApproximationAfterFlip(HalfEdgeMap<flatsurf::Vector<exactreal::Arb>> &vectors, HalfEdge flip) {
+  const auto &surface = static_cast<const FlatTriangulation<T> &>(vectors.parent());
   vectors.set(flip, static_cast<flatsurf::Vector<exactreal::Arb>>(surface.fromEdge(-surface.nextInFace(flip)) + surface.fromEdge(-surface.previousInFace(flip))));
 }
 
 template <typename T>
-void Implementation<FlatTriangulation<T>>::check(const FlatTriangulation<T>& self) {
+void Implementation<FlatTriangulation<T>>::check(const FlatTriangulation<T> &self) {
   // check that faces are closed
   for (auto edge : self.halfEdges()) {
     if (self.boundary(edge)) continue;
@@ -126,12 +126,12 @@ void Implementation<FlatTriangulation<T>>::check(const FlatTriangulation<T>& sel
 }
 
 template <typename T>
-T Implementation<FlatTriangulation<T>>::area(const Vector& a, const Vector& b, const Vector& c) {
-  const Vector& x = a;
-  const Vector& y = a + b;
-  const Vector& z = y + c;
+T Implementation<FlatTriangulation<T>>::area(const Vector &a, const Vector &b, const Vector &c) {
+  const Vector &x = a;
+  const Vector &y = a + b;
+  const Vector &z = y + c;
 
-  T area = x.x()*y.y() - x.y()*y.x() + y.x()*z.y() - y.y()*z.x() + z.x()*x.y() - z.y()*x.x();
+  T area = x.x() * y.y() - x.y() * y.x() + y.x() * z.y() - y.y() * z.x() + z.x() * x.y() - z.y() * x.x();
   ASSERT(area >= 0, "sides not oriented correctly");
   return area;
 }
@@ -147,29 +147,31 @@ const flatsurf::Vector<exactreal::Arb> &FlatTriangulation<T>::fromEdgeApproximat
 }
 
 template <typename T>
-FlatTriangulation<T>::FlatTriangulation() noexcept : FlatTriangulation(FlatTriangulationCombinatorial(), vector<Vector>{}) {}
+FlatTriangulation<T>::FlatTriangulation() noexcept :
+  FlatTriangulation(FlatTriangulationCombinatorial(), vector<Vector>{}) {}
 
 template <typename T>
-FlatTriangulation<T>::FlatTriangulation(FlatTriangulationCombinatorial &&combinatorial, const vector<Vector> &vectors)
-  : FlatTriangulation(std::move(combinatorial), [&](const HalfEdge he) {
-      Edge e = he;
-      if (he == e.positive())
-        return vectors.at(e.index());
-      else
-        return -vectors.at(e.index());
-    }) {
+FlatTriangulation<T>::FlatTriangulation(FlatTriangulationCombinatorial &&combinatorial, const vector<Vector> &vectors) :
+  FlatTriangulation(std::move(combinatorial), [&](const HalfEdge he) {
+    Edge e = he;
+    if (he == e.positive())
+      return vectors.at(e.index());
+    else
+      return -vectors.at(e.index());
+  }) {
   CHECK_ARGUMENT(vectors.size() == this->edges().size(), "there must be exactly one vector for each edge");
 }
 
 template <typename T>
-FlatTriangulation<T>::FlatTriangulation(FlatTriangulationCombinatorial &&combinatorial, const std::function<Vector(HalfEdge)>& vectors) :
+FlatTriangulation<T>::FlatTriangulation(FlatTriangulationCombinatorial &&combinatorial, const std::function<Vector(HalfEdge)> &vectors) :
   FlatTriangulationCombinatorial(std::move(combinatorial)),
   impl(spimpl::make_unique_impl<Implementation>(*this, vectors)) {
   Implementation::check(*this);
 }
 
 template <typename T>
-FlatTriangulation<T>::FlatTriangulation(FlatTriangulation<T> &&rhs) noexcept : FlatTriangulation() {
+FlatTriangulation<T>::FlatTriangulation(FlatTriangulation<T> &&rhs) noexcept :
+  FlatTriangulation() {
   *this = std::move(rhs);
 }
 
@@ -208,7 +210,6 @@ std::shared_ptr<const FlatTriangulation<T>> FlatTriangulation<T>::shared_from_th
   return std::static_pointer_cast<const FlatTriangulation<T>>(FlatTriangulationCombinatorial::shared_from_this());
 }
 
-
 template <typename T>
 std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &nextTo, const Vector &slot) const {
   CHECK_ARGUMENT(inSector(nextTo, slot), "vector must be contained in the sector next to the half edge");
@@ -245,7 +246,7 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &n
       // to check whether this is != CLOCKWISE. However, we do not allow slot
       // to end on an edge other than nextTo. So we perform one additional
       // flip in that case so slot is actually inside of a face.
-      if(surface->fromEdge(crossing).ccw(slot - base) == CCW::COUNTERCLOCKWISE)
+      if (surface->fromEdge(crossing).ccw(slot - base) == CCW::COUNTERCLOCKWISE)
         return;
 
       std::function<void(HalfEdge)> flip = [&](HalfEdge e) {
@@ -279,7 +280,7 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &n
     }
   }();
 
-  auto symmetric = [](HalfEdge x, HalfEdge e, const Vector& v) {
+  auto symmetric = [](HalfEdge x, HalfEdge e, const Vector &v) {
     assert(x == e || x == -e);
     return x == e ? v : -v;
   };
@@ -358,13 +359,12 @@ void FlatTriangulation<T>::flip(HalfEdge e) {
 }
 
 template <typename T>
-bool FlatTriangulation<T>::inSector(const HalfEdge sector, const Vector& vector) const {
-  return fromEdge(sector).ccw(vector) != CCW::CLOCKWISE
-         && fromEdge(nextAtVertex(sector)).ccw(vector) == CCW::CLOCKWISE;
+bool FlatTriangulation<T>::inSector(const HalfEdge sector, const Vector &vector) const {
+  return fromEdge(sector).ccw(vector) != CCW::CLOCKWISE && fromEdge(nextAtVertex(sector)).ccw(vector) == CCW::CLOCKWISE;
 }
 
 template <typename T>
-bool FlatTriangulation<T>::inSector(const HalfEdge sector, const Vertical<FlatTriangulation<T>>& vector) const {
+bool FlatTriangulation<T>::inSector(const HalfEdge sector, const Vertical<FlatTriangulation<T>> &vector) const {
   return inSector(sector, vector.vertical());
 }
 

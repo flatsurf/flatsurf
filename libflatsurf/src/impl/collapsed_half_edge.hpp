@@ -20,15 +20,14 @@
 #ifndef LIBFLATSURF_FLAT_TRIANGULATION_COLLAPSED_IMPL_COLLAPSED_HALF_EDGE_HPP
 #define LIBFLATSURF_FLAT_TRIANGULATION_COLLAPSED_IMPL_COLLAPSED_HALF_EDGE_HPP
 
-#include <memory>
-#include <list>
 #include <iosfwd>
+#include <list>
+#include <memory>
 
 #include "../../flatsurf/flat_triangulation.hpp"
 #include "../../flatsurf/saddle_connection.hpp"
 
 #include "./flat_triangulation_collapsed.impl.hpp"
-
 
 namespace flatsurf {
 
@@ -52,14 +51,13 @@ class CollapsedHalfEdge {
   Connections connections;
 };
 
-}
+}  // namespace flatsurf
 
 namespace std {
 
 template <typename T>
 struct hash<::flatsurf::CollapsedHalfEdge<T>> { std::size_t operator()(const ::flatsurf::CollapsedHalfEdge<T>&) const noexcept; };
 
-}
+}  // namespace std
 
 #endif
-

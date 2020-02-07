@@ -23,27 +23,25 @@
 #include <iosfwd>
 #include <memory>
 
+#include <gmpxx.h>
 #include <boost/operators.hpp>
 #include <exact-real/arb.hpp>
-#include <gmpxx.h>
 
-#include "serializable.hpp"
 #include "copyable.hpp"
+#include "serializable.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-class Chain :
-  public Serializable<Chain<Surface>>,
-  boost::equality_comparable<Chain<Surface>>,
-  boost::less_than_comparable<Chain<Surface>, Bound>,
-  boost::additive<Chain<Surface>, HalfEdge>,
-  boost::additive<Chain<Surface>>,
-  boost::multipliable<Chain<Surface>, mpz_class> {
-
+class Chain : public Serializable<Chain<Surface>>,
+              boost::equality_comparable<Chain<Surface>>,
+              boost::less_than_comparable<Chain<Surface>, Bound>,
+              boost::additive<Chain<Surface>, HalfEdge>,
+              boost::additive<Chain<Surface>>,
+              boost::multipliable<Chain<Surface>, mpz_class> {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
-  
-public:
+
+ public:
   Chain();
   explicit Chain(std::shared_ptr<const Surface>);
 
@@ -81,15 +79,15 @@ public:
 };
 
 template <typename Surface>
-Chain(std::shared_ptr<Surface>) -> Chain<Surface>;
+Chain(std::shared_ptr<Surface>)->Chain<Surface>;
 
-}
+}  // namespace flatsurf
 
 namespace std {
 
 template <typename Surface>
 struct hash<::flatsurf::Chain<Surface>> { size_t operator()(const ::flatsurf::Chain<Surface>&) const noexcept; };
 
-}
+}  // namespace std
 
 #endif

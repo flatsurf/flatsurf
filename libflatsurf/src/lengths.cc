@@ -20,30 +20,30 @@
 // TODO
 #include <iostream>
 
-#include <ostream>
-#include <intervalxt/length.hpp>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <intervalxt/length.hpp>
+#include <ostream>
 
 #include <boost/algorithm/string/join.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include <intervalxt/sample/arithmetic.hpp>
-#include <intervalxt/sample/exact-real-arithmetic.hpp>
-#include <intervalxt/sample/e-antic-arithmetic.hpp>
-#include <intervalxt/sample/rational-arithmetic.hpp>
 #include <intervalxt/interval_exchange_transformation.hpp>
+#include <intervalxt/sample/arithmetic.hpp>
+#include <intervalxt/sample/e-antic-arithmetic.hpp>
+#include <intervalxt/sample/exact-real-arithmetic.hpp>
+#include <intervalxt/sample/rational-arithmetic.hpp>
 
-#include "../flatsurf/vertical.hpp"
-#include "../flatsurf/vector.hpp"
-#include "../flatsurf/interval_exchange_transformation.hpp"
 #include "../flatsurf/chain.hpp"
+#include "../flatsurf/interval_exchange_transformation.hpp"
+#include "../flatsurf/vector.hpp"
+#include "../flatsurf/vertical.hpp"
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
-#include "impl/lengths.hpp"
-#include "impl/flow_connection.impl.hpp"
 #include "impl/flow_component.impl.hpp"
+#include "impl/flow_connection.impl.hpp"
+#include "impl/lengths.hpp"
 #include "impl/saddle_connection.impl.hpp"
 
 #include "util/assert.ipp"
@@ -51,10 +51,10 @@
 
 namespace flatsurf {
 
+using fmt::format;
 using intervalxt::Label;
 using intervalxt::Length;
 using rx::none_of;
-using fmt::format;
 
 template <typename Surface>
 Lengths<Surface>::Lengths(std::shared_ptr<const Vertical<Uncollapsed>> vertical, const EdgeMap<typename Surface::SaddleConnection>& lengths) :
@@ -107,13 +107,13 @@ void Lengths<Surface>::subtract(Label minuend) {
 
   const auto flow = [&](const auto& connections, bool reverse) {
     auto flowed = connections | rx::transform([&](const auto& connection) {
-        return Implementation<FlowConnection<FlatTriangulation<typename Surface::Coordinate>>>::make(state.lock(), ::flatsurf::Implementation<FlowComponent<FlatTriangulation<typename Surface::Coordinate>>>::make(state.lock(), &component), connection).saddleConnection();
-        }) | rx::transform([&](const auto& connection) {
-          // TODO: This happens to be correct because there can be no HalfEdges
-          // when reverse. These would be incorrectly oriented. See comments in
-          // intervalxt about orientation of HalfEdge TODO.
-          return reverse ? -connection : connection;
-          }) | rx::to_vector();
+      return Implementation<FlowConnection<FlatTriangulation<typename Surface::Coordinate>>>::make(state.lock(), ::flatsurf::Implementation<FlowComponent<FlatTriangulation<typename Surface::Coordinate>>>::make(state.lock(), &component), connection).saddleConnection();
+    }) | rx::transform([&](const auto& connection) {
+      // TODO: This happens to be correct because there can be no HalfEdges
+      // when reverse. These would be incorrectly oriented. See comments in
+      // intervalxt about orientation of HalfEdge TODO.
+      return reverse ? -connection : connection;
+    }) | rx::to_vector();
     if (reverse)
       std::reverse(begin(flowed), end(flowed));
     return flowed;
@@ -124,7 +124,8 @@ void Lengths<Surface>::subtract(Label minuend) {
   minuendConnection = -minuendConnection;
 
   HalfEdge target = minuendConnection.target();
-  Chain walk(minuendConnection.surface().shared_from_this());;
+  Chain walk(minuendConnection.surface().shared_from_this());
+  ;
   // Walk down on the minuend's left boundary
   {
     for (const auto& connection : flow(begin(minuendContour)->left(), !minuendOnTop)) {
@@ -229,7 +230,7 @@ std::vector<mpq_class> Lengths<Surface>::coefficients(Label label) const {
     // TODO: We are assuming that 0/1 lengths means zero/rational. Is that
     // sane? Probably, yes, but we should assert somewhere else…
     // It's also really weird that we call this from the constructor.
-    while(coefficients.size() < degree)
+    while (coefficients.size() < degree)
       coefficients.emplace_back();
   }
   return coefficients;
@@ -309,7 +310,7 @@ std::ostream& operator<<(std::ostream& os, const Lengths<Surface>& self) {
   return os << boost::algorithm::join(items, ", ");
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

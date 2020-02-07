@@ -23,8 +23,8 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include "../flatsurf/tracking_set.hpp"
 #include "../flatsurf/tracking.hpp"
+#include "../flatsurf/tracking_set.hpp"
 
 #include "impl/tracking_set.impl.hpp"
 
@@ -34,7 +34,7 @@ using std::string;
 namespace flatsurf {
 
 template <typename K>
-TrackingSet<K>::TrackingSet(const FlatTriangulationCombinatorial *parent, const std::function<bool(const K&)>& values, const FlipHandler &updateAfterFlip, const CollapseHandler &updateBeforeCollapse) :
+TrackingSet<K>::TrackingSet(const FlatTriangulationCombinatorial* parent, const std::function<bool(const K&)>& values, const FlipHandler& updateAfterFlip, const CollapseHandler& updateBeforeCollapse) :
   impl(spimpl::make_unique_impl<Implementation>(this, parent, values, updateAfterFlip, updateBeforeCollapse)) {
 }
 
@@ -77,12 +77,12 @@ ostream& operator<<(ostream& os, const TrackingSet<K>& self) {
   return os << "{ " << boost::algorithm::join(items, ", ") << " }";
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
-#include "../flatsurf/vertex.hpp"
-#include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/edge.hpp"
+#include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/vertex.hpp"
 
 namespace flatsurf {
 
@@ -93,4 +93,4 @@ template ostream& operator<<(ostream&, const TrackingSet<Edge>&);
 template class TrackingSet<Vertex>;
 template ostream& operator<<(ostream&, const TrackingSet<Vertex>&);
 
-}
+}  // namespace flatsurf

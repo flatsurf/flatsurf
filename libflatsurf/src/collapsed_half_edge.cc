@@ -31,7 +31,7 @@ template <typename T>
 void CollapsedHalfEdge<T>::updateAfterFlip(HalfEdgeMap<CollapsedHalfEdge>&, HalfEdge) {
   // intentionally empty, Implementation::updateAfterFlip() already did all the necessary updates.
 }
- 
+
 template <typename T>
 void CollapsedHalfEdge<T>::updateBeforeCollapse(HalfEdgeMap<CollapsedHalfEdge>&, Edge) {
   // intentionally empty, CollapsedHalfEdge::updateBeforeFlip already did all the necessary updates
@@ -49,7 +49,7 @@ std::ostream& operator<<(std::ostream& os, const CollapsedHalfEdge<T>& self) {
   return os;
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

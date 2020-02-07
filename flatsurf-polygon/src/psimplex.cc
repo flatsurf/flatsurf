@@ -86,19 +86,22 @@ PSimplex::~PSimplex() { /* empty destructor */
 }
 
 void PSimplex::Draw(__attribute__((unused)) my_ostream &output_stream,
-                    __attribute__((unused)) COORD d) {
+    __attribute__((unused)) COORD d) {
   ERR_RET("call to PSimplex::Draw");
 }
 
-PSimplex::PSimplex(Point p0, size_t i) : p(p0) { in_pcomplex = i; }
+PSimplex::PSimplex(Point p0, size_t i) :
+  p(p0) { in_pcomplex = i; }
 
 Simplex *PSimplex::sp() { ERR_RET("call to Psimplex::sp()"); }
 
-PVertex::PVertex(Vertex *v0, Point p0, size_t i) : PSimplex(p0, i) { s = v0; }
+PVertex::PVertex(Vertex *v0, Point p0, size_t i) :
+  PSimplex(p0, i) { s = v0; }
 
 Simplex *PVertex::sp() { return static_cast<Simplex *>(s); }
 
-PUEdge::PUEdge(OEdge &oe, Point p0, size_t i) : PSimplex(p0, i) {
+PUEdge::PUEdge(OEdge &oe, Point p0, size_t i) :
+  PSimplex(p0, i) {
   Point t;
 
   //  p has to be position of v0
@@ -112,11 +115,13 @@ PUEdge::PUEdge(OEdge &oe, Point p0, size_t i) : PSimplex(p0, i) {
   }
 }
 
-PUEdge::PUEdge(UEdge *e0, Point p0, size_t i) : PSimplex(p0, i) { s = e0; }
+PUEdge::PUEdge(UEdge *e0, Point p0, size_t i) :
+  PSimplex(p0, i) { s = e0; }
 
 Simplex *PUEdge::sp() { return static_cast<Simplex *>(s); }
 
-PFace::PFace(Face *f0, Point p0, size_t i) : PSimplex(p0, i) { s = f0; }
+PFace::PFace(Face *f0, Point p0, size_t i) :
+  PSimplex(p0, i) { s = f0; }
 
 Simplex *PFace::sp() { return static_cast<Simplex *>(s); }
 
@@ -534,7 +539,7 @@ bool Face::intersects(Point pb, Point pv) {
     }
 
     if (intersect_segment_interior(pb, pv, (*k).headOffset<Point>(),
-                                   (*k).vec_cx(), intersection)) {
+            (*k).vec_cx(), intersection)) {
       // std::cout << "Intersecting segments" << pb <<  pb+pv <<
       // 	(*k).headOffset<Point>() <<
       // 	(*k).headOffset<Point>() + (*k).vec_cx() << "\n";
@@ -601,7 +606,7 @@ bool Face::contains(Point p) {
 
   for (auto k = oedges.begin(); k != oedges.end(); ++k) {
     if (intersect_segment_interior(p, far_out_vector, (*k).headOffset<Point>(),
-                                   (*k).vec_cx(), intersection)) {
+            (*k).vec_cx(), intersection)) {
       count++;
     }
   }
@@ -811,7 +816,7 @@ void TwoComplex::NewDraw(my_ostream &output_stream) {
       had_pcomplex = true;
     } else if (active) {
       relocate(pc,
-               Point(global_max_x - min_x + SPACING * (max_x - min_x), 0.0));
+          Point(global_max_x - min_x + SPACING * (max_x - min_x), 0.0));
       //	    relocate(pc, Point(global_max_x - min_x
       //+SPACING*(max_x-min_x) 			       ,global_max_y - min_y
       //+SPACING*(max_y-min_y)));
@@ -836,7 +841,7 @@ void TwoComplex::NewDraw(my_ostream &output_stream) {
     scale_factor_ = SCALE_HACK * DIM * 2.0 / (global_max_y - global_min_y);
 
   mean = Point((global_max_x + global_min_x) / 2,
-               (global_max_y + global_min_y) / 2);
+      (global_max_y + global_min_y) / 2);
 
   //    fprintf(out_f,"%lf %lf %lf %lf %lf \n",global_min_x, global_max_x,
   //                         global_min_y, global_max_y, scale_factor);

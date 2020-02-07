@@ -20,16 +20,15 @@
 #ifndef LIBFLATSURF_FLOW_CONNECTION_HPP
 #define LIBFLATSURF_FLOW_CONNECTION_HPP
 
-#include <iosfwd>
 #include <boost/operators.hpp>
+#include <iosfwd>
 
 #include "copyable.hpp"
 
 namespace flatsurf {
 template <typename Surface>
-class FlowConnection :
-  Serializable<FlowConnection<Surface>>,
-  boost::equality_comparable<FlowConnection<Surface>> {
+class FlowConnection : Serializable<FlowConnection<Surface>>,
+                       boost::equality_comparable<FlowConnection<Surface>> {
   // Flow connections cannot be created directly (other than copying & moving them.)
   // They are created as products of FlowDecomposition.
   FlowConnection();
@@ -82,14 +81,13 @@ class FlowConnection :
   Copyable<Implementation> impl;
   friend Implementation;
 };
-}
+}  // namespace flatsurf
 
 namespace std {
 
 template <typename Surface>
 struct hash<::flatsurf::FlowConnection<Surface>> { std::size_t operator()(const ::flatsurf::FlowConnection<Surface>&) const noexcept; };
 
-}
+}  // namespace std
 
 #endif
-

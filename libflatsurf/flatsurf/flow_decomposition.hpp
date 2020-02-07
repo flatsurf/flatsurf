@@ -20,14 +20,14 @@
 #ifndef LIBFLATSURF_FLOW_DECOMPOSITION_HPP
 #define LIBFLATSURF_FLOW_DECOMPOSITION_HPP
 
-#include <vector>
-#include <iosfwd>
 #include <functional>
+#include <iosfwd>
+#include <vector>
 
 #include <boost/logic/tribool.hpp>
 
-#include "moveable.hpp"
 #include "flow_component.hpp"
+#include "moveable.hpp"
 
 namespace flatsurf {
 
@@ -43,10 +43,10 @@ class FlowDecomposition {
   // Return whether all resulting components satisfy target, i.e., target could
   // be established for all components without exceeding the limit.
   bool decompose(
-    std::function<bool(const FlowComponent<Surface>&)> target=[](const auto& c) {
-      return (c.cylinder() || c.withoutPeriodicTrajectory()) ? true : false;
-    },
-    int limit=-1);
+      std::function<bool(const FlowComponent<Surface>&)> target = [](const auto& c) {
+        return (c.cylinder() || c.withoutPeriodicTrajectory()) ? true : false;
+      },
+      int limit = -1);
 
   std::vector<FlowComponent<Surface>> components() const noexcept;
 
