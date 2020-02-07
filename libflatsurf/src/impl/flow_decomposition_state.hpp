@@ -28,6 +28,7 @@
 
 #include "../../flatsurf/saddle_connection.hpp"
 #include "../../flatsurf/vector.hpp"
+#include "../../flatsurf/contour_decomposition.hpp"
 
 #include "flow_component_state.hpp"
 
@@ -36,6 +37,8 @@ template <typename Surface>
 class FlowDecompositionState : public std::enable_shared_from_this<FlowDecompositionState<Surface>> {
  public:
   FlowDecompositionState(std::unique_ptr<Surface> surface, const Vector<typename Surface::Coordinate>& vert);
+
+  ContourDecomposition<Surface> contourDecomposition;
 
   std::list<FlowComponentState<Surface>> components;
   std::unordered_map<::intervalxt::Connection, typename Surface::SaddleConnection> injectedConnections;

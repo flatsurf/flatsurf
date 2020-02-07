@@ -177,7 +177,7 @@ Surface FlowComponent<Surface>::triangulation() const {
 
 template <typename Surface>
 Vertical<Surface> FlowComponent<Surface>::vertical() const {
-  const auto& collapsedSurface = impl->component->contourComponent.impl->state->surface;
+  const auto& collapsedSurface = impl->state->contourDecomposition.collapsed();
   return Vertical<Surface>(collapsedSurface->impl->original, collapsedSurface->vertical().vertical());
 }
 

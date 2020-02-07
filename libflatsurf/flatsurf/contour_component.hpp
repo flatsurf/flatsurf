@@ -61,8 +61,7 @@ class ContourComponent : boost::equality_comparable<ContourComponent<Surface>> {
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const ContourComponent<S> &);
 
-  // TODO: find a better solution for this
- public:
+ private:
   using Implementation = ::flatsurf::Implementation<ContourComponent>;
   spimpl::impl_ptr<Implementation> impl;
 
