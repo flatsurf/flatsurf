@@ -33,11 +33,11 @@ namespace flatsurf {
 
 template <typename Surface>
 class FlowDecomposition {
- public:
-  using T = typename Surface::Vector::Coordinate;
-
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
+  using T = typename Surface::Coordinate;
+
+ public:
   FlowDecomposition(std::unique_ptr<Surface>, const Vector<T>& vertical);
 
   // Return whether all resulting components satisfy target, i.e., target could

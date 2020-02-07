@@ -43,13 +43,10 @@ class FlatTriangulation : public FlatTriangulationCombinatorial,
 
  public:
   using Coordinate = T;
-  using Vector = ::flatsurf::Vector<T>;
-  using Collapsed = FlatTriangulationCollapsed<T>;
-  using SaddleConnection = ::flatsurf::SaddleConnection<FlatTriangulation<T>>;
 
   FlatTriangulation() noexcept;
-  FlatTriangulation(FlatTriangulationCombinatorial &&, const std::vector<Vector> &vectors);
-  FlatTriangulation(FlatTriangulationCombinatorial &&, const std::function<Vector(HalfEdge)> &vectors);
+  FlatTriangulation(FlatTriangulationCombinatorial &&, const std::vector<Vector<T>> &vectors);
+  FlatTriangulation(FlatTriangulationCombinatorial &&, const std::function<Vector<T>(HalfEdge)> &vectors);
   FlatTriangulation(FlatTriangulation<T> &&rhs) noexcept;
 
   // Create an independent clone of this triangulation that is built from the
@@ -61,7 +58,7 @@ class FlatTriangulation : public FlatTriangulationCombinatorial,
   // Create an independent clone of this triangulation with an added vertex
   // next to e at v from e's source. If the vector does not fit into the face
   // next to e, the necessary edge flips are performed to accomodate it.
-  std::unique_ptr<FlatTriangulation<T>> insertAt(HalfEdge &e, const Vector &v) const;
+  std::unique_ptr<FlatTriangulation<T>> insertAt(HalfEdge &e, const Vector<T> &v) const;
 
   // Create an independent clone of this triangulation with all vectors scaled
   // by c.
@@ -72,9 +69,9 @@ class FlatTriangulation : public FlatTriangulationCombinatorial,
   // half edges there.
   std::unique_ptr<FlatTriangulation<T>> slot(const HalfEdge e) const;
 
-  Vector shortest() const;
+  Vector<T> shortest() const;
   // Return the shortest vector relative to this direction which is not orthogonal to it.
-  Vector shortest(const Vector &) const;
+  Vector<T> shortest(const Vector<T> &) const;
 
   void flip(HalfEdge);
 
@@ -83,11 +80,11 @@ class FlatTriangulation : public FlatTriangulationCombinatorial,
   // Return whether the vector is in the sector counterclockwise next to the
   // half edge (including the half edge but not including the following half
   // edge.)
-  bool inSector(HalfEdge, const Vector &) const;
+  bool inSector(HalfEdge, const Vector<T> &) const;
   bool inSector(HalfEdge, const Vertical<FlatTriangulation<T>> &) const;
 
-  const Vector &fromEdge(HalfEdge) const;
-  const SaddleConnection alongEdge(HalfEdge) const;
+  const Vector<T> &fromEdge(HalfEdge) const;
+  const SaddleConnection<FlatTriangulation<T>> alongEdge(HalfEdge) const;
   const ::flatsurf::Vector<exactreal::Arb> &fromEdgeApproximate(HalfEdge) const;
 
   std::shared_ptr<const FlatTriangulation<T>> shared_from_this() const;
@@ -103,6 +100,7 @@ class FlatTriangulation : public FlatTriangulationCombinatorial,
  private:
   using Implementation = ::flatsurf::Implementation<FlatTriangulation>;
   Moveable<Implementation> impl;
+
   friend Implementation;
 };
 

@@ -45,8 +45,10 @@ struct factory<Vertex> {
 
 template <typename Surface>
 struct factory<SaddleConnection<Surface>> {
+  using T = typename Surface::Coordinate;
+
   static std::shared_ptr<SaddleConnection<Surface>> make() {
-    auto square = makeSquare<typename Surface::Vector>();
+    auto square = makeSquare<Vector<T>>();
     const HalfEdge e(1);
     return std::make_shared<SaddleConnection<Surface>>(SaddleConnection<Surface>::fromEdge(square, e));
   }

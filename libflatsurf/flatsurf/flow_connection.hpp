@@ -29,11 +29,13 @@ namespace flatsurf {
 template <typename Surface>
 class FlowConnection : Serializable<FlowConnection<Surface>>,
                        boost::equality_comparable<FlowConnection<Surface>> {
+  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
+
+  using T = typename Surface::Coordinate;
+
   // Flow connections cannot be created directly (other than copying & moving them.)
   // They are created as products of FlowDecomposition.
   FlowConnection();
-
-  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
  public:
   FlowComponent<Surface> component() const;
@@ -71,7 +73,7 @@ class FlowConnection : Serializable<FlowConnection<Surface>>,
 
   bool operator==(const FlowConnection<Surface>&) const noexcept;
 
-  typename Surface::SaddleConnection saddleConnection() const noexcept;
+  SaddleConnection<FlatTriangulation<T>> saddleConnection() const noexcept;
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const FlowConnection<S>&);

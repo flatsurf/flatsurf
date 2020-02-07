@@ -32,10 +32,11 @@
 namespace flatsurf {
 template <typename Surface>
 class Implementation<ContourDecomposition<Surface>> {
+  using T = typename Surface::Coordinate;
   using DecompositionState = ContourDecompositionState<Surface>;
 
  public:
-  Implementation(std::unique_ptr<Surface>, const Vector<typename Surface::Coordinate>&);
+  Implementation(std::unique_ptr<Surface>, const Vector<T>&);
 
   std::shared_ptr<DecompositionState> state;
 };

@@ -32,15 +32,17 @@ template <class Surface>
 class ContourDecomposition {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
+  using T = typename Surface::Coordinate;
+
  public:
-  ContourDecomposition(std::unique_ptr<Surface>, const Vector<typename Surface::Coordinate> &vertical);
+  ContourDecomposition(std::unique_ptr<Surface>, const Vector<T> &vertical);
 
   std::vector<ContourComponent<Surface>> components() const;
 
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const ContourDecomposition<S> &);
 
-  std::shared_ptr<const typename Surface::Collapsed> collapsed() const;
+  std::shared_ptr<const FlatTriangulationCollapsed<T>> collapsed() const;
 
  private:
   using Implementation = ::flatsurf::Implementation<ContourDecomposition>;

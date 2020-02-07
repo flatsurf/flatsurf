@@ -174,7 +174,7 @@ std::ostream &operator<<(std::ostream &, const FlatTriangulation<T> &);
 // renf_elem_class, does not have a ::Vector which SaddleConnection class
 // requires. This is clearly a bug in cppyy, but we have not been able to
 // create a minimal reproducer yet.
-template <typename Surface, typename _ = typename Surface::Vector>
+template <typename Surface, typename _ = Vector<typename Surface::Coordinate>>
 std::ostream &operator<<(std::ostream &, const SaddleConnection<Surface> &);
 template <typename Surface>
 std::ostream &operator<<(std::ostream &, const SaddleConnections<Surface> &);

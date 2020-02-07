@@ -619,7 +619,7 @@ int main(int argc, char **argv) {
 
       sc.clear();
 
-      auto direction = static_cast<typename FlatTriangulation::Vector>(saddle_connection);
+      auto direction = static_cast<Vector<typename FlatTriangulation::Coordinate>>(saddle_connection);
 
       for (const HalfEdge e : flat_triangulation->halfEdges()) {
         if (flat_triangulation->fromEdge(e).ccw(direction) == flatsurf::CCW::CLOCKWISE) {

@@ -39,8 +39,10 @@ template <class Surface>
 class Vertical : boost::equality_comparable<Vertical<Surface>> {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
+  using T = typename Surface::Coordinate;
+
  public:
-  Vertical(std::shared_ptr<const Surface>, const typename Surface::Vector &vertical);
+  Vertical(std::shared_ptr<const Surface>, const Vector<T> &vertical);
 
   enum class TRIANGLE {
     BACKWARD = 1,
@@ -56,11 +58,11 @@ class Vertical : boost::equality_comparable<Vertical<Surface>> {
   // both of its adjacent triangles.
   bool large(HalfEdge) const;
 
-  const typename Surface::Vector &vertical() const;
-  const typename Surface::Vector &horizontal() const;
+  const Vector<T> &vertical() const;
+  const Vector<T> &horizontal() const;
 
-  typename Surface::Coordinate perpendicular(const typename Surface::Vector &) const;
-  typename Surface::Coordinate parallel(const typename Surface::Vector &) const;
+  T perpendicular(const Vector<T> &) const;
+  T parallel(const Vector<T> &) const;
   bool parallel(Edge) const;
   bool perpendicular(Edge) const;
   bool parallel(HalfEdge) const;
@@ -92,7 +94,7 @@ class Vertical : boost::equality_comparable<Vertical<Surface>> {
 };
 
 template <typename Surface>
-Vertical(std::shared_ptr<const Surface>, const typename Surface::Vector &)->Vertical<Surface>;
+Vertical(std::shared_ptr<const Surface>, const Vector<typename Surface::Coordinate> &)->Vertical<Surface>;
 }  // namespace flatsurf
 
 #endif

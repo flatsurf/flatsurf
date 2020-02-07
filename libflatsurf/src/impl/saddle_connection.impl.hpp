@@ -30,6 +30,7 @@ namespace flatsurf {
 template <typename Surface>
 class Implementation<SaddleConnection<Surface>> {
   using SaddleConnection = flatsurf::SaddleConnection<Surface>;
+  using T = typename Surface::Coordinate;
 
  public:
   Implementation(std::shared_ptr<const Surface> &surface, HalfEdge source, HalfEdge target, const Chain<Surface> &vector);

@@ -42,7 +42,7 @@ using namespace flatsurf;
 namespace flatsurf {
 
 template <typename Surface>
-Vertical<Surface>::Vertical(std::shared_ptr<const Surface> surface, const typename Surface::Vector& vertical) :
+Vertical<Surface>::Vertical(std::shared_ptr<const Surface> surface, const Vector<T>& vertical) :
   impl(spimpl::make_impl<Implementation>(surface, vertical)) {}
 
 template <typename Surface>
@@ -77,12 +77,12 @@ bool Vertical<Surface>::large(HalfEdge e) const {
 }
 
 template <typename Surface>
-typename Surface::Coordinate Vertical<Surface>::perpendicular(const typename Surface::Vector& v) const {
+typename Surface::Coordinate Vertical<Surface>::perpendicular(const Vector<T>& v) const {
   return impl->horizontal * v;
 }
 
 template <typename Surface>
-typename Surface::Coordinate Vertical<Surface>::parallel(const typename Surface::Vector& v) const {
+typename Surface::Coordinate Vertical<Surface>::parallel(const Vector<T>& v) const {
   return impl->vertical * v;
 }
 
@@ -149,12 +149,12 @@ bool Vertical<Surface>::operator==(const Vertical& rhs) const noexcept {
 }
 
 template <typename Surface>
-const typename Surface::Vector& Vertical<Surface>::vertical() const {
+const Vector<typename Surface::Coordinate>& Vertical<Surface>::vertical() const {
   return impl->vertical;
 }
 
 template <typename Surface>
-const typename Surface::Vector& Vertical<Surface>::horizontal() const {
+const Vector<typename Surface::Coordinate>& Vertical<Surface>::horizontal() const {
   return impl->horizontal;
 }
 
@@ -164,7 +164,7 @@ ostream& operator<<(ostream& os, const Vertical<Surface>& self) {
 }
 
 template <typename Surface>
-Implementation<Vertical<Surface>>::Implementation(std::shared_ptr<const Surface> surface, const typename Surface::Vector& vertical) :
+Implementation<Vertical<Surface>>::Implementation(std::shared_ptr<const Surface> surface, const Vector<T>& vertical) :
   surface(surface),
   vertical(vertical),
   horizontal(-vertical.perpendicular()) {

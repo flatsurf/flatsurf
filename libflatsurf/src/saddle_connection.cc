@@ -56,7 +56,7 @@ bool SaddleConnection<Surface>::operator==(const SaddleConnection<Surface>& rhs)
   if (!*this) return !rhs;
   if (!rhs) return false;
 
-  bool ret = *impl->surface == *rhs.impl->surface && static_cast<typename Surface::Vector>(*this) == static_cast<typename Surface::Vector>(rhs) && impl->source == rhs.impl->source;
+  bool ret = *impl->surface == *rhs.impl->surface && static_cast<Vector<T>>(*this) == static_cast<Vector<T>>(rhs) && impl->source == rhs.impl->source;
 
   ASSERT((!ret || target() == rhs.target()), "saddle connection data is inconsistent, " << *this << " == " << rhs << " but their targets do not match since " << target() << " != " << rhs.target());
   return ret;
@@ -89,19 +89,19 @@ SaddleConnection<Surface> SaddleConnection<Surface>::operator-() const noexcept 
 template <typename Surface>
 SaddleConnection<Surface>::operator bool() const {
   if (impl == nullptr) return false;
-  ASSERT(static_cast<typename Surface::Vector>(impl->chain), "saddle connections must be nonzero");
+  ASSERT(static_cast<Vector<T>>(impl->chain), "saddle connections must be nonzero");
   return true;
 }
 
 template <typename Surface>
-SaddleConnection<Surface> SaddleConnection<Surface>::inSector(std::shared_ptr<const Surface> surface, HalfEdge source, const Vector& vector) {
+SaddleConnection<Surface> SaddleConnection<Surface>::inSector(std::shared_ptr<const Surface> surface, HalfEdge source, const Vector<T>& vector) {
   CHECK_ARGUMENT(surface->inSector(source, vector), "Cannot search for " << vector << " next to " << source << " in " << *surface << "; that direction is not in the search sector");
 
   // TODO: Bound should be length of vector
   auto reconstruction = SaddleConnections<Surface>(surface, Bound(INT_MAX, 0), source);
   auto it = reconstruction.begin();
   for (; *it != vector; it++) {
-    auto ccw = static_cast<Vector>(*it).ccw(vector);
+    auto ccw = static_cast<Vector<T>>(*it).ccw(vector);
     it.skipSector(-ccw);
   }
   return *it;
@@ -113,7 +113,7 @@ SaddleConnection<Surface> SaddleConnection<Surface>::fromEdge(std::shared_ptr<co
 }
 
 template <typename Surface>
-SaddleConnection<Surface> SaddleConnection<Surface>::inHalfPlane(std::shared_ptr<const Surface> surface, HalfEdge side, const Vertical<Surface>& vertical, const Vector& vector) {
+SaddleConnection<Surface> SaddleConnection<Surface>::inHalfPlane(std::shared_ptr<const Surface> surface, HalfEdge side, const Vertical<Surface>& vertical, const Vector<T>& vector) {
   CCW allowed = vertical.vertical().ccw(surface->fromEdge(side));
   HalfEdge sector;
   for (sector = side; vertical.vertical().ccw(surface->fromEdge(sector)) == allowed; sector = surface->previousAtVertex(sector))
@@ -129,7 +129,7 @@ SaddleConnection<Surface> SaddleConnection<Surface>::inHalfPlane(std::shared_ptr
 }
 
 template <typename Surface>
-SaddleConnection<Surface> SaddleConnection<Surface>::inPlane(std::shared_ptr<const Surface> surface, HalfEdge plane, const Vector& vector) {
+SaddleConnection<Surface> SaddleConnection<Surface>::inPlane(std::shared_ptr<const Surface> surface, HalfEdge plane, const Vector<T>& vector) {
   CHECK_ARGUMENT(vector.ccw(surface->fromEdge(plane)) != CCW::COLLINEAR || vector.orientation(surface->fromEdge(plane)) != ORIENTATION::OPPOSITE, "vector must not be opposite to the HalfEdge defining the plane");
 
   if (surface->fromEdge(plane).ccw(vector) == CCW::CLOCKWISE) {
@@ -145,7 +145,7 @@ SaddleConnection<Surface> SaddleConnection<Surface>::inPlane(std::shared_ptr<con
 }
 
 template <typename Surface>
-SaddleConnection<Surface> SaddleConnection<Surface>::clockwise(const SaddleConnection<Surface>& clockwiseFrom, const Vector& vector) {
+SaddleConnection<Surface> SaddleConnection<Surface>::clockwise(const SaddleConnection<Surface>& clockwiseFrom, const Vector<T>& vector) {
   auto& surface = clockwiseFrom.surface();
   HalfEdge sector = clockwiseFrom.source();
   if (clockwiseFrom.ccw(vector) != CCW::CLOCKWISE)
@@ -182,7 +182,7 @@ SaddleConnection<Surface> SaddleConnection<Surface>::inSector(std::shared_ptr<co
   auto reconstruction = SaddleConnections<Surface>(surface, Bound(INT_MAX, 0), source);
   auto it = reconstruction.begin();
   for (; direction.perpendicular(*it); it++) {
-    auto ccw = static_cast<Vector>(*it).ccw(direction.vertical());
+    auto ccw = static_cast<Vector<T>>(*it).ccw(direction.vertical());
     it.skipSector(-ccw);
   }
   return *it;
@@ -200,7 +200,7 @@ std::vector<HalfEdge> SaddleConnection<Surface>::crossings() const {
   auto it = reconstruction.begin();
   while (*it != *this) {
     auto ccw = it->ccw(*this);
-    ASSERT(ccw != CCW::COLLINEAR, "There cannot be another saddle connection in exactly the same direction as this one but in " << impl->surface << " at " << source() << " we found " << static_cast<Vector>(*it) << " which has the same direction as " << static_cast<Vector>(*this));
+    ASSERT(ccw != CCW::COLLINEAR, "There cannot be another saddle connection in exactly the same direction as this one but in " << impl->surface << " at " << source() << " we found " << static_cast<Vector<T>>(*it) << " which has the same direction as " << static_cast<Vector<T>>(*this));
     it.skipSector(-ccw);
     while (true) {
       auto crossing = it.incrementWithCrossings();
@@ -212,28 +212,28 @@ std::vector<HalfEdge> SaddleConnection<Surface>::crossings() const {
     }
   }
 
-  ASSERT(it->target() == target(), "We reconstructed the saddle connection in " << impl->surface << " starting from " << source() << " with vector " << static_cast<Vector>(*this) << " but it does not end at " << target() << " as claimed but at " << it->target());
+  ASSERT(it->target() == target(), "We reconstructed the saddle connection in " << impl->surface << " starting from " << source() << " with vector " << static_cast<Vector<T>>(*this) << " but it does not end at " << target() << " as claimed but at " << it->target());
 
   return ret;
 }
 
 template <typename Surface>
-ORIENTATION SaddleConnection<Surface>::orientation(const typename SaddleConnection::Vector& rhs) const {
-  return static_cast<typename Surface::Vector>(*this).orientation(rhs);
+ORIENTATION SaddleConnection<Surface>::orientation(const Vector<T>& rhs) const {
+  return static_cast<Vector<T>>(*this).orientation(rhs);
 }
 
 template <typename Surface>
-CCW SaddleConnection<Surface>::ccw(const typename SaddleConnection::Vector& rhs) const {
-  return static_cast<const typename Surface::Vector&>(*this).ccw(rhs);
+CCW SaddleConnection<Surface>::ccw(const Vector<T>& rhs) const {
+  return static_cast<const Vector<T>&>(*this).ccw(rhs);
 }
 
 template <typename Surface>
-SaddleConnection<Surface>::operator const typename Surface::Vector&() const {
-  return static_cast<const typename Surface::Vector&>(static_cast<const Chain<Surface>&>(*this));
+SaddleConnection<Surface>::operator const Vector<T>&() const {
+  return static_cast<const Vector<T>&>(static_cast<const Chain<Surface>&>(*this));
 }
 
 template <typename Surface>
-const typename Surface::Vector& SaddleConnection<Surface>::vector() const {
+const Vector<typename Surface::Coordinate>& SaddleConnection<Surface>::vector() const {
   return *this;
 }
 
@@ -248,18 +248,18 @@ SaddleConnection<Surface>::operator const Chain<Surface>&() const {
 
 template <typename Surface>
 bool SaddleConnection<Surface>::operator>(const Bound bound) const {
-  return static_cast<Vector>(*this) > bound;
+  return static_cast<Vector<T>>(*this) > bound;
 }
 
 template <typename Surface>
 bool SaddleConnection<Surface>::operator<(const Bound bound) const {
-  return static_cast<Vector>(*this) < bound;
+  return static_cast<Vector<T>>(*this) < bound;
 }
 
 template <typename Surface, typename _>
 ostream& operator<<(ostream& os, const SaddleConnection<Surface>& self) {
   if (!self) return os << "0";
-  return os << "SaddleConnection(" << static_cast<typename Surface::Vector>(self) << " from " << self.source() << ")";
+  return os << "SaddleConnection(" << static_cast<Vector<typename Surface::Coordinate>>(self) << " from " << self.source() << ")";
 }
 
 template <typename Surface>
@@ -275,14 +275,14 @@ Implementation<SaddleConnection<Surface>>::Implementation(std::shared_ptr<const 
 
 template <typename Surface>
 void Implementation<SaddleConnection<Surface>>::normalize() {
-  const auto normalize = [&](HalfEdge& sector, const typename Surface::Vector& vector) {
+  const auto normalize = [&](HalfEdge& sector, const Vector<T>& vector) {
     while (surface->fromEdge(sector).ccw(vector) == CCW::COUNTERCLOCKWISE)
       sector = surface->nextAtVertex(sector);
     while (surface->fromEdge(sector).ccw(vector) == CCW::CLOCKWISE)
       sector = surface->previousAtVertex(sector);
   };
 
-  const auto vector = static_cast<typename Surface::Vector>(chain);
+  const auto vector = static_cast<Vector<T>>(chain);
   normalize(this->source, vector);
   normalize(this->target, -vector);
 }

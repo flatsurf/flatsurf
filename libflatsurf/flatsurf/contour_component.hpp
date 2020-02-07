@@ -45,7 +45,7 @@ class ContourComponent : boost::equality_comparable<ContourComponent<Surface>> {
   using T = typename Surface::Coordinate;
   using Contour = std::list<ContourConnection<Surface>>;
 
-  IntervalExchangeTransformation<typename Surface::Collapsed> intervalExchangeTransformation() const;
+  IntervalExchangeTransformation<FlatTriangulationCollapsed<T>> intervalExchangeTransformation() const;
 
   // The saddle connections at the top of this component, from right to left.
   Contour top() const;

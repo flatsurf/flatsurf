@@ -24,7 +24,7 @@
 namespace flatsurf {
 
 template <typename Surface>
-FlowComponentState<Surface>::FlowComponentState(const ContourComponent<Surface>& contour, std::shared_ptr<const IntervalExchangeTransformation<typename Surface::Collapsed>> iet, const intervalxt::Component& component) :
+FlowComponentState<Surface>::FlowComponentState(const ContourComponent<Surface>& contour, std::shared_ptr<const IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>> iet, const intervalxt::Component& component) :
   contourComponent(contour),
   iet(iet),
   dynamicalComponent(component) {

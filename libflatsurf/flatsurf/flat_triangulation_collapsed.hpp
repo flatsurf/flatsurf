@@ -37,16 +37,14 @@ class FlatTriangulationCollapsed : public FlatTriangulationCombinatorial,
                                    boost::equality_comparable<FlatTriangulationCollapsed<T>> {
   static_assert(std::is_same_v<T, std::decay_t<T>>, "type must not have modifiers such as const");
 
+  using SaddleConnection = ::flatsurf::SaddleConnection<FlatTriangulation<T>>;
+
   FlatTriangulationCollapsed(std::unique_ptr<FlatTriangulation<T>>, const flatsurf::Vector<T> &vertical);
 
  public:
   using Coordinate = T;
-  // TODO: Remove everything but Coordinate from public interface
-  using Vector = flatsurf::Vector<T>;
-  using SaddleConnection = ::flatsurf::SaddleConnection<FlatTriangulation<T>>;
-  using Collapsed = FlatTriangulationCollapsed;
 
-  static std::shared_ptr<FlatTriangulationCollapsed<T>> make(std::unique_ptr<FlatTriangulation<T>>, const Vector &vertical);
+  static std::shared_ptr<FlatTriangulationCollapsed<T>> make(std::unique_ptr<FlatTriangulation<T>>, const Vector<T> &vertical);
 
   Vertical<FlatTriangulationCollapsed<T>> vertical() const;
 
@@ -68,7 +66,7 @@ class FlatTriangulationCollapsed : public FlatTriangulationCombinatorial,
   // the vertical part of the vectors are only consistent inside their faces.
   const SaddleConnection &fromEdge(HalfEdge) const;
 
-  bool inSector(HalfEdge, const Vector &) const;
+  bool inSector(HalfEdge, const Vector<T> &) const;
   bool inSector(HalfEdge, const Vertical<FlatTriangulationCollapsed<T>> &) const;
 
   // Return the saddle connections to go from this half edge's source to its negative's target.

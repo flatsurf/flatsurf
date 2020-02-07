@@ -30,14 +30,14 @@
 namespace flatsurf {
 
 template <typename Surface>
-ContourDecompositionState<Surface>::ContourDecompositionState(std::unique_ptr<Surface> surface, const Vector<typename Surface::Coordinate>& vert) :
+ContourDecompositionState<Surface>::ContourDecompositionState(std::unique_ptr<Surface> surface, const Vector<T>& vert) :
   surface([&]() {
-    if constexpr (std::is_same_v<Surface, FlatTriangulationCollapsed<typename Surface::Coordinate>>) {
+    if constexpr (std::is_same_v<Surface, FlatTriangulationCollapsed<T>>) {
       CHECK_ARGUMENT(surface->vertical().vertitcal() == vert, "can only decompose with respect to the existing vertical " << surface->vertical().vertical() << " of this surface");
       return surface;
     } else {
-      auto collapsed = Surface::Collapsed::make(std::move(surface), vert);
-      IntervalExchangeTransformation<typename Surface::Collapsed>::makeUniqueLargeEdges(*collapsed, vert);
+      auto collapsed = FlatTriangulationCollapsed<T>::make(std::move(surface), vert);
+      IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>::makeUniqueLargeEdges(*collapsed, vert);
       return collapsed;
     }
   }()),

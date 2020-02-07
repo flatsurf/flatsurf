@@ -34,14 +34,15 @@ namespace flatsurf {
 
 template <typename Surface>
 class FlowComponent {
+  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
+
+  using T = typename Surface::Coordinate;
+
   // Flow components cannot be created directly (other than copying & moving them.)
   // They are created during a FlowDecomposition.
   FlowComponent();
 
-  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
-
  public:
-  using T = typename Surface::Vector::Coordinate;
   // TODO: Should be circular list
   using Perimeter = std::list<FlowConnection<Surface>>;
 
@@ -64,11 +65,10 @@ class FlowComponent {
 
   Surface triangulation() const;
 
-  const IntervalExchangeTransformation<typename Surface::Collapsed>& intervalExchangeTransformation() const;
+  const IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>& intervalExchangeTransformation() const;
 
-  typename Surface::Coordinate width() const;
-
-  typename Surface::Coordinate area() const;
+  T width() const;
+  T area() const;
 
   Vertical<Surface> vertical() const;
 

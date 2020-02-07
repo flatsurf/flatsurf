@@ -39,14 +39,13 @@ class CollapsedHalfEdge;
 
 template <typename T>
 class Implementation<FlatTriangulationCollapsed<T>> {
-  using Vector = typename FlatTriangulationCollapsed<T>::Vector;
-  using SaddleConnection = typename FlatTriangulationCollapsed<T>::SaddleConnection;
+  using SaddleConnection = flatsurf::SaddleConnection<FlatTriangulation<T>>;
+  using CollapsedHalfEdge = flatsurf::CollapsedHalfEdge<T>;
 
- public:
-  using CollapsedHalfEdge = ::flatsurf::CollapsedHalfEdge<T>;
   friend CollapsedHalfEdge;
 
-  Implementation(const FlatTriangulationCombinatorial&, std::unique_ptr<FlatTriangulation<T>>, const Vector&);
+ public:
+  Implementation(const FlatTriangulationCombinatorial&, std::unique_ptr<FlatTriangulation<T>>, const Vector<T>&);
 
   // TODO: Move to its own file.
   // TODO: This is the same as TrackingStorage::Value; merge them
@@ -81,7 +80,7 @@ class Implementation<FlatTriangulationCollapsed<T>> {
 
   std::shared_ptr<const FlatTriangulation<T>> original;
 
-  Vector vertical;
+  Vector<T> vertical;
 
   // Tracks collapsed vertical connections.
   HalfEdgeMap<CollapsedHalfEdge> collapsedHalfEdges;

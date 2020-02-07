@@ -41,7 +41,7 @@ using std::ostream;
 using std::vector;
 
 template <typename Surface>
-ContourDecomposition<Surface>::ContourDecomposition(std::unique_ptr<Surface> surface, const Vector<typename Surface::Coordinate>& vertical) :
+ContourDecomposition<Surface>::ContourDecomposition(std::unique_ptr<Surface> surface, const Vector<T>& vertical) :
   impl(spimpl::make_unique_impl<Implementation>(std::move(surface), vertical)) {}
 
 template <typename Surface>
@@ -53,12 +53,12 @@ std::vector<ContourComponent<Surface>> ContourDecomposition<Surface>::components
 }
 
 template <typename Surface>
-std::shared_ptr<const typename Surface::Collapsed> ContourDecomposition<Surface>::collapsed() const {
+std::shared_ptr<const FlatTriangulationCollapsed<typename Surface::Coordinate>> ContourDecomposition<Surface>::collapsed() const {
   return impl->state->surface;
 }
 
 template <typename Surface>
-Implementation<ContourDecomposition<Surface>>::Implementation(std::unique_ptr<Surface> surface, const Vector<typename Surface::Coordinate>& vertical) :
+Implementation<ContourDecomposition<Surface>>::Implementation(std::unique_ptr<Surface> surface, const Vector<T>& vertical) :
   state(new DecompositionState(std::move(surface), vertical)) {}
 
 template <typename Surface>

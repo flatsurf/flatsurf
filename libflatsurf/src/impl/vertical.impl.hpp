@@ -30,15 +30,16 @@ namespace flatsurf {
 template <typename Surface>
 class Implementation<Vertical<Surface>> {
   using Vertical = ::flatsurf::Vertical<Surface>;
+  using T = typename Surface::Coordinate;
 
  public:
-  Implementation(std::shared_ptr<const Surface>, const typename Surface::Vector&);
+  Implementation(std::shared_ptr<const Surface>, const Vector<T>&);
 
   static bool visit(const Vertical& self, HalfEdge start, std::set<HalfEdge>& component, std::function<bool(HalfEdge)> visitor);
 
   std::shared_ptr<const Surface> surface;
-  typename Surface::Vector vertical;
-  typename Surface::Vector horizontal;
+  Vector<T> vertical;
+  Vector<T> horizontal;
 };
 
 }  // namespace flatsurf

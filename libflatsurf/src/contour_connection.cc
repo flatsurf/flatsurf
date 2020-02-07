@@ -53,14 +53,14 @@ bool ContourConnection<Surface>::bottom() const {
 }
 
 template <typename Surface>
-typename Surface::SaddleConnection ContourConnection<Surface>::connection() const {
+SaddleConnection<FlatTriangulation<typename Surface::Coordinate>> ContourConnection<Surface>::connection() const {
   if (bottom())
     return impl->state->surface->fromEdge(impl->e);
   return -(-*this).connection();
 }
 
 template <typename Surface>
-std::list<typename Surface::SaddleConnection> ContourConnection<Surface>::left() const {
+std::list<SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>> ContourConnection<Surface>::left() const {
   if (top())
     return Implementation::cross(*this, nextInPerimeter()).first;
   else
@@ -68,7 +68,7 @@ std::list<typename Surface::SaddleConnection> ContourConnection<Surface>::left()
 }
 
 template <typename Surface>
-std::list<typename Surface::SaddleConnection> ContourConnection<Surface>::right() const {
+std::list<SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>> ContourConnection<Surface>::right() const {
   if (top())
     return Implementation::cross(previousInPerimeter(), *this).second;
   else
@@ -126,12 +126,14 @@ Implementation<ContourConnection<Surface>>::Implementation(std::shared_ptr<Conto
   contour(contour) {}
 
 template <typename Surface>
-std::list<typename Surface::SaddleConnection> Implementation<ContourConnection<Surface>>::turn(const ContourConnection<Surface>& from, const ContourConnection<Surface>& to) {
+std::list<SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>> Implementation<ContourConnection<Surface>>::turn(const ContourConnection<Surface>& from, const ContourConnection<Surface>& to) {
+  using SaddleConnection = flatsurf::SaddleConnection<FlatTriangulation<T>>;
+
   ASSERT(to == from.nextInPerimeter(), "can only cross between adjacent connections but " << to << " does not follow " << from);
 
   auto& surface = *from.impl->state->surface;
 
-  std::list<typename Surface::SaddleConnection> turn;
+  std::list<SaddleConnection> turn;
 
   if (from.bottom() && to.bottom()) {
     // A typical pair of connections on the bottom of the contour.
@@ -152,7 +154,7 @@ std::list<typename Surface::SaddleConnection> Implementation<ContourConnection<S
     turn.splice(end(turn), surface.turn(surface.previousAtVertex(from.impl->e), to.impl->e) | rx::to_list());
   }
 
-  std::list<typename Surface::SaddleConnection> simplified;
+  std::list<SaddleConnection> simplified;
 
   for (auto& connection : turn) {
     if (!simplified.empty() && connection == -*rbegin(simplified))
@@ -161,19 +163,19 @@ std::list<typename Surface::SaddleConnection> Implementation<ContourConnection<S
       simplified.push_back(connection);
   }
 
-  ASSERT(std::unordered_set<typename Surface::SaddleConnection>(begin(simplified), end(simplified)).size() == simplified.size(), "connections cannot appear more than once when moving from one contour connection to the next");
+  ASSERT(std::unordered_set<SaddleConnection>(begin(simplified), end(simplified)).size() == simplified.size(), "connections cannot appear more than once when moving from one contour connection to the next");
 
   return simplified;
 }
 
 template <typename Surface>
-std::pair<std::list<typename Surface::SaddleConnection>, std::list<typename Surface::SaddleConnection>> Implementation<ContourConnection<Surface>>::cross(const ContourConnection<Surface>& from, const ContourConnection<Surface>& to) {
+std::pair<std::list<SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>>, std::list<SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>>> Implementation<ContourConnection<Surface>>::cross(const ContourConnection<Surface>& from, const ContourConnection<Surface>& to) {
   auto connections = turn(from, to);
 
   const auto& surface = *from.impl->state->surface;
   const auto vertical = surface.vertical();
 
-  std::list<typename Surface::SaddleConnection> atFrom, atTo;
+  std::list<SaddleConnection<FlatTriangulation<T>>> atFrom, atTo;
 
   if (from.bottom() && to.bottom()) {
     // A typical pair of connections on the bottom of the contour.

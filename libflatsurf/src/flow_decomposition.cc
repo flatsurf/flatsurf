@@ -74,10 +74,10 @@ std::vector<FlowComponent<Surface>> FlowDecomposition<Surface>::components() con
 }
 
 template <typename Surface>
-Implementation<FlowDecomposition<Surface>>::Implementation(std::unique_ptr<Surface> surface, const Vector<typename Surface::Coordinate>& vertical) :
+Implementation<FlowDecomposition<Surface>>::Implementation(std::unique_ptr<Surface> surface, const Vector<T>& vertical) :
   state(std::make_shared<FlowDecompositionState<Surface>>(std::move(surface), vertical)) {
   for (auto& component : state->components)
-    Implementation<IntervalExchangeTransformation<typename Surface::Collapsed>>::registerDecomposition(*component.iet, state);
+    Implementation<IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>>::registerDecomposition(*component.iet, state);
 }
 
 template <typename Surface>

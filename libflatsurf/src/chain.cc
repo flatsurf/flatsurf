@@ -39,7 +39,7 @@ Chain<Surface>::Chain(std::shared_ptr<const Surface> surface) :
   impl(spimpl::make_impl<Implementation>(surface)) {}
 
 template <typename Surface>
-Chain<Surface>::operator const typename Surface::Vector&() const {
+Chain<Surface>::operator const Vector<T>&() const {
   if (!impl->vector) {
     ASSERT(impl->pendingVectorMoves.size() == 0, "pendingVectorMoves was not properly cleared when vector was reset");
     impl->vector.emplace();
@@ -57,7 +57,7 @@ Chain<Surface>::operator const typename Surface::Vector&() const {
     if (auto chain = std::get_if<Chain>(&move)) {
       // TODO: We should only do this if converting the chain is cheapear than
       // converting *this after adding the chain coefficients.
-      *impl->vector += static_cast<const typename Surface::Vector&>(*chain);
+      *impl->vector += static_cast<const Vector<T>&>(*chain);
     } else if (auto halfEdge = std::get_if<HalfEdge>(&move)) {
       *impl->vector += impl->surface->fromEdge(*halfEdge);
     } else {
@@ -78,7 +78,7 @@ template <typename Surface>
 Chain<Surface>::operator const Vector<exactreal::Arb>&() const {
   if (!impl->approximateVector) {
     ASSERT(impl->pendingApproximateVectorMoves.size() == 0, "pendingApproximateVectorMoves was not properly cleared when vector was reset");
-    (void)static_cast<const typename Surface::Vector&>(*this);
+    (void)static_cast<const Vector<T>&>(*this);
     ASSERT(impl->approximateVector, "exact vector creation did not set approximate vector");
   }
 
@@ -141,7 +141,7 @@ Chain<Surface>& Chain<Surface>::operator+=(HalfEdge rhs) {
 template <typename Surface>
 Chain<Surface>& Chain<Surface>::operator*=(const mpz_class& rhs) {
   if (impl->vector) {
-    (void)static_cast<const typename Surface::Vector&>(*this);
+    (void)static_cast<const Vector<T>&>(*this);
     ASSERT(impl->pendingVectorMoves.size() == 0, "producing the current vector did not clear pending moves");
     *impl->vector *= rhs;
   }
@@ -177,13 +177,13 @@ bool Chain<Surface>::operator==(const Chain<Surface>& rhs) const {
 template <typename Surface>
 bool Chain<Surface>::operator<(const Bound rhs) const {
   // TODO: Check approximate first.
-  return static_cast<typename Surface::Vector>(*this) < rhs;
+  return static_cast<const Vector<T>&>(*this) < rhs;
 }
 
 template <typename Surface>
 bool Chain<Surface>::operator>(const Bound rhs) const {
   // TODO: Check approximate first.
-  return static_cast<typename Surface::Vector>(*this) > rhs;
+  return static_cast<const Vector<T>&>(*this) > rhs;
 }
 
 template <typename Surface>
@@ -191,7 +191,7 @@ Chain<Surface> Chain<Surface>::operator-() const {
   Chain<Surface> neg(impl->surface);
 
   if (impl->vector) {
-    (void)static_cast<const typename Surface::Vector&>(*this);
+    (void)static_cast<const Vector<T>&>(*this);
     neg.impl->vector = -*impl->vector;
   }
 
@@ -228,7 +228,7 @@ Implementation<Chain<Surface>>::Implementation(std::shared_ptr<const Surface> su
   surface(surface),
   coefficients(
       surface.get(), [&](const Edge&) { return 0; }, updateAfterFlip),
-  vector(typename Surface::Vector()),
+  vector(Vector<T>()),
   approximateVector(Vector<exactreal::Arb>()) {}
 
 template <typename Surface>

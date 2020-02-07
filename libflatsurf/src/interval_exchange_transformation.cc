@@ -17,6 +17,7 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <intervalxt/forward.hpp>
 #include <memory>
 #include <ostream>
 #include <vector>
@@ -48,12 +49,12 @@ using std::vector;
 namespace flatsurf {
 
 template <typename Surface>
-IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(std::shared_ptr<const Surface> surface, const Vector& vertical, const vector<HalfEdge>& top, const vector<HalfEdge>& bottom) :
+IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(std::shared_ptr<const Surface> surface, const Vector<T>& vertical, const vector<HalfEdge>& top, const vector<HalfEdge>& bottom) :
   impl(spimpl::make_unique_impl<Implementation>(surface, vertical, top, bottom)) {
 }
 
 template <typename Surface>
-IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(std::shared_ptr<const Surface> surface, const Vector& vertical, HalfEdge large) :
+IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(std::shared_ptr<const Surface> surface, const Vector<T>& vertical, HalfEdge large) :
   impl([&]() {
     CHECK_ARGUMENT(Vertical(surface, vertical).large(large), "can only construct IntervalExchangeTransformation from a large half edge");
 
@@ -72,7 +73,7 @@ IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(std::sha
 }
 
 template <typename Surface>
-void IntervalExchangeTransformation<Surface>::makeUniqueLargeEdges(Surface& surface, const typename Surface::Vector& vertical_) {
+void IntervalExchangeTransformation<Surface>::makeUniqueLargeEdges(Surface& surface, const Vector<T>& vertical_) {
   const typename EdgeSet::FlipHandler nopFlip = [](EdgeSet& self, HalfEdge e) {
     assert(!self.contains(e) && "must not flip source edge");
   };
@@ -130,13 +131,13 @@ void IntervalExchangeTransformation<Surface>::makeUniqueLargeEdges(Surface& surf
 }
 
 template <typename Surface>
-const typename IntervalExchangeTransformation<Surface>::IET& IntervalExchangeTransformation<Surface>::intervalExchangeTransformation() const noexcept { return impl->iet; }
+const intervalxt::IntervalExchangeTransformation& IntervalExchangeTransformation<Surface>::intervalExchangeTransformation() const noexcept { return impl->iet; }
 
 template <typename Surface>
-typename IntervalExchangeTransformation<Surface>::IET& IntervalExchangeTransformation<Surface>::intervalExchangeTransformation() noexcept { return impl->iet; }
+typename intervalxt::IntervalExchangeTransformation& IntervalExchangeTransformation<Surface>::intervalExchangeTransformation() noexcept { return impl->iet; }
 
 template <typename Surface>
-std::set<HalfEdge> IntervalExchangeTransformation<Surface>::makeUniqueLargeEdge(Surface& surface, const Vector& vertical_, HalfEdge& unique_) {
+std::set<HalfEdge> IntervalExchangeTransformation<Surface>::makeUniqueLargeEdge(Surface& surface, const Vector<T>& vertical_, HalfEdge& unique_) {
   TrackingHalfEdge unique(&surface, unique_);
 
   Vertical<Surface> vertical(surface.shared_from_this(), vertical_);
@@ -176,34 +177,36 @@ Edge IntervalExchangeTransformation<Surface>::edge(const Label& label) const {
 }
 
 template <typename Surface>
-typename Surface::SaddleConnection IntervalExchangeTransformation<Surface>::connection(const intervalxt::Label& label) const {
+SaddleConnection<FlatTriangulation<typename Surface::Coordinate>> IntervalExchangeTransformation<Surface>::connection(const intervalxt::Label& label) const {
   return impl->lengths->lengths.get(impl->lengths->fromLabel(label));
 }
 
 template <typename Surface>
-Implementation<IntervalExchangeTransformation<Surface>>::Implementation(std::shared_ptr<const Surface> surface, const Vector& vertical, const vector<HalfEdge>& top, const vector<HalfEdge>& bottom) :
+Implementation<IntervalExchangeTransformation<Surface>>::Implementation(std::shared_ptr<const Surface> surface, const Vector<T>& vertical, const vector<HalfEdge>& top, const vector<HalfEdge>& bottom) :
   surface(surface) {
+  using SaddleConnection = flatsurf::SaddleConnection<FlatTriangulation<T>>;
+
   const auto uncollapsed = [&]() {
-    if constexpr (std::is_same_v<Surface, FlatTriangulation<typename Surface::Coordinate>>)
+    if constexpr (std::is_same_v<Surface, FlatTriangulation<T>>)
       return surface;
     else
       return surface->uncollapsed();
   }();
 
-  const auto erasedLengths = std::make_shared<intervalxt::Lengths>(Lengths<Surface>(std::make_shared<Vertical<FlatTriangulation<typename Surface::Coordinate>>>(uncollapsed, vertical), EdgeMap<typename Surface::SaddleConnection>(surface.get(), [&](const Edge& e) {
+  const auto erasedLengths = std::make_shared<intervalxt::Lengths>(Lengths<Surface>(std::make_shared<Vertical<FlatTriangulation<T>>>(uncollapsed, vertical), EdgeMap<SaddleConnection>(surface.get(), [&](const Edge& e) {
     if (std::find(begin(top), end(top), e.positive()) != end(top)) {
-      if constexpr (std::is_same_v<Surface, FlatTriangulation<typename Surface::Coordinate>>)
-        return Surface::SaddleConnection::fromEdge(surface, e.positive());
+      if constexpr (std::is_same_v<Surface, FlatTriangulation<T>>)
+        return SaddleConnection::fromEdge(surface, e.positive());
       else
         return surface->fromEdge(e.positive());
     } else if (std::find(begin(top), end(top), e.negative()) != end(top)) {
-      if constexpr (std::is_same_v<Surface, FlatTriangulation<typename Surface::Coordinate>>)
-        return Surface::SaddleConnection::fromEdge(surface, e.negative());
+      if constexpr (std::is_same_v<Surface, FlatTriangulation<T>>)
+        return SaddleConnection::fromEdge(surface, e.negative());
       else
         return surface->fromEdge(e.negative());
     }
 
-    return typename Surface::SaddleConnection();
+    return SaddleConnection();
   })));
 
   iet = intervalxt::IntervalExchangeTransformation(
@@ -228,7 +231,7 @@ Implementation<IntervalExchangeTransformation<Surface>>::Implementation(std::sha
 }
 
 template <typename Surface>
-void Implementation<IntervalExchangeTransformation<Surface>>::registerDecomposition(const IntervalExchangeTransformation<Surface>& iet, std::shared_ptr<FlowDecompositionState<FlatTriangulation<typename Surface::Coordinate>>> state) {
+void Implementation<IntervalExchangeTransformation<Surface>>::registerDecomposition(const IntervalExchangeTransformation<Surface>& iet, std::shared_ptr<FlowDecompositionState<FlatTriangulation<T>>> state) {
   iet.impl->lengths->registerDecomposition(state);
 }
 

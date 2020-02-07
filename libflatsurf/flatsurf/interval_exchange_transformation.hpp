@@ -30,37 +30,35 @@
 
 namespace flatsurf {
 
-template <class Surface>
+template <typename Surface>
 class IntervalExchangeTransformation {
+  using T = typename Surface::Coordinate;
   using Label = intervalxt::Label;
-  using IET = intervalxt::IntervalExchangeTransformation;
-  using Vector = typename Surface::Vector;
-  using SaddleConnection = typename Surface::SaddleConnection;
 
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
  public:
-  IntervalExchangeTransformation(std::shared_ptr<const Surface>, const Vector& vertical, const std::vector<HalfEdge>& top, const std::vector<HalfEdge>& bottom);
+  IntervalExchangeTransformation(std::shared_ptr<const Surface>, const Vector<T>& vertical, const std::vector<HalfEdge>& top, const std::vector<HalfEdge>& bottom);
 
-  IntervalExchangeTransformation(std::shared_ptr<const Surface>, const Vector& vertical, const HalfEdge);
+  IntervalExchangeTransformation(std::shared_ptr<const Surface>, const Vector<T>& vertical, const HalfEdge);
 
   // Modify the surface such that each component has a unique large edge
   // and the components are such that their contours do not begin with the same
   // half edge and not end with the same half edge (unless their contours are
   // trivial.)
-  static void makeUniqueLargeEdges(Surface&, const Vector&);
+  static void makeUniqueLargeEdges(Surface&, const Vector<T>&);
 
-  static std::set<HalfEdge> makeUniqueLargeEdge(Surface&, const Vector&, HalfEdge&);
+  static std::set<HalfEdge> makeUniqueLargeEdge(Surface&, const Vector<T>&, HalfEdge&);
 
-  IET& intervalExchangeTransformation() noexcept;
-  const IET& intervalExchangeTransformation() const noexcept;
+  intervalxt::IntervalExchangeTransformation& intervalExchangeTransformation() noexcept;
+  const intervalxt::IntervalExchangeTransformation& intervalExchangeTransformation() const noexcept;
 
   // The Edge in the (collapsed) surface from which this label was created originally.
   Edge edge(const Label&) const;
 
   // TODO: Does this actually make sense here? We cannot in general determine
   // the connection without knowing the  FlowDecomposition it seems.
-  SaddleConnection connection(const Label&) const;
+  SaddleConnection<FlatTriangulation<T>> connection(const Label&) const;
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const IntervalExchangeTransformation<S>&);
@@ -71,6 +69,12 @@ class IntervalExchangeTransformation {
 
   friend Implementation;
 };
+
+template <typename Surface, typename... Args>
+IntervalExchangeTransformation(std::shared_ptr<const Surface>, Args&&...)->IntervalExchangeTransformation<Surface>;
+
+template <typename Surface, typename... Args>
+IntervalExchangeTransformation(std::shared_ptr<Surface>, Args&&...)->IntervalExchangeTransformation<Surface>;
 
 }  // namespace flatsurf
 

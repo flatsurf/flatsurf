@@ -210,10 +210,10 @@ Vector<T>::Vector(const T& x, const T& y) :
   impl(spimpl::make_impl<Implementation>(x, y)) {}
 
 template <typename T>
-typename Vector<T>::Coordinate Vector<T>::x() const noexcept { return impl->x; }
+T Vector<T>::x() const noexcept { return impl->x; }
 
 template <typename T>
-typename Vector<T>::Coordinate Vector<T>::y() const noexcept { return impl->y; }
+T Vector<T>::y() const noexcept { return impl->y; }
 
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const Vector<T>& self) {

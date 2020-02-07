@@ -39,18 +39,17 @@ class ContourConnection : boost::equality_comparable<ContourComponent<Surface>> 
 
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
- public:
   using T = typename Surface::Coordinate;
-  using SaddleConnection = typename Surface::SaddleConnection;
 
-  SaddleConnection connection() const;
+ public:
+  SaddleConnection<FlatTriangulation<T>> connection() const;
 
   // The vertical connections on the left of this non-vertical connection going
   // from the left end of `connection` towards the interior.
-  std::list<SaddleConnection> left() const;
+  std::list<SaddleConnection<FlatTriangulation<T>>> left() const;
   // The vertical connections on the right of this non-vertical connection going
   // from the right end of `connection` towards the interior.
-  std::list<SaddleConnection> right() const;
+  std::list<SaddleConnection<FlatTriangulation<T>>> right() const;
 
   ContourConnection nextInPerimeter() const;
   ContourConnection previousInPerimeter() const;

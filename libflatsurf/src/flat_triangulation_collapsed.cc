@@ -63,13 +63,13 @@ using std::ostream;
 using std::string;
 
 template <typename T>
-FlatTriangulationCollapsed<T>::FlatTriangulationCollapsed(std::unique_ptr<FlatTriangulation<T>> surface, const Vector& vertical) :
+FlatTriangulationCollapsed<T>::FlatTriangulationCollapsed(std::unique_ptr<FlatTriangulation<T>> surface, const Vector<T>& vertical) :
   FlatTriangulationCombinatorial(std::move(*surface->clone())),
   impl(spimpl::make_unique_impl<Implementation>(*this, std::move(surface), vertical)) {
 }
 
 template <typename T>
-std::shared_ptr<FlatTriangulationCollapsed<T>> FlatTriangulationCollapsed<T>::make(std::unique_ptr<FlatTriangulation<T>> surface, const Vector& vertical) {
+std::shared_ptr<FlatTriangulationCollapsed<T>> FlatTriangulationCollapsed<T>::make(std::unique_ptr<FlatTriangulation<T>> surface, const Vector<T>& vertical) {
   auto ret = std::shared_ptr<FlatTriangulationCollapsed<T>>(new FlatTriangulationCollapsed<T>(std::move(surface), vertical));
 
   while ([&]() {
@@ -92,7 +92,7 @@ Vertical<FlatTriangulationCollapsed<T>> FlatTriangulationCollapsed<T>::vertical(
 }
 
 template <typename T>
-bool FlatTriangulationCollapsed<T>::inSector(HalfEdge sector, const Vector& vector) const {
+bool FlatTriangulationCollapsed<T>::inSector(HalfEdge sector, const Vector<T>& vector) const {
   return fromEdge(sector).ccw(vector) != CCW::CLOCKWISE && (-fromEdge(previousInFace(sector))).ccw(vector) == CCW::CLOCKWISE;
 }
 
@@ -130,7 +130,7 @@ void FlatTriangulationCollapsed<T>::flip(HalfEdge e) {
     static Amortized cost;
     // TODO: It would maybe be better to estimate the cost by looking at the shortest vector in direction of e.
     const auto connection = fromEdge(e);
-    if (!cost.pay(relativeLength(static_cast<const Vector&>(connection), impl->original->shortest(connection)) + 1)) return true;
+    if (!cost.pay(relativeLength(static_cast<const Vector<T>&>(connection), impl->original->shortest(connection)) + 1)) return true;
     return connection == SaddleConnection::inSector(impl->original, connection.source(), connection);
   }()),
       "Edges of Triangulation inconsistent after flip. The half edge " << e << " in the collapsed surface " << *this << " claims to correspond to the " << fromEdge(e) << ", however, there is no such saddle connection in the original surface " << *impl->original << ".");
@@ -151,7 +151,7 @@ std::pair<HalfEdge, HalfEdge> FlatTriangulationCollapsed<T>::collapse(HalfEdge e
 
     for (auto halfEdge : {ret.first, ret.second}) {
       const auto connection = fromEdge(halfEdge);
-      if (!cost.pay(relativeLength(static_cast<const Vector&>(connection), impl->original->shortest(connection)) + 1)) return true;
+      if (!cost.pay(relativeLength(static_cast<const Vector<T>&>(connection), impl->original->shortest(connection)) + 1)) return true;
       const auto reconstruction = SaddleConnection::inSector(impl->original, connection.source(), connection);
       ASSERT(connection == reconstruction, "Edges of Triangulation inconsistent after collapse. The half edge " << e << " in the collapsed surface " << *this << " claims to correspond to the " << connection << ", however, there is no such saddle connection in the original surface " << *impl->original << " instead it should probably be " << reconstruction);
     }
@@ -211,7 +211,7 @@ std::shared_ptr<const FlatTriangulationCollapsed<T>> FlatTriangulationCollapsed<
 }
 
 template <typename T>
-Implementation<FlatTriangulationCollapsed<T>>::Implementation(const FlatTriangulationCombinatorial& combinatorial, std::unique_ptr<FlatTriangulation<T>> surface, const Vector& vertical) :
+Implementation<FlatTriangulationCollapsed<T>>::Implementation(const FlatTriangulationCombinatorial& combinatorial, std::unique_ptr<FlatTriangulation<T>> surface, const Vector<T>& vertical) :
   original(std::move(surface)),
   vertical(vertical),
   collapsedHalfEdges(
@@ -229,7 +229,7 @@ Implementation<FlatTriangulationCollapsed<T>>::Implementation(const FlatTriangul
 template <typename T>
 template <typename M>
 void Implementation<FlatTriangulationCollapsed<T>>::handleFlip(M& map, HalfEdge flip, const std::function<void(const FlatTriangulationCollapsed<T>&, HalfEdge, HalfEdge, HalfEdge, HalfEdge)>& handler) {
-  const auto& surface = static_cast<const FlatTriangulationCollapsed<typename Vector::Coordinate>&>(map.parent());
+  const auto& surface = static_cast<const FlatTriangulationCollapsed<T>&>(map.parent());
 
   // The flip turned (a b flip)(c d -flip) into (a -flip d)(c flip b)
   const HalfEdge a = surface.previousInFace(-flip);
@@ -243,7 +243,7 @@ void Implementation<FlatTriangulationCollapsed<T>>::handleFlip(M& map, HalfEdge 
 template <typename T>
 template <typename M>
 void Implementation<FlatTriangulationCollapsed<T>>::handleCollapse(M& map, Edge collapse_, const std::function<void(const FlatTriangulationCollapsed<T>&, HalfEdge)>& handler) {
-  const auto& surface = static_cast<const FlatTriangulationCollapsed<typename Vector::Coordinate>&>(map.parent());
+  const auto& surface = static_cast<const FlatTriangulationCollapsed<T>&>(map.parent());
   HalfEdge collapse = collapse_.positive();
 
   assert(surface.vertical().parallel(collapse) && "cannot collapse non-vertical edge");
@@ -265,7 +265,7 @@ T Implementation<FlatTriangulationCollapsed<T>>::area(const FlatTriangulationCol
       area += Implementation<FlatTriangulation<T>>::area(self.fromEdge(e), self.fromEdge(self.nextInFace(e)), self.fromEdge(self.previousInFace(e)));
     }
     for (auto connection : self.cross(e)) {
-      area += 3 * Implementation<FlatTriangulation<T>>::area(connection, static_cast<Vector>(self.fromEdge(e)) - connection, -self.fromEdge(e));
+      area += 3 * Implementation<FlatTriangulation<T>>::area(connection, static_cast<Vector<T>>(self.fromEdge(e)) - connection, -self.fromEdge(e));
     }
   }
 

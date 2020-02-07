@@ -35,16 +35,18 @@ namespace flatsurf {
 
 template <typename Surface>
 class Implementation<FlowConnection<Surface>> {
+  using T = typename Surface::Coordinate;
+
  public:
-  Implementation(std::shared_ptr<FlowDecompositionState<Surface>>, const FlowComponent<Surface>&, const typename Surface::SaddleConnection&);
+  Implementation(std::shared_ptr<FlowDecompositionState<Surface>>, const FlowComponent<Surface>&, const SaddleConnection<FlatTriangulation<T>>&);
 
   static FlowConnection<Surface> make(std::shared_ptr<FlowDecompositionState<Surface>>, const FlowComponent<Surface>&, const intervalxt::Connection&);
   static FlowConnection<Surface> make(std::shared_ptr<FlowDecompositionState<Surface>>, const FlowComponent<Surface>&, const intervalxt::HalfEdge&);
-  static FlowConnection<Surface> make(std::shared_ptr<FlowDecompositionState<Surface>>, const FlowComponent<Surface>&, const typename std::variant<intervalxt::Connection, intervalxt::HalfEdge>& connection);
+  static FlowConnection<Surface> make(std::shared_ptr<FlowDecompositionState<Surface>>, const FlowComponent<Surface>&, const std::variant<intervalxt::Connection, intervalxt::HalfEdge>& connection);
 
   std::shared_ptr<FlowDecompositionState<Surface>> state;
   FlowComponent<Surface> component;
-  typename Surface::SaddleConnection saddleConnection;
+  SaddleConnection<FlatTriangulation<T>> saddleConnection;
 };
 
 }  // namespace flatsurf

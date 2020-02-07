@@ -30,16 +30,15 @@ namespace flatsurf {
 
 template <typename Surface>
 class ContourDecompositionState : public std::enable_shared_from_this<ContourDecompositionState<Surface>> {
+  using T = typename Surface::Coordinate;
   using ComponentState = ContourComponentState<Surface>;
 
  public:
-  using Collapsed = std::conditional_t<std::is_same_v<Surface, FlatTriangulationCollapsed<typename Surface::Coordinate>>, Surface, typename Surface::Collapsed>;
-
-  ContourDecompositionState(std::unique_ptr<Surface> surface, const Vector<typename Surface::Coordinate>& vert);
+  ContourDecompositionState(std::unique_ptr<Surface> surface, const Vector<T>& vert);
 
   ContourComponent<Surface> make(ComponentState* component);
 
-  std::shared_ptr<typename Surface::Collapsed> surface;
+  std::shared_ptr<FlatTriangulationCollapsed<T>> surface;
   std::list<ComponentState> components;
 
   template <typename S>

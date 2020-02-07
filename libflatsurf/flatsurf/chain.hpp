@@ -41,11 +41,13 @@ class Chain : public Serializable<Chain<Surface>>,
               boost::multipliable<Chain<Surface>, mpz_class> {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
+  using T = typename Surface::Coordinate;
+
  public:
   Chain();
   explicit Chain(std::shared_ptr<const Surface>);
 
-  operator const typename Surface::Vector&() const;
+  operator const Vector<T>&() const;
   operator const Vector<exactreal::Arb>&() const;
 
   const Surface& surface() const;

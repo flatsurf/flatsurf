@@ -34,6 +34,8 @@ namespace flatsurf {
 
 template <typename Surface>
 class Implementation<LengthAlongTriangulation<Surface>> {
+  using T = typename Surface::Coordinate;
+
  public:
   enum class CLASSIFICATION {
     BOTH_ARE_NIL,
@@ -42,12 +44,12 @@ class Implementation<LengthAlongTriangulation<Surface>> {
     NONE_IS_NIL,
   };
 
-  using Coefficient = std::conditional_t<std::is_same_v<long long, typename Surface::Coordinate>, long long, mpz_class>;
+  using Coefficient = std::conditional_t<std::is_same_v<long long, T>, long long, mpz_class>;
 
   Implementation();
   Implementation(HalfEdge, std::shared_ptr<const Vertical<Surface>> vertical);
 
-  operator typename Surface::Coordinate() const noexcept;
+  operator T() const noexcept;
 
   static int sgn(HalfEdge e) noexcept;
 

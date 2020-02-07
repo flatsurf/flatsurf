@@ -50,10 +50,10 @@
 namespace flatsurf {
 
 template <typename Surface>
-FlowDecompositionState<Surface>::FlowDecompositionState(std::unique_ptr<Surface> surface, const Vector<typename Surface::Coordinate>& direction) :
+FlowDecompositionState<Surface>::FlowDecompositionState(std::unique_ptr<Surface> surface, const Vector<T>& direction) :
   contourDecomposition(std::move(surface), direction) {
   for (auto& contour : contourDecomposition.components()) {
-    auto iet = std::make_shared<IntervalExchangeTransformation<typename Surface::Collapsed>>(contour.intervalExchangeTransformation());
+    auto iet = std::make_shared<IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>>(contour.intervalExchangeTransformation());
     auto decomposition = intervalxt::DynamicalDecomposition(iet->intervalExchangeTransformation());
     ASSERT(decomposition.components().size() == 1, "contour component must yield exactly one flow component initially");
     for (auto& component : decomposition.components()) {

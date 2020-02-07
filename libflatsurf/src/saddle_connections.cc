@@ -61,6 +61,7 @@ enum class Move {
 
 namespace flatsurf {
 template <typename Surface>
+// TODO: Move this to the usual Implementation<> pattern.
 class SaddleConnections<Surface>::Implementation {
  public:
   Implementation(Iterator&& begin) noexcept :
@@ -117,7 +118,7 @@ class SaddleConnections<Surface>::Iterator::Implementation {
   static CCW ccw(const Chain<Surface>& lhs, const Chain<Surface>& rhs) {
     auto ccw = static_cast<const Vector<exactreal::Arb>&>(lhs).ccw(static_cast<const Vector<exactreal::Arb>&>(rhs));
     if (ccw) return *ccw;
-    return static_cast<const typename Surface::Vector&>(lhs).ccw(static_cast<const typename Surface::Vector&>(rhs));
+    return static_cast<const Vector<T>&>(lhs).ccw(static_cast<const Vector<T>&>(rhs));
   }
 
   std::shared_ptr<const Surface> surface;

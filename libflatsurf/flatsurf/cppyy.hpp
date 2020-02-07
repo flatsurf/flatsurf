@@ -41,7 +41,7 @@ namespace flatsurf {
 // cppyy sometimes has trouble with rvalues, let's help it to create a FlatTriangulation
 template <typename T, typename V>
 auto makeFlatTriangulation(const T &vertices, const std::vector<V> &vectors) {
-  return std::make_shared<FlatTriangulation<typename V::Coordinate>>(FlatTriangulationCombinatorial(vertices), vectors);
+  return std::make_shared<FlatTriangulation<T>>(FlatTriangulationCombinatorial(vertices), vectors);
 }
 
 // cppyy gets the lifetime of the surfaces wrong when methods return a unique_ptr<Surface>

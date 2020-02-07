@@ -57,7 +57,7 @@ using intervalxt::Length;
 using rx::none_of;
 
 template <typename Surface>
-Lengths<Surface>::Lengths(std::shared_ptr<const Vertical<Uncollapsed>> vertical, const EdgeMap<typename Surface::SaddleConnection>& lengths) :
+Lengths<Surface>::Lengths(std::shared_ptr<const Vertical<FlatTriangulation<T>>> vertical, const EdgeMap<SaddleConnection<FlatTriangulation<T>>>& lengths) :
   vertical(vertical),
   lengths(lengths),
   stack(),
@@ -82,7 +82,7 @@ void Lengths<Surface>::pop() {
   ASSERT(not stack.empty(), "cannot pop from an empty stack");
   sum -= length(stack.back());
   stack.pop_back();
-  ASSERT(!stack.empty() || sum == typename Surface::Coordinate(), "sum inconsistent with stack");
+  ASSERT(!stack.empty() || sum == T(), "sum inconsistent with stack");
 }
 
 template <typename Surface>
@@ -91,7 +91,7 @@ void Lengths<Surface>::subtract(Label minuend) {
 
   ASSERT(length(minuend) > 0, "lengths must be positive");
 
-  const typename Surface::Coordinate expected = length(minuend) - length();
+  const T expected = length(minuend) - length();
   ASSERT(expected > 0, "Lengths must be positive but subtracting " << length() << " from edge " << fromLabel(minuend) << " of length " << length(minuend) << " would yield " << expected << " which is non-positive.");
   ASSERT(expected < length(minuend), "subtraction must shorten lengths");
 
@@ -107,7 +107,7 @@ void Lengths<Surface>::subtract(Label minuend) {
 
   const auto flow = [&](const auto& connections, bool reverse) {
     auto flowed = connections | rx::transform([&](const auto& connection) {
-      return Implementation<FlowConnection<FlatTriangulation<typename Surface::Coordinate>>>::make(state.lock(), ::flatsurf::Implementation<FlowComponent<FlatTriangulation<typename Surface::Coordinate>>>::make(state.lock(), &component), connection).saddleConnection();
+      return Implementation<FlowConnection<FlatTriangulation<T>>>::make(state.lock(), ::flatsurf::Implementation<FlowComponent<FlatTriangulation<T>>>::make(state.lock(), &component), connection).saddleConnection();
     }) | rx::transform([&](const auto& connection) {
       // TODO: This happens to be correct because there can be no HalfEdges
       // when reverse. These would be incorrectly oriented. See comments in
@@ -167,7 +167,7 @@ void Lengths<Surface>::subtract(Label minuend) {
   // std::cout << "target= " << target << std::endl;
 
   // TODO: This is ridiculously slow but the source & target in the line above was not correct in general.
-  // minuendConnection = SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>::inHalfPlane(minuendConnection.surface().shared_from_this(), source, *vertical, vector);
+  // minuendConnection = SaddleConnection<FlatTriangulation<T>>::inHalfPlane(minuendConnection.surface().shared_from_this(), source, *vertical, vector);
 
   // std::cout << "target= " << minuendConnection.target() << std::endl;
 
@@ -176,19 +176,19 @@ void Lengths<Surface>::subtract(Label minuend) {
   minuendConnection = -minuendConnection;
 
   // TODO: This is nice but too expensive for large vectors.
-  // ::flatsurf::Implementation<SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>>::check(minuendConnection);
+  // ::flatsurf::Implementation<SaddleConnection<FlatTriangulation<T>>>::check(minuendConnection);
 
   ASSERT(get(minuend), "lengths must be non-zero");
   ASSERT(length(minuend) == expected, "subtract inconsistent: subtracted " << length() << " from " << fromLabel(minuend) << " which should have yielded " << expected << " but got " << length(minuend) << " instead");
 
   stack.clear();
-  sum = typename Surface::Coordinate();
+  sum = T();
 
   // std::cout<<"Subtracted from " << fromLabel(minuend) << " when " << *this << std::endl;
 }
 
 template <typename Surface>
-void Lengths<Surface>::registerDecomposition(std::shared_ptr<FlowDecompositionState<FlatTriangulation<typename Surface::Coordinate>>> state) {
+void Lengths<Surface>::registerDecomposition(std::shared_ptr<FlowDecompositionState<FlatTriangulation<T>>> state) {
   this->state = state;
 }
 
@@ -225,7 +225,7 @@ Label Lengths<Surface>::subtractRepeated(Label minuend) {
 
 template <typename Surface>
 std::vector<mpq_class> Lengths<Surface>::coefficients(Label label) const {
-  auto coefficients = intervalxt::sample::Arithmetic<typename Surface::Coordinate>::coefficients(length(label));
+  auto coefficients = intervalxt::sample::Arithmetic<T>::coefficients(length(label));
   if (coefficients.size() == 0 || coefficients.size() == 1) {
     // TODO: We are assuming that 0/1 lengths means zero/rational. Is that
     // sane? Probably, yes, but we should assert somewhere else…

@@ -85,7 +85,7 @@ void Vector<T>::save(Archive& archive) const {
 template <typename T>
 template <typename Archive>
 void Vector<T>::load(Archive& archive) {
-  typename Vector<T>::Coordinate x, y;
+  T x, y;
   archive(cereal::make_nvp("x", x));
   archive(cereal::make_nvp("y", y));
   *this = Vector<T>(x, y);
@@ -135,7 +135,7 @@ struct Serialization<FlatTriangulation<T>> {
   void save(Archive& archive, const FlatTriangulation<T>& self) {
     archive(cereal::make_nvp("combinatorial", static_cast<const FlatTriangulationCombinatorial&>(self)));
 
-    std::map<HalfEdge, typename FlatTriangulation<T>::Vector> vectors;
+    std::map<HalfEdge, Vector<T>> vectors;
     for (auto& edge : self.halfEdges())
       vectors[edge] = self.fromEdge(edge);
 
@@ -146,7 +146,7 @@ struct Serialization<FlatTriangulation<T>> {
   void load(Archive& archive, FlatTriangulation<T>& self) {
     FlatTriangulationCombinatorial combinatorial;
     archive(cereal::make_nvp("combinatorial", combinatorial));
-    std::map<HalfEdge, typename FlatTriangulation<T>::Vector> map;
+    std::map<HalfEdge, Vector<T>> map;
     archive(cereal::make_nvp("vectors", map));
 
     self = FlatTriangulation<long long>(std::move(std::move(combinatorial)), [&](HalfEdge e) { return map.at(e); });

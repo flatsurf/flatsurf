@@ -26,23 +26,25 @@
 
 #include <intervalxt/connection.hpp>
 
+#include "../../flatsurf/contour_decomposition.hpp"
 #include "../../flatsurf/saddle_connection.hpp"
 #include "../../flatsurf/vector.hpp"
-#include "../../flatsurf/contour_decomposition.hpp"
 
 #include "flow_component_state.hpp"
 
 namespace flatsurf {
 template <typename Surface>
 class FlowDecompositionState : public std::enable_shared_from_this<FlowDecompositionState<Surface>> {
+  using T = typename Surface::Coordinate;
+
  public:
-  FlowDecompositionState(std::unique_ptr<Surface> surface, const Vector<typename Surface::Coordinate>& vert);
+  FlowDecompositionState(std::unique_ptr<Surface> surface, const Vector<T>& vert);
 
   ContourDecomposition<Surface> contourDecomposition;
 
   std::list<FlowComponentState<Surface>> components;
-  std::unordered_map<::intervalxt::Connection, typename Surface::SaddleConnection> injectedConnections;
-  std::unordered_map<::intervalxt::Connection, typename Surface::SaddleConnection> detectedConnections;
+  std::unordered_map<::intervalxt::Connection, SaddleConnection<FlatTriangulation<T>>> injectedConnections;
+  std::unordered_map<::intervalxt::Connection, SaddleConnection<FlatTriangulation<T>>> detectedConnections;
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const FlowDecompositionState<S>&);

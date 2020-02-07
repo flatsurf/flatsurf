@@ -36,6 +36,7 @@ template <typename Surface>
 class Implementation<Chain<Surface>> {
   static void updateAfterFlip(EdgeMap<mpz_class>&, HalfEdge);
 
+  using T = typename Surface::Coordinate;
   using Move = std::variant<Chain<Surface>, HalfEdge>;
 
  public:
@@ -47,7 +48,7 @@ class Implementation<Chain<Surface>> {
 
   EdgeMap<mpz_class> coefficients;
 
-  mutable std::optional<typename Surface::Vector> vector;
+  mutable std::optional<Vector<T>> vector;
   mutable std::vector<Move> pendingVectorMoves;
 
   mutable std::optional<Vector<exactreal::Arb>> approximateVector;

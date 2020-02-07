@@ -34,7 +34,7 @@ namespace flatsurf {
 template <typename T>
 class CollapsedHalfEdge {
   using Surface = FlatTriangulationCollapsed<T>;
-  using Connections = std::list<typename Surface::SaddleConnection>;
+  using Connections = std::list<SaddleConnection<FlatTriangulation<T>>>;
 
  public:
   static void updateAfterFlip(HalfEdgeMap<CollapsedHalfEdge>&, HalfEdge);

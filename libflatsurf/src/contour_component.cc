@@ -49,15 +49,15 @@ ContourComponent<Surface>::ContourComponent() {
 }
 
 template <typename Surface>
-IntervalExchangeTransformation<typename Surface::Collapsed> ContourComponent<Surface>::intervalExchangeTransformation() const {
-  return IntervalExchangeTransformation<typename Surface::Collapsed>(impl->state->surface, impl->state->surface->vertical().vertical(), impl->large());
+IntervalExchangeTransformation<FlatTriangulationCollapsed<typename Surface::Coordinate>> ContourComponent<Surface>::intervalExchangeTransformation() const {
+  return IntervalExchangeTransformation(impl->state->surface, impl->state->surface->vertical().vertical(), impl->large());
 }
 
 template <typename Surface>
 std::list<ContourConnection<Surface>> ContourComponent<Surface>::top() const {
   vector<HalfEdge> topEdges;
 
-  ::flatsurf::Implementation<ContourComponent<typename ContourDecompositionState<Surface>::Collapsed>>::makeContour(back_inserter(topEdges), impl->large(), *impl->state->surface, impl->state->surface->vertical());
+  ::flatsurf::Implementation<ContourComponent<FlatTriangulationCollapsed<T>>>::makeContour(back_inserter(topEdges), impl->large(), *impl->state->surface, impl->state->surface->vertical());
 
   auto top = topEdges | rx::transform([&](const HalfEdge e) {
     return -::flatsurf::Implementation<ContourConnection<Surface>>::make(impl->state, *this, e);
@@ -76,7 +76,7 @@ template <typename Surface>
 std::list<ContourConnection<Surface>> ContourComponent<Surface>::bottom() const {
   vector<HalfEdge> bottomEdges;
 
-  ::flatsurf::Implementation<ContourComponent<typename ContourDecompositionState<Surface>::Collapsed>>::makeContour(back_inserter(bottomEdges), -impl->large(), *impl->state->surface, -impl->state->surface->vertical());
+  ::flatsurf::Implementation<ContourComponent<FlatTriangulationCollapsed<T>>>::makeContour(back_inserter(bottomEdges), -impl->large(), *impl->state->surface, -impl->state->surface->vertical());
 
   auto bottom = bottomEdges | rx::reverse() | rx::transform([&](const HalfEdge e) {
     return ::flatsurf::Implementation<ContourConnection<Surface>>::make(impl->state, *this, -e);

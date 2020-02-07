@@ -44,7 +44,7 @@ FlowConnection<Surface>::FlowConnection()
 }
 
 template <typename Surface>
-typename Surface::SaddleConnection FlowConnection<Surface>::saddleConnection() const noexcept {
+SaddleConnection<FlatTriangulation<typename Surface::Coordinate>> FlowConnection<Surface>::saddleConnection() const noexcept {
   return impl->saddleConnection;
 }
 
@@ -92,7 +92,7 @@ FlowComponent<Surface> FlowConnection<Surface>::component() const {
 }
 
 template <typename Surface>
-Implementation<FlowConnection<Surface>>::Implementation(std::shared_ptr<FlowDecompositionState<Surface>> state, const FlowComponent<Surface>& component, const typename Surface::SaddleConnection& saddleConnection) :
+Implementation<FlowConnection<Surface>>::Implementation(std::shared_ptr<FlowDecompositionState<Surface>> state, const FlowComponent<Surface>& component, const SaddleConnection<FlatTriangulation<T>>& saddleConnection) :
   state(state),
   component(component),
   saddleConnection(saddleConnection) {
@@ -153,7 +153,7 @@ using namespace flatsurf;
 
 template <typename Surface>
 size_t hash<FlowConnection<Surface>>::operator()(const FlowConnection<Surface>& self) const noexcept {
-  return std::hash<typename Surface::SaddleConnection>()(self.saddleConnection());
+  return std::hash<SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>>()(self.saddleConnection());
 }
 
 }  // namespace std

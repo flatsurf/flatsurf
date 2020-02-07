@@ -35,6 +35,8 @@ template <typename Surface>
 class SaddleConnections {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
+  using T = typename Surface::Coordinate;
+
  public:
   // All saddle connections on the surface starting at any vertex.
   SaddleConnections(const std::shared_ptr<const Surface> &, Bound searchRadius);

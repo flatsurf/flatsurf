@@ -74,7 +74,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
       const auto surface = ::flatsurf::Implementation<FlowConnection<Surface>>::make(impl->state, *this, *begin(*step.equivalent)).saddleConnection().surface().shared_from_this();
 
       // Register the saddle connection we just discovered
-      Chain<FlatTriangulation<typename Surface::Coordinate>> vector(surface);
+      Chain<FlatTriangulation<T>> vector(surface);
       for (const auto& connection : *step.equivalent) {
         auto flowConnection = ::flatsurf::Implementation<FlowConnection<Surface>>::make(impl->state, *this, connection);
         // TODO: Unfortunately, non-verticals are not correctly oriented in intervalxt (i.e., a positive HalfEdge is a top half edge, a negative one is bottom; however, we assume things to be in a counter-clockwise context and there is currently no way to write things in a clockwise context. I guess, intervalxt should simply report the equivalent of -connection instead.)
@@ -122,7 +122,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
       }();
 
       // auto connection = SaddleConnection<Surface>::clockwise(clockwiseFrom, vector);
-      auto connection = SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>(surface, source, target, vector);
+      auto connection = SaddleConnection<FlatTriangulation<T>>(surface, source, target, vector);
 
       // TODO: This is nice but too expensive for large vectors.
       // ::flatsurf::Implementation<SaddleConnection<Surface>>::check(connection);
@@ -188,7 +188,7 @@ typename Surface::Coordinate FlowComponent<Surface>::area() const {
   auto vertical = this->vertical();
 
   for (const auto& c : perimeter()) {
-    auto vector = static_cast<typename Surface::Vector>(c.saddleConnection());
+    auto vector = static_cast<Vector<T>>(c.saddleConnection());
     auto x = vertical.perpendicular(vector);
     auto y = vertical.parallel(vector);
 
@@ -231,7 +231,7 @@ bool FlowComponent<Surface>::operator==(const FlowComponent<Surface>& rhs) const
 }
 
 template <typename Surface>
-const IntervalExchangeTransformation<typename Surface::Collapsed>& FlowComponent<Surface>::intervalExchangeTransformation() const {
+const IntervalExchangeTransformation<FlatTriangulationCollapsed<typename Surface::Coordinate>>& FlowComponent<Surface>::intervalExchangeTransformation() const {
   return *impl->component->iet;
 }
 

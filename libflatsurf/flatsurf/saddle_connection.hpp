@@ -39,26 +39,28 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
                          boost::less_than_comparable<SaddleConnection<Surface>, Bound> {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
-  using Vector = typename Surface::Vector;
+  using T = typename Surface::Coordinate;
 
  public:
   SaddleConnection();
   SaddleConnection(std::shared_ptr<const Surface>, HalfEdge source, HalfEdge target, const Chain<Surface> &);
 
-  static SaddleConnection<Surface> inSector(std::shared_ptr<const Surface>, HalfEdge source, const Vector &);
+  static SaddleConnection<Surface> inSector(std::shared_ptr<const Surface>, HalfEdge source, const Vector<T> &);
   // TODO: Should we introduce a Direction primitive to not abuse vertical here? (Maybe a superclass of Vertical?)
   static SaddleConnection<Surface> inSector(std::shared_ptr<const Surface>, HalfEdge source, const Vertical<Surface> &);
-  static SaddleConnection<Surface> inHalfPlane(std::shared_ptr<const Surface>, HalfEdge side, const Vertical<Surface> &, const Vector &);
-  static SaddleConnection<Surface> inPlane(std::shared_ptr<const Surface>, HalfEdge plane, const Vector &);
+  static SaddleConnection<Surface> inHalfPlane(std::shared_ptr<const Surface>, HalfEdge side, const Vertical<Surface> &, const Vector<T> &);
+  static SaddleConnection<Surface> inPlane(std::shared_ptr<const Surface>, HalfEdge plane, const Vector<T> &);
   static SaddleConnection<Surface> alongVertical(std::shared_ptr<const Surface>, const Vertical<Surface> &direction, HalfEdge plane);
-  static SaddleConnection<Surface> clockwise(const SaddleConnection &from, const Vector &);
+  static SaddleConnection<Surface> clockwise(const SaddleConnection &from, const Vector<T> &);
   static SaddleConnection<Surface> fromEdge(std::shared_ptr<const Surface>, HalfEdge);
 
-  // TODO: Does this also give me an implicit cast to Vector? If not, we should add this explicitly; the explicit vector() seems more sane anyway.
-  operator const Vector &() const;
+  // TODO: Does this also give me an implicit cast to Vector? If not, we should
+  // add this explicitly; the explicit vector() seems more sane anyway. Same
+  // applies to these operators in Chain<>.
+  operator const Vector<T> &() const;
   operator const Chain<Surface> &() const;
 
-  const Vector &vector() const;
+  const Vector<T> &vector() const;
 
   explicit operator bool() const;
 
@@ -67,9 +69,9 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   // them must be less than 2π.
   // CCW ccw(const SaddleConnection&) const;
   // TODO: This is a convenience method with a somewhat dubious semantic.
-  CCW ccw(const Vector &) const;
+  CCW ccw(const Vector<T> &) const;
   // TODO: This is a convenience method with a somewhat dubious semantic.
-  ORIENTATION orientation(const Vector &) const;
+  ORIENTATION orientation(const Vector<T> &) const;
 
   // The saddle connection is leaving from the vertex at the source of source.
   // It is leaving in a direction that is contained in the sector next to
@@ -99,6 +101,7 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
  private:
   using Implementation = ::flatsurf::Implementation<SaddleConnection>;
   Copyable<Implementation> impl;
+
   friend Implementation;
 };
 

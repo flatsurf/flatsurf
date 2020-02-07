@@ -38,10 +38,10 @@ namespace flatsurf {
 
 template <typename Surface>
 class Lengths {
-  using Uncollapsed = FlatTriangulation<typename Surface::Coordinate>;
+  using T = typename Surface::Coordinate;
 
  public:
-  Lengths(std::shared_ptr<const Vertical<Uncollapsed>>, const EdgeMap<typename Surface::SaddleConnection>&);
+  Lengths(std::shared_ptr<const Vertical<FlatTriangulation<T>>>, const EdgeMap<SaddleConnection<FlatTriangulation<T>>>&);
 
   void push(intervalxt::Label);
   void pop();
@@ -50,13 +50,13 @@ class Lengths {
   std::vector<mpq_class> coefficients(intervalxt::Label) const;
   int cmp(intervalxt::Label) const;
   int cmp(intervalxt::Label, intervalxt::Label) const;
-  typename Surface::Coordinate get(intervalxt::Label) const;
+  T get(intervalxt::Label) const;
   std::string render(intervalxt::Label) const;
 
   // TODO: This is a hack. We should pass this at construction time but
   // flatsurf::IntervalExchangeTransformation wants to exist independently of a
   // FlowDecomposition. Maybe there should be several flavours of Lengths?
-  void registerDecomposition(std::shared_ptr<FlowDecompositionState<FlatTriangulation<typename Surface::Coordinate>>>);
+  void registerDecomposition(std::shared_ptr<FlowDecompositionState<FlatTriangulation<T>>>);
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const Lengths<S>&);
@@ -65,15 +65,15 @@ class Lengths {
   intervalxt::Label toLabel(Edge) const;
   Edge fromLabel(intervalxt::Label) const;
 
-  typename Surface::Coordinate length(intervalxt::Label) const;
-  typename Surface::Coordinate length() const;
+  T length(intervalxt::Label) const;
+  T length() const;
 
-  std::weak_ptr<FlowDecompositionState<FlatTriangulation<typename Surface::Coordinate>>> state;
-  std::shared_ptr<const Vertical<Uncollapsed>> vertical;
-  EdgeMap<typename Surface::SaddleConnection> lengths;
+  std::weak_ptr<FlowDecompositionState<FlatTriangulation<T>>> state;
+  std::shared_ptr<const Vertical<FlatTriangulation<T>>> vertical;
+  EdgeMap<SaddleConnection<FlatTriangulation<T>>> lengths;
 
   std::deque<intervalxt::Label> stack;
-  typename Surface::Coordinate sum;
+  T sum;
 
   size_t degree;
 

@@ -29,8 +29,10 @@
 namespace flatsurf {
 template <typename Surface>
 class Implementation<FlowDecomposition<Surface>> {
+  using T = typename Surface::Coordinate;
+
  public:
-  Implementation(std::unique_ptr<Surface> surface, const Vector<typename Surface::Coordinate>& vertical);
+  Implementation(std::unique_ptr<Surface> surface, const Vector<T>& vertical);
 
   std::shared_ptr<FlowDecompositionState<Surface>> state;
 };
