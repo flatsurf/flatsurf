@@ -59,10 +59,8 @@ void SaddleConnectionsL(State& state) {
   auto L = makeL<R2>();
   auto bound = Bound(state.range(0), 0);
 
-  HalfEdge e(1);
-
   for (auto _ : state) {
-    auto connections = SaddleConnections(L, bound, e);
+    auto connections = SaddleConnections(L, bound);
     DoNotOptimize(std::distance(connections.begin(), connections.end()));
   }
 }
