@@ -26,6 +26,10 @@
 
 #include "flat_triangulation_combinatorial.hpp"
 
+// TODO: Should we have more Tracking and non-Tracking versions of things?
+// Shouldn't TrackingHalfEdge inherit Tracking<HalfEdge> instead of containing
+// it as a field?
+
 namespace flatsurf {
 template <typename T>
 class Tracking {
@@ -54,6 +58,9 @@ class Tracking {
   ~Tracking();
 
   T& get() const;
+
+  operator T&();
+  operator const T&() const;
 
   const FlatTriangulationCombinatorial& parent() const;
 
