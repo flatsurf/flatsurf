@@ -19,15 +19,19 @@
 
 #include <exact-real/arb.hpp>
 #include <stack>
+#include <fmt/format.h>
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/chain.hpp"
+#include "../flatsurf/fmt.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
+
+#include "external/rx-ranges/include/rx/ranges.hpp"
 
 #include "util/assert.ipp"
 
@@ -40,12 +44,15 @@ enum class Classification {
 };
 
 enum class State {
-  // nextEdgeEnd is likely inside the search radius
-  START_INSIDE_SEARCH_RADIUS,
-  // nextEdgeEnd is certainly outside the search radius
-  START_OUTSIDE_SEARCH_RADIUS,
-  OUTSIDE_SEARCH_SECTOR_CLOCKWISE_SEARCHING,
-  OUTSIDE_SEARCH_SECTOR_COUNTERCLOCKWISE_SEARCHING,
+  // The search will now cross nextEdge which starts and ends inside the search radius
+  START_FROM_INSIDE_TO_INSIDE,
+  // The search will now cross nextEdge which starts inside the search radius and ends outside or at the search radius
+  START_FROM_INSIDE_TO_OUTSIDE,
+  // The search will now cross nextEdge which starts outside or at the search radius and ends inside the search radius
+  START_FROM_OUTSIDE_TO_INSIDE,
+  OUTSIDE_SEARCH_SECTOR_COUNTERCLOCKWISE,
+  OUTSIDE_SEARCH_SECTOR_CLOCKWISE,
+  // The iterator has stopped at a Saddle Connection inside or at the search radius
   SADDLE_CONNECTION_FOUND,
   SADDLE_CONNECTION_FOUND_SEARCHING_FIRST,
   SADDLE_CONNECTION_FOUND_SEARCHING_SECOND,
@@ -104,8 +111,8 @@ class SaddleConnections<Surface>::Iterator::Implementation {
     nextEdge = surface->nextInFace(e);
     boundary[1] = boundary[0] + nextEdge;
     nextEdgeEnd = (Chain<Surface>(surface) += e) += nextEdge;
-    state.push(State::END);
-    state.push(State::START_INSIDE_SEARCH_RADIUS);
+    state.push_back(State::END);
+    state.push_back(State::START_FROM_INSIDE_TO_INSIDE);
 
     // Report sector as a saddle connection unless it is already outside of
     // the search radius.
@@ -150,7 +157,9 @@ class SaddleConnections<Surface>::Iterator::Implementation {
   // i.e., "return increment()" since that also exceeds the stack size for
   // (much larger) radii. (Strangely, GCC, as of early 2019, does not
   // optimize such tail recursion.)
-  std::stack<State> state;
+  // (This should really be a stack. But we want to print its content easily
+  // for debugging which a stack does not support.)
+  std::deque<State> state;
 
   // We collect pending moves across the surface here (adding half edges to
   // nextEdgeEnd mostly.) When the exact value of nextEdgeEnd is required, we
@@ -178,8 +187,10 @@ class SaddleConnections<Surface>::Iterator::Implementation {
     assert(sector != sectors->end());
     assert(ccw(boundary[0], boundary[1]) == CCW::COUNTERCLOCKWISE);
 
-    const auto s = state.top();
-    state.pop();
+    applyMoves();
+
+    const auto s = state.back();
+    state.pop_back();
     switch (s) {
       case State::END:
         applyMoves();
@@ -188,94 +199,78 @@ class SaddleConnections<Surface>::Iterator::Implementation {
           prepareSearch();
         }
         return true;
-      case State::START_OUTSIDE_SEARCH_RADIUS:
-      case State::START_INSIDE_SEARCH_RADIUS:
+      case State::START_FROM_INSIDE_TO_INSIDE:
+      case State::START_FROM_INSIDE_TO_OUTSIDE:
+      case State::START_FROM_OUTSIDE_TO_INSIDE:
         moves.push_back(Move::GOTO_OTHER_FACE);
+
         if (onBoundary()) {
           moves.push_back(Move::GOTO_OTHER_FACE);
           return false;
         }
+
         moves.push_back(Move::GOTO_NEXT_EDGE);
 
-        applyMoves();
         switch (classifyHalfEdgeEnd()) {
           case Classification::OUTSIDE_SEARCH_SECTOR_CLOCKWISE: {
-            // Since this vertex is outside of the search sector on the
+            const bool nothingBeyondThisVertex = !(nextEdgeEnd < searchRadius);
+
+            // This vertex is outside of the search sector on the
             // clockwise side, we skip the clockwise sector in the recursive
             // search and recurse into the counterclockwise sector.
             moves.push_back(Move::GOTO_NEXT_EDGE);
 
-            applyMoves();
-            const bool classifiedVertexIsExceedingSearchRadius = nextEdgeEnd > searchRadius;
+            state.push_back(State::OUTSIDE_SEARCH_SECTOR_CLOCKWISE);
+            
+            pushStart(nothingBeyondThisVertex, s == State::START_FROM_INSIDE_TO_OUTSIDE);
 
-            if (s == State::START_OUTSIDE_SEARCH_RADIUS && classifiedVertexIsExceedingSearchRadius) {
-              // Both end points of this edge are outside the search radius.
-              // Nothing beyond this edge can be inside the search radius.
-              moves.push_back(Move::GOTO_NEXT_EDGE);
-              moves.push_back(Move::GOTO_OTHER_FACE);
-            } else {
-              // Note that the following is a nop that just exists for symmetry.
-              state.push(State::OUTSIDE_SEARCH_SECTOR_CLOCKWISE_SEARCHING);
-              state.push(s);
-            }
             return false;
           }
           case Classification::OUTSIDE_SEARCH_SECTOR_COUNTERCLOCKWISE: {
-            // Similarly, we skip the counterclockwise sector.
-            state.push(State::OUTSIDE_SEARCH_SECTOR_COUNTERCLOCKWISE_SEARCHING);
-            state.push(nextEdgeEnd > searchRadius ? State::START_OUTSIDE_SEARCH_RADIUS : State::START_INSIDE_SEARCH_RADIUS);
+            const bool nothingBeyondThisVertex = !(nextEdgeEnd < searchRadius);
+
+            // Similarly, we skip the counterclockwise sector (but only after
+            // we visited the clockwise one.)
+            state.push_back(State::OUTSIDE_SEARCH_SECTOR_COUNTERCLOCKWISE);
+
+            pushStart(s == State::START_FROM_OUTSIDE_TO_INSIDE, nothingBeyondThisVertex);
+
             return false;
           }
-          case Classification::SADDLE_CONNECTION:
-            state.push(State::SADDLE_CONNECTION_FOUND);
-            if (!(nextEdgeEnd > searchRadius)) {
-              // Report this saddle connection.
-              return true;
-            } else {
-              // If the vertex is beyond the search radius, we do not report
-              // this new saddle connection. If additionaly, the other vertices
-              // of this triangle had already been outside of the search radius,
-              // we abort the search here.
-              bool baseIsAlreadyExceedingSearchRadius = true;
-              moves.push_back(Move::GOTO_NEXT_EDGE);
-              applyMoves();
-              baseIsAlreadyExceedingSearchRadius &=
-                  (nextEdgeEnd > searchRadius);
-              moves.push_back(Move::GOTO_NEXT_EDGE);
-              applyMoves();
-              baseIsAlreadyExceedingSearchRadius &=
-                  (nextEdgeEnd > searchRadius);
-              if (baseIsAlreadyExceedingSearchRadius) {
-                // The other vertices of the triangle are outside of the search
-                // radius; abort the search here, i.e., backtrack.
-                moves.push_back(Move::GOTO_OTHER_FACE);
-                state.pop();
-              } else {
-                // One of the vertices is inside the search radius; continue the
-                // search.
-                moves.push_back(Move::GOTO_NEXT_EDGE);
-              }
+          case Classification::SADDLE_CONNECTION: {
+            const bool beyondRadius = nextEdgeEnd > searchRadius;
+
+            // Prepare the recursive descent into the two half edges attached
+            // to this vertex.
+            state.push_back(State::SADDLE_CONNECTION_FOUND_SEARCHING_SECOND);
+            pushStart(beyondRadius, s == State::START_FROM_INSIDE_TO_OUTSIDE);
+            state.push_back(State::SADDLE_CONNECTION_FOUND_SEARCHING_FIRST);
+            pushStart(s == State::START_FROM_OUTSIDE_TO_INSIDE, beyondRadius);
+
+            // Shrink the search sector for the clockwise descent.
+            tmp.push(std::move(boundary[1]));
+            boundary[1] = nextEdgeEnd;
+
+            if (beyondRadius) {
               return false;
+            } else {
+              state.push_back(State::SADDLE_CONNECTION_FOUND);
+              return true;
             }
+          }
+          default:
+            throw std::logic_error("unknown classification result");
         }
-        throw std::logic_error("impossible to happen");
       case State::SADDLE_CONNECTION_FOUND:
-        // We have just reported a saddle connection; now we prepare
-        // the recursive descend into the clockwise sector.
-        tmp.push(boundary[1]);
-        applyMoves();
-        boundary[1] = nextEdgeEnd;
-        state.push(State::SADDLE_CONNECTION_FOUND_SEARCHING_SECOND);
-        state.push(State::START_INSIDE_SEARCH_RADIUS);
-        state.push(State::SADDLE_CONNECTION_FOUND_SEARCHING_FIRST);
-        state.push(State::START_INSIDE_SEARCH_RADIUS);
+        // TODO: We should get rid of this state. It only exists to distinguish
+        // the initial saddle connection.
         return false;
       case State::SADDLE_CONNECTION_FOUND_SEARCHING_FIRST:
         // We have just come back from the search in the clockwise sector; now
         // we prepare the recursive descend into the counterclockwise sector.
-        boundary[1] = tmp.top();
+        boundary[1] = std::move(tmp.top());
         tmp.pop();
-        tmp.push(boundary[0]);
+        tmp.push(std::move(boundary[0]));
         applyMoves();
         boundary[0] = nextEdgeEnd;
         moves.push_back(Move::GOTO_NEXT_EDGE);
@@ -283,19 +278,23 @@ class SaddleConnections<Surface>::Iterator::Implementation {
       case State::SADDLE_CONNECTION_FOUND_SEARCHING_SECOND:
         // We have just come back from the search in the counterclockwise
         // sector; we are done here and return in the recursion.
-        boundary[0] = tmp.top();
+        boundary[0] = std::move(tmp.top());
         tmp.pop();
-        break;
-      case State::OUTSIDE_SEARCH_SECTOR_COUNTERCLOCKWISE_SEARCHING:
         moves.push_back(Move::GOTO_NEXT_EDGE);
-        break;
-      case State::OUTSIDE_SEARCH_SECTOR_CLOCKWISE_SEARCHING:
-        break;
+        moves.push_back(Move::GOTO_OTHER_FACE);
+        return false;
+      case State::OUTSIDE_SEARCH_SECTOR_CLOCKWISE:
+        moves.push_back(Move::GOTO_NEXT_EDGE);
+        moves.push_back(Move::GOTO_OTHER_FACE);
+        return false;
+      case State::OUTSIDE_SEARCH_SECTOR_COUNTERCLOCKWISE:
+        moves.push_back(Move::GOTO_NEXT_EDGE);
+        moves.push_back(Move::GOTO_NEXT_EDGE);
+        moves.push_back(Move::GOTO_OTHER_FACE);
+        return false;
+      default:
+        throw std::logic_error("unknown State");
     }
-
-    moves.push_back(Move::GOTO_NEXT_EDGE);
-    moves.push_back(Move::GOTO_OTHER_FACE);
-    return false;
   }
 
   bool onBoundary() {
@@ -309,42 +308,56 @@ class SaddleConnections<Surface>::Iterator::Implementation {
     ASSERT_ARGUMENT(sector != CCW::COLLINEAR, "There is no such thing like a collinear sector.");
     assert(state.size() && "cannot skip a sector in a completed search");
 
-    switch (state.top()) {
+    switch (state.back()) {
       case State::SADDLE_CONNECTION_FOUND:
-        increment();
+        state.pop_back();
 
         if (sector == CCW::CLOCKWISE) {
           // Go directly to the second sector by skipping the recursive call,
           // i.e., the START.
-          assert(state.top() == State::START_INSIDE_SEARCH_RADIUS || state.top() == State::START_OUTSIDE_SEARCH_RADIUS);
-          state.pop();
-
-          assert(state.top() == State::SADDLE_CONNECTION_FOUND_SEARCHING_FIRST);
+          switch(state.back()) {
+            case State::START_FROM_INSIDE_TO_INSIDE:
+            case State::START_FROM_INSIDE_TO_OUTSIDE:
+            case State::START_FROM_OUTSIDE_TO_INSIDE:
+              state.pop_back();
+              break;
+            default:
+              break;
+          }
+          ASSERT(state.back() == State::SADDLE_CONNECTION_FOUND_SEARCHING_FIRST, "State machine of SaddleConnections is inconsistent when trying to skip clockwise sector.");
         } else if (sector == CCW::COUNTERCLOCKWISE) {
-          assert(state.top() == State::START_INSIDE_SEARCH_RADIUS || state.top() == State::START_OUTSIDE_SEARCH_RADIUS);
-          state.pop();
-
-          assert(state.top() == State::SADDLE_CONNECTION_FOUND_SEARCHING_FIRST);
-          state.pop();
-
-          assert(state.top() == State::START_INSIDE_SEARCH_RADIUS || state.top() == State::START_OUTSIDE_SEARCH_RADIUS);
           // Skip the second recursive call by dropping its START.
-          state.pop();
+          std::stack<State> unchanged;
+          while(state.back() != State::SADDLE_CONNECTION_FOUND_SEARCHING_SECOND) {
+            unchanged.push(state.back());
+            state.pop_back();
+          }
 
-          // And push the rest back on the stack unchanged.
-          state.push(State::SADDLE_CONNECTION_FOUND_SEARCHING_FIRST);
-          state.push(State::START_INSIDE_SEARCH_RADIUS);
+          switch(unchanged.top()) {
+            case State::START_FROM_INSIDE_TO_INSIDE:
+            case State::START_FROM_INSIDE_TO_OUTSIDE:
+            case State::START_FROM_OUTSIDE_TO_INSIDE:
+              unchanged.pop();
+            default:
+              break;
+          }
+
+          while(!unchanged.empty()) {
+            state.push_back(unchanged.top());
+            unchanged.pop();
+          }
         }
         break;
-      case State::START_INSIDE_SEARCH_RADIUS:
-      case State::START_OUTSIDE_SEARCH_RADIUS:
+      case State::START_FROM_INSIDE_TO_INSIDE:
+      case State::START_FROM_OUTSIDE_TO_INSIDE:
+      case State::START_FROM_INSIDE_TO_OUTSIDE:
         if (state.size() == 2) {
           if (sector == CCW::COUNTERCLOCKWISE) {
             // We are in the initial state, the reported saddle connection is on
             // the clockwise end of the search sector. If we skip the
             // counterclockwise sector, then we skip everything.
-            state.pop();
-            assert(state.top() == State::END);
+            state.pop_back();
+            assert(state.back() == State::END);
           } else {
             // We are skipping the clockwise sector anyway.
             ;
@@ -439,7 +452,8 @@ class SaddleConnections<Surface>::Iterator::Implementation {
     }
   }
 
-  Classification classifyHalfEdgeEnd() const {
+  Classification classifyHalfEdgeEnd() {
+    applyMoves();
     switch (ccw(boundary[0], nextEdgeEnd)) {
       case CCW::CLOCKWISE:
       case CCW::COLLINEAR:
@@ -456,11 +470,52 @@ class SaddleConnections<Surface>::Iterator::Implementation {
     throw std::logic_error("impossible to happen");
   }
 
+  void pushStart(bool fromOutside, bool toOutside) {
+    if (fromOutside) {
+      if (toOutside) {
+        ;  
+      } else {
+        state.push_back(State::START_FROM_OUTSIDE_TO_INSIDE);
+      }
+    } else {
+      if (toOutside) {
+        state.push_back(State::START_FROM_INSIDE_TO_OUTSIDE);
+      } else {
+        state.push_back(State::START_FROM_INSIDE_TO_INSIDE);
+      }
+    }
+  }
+
   friend std::ostream& operator<<(std::ostream& os, const Implementation& self) {
     if (self.sector == self.sectors->end()) {
       return os << "Iterator(END)";
     }
-    return os << "Iterator(sector = " << *self.sector << ", connection = " << self.nextEdgeEnd << ")";
+    else {
+      return os << fmt::format("Iterator(sector={}, boundary=({}, {}), nextEdge={}, nextEdgeEnd={}, stack=[{}])", *self.sector, static_cast<Vector<T>>(self.boundary[0]), static_cast<Vector<T>>(self.boundary[1]), self.nextEdge, static_cast<Vector<T>>(self.nextEdgeEnd), fmt::join(self.state | rx::transform([](const auto& state) {
+        switch(state) {
+          case State::START_FROM_INSIDE_TO_INSIDE:
+            return "START_FROM_INSIDE_TO_INSIDE";
+          case State::START_FROM_INSIDE_TO_OUTSIDE:
+            return "START_FROM_INSIDE_TO_OUTSIDE";
+          case State::START_FROM_OUTSIDE_TO_INSIDE:
+            return "START_FROM_OUTSIDE_TO_INSIDE";
+          case State::OUTSIDE_SEARCH_SECTOR_COUNTERCLOCKWISE:
+            return "OUTSIDE_SEARCH_SECTOR_COUNTERCLOCKWISE";
+          case State::OUTSIDE_SEARCH_SECTOR_CLOCKWISE:
+            return "OUTSIDE_SEARCH_SECTOR_COUNTERCLOCKWISE";
+          case State::SADDLE_CONNECTION_FOUND:
+            return "SADDLE_CONNECTION_FOUND";
+          case State::SADDLE_CONNECTION_FOUND_SEARCHING_FIRST:
+            return "SADDLE_CONNECTION_FOUND_SEARCHING_FIRST";
+          case State::SADDLE_CONNECTION_FOUND_SEARCHING_SECOND:
+            return "SADDLE_CONNECTION_FOUND_SEARCHING_SECOND";
+          case State::END:
+            return "END";
+          default:
+            throw std::logic_error("unknown State");
+        }
+      }) | rx::to_vector() , ", "));
+    }
   }
 };
 
@@ -522,9 +577,11 @@ std::optional<HalfEdge> SaddleConnections<Surface>::Iterator::incrementWithCross
     if (impl->sector == impl->sectors->end()) {
       return {};
     } else
-      switch (impl->state.top()) {
-        case State::START_INSIDE_SEARCH_RADIUS:
-        case State::START_OUTSIDE_SEARCH_RADIUS: {
+      switch (impl->state.back()) {
+        case State::START_FROM_INSIDE_TO_INSIDE:
+        case State::START_FROM_INSIDE_TO_OUTSIDE:
+        case State::START_FROM_OUTSIDE_TO_INSIDE:
+        {
           impl->applyMoves();
           const auto ret = impl->nextEdge;
           impl->increment();
@@ -542,16 +599,14 @@ template <typename Surface>
 const SaddleConnection<Surface>& SaddleConnections<Surface>::Iterator::dereference() const {
   ASSERT(impl->sector != impl->sectors->end(), "iterator is at end()");
 
-  switch (impl->state.top()) {
-    case State::START_INSIDE_SEARCH_RADIUS:
+  switch (impl->state.back()) {
+    case State::START_FROM_INSIDE_TO_INSIDE:
       // This makes the first reported connection work: It is not nextEdgeEnd but the sector boundary.
       impl->connection = SaddleConnection<Surface>::fromEdge(impl->surface, *impl->sector);
       break;
     case State::SADDLE_CONNECTION_FOUND:
       impl->connection = SaddleConnection<Surface>(impl->surface, *impl->sector, -impl->nextEdge, impl->nextEdgeEnd);
       break;
-    case State::START_OUTSIDE_SEARCH_RADIUS:
-      ASSERT(false, "iterator must be at end when in this state");
     default:
       ASSERT(false, "iterator cannot hold in this state");
   }
