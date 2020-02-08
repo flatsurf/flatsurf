@@ -40,7 +40,8 @@
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertical.hpp"
 
-#include "surfaces.hpp"
+#include "generators/surface_generator.hpp"
+#include "generators/saddle_connections_generator.hpp"
 
 using boost::lexical_cast;
 using eantic::renf_class;
@@ -61,67 +62,54 @@ TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimet
   REQUIRE(lexical_cast<std::string>(decomposition) == "[ContourComponent(ContourConnection(←SaddleConnection((0, -1) from -2)→SaddleConnection((1, 1) from 3))→ContourConnection(SaddleConnection((-1, -1) from -3)←SaddleConnection((0, 1) from 2)→))]");
 }
 
-TEMPLATE_TEST_CASE("Connections and IET from Contour Decomposition", "[contour_decomposition][iet]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Connections and IET from Contour Decomposition", "[contour_decomposition][iet]", (long long)/*, (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)*/) {
   using T = TestType;
-  using R2 = Vector<T>;
 
-  int bound;
-  std::shared_ptr<FlatTriangulation<T>> surface;
-  if constexpr (std::is_same_v<T, long long> || std::is_same_v<T, mpq_class> || std::is_same_v<T, exactreal::Element<exactreal::IntegerRing>>) {
-    surface = GENERATE(makeSquare<R2>(), makeL<R2>());
-    bound = 5;
-  } else {
-    surface = GENERATE(makeSquare<R2>(), makeL<R2>(), make1221<R2>(), makeHexagon<R2>(), makeHeptagonL<R2>(), makeGoldenL<R2>());
-    bound = 2;
-  }
+  // TODO: Use this everywhere to fix broken SECTION inside loop.
+  const auto surface = GENERATE(makeSurface<T>());
 
   GIVEN("The surface " << *surface) {
-    using SaddleConnection = SaddleConnection<FlatTriangulation<T>>;
+    const auto saddleConnection = GENERATE_COPY(saddleConnections<T>(surface));
 
-    for (auto sc : SaddleConnections<FlatTriangulation<T>>(surface, Bound(bound, 0))) {
-      THEN("We can compute a ContourDecomposition in direction " << static_cast<R2>(sc)) {
-        auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), sc);
-        auto vertical = decomposition.collapsed()->vertical();
+    AND_GIVEN("A direction of a Saddle Connection " << saddleConnection) {
+      THEN("The Contour Decomposition in that Direction can be Computed") {
+        auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), saddleConnection);
+
         // All connections show up once with both signs in the decomposition.
-        {
-          std::unordered_map<SaddleConnection, int> connections;
+        std::unordered_map<SaddleConnection<FlatTriangulation<T>>, int> connections;
 
-          auto track = [&](const SaddleConnection& connection) {
-            CAPTURE(connection);
+        auto track = [&](const auto& connection) {
+          if (connections.find(connection) == connections.end()) {
+            connections[connection] = 1;
+            connections[-connection] = 0;
+          } else {
+            connections[connection]++;
+            REQUIRE(connections[connection] == 1);
+            REQUIRE(connections[-connection] == 1);
+          }
+        };
 
-            if (connections.find(connection) == connections.end()) {
-              connections[connection] = 1;
-              connections[-connection] = 0;
-            } else {
-              connections[connection]++;
-              REQUIRE(connections[connection] == 1);
-              REQUIRE(connections[-connection] == 1);
+        for (auto component : decomposition.components()) {
+          const auto vertical = decomposition.collapsed()->vertical();
+          CAPTURE(component);
+          for (auto contourConnection : component.perimeter()) {
+            const bool top = contourConnection.top();
+            REQUIRE(vertical.perpendicular(contourConnection.connection()) != 0);
+            track(contourConnection.connection());
+            for (auto connection : contourConnection.left()) {
+              REQUIRE(vertical.perpendicular(connection) == 0);
+              REQUIRE(vertical.parallel(top ? -connection : connection) > 0);
+              track(top ? connection : -connection);
             }
-          };
-
-          for (auto component : decomposition.components()) {
-            CAPTURE(component);
-            for (auto contourConnection : component.perimeter()) {
-              const bool top = contourConnection.top();
-              CAPTURE(contourConnection);
-              REQUIRE(vertical.perpendicular(contourConnection.connection()) != 0);
-              track(contourConnection.connection());
-              for (auto connection : contourConnection.left()) {
-                REQUIRE(vertical.perpendicular(connection) == 0);
-                REQUIRE(vertical.parallel(top ? -connection : connection) > 0);
-                track(top ? connection : -connection);
-              }
-              for (auto connection : contourConnection.right()) {
-                REQUIRE(vertical.perpendicular(connection) == 0);
-                REQUIRE(vertical.parallel(top ? -connection : connection) > 0);
-                track(top ? -connection : connection);
-              }
+            for (auto connection : contourConnection.right()) {
+              REQUIRE(vertical.perpendicular(connection) == 0);
+              REQUIRE(vertical.parallel(top ? -connection : connection) > 0);
+              track(top ? -connection : connection);
             }
           }
         }
-
-        // We can construct the IETs for the components.
-        {
+        
+        AND_THEN("We can construct the IETs from the components") {
           for (auto component : decomposition.components()) {
             auto iet = component.intervalExchangeTransformation();
           }
