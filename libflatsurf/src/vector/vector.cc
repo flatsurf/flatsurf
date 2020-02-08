@@ -18,6 +18,7 @@
  *********************************************************************/
 
 #include <boost/lexical_cast.hpp>
+#include <exact-real/arb.hpp>
 #include <exact-real/arf.hpp>
 #include <exact-real/element.hpp>
 #include <exact-real/integer_ring.hpp>
@@ -86,8 +87,16 @@ class Implementation<Vector<T>> : public Cartesian<T> {
 
   template <bool Enable = IsArb<T>, If<Enable> = true>
   Implementation& operator+=(const flatsurf::Vector<Arb>& rhs) {
-    this->x += rhs.impl->x(ARB_PRECISION_FAST);
-    this->y += rhs.impl->y(ARB_PRECISION_FAST);
+    // Unfortunately, exact-real's arb::yap adds too much overhead, in
+    // particular in DEBUG builds for this operation that is called all the
+    // time. So we have to call arb_add directly here.
+
+    // this->x += rhs.impl->x(ARB_PRECISION_FAST);
+    arb_add(this->x.arb_t(), this->x.arb_t(), rhs.impl->x.arb_t(), ARB_PRECISION_FAST);
+
+    // this->y += rhs.impl->y(ARB_PRECISION_FAST);
+    arb_add(this->y.arb_t(), this->y.arb_t(), rhs.impl->y.arb_t(), ARB_PRECISION_FAST);
+
     return *this;
   }
 
