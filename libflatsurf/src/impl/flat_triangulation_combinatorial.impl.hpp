@@ -24,7 +24,7 @@
 #include <set>
 #include <unordered_map>
 
-#include <boost/signals2.hpp>
+#include "../external/slimsig/include/slimsig/slimsig.h"
 
 #include "../../flatsurf/edge.hpp"
 #include "../../flatsurf/flat_triangulation_combinatorial.hpp"
@@ -52,11 +52,11 @@ class Implementation<FlatTriangulationCombinatorial> {
   Permutation<HalfEdge> faces;
   std::vector<Vertex> vertexes;
 
-  boost::signals2::signal<void(HalfEdge)> afterFlip;
-  boost::signals2::signal<void(Edge)> beforeCollapse;
-  boost::signals2::signal<void(HalfEdge, HalfEdge)> beforeSwap;
-  boost::signals2::signal<void(const std::set<Edge>&)> beforeErase;
-  boost::signals2::signal<void(FlatTriangulationCombinatorial*)> afterMove;
+  slimsig::signal<void(HalfEdge)> afterFlip;
+  slimsig::signal<void(Edge)> beforeCollapse;
+  slimsig::signal<void(HalfEdge, HalfEdge)> beforeSwap;
+  slimsig::signal<void(const std::set<Edge>&)> beforeErase;
+  slimsig::signal<void(FlatTriangulationCombinatorial*)> afterMove;
 };
 
 }  // namespace flatsurf

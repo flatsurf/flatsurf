@@ -20,7 +20,7 @@
 #ifndef LIBFLATSURF_TRACKING_IMPL_HPP
 #define LIBFLATSURF_TRACKING_IMPL_HPP
 
-#include <boost/signals2.hpp>
+#include "../external/slimsig/include/slimsig/slimsig.h"
 
 #include "../../flatsurf/tracking.hpp"
 
@@ -56,11 +56,11 @@ class Implementation<Tracking<T>> {
   const EraseHandler updateBeforeErase;
   const DestructionHandler updateBeforeDestruction;
 
-  boost::signals2::connection onAfterFlip;
-  boost::signals2::connection onBeforeCollapse;
-  boost::signals2::connection onBeforeSwap;
-  boost::signals2::connection onBeforeErase;
-  boost::signals2::connection onAfterMove;
+  typename slimsig::signal<void(HalfEdge)>::connection onAfterFlip;
+  typename slimsig::signal<void(Edge)>::connection onBeforeCollapse;
+  typename slimsig::signal<void(HalfEdge, HalfEdge)>::connection onBeforeSwap;
+  typename slimsig::signal<void(const std::set<Edge>&)>::connection onBeforeErase;
+  typename slimsig::signal<void(FlatTriangulationCombinatorial*)>::connection onAfterMove;
 };
 
 }  // namespace flatsurf

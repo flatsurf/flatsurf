@@ -113,7 +113,7 @@ FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(FlatTriangulation
 
 FlatTriangulationCombinatorial& FlatTriangulationCombinatorial::operator=(FlatTriangulationCombinatorial&& rhs) noexcept {
   impl = std::move(rhs.impl);
-  impl->afterMove(this);
+  impl->afterMove.emit(this);
   return *this;
 }
 
@@ -233,7 +233,7 @@ void FlatTriangulationCombinatorial::flip(HalfEdge e) {
   impl->faces *= cycle{c, b, -e};
 
   // notify attached structures about this flip
-  impl->afterFlip(e);
+  impl->afterFlip.emit(e);
 
   impl->resetVertexes();
 
@@ -252,7 +252,7 @@ std::pair<HalfEdge, HalfEdge> FlatTriangulationCombinatorial::collapse(HalfEdge 
     throw std::logic_error("not implemented: cannot collapse collapsed edge yet");
 
   // notify attached structures about this collapse
-  impl->beforeCollapse(collapse);
+  impl->beforeCollapse.emit(collapse);
 
   // In principle, we will drop three pairs of half edges, namely e,
   // previousAtVertex(-e), nextAtVertex(-e).
@@ -310,7 +310,7 @@ std::pair<HalfEdge, HalfEdge> FlatTriangulationCombinatorial::collapse(HalfEdge 
     dropHalfEdges.insert(d.negative());
   }
 
-  impl->beforeErase(dropEdges);
+  impl->beforeErase.emit(dropEdges);
 
   // Consider the faces (collapse, x, -a) and (-collapse, c, -y).
   const HalfEdge a = -previousInFace(collapse);
@@ -458,7 +458,7 @@ void Implementation<FlatTriangulationCombinatorial>::resetEdges() {
 void Implementation<FlatTriangulationCombinatorial>::swap(HalfEdge a, HalfEdge b) {
   if (a == b) return;
 
-  beforeSwap(a, b);
+  beforeSwap.emit(a, b);
 
   vertices *= {a, b};
   std::vector{a, b} *= vertices;
@@ -478,7 +478,7 @@ void Implementation<FlatTriangulationCombinatorial>::swap(HalfEdge a, HalfEdge b
 }
 
 Implementation<FlatTriangulationCombinatorial>::~Implementation() {
-  afterMove(nullptr);
+  afterMove.emit(nullptr);
 }
 
 bool FlatTriangulationCombinatorial::operator==(const FlatTriangulationCombinatorial& rhs) const noexcept {
