@@ -137,7 +137,7 @@ template <typename Surface>
 typename intervalxt::IntervalExchangeTransformation& IntervalExchangeTransformation<Surface>::intervalExchangeTransformation() noexcept { return impl->iet; }
 
 template <typename Surface>
-std::set<HalfEdge> IntervalExchangeTransformation<Surface>::makeUniqueLargeEdge(Surface& surface, const Vector<T>& vertical_, HalfEdge& unique_) {
+std::unordered_set<HalfEdge> IntervalExchangeTransformation<Surface>::makeUniqueLargeEdge(Surface& surface, const Vector<T>& vertical_, HalfEdge& unique_) {
   TrackingHalfEdge unique(&surface, unique_);
 
   Vertical<Surface> vertical(surface.shared_from_this(), vertical_);
@@ -148,7 +148,7 @@ std::set<HalfEdge> IntervalExchangeTransformation<Surface>::makeUniqueLargeEdge(
 
   // Eliminate other large edges
   while (true) {
-    std::set<HalfEdge> component;
+    std::unordered_set<HalfEdge> component;
     if (Vertical<Surface>::Implementation::visit(vertical, unique, component, [&](HalfEdge e) {
           if (e == unique || e == -unique)
             return true;

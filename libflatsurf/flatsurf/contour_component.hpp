@@ -32,6 +32,7 @@
 
 namespace flatsurf {
 
+// Note that this object is immutable, all its members are const.
 template <class Surface>
 class ContourComponent : boost::equality_comparable<ContourComponent<Surface>> {
  private:
@@ -43,7 +44,7 @@ class ContourComponent : boost::equality_comparable<ContourComponent<Surface>> {
 
  public:
   using T = typename Surface::Coordinate;
-  using Contour = std::list<ContourConnection<Surface>>;
+  using Contour = std::vector<ContourConnection<Surface>>;
 
   IntervalExchangeTransformation<FlatTriangulationCollapsed<T>> intervalExchangeTransformation() const;
 

@@ -19,7 +19,7 @@
 
 #include <map>
 #include <memory>
-#include <set>
+#include <unordered_set>
 
 #include <intervalxt/interval_exchange_transformation.hpp>
 #include <intervalxt/label.hpp>
@@ -46,13 +46,13 @@ Vertical<Surface>::Vertical(std::shared_ptr<const Surface> surface, const Vector
   impl(spimpl::make_impl<Implementation>(surface, vertical)) {}
 
 template <typename Surface>
-std::vector<std::set<HalfEdge>> Vertical<Surface>::components() const {
-  std::vector<std::set<HalfEdge>> components;
-  std::set<HalfEdge> done;
+std::vector<std::unordered_set<HalfEdge>> Vertical<Surface>::components() const {
+  std::vector<std::unordered_set<HalfEdge>> components;
+  std::unordered_set<HalfEdge> done;
   for (const auto& start : impl->surface->halfEdges()) {
     if (done.find(start) != done.end())
       continue;
-    std::set<HalfEdge> component;
+    std::unordered_set<HalfEdge> component;
     if (!Implementation::visit(*this, start, component, [&](HalfEdge) { return true; })) {
       assert(false && "visit cannot fail without a predicate");
     }
@@ -172,7 +172,7 @@ Implementation<Vertical<Surface>>::Implementation(std::shared_ptr<const Surface>
 }
 
 template <typename Surface>
-bool Implementation<Vertical<Surface>>::visit(const Vertical& self, HalfEdge start, std::set<HalfEdge>& component, std::function<bool(HalfEdge)> visitor) {
+bool Implementation<Vertical<Surface>>::visit(const Vertical& self, HalfEdge start, std::unordered_set<HalfEdge>& component, std::function<bool(HalfEdge)> visitor) {
   if (component.find(start) != component.end())
     return true;
 

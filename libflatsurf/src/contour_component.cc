@@ -54,44 +54,21 @@ IntervalExchangeTransformation<FlatTriangulationCollapsed<typename Surface::Coor
 }
 
 template <typename Surface>
-std::list<ContourConnection<Surface>> ContourComponent<Surface>::top() const {
-  vector<HalfEdge> topEdges;
-
-  ::flatsurf::Implementation<ContourComponent<FlatTriangulationCollapsed<T>>>::makeContour(back_inserter(topEdges), impl->large(), *impl->state->surface, impl->state->surface->vertical());
-
-  auto top = topEdges | rx::transform([&](const HalfEdge e) {
+std::vector<ContourConnection<Surface>> ContourComponent<Surface>::top() const {
+  return impl->component->topEdges | rx::transform([&](const HalfEdge e) {
     return -::flatsurf::Implementation<ContourConnection<Surface>>::make(impl->state, *this, e);
-  }) | rx::reverse() |
-             rx::to_list();
-
-  ASSERT(std::all_of(top.begin(), top.end(), [&](const auto& connection) {
-    return impl->state->surface->vertical().perpendicular(connection.connection()) < 0;
-  }),
-      "top connections must be negative, i.e., from right to left");
-
-  return top;
+  }) | rx::to_vector();
 }
 
 template <typename Surface>
-std::list<ContourConnection<Surface>> ContourComponent<Surface>::bottom() const {
-  vector<HalfEdge> bottomEdges;
-
-  ::flatsurf::Implementation<ContourComponent<FlatTriangulationCollapsed<T>>>::makeContour(back_inserter(bottomEdges), -impl->large(), *impl->state->surface, -impl->state->surface->vertical());
-
-  auto bottom = bottomEdges | rx::reverse() | rx::transform([&](const HalfEdge e) {
-    return ::flatsurf::Implementation<ContourConnection<Surface>>::make(impl->state, *this, -e);
-  }) | rx::to_list();
-
-  ASSERT(std::all_of(bottom.begin(), bottom.end(), [&](const auto& connection) {
-    return impl->state->surface->vertical().perpendicular(connection.connection()) > 0;
-  }),
-      "bottom connections must be positive, i.e., from left to right");
-
-  return bottom;
+std::vector<ContourConnection<Surface>> ContourComponent<Surface>::bottom() const {
+  return impl->component->bottomEdges | rx::transform([&](const HalfEdge e) {
+    return ::flatsurf::Implementation<ContourConnection<Surface>>::make(impl->state, *this, e);
+  }) | rx::to_vector();
 }
 
 template <typename Surface>
-std::list<ContourConnection<Surface>> ContourComponent<Surface>::perimeter() const {
+std::vector<ContourConnection<Surface>> ContourComponent<Surface>::perimeter() const {
   auto perimeter = bottom();
   for (auto connection : top()) perimeter.push_back(connection);
   return perimeter;
@@ -99,15 +76,7 @@ std::list<ContourConnection<Surface>> ContourComponent<Surface>::perimeter() con
 
 template <typename Surface>
 HalfEdge Implementation<ContourComponent<Surface>>::large() const {
-  auto vertical = state->surface->vertical();
-  HalfEdge large = *std::find_if(component->component.begin(), component->component.end(), [&](HalfEdge e) {
-    return vertical.large(e);
-  });
-
-  if (vertical.perpendicular(state->surface->fromEdge(large)) < 0)
-    large = -large;
-
-  return large;
+  return component->large;
 }
 
 template <typename Surface>
@@ -144,7 +113,14 @@ void Implementation<ContourComponent<Surface>>::makeContour(std::back_insert_ite
 
 template <typename Surface>
 bool ContourComponent<Surface>::operator==(const ContourComponent<Surface>& rhs) const {
-  return impl->component->component == rhs.impl->component->component && impl->state->surface == rhs.impl->state->surface;
+  if (impl->component == rhs.impl->component)
+    return true;
+
+  if (impl->state == rhs.impl->state)
+    return false;
+
+  return impl->state->surface == rhs.impl->state->surface
+    && impl->component->halfEdges == rhs.impl->component->halfEdges;
 }
 
 template <typename Surface>

@@ -30,6 +30,7 @@ libflatsurf_la_SOURCES =                                            \
 	flow_decomposition_state.cc                                 \
 	flow_component_state.cc                                     \
 	contour_decomposition_state.cc                              \
+	contour_component_state.cc                                  \
 	collapsed_half_edge.cc                                      \
 	contour_connection.cc                                       \
 	chain.cc

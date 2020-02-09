@@ -27,6 +27,8 @@
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/contour_component.hpp"
+#include "../flatsurf/fmt.hpp"
 
 #include "impl/contour_decomposition.impl.hpp"
 
@@ -63,7 +65,7 @@ Implementation<ContourDecomposition<Surface>>::Implementation(std::unique_ptr<Su
 
 template <typename Surface>
 ostream& operator<<(ostream& os, const ContourDecomposition<Surface>& self) {
-  return os << fmt::format("[{}]", fmt::join(self.components() | rx::transform([&](const auto& component) { return fmt::format("{}", component); }) | rx::to_vector(), ", "));
+  return os << fmt::format("[{}]", fmt::join(self.components(), ", "));
 }
 }  // namespace flatsurf
 

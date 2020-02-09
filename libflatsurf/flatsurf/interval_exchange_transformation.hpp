@@ -20,7 +20,7 @@
 #ifndef LIBFLATSURF_INTERVAL_EXCHANGE_TRANSFORMATION_HPP
 #define LIBFLATSURF_INTERVAL_EXCHANGE_TRANSFORMATION_HPP
 
-#include <set>
+#include <unordered_set>
 #include <vector>
 
 #include "external/spimpl/spimpl.h"
@@ -48,7 +48,7 @@ class IntervalExchangeTransformation {
   // trivial.)
   static void makeUniqueLargeEdges(Surface&, const Vector<T>&);
 
-  static std::set<HalfEdge> makeUniqueLargeEdge(Surface&, const Vector<T>&, HalfEdge&);
+  static std::unordered_set<HalfEdge> makeUniqueLargeEdge(Surface&, const Vector<T>&, HalfEdge&);
 
   intervalxt::IntervalExchangeTransformation& intervalExchangeTransformation() noexcept;
   const intervalxt::IntervalExchangeTransformation& intervalExchangeTransformation() const noexcept;

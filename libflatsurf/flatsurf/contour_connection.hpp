@@ -29,7 +29,9 @@
 #include "forward.hpp"
 
 namespace flatsurf {
+
 // A non-vertical connection.
+// Note that this object is immutable, all its members are const.
 template <typename Surface>
 class ContourConnection : boost::equality_comparable<ContourComponent<Surface>> {
  private:

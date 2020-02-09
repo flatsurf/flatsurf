@@ -35,7 +35,7 @@ class Implementation<Vertical<Surface>> {
  public:
   Implementation(std::shared_ptr<const Surface>, const Vector<T>&);
 
-  static bool visit(const Vertical& self, HalfEdge start, std::set<HalfEdge>& component, std::function<bool(HalfEdge)> visitor);
+  static bool visit(const Vertical& self, HalfEdge start, std::unordered_set<HalfEdge>& component, std::function<bool(HalfEdge)> visitor);
 
   std::shared_ptr<const Surface> surface;
   Vector<T> vertical;

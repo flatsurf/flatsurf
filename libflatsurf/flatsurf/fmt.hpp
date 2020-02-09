@@ -61,6 +61,8 @@ template <>
 struct fmt::formatter<::flatsurf::HalfEdge> : ::flatsurf::GenericFormatter<::flatsurf::HalfEdge> {};
 template <typename T>
 struct fmt::formatter<::flatsurf::Vector<T>> : ::flatsurf::GenericFormatter<::flatsurf::Vector<T>> {};
+template <typename T>
+struct fmt::formatter<::flatsurf::ContourComponent<T>> : ::flatsurf::GenericFormatter<::flatsurf::ContourComponent<T>> {};
 
 
 #endif

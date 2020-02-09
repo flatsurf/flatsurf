@@ -246,7 +246,7 @@ void Implementation<FlatTriangulationCollapsed<T>>::handleCollapse(M& map, Edge 
   const auto& surface = static_cast<const FlatTriangulationCollapsed<T>&>(map.parent());
   HalfEdge collapse = collapse_.positive();
 
-  assert(surface.vertical().parallel(collapse) && "cannot collapse non-vertical edge");
+  ASSERT(surface.vertical().parallel(collapse), "cannot collapse non-vertical edge " << collapse);
 
   if (surface.vertical().parallel(surface.fromEdge(collapse)) < 0)
     collapse = -collapse;
@@ -286,13 +286,18 @@ bool Implementation<FlatTriangulationCollapsed<T>>::faceClosed(const FlatTriangu
 
 template <typename T>
 void Implementation<FlatTriangulationCollapsed<T>>::updateAfterFlip(HalfEdgeMap<AsymmetricConnection>& vectors, HalfEdge flip) {
+  // TODO: Speed this up. We can very often get away without creating a new
+  // Chain/SaddleConnection by using more move and inplace operations. There
+  // should probably be a destructive static_cast from SaddleConnection&& to
+  // Chain.
   Implementation::handleFlip(vectors, flip, [&](const auto& surface, HalfEdge a, HalfEdge b, HalfEdge c, HalfEdge d) {
     const auto sum = [&](const auto& lhs, const auto& rhs) {
-      return SaddleConnection(surface.impl->original, lhs.source(), rhs.target(), static_cast<Chain<FlatTriangulation<T>>>(lhs) + static_cast<Chain<FlatTriangulation<T>>>(rhs));
+      return SaddleConnection(surface.impl->original, lhs.source(), rhs.target(), static_cast<const Chain<FlatTriangulation<T>>&>(lhs) + static_cast<const Chain<FlatTriangulation<T>>&>(rhs));
     };
 
-    // The flip turned (a b flip)(c d -flip) into (a -flip d)(c flip b)
     auto& collapsedHalfEdges = surface.impl->collapsedHalfEdges;
+
+    // The flip turned (a b flip)(c d -flip) into (a -flip d)(c flip b)
 
     // We pull b down over the connections hidden in flip …
     for (const auto& connection : collapsedHalfEdges.get(flip).connections) {
@@ -342,8 +347,6 @@ void Implementation<FlatTriangulationCollapsed<T>>::updateBeforeCollapse(HalfEdg
     auto connection = vectors.get(collapse).value;
 
     ASSERT(-connection == vectors.get(-collapse), "the vertical half edge cannot hide collapsed saddle connections so it must be the same in both of its faces but " << collapse << " is " << connection << " and " << -collapse << " is " << vectors.get(-collapse));
-
-    flatsurf::Implementation<SaddleConnection>::check(connection);
 
     collapsedHalfEdges.get(b).connections.push_front(connection);
     collapsedHalfEdges.get(d).connections.push_front(-connection);

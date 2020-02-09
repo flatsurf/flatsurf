@@ -21,15 +21,29 @@
 #define LIBFLATSURF_CONTOUR_COMPONENT_IMPL_COMPONENT_STATE_HPP
 
 #include <memory>
-#include <set>
+#include <unordered_set>
+#include <list>
 
-#include "contour_component.impl.hpp"
+#include "../../flatsurf/half_edge.hpp"
+
+#include "forward.hpp"
 
 namespace flatsurf {
 template <typename Surface>
 class ContourComponentState {
+  using T = typename Surface::Coordinate;
+
  public:
-  std::set<HalfEdge> component;
+  ContourComponentState(const ContourDecompositionState<Surface>&, const std::unordered_set<HalfEdge>&);
+
+  std::unordered_set<HalfEdge> halfEdges;
+
+  HalfEdge large;
+  std::vector<HalfEdge> topEdges;
+  std::vector<HalfEdge> bottomEdges;
+
+  template <typename S>
+  friend std::ostream& operator<<(std::ostream&, const ContourComponentState<S>&);
 };
 }  // namespace flatsurf
 

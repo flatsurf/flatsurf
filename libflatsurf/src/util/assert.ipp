@@ -32,7 +32,7 @@ class Amortized {
   T budget;
 
  public:
-  Amortized(const T& budget = 1 << 16) :
+  Amortized(const T& budget = 1 << 10) :
     budget(budget) {}
 
   void reset(const T& budget) { this->budget = budget; }

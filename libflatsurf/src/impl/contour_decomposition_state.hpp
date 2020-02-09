@@ -22,9 +22,11 @@
 
 #include <list>
 #include <memory>
+#include <iosfwd>
 
-#include "contour_decomposition.impl.hpp"
-#include "forward.hpp"
+#include "../../flatsurf/contour_component.hpp"
+
+#include "contour_component_state.hpp"
 
 namespace flatsurf {
 

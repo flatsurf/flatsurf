@@ -22,7 +22,7 @@
 
 #include <iosfwd>
 #include <memory>
-#include <set>
+#include <unordered_set>
 #include <type_traits>
 #include <vector>
 
@@ -70,7 +70,7 @@ class Vertical : boost::equality_comparable<Vertical<Surface>> {
 
   std::shared_ptr<const Surface> surface() const;
 
-  std::vector<std::set<HalfEdge>> components() const;
+  std::vector<std::unordered_set<HalfEdge>> components() const;
 
   bool operator==(const Vertical &) const noexcept;
 

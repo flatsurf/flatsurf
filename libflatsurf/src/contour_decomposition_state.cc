@@ -26,6 +26,7 @@
 #include "util/assert.ipp"
 
 #include "impl/contour_decomposition_state.hpp"
+#include "impl/contour_component.impl.hpp"
 
 namespace flatsurf {
 
@@ -44,7 +45,7 @@ ContourDecompositionState<Surface>::ContourDecompositionState(std::unique_ptr<Su
   components([&]() {
     std::list<ComponentState> components;
     for (auto& component : this->surface->vertical().components()) {
-      components.push_back(ComponentState{component});
+      components.push_back(ComponentState(*this, component));
     }
     return components;
   }()) {
