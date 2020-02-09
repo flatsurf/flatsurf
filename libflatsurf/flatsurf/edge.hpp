@@ -49,4 +49,11 @@ class Edge : boost::equality_comparable<Edge> {
 };
 }  // namespace flatsurf
 
+namespace std {
+template <>
+struct hash<flatsurf::Edge> {
+  size_t operator()(const flatsurf::Edge &) const noexcept;
+};
+}  // namespace std
+
 #endif

@@ -58,3 +58,7 @@ std::ostream& operator<<(std::ostream& os, const Edge& e) {
 }
 
 }  // namespace flatsurf
+
+size_t std::hash<flatsurf::Edge>::operator()(const flatsurf::Edge &e) const noexcept {
+  return std::hash<flatsurf::HalfEdge>()(e.positive());
+}

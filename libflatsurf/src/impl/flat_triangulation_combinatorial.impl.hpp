@@ -22,7 +22,8 @@
 
 #include <functional>
 #include <set>
-#include <unordered_map>
+#include <variant>
+#include <vector>
 
 #include "../external/slimsig/include/slimsig/slimsig.h"
 
@@ -39,6 +40,14 @@ class Implementation<FlatTriangulationCombinatorial> {
   Implementation(const Permutation<HalfEdge>&, const std::set<HalfEdge>&);
   ~Implementation();
 
+  struct MessageAfterFlip { HalfEdge e; };
+  struct MessageBeforeCollapse { Edge e; };
+  struct MessageBeforeSwap { HalfEdge a, b; };
+  struct MessageBeforeErase { std::set<Edge> erase; };
+  struct MessageAfterMove { FlatTriangulationCombinatorial* target; };
+
+  using Message = std::variant<MessageAfterFlip, MessageBeforeCollapse, MessageBeforeSwap, MessageBeforeErase, MessageAfterMove>;
+
   void resetVertexes();
   void resetVertices();
   void resetEdges();
@@ -52,11 +61,7 @@ class Implementation<FlatTriangulationCombinatorial> {
   Permutation<HalfEdge> faces;
   std::vector<Vertex> vertexes;
 
-  slimsig::signal<void(HalfEdge)> afterFlip;
-  slimsig::signal<void(Edge)> beforeCollapse;
-  slimsig::signal<void(HalfEdge, HalfEdge)> beforeSwap;
-  slimsig::signal<void(const std::set<Edge>&)> beforeErase;
-  slimsig::signal<void(FlatTriangulationCombinatorial*)> afterMove;
+  slimsig::signal<void(Message)> change;
 };
 
 }  // namespace flatsurf

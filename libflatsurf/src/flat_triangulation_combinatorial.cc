@@ -113,7 +113,7 @@ FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(FlatTriangulation
 
 FlatTriangulationCombinatorial& FlatTriangulationCombinatorial::operator=(FlatTriangulationCombinatorial&& rhs) noexcept {
   impl = std::move(rhs.impl);
-  impl->afterMove.emit(this);
+  impl->change.emit(Implementation::MessageAfterMove{this});
   return *this;
 }
 
@@ -233,7 +233,7 @@ void FlatTriangulationCombinatorial::flip(HalfEdge e) {
   impl->faces *= cycle{c, b, -e};
 
   // notify attached structures about this flip
-  impl->afterFlip.emit(e);
+  impl->change.emit(Implementation::MessageAfterFlip{e});
 
   impl->resetVertexes();
 
@@ -252,7 +252,7 @@ std::pair<HalfEdge, HalfEdge> FlatTriangulationCombinatorial::collapse(HalfEdge 
     throw std::logic_error("not implemented: cannot collapse collapsed edge yet");
 
   // notify attached structures about this collapse
-  impl->beforeCollapse.emit(collapse);
+  impl->change.emit(Implementation::MessageBeforeCollapse{collapse});
 
   // In principle, we will drop three pairs of half edges, namely e,
   // previousAtVertex(-e), nextAtVertex(-e).
@@ -310,7 +310,7 @@ std::pair<HalfEdge, HalfEdge> FlatTriangulationCombinatorial::collapse(HalfEdge 
     dropHalfEdges.insert(d.negative());
   }
 
-  impl->beforeErase.emit(dropEdges);
+  impl->change.emit(Implementation::MessageBeforeErase{dropEdges});
 
   // Consider the faces (collapse, x, -a) and (-collapse, c, -y).
   const HalfEdge a = -previousInFace(collapse);
@@ -458,7 +458,7 @@ void Implementation<FlatTriangulationCombinatorial>::resetEdges() {
 void Implementation<FlatTriangulationCombinatorial>::swap(HalfEdge a, HalfEdge b) {
   if (a == b) return;
 
-  beforeSwap.emit(a, b);
+  change.emit(Implementation::MessageBeforeSwap{a, b});
 
   vertices *= {a, b};
   std::vector{a, b} *= vertices;
@@ -478,7 +478,7 @@ void Implementation<FlatTriangulationCombinatorial>::swap(HalfEdge a, HalfEdge b
 }
 
 Implementation<FlatTriangulationCombinatorial>::~Implementation() {
-  afterMove.emit(nullptr);
+  change.emit(MessageAfterMove{nullptr});
 }
 
 bool FlatTriangulationCombinatorial::operator==(const FlatTriangulationCombinatorial& rhs) const noexcept {

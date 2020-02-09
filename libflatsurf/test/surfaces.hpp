@@ -40,11 +40,11 @@ using eantic::renf_elem_class;
 using std::vector;
 
 namespace flatsurf::test {
-auto K = renf_class::make("x^2 - 3", "x", "1.73 +/- 0.1");
-auto L = renf_class::make("x^2 - x - 1", "x", "1.618 +/- 0.1");
-auto M = renf_class::make("x^3 - x^2 - 2*x +1", "x", "1.802 +/- 0.1");
+static auto K = renf_class::make("x^2 - 3", "x", "1.73 +/- 0.1");
+static auto L = renf_class::make("x^2 - x - 1", "x", "1.618 +/- 0.1");
+static auto M = renf_class::make("x^3 - x^2 - 2*x +1", "x", "1.802 +/- 0.1");
 
-auto makeSquareCombinatorial() {
+inline auto makeSquareCombinatorial() {
   auto vertices = vector<vector<int>>{{1, 3, 2, -1, -3, -2}};
   return FlatTriangulationCombinatorial(vertices);
 }
@@ -55,7 +55,7 @@ auto makeSquare() {
   return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(makeSquareCombinatorial(), vectors);
 }
 
-auto makeSquareWithBoundaryCombinatorial() {
+inline auto makeSquareWithBoundaryCombinatorial() {
   auto vertices = vector<vector<int>>{{-2, 1, 3, 2}, {4, -1, -3, -4}};
   return FlatTriangulationCombinatorial(vertices, {2, -4});
 }
@@ -66,7 +66,7 @@ auto makeSquareWithBoundary() {
   return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(makeSquareWithBoundaryCombinatorial(), vectors);
 }
 
-auto makeLCombinatorial() {
+inline auto makeLCombinatorial() {
   auto vertices = vector<vector<int>>{{1, 2, 3, 4, 5, -3, 6, 7, 8, -6, -2, 9, -4, -5, -9, -1, -7, -8}};
   return FlatTriangulationCombinatorial(vertices);
 }
@@ -85,7 +85,7 @@ auto makeGoldenL() {
   return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(makeLCombinatorial(), vectors);
 }
 
-auto makeHexagonCombinatorial() {
+inline auto makeHexagonCombinatorial() {
   auto vertices = vector<vector<int>>({{1, 3, -4, -5, -3, -2}, {2, -1, -6, 4, 5, 6}});
   return FlatTriangulationCombinatorial(vertices);
 }
@@ -98,7 +98,7 @@ auto makeHexagon() {
   return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(makeHexagonCombinatorial(), vectors);
 }
 
-auto makeHeptagonLCombinatorial() {
+inline auto makeHeptagonLCombinatorial() {
   auto vertices = vector<vector<int>>{{1, 2, 3, 4, 5, 6, -4, 7, 8, -1, 9, 10, 11, 12, -10, 13, -2, -8, 14, -5, -6, -14, -7, -3, -13, -9, 15, -11, -12, -15}};
   return FlatTriangulationCombinatorial(vertices);
 }
@@ -112,7 +112,7 @@ auto makeHeptagonL() {
   return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(makeHeptagonLCombinatorial(), vectors);
 }
 
-auto make1221Combinatorial() {
+inline auto make1221Combinatorial() {
   auto vertices = vector<vector<int>>({{-12, 4, -6, -1, -8, 6, -5, 3, -10, 5, -4, 2}, {-11, 7, 1, 8, -7, 9, -3, 10, -9, 11, -2, 12}});
   return FlatTriangulationCombinatorial(vertices);
 }

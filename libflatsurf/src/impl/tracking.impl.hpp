@@ -24,12 +24,16 @@
 
 #include "../../flatsurf/tracking.hpp"
 
+#include "flat_triangulation_combinatorial.impl.hpp"
+
 namespace flatsurf {
 
 template <typename T>
 class Implementation<Tracking<T>> {
   void disconnect();
   void connect();
+
+  using Message = typename ::flatsurf::Implementation<FlatTriangulationCombinatorial>::Message;
 
  public:
   using FlipHandler = typename Tracking<T>::FlipHandler;
@@ -56,11 +60,7 @@ class Implementation<Tracking<T>> {
   const EraseHandler updateBeforeErase;
   const DestructionHandler updateBeforeDestruction;
 
-  typename slimsig::signal<void(HalfEdge)>::connection onAfterFlip;
-  typename slimsig::signal<void(Edge)>::connection onBeforeCollapse;
-  typename slimsig::signal<void(HalfEdge, HalfEdge)>::connection onBeforeSwap;
-  typename slimsig::signal<void(const std::set<Edge>&)>::connection onBeforeErase;
-  typename slimsig::signal<void(FlatTriangulationCombinatorial*)>::connection onAfterMove;
+  typename slimsig::signal<void(Message)>::connection onChange;
 };
 
 }  // namespace flatsurf

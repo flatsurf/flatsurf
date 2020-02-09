@@ -1,6 +1,6 @@
 noinst_PROGRAMS = benchmark
 
-benchmark_SOURCES = main.cc saddle_connections.benchmark.cc surfaces.hpp
+benchmark_SOURCES = main.cc saddle_connections.benchmark.cc chain.benchmark.cc surfaces.hpp
 
 AM_CPPFLAGS = -I $(srcdir)/.. -I $(builddir)/..
 AM_LDFLAGS = $(builddir)/../src/libflatsurf.la

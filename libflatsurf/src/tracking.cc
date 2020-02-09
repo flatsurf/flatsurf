@@ -89,11 +89,7 @@ Implementation<Tracking<T>>::~Implementation() {
 template <typename T>
 void Implementation<Tracking<T>>::disconnect() {
   if (parent != nullptr) {
-    onAfterFlip.disconnect();
-    onBeforeCollapse.disconnect();
-    onBeforeSwap.disconnect();
-    onBeforeErase.disconnect();
-    onAfterMove.disconnect();
+    onChange.disconnect();
     parent = nullptr;
   }
 }
@@ -102,28 +98,28 @@ template <typename T>
 void Implementation<Tracking<T>>::connect() {
   assert(parent != nullptr && "cannot connect without a parent FlatTriangulationCombinatorial");
 
-  // All these callbacks hold a reference to "this". This reference cannot be
+  // This callback holds a reference to "this". This reference cannot be
   // dangling since we explicitly disconnect in ~Implementation.
-  onAfterFlip = parent->impl->afterFlip.connect([&](HalfEdge e) {
-    updateAfterFlip(*value, *parent, e);
-  });
-  onBeforeCollapse = parent->impl->beforeCollapse.connect([&](Edge e) {
-    updateBeforeCollapse(*value, *parent, e);
-  });
-  onBeforeSwap = parent->impl->beforeSwap.connect([&](HalfEdge a, HalfEdge b) {
-    updateBeforeSwap(*value, *parent, a, b);
-  });
-  onBeforeErase = parent->impl->beforeErase.connect([&](const std::set<Edge>& erase) {
-    updateBeforeErase(*value, *parent, erase);
-  });
-  onAfterMove = parent->impl->afterMove.connect([&](FlatTriangulationCombinatorial* parent) {
-    if (parent == nullptr) {
-      updateBeforeDestruction(*value, *this->parent);
-    }
-    disconnect();
-    if (parent != nullptr) {
-      this->parent = parent;
-      connect();
+  onChange = parent->impl->change.connect([&](const Message& message) {
+    if (auto flipMessage = std::get_if<::flatsurf::Implementation<FlatTriangulationCombinatorial>::MessageAfterFlip>(&message)) {
+      updateAfterFlip(*value, *parent, flipMessage->e);
+    } else if (auto collapseMessage = std::get_if<::flatsurf::Implementation<FlatTriangulationCombinatorial>::MessageBeforeCollapse>(&message)) {
+      updateBeforeCollapse(*value, *parent, collapseMessage->e);
+    } else if (auto swapMessage = std::get_if<::flatsurf::Implementation<FlatTriangulationCombinatorial>::MessageBeforeSwap>(&message)) {
+      updateBeforeSwap(*value, *parent, swapMessage->a, swapMessage->b);
+    } else if (auto eraseMessage = std::get_if<::flatsurf::Implementation<FlatTriangulationCombinatorial>::MessageBeforeErase>(&message)) {
+      updateBeforeErase(*value, *parent, eraseMessage->erase);
+    } else if (auto moveMessage = std::get_if<::flatsurf::Implementation<FlatTriangulationCombinatorial>::MessageAfterMove>(&message)) {
+      if (moveMessage->target == nullptr) {
+        updateBeforeDestruction(*value, *this->parent);
+      }
+      disconnect();
+      if (parent != nullptr) {
+        this->parent = moveMessage->target;
+        connect();
+      }
+    } else {
+      throw std::logic_error("unknown Message");
     }
   });
 }
