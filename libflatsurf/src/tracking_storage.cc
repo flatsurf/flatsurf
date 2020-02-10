@@ -36,14 +36,16 @@ TrackingStorage<SELF, K, V>::TrackingStorage(SELF* self, const FlatTriangulation
   updateAfterFlip(updateAfterFlip),
   updateBeforeCollapse(updateBeforeCollapse),
   tracker(parent, self, wrappedUpdateAfterFlip, wrappedUpdateBeforeCollapse, updateBeforeSwap, updateBeforeErase) {
+  const auto& keys = TrackingStorage::keys(*parent);
   if constexpr (hasIndex) {
-    for (const auto& key : keys(*parent)) {
-      assert(key.index() == data.size() && "sort order not consistent with index()");
+    data.reserve(keys.size());
+    for (const auto& key : keys) {
+      ASSERT(key.index() == data.size(), "sort order not consistent with index()");
       data.emplace_back(Value{values(key)});
     }
   } else {
-    for (const auto& key : keys(*parent)) {
-      assert(data.find(key) == data.end() && "keys of these items are not unique");
+    for (const auto& key : keys) {
+      ASSERT(data.find(key) == data.end(), "keys of these items are not unique");
       data.emplace(key, values(key));
     }
   }
@@ -52,28 +54,28 @@ TrackingStorage<SELF, K, V>::TrackingStorage(SELF* self, const FlatTriangulation
 template <typename SELF, typename K, typename V>
 V& TrackingStorage<SELF, K, V>::get(const K& key) {
   if constexpr (hasIndex) {
-    return data[key.index()].value;
+    return reinterpret_cast<V&>(data[key.index()]);
   } else {
     const auto& value = data.find(key);
-    assert(value != data.end() && "not in this surface");
-    return value->second;
+    ASSERT(value != data.end(), "not in this surface");
+    return reinterpret_cast<V&>(value->second);
   }
 }
 
 template <typename SELF, typename K, typename V>
 void TrackingStorage<SELF, K, V>::set(const K& key, const V& value) {
   if constexpr (hasIndex) {
-    assert(key.index() < data.size() && "not in this surface");
+    ASSERT(key.index() < data.size(), "not in this surface");
     data[key.index()] = {value};
     if constexpr (odd)
       data[(-key).index()] = {-value};
   } else {
     auto it = data.find(key);
-    assert(it != data.end() && "not in this surface");
+    ASSERT(it != data.end(), "not in this surface");
     it->second = value;
     if constexpr (odd) {
       it = data.find(-key);
-      assert(it != data.end() && "not in this surface");
+      ASSERT(it != data.end(), "not in this surface");
       it->second = -value;
     }
   }
@@ -167,7 +169,8 @@ void TrackingStorage<SELF, K, V>::wrappedUpdateAfterFlip(SELF& self, const FlatT
           return true;
         }
       }
-      assert(false && "failed to rename vertex after flip"); });
+      throw std::logic_error("failed to rename vertex after flip");
+    });
   } else {
     throw std::logic_error("not implemented: wrappedUpdateAfterFlip()");
   }

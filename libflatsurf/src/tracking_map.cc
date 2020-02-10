@@ -51,6 +51,7 @@ TrackingMap<K, V>::TrackingMap(const TrackingMap& rhs) :
       this, &rhs.parent(), [&](const K& key) { return rhs.get(key); }, rhs.impl->updateAfterFlip, rhs.impl->updateBeforeCollapse)) {
 }
 
+// TODO: Implement this in a faster way.
 template <typename K, typename V>
 TrackingMap<K, V>::TrackingMap(TrackingMap&& rhs) :
   TrackingMap(rhs) {}

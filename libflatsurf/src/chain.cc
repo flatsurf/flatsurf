@@ -36,7 +36,7 @@ Chain<Surface>::Chain() :
 
 template <typename Surface>
 Chain<Surface>::Chain(std::shared_ptr<const Surface> surface) :
-  impl(spimpl::make_impl<Implementation>(surface)) {}
+  impl(spimpl::make_impl<Implementation>(std::move(surface))) {}
 
 template <typename Surface>
 Chain<Surface>::operator const Vector<T>&() const {
@@ -225,11 +225,11 @@ std::ostream& operator<<(std::ostream& os, const Chain<Surface>& chain) {
 
 template <typename Surface>
 Implementation<Chain<Surface>>::Implementation(std::shared_ptr<const Surface> surface) :
-  surface(surface),
+  surface(std::move(surface)),
   coefficients(
-      surface.get(), [&](const Edge&) { return 0; }, updateAfterFlip),
-  vector(Vector<T>()),
-  approximateVector(Vector<exactreal::Arb>()) {}
+      this->surface.get(), [&](const Edge&) { return mpz_class(); }, updateAfterFlip),
+  vector(),
+  approximateVector() {}
 
 template <typename Surface>
 void Implementation<Chain<Surface>>::recordMove(const Move& move) const {

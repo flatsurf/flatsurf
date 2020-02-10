@@ -45,7 +45,7 @@ void CreateChain(State& state) {
 BENCHMARK_TEMPLATE(CreateChain, long long);
 
 template <class T>
-void CopyChain(State& state) {
+void CopyConstructChain(State& state) {
   using R2 = Vector<T>;
   const auto L = makeL<R2>();
   const auto chain = Chain(L);
@@ -54,7 +54,20 @@ void CopyChain(State& state) {
     DoNotOptimize(Chain(chain));
   }
 }
-BENCHMARK_TEMPLATE(CopyChain, long long);
+BENCHMARK_TEMPLATE(CopyConstructChain, long long);
+
+template <class T>
+void CopyAssignChain(State& state) {
+  using R2 = Vector<T>;
+  const auto L = makeL<R2>();
+  const auto chain = Chain(L);
+  auto target = chain;
+
+  for (auto _ : state) {
+    target = chain;
+  }
+}
+BENCHMARK_TEMPLATE(CopyAssignChain, long long);
 
 template <class T>
 void MoveChain(State& state) {

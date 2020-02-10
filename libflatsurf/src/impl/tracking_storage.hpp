@@ -38,17 +38,10 @@ using index_t = decltype(std::declval<K>().index());
 
 template <typename SELF, typename K, typename V>
 class TrackingStorage {
-  // Work around STL's bool optimization: vector<Value> is not a bitfield
-  // anymore but a proper vector of things we can return by reference.
-  struct Value {
-    V value;
-    bool operator==(const Value& rhs) const {
-      if constexpr (std::is_same_v<decltype(value == rhs.value), bool>)
-        return value == rhs.value;
-      else
-        throw std::logic_error("not implemented: operator== for operands that do not implement bool operator==");
-    }
-  };
+  using Value = std::conditional_t<std::is_same_v<V, bool>, char, V>;
+
+  static_assert(sizeof(V) == sizeof(Value), "We replace bool with char to work around vector<bool> 'optimizations' in the STL. If this is not correct for your achitecture, we need to provide an additional alternative type for Value below.");
+
   static constexpr bool hasIndex = boost::is_detected_exact_v<size_t, index_t, K>;
   using Data = std::conditional_t<hasIndex, std::vector<Value>, std::map<K, V>>;
   static constexpr bool odd = SELF::odd;
