@@ -66,7 +66,7 @@ class TrackingStorage {
   void swap(const K&, const K&);
 
   std::vector<K> keys() const;
-  static std::vector<K> keys(const FlatTriangulationCombinatorial&);
+  static const std::vector<K>& keys(const FlatTriangulationCombinatorial&);
 
   const typename SELF::FlipHandler updateAfterFlip;
   const typename SELF::CollapseHandler updateBeforeCollapse;

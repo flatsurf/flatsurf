@@ -21,6 +21,7 @@
 #ifndef LIBFLATSURF_TEST_SURFACES_HPP
 #define LIBFLATSURF_TEST_SURFACES_HPP
 
+#include <memory>
 #include <vector>
 
 #include <e-antic/renfxx.h>
@@ -46,35 +47,35 @@ static auto M = renf_class::make("x^3 - x^2 - 2*x +1", "x", "1.802 +/- 0.1");
 
 inline auto makeSquareCombinatorial() {
   auto vertices = vector<vector<int>>{{1, 3, 2, -1, -3, -2}};
-  return FlatTriangulationCombinatorial(vertices);
+  return std::make_shared<FlatTriangulationCombinatorial>(vertices);
 }
 
 template <typename R2>
 auto makeSquare() {
   auto vectors = vector{R2(1, 0), R2(0, 1), R2(1, 1)};
-  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(makeSquareCombinatorial(), vectors);
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeSquareCombinatorial()), vectors);
 }
 
 inline auto makeSquareWithBoundaryCombinatorial() {
   auto vertices = vector<vector<int>>{{-2, 1, 3, 2}, {4, -1, -3, -4}};
-  return FlatTriangulationCombinatorial(vertices, {2, -4});
+  return std::make_shared<FlatTriangulationCombinatorial>(vertices, std::set<int>{2, -4});
 }
 
 template <typename R2>
 auto makeSquareWithBoundary() {
   auto vectors = vector{R2(1, 0), R2(0, 1), R2(1, 1), R2(0, 1)};
-  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(makeSquareWithBoundaryCombinatorial(), vectors);
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeSquareWithBoundaryCombinatorial()), vectors);
 }
 
 inline auto makeLCombinatorial() {
   auto vertices = vector<vector<int>>{{1, 2, 3, 4, 5, -3, 6, 7, 8, -6, -2, 9, -4, -5, -9, -1, -7, -8}};
-  return FlatTriangulationCombinatorial(vertices);
+  return std::make_shared<FlatTriangulationCombinatorial>(vertices);
 }
 
 template <typename R2>
 auto makeL() {
   auto vectors = {R2(1, 0), R2(1, 1), R2(0, 1), R2(-1, 0), R2(-1, -1), R2(1, 0), R2(1, 1), R2(0, 1), R2(0, -1)};
-  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(makeLCombinatorial(), vectors);
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeLCombinatorial()), vectors);
 }
 
 template <typename R2>
@@ -82,12 +83,12 @@ auto makeGoldenL() {
   vector<R2> vectors;
   auto a = L->gen();
   vectors = vector{R2(1, 0), R2(1, 1), R2(0, 1), R2(1 - a, 0), R2(1 - a, -1), R2(1, 0), R2(1, a - 1), R2(0, a - 1), R2(0, -1)};
-  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(makeLCombinatorial(), vectors);
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeLCombinatorial()), vectors);
 }
 
 inline auto makeHexagonCombinatorial() {
   auto vertices = vector<vector<int>>({{1, 3, -4, -5, -3, -2}, {2, -1, -6, 4, 5, 6}});
-  return FlatTriangulationCombinatorial(vertices);
+  return std::make_shared<FlatTriangulationCombinatorial>(vertices);
 }
 
 template <typename R2>
@@ -95,12 +96,12 @@ auto makeHexagon() {
   vector<R2> vectors;
   auto x = K->gen();
   vectors = vector{R2(2, 0), R2(1, x), R2(3, x), R2(1, -x), R2(4, 0), R2(3, x)};
-  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(makeHexagonCombinatorial(), vectors);
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeHexagonCombinatorial()), vectors);
 }
 
 inline auto makeHeptagonLCombinatorial() {
   auto vertices = vector<vector<int>>{{1, 2, 3, 4, 5, 6, -4, 7, 8, -1, 9, 10, 11, 12, -10, 13, -2, -8, 14, -5, -6, -14, -7, -3, -13, -9, 15, -11, -12, -15}};
-  return FlatTriangulationCombinatorial(vertices);
+  return std::make_shared<FlatTriangulationCombinatorial>(vertices);
 }
 
 template <typename R2>
@@ -109,12 +110,12 @@ auto makeHeptagonL() {
   auto a = M->gen();
   auto b = a * a - a - 1;
   vectors = vector{R2(1, 0), R2(1, 1), R2(0, 1), R2(1 - a, 0), R2(1 - a, -b), R2(0, -b), R2(a - 1, 1), R2(0, 1), R2(-1, 1 - a), R2(0, 1 - a), R2(b, 0), R2(b, a - 1), R2(-1, 0), R2(a - 1, 0), R2(0, a - 1)};
-  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(makeHeptagonLCombinatorial(), vectors);
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeHeptagonLCombinatorial()), vectors);
 }
 
 inline auto make1221Combinatorial() {
   auto vertices = vector<vector<int>>({{-12, 4, -6, -1, -8, 6, -5, 3, -10, 5, -4, 2}, {-11, 7, 1, 8, -7, 9, -3, 10, -9, 11, -2, 12}});
-  return FlatTriangulationCombinatorial(vertices);
+  return std::make_shared<FlatTriangulationCombinatorial>(vertices);
 }
 
 template <typename R2>
@@ -134,7 +135,7 @@ auto make1221() {
   } else {
     throw std::logic_error("not implemented: make1221()");
   }
-  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(make1221Combinatorial(), vectors);
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*make1221Combinatorial()), vectors);
 }
 
 }  // namespace flatsurf::test

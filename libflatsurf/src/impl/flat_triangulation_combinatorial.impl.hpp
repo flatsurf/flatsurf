@@ -60,6 +60,7 @@ class Implementation<FlatTriangulationCombinatorial> {
   Permutation<HalfEdge> vertices;
   Permutation<HalfEdge> faces;
   std::vector<Vertex> vertexes;
+  std::vector<HalfEdge> halfEdges;
 
   slimsig::signal<void(Message)> change;
 };

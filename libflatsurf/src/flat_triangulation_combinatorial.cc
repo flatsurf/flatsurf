@@ -77,7 +77,7 @@ HalfEdge FlatTriangulationCombinatorial::previousAtVertex(const HalfEdge e) cons
 }
 
 const vector<HalfEdge>& FlatTriangulationCombinatorial::halfEdges() const {
-  return impl->vertices.domain();
+  return impl->halfEdges;
 }
 
 const vector<Vertex>& FlatTriangulationCombinatorial::vertices() const {
@@ -430,8 +430,9 @@ void Implementation<FlatTriangulationCombinatorial>::resetVertexes() {
   for (const auto& cycle : vertices.cycles()) {
     Vertex v;
     v.impl = spimpl::make_impl<Vertex::Implementation>(HalfEdges(cycle.begin(), cycle.end()));
-    this->vertexes.push_back(v);
+    vertexes.push_back(v);
   }
+  sort(begin(vertexes), end(vertexes));
 }
 
 void Implementation<FlatTriangulationCombinatorial>::resetVertices() {
@@ -453,6 +454,9 @@ void Implementation<FlatTriangulationCombinatorial>::resetEdges() {
   for (const auto& e : faces.domain())
     edges.insert(e);
   this->edges = std::vector<Edge>(edges.begin(), edges.end());
+
+  halfEdges = vertices.domain();
+  sort(begin(halfEdges), end(halfEdges));
 }
 
 void Implementation<FlatTriangulationCombinatorial>::swap(HalfEdge a, HalfEdge b) {

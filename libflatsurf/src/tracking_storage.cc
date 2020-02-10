@@ -101,21 +101,16 @@ void TrackingStorage<SELF, K, V>::rekey(const std::function<bool(const K&)>& sea
 }
 
 template <typename SELF, typename K, typename V>
-std::vector<K> TrackingStorage<SELF, K, V>::keys(const FlatTriangulationCombinatorial& parent) {
-  std::vector<K> keys;
+const std::vector<K>& TrackingStorage<SELF, K, V>::keys(const FlatTriangulationCombinatorial& parent) {
   if constexpr (std::is_same_v<K, HalfEdge>) {
-    keys = parent.halfEdges();
+    return parent.halfEdges();
   } else if constexpr (std::is_same_v<K, Edge>) {
-    keys = parent.edges();
+    return parent.edges();
   } else if constexpr (std::is_same_v<K, Vertex>) {
-    keys = parent.vertices();
+    return parent.vertices();
   } else {
     throw std::logic_error("not implemented: keys()");
   }
-
-  sort(keys.begin(), keys.end());
-
-  return keys;
 }
 
 template <typename SELF, typename K, typename V>

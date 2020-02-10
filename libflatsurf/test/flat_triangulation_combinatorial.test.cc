@@ -26,40 +26,75 @@
 
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
-#include "../flatsurf/saddle_connection.hpp"
-#include "../flatsurf/saddle_connections.hpp"
-#include "../flatsurf/vector.hpp"
+#include "../flatsurf/edge.hpp"
+#include "../flatsurf/vertex.hpp"
 
-#include "surfaces.hpp"
+#include "generators/combinatorial_surface_generator.hpp"
 
 namespace flatsurf::test {
 
-TEST_CASE("Flat Triangulation Comparisons", "[flat_triangulation][operator==]") {
-  auto square = makeSquareCombinatorial();
-  GIVEN("The Square " << square) {
-    REQUIRE(square == *square.clone());
-    REQUIRE(square != makeSquareWithBoundaryCombinatorial());
+TEST_CASE("Flat Triangulation Comparisons", "[flat_triangulation_combinatorial][operator==]") {
+  const auto surface = GENERATE(makeSurfaceCombinatorial());
+
+  GIVEN("The Surface " << *surface) {
+    REQUIRE(*surface == *surface->clone());
+    REQUIRE(*surface != *makeSquareWithBoundaryCombinatorial());
   }
 }
 
-TEST_CASE("Flat Triangulation Insertions", "[flat_triangulation][insert]") {
-  auto square = makeSquareCombinatorial();
+TEST_CASE("Flat Triangulation Edges", "[flat_triangulation_combinatorial][edges]") {
+  const auto surface = GENERATE(makeSurfaceCombinatorial());
 
-  GIVEN("The Square " << square) {
-    auto e = square.halfEdges()[0];
+  GIVEN("The Surface " << *surface) {
+    auto edges = surface->edges();
+
+    REQUIRE(edges.size() == surface->halfEdges().size() / 2);
+
+    // This is assumed by TrackingStorage for efficiency.
+    REQUIRE(std::is_sorted(begin(edges), end(edges)));
+  }
+}
+
+TEST_CASE("Flat Triangulation Half Edges", "[flat_triangulation_combinatorial][half_edges]") {
+  const auto surface = GENERATE(makeSurfaceCombinatorial());
+
+  GIVEN("The Surface " << *surface) {
+    auto halfEdges = surface->halfEdges();
+
+    // This is assumed by TrackingStorage for efficiency.
+    REQUIRE(std::is_sorted(begin(halfEdges), end(halfEdges)));
+  }
+}
+
+TEST_CASE("Flat Triangulation Vertices", "[flat_triangulation_combinatorial][vertices]") {
+  const auto surface = GENERATE(makeSurfaceCombinatorial());
+
+  GIVEN("The Surface " << *surface) {
+    auto vertices = surface->vertices();
+
+    // This is assumed by TrackingStorage for efficiency.
+    REQUIRE(std::is_sorted(begin(vertices), end(vertices)));
+  }
+}
+
+TEST_CASE("Flat Triangulation Insertions", "[flat_triangulation_combinatorial][insert]") {
+  const auto surface = GENERATE(makeSurfaceCombinatorial());
+
+  GIVEN("The Surface " << *surface) {
+    auto e = surface->halfEdges()[0];
 
     WHEN("We Insert a Vertex Next to " << e) {
-      auto square_ = square.insertAt(e);
-      CAPTURE(*square_);
+      auto inserted = surface->insertAt(e);
+      CAPTURE(*inserted);
 
       THEN("The Combinatorics Have Changed in the Expected Way") {
-        REQUIRE(square != *square_);
-        REQUIRE(square.vertices().size() + 1 == square_->vertices().size());
-        REQUIRE(square.halfEdges().size() + 6 == square_->halfEdges().size());
+        REQUIRE(*surface != *inserted);
+        REQUIRE(surface->vertices().size() + 1 == inserted->vertices().size());
+        REQUIRE(surface->halfEdges().size() + 6 == inserted->halfEdges().size());
 
-        auto a = -square_->nextAtVertex(e);
-        REQUIRE(a != -square.nextAtVertex(e));
-        REQUIRE(square_->nextAtVertex(square_->nextAtVertex(square_->nextAtVertex(a))) == a);
+        auto a = -inserted->nextAtVertex(e);
+        REQUIRE(a != -surface->nextAtVertex(e));
+        REQUIRE(inserted->nextAtVertex(inserted->nextAtVertex(inserted->nextAtVertex(a))) == a);
       }
     }
   }

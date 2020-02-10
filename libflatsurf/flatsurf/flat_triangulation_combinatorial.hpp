@@ -83,7 +83,6 @@ class FlatTriangulationCombinatorial : Serializable<FlatTriangulationCombinatori
   // in counter-clockwise order of this half edge at its source.
   bool boundary(HalfEdge e) const;
 
-  // TODO: Do we want to change all these to Tracking*? Then we would not need to reset() anymore.
   const std::vector<Edge> &edges() const;
   const std::vector<HalfEdge> &halfEdges() const;
   const std::vector<Vertex> &vertices() const;
