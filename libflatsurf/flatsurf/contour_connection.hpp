@@ -44,6 +44,9 @@ class ContourConnection : boost::equality_comparable<ContourComponent<Surface>> 
   using T = typename Surface::Coordinate;
 
  public:
+  // The saddle connection in the surface corresponding to this contour
+  // connection. Going from left to right if this is a bottom connection,
+  // otherwise going from right to left.
   SaddleConnection<FlatTriangulation<T>> connection() const;
 
   // The vertical connections on the left of this non-vertical connection going
@@ -71,6 +74,7 @@ class ContourConnection : boost::equality_comparable<ContourComponent<Surface>> 
  private:
   using Implementation = ::flatsurf::Implementation<ContourConnection>;
   spimpl::impl_ptr<Implementation> impl;
+
   friend Implementation;
 };
 }  // namespace flatsurf

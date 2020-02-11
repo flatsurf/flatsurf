@@ -32,14 +32,10 @@ class Implementation<ContourConnection<Surface>> {
   using T = typename Surface::Coordinate;
 
  public:
-  enum class Contour {
-    BOTTOM = -1,
-    TOP = 1,
-  };
+  Implementation(std::shared_ptr<ContourDecompositionState<Surface>>, ContourComponentState<Surface>* const component, HalfEdge, bool top);
 
-  Implementation(std::shared_ptr<ContourDecompositionState<Surface>>, const ContourComponent<Surface>& component, HalfEdge, Contour);
-
-  static ContourConnection<Surface> make(std::shared_ptr<ContourDecompositionState<Surface>>, const ContourComponent<Surface>& component, HalfEdge);
+  static ContourConnection<Surface> makeTop(std::shared_ptr<ContourDecompositionState<Surface>>, ContourComponentState<Surface>* const component, HalfEdge);
+  static ContourConnection<Surface> makeBottom(std::shared_ptr<ContourDecompositionState<Surface>>, ContourComponentState<Surface>* const component, HalfEdge);
 
   // Return the collapsed vertical connections that need to be crossed when
   // turning clockwise from from (i.e., nextInFace(from)) to to.
@@ -52,10 +48,15 @@ class Implementation<ContourConnection<Surface>> {
   static std::pair<std::list<SaddleConnection<FlatTriangulation<T>>>, std::list<SaddleConnection<FlatTriangulation<T>>>> cross(const ContourConnection<Surface>& from, const ContourConnection<Surface>& to);
 
   std::shared_ptr<ContourDecompositionState<Surface>> state;
-  ContourComponent<Surface> component;
-  // The normalized half edge describing this connection going from left to right.
-  HalfEdge e;
-  Contour contour;
+  ContourComponentState<Surface>* const component;
+  // The half edge describing this connection going from left to right if on
+  // the bottom, otherwise going from right to left.
+  HalfEdge halfEdge;
+  // Whether this is part of the top or of the bottom contour.
+  enum class Contour {
+    TOP,
+    BOTTOM,
+  } contour;
 };
 
 }  // namespace flatsurf

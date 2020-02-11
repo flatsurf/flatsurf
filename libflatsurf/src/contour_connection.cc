@@ -31,6 +31,7 @@
 #include "../flatsurf/vertical.hpp"
 
 #include "impl/contour_connection.impl.hpp"
+#include "impl/contour_component.impl.hpp"
 #include "impl/contour_decomposition_state.hpp"
 
 #include "util/assert.ipp"
@@ -54,9 +55,7 @@ bool ContourConnection<Surface>::bottom() const {
 
 template <typename Surface>
 SaddleConnection<FlatTriangulation<typename Surface::Coordinate>> ContourConnection<Surface>::connection() const {
-  if (bottom())
-    return impl->state->surface->fromEdge(impl->e);
-  return -(-*this).connection();
+  return impl->state->surface->fromEdge(impl->halfEdge);
 }
 
 template <typename Surface>
@@ -77,59 +76,55 @@ std::list<SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>> Con
 
 template <typename Surface>
 ContourConnection<Surface> ContourConnection<Surface>::previousInPerimeter() const {
-  auto perimeter = impl->component.perimeter();
-  for (auto connection = ++begin(perimeter); connection != end(perimeter); connection++)
-    if (*this == *connection)
-      return *--connection;
-  if (*this == *begin(perimeter))
-    return *--end(perimeter);
-  ASSERT(false, "Connection " << *this << " not present in perimeter of its own component " << impl->component);
+  return ::flatsurf::Implementation<ContourComponent<Surface>>::previousInPerimeter(impl->state, impl->component, impl->halfEdge);
 }
 
 template <typename Surface>
 ContourConnection<Surface> ContourConnection<Surface>::nextInPerimeter() const {
-  auto perimeter = impl->component.perimeter();
-  for (auto connection = begin(perimeter); connection != --end(perimeter); connection++)
-    if (*this == *connection)
-      return *++connection;
-  if (*this == *(--end(perimeter)))
-    return *begin(perimeter);
-  ASSERT(false, "Connection " << *this << " not present in perimeter of its own component " << impl->component);
+  return ::flatsurf::Implementation<ContourComponent<Surface>>::nextInPerimeter(impl->state, impl->component, impl->halfEdge);
 }
 
 template <typename Surface>
 ContourConnection<Surface> ContourConnection<Surface>::operator-() const {
-  using Contour = typename Implementation::Contour;
-  auto neg = *this;
-  neg.impl->contour = impl->contour == Contour::TOP ? Contour::BOTTOM : Contour::TOP;
-  return neg;
+  throw std::logic_error("not implemented: ContourConnection::operator-()");
 }
 
 template <typename Surface>
 bool ContourConnection<Surface>::operator==(const ContourConnection<Surface>& rhs) const {
-  return impl->component == rhs.impl->component && impl->e == rhs.impl->e && impl->contour == rhs.impl->contour;
+  const bool ret = impl->state == rhs.impl->state && impl->halfEdge == rhs.impl->halfEdge;
+  ASSERT(!ret || impl->component == rhs.impl->component, "One half edge cannot be in two different components.");
+  ASSERT(!ret || impl->contour == rhs.impl->contour, "One half edge cannot be in two different contours.");
+  return ret;
 }
 
 template <typename Surface>
-ContourConnection<Surface> Implementation<ContourConnection<Surface>>::make(std::shared_ptr<ContourDecompositionState<Surface>> state, const ContourComponent<Surface>& component, HalfEdge e) {
+ContourConnection<Surface> Implementation<ContourConnection<Surface>>::makeTop(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* const component, HalfEdge e) {
   ContourConnection<Surface> ret;
-  ret.impl = spimpl::make_impl<Implementation>(state, component, e, Contour::BOTTOM);
+  ret.impl = spimpl::make_impl<Implementation>(state, component, e, true);
+  ASSERT(state->surface->vertical().perpendicular(state->surface->fromEdge(e)) < 0, "HalfEdge must be from right to left but " << e << " is not in " << *state->surface);
+  return ret;
+}
+
+template <typename Surface>
+ContourConnection<Surface> Implementation<ContourConnection<Surface>>::makeBottom(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* const component, HalfEdge e) {
+  ContourConnection<Surface> ret;
+  ret.impl = spimpl::make_impl<Implementation>(state, component, e, false);
   ASSERT(state->surface->vertical().perpendicular(state->surface->fromEdge(e)) > 0, "HalfEdge must be from left to right but " << e << " is not in " << *state->surface);
   return ret;
 }
 
 template <typename Surface>
-Implementation<ContourConnection<Surface>>::Implementation(std::shared_ptr<ContourDecompositionState<Surface>> state, const ContourComponent<Surface>& component, HalfEdge e, Contour contour) :
+Implementation<ContourConnection<Surface>>::Implementation(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* const component, HalfEdge halfEdge, bool top) :
   state(state),
   component(component),
-  e(e),
-  contour(contour) {}
+  halfEdge(halfEdge),
+  contour(top ? Contour::TOP : Contour::BOTTOM) {}
 
 template <typename Surface>
 std::list<SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>> Implementation<ContourConnection<Surface>>::turn(const ContourConnection<Surface>& from, const ContourConnection<Surface>& to) {
   using SaddleConnection = flatsurf::SaddleConnection<FlatTriangulation<T>>;
 
-  ASSERT(to == from.nextInPerimeter(), "can only cross between adjacent connections but " << to << " does not follow " << from);
+  ASSERT(to == from.nextInPerimeter(), "can only cross between adjacent connections but " << to.impl->halfEdge << " does not follow " << from.impl->halfEdge);
 
   auto& surface = *from.impl->state->surface;
 
@@ -137,21 +132,21 @@ std::list<SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>> Imp
 
   if (from.bottom() && to.bottom()) {
     // A typical pair of connections on the bottom of the contour.
-    turn = surface.turn(surface.nextInFace(from.impl->e), to.impl->e) | rx::to_list();
+    turn = surface.turn(surface.nextInFace(from.impl->halfEdge), to.impl->halfEdge) | rx::to_list();
   } else if (from.bottom() && to.top()) {
     // The last connection on the bottom of the contour and the first on the top of the contour.
-    ASSERT(Vertex::target(from.impl->e, surface) == Vertex::target(to.impl->e, surface), "final connections must point to the same vertex but " << from << " and " << to << " do not");
-    turn = surface.cross(surface.nextInFace(from.impl->e)) | rx::to_list();
-    turn.splice(end(turn), surface.turn(surface.previousAtVertex(surface.nextInFace(from.impl->e)), surface.nextInFace(to.impl->e)) | rx::to_list());
+    ASSERT(Vertex::target(from.impl->halfEdge, surface) == Vertex::source(to.impl->halfEdge, surface), "final connections must point to the same vertex but " << from.impl->halfEdge << " and " << to.impl->halfEdge << " do not");
+    turn = surface.cross(surface.nextInFace(from.impl->halfEdge)) | rx::to_list();
+    turn.splice(end(turn), surface.turn(surface.previousAtVertex(surface.nextInFace(from.impl->halfEdge)), surface.nextInFace(-to.impl->halfEdge)) | rx::to_list());
   } else if (from.top() && to.top()) {
     // A typical pair of connections on the top of the contour.
-    turn = surface.turn(from.impl->e, surface.nextInFace(to.impl->e)) | rx::to_list();
+    turn = surface.turn(-from.impl->halfEdge, surface.nextInFace(-to.impl->halfEdge)) | rx::to_list();
   } else {
     // The last connection on the top of the contour and the first on the bottom of the contour.
     ASSERT(from.top() && to.bottom(), "inconsistent top() / bottom()");
-    ASSERT(Vertex::source(from.impl->e, surface) == Vertex::source(to.impl->e, surface), "initial connections must start at the same vertex but " << from << " and " << to << " do not");
-    turn = surface.cross(from.impl->e) | rx::to_list();
-    turn.splice(end(turn), surface.turn(surface.previousAtVertex(from.impl->e), to.impl->e) | rx::to_list());
+    ASSERT(Vertex::target(from.impl->halfEdge, surface) == Vertex::source(to.impl->halfEdge, surface), "initial connections must start at the same vertex but " << from << " and " << to << " do not");
+    turn = surface.cross(-from.impl->halfEdge) | rx::to_list();
+    turn.splice(end(turn), surface.turn(surface.previousAtVertex(-from.impl->halfEdge), to.impl->halfEdge) | rx::to_list());
   }
 
   std::list<SaddleConnection> simplified;

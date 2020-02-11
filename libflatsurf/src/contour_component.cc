@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -56,14 +56,14 @@ IntervalExchangeTransformation<FlatTriangulationCollapsed<typename Surface::Coor
 template <typename Surface>
 std::vector<ContourConnection<Surface>> ContourComponent<Surface>::top() const {
   return impl->component->topEdges | rx::transform([&](const HalfEdge e) {
-    return -::flatsurf::Implementation<ContourConnection<Surface>>::make(impl->state, *this, e);
+    return ::flatsurf::Implementation<ContourConnection<Surface>>::makeTop(impl->state, impl->component, -e);
   }) | rx::to_vector();
 }
 
 template <typename Surface>
 std::vector<ContourConnection<Surface>> ContourComponent<Surface>::bottom() const {
   return impl->component->bottomEdges | rx::transform([&](const HalfEdge e) {
-    return ::flatsurf::Implementation<ContourConnection<Surface>>::make(impl->state, *this, e);
+    return ::flatsurf::Implementation<ContourConnection<Surface>>::makeBottom(impl->state, impl->component, e);
   }) | rx::to_vector();
 }
 
@@ -84,6 +84,52 @@ ContourComponent<Surface> Implementation<ContourComponent<Surface>>::make(std::s
   ContourComponent<Surface> ret;
   ret.impl = spimpl::make_impl<Implementation>(state, component);
   return ret;
+}
+
+template <typename Surface>
+ContourConnection<Surface> Implementation<ContourComponent<Surface>>::nextInPerimeter(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* const component, HalfEdge e) {
+  if (e == *rbegin(component->bottomEdges)) {
+    return ::flatsurf::Implementation<ContourConnection<Surface>>::makeTop(state, component, -*begin(component->topEdges));
+  }
+
+  if (e == -*rbegin(component->topEdges)) {
+    return ::flatsurf::Implementation<ContourConnection<Surface>>::makeBottom(state, component, *begin(component->bottomEdges));
+  }
+
+  auto bottom = std::find(begin(component->bottomEdges), end(component->bottomEdges), e);
+  if (bottom != end(component->bottomEdges)) {
+    return ::flatsurf::Implementation<ContourConnection<Surface>>::makeBottom(state, component, *++bottom);
+  }
+
+  auto top = std::find(begin(component->topEdges), end(component->topEdges), -e);
+  if (top != end(component->topEdges)) {
+    return ::flatsurf::Implementation<ContourConnection<Surface>>::makeTop(state, component, -*++top);
+  }
+
+  throw std::logic_error("Half Edge not in this component");
+}
+
+template <typename Surface>
+ContourConnection<Surface> Implementation<ContourComponent<Surface>>::previousInPerimeter(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* const component, HalfEdge e) {
+  if (e == *begin(component->bottomEdges)) {
+    return ::flatsurf::Implementation<ContourConnection<Surface>>::makeTop(state, component, -*rbegin(component->topEdges));
+  }
+
+  if (e == -*begin(component->topEdges)) {
+    return ::flatsurf::Implementation<ContourConnection<Surface>>::makeBottom(state, component, *rbegin(component->bottomEdges));
+  }
+
+  auto bottom = std::find(begin(component->bottomEdges), end(component->bottomEdges), e);
+  if (bottom != end(component->bottomEdges)) {
+    return ::flatsurf::Implementation<ContourConnection<Surface>>::makeBottom(state, component, *--bottom);
+  }
+
+  auto top = std::find(begin(component->topEdges), end(component->topEdges), -e);
+  if (top != end(component->topEdges)) {
+    return ::flatsurf::Implementation<ContourConnection<Surface>>::makeTop(state, component, -*--top);
+  }
+
+  throw std::logic_error("Half Edge not in this component");
 }
 
 template <typename Surface>

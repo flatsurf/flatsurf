@@ -27,6 +27,7 @@
 #include "../../flatsurf/contour_component.hpp"
 
 #include "contour_decomposition.impl.hpp"
+#include "contour_decomposition_state.hpp"
 #include "forward.hpp"
 
 namespace flatsurf {
@@ -38,6 +39,9 @@ class Implementation<ContourComponent<Surface>> {
   class ComponentState;
 
   static void makeContour(std::back_insert_iterator<std::vector<HalfEdge>>, const HalfEdge, const Surface&, const Vertical<Surface>&);
+
+  static ContourConnection<Surface> nextInPerimeter(std::shared_ptr<ContourDecompositionState<Surface>>, ContourComponentState<Surface>* const, HalfEdge);
+  static ContourConnection<Surface> previousInPerimeter(std::shared_ptr<ContourDecompositionState<Surface>>, ContourComponentState<Surface>* const, HalfEdge);
 
   HalfEdge large() const;
 
@@ -52,4 +56,5 @@ class Implementation<ContourComponent<Surface>> {
 };
 
 }  // namespace flatsurf
+
 #endif
