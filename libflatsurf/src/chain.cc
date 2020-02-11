@@ -23,6 +23,7 @@
 #include "../flatsurf/chain.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/vector.hpp"
+#include "../flatsurf/saddle_connection.hpp"
 
 #include "impl/chain.impl.hpp"
 
@@ -37,6 +38,10 @@ Chain<Surface>::Chain() :
 template <typename Surface>
 Chain<Surface>::Chain(std::shared_ptr<const Surface> surface) :
   impl(spimpl::make_impl<Implementation>(std::move(surface))) {}
+
+template <typename Surface>
+Chain<Surface>::Chain(std::shared_ptr<const Surface> surface, HalfEdge edge) :
+  impl(spimpl::make_impl<Implementation>(std::move(surface), edge)) {}
 
 template <typename Surface>
 Chain<Surface>::operator const Vector<T>&() const {
@@ -54,15 +59,9 @@ Chain<Surface>::operator const Vector<T>&() const {
   // optimized for such cases. The underlying storage primitive should also be
   // used here.)
   for (auto& move : impl->pendingVectorMoves) {
-    if (auto chain = std::get_if<Chain>(&move)) {
-      // TODO: We should only do this if converting the chain is cheapear than
-      // converting *this after adding the chain coefficients.
-      *impl->vector += static_cast<const Vector<T>&>(*chain);
-    } else if (auto halfEdge = std::get_if<HalfEdge>(&move)) {
-      *impl->vector += impl->surface->fromEdge(*halfEdge);
-    } else {
-      throw std::logic_error("unsupported primitive in moves");
-    }
+    // TODO: We should only do this if converting the chain is cheapear than
+    // converting *this after adding the chain coefficients.
+    *impl->vector += move;
   }
 
   impl->pendingVectorMoves.clear();
@@ -88,15 +87,9 @@ Chain<Surface>::operator const Vector<exactreal::Arb>&() const {
   // optimized for such cases. The underlying storage primitive should also be
   // used here.)
   for (auto& move : impl->pendingApproximateVectorMoves) {
-    if (auto chain = std::get_if<Chain>(&move)) {
-      // TODO: We should only do this if converting the chain is cheapear than
-      // converting *this after adding the chain coefficients.
-      *impl->approximateVector += static_cast<const Vector<exactreal::Arb>&>(*chain);
-    } else if (auto halfEdge = std::get_if<HalfEdge>(&move)) {
-      *impl->approximateVector += impl->surface->fromEdgeApproximate(*halfEdge);
-    } else {
-      throw std::logic_error("unsupported primitive in moves");
-    }
+    // TODO: We should only do this if converting the chain is cheapear than
+    // converting *this after adding the chain coefficients.
+    *impl->approximateVector += move;
   }
 
   impl->pendingApproximateVectorMoves.clear();
@@ -116,6 +109,17 @@ Chain<Surface>& Chain<Surface>::operator+=(const Chain<Surface>& rhs) {
   rhs.impl->coefficients.apply([&](const auto& edge, const auto& c) {
     impl->coefficients.get(edge) += c;
   });
+
+  return *this;
+}
+
+template <typename Surface>
+Chain<Surface>& Chain<Surface>::operator+=(Chain<Surface>&& rhs) {
+  rhs.impl->coefficients.apply([&](const auto& edge, const auto& c) {
+    impl->coefficients.get(edge) += c;
+  });
+
+  impl->recordMove(std::move(rhs));
 
   return *this;
 }
@@ -227,14 +231,34 @@ template <typename Surface>
 Implementation<Chain<Surface>>::Implementation(std::shared_ptr<const Surface> surface) :
   surface(std::move(surface)),
   coefficients(
-      this->surface.get(), [&](const Edge&) { return mpz_class(); }, updateAfterFlip),
-  vector(),
-  approximateVector() {}
+      this->surface.get(), [&](const Edge&) { return mpz_class(); }, updateCoefficientsAfterFlip),
+  vector(std::in_place_t()),
+  approximateVector(std::in_place_t()) {}
 
 template <typename Surface>
-void Implementation<Chain<Surface>>::recordMove(const Move& move) const {
+Implementation<Chain<Surface>>::Implementation(std::shared_ptr<const Surface> surface, HalfEdge halfEdge) :
+  surface(std::move(surface)),
+  coefficients(
+      this->surface.get(), [&](const Edge& edge) {
+        if (halfEdge == edge.positive())
+          return mpz_class(1);
+        else if (halfEdge == edge.negative())
+          return mpz_class(-1);
+        else
+          return mpz_class();
+      }, updateCoefficientsAfterFlip),
+  vector(this->surface->fromEdge(halfEdge)),
+  approximateVector(this->surface->fromEdgeApproximate(halfEdge)) {}
+
+template <typename Surface>
+void Implementation<Chain<Surface>>::recordMove(HalfEdge edge) const {
+  recordMove(Chain(surface, edge));
+}
+
+template <typename Surface>
+void Implementation<Chain<Surface>>::recordMove(const Chain<Surface>& move) const {
   if (vector) {
-    if (pendingVectorMoves.size() < surface->size()) {
+    if (pendingVectorMoves.size() < surface->size() && move.impl->vector.has_value()) {
       pendingVectorMoves.push_back(move);
     } else {
       vector = {};
@@ -243,7 +267,7 @@ void Implementation<Chain<Surface>>::recordMove(const Move& move) const {
   }
 
   if (approximateVector) {
-    if (pendingApproximateVectorMoves.size() < surface->size()) {
+    if (pendingApproximateVectorMoves.size() < surface->size() && move.impl->approximateVector.has_value()) {
       pendingApproximateVectorMoves.push_back(move);
     } else {
       approximateVector = {};
@@ -253,10 +277,8 @@ void Implementation<Chain<Surface>>::recordMove(const Move& move) const {
 }
 
 template <typename Surface>
-void Implementation<Chain<Surface>>::updateAfterFlip(EdgeMap<mpz_class>& map, HalfEdge flip) {
+void Implementation<Chain<Surface>>::updateCoefficientsAfterFlip(EdgeMap<mpz_class>& map, HalfEdge flip) {
   const auto& parent = map.parent();
-
-  // TODO TODO TODO: Chain needs to be tracking, so we trash pendingMoves on flip and everything else.
 
   const auto set = [&](HalfEdge halfEdge, const mpz_class& c) {
     if (Edge(halfEdge).positive() == halfEdge)

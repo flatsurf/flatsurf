@@ -84,7 +84,6 @@ class FlatTriangulation : public FlatTriangulationCombinatorial,
   bool inSector(HalfEdge, const Vertical<FlatTriangulation<T>> &) const;
 
   const Vector<T> &fromEdge(HalfEdge) const;
-  const SaddleConnection<FlatTriangulation<T>> alongEdge(HalfEdge) const;
   const ::flatsurf::Vector<exactreal::Arb> &fromEdgeApproximate(HalfEdge) const;
 
   std::shared_ptr<const FlatTriangulation<T>> shared_from_this() const;

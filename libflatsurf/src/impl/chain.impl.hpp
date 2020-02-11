@@ -29,30 +29,32 @@
 #include "../../flatsurf/chain.hpp"
 #include "../../flatsurf/edge_map.hpp"
 #include "../../flatsurf/vector.hpp"
+#include "../../flatsurf/tracking.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
 class Implementation<Chain<Surface>> {
-  static void updateAfterFlip(EdgeMap<mpz_class>&, HalfEdge);
+  static void updateCoefficientsAfterFlip(EdgeMap<mpz_class>&, HalfEdge);
 
   using T = typename Surface::Coordinate;
-  using Move = std::variant<Chain<Surface>, HalfEdge>;
 
  public:
-  Implementation(std::shared_ptr<const Surface> surface);
+  Implementation(std::shared_ptr<const Surface>);
+  Implementation(std::shared_ptr<const Surface>, HalfEdge);
 
-  void recordMove(const Move&) const;
+  void recordMove(const Chain<Surface>&) const;
+  void recordMove(HalfEdge) const;
 
   std::shared_ptr<const Surface> surface;
 
   EdgeMap<mpz_class> coefficients;
 
   mutable std::optional<Vector<T>> vector;
-  mutable std::vector<Move> pendingVectorMoves;
+  mutable std::vector<Vector<T>> pendingVectorMoves;
 
   mutable std::optional<Vector<exactreal::Arb>> approximateVector;
-  mutable std::vector<Move> pendingApproximateVectorMoves;
+  mutable std::vector<Vector<exactreal::Arb>> pendingApproximateVectorMoves;
 };
 
 }  // namespace flatsurf

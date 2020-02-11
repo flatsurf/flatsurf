@@ -46,6 +46,7 @@ class Chain : public Serializable<Chain<Surface>>,
  public:
   Chain();
   explicit Chain(std::shared_ptr<const Surface>);
+  Chain(std::shared_ptr<const Surface>, HalfEdge);
 
   operator const Vector<T>&() const;
   operator const Vector<exactreal::Arb>&() const;
@@ -53,7 +54,9 @@ class Chain : public Serializable<Chain<Surface>>,
   const Surface& surface() const;
 
   Chain<Surface>& operator+=(const Chain&);
+  Chain<Surface>& operator+=(Chain&&);
   Chain<Surface>& operator-=(const Chain&);
+  Chain<Surface>& operator-=(Chain&&);
   Chain<Surface>& operator+=(HalfEdge);
   Chain<Surface>& operator-=(HalfEdge);
 

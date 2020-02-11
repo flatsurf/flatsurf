@@ -55,7 +55,6 @@
 #include "tracking_map.hpp"
 #include "tracking_set.hpp"
 #include "vector.hpp"
-#include "vector_along_triangulation.hpp"
 #include "vertex.hpp"
 #include "vertex_map.hpp"
 #include "vertical.hpp"
