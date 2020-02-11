@@ -86,7 +86,7 @@ class SaddleConnections<Surface>::Iterator::Implementation {
     sectors(std::make_shared<vector<HalfEdge>>(searchSectors)),
     sector(this->sectors->begin()),
     nextEdgeEnd(this->surface),
-    connection(SaddleConnection<Surface>::fromEdge(this->surface, surface->halfEdges()[0])) {
+    connection(SaddleConnection(this->surface, surface->halfEdges()[0])) {
     prepareSearch();
   }
 
@@ -602,7 +602,7 @@ const SaddleConnection<Surface>& SaddleConnections<Surface>::Iterator::dereferen
   switch (impl->state.back()) {
     case State::START_FROM_INSIDE_TO_INSIDE:
       // This makes the first reported connection work: It is not nextEdgeEnd but the sector boundary.
-      impl->connection = SaddleConnection<Surface>::fromEdge(impl->surface, *impl->sector);
+      impl->connection = SaddleConnection(impl->surface, *impl->sector);
       break;
     case State::SADDLE_CONNECTION_FOUND:
       impl->connection = SaddleConnection<Surface>(impl->surface, *impl->sector, -impl->nextEdge, impl->nextEdgeEnd);

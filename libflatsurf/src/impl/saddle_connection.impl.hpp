@@ -34,6 +34,7 @@ class Implementation<SaddleConnection<Surface>> {
 
  public:
   Implementation(std::shared_ptr<const Surface> &surface, HalfEdge source, HalfEdge target, const Chain<Surface> &vector);
+  Implementation(std::shared_ptr<const Surface> &surface, HalfEdge e);
 
   static void check(const SaddleConnection &);
 

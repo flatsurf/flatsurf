@@ -43,6 +43,7 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
 
  public:
   SaddleConnection();
+  SaddleConnection(std::shared_ptr<const Surface>, HalfEdge e);
   SaddleConnection(std::shared_ptr<const Surface>, HalfEdge source, HalfEdge target, const Chain<Surface> &);
 
   static SaddleConnection<Surface> inSector(std::shared_ptr<const Surface>, HalfEdge source, const Vector<T> &);
@@ -52,7 +53,6 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   static SaddleConnection<Surface> inPlane(std::shared_ptr<const Surface>, HalfEdge plane, const Vector<T> &);
   static SaddleConnection<Surface> alongVertical(std::shared_ptr<const Surface>, const Vertical<Surface> &direction, HalfEdge plane);
   static SaddleConnection<Surface> clockwise(const SaddleConnection &from, const Vector<T> &);
-  static SaddleConnection<Surface> fromEdge(std::shared_ptr<const Surface>, HalfEdge);
 
   // TODO: Does this also give me an implicit cast to Vector? If not, we should
   // add this explicitly; the explicit vector() seems more sane anyway. Same
@@ -107,6 +107,9 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
 
 template <typename Surface, typename... T>
 SaddleConnection(std::shared_ptr<const Surface>, T &&...)->SaddleConnection<Surface>;
+
+template <typename Surface, typename... T>
+SaddleConnection(std::shared_ptr<Surface>, T &&...)->SaddleConnection<Surface>;
 
 }  // namespace flatsurf
 

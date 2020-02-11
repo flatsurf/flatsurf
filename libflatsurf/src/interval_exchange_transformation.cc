@@ -80,8 +80,7 @@ void IntervalExchangeTransformation<Surface>::makeUniqueLargeEdges(Surface& surf
   const typename EdgeSet::CollapseHandler nopCollapse = [](EdgeSet& self, Edge e) {
     assert(!self.contains(e) && "must not collapse source edge");
   };
-  EdgeSet sources(
-      &surface, [](Edge) { return false; }, nopFlip, nopCollapse);
+  EdgeSet sources(&surface, [](Edge) { return false; }, nopFlip, nopCollapse);
 
   const bool splitContours = true;
 
@@ -154,12 +153,8 @@ std::unordered_set<HalfEdge> IntervalExchangeTransformation<Surface>::makeUnique
             return true;
 
           if (vertical.large(e)) {
-            if constexpr (std::is_const_v<Surface>) {
-              throw std::logic_error("cannot flip on const surface");
-            } else {
-              surface.flip(e);
-              return false;
-            }
+            surface.flip(e);
+            return false;
           }
 
           return true;
@@ -196,12 +191,12 @@ Implementation<IntervalExchangeTransformation<Surface>>::Implementation(std::sha
   const auto erasedLengths = std::make_shared<intervalxt::Lengths>(Lengths<Surface>(std::make_shared<Vertical<FlatTriangulation<T>>>(uncollapsed, vertical), EdgeMap<SaddleConnection>(surface.get(), [&](const Edge& e) {
     if (std::find(begin(top), end(top), e.positive()) != end(top)) {
       if constexpr (std::is_same_v<Surface, FlatTriangulation<T>>)
-        return SaddleConnection::fromEdge(surface, e.positive());
+        return SaddleConnection(surface, e.positive());
       else
         return surface->fromEdge(e.positive());
     } else if (std::find(begin(top), end(top), e.negative()) != end(top)) {
       if constexpr (std::is_same_v<Surface, FlatTriangulation<T>>)
-        return SaddleConnection::fromEdge(surface, e.negative());
+        return SaddleConnection(surface, e.negative());
       else
         return surface->fromEdge(e.negative());
     }

@@ -50,7 +50,7 @@ struct factory<SaddleConnection<Surface>> {
   static std::shared_ptr<SaddleConnection<Surface>> make() {
     auto square = makeSquare<Vector<T>>();
     const HalfEdge e(1);
-    return std::make_shared<SaddleConnection<Surface>>(SaddleConnection<Surface>::fromEdge(square, e));
+    return std::make_shared<SaddleConnection<Surface>>(SaddleConnection(square, e));
   }
 };
 

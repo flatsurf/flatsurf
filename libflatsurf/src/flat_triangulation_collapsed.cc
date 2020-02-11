@@ -215,13 +215,16 @@ Implementation<FlatTriangulationCollapsed<T>>::Implementation(const FlatTriangul
   original(std::move(surface)),
   vertical(vertical),
   collapsedHalfEdges(
-      &combinatorial, [&](HalfEdge) {
+      &combinatorial,
+      [&](HalfEdge) {
         return CollapsedHalfEdge{{}};
       },
-      CollapsedHalfEdge::updateAfterFlip, CollapsedHalfEdge::updateBeforeCollapse),
+      CollapsedHalfEdge::updateAfterFlip,
+      CollapsedHalfEdge::updateBeforeCollapse),
   vectors(
-      &combinatorial, [&](HalfEdge e) {
-        return AsymmetricConnection{SaddleConnection::fromEdge(original, e)};
+      &combinatorial,
+      [&](HalfEdge e) {
+        return AsymmetricConnection{SaddleConnection(original, e)};
       },
       updateAfterFlip, updateBeforeCollapse) {
 }

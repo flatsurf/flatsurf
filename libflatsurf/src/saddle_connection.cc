@@ -47,6 +47,11 @@ SaddleConnection<Surface>::SaddleConnection() :
   impl(nullptr) {}
 
 template <typename Surface>
+SaddleConnection<Surface>::SaddleConnection(std::shared_ptr<const Surface> surface, HalfEdge e) :
+  impl(spimpl::make_impl<Implementation>(surface, e)) {
+}
+
+template <typename Surface>
 SaddleConnection<Surface>::SaddleConnection(std::shared_ptr<const Surface> surface, HalfEdge source, HalfEdge target, const Chain<Surface>& chain) :
   impl(spimpl::make_impl<Implementation>(surface, source, target, chain)) {
 }
@@ -105,11 +110,6 @@ SaddleConnection<Surface> SaddleConnection<Surface>::inSector(std::shared_ptr<co
     it.skipSector(-ccw);
   }
   return *it;
-}
-
-template <typename Surface>
-SaddleConnection<Surface> SaddleConnection<Surface>::fromEdge(std::shared_ptr<const Surface> surface, HalfEdge edge) {
-  return SaddleConnection(surface, edge, -edge, Chain<Surface>(surface) += edge);
 }
 
 template <typename Surface>
@@ -260,6 +260,14 @@ template <typename Surface, typename _>
 ostream& operator<<(ostream& os, const SaddleConnection<Surface>& self) {
   if (!self) return os << "0";
   return os << "SaddleConnection(" << static_cast<Vector<typename Surface::Coordinate>>(self) << " from " << self.source() << ")";
+}
+
+template <typename Surface>
+Implementation<SaddleConnection<Surface>>::Implementation(std::shared_ptr<const Surface>& surface, HalfEdge e) :
+  surface(surface),
+  source(e),
+  target(-e),
+  chain(surface, e) {
 }
 
 template <typename Surface>
