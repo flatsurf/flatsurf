@@ -50,8 +50,8 @@ class Implementation<FlatTriangulationCollapsed<T>> {
   // TODO: Move to its own file.
   // TODO: This is the same as TrackingStorage::Value; merge them
   struct AsymmetricConnection {
-    AsymmetricConnection(const SaddleConnection& value) :
-      value(value) {}
+    AsymmetricConnection(SaddleConnection&& value) : value(std::move(value)) {}
+
     operator SaddleConnection() const { return value; }
 
     SaddleConnection value;
