@@ -17,7 +17,6 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <map>
 #include <memory>
 #include <unordered_set>
 

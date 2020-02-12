@@ -18,7 +18,7 @@
  *********************************************************************/
 
 #include <ostream>
-#include <set>
+#include <vector>
 
 #include "impl/flat_triangulation_combinatorial.impl.hpp"
 #include "impl/tracking.impl.hpp"
@@ -55,7 +55,7 @@ void Tracking<T>::noSwap(T&, const FlatTriangulationCombinatorial&, HalfEdge, Ha
 }
 
 template <typename T>
-void Tracking<T>::noErase(T&, const FlatTriangulationCombinatorial&, const std::set<Edge>&) {
+void Tracking<T>::noErase(T&, const FlatTriangulationCombinatorial&, const std::vector<Edge>&) {
   throw std::logic_error("this tracker of a FlatTriangulationCombinatorial does not support removal of edges");
 }
 

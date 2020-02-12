@@ -70,7 +70,7 @@ class TrackingStorage {
   static void wrappedUpdateAfterFlip(SELF&, const FlatTriangulationCombinatorial&, HalfEdge);
   static void wrappedUpdateBeforeCollapse(SELF&, const FlatTriangulationCombinatorial&, Edge);
   static void updateBeforeSwap(SELF&, const FlatTriangulationCombinatorial&, HalfEdge, HalfEdge);
-  static void updateBeforeErase(SELF&, const FlatTriangulationCombinatorial&, const std::set<Edge>&);
+  static void updateBeforeErase(SELF&, const FlatTriangulationCombinatorial&, const std::vector<Edge>&);
 
   Data data;
 };

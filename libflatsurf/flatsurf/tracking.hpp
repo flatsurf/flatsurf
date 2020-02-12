@@ -22,7 +22,6 @@
 
 #include <functional>
 #include <iosfwd>
-#include <set>
 
 #include "flat_triangulation_combinatorial.hpp"
 
@@ -41,7 +40,7 @@ class Tracking {
   // A callback of this type is invoked before two edges are swapped.
   using SwapHandler = std::function<void(T&, const FlatTriangulationCombinatorial&, HalfEdge a, HalfEdge b)>;
   // A callback of this type is invoked before an edge is dropped from the surface.
-  using EraseHandler = std::function<void(T&, const FlatTriangulationCombinatorial&, const std::set<Edge>& erase)>;
+  using EraseHandler = std::function<void(T&, const FlatTriangulationCombinatorial&, const std::vector<Edge>& erase)>;
   // A callback of this type is invoked when the parent surface is destructed.
   using DestructionHandler = std::function<void(T&, const FlatTriangulationCombinatorial&)>;
 
@@ -74,7 +73,7 @@ class Tracking {
   static void noFlip(T&, const FlatTriangulationCombinatorial&, HalfEdge);
   static void noCollapse(T&, const FlatTriangulationCombinatorial&, Edge);
   static void noSwap(T&, const FlatTriangulationCombinatorial&, HalfEdge, HalfEdge);
-  static void noErase(T&, const FlatTriangulationCombinatorial&, const std::set<Edge>&);
+  static void noErase(T&, const FlatTriangulationCombinatorial&, const std::vector<Edge>&);
   static void forgetParent(T&, const FlatTriangulationCombinatorial&);
 };
 }  // namespace flatsurf

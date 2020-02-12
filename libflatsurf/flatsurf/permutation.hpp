@@ -24,7 +24,6 @@
 #include <functional>
 #include <iosfwd>
 #include <map>
-#include <set>
 #include <utility>
 #include <vector>
 
@@ -61,7 +60,7 @@ class Permutation : boost::equality_comparable<Permutation<T>>, boost::multiplia
   size_t size() const noexcept;
   const std::vector<T> &domain() const noexcept;
   std::vector<std::vector<T>> cycles() const noexcept;
-  void drop(const std::set<T> &);
+  void drop(const std::vector<T> &);
 
   bool trivial() const noexcept;
 

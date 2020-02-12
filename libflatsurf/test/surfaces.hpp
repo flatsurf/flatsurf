@@ -58,7 +58,7 @@ auto makeSquare() {
 
 inline auto makeSquareWithBoundaryCombinatorial() {
   auto vertices = vector<vector<int>>{{-2, 1, 3, 2}, {4, -1, -3, -4}};
-  return std::make_shared<FlatTriangulationCombinatorial>(vertices, std::set<int>{2, -4});
+  return std::make_shared<FlatTriangulationCombinatorial>(vertices, std::vector{2, -4});
 }
 
 template <typename R2>

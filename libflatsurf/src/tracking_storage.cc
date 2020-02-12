@@ -153,7 +153,7 @@ void TrackingStorage<SELF, K, V>::wrappedUpdateAfterFlip(SELF& self, const FlatT
   } else if constexpr (std::is_same_v<K, Vertex>) {
     // The labels of the vertices attached to the old and new edge have
     // changed. So we need to migrate the data to new keys.
-    std::set<HalfEdge> boundary{
+    std::vector<HalfEdge> boundary{
         surface.previousAtVertex(flip),
         -surface.nextAtVertex(flip),
         surface.previousAtVertex(-flip),
@@ -161,10 +161,10 @@ void TrackingStorage<SELF, K, V>::wrappedUpdateAfterFlip(SELF& self, const FlatT
 
     self.impl->rekey([&](const Vertex& vertex) {
       for (const auto& e : vertex.impl->sources)
-        if (boundary.find(e) != boundary.end()) return true;
+        if (std::find(begin(boundary), end(boundary), e) != end(boundary)) return true;
       return false; }, [&](Vertex& vertex) {
       for (const auto& e : vertex.impl->sources) {
-        if (boundary.find(e) != boundary.end()) {
+        if (std::find(begin(boundary), end(boundary), e) != end(boundary)) {
           vertex = Vertex::source(e, surface);
           return true;
         }
@@ -250,7 +250,7 @@ void TrackingStorage<SELF, K, V>::updateBeforeSwap(SELF& self, const FlatTriangu
 }
 
 template <typename SELF, typename K, typename V>
-void TrackingStorage<SELF, K, V>::updateBeforeErase(SELF& self, const FlatTriangulationCombinatorial&, const std::set<Edge>& erase) {
+void TrackingStorage<SELF, K, V>::updateBeforeErase(SELF& self, const FlatTriangulationCombinatorial&, const std::vector<Edge>& erase) {
   if (erase.size() == 0)
     return;
 

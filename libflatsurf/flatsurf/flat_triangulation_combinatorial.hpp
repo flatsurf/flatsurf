@@ -23,7 +23,6 @@
 #include <boost/operators.hpp>
 #include <iosfwd>
 #include <memory>
-#include <set>
 #include <vector>
 
 #include "moveable.hpp"
@@ -36,7 +35,7 @@ class FlatTriangulationCombinatorial : Serializable<FlatTriangulationCombinatori
                                        public std::enable_shared_from_this<FlatTriangulationCombinatorial> {
  public:
   FlatTriangulationCombinatorial();
-  FlatTriangulationCombinatorial(const std::vector<std::vector<int>> &vertices, const std::set<int> &boundaries = std::set<int>());
+  FlatTriangulationCombinatorial(const std::vector<std::vector<int>> &vertices, const std::vector<int> &boundaries = std::vector<int>());
   FlatTriangulationCombinatorial(const Permutation<HalfEdge> &vertices);
   FlatTriangulationCombinatorial(FlatTriangulationCombinatorial &&);
 
@@ -101,7 +100,7 @@ class FlatTriangulationCombinatorial : Serializable<FlatTriangulationCombinatori
   // * The half edges e and -e are equivalent.
   // * Two half edges in the same face are equivalent.
   // Note that components that only meet in a vertex but not a half edge are therefore distinct.
-  std::vector<std::set<HalfEdge>> components() const;
+  std::vector<std::vector<HalfEdge>> components() const;
 
   // Return whether rhs is combinatorial the same triangulation (with the same
   // numbering of edges.)

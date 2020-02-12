@@ -21,7 +21,6 @@
 #define LIBFLATSURF_FLAT_TRIANGULATION_COMBINATORIAL_IMPL_HPP
 
 #include <functional>
-#include <set>
 #include <variant>
 #include <vector>
 
@@ -37,13 +36,13 @@ namespace flatsurf {
 template <>
 class Implementation<FlatTriangulationCombinatorial> {
  public:
-  Implementation(const Permutation<HalfEdge>&, const std::set<HalfEdge>&);
+  Implementation(const Permutation<HalfEdge>&, const std::vector<HalfEdge>&);
   ~Implementation();
 
   struct MessageAfterFlip { HalfEdge e; };
   struct MessageBeforeCollapse { Edge e; };
   struct MessageBeforeSwap { HalfEdge a, b; };
-  struct MessageBeforeErase { std::set<Edge> erase; };
+  struct MessageBeforeErase { std::vector<Edge> erase; };
   struct MessageAfterMove { FlatTriangulationCombinatorial* target; };
 
   using Message = std::variant<MessageAfterFlip, MessageBeforeCollapse, MessageBeforeSwap, MessageBeforeErase, MessageAfterMove>;

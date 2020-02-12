@@ -161,9 +161,9 @@ vector<vector<T>> Permutation<T>::cycles() const noexcept {
 }
 
 template <typename T>
-void Permutation<T>::drop(const set<T> &items) {
+void Permutation<T>::drop(const vector<T> &items) {
   for (auto &item : items)
-    CHECK_ARGUMENT(items.find(this->operator()(item)) != items.end(), "items to remove must be in isolated cycles");
+    CHECK_ARGUMENT(std::find(begin(items), end(items), this->operator()(item)) != end(items), "items to remove must be in isolated cycles");
 
   for (auto &item : items)
     CHECK_ARGUMENT(index(item) >= permutation.size() - items.size(), "items to remove must have maximal index");
