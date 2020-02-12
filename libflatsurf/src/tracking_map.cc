@@ -47,8 +47,7 @@ TrackingMap<K, V>::TrackingMap(const FlatTriangulationCombinatorial* parent, con
 
 template <typename K, typename V>
 TrackingMap<K, V>::TrackingMap(const TrackingMap& rhs) :
-  impl(spimpl::make_unique_impl<Implementation>(
-      this, &rhs.parent(), [&](const K& key) { return rhs.get(key); }, rhs.impl->updateAfterFlip, rhs.impl->updateBeforeCollapse)) {
+  impl(spimpl::make_unique_impl<Implementation>(this, &rhs.parent(), [&](const K& key) { return rhs.get(key); }, rhs.impl->updateAfterFlip, rhs.impl->updateBeforeCollapse)) {
 }
 
 // TODO: Implement this in a faster way.

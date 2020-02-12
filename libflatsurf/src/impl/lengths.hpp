@@ -41,7 +41,7 @@ class Lengths {
   using T = typename Surface::Coordinate;
 
  public:
-  Lengths(std::shared_ptr<const Vertical<FlatTriangulation<T>>>, const EdgeMap<SaddleConnection<FlatTriangulation<T>>>&);
+  Lengths(std::shared_ptr<const Vertical<FlatTriangulation<T>>>, EdgeMap<SaddleConnection<FlatTriangulation<T>>>&&);
 
   void push(intervalxt::Label);
   void pop();

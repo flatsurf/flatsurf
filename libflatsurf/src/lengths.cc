@@ -57,13 +57,13 @@ using intervalxt::Length;
 using rx::none_of;
 
 template <typename Surface>
-Lengths<Surface>::Lengths(std::shared_ptr<const Vertical<FlatTriangulation<T>>> vertical, const EdgeMap<SaddleConnection<FlatTriangulation<T>>>& lengths) :
+Lengths<Surface>::Lengths(std::shared_ptr<const Vertical<FlatTriangulation<T>>> vertical, EdgeMap<SaddleConnection<FlatTriangulation<T>>>&& lengths) :
   vertical(vertical),
-  lengths(lengths),
+  lengths(std::move(lengths)),
   stack(),
   sum(),
   degree(0) {
-  lengths.apply([&](const auto& edge, const auto& connection) {
+  this->lengths.apply([&](const auto& edge, const auto& connection) {
     CHECK_ARGUMENT(!connection || vertical->perpendicular(connection) > 0, "nontrivial length must be positive but " << edge << " is " << connection);
     if (connection)
       degree = std::max(degree, coefficients(toLabel(edge)).size());
