@@ -54,7 +54,7 @@ bool ContourConnection<Surface>::bottom() const {
 }
 
 template <typename Surface>
-SaddleConnection<FlatTriangulation<typename Surface::Coordinate>> ContourConnection<Surface>::connection() const {
+const SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>& ContourConnection<Surface>::connection() const {
   return impl->state->surface->fromEdge(impl->halfEdge);
 }
 

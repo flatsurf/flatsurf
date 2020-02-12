@@ -47,7 +47,7 @@ class ContourConnection : boost::equality_comparable<ContourComponent<Surface>> 
   // The saddle connection in the surface corresponding to this contour
   // connection. Going from left to right if this is a bottom connection,
   // otherwise going from right to left.
-  SaddleConnection<FlatTriangulation<T>> connection() const;
+  const SaddleConnection<FlatTriangulation<T>>& connection() const;
 
   // The vertical connections on the left of this non-vertical connection going
   // from the left end of `connection` towards the interior.
