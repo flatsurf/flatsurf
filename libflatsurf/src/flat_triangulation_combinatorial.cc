@@ -204,7 +204,7 @@ std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::
   return ret;
 }
 
-vector<HalfEdge> FlatTriangulationCombinatorial::atVertex(const Vertex v) const {
+vector<HalfEdge> FlatTriangulationCombinatorial::atVertex(const Vertex& v) const {
   assert(std::any_of(impl->vertexes.begin(), impl->vertexes.end(), [&](Vertex vv) { return v == vv; }) && "vertex is not on this surface");
   return vector<HalfEdge>(v.impl->sources.begin(), v.impl->sources.end());
 }

@@ -29,6 +29,8 @@
 
 #include "impl/vertex.impl.hpp"
 
+#include "util/assert.ipp"
+
 using std::ostream;
 using std::string;
 
@@ -44,9 +46,7 @@ inline void check(const HalfEdges& a) {
 inline void check(const HalfEdges& a, const HalfEdges& b) {
   check(a);
   check(b);
-  assert((
-             (a == b) || all_of(a.begin(), a.end(), [&](const auto& e) { return b.find(e) == b.end(); }) || all_of(b.begin(), b.end(), [&](const auto& e) { return a.find(e) == a.end(); })) &&
-         "cannot compare vertices that were created from different surfaces");
+  ASSERT(((a == b) || all_of(a.begin(), a.end(), [&](const auto& e) { return b.find(e) == b.end(); }) || all_of(b.begin(), b.end(), [&](const auto& e) { return a.find(e) == a.end(); })), "cannot compare vertices that were created from different surfaces");
 }
 }  // namespace
 
