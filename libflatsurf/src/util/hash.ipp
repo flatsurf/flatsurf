@@ -42,7 +42,7 @@ inline size_t hash_combine(const T& t) {
 
 // TODO: Test this
 template <typename S, typename T, typename... Args>
-inline size_t hash_combine(const S& s, const T& t, Args... args) {
+inline size_t hash_combine(const S& s, const T& t, const Args&... args) {
   if constexpr (std::is_same_v<size_t, uint64_t>) {
     // http://mostlymangling.blogspot.com/2019/01/better-stronger-mixer-and-test-procedure.html, public domain
     const auto rrxmxmx = [](size_t v) {
