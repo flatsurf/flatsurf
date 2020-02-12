@@ -24,6 +24,7 @@
 #include <sstream>
 
 #include <boost/preprocessor/stringize.hpp>
+#include <boost/config.hpp>
 
 namespace flatsurf {
 
@@ -54,7 +55,7 @@ void throw_for_assert(const E& e) { throw e; }
 }  // namespace flatsurf
 
 #define ASSERT_(CONDITION, EXCEPTION, MESSAGE)                                \
-  while (not(CONDITION)) {                                                    \
+  while (BOOST_UNLIKELY(not(CONDITION))) {                                    \
     std::stringstream user_message, assertion_message;                        \
     user_message << MESSAGE;                                                  \
     assertion_message << (#CONDITION " does not hold");                       \
