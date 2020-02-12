@@ -34,8 +34,8 @@ class Vertex : boost::equality_comparable<Vertex> {
   // Construct an invalid vertex.
   Vertex();
 
-  static Vertex source(const HalfEdge &, const FlatTriangulationCombinatorial &);
-  static Vertex target(const HalfEdge &, const FlatTriangulationCombinatorial &);
+  static const Vertex& source(const HalfEdge &, const FlatTriangulationCombinatorial &);
+  static const Vertex& target(const HalfEdge &, const FlatTriangulationCombinatorial &);
 
   // Note that this operator fails to distinguish equally labeled vertices on different surfaces.
   bool operator==(const Vertex &) const;

@@ -64,14 +64,14 @@ bool Vertex::operator<(const Vertex& rhs) const {
   return impl->sources < rhs.impl->sources;
 }
 
-Vertex Vertex::source(const HalfEdge& e, const FlatTriangulationCombinatorial& surface) {
+const Vertex& Vertex::source(const HalfEdge& e, const FlatTriangulationCombinatorial& surface) {
   for (const auto& v : surface.vertices())
     if (v.impl->sources.find(e) != v.impl->sources.end())
       return v;
-  assert(false && "half edge not in the surface");
+  UNREACHABLE("half edge " << e << " not in the surface")
 }
 
-Vertex Vertex::target(const HalfEdge& e, const FlatTriangulationCombinatorial& surface) {
+const Vertex& Vertex::target(const HalfEdge& e, const FlatTriangulationCombinatorial& surface) {
   return Vertex::source(-e, surface);
 }
 
