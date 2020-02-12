@@ -38,22 +38,20 @@ using index_t = decltype(std::declval<K>().index());
 
 template <typename SELF, typename K, typename V>
 class TrackingStorage {
-  using Value = std::conditional_t<std::is_same_v<V, bool>, char, V>;
-
-  static_assert(sizeof(V) == sizeof(Value), "We replace bool with char to work around vector<bool> 'optimizations' in the STL. If this is not correct for your achitecture, we need to provide an additional alternative type for Value below.");
-
   static constexpr bool hasIndex = boost::is_detected_exact_v<size_t, index_t, K>;
-  using Data = std::conditional_t<hasIndex, std::vector<Value>, std::unordered_map<K, V>>;
+  using Data = std::conditional_t<hasIndex, std::vector<V>, std::unordered_map<K, V>>;
   static constexpr bool odd = SELF::odd;
   using Tracker = Tracking<SELF>;
+
+  using Reference = std::conditional_t<std::is_same_v<Data, std::vector<V>>, typename std::vector<V>::reference, V&>;
 
  public:
   TrackingStorage(SELF* self, const FlatTriangulationCombinatorial* parent, const std::function<V(const K&)>& values, const typename SELF::FlipHandler& updateAfterFlip, const typename SELF::CollapseHandler& updateBeforeCollapse);
 
   bool operator==(const TrackingStorage&) const;
 
-  V& get(const K&);
-  const V& get(const K&) const;
+  Reference get(const K&);
+  typename Data::const_reference get(const K&) const;
   void set(const K&, const V&);
   void rekey(const std::function<bool(const K&)>& search, const std::function<bool(K&)>& adapt);
   void swap(const K&, const K&);

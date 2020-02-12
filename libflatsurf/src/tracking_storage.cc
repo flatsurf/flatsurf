@@ -41,7 +41,7 @@ TrackingStorage<SELF, K, V>::TrackingStorage(SELF* self, const FlatTriangulation
     data.reserve(keys.size());
     for (const auto& key : keys) {
       ASSERT(key.index() == data.size(), "sort order not consistent with index()");
-      data.emplace_back(Value{values(key)});
+      data.emplace_back(values(key));
     }
   } else {
     for (const auto& key : keys) {
@@ -52,13 +52,11 @@ TrackingStorage<SELF, K, V>::TrackingStorage(SELF* self, const FlatTriangulation
 }
 
 template <typename SELF, typename K, typename V>
-V& TrackingStorage<SELF, K, V>::get(const K& key) {
+typename TrackingStorage<SELF, K, V>::Reference TrackingStorage<SELF, K, V>::get(const K& key) {
   if constexpr (hasIndex) {
-    return reinterpret_cast<V&>(data[key.index()]);
+    return data[key.index()];
   } else {
-    const auto& value = data.find(key);
-    ASSERT(value != data.end(), "not in this surface");
-    return reinterpret_cast<V&>(value->second);
+    return data.at(key);
   }
 }
 
