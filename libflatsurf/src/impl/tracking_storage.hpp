@@ -21,7 +21,7 @@
 #define LIBFLATSURF_TRACKING_STORAGE_HPP
 
 #include <functional>
-#include <map>
+#include <unordered_map>
 #include <type_traits>
 #include <vector>
 
@@ -43,7 +43,7 @@ class TrackingStorage {
   static_assert(sizeof(V) == sizeof(Value), "We replace bool with char to work around vector<bool> 'optimizations' in the STL. If this is not correct for your achitecture, we need to provide an additional alternative type for Value below.");
 
   static constexpr bool hasIndex = boost::is_detected_exact_v<size_t, index_t, K>;
-  using Data = std::conditional_t<hasIndex, std::vector<Value>, std::map<K, V>>;
+  using Data = std::conditional_t<hasIndex, std::vector<Value>, std::unordered_map<K, V>>;
   static constexpr bool odd = SELF::odd;
   using Tracker = Tracking<SELF>;
 
