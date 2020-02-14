@@ -52,7 +52,7 @@ class Implementation<FlatTriangulationCollapsed<T>> {
   struct AsymmetricConnection {
     AsymmetricConnection(SaddleConnection&& value) : value(std::move(value)) {}
 
-    operator SaddleConnection() const { return value; }
+    operator const SaddleConnection&() const { return value; }
 
     SaddleConnection value;
 

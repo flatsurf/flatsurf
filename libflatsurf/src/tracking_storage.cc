@@ -62,6 +62,11 @@ typename TrackingStorage<SELF, K, V>::Reference TrackingStorage<SELF, K, V>::get
 
 template <typename SELF, typename K, typename V>
 void TrackingStorage<SELF, K, V>::set(const K& key, const V& value) {
+  set(key, V(value));
+}
+
+template <typename SELF, typename K, typename V>
+void TrackingStorage<SELF, K, V>::set(const K& key, V&& value) {
   if constexpr (hasIndex) {
     ASSERT(key.index() < data.size(), "not in this surface");
     data[key.index()] = {value};
@@ -74,7 +79,7 @@ void TrackingStorage<SELF, K, V>::set(const K& key, const V& value) {
     if constexpr (odd) {
       it = data.find(-key);
       ASSERT(it != data.end(), "not in this surface");
-      it->second = -value;
+      it->second = -std::move(value);
     }
   }
 }

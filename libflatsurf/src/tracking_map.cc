@@ -76,6 +76,11 @@ void TrackingMap<K, V>::apply(std::function<void(const K&, const V&)> map) const
 }
 
 template <typename K, typename V>
+void TrackingMap<K, V>::set(const K& key, V&& value) {
+  impl->set(key, std::move(value));
+}
+
+template <typename K, typename V>
 void TrackingMap<K, V>::set(const K& key, const V& value) {
   impl->set(key, value);
 }

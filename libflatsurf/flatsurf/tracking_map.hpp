@@ -59,6 +59,7 @@ class TrackingMap : boost::equality_comparable<TrackingMap<K, V>> {
 
   ~TrackingMap();
 
+  void set(const K&, V&&);
   void set(const K&, const V&);
   std::conditional_t<odd, const V&, V&> get(const K&) const;
 

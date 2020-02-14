@@ -52,6 +52,7 @@ class TrackingStorage {
 
   Reference get(const K&);
   typename Data::const_reference get(const K&) const;
+  void set(const K&, V&&);
   void set(const K&, const V&);
   void rekey(const std::function<bool(const K&)>& search, const std::function<bool(K&)>& adapt);
   void swap(const K&, const K&);
