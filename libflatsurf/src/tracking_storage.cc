@@ -149,6 +149,7 @@ void TrackingStorage<SELF, K, V>::wrappedUpdateAfterFlip(SELF& self, const FlatT
   } else if constexpr (std::is_same_v<K, Edge>) {
     // all edges remain valid when a flip is performed, no special action necessary
   } else if constexpr (std::is_same_v<K, Vertex>) {
+    /*
     // The labels of the vertices attached to the old and new edge have
     // changed. So we need to migrate the data to new keys.
     std::vector<HalfEdge> boundary{
@@ -169,6 +170,8 @@ void TrackingStorage<SELF, K, V>::wrappedUpdateAfterFlip(SELF& self, const FlatT
       }
       throw std::logic_error("failed to rename vertex after flip");
     });
+    */
+    throw std::logic_error("not implemented: wrappedUpdateAfterFlip()");
   } else {
     throw std::logic_error("not implemented: wrappedUpdateAfterFlip()");
   }
@@ -208,6 +211,7 @@ void TrackingStorage<SELF, K, V>::updateBeforeSwap(SELF& self, const FlatTriangu
     if (a != -b)
       swap(self.impl->get(Edge(a)), self.impl->get(Edge(b)));
   } else if constexpr (std::is_same_v<K, Vertex>) {
+    /*
     Vertex v = Vertex::source(a, surface);
     Vertex w = Vertex::source(b, surface);
     Vertex vv = Vertex::source(-a, surface);
@@ -242,6 +246,8 @@ void TrackingStorage<SELF, K, V>::updateBeforeSwap(SELF& self, const FlatTriangu
         }
       }
       return true; });
+    */
+    throw std::logic_error("not implemented: updateBeforeSwap()");
   } else {
     throw std::logic_error("not implemented: updateBeforeSwap()");
   }
@@ -308,7 +314,6 @@ std::ostream& operator<<(std::ostream&, const TrackingStorage<SELF, K, V>&) {
 LIBFLATSURF_INSTANTIATE_MANY((LIBFLATSURF_INSTANTIATE_THIS), LIBFLATSURF_REAL_TYPES)
 
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION), (TrackingStorage<TrackingSet<HalfEdge>, HalfEdge, bool>))
-LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION), (TrackingStorage<TrackingSet<Vertex>, Vertex, bool>))
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION), (TrackingStorage<TrackingSet<Edge>, Edge, bool>))
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION), (TrackingStorage<TrackingMap<Edge, int>, Edge, int>))
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION), (TrackingStorage<TrackingMap<HalfEdge, int>, HalfEdge, int>))

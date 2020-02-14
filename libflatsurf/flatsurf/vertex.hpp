@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,40 +24,29 @@
 
 #include "external/spimpl/spimpl.h"
 
+#include "copyable.hpp"
 #include "forward.hpp"
+#include "serializable.hpp"
 
 namespace flatsurf {
-// In their current implementation, Vertex is a much more bulky object than
-// HalfEdge and Edge which are just wrapping a single integer.
-class Vertex : boost::equality_comparable<Vertex> {
- public:
-  // Construct an invalid vertex.
-  Vertex();
+class Vertex : Serializable<Vertex>,
+               boost::equality_comparable<Vertex> {
+  // Vertex cannot be created directly; use source() and target() instead.
+  template <typename ...Args> Vertex(PrivateConstructor, Args&&...);
 
+ public:
   static const Vertex& source(const HalfEdge &, const FlatTriangulationCombinatorial &);
   static const Vertex& target(const HalfEdge &, const FlatTriangulationCombinatorial &);
 
-  // Note that this operator fails to distinguish equally labeled vertices on different surfaces.
   bool operator==(const Vertex &) const;
-  bool operator<(const Vertex &) const;
 
   friend std::ostream &operator<<(std::ostream &, const Vertex &);
 
-  // TODO: Find a better solution for this.
- public:
-  // TODO: Can I make this protected in a private base class and use
-  // specialization to implement Implementation differently in different
-  // classes?
-  class Implementation;
-  spimpl::impl_ptr<Implementation> impl;
-
-  // TODO: With some if-constexpr, I could move all these into a single method
-  // in a shared private base class.
-  friend cereal::access;
-  template <typename Archive>
-  void save(Archive &) const;
-  template <typename Archive>
-  void load(Archive &);
+ private:
+  using Implementation = ::flatsurf::Implementation<Vertex>;
+  Copyable<Implementation> impl;
+  friend Implementation;
+  friend std::hash<Vertex>;
 };
 }  // namespace flatsurf
 

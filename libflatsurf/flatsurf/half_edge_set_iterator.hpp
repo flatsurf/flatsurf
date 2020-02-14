@@ -17,30 +17,35 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_VERTEX_IMPL_HPP
-#define LIBFLATSURF_VERTEX_IMPL_HPP
+#ifndef LIBFLATSURF_HALF_EDGE_SET_ITERATOR_HPP
+#define LIBFLATSURF_HALF_EDGE_SET_ITERATOR_HPP
 
-#include <vector>
+#include <boost/iterator/iterator_categories.hpp>
+#include <boost/iterator/iterator_facade.hpp>
 
-#include "../../flatsurf/vertex.hpp"
-#include "../../flatsurf/half_edge_set.hpp"
+#include "external/spimpl/spimpl.h"
+
+#include "forward.hpp"
 
 namespace flatsurf {
 
-template <>
-class Implementation<Vertex> {
+class HalfEdgeSetIterator : public boost::iterator_facade<HalfEdgeSetIterator, const HalfEdge&, boost::forward_traversal_tag> {
+  template <typename ...Args> HalfEdgeSetIterator(PrivateConstructor, Args&&...);
+
  public:
-  static bool comparable(const HalfEdgeSet&, const HalfEdgeSet&);
-  static void afterFlip(Vertex&, const FlatTriangulationCombinatorial&, HalfEdge flip);
+  using value_type = HalfEdge;
 
-  static Vertex make(const std::vector<HalfEdge> sources);
+  void increment();
+  const HalfEdge &dereference() const;
+  bool equal(const HalfEdgeSetIterator &other) const;
 
-  static const HalfEdgeSet& outgoing(const Vertex&);
-
-  // The half edges starting at this vertex.
-  HalfEdgeSet sources;
+ private:
+  using Implementation = ::flatsurf::Implementation<HalfEdgeSetIterator>;
+  spimpl::impl_ptr<Implementation> impl;
+  friend Implementation;
+  friend HalfEdgeSet;
 };
 
-}  // namespace flatsurf
+}
 
 #endif

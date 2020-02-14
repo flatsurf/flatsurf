@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@
 #include "../flatsurf/half_edge_map.hpp"
 #include "../flatsurf/permutation.hpp"
 #include "../flatsurf/vertex.hpp"
+#include "../flatsurf/half_edge_set_iterator.hpp"
 
 #include "impl/flat_triangulation_combinatorial.impl.hpp"
 #include "impl/tracking.impl.hpp"
@@ -157,7 +158,7 @@ std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::
   CHECK_ARGUMENT(!boundary(e) && !boundary(-e), "cannot disconnect half edge that is already boundary");
 
   // We insert a new half edge ee into the vertex permutation next to e
-  HalfEdge ee(static_cast<int>(halfEdges().size()) / 2 + 1);
+  auto ee = HalfEdge(static_cast<int>(halfEdges().size()) / 2 + 1);
 
   std::map<HalfEdge, HalfEdge> vertices;
   for (auto h : halfEdges()) {
@@ -199,9 +200,9 @@ std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::
   return ret;
 }
 
-vector<HalfEdge> FlatTriangulationCombinatorial::atVertex(const Vertex& v) const {
-  assert(std::any_of(impl->vertexes.begin(), impl->vertexes.end(), [&](Vertex vv) { return v == vv; }) && "vertex is not on this surface");
-  return vector<HalfEdge>(v.impl->sources.begin(), v.impl->sources.end());
+std::vector<HalfEdge> FlatTriangulationCombinatorial::outgoing(const Vertex& v) const {
+  const auto& outgoing = ::flatsurf::Implementation<Vertex>::outgoing(v);
+  return std::vector<HalfEdge>(begin(outgoing), end(outgoing));
 }
 
 void FlatTriangulationCombinatorial::flip(HalfEdge e) {
@@ -227,10 +228,11 @@ void FlatTriangulationCombinatorial::flip(HalfEdge e) {
   impl->faces *= cycle{a, d, e};
   impl->faces *= cycle{c, b, -e};
 
+  for (auto& vertex : impl->vertexes)
+    ::flatsurf::Implementation<Vertex>::afterFlip(vertex, *this, e);
+
   // notify attached structures about this flip
   impl->change.emit(Implementation::MessageAfterFlip{e});
-
-  impl->resetVertexes();
 
   impl->check();
 }
@@ -420,14 +422,9 @@ void Implementation<FlatTriangulationCombinatorial>::check() {
 }
 
 void Implementation<FlatTriangulationCombinatorial>::resetVertexes() {
-  using HalfEdges = std::set<HalfEdge>;
   this->vertexes.clear();
-  for (const auto& cycle : vertices.cycles()) {
-    Vertex v;
-    v.impl = spimpl::make_impl<Vertex::Implementation>(HalfEdges(cycle.begin(), cycle.end()));
-    vertexes.push_back(v);
-  }
-  sort(begin(vertexes), end(vertexes));
+  for (const auto& cycle : vertices.cycles())
+    vertexes.push_back(::flatsurf::Implementation<Vertex>::make(cycle));
 }
 
 void Implementation<FlatTriangulationCombinatorial>::resetVertices() {
@@ -448,7 +445,7 @@ void Implementation<FlatTriangulationCombinatorial>::resetEdges() {
   std::set<Edge> edges;
   for (const auto& e : faces.domain())
     edges.insert(e);
-  this->edges = std::vector<Edge>(edges.begin(), edges.end());
+  this->edges = std::vector<Edge>(begin(edges), end(edges));
 
   halfEdges = vertices.domain();
   sort(begin(halfEdges), end(halfEdges));
@@ -474,6 +471,8 @@ void Implementation<FlatTriangulationCombinatorial>::swap(HalfEdge a, HalfEdge b
     faces *= {-a, -b};
     std::vector{-a, -b} *= faces;
   }
+
+  resetVertexes();
 }
 
 Implementation<FlatTriangulationCombinatorial>::~Implementation() {

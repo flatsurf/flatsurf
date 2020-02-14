@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,30 +17,24 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_VERTEX_IMPL_HPP
-#define LIBFLATSURF_VERTEX_IMPL_HPP
+#ifndef LIBFLATSURF_TRACKING_SET_ITERATOR_IMPL_HPP
+#define LIBFLATSURF_TRACKING_SET_ITERATOR_IMPL_HPP
 
-#include <vector>
-
-#include "../../flatsurf/vertex.hpp"
-#include "../../flatsurf/half_edge_set.hpp"
+#include "../../flatsurf/tracking_set_iterator.hpp"
 
 namespace flatsurf {
-
-template <>
-class Implementation<Vertex> {
+template <typename T>
+class Implementation<TrackingSetIterator<T>> {
  public:
-  static bool comparable(const HalfEdgeSet&, const HalfEdgeSet&);
-  static void afterFlip(Vertex&, const FlatTriangulationCombinatorial&, HalfEdge flip);
+  Implementation(const TrackingSet<T>*);
 
-  static Vertex make(const std::vector<HalfEdge> sources);
+  static TrackingSetIterator<T> begin(const TrackingSet<T>*);
+  static TrackingSetIterator<T> end(const TrackingSet<T>*);
 
-  static const HalfEdgeSet& outgoing(const Vertex&);
-
-  // The half edges starting at this vertex.
-  HalfEdgeSet sources;
+  const TrackingSet<T>* set;
+  const T* current;
 };
 
-}  // namespace flatsurf
+}
 
 #endif

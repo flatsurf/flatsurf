@@ -27,27 +27,40 @@
 using std::ostream;
 
 namespace flatsurf {
+
+HalfEdge::HalfEdge(PrivateConstructor, size_t idx) :
+  idx(idx) {
+}
+
 HalfEdge::HalfEdge(const int id) :
-  id(id) {
-  ASSERT_ARGUMENT(id != 0, "id must be non-zero");
+  HalfEdge(PrivateConstructor{}, id > 0 ? (2 * (id - 1)) : (-2 * id - 1)) {
+  ASSERT(id != 0, "id must be non-zero");
+}
+
+HalfEdge HalfEdge::fromIndex(const size_t index) {
+  return HalfEdge(PrivateConstructor{}, index);
 }
 
 HalfEdge::HalfEdge() :
-  id(0) {}
+  HalfEdge(PrivateConstructor{}, static_cast<size_t>(-1)) {}
+
+int HalfEdge::id() const noexcept {
+  ASSERT(idx != static_cast<size_t>(-1), "id must be non-zero");
+  return (idx % 2 ? -1 : 1) * (idx / 2 + 1);
+}
 
 HalfEdge HalfEdge::operator-() const {
-  ASSERT_ARGUMENT(id != 0, "id must be non-zero");
-  return HalfEdge(-id);
+  return HalfEdge::fromIndex(idx ^ 1);
 }
 
 HalfEdge &HalfEdge::operator=(const HalfEdge &rhs) {
-  this->id = rhs.id;
-  ASSERT_ARGUMENT(id != 0, "id must be non-zero");
+  this->idx = rhs.idx;
+  ASSERT(idx != static_cast<size_t>(-1), "id must be non-zero");
   return *this;
 }
 
 bool HalfEdge::operator==(const HalfEdge &rhs) const {
-  return this->id == rhs.id;
+  return this->idx == rhs.idx;
 }
 
 bool HalfEdge::operator<(const HalfEdge &rhs) const {
@@ -55,19 +68,14 @@ bool HalfEdge::operator<(const HalfEdge &rhs) const {
 }
 
 size_t HalfEdge::index() const noexcept {
-  const int id = this->id;
-  ASSERT(id != 0, "a valid half edge must have a non-zero id");
-  if (id < 0) {
-    return static_cast<size_t>(-2 * id - 1);
-  } else {
-    return static_cast<size_t>(2 * id - 2);
-  }
+  ASSERT(idx != static_cast<size_t>(-1), "id must be non-zero");
+  return idx;
 }
 
-ostream &operator<<(ostream &os, const HalfEdge &self) { return os << self.id; }
+ostream &operator<<(ostream &os, const HalfEdge &self) { return os << self.id(); }
 
 }  // namespace flatsurf
 
 size_t std::hash<flatsurf::HalfEdge>::operator()(const flatsurf::HalfEdge &e) const noexcept {
-  return static_cast<size_t>(e.id);
+  return static_cast<size_t>(e.index());
 }

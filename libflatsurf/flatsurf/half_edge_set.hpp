@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,49 @@
 #ifndef LIBFLATSURF_HALF_EDGE_SET_HPP
 #define LIBFLATSURF_HALF_EDGE_SET_HPP
 
-#include "half_edge.hpp"
-#include "tracking_set.hpp"
+#include <iosfwd>
+#include <vector>
+
+#include <boost/operators.hpp>
+
+#include "external/spimpl/spimpl.h"
+
+#include "forward.hpp"
+#include "half_edge_set_iterator.hpp"
+
+namespace flatsurf {
+
+class HalfEdgeSet : boost::equality_comparable<HalfEdgeSet> {
+  template <typename ...Args> HalfEdgeSet(PrivateConstructor, Args&&...);
+
+ public:
+  HalfEdgeSet(const std::vector<HalfEdge>&);
+
+  bool contains(HalfEdge) const;
+  void insert(HalfEdge);
+  void erase(HalfEdge);
+
+  HalfEdgeSetIterator begin() const;
+  HalfEdgeSetIterator end() const;
+
+  bool operator==(const HalfEdgeSet&) const;
+
+  bool disjoint(const HalfEdgeSet&) const;
+
+  friend std::ostream& operator<<(std::ostream&, const HalfEdgeSet&);
+
+ private:
+  using Implementation = ::flatsurf::Implementation<HalfEdgeSet>;
+  spimpl::impl_ptr<Implementation> impl;
+  friend Implementation;
+  friend HalfEdgeSetIterator;
+  friend ::flatsurf::Implementation<HalfEdgeSetIterator>;
+};
+
+HalfEdgeSetIterator begin(const HalfEdgeSet&);
+
+HalfEdgeSetIterator end(const HalfEdgeSet&);
+
+}
 
 #endif

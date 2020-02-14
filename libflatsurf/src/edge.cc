@@ -33,16 +33,15 @@ Edge::Edge(int id) :
   Edge(HalfEdge(id)) {}
 
 Edge::Edge(HalfEdge e) :
-  id(e.id >= (-e).id ? e : -e) {}
+  id(e.index() < (-e).index() ? e : -e) {}
 
 HalfEdge Edge::positive() const { return id; }
 
 HalfEdge Edge::negative() const { return -id; }
 
 size_t Edge::index() const {
-  ASSERT(id.id != 0, "Edge 0 is not a valid edge");
-  ASSERT(id.id > 0, "Edge should have been automatically set to its positive HalfEdge representative");
-  return static_cast<size_t>(id.id) - 1;
+  ASSERT(id.index() % 2 == 0, "Edge should have been automatically set to its positive HalfEdge representative");
+  return id.index() / 2;
 }
 
 bool Edge::operator==(const Edge& rhs) const {

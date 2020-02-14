@@ -22,6 +22,8 @@
 #include <ostream>
 #include <vector>
 
+#include <fmt/format.h>
+
 #include <boost/type_erasure/any_cast.hpp>
 
 #include <intervalxt/interval_exchange_transformation.hpp>
@@ -31,7 +33,8 @@
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
 #include "../flatsurf/edge_set.hpp"
-#include "../flatsurf/tracking_half_edge.hpp"
+#include "../flatsurf/tracked.hpp"
+#include "../flatsurf/fmt.hpp"
 
 #include "impl/contour_component.impl.hpp"
 #include "impl/flat_triangulation_collapsed.impl.hpp"
@@ -137,19 +140,19 @@ typename intervalxt::IntervalExchangeTransformation& IntervalExchangeTransformat
 
 template <typename Surface>
 std::unordered_set<HalfEdge> IntervalExchangeTransformation<Surface>::makeUniqueLargeEdge(Surface& surface, const Vector<T>& vertical_, HalfEdge& unique_) {
-  TrackingHalfEdge unique(&surface, unique_);
+  Tracked<HalfEdge> unique(&surface, HalfEdge(unique_));
 
   Vertical<Surface> vertical(surface.shared_from_this(), vertical_);
 
   ASSERT_ARGUMENT(vertical.large(unique), "edge must already be large");
   if (vertical.perpendicular(surface.fromEdge(unique)) < 0)
-    unique = -unique;
+    unique = -static_cast<HalfEdge>(unique);
 
   // Eliminate other large edges
   while (true) {
     std::unordered_set<HalfEdge> component;
     if (Vertical<Surface>::Implementation::visit(vertical, unique, component, [&](HalfEdge e) {
-          if (e == unique || e == -unique)
+          if (e == static_cast<HalfEdge>(unique) || e == -static_cast<HalfEdge>(unique))
             return true;
 
           if (vertical.large(e)) {
@@ -160,10 +163,11 @@ std::unordered_set<HalfEdge> IntervalExchangeTransformation<Surface>::makeUnique
           return true;
         })) {
       assert(component.size() >= 2);
-      unique_ = unique;
       return component;
     }
   }
+
+  unique_ = unique;
 }
 
 template <typename Surface>
@@ -220,7 +224,7 @@ Implementation<IntervalExchangeTransformation<Surface>>::Implementation(std::sha
   };
 
   CHECK_ARGUMENT(std::multiset<HalfEdge>(top.begin(), top.end()) == std::multiset<HalfEdge>(bottom.begin(), bottom.end()), "top and bottom contour must contain the same half edges");
-  CHECK_ARGUMENT(connected(top), "top contour must be connected");
+  CHECK_ARGUMENT(connected(top), fmt::format("top contour must be connected but {} is not connected in {}.", fmt::join(top, ", "),*surface));
   CHECK_ARGUMENT(connected(bottom), "bottom contour must be connected");
   ASSERT(std::all_of(begin(top), end(top), [&](Edge e) { return lengths->get(intervalxt::Label(e.index())) > 0; }), "lengths in contour must be positive");
 }

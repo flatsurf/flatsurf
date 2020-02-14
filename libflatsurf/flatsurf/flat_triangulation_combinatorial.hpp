@@ -85,8 +85,9 @@ class FlatTriangulationCombinatorial : Serializable<FlatTriangulationCombinatori
   const std::vector<Edge> &edges() const;
   const std::vector<HalfEdge> &halfEdges() const;
   const std::vector<Vertex> &vertices() const;
-  // Return the outgoing half edges from this vertex in ccw order.
-  std::vector<HalfEdge> atVertex(const Vertex&) const;
+
+  // Return the outgoing half edges from this vertex.
+  std::vector<HalfEdge> outgoing(const Vertex&) const;
 
   // Return the number of half edges in this triangulation.
   size_t size() const noexcept;

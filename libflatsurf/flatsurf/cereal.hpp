@@ -44,23 +44,13 @@
 namespace flatsurf {
 
 template <typename Archive>
-void Vertex::save(Archive&) const {
-  throw std::logic_error("not implemented: vertex cannot be serialized yet");
-}
-
-template <typename Archive>
-void Vertex::load(Archive&) {
-  throw std::logic_error("not implemented: vertex cannot be deserialized yet");
-}
-
-template <typename Archive>
 int HalfEdge::save_minimal(Archive&) const {
-  return id;
+  return id();
 }
 
 template <typename Archive>
 void HalfEdge::load_minimal(Archive&, const int& value) {
-  id = value;
+  *this = HalfEdge(value);
 }
 
 template <typename Archive, typename T>

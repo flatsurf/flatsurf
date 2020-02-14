@@ -1,7 +1,8 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2020 Vincent Delecroix
+ *        Copyright (C) 2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,30 +18,23 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_VERTEX_IMPL_HPP
-#define LIBFLATSURF_VERTEX_IMPL_HPP
+#include "external/catch2/single_include/catch2/catch.hpp"
 
-#include <vector>
+#include "../flatsurf/half_edge.hpp"
 
-#include "../../flatsurf/vertex.hpp"
-#include "../../flatsurf/half_edge_set.hpp"
+namespace flatsurf::test {
 
-namespace flatsurf {
+TEST_CASE("HalfEdge Basics", "[half_edge]") {
+  const int id = GENERATE(range(-1024, 1024));
+  
+  if (id == 0) return;
 
-template <>
-class Implementation<Vertex> {
- public:
-  static bool comparable(const HalfEdgeSet&, const HalfEdgeSet&);
-  static void afterFlip(Vertex&, const FlatTriangulationCombinatorial&, HalfEdge flip);
+  const HalfEdge e(id);
 
-  static Vertex make(const std::vector<HalfEdge> sources);
+  REQUIRE(e == HalfEdge(id));
+  REQUIRE(-e == HalfEdge(-id));
+  REQUIRE(e.id() == id);
+  REQUIRE(HalfEdge::fromIndex(e.index()) == e);
+}
 
-  static const HalfEdgeSet& outgoing(const Vertex&);
-
-  // The half edges starting at this vertex.
-  HalfEdgeSet sources;
-};
-
-}  // namespace flatsurf
-
-#endif
+}

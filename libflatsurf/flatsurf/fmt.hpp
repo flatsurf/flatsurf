@@ -63,6 +63,11 @@ template <typename T>
 struct fmt::formatter<::flatsurf::Vector<T>> : ::flatsurf::GenericFormatter<::flatsurf::Vector<T>> {};
 template <typename T>
 struct fmt::formatter<::flatsurf::ContourComponent<T>> : ::flatsurf::GenericFormatter<::flatsurf::ContourComponent<T>> {};
-
+template <>
+struct fmt::formatter<::flatsurf::HalfEdgeSet> : ::flatsurf::GenericFormatter<::flatsurf::HalfEdgeSet> {};
+template <typename T>
+struct fmt::formatter<::flatsurf::FlatTriangulation<T>> : ::flatsurf::GenericFormatter<::flatsurf::FlatTriangulation<T>> {};
+template <typename T>
+struct fmt::formatter<::flatsurf::FlatTriangulationCollapsed<T>> : ::flatsurf::GenericFormatter<::flatsurf::FlatTriangulationCollapsed<T>> {};
 
 #endif

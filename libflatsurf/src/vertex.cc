@@ -20,12 +20,13 @@
 #include <ostream>
 #include <string>
 
-#include <boost/algorithm/string/join.hpp>
-#include <boost/lexical_cast.hpp>
+#include <fmt/format.h>
 
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/vertex.hpp"
+#include "../flatsurf/half_edge_set_iterator.hpp"
+#include "../flatsurf/fmt.hpp"
 
 #include "impl/vertex.impl.hpp"
 
@@ -36,55 +37,52 @@ using std::string;
 
 namespace flatsurf {
 
-using HalfEdges = std::set<HalfEdge>;
-
-namespace {
-inline void check(const HalfEdges& a) {
-  assert(a.size() && "vertex not created from any surface");
-}
-
-inline void check(const HalfEdges& a, const HalfEdges& b) {
-  check(a);
-  check(b);
-  ASSERT(((a == b) || all_of(a.begin(), a.end(), [&](const auto& e) { return b.find(e) == b.end(); }) || all_of(b.begin(), b.end(), [&](const auto& e) { return a.find(e) == a.end(); })), "cannot compare vertices that were created from different surfaces");
-}
-}  // namespace
-
-Vertex::Vertex() :
-  impl(spimpl::make_impl<Implementation>(HalfEdges())) {
+template <typename ...Args>
+Vertex::Vertex(PrivateConstructor, Args&&... args) :
+  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {
 }
 
 bool Vertex::operator==(const Vertex& rhs) const {
-  check(impl->sources, rhs.impl->sources);
-  return impl->sources == rhs.impl->sources;
-}
+  ASSERT(Implementation::comparable(impl->sources, rhs.impl->sources), "Cannot compare unrelated vertices; maybe the surface has changed since these vertices were created?");
 
-bool Vertex::operator<(const Vertex& rhs) const {
-  check(impl->sources, rhs.impl->sources);
-  return impl->sources < rhs.impl->sources;
+  return *begin(impl->sources) == *begin(rhs.impl->sources);
 }
 
 const Vertex& Vertex::source(const HalfEdge& e, const FlatTriangulationCombinatorial& surface) {
-  for (const auto& v : surface.vertices())
-    if (v.impl->sources.find(e) != v.impl->sources.end())
-      return v;
-  UNREACHABLE("half edge " << e << " not in the surface")
+  return *std::find_if(begin(surface.vertices()), end(surface.vertices()), [&](const auto& v) { return v.impl->sources.contains(e); });
 }
 
 const Vertex& Vertex::target(const HalfEdge& e, const FlatTriangulationCombinatorial& surface) {
   return Vertex::source(-e, surface);
 }
 
-Vertex::Implementation::Implementation(const HalfEdges& sources) :
-  sources(sources) {
+ostream& operator<<(ostream& os, const Vertex& self) {
+  return os << fmt::format("Vertex([{}])", self.impl->sources);
 }
 
-ostream& operator<<(ostream& os, const Vertex& self) {
-  check(self.impl->sources);
-  std::vector<string> items;
-  for (auto e : self.impl->sources)
-    items.push_back(boost::lexical_cast<string>(e));
-  return os << "Vertex(" << boost::algorithm::join(items, ", ") << ")";
+bool Implementation<Vertex>::comparable(const HalfEdgeSet& a, const HalfEdgeSet& b) {
+  return a == b || a.disjoint(b);
+}
+
+void Implementation<Vertex>::afterFlip(Vertex& v, const FlatTriangulationCombinatorial& parent, HalfEdge flipped) {
+  auto& sources = v.impl->sources;
+
+  HalfEdge b = parent.previousAtVertex(-flipped);
+  HalfEdge d = parent.previousAtVertex(flipped);
+
+  if (sources.contains(-b)) sources.erase(flipped);
+  if (sources.contains(-d)) sources.erase(-flipped);
+
+  if (sources.contains(b)) sources.insert(-flipped);
+  if (sources.contains(d)) sources.insert(flipped);
+}
+
+const HalfEdgeSet& Implementation<Vertex>::outgoing(const Vertex& v) {
+  return v.impl->sources;
+}
+
+Vertex Implementation<Vertex>::make(const std::vector<HalfEdge> sources) {
+  return Vertex(PrivateConstructor{}, HalfEdgeSet(sources));
 }
 
 }  // namespace flatsurf

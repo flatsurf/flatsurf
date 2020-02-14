@@ -32,6 +32,8 @@ enum class CCW;
 
 enum class ORIENTATION;
 
+struct PrivateConstructor {};
+
 template <typename T>
 class Vector;
 
@@ -101,7 +103,9 @@ using FaceMap = TrackingMap<Face, T>;
 template <typename T>
 class TrackingSet;
 
-using HalfEdgeSet = TrackingSet<HalfEdge>;
+class HalfEdgeSet;
+
+class HalfEdgeSetIterator;
 
 using VertexSet = TrackingSet<Vertex>;
 

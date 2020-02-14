@@ -71,9 +71,6 @@ TEST_CASE("Flat Triangulation Vertices", "[flat_triangulation_combinatorial][ver
 
   GIVEN("The Surface " << *surface) {
     auto vertices = surface->vertices();
-
-    // This is assumed by TrackingStorage for efficiency.
-    REQUIRE(std::is_sorted(begin(vertices), end(vertices)));
   }
 }
 

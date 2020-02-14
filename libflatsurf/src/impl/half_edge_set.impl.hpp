@@ -17,30 +17,26 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_VERTEX_IMPL_HPP
-#define LIBFLATSURF_VERTEX_IMPL_HPP
+#ifndef LIBFLATSURF_HALF_EDGE_SET_IMPL_HPP
+#define LIBFLATSURF_HALF_EDGE_SET_IMPL_HPP
 
-#include <vector>
+#include <boost/dynamic_bitset.hpp>
+#include <boost/dynamic_bitset/dynamic_bitset.hpp>
 
-#include "../../flatsurf/vertex.hpp"
 #include "../../flatsurf/half_edge_set.hpp"
 
 namespace flatsurf {
 
 template <>
-class Implementation<Vertex> {
+class Implementation<HalfEdgeSet> {
  public:
-  static bool comparable(const HalfEdgeSet&, const HalfEdgeSet&);
-  static void afterFlip(Vertex&, const FlatTriangulationCombinatorial&, HalfEdge flip);
-
-  static Vertex make(const std::vector<HalfEdge> sources);
-
-  static const HalfEdgeSet& outgoing(const Vertex&);
-
-  // The half edges starting at this vertex.
-  HalfEdgeSet sources;
+  mutable boost::dynamic_bitset<> set {};
 };
 
-}  // namespace flatsurf
+static_assert(!std::is_pod_v<Implementation<HalfEdgeSet>>);
+static_assert(!std::is_pod_v<boost::dynamic_bitset<>>);
+
+}
 
 #endif
+

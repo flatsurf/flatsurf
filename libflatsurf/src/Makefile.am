@@ -1,39 +1,41 @@
 lib_LTLIBRARIES = libflatsurf.la
 
 libflatsurf_la_SOURCES =                                            \
-	ccw.cc                                                      \
 	bound.cc                                                    \
+	ccw.cc                                                      \
+	chain.cc                                                    \
+	collapsed_half_edge.cc                                      \
+	contour_component.cc                                        \
+	contour_component_state.cc                                  \
+	contour_connection.cc                                       \
+	contour_decomposition.cc                                    \
+	contour_decomposition_state.cc                              \
 	delaunay_triangulation.cc                                   \
 	edge.cc                                                     \
+	half_edge_set.cc                                            \
+	half_edge_set_iterator.cc                                   \
 	flat_triangulation.cc                                       \
+	flat_triangulation_collapsed.cc                             \
 	flat_triangulation_combinatorial.cc                         \
+	flow_component.cc                                           \
+	flow_component_state.cc                                     \
+	flow_connection.cc                                          \
+	flow_decomposition.cc                                       \
+	flow_decomposition_state.cc                                 \
 	half_edge.cc                                                \
-	tracking_map.cc                                             \
-	tracking_set.cc                                             \
-	tracking.cc                                                 \
-	tracking_half_edge.cc                                       \
-	tracking_storage.cc                                         \
-	contour_decomposition.cc                                    \
+	interval_exchange_transformation.cc                         \
+	lengths.cc                                                  \
 	permutation.cc                                              \
 	saddle_connection.cc                                        \
 	saddle_connections.cc                                       \
-	flow_connection.cc                                          \
-	vertex.cc                                                   \
+	tracked.cc                                                  \
+	tracking.cc                                                 \
+	tracking_map.cc                                             \
+	tracking_set.cc                                             \
+	tracking_storage.cc                                         \
 	vector/vector.cc                                            \
-	flow_decomposition.cc                                       \
-	vertical.cc                                                 \
-	flat_triangulation_collapsed.cc                             \
-	flow_component.cc                                           \
-	contour_component.cc                                        \
-	interval_exchange_transformation.cc                         \
-	lengths.cc                                                  \
-	flow_decomposition_state.cc                                 \
-	flow_component_state.cc                                     \
-	contour_decomposition_state.cc                              \
-	contour_component_state.cc                                  \
-	collapsed_half_edge.cc                                      \
-	contour_connection.cc                                       \
-	chain.cc
+	vertex.cc                                                   \
+	vertical.cc
 
 nobase_include_HEADERS =                                            \
 	../flatsurf/bound.hpp                                       \

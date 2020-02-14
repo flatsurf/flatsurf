@@ -32,14 +32,14 @@ namespace flatsurf {
 // Similar to Edge this is a wrapper to get type-safe HalfEdges without any
 // runtime overhead (at least when compiling with -flto.)
 class HalfEdge : boost::equality_comparable<HalfEdge> {
- public:
-  friend class Edge;
-  friend class FlatTriangulationCombinatorial;
-  friend class Vertex;
+  HalfEdge(PrivateConstructor, size_t idx);
 
+ public:
   HalfEdge();
+  HalfEdge(int id);
   HalfEdge(const HalfEdge &edge) = default;
-  explicit HalfEdge(const int id);
+
+  static HalfEdge fromIndex(size_t index);
 
   HalfEdge operator-() const;
   HalfEdge &operator=(const HalfEdge &other);
@@ -52,13 +52,13 @@ class HalfEdge : boost::equality_comparable<HalfEdge> {
   // Return a zero based index for this half edge that can be used to index into an array.
   size_t index() const noexcept;
 
- private:
-  // TODO: It's probably better to store this as its unsigned index().
-  // operator- then becomes a bit flip on the last bit.
-  int id;
+  int id() const noexcept;
 
-  friend std::hash<HalfEdge>;
+ private:
+  int idx;
+
   friend cereal::access;
+
   template <typename Archive>
   int save_minimal(Archive &) const;
   template <typename Archive>

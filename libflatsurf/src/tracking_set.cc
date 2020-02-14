@@ -82,7 +82,6 @@ ostream& operator<<(ostream& os, const TrackingSet<K>& self) {
 // Instantiations of templates so implementations are generated for the linker
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/half_edge.hpp"
-#include "../flatsurf/vertex.hpp"
 
 namespace flatsurf {
 
@@ -90,7 +89,5 @@ template class TrackingSet<HalfEdge>;
 template ostream& operator<<(ostream&, const TrackingSet<HalfEdge>&);
 template class TrackingSet<Edge>;
 template ostream& operator<<(ostream&, const TrackingSet<Edge>&);
-template class TrackingSet<Vertex>;
-template ostream& operator<<(ostream&, const TrackingSet<Vertex>&);
 
 }  // namespace flatsurf
