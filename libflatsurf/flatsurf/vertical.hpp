@@ -35,7 +35,7 @@
 namespace flatsurf {
 // TODO: Maybe split into a base class Direction or Orientation or something
 // like that and this subclass Vertical which is attached to a Surface.
-template <class Surface>
+template <typename Surface>
 class Vertical : boost::equality_comparable<Vertical<Surface>> {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
@@ -92,6 +92,12 @@ class Vertical : boost::equality_comparable<Vertical<Surface>> {
   template <typename Archive>
   void load(Archive &archive);
 };
+
+template <typename Surface, typename ...Args>
+Vertical(std::shared_ptr<const Surface>, Args&&...) -> Vertical<Surface>;
+
+template <typename Surface, typename ...Args>
+Vertical(std::shared_ptr<Surface>, Args&&...) -> Vertical<Surface>;
 
 template <typename Surface>
 Vertical(std::shared_ptr<const Surface>, const Vector<typename Surface::Coordinate> &)->Vertical<Surface>;

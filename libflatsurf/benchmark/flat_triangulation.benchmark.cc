@@ -22,6 +22,7 @@
 #include <memory>
 
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/vertical.hpp"
 
 #include "surfaces.hpp"
 
@@ -31,18 +32,23 @@ using benchmark::State;
 namespace flatsurf::benchmark {
 using namespace flatsurf::test;
 
-void FlatTriangulationCombinatorialFlip(State& state) {
-  auto L = makeLCombinatorial();
+template <typename R2>
+void FlatTriangulationFlip(State& state) {
+  auto L = makeL<R2>();
 
-  const int N = L->size();
-
-  int idx = 0;
+  auto vertical = Vertical(L, R2(1000000007, 1));
 
   for (auto _ : state) {
-    HalfEdge e = HalfEdge::fromIndex(idx++ % N);
-    L->flip(e);
+    for (auto e : L->halfEdges())
+      if (vertical.large(e)){
+        L->flip(e);
+        break;
+      }
   }
 }
-BENCHMARK(FlatTriangulationCombinatorialFlip);
+BENCHMARK_TEMPLATE(FlatTriangulationFlip, Vector<long long>);
+BENCHMARK_TEMPLATE(FlatTriangulationFlip, Vector<mpq_class>);
+BENCHMARK_TEMPLATE(FlatTriangulationFlip, Vector<eantic::renf_elem_class>);
+BENCHMARK_TEMPLATE(FlatTriangulationFlip, Vector<exactreal::Element<exactreal::IntegerRing>>);
 
 }  // namespace flatsurf::benchmark
