@@ -34,7 +34,7 @@ HalfEdge::HalfEdge(PrivateConstructor, size_t idx) :
 
 HalfEdge::HalfEdge(const int id) :
   HalfEdge(PrivateConstructor{}, id > 0 ? (2 * (id - 1)) : (-2 * id - 1)) {
-  ASSERT(id != 0, "id must be non-zero");
+  ASSERT_ARGUMENT(id != 0, "id must be non-zero");
 }
 
 HalfEdge HalfEdge::fromIndex(const size_t index) {
@@ -46,21 +46,21 @@ HalfEdge::HalfEdge() :
 
 int HalfEdge::id() const noexcept {
   ASSERT(idx != static_cast<size_t>(-1), "id must be non-zero");
-  return (idx % 2 ? -1 : 1) * (idx / 2 + 1);
+  return (idx % 2 ? -1 : 1) * static_cast<int>(idx / 2 + 1);
 }
 
 HalfEdge HalfEdge::operator-() const {
-  return HalfEdge::fromIndex(idx ^ 1);
+  return HalfEdge::fromIndex(idx ^ static_cast<size_t>(1));
 }
 
 HalfEdge &HalfEdge::operator=(const HalfEdge &rhs) {
-  this->idx = rhs.idx;
+  idx = rhs.idx;
   ASSERT(idx != static_cast<size_t>(-1), "id must be non-zero");
   return *this;
 }
 
 bool HalfEdge::operator==(const HalfEdge &rhs) const {
-  return this->idx == rhs.idx;
+  return idx == rhs.idx;
 }
 
 bool HalfEdge::operator<(const HalfEdge &rhs) const {

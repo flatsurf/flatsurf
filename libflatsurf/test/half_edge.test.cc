@@ -32,8 +32,10 @@ TEST_CASE("HalfEdge Basics", "[half_edge]") {
   const HalfEdge e(id);
 
   REQUIRE(e == HalfEdge(id));
+  REQUIRE(-(-e) == e);
   REQUIRE(-e == HalfEdge(-id));
   REQUIRE(e.id() == id);
+  REQUIRE((-e).id() == -e.id());
   REQUIRE(HalfEdge::fromIndex(e.index()) == e);
 }
 

@@ -55,7 +55,7 @@ class HalfEdge : boost::equality_comparable<HalfEdge> {
   int id() const noexcept;
 
  private:
-  int idx;
+  size_t idx;
 
   friend cereal::access;
 
