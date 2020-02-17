@@ -58,6 +58,8 @@ struct fmt::formatter<::flatsurf::SaddleConnection<T>> : ::flatsurf::GenericForm
 template <typename T>
 struct fmt::formatter<::flatsurf::FlowConnection<T>> : ::flatsurf::GenericFormatter<::flatsurf::FlowConnection<T>> {};
 template <>
+struct fmt::formatter<::flatsurf::Edge> : ::flatsurf::GenericFormatter<::flatsurf::Edge> {};
+template <>
 struct fmt::formatter<::flatsurf::HalfEdge> : ::flatsurf::GenericFormatter<::flatsurf::HalfEdge> {};
 template <typename T>
 struct fmt::formatter<::flatsurf::Vector<T>> : ::flatsurf::GenericFormatter<::flatsurf::Vector<T>> {};

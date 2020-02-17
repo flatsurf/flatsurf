@@ -39,8 +39,8 @@
 
 namespace flatsurf {
 // cppyy sometimes has trouble with rvalues, let's help it to create a FlatTriangulation
-template <typename T, typename V>
-auto makeFlatTriangulation(const T &vertices, const std::vector<V> &vectors) {
+template <typename T>
+std::shared_ptr<FlatTriangulation<T>> makeFlatTriangulation(const std::vector<std::vector<int>> &vertices, const std::vector<Vector<T>> &vectors) {
   return std::make_shared<FlatTriangulation<T>>(FlatTriangulationCombinatorial(vertices), vectors);
 }
 

@@ -184,7 +184,7 @@ struct Serialization<SaddleConnection<Surface>> {
     HalfEdge source, target;
     archive(cereal::make_nvp("source", source));
     archive(cereal::make_nvp("target", target));
-    Chain<Surface> chain;
+    Chain<Surface> chain(surface);
     archive(cereal::make_nvp("chain", chain));
 
     self = SaddleConnection<Surface>(surface, source, target, chain);

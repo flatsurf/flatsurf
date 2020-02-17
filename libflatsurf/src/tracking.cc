@@ -142,6 +142,7 @@ std::ostream& operator<<(std::ostream&, const Tracking<T>&) {
   LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<HalfEdge, T>>))                                                       \
   LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<Edge, T>>))                                                           \
   LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<Edge, SaddleConnection<FlatTriangulation<T>>>>))                      \
+  LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<Edge, std::optional<SaddleConnection<FlatTriangulation<T>>>>>))                      \
   LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<HalfEdge, CollapsedHalfEdge<T>>>))                                    \
   LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<HalfEdge, LengthAlongTriangulation<FlatTriangulation<T>>>>))          \
   LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<HalfEdge, LengthAlongTriangulation<FlatTriangulationCollapsed<T>>>>)) \

@@ -96,7 +96,6 @@ Implementation<FlowConnection<Surface>>::Implementation(std::shared_ptr<FlowDeco
   state(state),
   component(component),
   saddleConnection(saddleConnection) {
-  ASSERT(saddleConnection, "SaddleConnection must not be trivial");
 }
 
 template <typename Surface>

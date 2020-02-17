@@ -29,6 +29,7 @@
 
 #include "copyable.hpp"
 #include "serializable.hpp"
+#include "chain_iterator.hpp"
 
 namespace flatsurf {
 
@@ -44,14 +45,11 @@ class Chain : public Serializable<Chain<Surface>>,
   using T = typename Surface::Coordinate;
 
  public:
-  Chain();
   explicit Chain(std::shared_ptr<const Surface>);
   Chain(std::shared_ptr<const Surface>, HalfEdge);
 
   operator const Vector<T>&() const;
   operator const Vector<exactreal::Arb>&() const;
-
-  const Surface& surface() const;
 
   Chain<Surface>& operator+=(const Chain&);
   Chain<Surface>& operator+=(Chain&&);
@@ -62,7 +60,11 @@ class Chain : public Serializable<Chain<Surface>>,
 
   Chain<Surface>& operator*=(const mpz_class&);
 
-  mpz_class operator[](const Edge&) const;
+  const mpz_class& operator[](const Edge&) const;
+  mpz_class operator[](const HalfEdge&) const;
+
+  ChainIterator<Surface> begin() const;
+  ChainIterator<Surface> end() const;
 
   bool operator==(const Chain& rhs) const;
 
@@ -73,6 +75,8 @@ class Chain : public Serializable<Chain<Surface>>,
 
   explicit operator bool() const;
 
+  const Surface& surface() const;
+
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const Chain<S>&);
 
@@ -80,6 +84,8 @@ class Chain : public Serializable<Chain<Surface>>,
   using Implementation = ::flatsurf::Implementation<Chain>;
   Copyable<Implementation> impl;
   friend Implementation;
+  friend ChainIterator<Surface>;
+  friend ::flatsurf::Implementation<ChainIterator<Surface>>;
   friend std::hash<Chain<Surface>>;
 };
 

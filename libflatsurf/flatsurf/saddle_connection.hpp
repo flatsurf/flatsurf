@@ -42,7 +42,6 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   using T = typename Surface::Coordinate;
 
  public:
-  SaddleConnection();
   SaddleConnection(std::shared_ptr<const Surface>, HalfEdge e);
   SaddleConnection(std::shared_ptr<const Surface>, HalfEdge source, HalfEdge target, const Chain<Surface> &);
 
@@ -61,8 +60,6 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   operator const Chain<Surface> &() const;
 
   const Vector<T> &vector() const;
-
-  explicit operator bool() const;
 
   // Return which direction we need to turn to go from this saddle connection
   // to the given one. Both must start at the same vertex and the angle between

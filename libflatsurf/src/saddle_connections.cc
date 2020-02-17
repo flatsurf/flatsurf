@@ -85,6 +85,7 @@ class SaddleConnections<Surface>::Iterator::Implementation {
     searchRadius(searchRadius),
     sectors(std::make_shared<vector<HalfEdge>>(searchSectors)),
     sector(this->sectors->begin()),
+    boundary{Chain(this->surface), Chain(this->surface)},
     nextEdgeEnd(this->surface),
     connection(SaddleConnection(this->surface, surface->halfEdges()[0])) {
     prepareSearch();

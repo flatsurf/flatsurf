@@ -4,6 +4,8 @@ libflatsurf_la_SOURCES =                                            \
 	bound.cc                                                    \
 	ccw.cc                                                      \
 	chain.cc                                                    \
+	chain_vector.cc                                             \
+	chain_iterator.cc                                           \
 	collapsed_half_edge.cc                                      \
 	contour_component.cc                                        \
 	contour_component_state.cc                                  \

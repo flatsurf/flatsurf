@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,45 +17,34 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_EDGE_HPP
-#define LIBFLATSURF_EDGE_HPP
+#ifndef LIBFLATSURF_CHAIN_ITERATOR_IMPL_HPP
+#define LIBFLATSURF_CHAIN_ITERATOR_IMPL_HPP
 
-#include <iosfwd>
-#include <vector>
-
-#include <boost/operators.hpp>
-
-#include "half_edge.hpp"
+#include "../../flatsurf/chain_iterator.hpp"
 
 namespace flatsurf {
-class Edge : boost::equality_comparable<Edge> {
+
+template <typename Surface>
+class Implementation<ChainIterator<Surface>> {
  public:
-  Edge();
-  Edge(int);
-  Edge(HalfEdge);
+  Implementation(const Chain<Surface>*, int pos = 0);
 
-  static Edge fromIndex(size_t);
+  static ChainIterator<Surface> begin(const Chain<Surface>*);
+  static ChainIterator<Surface> end(const Chain<Surface>*);
 
-  HalfEdge positive() const;
-  HalfEdge negative() const;
-
-  size_t index() const;
-
-  bool operator==(const Edge&) const;
-  bool operator<(const Edge&) const;
-
-  friend std::ostream& operator<<(std::ostream&, const Edge&);
+  const Chain<Surface>* parent;
+  std::pair<Edge, const mpz_class*> current;
 
  private:
-  HalfEdge id;
-};
-}  // namespace flatsurf
+  // Return the index of the first non-zero entry in the chain after pos.
+  // Return the number of edges if none could be found.
+  static size_t findNext(const Chain<Surface>*, int pos);
+  static std::pair<Edge, const mpz_class*> make(const Chain<Surface>*, size_t pos);
 
-namespace std {
-template <>
-struct hash<flatsurf::Edge> {
-  size_t operator()(const flatsurf::Edge &) const noexcept;
+  friend ChainIterator<Surface>;
 };
-}  // namespace std
+
+}
 
 #endif
+

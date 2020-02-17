@@ -17,17 +17,12 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-// TODO
-#include <iostream>
+#include <ostream>
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+
 #include <intervalxt/length.hpp>
-#include <ostream>
-
-#include <boost/algorithm/string/join.hpp>
-#include <boost/lexical_cast.hpp>
-
 #include <intervalxt/interval_exchange_transformation.hpp>
 #include <intervalxt/sample/arithmetic.hpp>
 #include <intervalxt/sample/e-antic-arithmetic.hpp>
@@ -57,14 +52,14 @@ using intervalxt::Length;
 using rx::none_of;
 
 template <typename Surface>
-Lengths<Surface>::Lengths(std::shared_ptr<const Vertical<FlatTriangulation<T>>> vertical, EdgeMap<SaddleConnection<FlatTriangulation<T>>>&& lengths) :
+Lengths<Surface>::Lengths(std::shared_ptr<const Vertical<FlatTriangulation<T>>> vertical, EdgeMap<std::optional<SaddleConnection<FlatTriangulation<T>>>>&& lengths) :
   vertical(vertical),
   lengths(std::move(lengths)),
   stack(),
   sum(),
   degree(0) {
   this->lengths.apply([&](const auto& edge, const auto& connection) {
-    CHECK_ARGUMENT(!connection || vertical->perpendicular(connection) > 0, "nontrivial length must be positive but " << edge << " is " << connection);
+    CHECK_ARGUMENT(!connection || vertical->perpendicular(*connection) > 0, "nontrivial length must be positive but " << edge << " is " << *connection);
     if (connection)
       degree = std::max(degree, coefficients(toLabel(edge)).size());
   });
@@ -87,8 +82,6 @@ void Lengths<Surface>::pop() {
 
 template <typename Surface>
 void Lengths<Surface>::subtract(Label minuend) {
-  // std::cout<<"Subtracting from " << fromLabel(minuend) << " when " << *this << std::endl;
-
   ASSERT(length(minuend) > 0, "lengths must be positive");
 
   const T expected = length(minuend) - length();
@@ -121,10 +114,10 @@ void Lengths<Surface>::subtract(Label minuend) {
 
   auto& minuendConnection = lengths.get(fromLabel(minuend));
 
-  minuendConnection = -minuendConnection;
+  minuendConnection = -*minuendConnection;
 
-  HalfEdge target = minuendConnection.target();
-  Chain walk(minuendConnection.surface().shared_from_this());
+  HalfEdge target = minuendConnection->target();
+  Chain walk(minuendConnection->surface().shared_from_this());
   ;
   // Walk down on the minuend's left boundary
   {
@@ -138,10 +131,8 @@ void Lengths<Surface>::subtract(Label minuend) {
   {
     for (const auto& subtrahend : subtrahendContour) {
       ASSERT(subtrahend != *rbegin(subtrahendContour), "Stack cannot contain every label in the IntervalExchangeTransformation");
-      // std::cout << "subtracting " << subtrahend << std::endl;
 
       for (const auto& connection : flow(subtrahend.cross(), !minuendOnTop)) {
-        // std::cout << "flowing over " << connection << std::endl;
         walk += connection;
         target = connection.target();
       }
@@ -151,29 +142,23 @@ void Lengths<Surface>::subtract(Label minuend) {
     }
   }
 
-  auto source = minuendConnection.source();
-  // std::cout << "source= " << source << std::endl;
-  if (vertical->perpendicular(minuendConnection.surface().fromEdge(source)) > 0)
-    source = minuendConnection.surface().nextAtVertex(source);
-  // std::cout << "source= " << source << std::endl;
-  ASSERT(vertical->perpendicular(minuendConnection.surface().fromEdge(source)) <= 0, "minuend source edge in wrong half plane");
+  auto source = minuendConnection->source();
+  if (vertical->perpendicular(minuendConnection->surface().fromEdge(source)) > 0)
+    source = minuendConnection->surface().nextAtVertex(source);
+  ASSERT(vertical->perpendicular(minuendConnection->surface().fromEdge(source)) <= 0, "minuend source edge in wrong half plane");
 
-  auto vector = walk + minuendConnection;
+  auto vector = walk + *minuendConnection;
 
   // TODO: I don't really believe that this is correct.
-  // std::cout << "target= " << target << std::endl;
-  while (!minuendConnection.surface().inSector(target, -vector))
-    target = minuendOnTop ? minuendConnection.surface().previousAtVertex(target) : minuendConnection.surface().nextAtVertex(target);
-  // std::cout << "target= " << target << std::endl;
+  while (!minuendConnection->surface().inSector(target, -vector))
+    target = minuendOnTop ? minuendConnection->surface().previousAtVertex(target) : minuendConnection->surface().nextAtVertex(target);
 
   // TODO: This is ridiculously slow but the source & target in the line above was not correct in general.
   // minuendConnection = SaddleConnection<FlatTriangulation<T>>::inHalfPlane(minuendConnection.surface().shared_from_this(), source, *vertical, vector);
 
-  // std::cout << "target= " << minuendConnection.target() << std::endl;
+  minuendConnection = SaddleConnection(minuendConnection->surface().shared_from_this(), source, target, vector);
 
-  minuendConnection = SaddleConnection(minuendConnection.surface().shared_from_this(), source, target, vector);
-
-  minuendConnection = -minuendConnection;
+  minuendConnection = -*minuendConnection;
 
   // TODO: This is nice but too expensive for large vectors.
   // ::flatsurf::Implementation<SaddleConnection<FlatTriangulation<T>>>::check(minuendConnection);
@@ -183,8 +168,6 @@ void Lengths<Surface>::subtract(Label minuend) {
 
   stack.clear();
   sum = T();
-
-  // std::cout<<"Subtracted from " << fromLabel(minuend) << " when " << *this << std::endl;
 }
 
 template <typename Surface>
@@ -213,7 +196,6 @@ Label Lengths<Surface>::subtractRepeated(Label minuend) {
       }
     }
 
-    // std::cout << "Subtracting repeated… " << ++N << std::endl;
     subtract(minuend);
   }
   */
@@ -291,7 +273,7 @@ typename Surface::Coordinate Lengths<Surface>::length() const {
 
 template <typename Surface>
 typename Surface::Coordinate Lengths<Surface>::length(intervalxt::Label label) const {
-  auto length = vertical->perpendicular(lengths.get(fromLabel(label)));
+  auto length = vertical->perpendicular(*lengths.get(fromLabel(label)));
   ASSERT(length > 0, "length must be positive");
   return length;
 }
@@ -301,13 +283,10 @@ std::ostream& operator<<(std::ostream& os, const Lengths<Surface>& self) {
   using std::string;
   std::vector<string> items;
   self.lengths.apply([&](const auto& key, const auto& value) {
-    string v = boost::lexical_cast<string>(value);
-    if (v == "" || v == "0") return;
-
-    string k = boost::lexical_cast<string>(key);
-    items.push_back(k + ": " + v + " = " + boost::lexical_cast<string>(self.length(self.toLabel(key))));
+    if (!value) return;
+    items.push_back(fmt::format("{}: {} = {}", key, *value, self.length(self.toLabel(key))));
   });
-  return os << boost::algorithm::join(items, ", ");
+  return os << fmt::format("{}", fmt::join(items, ", "));
 }
 
 }  // namespace flatsurf

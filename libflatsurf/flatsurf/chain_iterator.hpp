@@ -17,11 +17,13 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_HALF_EDGE_SET_ITERATOR_HPP
-#define LIBFLATSURF_HALF_EDGE_SET_ITERATOR_HPP
+#ifndef LIBFLATSURF_CHAIN_ITERATOR_HPP
+#define LIBFLATSURF_CHAIN_ITERATOR_HPP
 
 #include <boost/iterator/iterator_categories.hpp>
 #include <boost/iterator/iterator_facade.hpp>
+
+#include <gmpxx.h>
 
 #include "external/spimpl/spimpl.h"
 
@@ -29,21 +31,25 @@
 
 namespace flatsurf {
 
-class HalfEdgeSetIterator : public boost::iterator_facade<HalfEdgeSetIterator, const HalfEdge&, boost::forward_traversal_tag> {
-  template <typename ...Args> HalfEdgeSetIterator(PrivateConstructor, Args&&...);
+template <typename Surface>
+class ChainIterator : public boost::iterator_facade<ChainIterator<Surface>, const std::pair<Edge, const mpz_class*>&, boost::forward_traversal_tag> {
+  template <typename ...Args> ChainIterator(PrivateConstructor, Args&&...);
 
  public:
-  using value_type = HalfEdge;
+  using value_type = std::pair<Edge, const mpz_class*>;
 
   void increment();
-  const value_type &dereference() const;
-  bool equal(const HalfEdgeSetIterator &other) const;
+  const value_type& dereference() const;
+  bool equal(const ChainIterator &other) const;
+
+  template <typename S>
+  friend std::ostream& operator<<(std::ostream&, const ChainIterator<S>&);
 
  private:
-  using Implementation = ::flatsurf::Implementation<HalfEdgeSetIterator>;
+  using Implementation = ::flatsurf::Implementation<ChainIterator>;
   spimpl::impl_ptr<Implementation> impl;
   friend Implementation;
-  friend HalfEdgeSet;
+  friend Chain<Surface>;
 };
 
 }

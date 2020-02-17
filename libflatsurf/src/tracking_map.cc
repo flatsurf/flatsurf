@@ -20,16 +20,17 @@
 #include <algorithm>
 #include <ostream>
 
-#include <boost/algorithm/string/join.hpp>
-#include <boost/lexical_cast.hpp>
+#include <fmt/format.h>
+#include <fmt/ostream.h>
 
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../flatsurf/tracking.hpp"
 #include "../flatsurf/tracking_map.hpp"
 #include "../flatsurf/vertex.hpp"
+#include "../flatsurf/fmt.hpp"
 
 #include "util/assert.ipp"
-#include "util/instantiate.ipp"
+#include "util/instance_of.ipp"
 
 #include "impl/flat_triangulation_combinatorial.impl.hpp"
 #include "impl/tracking_map.impl.hpp"
@@ -105,10 +106,17 @@ template <typename K, typename V>
 ostream& operator<<(ostream& os, const TrackingMap<K, V>& self) {
   std::vector<string> items;
   self.apply([&](const K& key, const V& value) {
-    string v = boost::lexical_cast<string>(value);
+    string v;
+    if constexpr (is_instance_of_v<V, std::optional>) {
+      if (!value) return;
+      v = fmt::format("{}", *value);
+    } else {
+      v = fmt::format("{}", value);
+    }
+
     if (v == "" || v == "0") return;
 
-    string k = boost::lexical_cast<string>(key);
+    string k = fmt::format("{}", key);
     if constexpr (TrackingMap<K, V>::odd) {
       if (k.rfind("-", 0) == 0) {
         assert(value == -self.get(-key) && "map symmetry is broken");
@@ -117,7 +125,7 @@ ostream& operator<<(ostream& os, const TrackingMap<K, V>& self) {
     }
     items.push_back(k + ": " + v);
   });
-  return os << boost::algorithm::join(items, ", ");
+  return os << fmt::format("{}", fmt::join(items, ", "));
 }
 
 }  // namespace flatsurf
@@ -145,13 +153,14 @@ size_t hash<::flatsurf::TrackingMap<K, V>>::operator()(const ::flatsurf::Trackin
   LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION(T) \
   LIBFLATSURF_INSTANTIATE_HASH(T)
 
-#define LIBFLATSURF_INSTANTIATE_THIS(T)                                                    \
-  LIBFLATSURF_INSTANTIATE_ONE((TrackingMap<HalfEdge, Vector<T>>))                          \
-  LIBFLATSURF_INSTANTIATE_ONE((TrackingMap<Edge, Vector<T>>))                              \
-  LIBFLATSURF_INSTANTIATE_ONE((TrackingMap<HalfEdge, T>))                                  \
-  LIBFLATSURF_INSTANTIATE_ONE((TrackingMap<Edge, T>))                                      \
-  LIBFLATSURF_INSTANTIATE_ONE((TrackingMap<Edge, SaddleConnection<FlatTriangulation<T>>>)) \
-  LIBFLATSURF_INSTANTIATE_ONE((TrackingMap<HalfEdge, CollapsedHalfEdge<T>>))               \
+#define LIBFLATSURF_INSTANTIATE_THIS(T)                                                                   \
+  LIBFLATSURF_INSTANTIATE_ONE((TrackingMap<HalfEdge, Vector<T>>))                                         \
+  LIBFLATSURF_INSTANTIATE_ONE((TrackingMap<Edge, Vector<T>>))                                             \
+  LIBFLATSURF_INSTANTIATE_ONE((TrackingMap<HalfEdge, T>))                                                 \
+  LIBFLATSURF_INSTANTIATE_ONE((TrackingMap<Edge, T>))                                                     \
+  LIBFLATSURF_INSTANTIATE_ONE((TrackingMap<Edge, SaddleConnection<FlatTriangulation<T>>>))                \
+  LIBFLATSURF_INSTANTIATE_ONE((TrackingMap<Edge, std::optional<SaddleConnection<FlatTriangulation<T>>>>)) \
+  LIBFLATSURF_INSTANTIATE_ONE((TrackingMap<HalfEdge, CollapsedHalfEdge<T>>))                              \
   LIBFLATSURF_INSTANTIATE_ONE((TrackingMap<HalfEdge, typename Implementation<FlatTriangulationCollapsed<T>>::AsymmetricConnection>))
 
 LIBFLATSURF_INSTANTIATE_MANY((LIBFLATSURF_INSTANTIATE_THIS), LIBFLATSURF_REAL_TYPES)

@@ -313,6 +313,7 @@ std::ostream& operator<<(std::ostream&, const TrackingStorage<SELF, K, V>&) {
   LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION((TrackingStorage<TrackingMap<HalfEdge, T>, HalfEdge, T>))                                                                   \
   LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION((TrackingStorage<TrackingMap<Edge, T>, Edge, T>))                                                                           \
   LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION((TrackingStorage<TrackingMap<Edge, SaddleConnection<FlatTriangulation<T>>>, Edge, SaddleConnection<FlatTriangulation<T>>>)) \
+  LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION((TrackingStorage<TrackingMap<Edge, std::optional<SaddleConnection<FlatTriangulation<T>>>>, Edge, std::optional<SaddleConnection<FlatTriangulation<T>>>>)) \
   LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION((TrackingStorage<TrackingMap<HalfEdge, CollapsedHalfEdge<T>>, HalfEdge, CollapsedHalfEdge<T>>))                             \
   LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION((TrackingStorage<TrackingMap<HalfEdge, typename Implementation<FlatTriangulationCollapsed<T>>::AsymmetricConnection>, HalfEdge, typename Implementation<FlatTriangulationCollapsed<T>>::AsymmetricConnection>))
 

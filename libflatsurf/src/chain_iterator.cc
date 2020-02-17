@@ -1,0 +1,107 @@
+/**********************************************************************
+ *  This file is part of flatsurf.
+ *
+ *        Copyright (C) 2020 Julian Rüth
+ *
+ *  Flatsurf is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Flatsurf is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
+ *********************************************************************/
+
+#include <flint/fmpz.h>
+
+#include "../flatsurf/chain.hpp"
+#include "../flatsurf/chain_iterator.hpp"
+#include "../flatsurf/edge.hpp"
+
+#include "impl/chain.impl.hpp"
+#include "impl/chain_iterator.impl.hpp"
+
+#include "util/assert.ipp"
+
+namespace flatsurf {
+
+template <typename Surface>
+template <typename ...Args>
+ChainIterator<Surface>::ChainIterator(PrivateConstructor, Args&&... args) :
+  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
+
+template <typename Surface>
+void ChainIterator<Surface>::increment() {
+  const size_t pos = impl->current.first.index();
+  _fmpz_demote_val(&impl->parent->impl->coefficients[pos]);
+  impl->current = Implementation::make(impl->parent, Implementation::findNext(impl->parent, static_cast<int>(pos)));
+}
+
+template <typename Surface>
+const typename ChainIterator<Surface>::value_type &ChainIterator<Surface>::dereference() const {
+  ASSERT(impl->current.second != nullptr, "Cannot dereference iterator that is already at the end of Chain.");
+  return impl->current;
+}
+
+template <typename Surface>
+bool ChainIterator<Surface>::equal(const ChainIterator& rhs) const {
+  return impl->parent == rhs.impl->parent && impl->current.first == rhs.impl->current.first;
+}
+
+template <typename Surface>
+std::ostream& operator<<(std::ostream& os, const ChainIterator<Surface>& self) {
+  if (self.impl->current.second == nullptr)
+    return os << "Chain::end()";
+  else if (self.impl->current.first.index() == 0)
+    return os << "Chain::begin()";
+  else
+    return os << "Chain::begin() + " << self.impl->current.first.index();
+}
+
+template <typename Surface>
+Implementation<ChainIterator<Surface>>::Implementation(const Chain<Surface>* parent, int pos) :
+  parent(parent),
+  current(make(parent, findNext(parent, pos - 1))) {
+}
+
+template <typename Surface>
+ChainIterator<Surface> Implementation<ChainIterator<Surface>>::begin(const Chain<Surface>* chain) {
+  return ChainIterator<Surface>(PrivateConstructor{}, chain, 0);
+}
+
+template <typename Surface>
+ChainIterator<Surface> Implementation<ChainIterator<Surface>>::end(const Chain<Surface>* chain) {
+  return ChainIterator<Surface>(PrivateConstructor{}, chain, static_cast<int>(chain->surface().size()));
+}
+
+template <typename Surface>
+size_t Implementation<ChainIterator<Surface>>::findNext(const Chain<Surface>* parent, int pos) {
+  const size_t size = parent->surface().size();
+
+  do {
+    pos++;
+  }while(pos < size && fmpz_is_zero(&parent->impl->coefficients[pos]));
+
+  return pos;
+}
+
+template <typename Surface>
+std::pair<Edge, const mpz_class*> Implementation<ChainIterator<Surface>>::make(const Chain<Surface>*parent, size_t pos) {
+  const Edge e = Edge::fromIndex(pos);
+  if (pos != parent->surface().size())
+    return std::pair(e, &(*parent)[e]);
+  else
+    return std::pair(e, nullptr);
+}
+
+}
+
+// Instantiations of templates so implementations are generated for the linker
+#include "util/instantiate.ipp"
+
+LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION)(LIBFLATSURF_INSTANTIATE_HASH), ChainIterator, LIBFLATSURF_FLAT_TRIANGULATION_TYPES)

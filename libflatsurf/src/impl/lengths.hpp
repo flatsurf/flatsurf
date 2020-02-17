@@ -41,7 +41,7 @@ class Lengths {
   using T = typename Surface::Coordinate;
 
  public:
-  Lengths(std::shared_ptr<const Vertical<FlatTriangulation<T>>>, EdgeMap<SaddleConnection<FlatTriangulation<T>>>&&);
+  Lengths(std::shared_ptr<const Vertical<FlatTriangulation<T>>>, EdgeMap<std::optional<SaddleConnection<FlatTriangulation<T>>>>&&);
 
   void push(intervalxt::Label);
   void pop();
@@ -70,7 +70,7 @@ class Lengths {
 
   std::weak_ptr<FlowDecompositionState<FlatTriangulation<T>>> state;
   std::shared_ptr<const Vertical<FlatTriangulation<T>>> vertical;
-  EdgeMap<SaddleConnection<FlatTriangulation<T>>> lengths;
+  EdgeMap<std::optional<SaddleConnection<FlatTriangulation<T>>>> lengths;
 
   std::deque<intervalxt::Label> stack;
   T sum;

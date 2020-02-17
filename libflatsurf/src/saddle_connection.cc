@@ -42,11 +42,6 @@ using std::ostream;
 namespace flatsurf {
 
 template <typename Surface>
-SaddleConnection<Surface>::SaddleConnection() :
-  // TODO: Would be better if this were a saddle connection on a trivial surface whatever that might mean.
-  impl(nullptr) {}
-
-template <typename Surface>
 SaddleConnection<Surface>::SaddleConnection(std::shared_ptr<const Surface> surface, HalfEdge e) :
   impl(spimpl::make_impl<Implementation>(surface, e)) {
 }
@@ -58,9 +53,6 @@ SaddleConnection<Surface>::SaddleConnection(std::shared_ptr<const Surface> surfa
 
 template <typename Surface>
 bool SaddleConnection<Surface>::operator==(const SaddleConnection<Surface>& rhs) const {
-  if (!*this) return !rhs;
-  if (!rhs) return false;
-
   bool ret = *impl->surface == *rhs.impl->surface && static_cast<const Vector<T>&>(*this) == static_cast<const Vector<T>&>(rhs) && impl->source == rhs.impl->source;
 
   ASSERT((!ret || target() == rhs.target()), "saddle connection data is inconsistent, " << *this << " == " << rhs << " but their targets do not match since " << target() << " != " << rhs.target());
@@ -69,33 +61,22 @@ bool SaddleConnection<Surface>::operator==(const SaddleConnection<Surface>& rhs)
 
 template <typename Surface>
 HalfEdge SaddleConnection<Surface>::source() const {
-  CHECK_ARGUMENT(*this, "trivial saddle connection has no source");
   return impl->source;
 }
 
 template <typename Surface>
 HalfEdge SaddleConnection<Surface>::target() const {
-  CHECK_ARGUMENT(*this, "trivial saddle connection has no target");
   return impl->target;
 }
 
 template <typename Surface>
 const Surface& SaddleConnection<Surface>::surface() const {
-  ASSERT_ARGUMENT(*this, "trivial saddle connection not associated to a specific surface");
   return *impl->surface;
 }
 
 template <typename Surface>
 SaddleConnection<Surface> SaddleConnection<Surface>::operator-() const noexcept {
-  if (!*this) return *this;
   return SaddleConnection(impl->surface, impl->target, impl->source, -impl->chain);
-}
-
-template <typename Surface>
-SaddleConnection<Surface>::operator bool() const {
-  if (impl == nullptr) return false;
-  ASSERT(static_cast<const Vector<T>&>(impl->chain), "saddle connections must be nonzero");
-  return true;
 }
 
 template <typename Surface>
@@ -239,10 +220,6 @@ const Vector<typename Surface::Coordinate>& SaddleConnection<Surface>::vector() 
 
 template <typename Surface>
 SaddleConnection<Surface>::operator const Chain<Surface>&() const {
-  if (!*this) {
-    static Chain<Surface> zero;
-    return zero;
-  }
   return impl->chain;
 }
 
@@ -258,7 +235,6 @@ bool SaddleConnection<Surface>::operator<(const Bound bound) const {
 
 template <typename Surface, typename _>
 ostream& operator<<(ostream& os, const SaddleConnection<Surface>& self) {
-  if (!self) return os << "0";
   return os << "SaddleConnection(" << static_cast<const Vector<typename Surface::Coordinate>&>(self) << " from " << self.source() << ")";
 }
 

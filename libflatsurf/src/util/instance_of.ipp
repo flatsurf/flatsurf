@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,45 +17,17 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_EDGE_HPP
-#define LIBFLATSURF_EDGE_HPP
-
-#include <iosfwd>
-#include <vector>
-
-#include <boost/operators.hpp>
-
-#include "half_edge.hpp"
+// Heavily inspired by https://stackoverflow.com/a/56818333/812379
 
 namespace flatsurf {
-class Edge : boost::equality_comparable<Edge> {
- public:
-  Edge();
-  Edge(int);
-  Edge(HalfEdge);
 
-  static Edge fromIndex(size_t);
+template <typename T, template <typename...> typename Template>
+struct is_instance_of : std::false_type { };
 
-  HalfEdge positive() const;
-  HalfEdge negative() const;
+template <template <typename...> typename Template, typename... Args>
+struct is_instance_of<Template<Args...>, Template> : std::true_type { };
 
-  size_t index() const;
+template <typename T, template <typename...> typename Template>
+constexpr bool is_instance_of_v = is_instance_of<T, Template>::value;
 
-  bool operator==(const Edge&) const;
-  bool operator<(const Edge&) const;
-
-  friend std::ostream& operator<<(std::ostream&, const Edge&);
-
- private:
-  HalfEdge id;
-};
-}  // namespace flatsurf
-
-namespace std {
-template <>
-struct hash<flatsurf::Edge> {
-  size_t operator()(const flatsurf::Edge &) const noexcept;
-};
-}  // namespace std
-
-#endif
+}
