@@ -79,7 +79,7 @@ struct Cost {
 
   // The cost of recomputing a vector from the mpz coefficients from scratch.
   static constexpr double recompute(size_t edges) {
-    return edges * addmul();
+    return static_cast<double>(edges) * addmul();
   }
 };
 

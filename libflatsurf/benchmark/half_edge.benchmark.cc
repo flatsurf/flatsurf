@@ -28,7 +28,7 @@ using benchmark::State;
 namespace flatsurf::benchmark {
 
 void HalfEdgeIndex(State& state) {
-  HalfEdge e(state.range(0));
+  HalfEdge e(static_cast<int>(state.range(0)));
 
   for (auto _ : state) {
     DoNotOptimize(e.index());

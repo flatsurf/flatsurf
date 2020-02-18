@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,9 +16,6 @@
  *  You should have received a copy of the GNU General Public License
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
-
-// TODO
-#include <iostream>
 
 #include <memory>
 #include <ostream>
@@ -53,7 +50,6 @@ namespace flatsurf {
 template <typename Surface>
 FlowDecomposition<Surface>::FlowDecomposition(std::unique_ptr<Surface> surface, const Vector<T>& vertical) :
   impl(spimpl::make_unique_impl<Implementation>(std::move(surface), vertical)) {
-  // std::cout << *this << " with respect to " << vertical << std::endl;
 }
 
 template <typename Surface>
@@ -88,26 +84,10 @@ ostream& operator<<(ostream& os, const FlowDecomposition<Surface>& self) {
 
   return os << "FlowDecompsition(components=[" << boost::algorithm::join(components, ", ") << "])";
 }
+
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
-#include <e-antic/renfxx.h>
-#include <exact-real/element.hpp>
-#include <exact-real/integer_ring.hpp>
-#include <exact-real/number_field.hpp>
-#include <exact-real/rational_field.hpp>
+#include "util/instantiate.ipp"
 
-namespace flatsurf {
-template class FlowDecomposition<FlatTriangulation<long long>>;
-template ostream& operator<<(ostream&, const FlowDecomposition<FlatTriangulation<long long>>&);
-template class FlowDecomposition<FlatTriangulation<mpq_class>>;
-template ostream& operator<<(ostream&, const FlowDecomposition<FlatTriangulation<mpq_class>>&);
-template class FlowDecomposition<FlatTriangulation<eantic::renf_elem_class>>;
-template ostream& operator<<(ostream&, const FlowDecomposition<FlatTriangulation<eantic::renf_elem_class>>&);
-template class FlowDecomposition<FlatTriangulation<exactreal::Element<exactreal::IntegerRing>>>;
-template ostream& operator<<(ostream&, const FlowDecomposition<FlatTriangulation<exactreal::Element<exactreal::IntegerRing>>>&);
-template class FlowDecomposition<FlatTriangulation<exactreal::Element<exactreal::RationalField>>>;
-template ostream& operator<<(ostream&, const FlowDecomposition<FlatTriangulation<exactreal::Element<exactreal::RationalField>>>&);
-template class FlowDecomposition<FlatTriangulation<exactreal::Element<exactreal::NumberField>>>;
-template ostream& operator<<(ostream&, const FlowDecomposition<FlatTriangulation<exactreal::Element<exactreal::NumberField>>>&);
-}  // namespace flatsurf
+LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), FlowDecomposition, LIBFLATSURF_FLAT_TRIANGULATION_TYPES)
