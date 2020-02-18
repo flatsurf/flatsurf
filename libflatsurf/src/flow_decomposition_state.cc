@@ -96,7 +96,7 @@ FlowDecompositionState<Surface>::FlowDecompositionState(std::unique_ptr<Surface>
 
       for (auto top : {true, false}) {
         const auto& labels = top ? dynamicalComponent.topContour() : dynamicalComponent.bottomContour();
-        auto connections = top ? contourComponent.top() : contourComponent.bottom();
+        auto connections = top ? contourComponent.topContour() : contourComponent.bottomContour();
         if (top)
           std::reverse(begin(connections), end(connections));
         for (const auto& [label, connection] : rx::zip(labels, connections)) {

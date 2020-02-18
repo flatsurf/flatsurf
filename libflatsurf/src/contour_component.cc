@@ -54,29 +54,51 @@ IntervalExchangeTransformation<FlatTriangulationCollapsed<typename Surface::Coor
 }
 
 template <typename Surface>
-std::vector<ContourConnection<Surface>> ContourComponent<Surface>::top() const {
+std::vector<ContourConnection<Surface>> ContourComponent<Surface>::topContour() const {
   return impl->component->topEdges | rx::transform([&](const HalfEdge e) {
     return ::flatsurf::Implementation<ContourConnection<Surface>>::makeTop(impl->state, impl->component, -e);
   }) | rx::to_vector();
 }
 
 template <typename Surface>
-std::vector<ContourConnection<Surface>> ContourComponent<Surface>::bottom() const {
+std::list<SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>> ContourComponent<Surface>::top() const {
+  return topContour() | rx::transform([&](const auto& contourConnection) { return contourConnection.perimeter(); }) | rx::to_vector() | rx::flatten<1>() | rx::to_list();
+}
+
+template <typename Surface>
+std::vector<ContourConnection<Surface>> ContourComponent<Surface>::bottomContour() const {
   return impl->component->bottomEdges | rx::transform([&](const HalfEdge e) {
     return ::flatsurf::Implementation<ContourConnection<Surface>>::makeBottom(impl->state, impl->component, e);
   }) | rx::to_vector();
 }
 
 template <typename Surface>
-std::vector<ContourConnection<Surface>> ContourComponent<Surface>::perimeter() const {
+std::list<SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>> ContourComponent<Surface>::bottom() const {
+  return bottomContour() | rx::transform([&](const auto& contourConnection) { return contourConnection.perimeter(); }) | rx::to_vector() | rx::flatten<1>() | rx::to_list();
+}
+
+template <typename Surface>
+std::vector<ContourConnection<Surface>> ContourComponent<Surface>::perimeterContour() const {
+  auto perimeter = bottomContour();
+  for (auto connection : topContour()) perimeter.push_back(connection);
+  return perimeter;
+}
+
+template <typename Surface>
+std::list<SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>> ContourComponent<Surface>::perimeter() const {
   auto perimeter = bottom();
-  for (auto connection : top()) perimeter.push_back(connection);
+  perimeter.splice(end(perimeter), top());
   return perimeter;
 }
 
 template <typename Surface>
 HalfEdge Implementation<ContourComponent<Surface>>::large() const {
   return component->large;
+}
+
+template <typename Surface>
+typename Surface::Coordinate ContourComponent<Surface>::area() const {
+  return 3 * Vector<T>::area(perimeter() | rx::transform([&](const auto& connection) { return static_cast<const Vector<T>&>(connection); }) | rx::to_vector());
 }
 
 template <typename Surface>
@@ -171,7 +193,7 @@ bool ContourComponent<Surface>::operator==(const ContourComponent<Surface>& rhs)
 
 template <typename Surface>
 ostream& operator<<(ostream& os, const ContourComponent<Surface>& self) {
-  return os << "ContourComponent(" << fmt::format("{}", fmt::join(self.perimeter() | rx::transform([&](const auto& connection) { return fmt::format("{}", connection); }) | rx::to_vector(), "→")) << ")";
+  return os << "ContourComponent(" << fmt::format("{}", fmt::join(self.perimeterContour() | rx::transform([&](const auto& connection) { return fmt::format("{}", connection); }) | rx::to_vector(), "→")) << ")";
 }
 
 }  // namespace flatsurf

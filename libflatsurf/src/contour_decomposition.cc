@@ -32,6 +32,8 @@
 
 #include "impl/contour_decomposition.impl.hpp"
 
+#include "util/assert.ipp"
+
 // TODO: We could add a lot of constness here probably.
 // TODO: The "make()" from impl() pattern could probably be automated somewhat.
 // TODO: const properties are almost always the wrong thing to do. Instead they
@@ -44,7 +46,10 @@ using std::vector;
 
 template <typename Surface>
 ContourDecomposition<Surface>::ContourDecomposition(std::unique_ptr<Surface> surface, const Vector<T>& vertical) :
-  impl(spimpl::make_unique_impl<Implementation>(std::move(surface), vertical)) {}
+  impl(spimpl::make_unique_impl<Implementation>(std::move(surface), vertical)) {
+  auto componentsArea = [&]() { return static_cast<T>(components() | rx::transform([&](const auto& component) { return component.area(); }) | rx::sum()); };
+  ASSERT(componentsArea() == impl->state->surface->area(),"Area " << componentsArea() << " of contour components " << *this << " does not match area " << impl->state->surface->area() << " of original surface " << *impl->state->surface);
+}
 
 template <typename Surface>
 std::vector<ContourComponent<Surface>> ContourDecomposition<Surface>::components() const {

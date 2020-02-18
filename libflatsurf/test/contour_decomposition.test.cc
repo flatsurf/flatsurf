@@ -93,7 +93,7 @@ TEMPLATE_TEST_CASE("Connections and IET from Contour Decomposition", "[contour_d
         for (auto component : decomposition.components()) {
           const auto vertical = decomposition.collapsed()->vertical();
           CAPTURE(component);
-          for (auto contourConnection : component.perimeter()) {
+          for (auto contourConnection : component.perimeterContour()) {
             const bool top = contourConnection.top();
             REQUIRE(vertical.perpendicular(contourConnection.connection()) != 0);
             track(contourConnection.connection());

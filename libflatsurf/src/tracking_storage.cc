@@ -148,7 +148,7 @@ std::vector<K> TrackingStorage<SELF, K, V>::keys() const {
 }
 
 template <typename SELF, typename K, typename V>
-void TrackingStorage<SELF, K, V>::wrappedUpdateAfterFlip(SELF& self, const FlatTriangulationCombinatorial& surface, HalfEdge flip) {
+void TrackingStorage<SELF, K, V>::wrappedUpdateAfterFlip(SELF& self, const FlatTriangulationCombinatorial&, HalfEdge flip) {
   if constexpr (std::is_same_v<K, HalfEdge>) {
     // all half edges remain valid when a flip is performed, no special action necessary
   } else if constexpr (std::is_same_v<K, Edge>) {
@@ -201,7 +201,7 @@ void TrackingStorage<SELF, K, V>::wrappedUpdateBeforeCollapse(SELF& self, const 
 }
 
 template <typename SELF, typename K, typename V>
-void TrackingStorage<SELF, K, V>::updateBeforeSwap(SELF& self, const FlatTriangulationCombinatorial& surface, HalfEdge a, HalfEdge b) {
+void TrackingStorage<SELF, K, V>::updateBeforeSwap(SELF& self, const FlatTriangulationCombinatorial&, HalfEdge a, HalfEdge b) {
   if (a == b) return;
 
   // Enable ADL, see https://stackoverflow.com/questions/28130671/how-does-using-stdswap-enable-adl

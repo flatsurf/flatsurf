@@ -111,6 +111,7 @@ void Implementation<FlatTriangulation<T>>::check(const FlatTriangulation<T> &sel
   for (auto edge : self.halfEdges()) {
     if (self.boundary(edge)) continue;
     auto zero = self.fromEdge(edge);
+    CHECK_ARGUMENT(zero, "edges must not be trivial but " << edge << " is zero in " << self);
     edge = self.nextInFace(edge);
     zero += self.fromEdge(edge);
     edge = self.nextInFace(edge);

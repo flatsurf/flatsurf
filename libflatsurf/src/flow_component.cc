@@ -183,22 +183,8 @@ Vertical<Surface> FlowComponent<Surface>::vertical() const {
 
 template <typename Surface>
 typename Surface::Coordinate FlowComponent<Surface>::area() const {
-  T height = T();
-  T sum = T();
-  auto vertical = this->vertical();
-
-  for (const auto& c : perimeter()) {
-    auto vector = static_cast<Vector<T>>(c.saddleConnection());
-    auto x = vertical.perpendicular(vector);
-    auto y = vertical.parallel(vector);
-
-    sum -= 2 * x * height;
-    sum -= x * y;
-
-    height += y;
-  }
-
-  return 3 * sum;
+  // TODO: Fix scaling
+  return 3 * Vector<T>::area(perimeter() | rx::transform([&](const auto & connection) { return static_cast<const Vector<T>&>(connection.saddleConnection()); }) | rx::to_vector());
 }
 
 template <typename Surface>

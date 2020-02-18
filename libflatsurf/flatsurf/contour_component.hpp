@@ -48,14 +48,24 @@ class ContourComponent : boost::equality_comparable<ContourComponent<Surface>> {
 
   IntervalExchangeTransformation<FlatTriangulationCollapsed<T>> intervalExchangeTransformation() const;
 
-  // The saddle connections at the top of this component, from right to left.
-  Contour top() const;
+  std::list<SaddleConnection<FlatTriangulation<T>>> top() const;
 
-  // The saddle connections at the bottom of this component, from left to right.
-  Contour bottom() const;
+  // TODO: The *Contour naming scheme here is a bit clumsy.
+  // The contour connections at the top of this component, from right to left.
+  Contour topContour() const;
 
-  // The saddle connections going around this component in counter-clockwise order, i.e., bottom + top.
-  Contour perimeter() const;
+  std::list<SaddleConnection<FlatTriangulation<T>>> bottom() const;
+
+  // The contour connections at the bottom of this component, from left to right.
+  Contour bottomContour() const;
+
+  // The contour connections going around this component in counter-clockwise order, i.e., bottomContour() + topContour().
+  Contour perimeterContour() const;
+
+  std::list<SaddleConnection<FlatTriangulation<T>>> perimeter() const;
+
+  T width() const;
+  T area() const;
 
   bool operator==(const ContourComponent<Surface> &) const;
 

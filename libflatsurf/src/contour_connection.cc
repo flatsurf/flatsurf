@@ -75,6 +75,15 @@ std::list<SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>> Con
 }
 
 template <typename Surface>
+std::list<SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>> ContourConnection<Surface>::perimeter() const {
+  if (top()) {
+    return rx::chain(right() | rx::reverse() | rx::transform([](const auto& connection) { return -connection; }), std::vector{ connection() }, left()) | rx::to_list();
+  } else {
+    return rx::chain(left() | rx::reverse() | rx::transform([](const auto& connection) { return -connection; }), std::vector{ connection() }, right()) | rx::to_list();
+  }
+}
+
+template <typename Surface>
 ContourConnection<Surface> ContourConnection<Surface>::previousInPerimeter() const {
   return ::flatsurf::Implementation<ContourComponent<Surface>>::previousInPerimeter(impl->state, impl->component, impl->halfEdge);
 }

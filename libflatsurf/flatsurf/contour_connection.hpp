@@ -44,10 +44,16 @@ class ContourConnection : boost::equality_comparable<ContourComponent<Surface>> 
   using T = typename Surface::Coordinate;
 
  public:
+  // TODO: Unify naming of saddle connection returning methods.
   // The saddle connection in the surface corresponding to this contour
   // connection. Going from left to right if this is a bottom connection,
   // otherwise going from right to left.
   const SaddleConnection<FlatTriangulation<T>>& connection() const;
+
+  // The saddle connections of left(), connection(), and right() in
+  // contourclockwise order, i.e., either -left() + connection() + right() or
+  // -right() - connection() + left().
+  std::list<SaddleConnection<FlatTriangulation<T>>> perimeter() const;
 
   // The vertical connections on the left of this non-vertical connection going
   // from the left end of `connection` towards the interior.
