@@ -39,6 +39,7 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::shared_ptr<Fl
   enum class Surface {
     SQUARE,
     L,
+    _125,
     _1221,
     HEXAGON,
     HEPTAGON_L,
@@ -60,6 +61,10 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::shared_ptr<Fl
         return makeSquare<R2>();
       case Surface::L:
         return makeL<R2>();
+      case Surface::_125:
+        if constexpr (hasFractions && hasNumberFieldElements)
+          return make125<R2>();
+        else return nullptr;
       case Surface::_1221:
         if constexpr (hasFractions && hasNumberFieldElements)
           return make1221<R2>();

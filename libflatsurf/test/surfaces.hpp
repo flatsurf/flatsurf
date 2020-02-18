@@ -44,6 +44,7 @@ namespace flatsurf::test {
 static auto K = renf_class::make("x^2 - 3", "x", "1.73 +/- 0.1");
 static auto L = renf_class::make("x^2 - x - 1", "x", "1.618 +/- 0.1");
 static auto M = renf_class::make("x^3 - x^2 - 2*x +1", "x", "1.802 +/- 0.1");
+static auto N = renf_class::make("x^2 - 2", "x", "1.414 +/- .1");
 
 inline auto makeSquareCombinatorial() {
   auto vertices = vector<vector<int>>{{1, 3, 2, -1, -3, -2}};
@@ -111,6 +112,20 @@ auto makeHeptagonL() {
   auto b = a * a - a - 1;
   vectors = vector{R2(1, 0), R2(1, 1), R2(0, 1), R2(1 - a, 0), R2(1 - a, -b), R2(0, -b), R2(a - 1, 1), R2(0, 1), R2(-1, 1 - a), R2(0, 1 - a), R2(b, 0), R2(b, a - 1), R2(-1, 0), R2(a - 1, 0), R2(0, a - 1)};
   return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeHeptagonLCombinatorial()), vectors);
+}
+
+inline auto make125Combinatorial() {
+  auto vertices = vector<vector<int>>{{1, -3, -9, -21, 12, -13, 18, -19, -24, 22, 14, 6, -7, -17, 10, 4}, {-1, -5, -12, -23, 24, 16, 7, 2}, {-2, -6, -15, 13, 5, -4, -11, -22, 23, 21, -20, 17, -16, 19, 8, 3}, {-8, -18, 15, -14, 11, -10, 20, 9}};
+  return std::make_shared<FlatTriangulationCombinatorial>(vertices);
+}
+
+template <typename R2>
+inline auto make125() {
+  vector<R2> vectors;
+  auto a = N->gen();
+  auto b = N->one() / 2;
+  vectors = vector{R2(1, 0), R2(b*a-1, -b*a+1), R2((-b*a), (b*a-1)), R2((b*a), (b*a-1)), R2((-b*a+1), (-b*a+1)), R2((b*a-1), (-b*a)), R2(0, 1), R2(0, (a-1)), R2((-b*a), (-b*a)), R2((b*a), (-b*a)), R2(0, (a-1)), R2(0, 1), R2((-b*a+1), (-b*a)), R2((-b*a), (-b*a)), R2((a-1), 0), R2((-b*a+1), (-b*a+1)), R2((b*a-1), (b*a)), R2((-b*a), (b*a)), R2((b*a), (b*a-1)), R2((-a+1), 0), R2((b*a-1), (-b*a)), R2((-b*a), (b*a-1)), R2((b*a-1), (-b*a+1)), R2(1, 0)};
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*make125Combinatorial()), vectors);
 }
 
 inline auto make1221Combinatorial() {

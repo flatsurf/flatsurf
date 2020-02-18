@@ -38,6 +38,7 @@ class CombinatorialSurfaceGenerator : public Catch::Generators::IGenerator<std::
   enum class Surface {
     SQUARE,
     L,
+    _125,
     _1221,
     HEXAGON,
     HEPTAGON_L,
@@ -53,6 +54,8 @@ class CombinatorialSurfaceGenerator : public Catch::Generators::IGenerator<std::
         return makeSquareCombinatorial();
       case Surface::L:
         return makeLCombinatorial();
+      case Surface::_125:
+        return make125Combinatorial();
       case Surface::_1221:
         return make1221Combinatorial();
       case Surface::HEXAGON:
