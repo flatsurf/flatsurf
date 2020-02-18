@@ -1,4 +1,4 @@
-check_PROGRAMS = half_edge chain vector_longlong contour_decomposition delaunay saddle_connections vector_exactreal cereal permutation flat_triangulation_combinatorial flat_triangulation flow_decomposition flat_triangulation_collapsed vertex
+check_PROGRAMS = half_edge chain vector_longlong contour_decomposition delaunay saddle_connections vector_exactreal cereal permutation flat_triangulation_combinatorial flat_triangulation flow_decomposition flat_triangulation_collapsed vertex edge
 
 TESTS = $(check_PROGRAMS)
 
@@ -11,6 +11,7 @@ flat_triangulation_collapsed_SOURCES = flat_triangulation_collapsed.test.cc main
 flat_triangulation_combinatorial_SOURCES = flat_triangulation_combinatorial.test.cc main.cc surfaces.hpp
 flow_decomposition_SOURCES = flow_decomposition.test.cc main.cc surfaces.hpp
 half_edge_SOURCES = half_edge.test.cc main.cc
+edge_SOURCES = edge.test.cc main.cc
 permutation_SOURCES = permutation.test.cc main.cc
 saddle_connections_SOURCES = saddle_connections.test.cc main.cc surfaces.hpp
 vector_exactreal_SOURCES = vector_exactreal.test.cc main.cc

@@ -36,7 +36,7 @@ Edge::Edge(HalfEdge e) :
   id(e.index() < (-e).index() ? e : -e) {}
 
 Edge Edge::fromIndex(size_t index) {
-  return Edge(HalfEdge(index));
+  return Edge(HalfEdge(static_cast<int>(index) + 1));
 }
 
 HalfEdge Edge::positive() const { return id; }
