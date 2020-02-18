@@ -30,7 +30,8 @@
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
 
-#include "surfaces.hpp"
+#include "generators/surface_generator.hpp"
+#include "generators/saddle_connections_generator.hpp"
 
 using eantic::renf_class;
 using eantic::renf_elem_class;
@@ -39,24 +40,18 @@ namespace flatsurf::test {
 
 using namespace flatsurf;
 
-TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using R2 = Vector<T>;
 
-  int bound;
-  std::shared_ptr<FlatTriangulation<T>> surface;
-  if constexpr (std::is_same_v<T, long long> || std::is_same_v<T, mpq_class> || std::is_same_v<T, exactreal::Element<exactreal::IntegerRing>>) {
-    surface = GENERATE(makeSquare<R2>(), makeL<R2>());
-    bound = 10;
-  } else {
-    surface = GENERATE(makeSquare<R2>(), makeL<R2>(), makeHexagon<R2>(), makeHeptagonL<R2>(), makeGoldenL<R2>(), make1221<R2>());
-    bound = 5;
-  }
+  const auto surface = GENERATE(makeSurface<T>());
 
   GIVEN("The surface " << *surface) {
-    for (auto sc : SaddleConnections<FlatTriangulation<T>>(surface, Bound(bound, 0))) {
-      THEN("The flow decomposition in direction " << static_cast<R2>(sc) << " can be computed") {
-        auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), sc);
+    const auto saddleConnection = GENERATE_COPY(saddleConnections<T>(surface));
+
+    AND_GIVEN("A direction of a Saddle Connection " << saddleConnection) {
+      THEN("The flow decomposition in that direction can be computed") {
+        auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), saddleConnection);
 
         const auto area = [](const auto& decomposition) {
           T sum = T();
@@ -65,7 +60,7 @@ TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (long long), (m
         };
 
         // TODO: Norm areas!
-        T scale = (static_cast<R2>(sc).x() * static_cast<R2>(sc).x() + static_cast<R2>(sc).y() * static_cast<R2>(sc).y());
+        T scale = (static_cast<R2>(saddleConnection).x() * static_cast<R2>(saddleConnection).x() + static_cast<R2>(saddleConnection).y() * static_cast<R2>(saddleConnection).y());
 
         CAPTURE(flowDecomposition);
         REQUIRE(area(flowDecomposition) == scale * surface->area());
