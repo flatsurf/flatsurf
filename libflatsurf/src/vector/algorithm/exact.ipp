@@ -22,11 +22,15 @@
 
 #include <optional>
 
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+
 #include "../../external/gmpxxll/gmpxxll/mpz_class.hpp"
 
 #include "../../../flatsurf/bound.hpp"
 #include "../../../flatsurf/ccw.hpp"
 #include "../../../flatsurf/orientation.hpp"
+#include "../../../flatsurf/fmt.hpp"
 
 #include "../storage/cartesian.ipp"
 #include "../storage/forward.ipp"
@@ -216,6 +220,27 @@ ORIENTATION VectorExact<Vector, T>::orientation(const Vector& rhs) const noexcep
       return ORIENTATION::ORTHOGONAL;
     }
   }
+}
+
+template <typename Vector, typename T>
+T VectorExact<Vector, T>::area(const std::vector<Vector>& perimeter) {
+  Vector current;
+
+  T area = T();
+
+  for (const auto& v : perimeter) {
+    Vector next = current + v;
+
+    area += current.x()*next.y() - current.y()*next.x();
+
+    current = next;
+  }
+
+  ASSERT(!current, fmt::format("Polygon must be closed but this polygon's sides [{}] summed to {}", fmt::join(perimeter, ", "), current));
+
+  ASSERT(area >= 0, fmt::format("Area of polygon must be positive but the area of this polygon [{}] was {}; maybe the polygon was not oriented counterclockwise?", fmt::join(perimeter, ", "), area));
+
+  return area;
 }
 
 template <typename Vector, typename T>
