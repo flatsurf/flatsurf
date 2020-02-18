@@ -52,7 +52,7 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::shared_ptr<Fl
 
   using R2 = Vector<T>;
 
-  static constexpr bool hasFractions = std::is_same_v<T, mpq_class> || std::is_same_v<T, exactreal::Element<exactreal::RationalField>> || std::is_same_v<T, exactreal::Element<exactreal::NumberField>>;
+  static constexpr bool hasFractions = std::is_same_v<T, mpq_class> || std::is_same_v<T, eantic::renf_elem_class> || std::is_same_v<T, exactreal::Element<exactreal::RationalField>> || std::is_same_v<T, exactreal::Element<exactreal::NumberField>>;
   static constexpr bool hasNumberFieldElements = std::is_same_v<T, eantic::renf_elem_class> || std::is_same_v<T, exactreal::Element<exactreal::NumberField>>;
 
   static std::shared_ptr<FlatTriangulation<T>> make(Surface surface) {
