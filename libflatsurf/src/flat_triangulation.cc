@@ -127,17 +127,6 @@ void Implementation<FlatTriangulation<T>>::check(const FlatTriangulation<T> &sel
 }
 
 template <typename T>
-T Implementation<FlatTriangulation<T>>::area(const Vector<T> &a, const Vector<T> &b, const Vector<T> &c) {
-  const Vector<T> &x = a;
-  const Vector<T> &y = a + b;
-  const Vector<T> &z = y + c;
-
-  T area = x.x() * y.y() - x.y() * y.x() + y.x() * z.y() - y.y() * z.x() + z.x() * x.y() - z.y() * x.x();
-  ASSERT(area >= 0, "sides not oriented correctly");
-  return area;
-}
-
-template <typename T>
 const Vector<T> &FlatTriangulation<T>::fromEdge(const HalfEdge e) const {
   return impl->vectors.get(e);
 }
@@ -334,9 +323,9 @@ T FlatTriangulation<T>::area() const {
   T area = T();
   for (auto e : halfEdges()) {
     if (boundary(e)) continue;
-    area += Implementation::area(fromEdge(e), fromEdge(nextInFace(e)), fromEdge(nextInFace(nextInFace(e))));
+    area += Vector<T>::area({fromEdge(e), fromEdge(nextInFace(e)), fromEdge(nextInFace(nextInFace(e)))});
   }
-  // TODO: Divide by six; and fix comparisons in collapsed
+  // TODO: Divide by three (times two from ::area); and fix comparisons in collapsed
   return area;
 }
 

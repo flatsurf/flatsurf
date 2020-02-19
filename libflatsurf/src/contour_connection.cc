@@ -55,7 +55,10 @@ bool ContourConnection<Surface>::bottom() const {
 
 template <typename Surface>
 const SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>& ContourConnection<Surface>::connection() const {
-  return impl->state->surface->fromEdge(impl->halfEdge);
+  if (top())
+    return impl->state->surface->fromEdge(-impl->halfEdge);
+  else
+    return impl->state->surface->fromEdge(impl->halfEdge);
 }
 
 template <typename Surface>
@@ -77,7 +80,7 @@ std::list<SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>> Con
 template <typename Surface>
 std::list<SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>> ContourConnection<Surface>::perimeter() const {
   if (top()) {
-    return rx::chain(right() | rx::reverse() | rx::transform([](const auto& connection) { return -connection; }), std::vector{ connection() }, left()) | rx::to_list();
+    return rx::chain(right() | rx::reverse() | rx::transform([](const auto& connection) { return -connection; }), std::vector{ -connection() }, left()) | rx::to_list();
   } else {
     return rx::chain(left() | rx::reverse() | rx::transform([](const auto& connection) { return -connection; }), std::vector{ connection() }, right()) | rx::to_list();
   }
@@ -148,8 +151,11 @@ std::list<SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>> Imp
     turn = surface.cross(surface.nextInFace(from.impl->halfEdge)) | rx::to_list();
     turn.splice(end(turn), surface.turn(surface.previousAtVertex(surface.nextInFace(from.impl->halfEdge)), surface.nextInFace(-to.impl->halfEdge)) | rx::to_list());
   } else if (from.top() && to.top()) {
-    // A typical pair of connections on the top of the contour.
-    turn = surface.turn(-from.impl->halfEdge, surface.nextInFace(-to.impl->halfEdge)) | rx::to_list();
+    // A typical pair of connections on the top of the contour; note that even
+    // here it is not enough to turn from -from.impl->halfEdge to
+    // nextInFace(-to.impl->halfEdge) as these two half edges can be the same.
+    turn = surface.cross(-from.impl->halfEdge) | rx::to_list();
+    turn.splice(end(turn), surface.turn(surface.previousAtVertex(-from.impl->halfEdge), surface.nextInFace(-to.impl->halfEdge)) | rx::to_list());
   } else {
     // The last connection on the top of the contour and the first on the bottom of the contour.
     ASSERT(from.top() && to.bottom(), "inconsistent top() / bottom()");
@@ -218,7 +224,7 @@ std::pair<std::list<SaddleConnection<FlatTriangulation<typename Surface::Coordin
 
 template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const ContourConnection<Surface>& self) {
-  return os << fmt::format("ContourConnection({}←{}→{})", fmt::format("{}", fmt::join(self.left() | rx::transform([&](const auto& connection) { return fmt::format("{}", connection); }) | rx::to_vector(), "←")), self.connection(), fmt::join(self.right() | rx::transform([&](const auto& connection) { return fmt::format("{}", connection); }) | rx::to_vector(), "→"));
+  return os << fmt::format("ContourConnection({}←{}→{})", fmt::format("{}", fmt::join(self.left() | rx::transform([&](const auto& connection) { return fmt::format("{}", connection); }) | rx::to_vector(), "←")), self.top() ? -self.connection() : self.connection(), fmt::join(self.right() | rx::transform([&](const auto& connection) { return fmt::format("{}", connection); }) | rx::to_vector(), "→"));
 }
 
 }  // namespace flatsurf

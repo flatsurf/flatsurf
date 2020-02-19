@@ -265,10 +265,10 @@ T Implementation<FlatTriangulationCollapsed<T>>::area(const FlatTriangulationCol
     if (self.boundary(e)) throw std::logic_error("not implemented: area with boundary");
 
     if (self.nextInFace(e) != self.previousInFace(e)) {
-      area += Implementation<FlatTriangulation<T>>::area(self.fromEdge(e), self.fromEdge(self.nextInFace(e)), self.fromEdge(self.previousInFace(e)));
+      area += Vector<T>::area({self.fromEdge(e), self.fromEdge(self.nextInFace(e)), self.fromEdge(self.previousInFace(e))});
     }
     for (auto connection : self.cross(e)) {
-      area += 3 * Implementation<FlatTriangulation<T>>::area(connection, static_cast<Vector<T>>(self.fromEdge(e)) - connection, -self.fromEdge(e));
+      area += 3 * Vector<T>::area({connection, static_cast<Vector<T>>(self.fromEdge(e)) - connection, -self.fromEdge(e)});
     }
   }
 

@@ -34,7 +34,7 @@ using namespace flatsurf::test;
 void FlatTriangulationCombinatorialFlip(State& state) {
   auto L = makeLCombinatorial();
 
-  const int N = L->size();
+  const int N = static_cast<int>(L->size());
 
   int idx = 0;
 
