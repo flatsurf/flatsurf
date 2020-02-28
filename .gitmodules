@@ -1,6 +1,3 @@
-[submodule "src/libflatsurf/external/spimpl"]
-	path = libflatsurf/flatsurf/external/spimpl
-	url = https://github.com/oliora/samples.git
 [submodule "libflatsurf/test/external/cereal"]
 	path = libflatsurf/test/external/cereal
 	url = https://github.com/USCiLab/cereal.git
@@ -12,7 +9,7 @@
 	url = https://github.com/catchorg/Catch2.git
 [submodule "libflatsurf/src/external/gmpxxll"]
 	path = libflatsurf/src/external/gmpxxll
-	url = //github.com/flatsurf/gmpxxll.git
+	url = https://github.com/flatsurf/gmpxxll.git
 [submodule "libflatsurf/src/external/rx-ranges"]
 	path = libflatsurf/src/external/rx-ranges
 	url = https://github.com/simonask/rx-ranges
