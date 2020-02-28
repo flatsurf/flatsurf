@@ -25,10 +25,14 @@
 #include <memory>
 
 #include "bound.hpp"
+#include "edge.hpp"
+#include "chain.hpp"
+#include "chain_iterator.hpp"
 #include "flat_triangulation.hpp"
 #include "flat_triangulation_combinatorial.hpp"
 #include "flow_component.hpp"
 #include "flow_decomposition.hpp"
+#include "flow_connection.hpp"
 #include "half_edge.hpp"
 #include "interval_exchange_transformation.hpp"
 #include "permutation.hpp"
