@@ -21,8 +21,8 @@ CLEANFILES = test-env.sh python-doctest.sh sage-doctest.sh
 $(builddir)/test-env.sh: $(srcdir)/test-env.sh.in Makefile
 	sed -e 's,[@]abs_srcdir[@],$(abs_srcdir),g' -e 's,[@]abs_builddir[@],$(abs_builddir),g' -e 's,[@]pythondir[@],$(pythondir),g' < $< > $@
 $(builddir)/python-doctest.sh: $(srcdir)/python-doctest.sh.in Makefile
-	sed -e 's,[@]srcdir[@],$(srcdir),g' -e 's,[@]builddir[@],$(builddir),g' < $< > $@
+	sed -e 's,[@]srcdir[@],$(srcdir),g' < $< > $@
 	chmod +x $@
 $(builddir)/sage-doctest.sh: $(srcdir)/sage-doctest.sh.in Makefile
-	sed -e 's,[@]srcdir[@],$(srcdir),g' -e 's,[@]builddir[@],$(builddir),g' < $< > $@
+	sed -e 's,[@]srcdir[@],$(srcdir),g' < $< > $@
 	chmod +x $@
