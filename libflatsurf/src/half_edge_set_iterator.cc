@@ -54,4 +54,8 @@ HalfEdgeSetIterator HalfEdgeSet::end() const {
   return HalfEdgeSetIterator{PrivateConstructor{}, this, HalfEdge::fromIndex(impl->set.size())};
 }
 
+Implementation<HalfEdgeSetIterator>::Implementation(const HalfEdgeSet* parent, HalfEdge current) :
+  parent(parent),
+  current(current) {}
+
 }

@@ -30,6 +30,8 @@ namespace flatsurf {
 template <>
 class Implementation<HalfEdgeSetIterator> {
  public:
+  Implementation(const HalfEdgeSet* parent, HalfEdge current);
+
   const HalfEdgeSet* parent;
   HalfEdge current;
 };
