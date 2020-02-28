@@ -224,6 +224,11 @@ SaddleConnection<Surface>::operator const Chain<Surface>&() const {
 }
 
 template <typename Surface>
+Chain<Surface> SaddleConnection<Surface>::chain() const {
+  return impl->chain;
+}
+
+template <typename Surface>
 bool SaddleConnection<Surface>::operator>(const Bound bound) const {
   return static_cast<const Vector<T>&>(*this) > bound;
 }

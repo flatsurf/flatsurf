@@ -60,6 +60,7 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   operator const Chain<Surface> &() const;
 
   const Vector<T> &vector() const;
+  Chain<Surface> chain() const;
 
   // Return which direction we need to turn to go from this saddle connection
   // to the given one. Both must start at the same vertex and the angle between
