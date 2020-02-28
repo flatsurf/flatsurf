@@ -39,9 +39,11 @@ libflatsurf_la_SOURCES =                                            \
 	vertex.cc                                                   \
 	vertical.cc
 
-nobase_include_HEADERS =                                            \
+nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/bound.hpp                                       \
 	../flatsurf/ccw.hpp                                         \
+	../flatsurf/copyable.hpp                                    \
+	../flatsurf/serializable.hpp                                \
 	../flatsurf/flow_component.hpp                              \
 	../flatsurf/decomposition_step.hpp                          \
 	../flatsurf/cppyy.hpp                                       \
