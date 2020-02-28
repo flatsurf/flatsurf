@@ -19,6 +19,7 @@
 
 #include <ostream>
 
+#include "../flatsurf/edge.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/permutation.hpp"
 
@@ -70,6 +71,10 @@ bool HalfEdge::operator<(const HalfEdge &rhs) const {
 size_t HalfEdge::index() const noexcept {
   ASSERT(idx != static_cast<size_t>(-1), "id must be non-zero");
   return idx;
+}
+
+Edge HalfEdge::edge() const {
+  return Edge(*this);
 }
 
 ostream &operator<<(ostream &os, const HalfEdge &self) { return os << self.id(); }

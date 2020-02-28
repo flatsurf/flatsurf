@@ -4,7 +4,7 @@
 ######################################################################
 # This file is part of flatsurf.
 #
-#       Copyright (C) 2019 Julian Rüth
+#       Copyright (C) 2020 Julian Rüth
 #
 # flatsurf is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,20 +22,12 @@
 
 import sys
 import pytest
-import ctypes
 
 from pyflatsurf import flatsurf
-from pyeantic import eantic
 
-def test_creation():
-    v = flatsurf.Vector['mpz_class'](1, 1)
-    assert str(v) == "(1, 1)"
-
-    import cppyy
-    mpq = cppyy.gbl.mpq_class
-    mpz = cppyy.gbl.mpz_class
-    v = flatsurf.Vector[mpq](1, (mpq(mpz(1), mpz(3))))
-    assert str(v) == "(1, 1/3)"
+def test_edge():
+    half_edge = flatsurf.HalfEdge(1)
+    assert half_edge.edge().positive() == half_edge
 
 if __name__ == '__main__': sys.exit(pytest.main(sys.argv))
 

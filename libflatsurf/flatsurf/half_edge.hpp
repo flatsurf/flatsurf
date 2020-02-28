@@ -47,6 +47,7 @@ class HalfEdge : boost::equality_comparable<HalfEdge> {
   // TODO: Remove operator< where it makes not mathematical sense.
   bool operator<(const HalfEdge &other) const;
   friend std::ostream &operator<<(std::ostream &, const HalfEdge &);
+
   Edge edge() const;
 
   // Return a zero based index for this half edge that can be used to index into an array.
