@@ -72,7 +72,7 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/vertical.hpp                                    \
 	../flatsurf/vertex_map.hpp
 
-nobase_include_HEADERS +=                                           \
+nobase_pkginclude_HEADERS +=                                        \
 	../flatsurf/detail/vector_base.hpp                          \
 	../flatsurf/detail/vector_exact.hpp                         \
 	../flatsurf/detail/vector_with_error.hpp                    \
