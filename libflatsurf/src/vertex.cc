@@ -77,6 +77,9 @@ void Implementation<Vertex>::afterFlip(Vertex& v, const FlatTriangulationCombina
   if (sources.contains(d)) sources.insert(flipped);
 }
 
+Implementation<Vertex>::Implementation(const HalfEdgeSet& sources) :
+  sources(sources) {}
+
 const HalfEdgeSet& Implementation<Vertex>::outgoing(const Vertex& v) {
   return v.impl->sources;
 }
