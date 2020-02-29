@@ -373,6 +373,24 @@ bool FlatTriangulation<T>::operator==(const FlatTriangulation<T> &rhs) const noe
 }
 
 template <typename T>
+int FlatTriangulation<T>::angle(const Vertex& vertex) const {
+  int angle = 0;
+
+  const HalfEdge first = *begin(outgoing(vertex));
+  HalfEdge current = first;
+  do {
+    const HalfEdge next = nextAtVertex(current);
+
+    if (fromEdge(current).x() >= 0 && fromEdge(next).x() < 0)
+      angle++;
+
+    current = next;
+  } while(current != first);
+
+  return angle;
+}
+
+template <typename T>
 ostream &operator<<(ostream &os, const FlatTriangulation<T> &self) {
   return os << static_cast<const FlatTriangulationCombinatorial &>(self)
             << " with vectors " << self.impl->vectors;
