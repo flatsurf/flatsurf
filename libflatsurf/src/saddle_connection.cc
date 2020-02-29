@@ -214,7 +214,7 @@ SaddleConnection<Surface>::operator const Vector<T>&() const {
 }
 
 template <typename Surface>
-const Vector<typename Surface::Coordinate>& SaddleConnection<Surface>::vector() const {
+Vector<typename Surface::Coordinate> SaddleConnection<Surface>::vector() const {
   return *this;
 }
 

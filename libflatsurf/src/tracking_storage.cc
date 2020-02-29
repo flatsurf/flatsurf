@@ -155,6 +155,7 @@ void TrackingStorage<SELF, K, V>::wrappedUpdateAfterFlip(SELF& self, const FlatT
     // all edges remain valid when a flip is performed, no special action necessary
   } else if constexpr (std::is_same_v<K, Vertex>) {
     /*
+    // TODO
     // The labels of the vertices attached to the old and new edge have
     // changed. So we need to migrate the data to new keys.
     std::vector<HalfEdge> boundary{
@@ -217,6 +218,7 @@ void TrackingStorage<SELF, K, V>::updateBeforeSwap(SELF& self, const FlatTriangu
       swap(self.impl->get(Edge(a)), self.impl->get(Edge(b)));
   } else if constexpr (std::is_same_v<K, Vertex>) {
     /*
+    // TODO
     Vertex v = Vertex::source(a, surface);
     Vertex w = Vertex::source(b, surface);
     Vertex vv = Vertex::source(-a, surface);

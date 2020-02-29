@@ -59,7 +59,7 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   operator const Vector<T> &() const;
   operator const Chain<Surface> &() const;
 
-  const Vector<T> &vector() const;
+  Vector<T> vector() const;
   Chain<Surface> chain() const;
 
   // Return which direction we need to turn to go from this saddle connection
