@@ -114,6 +114,19 @@ auto makeHeptagonL() {
   return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeHeptagonLCombinatorial()), vectors);
 }
 
+inline auto make123Combinatorial() {
+  auto vertices = vector<vector<int>>{{1, -3, -9, -18, 12, -13, 14, 6, -7, -16, 10, 4}, {-1, -5, -12, 15, 7, 2}, {-2, -6, 8, 3}, {-4, -11, 13, 5}, {-8, -14, 11, -10, 17, 9}, {-15, 18, -17, 16}};
+  return std::make_shared<FlatTriangulationCombinatorial>(vertices);
+}
+
+template <typename R2>
+auto make123() {
+  vector<R2> vectors;
+  auto a = K->gen();
+  vectors = vector{R2(4, 0), R2(-1, 1*a), R2(-3, -1*a), R2(3, -1*a), R2(1, 1*a), R2(-3, -1*a), R2(2, 2*a), R2(-1, 1*a), R2(-2, -2*a), R2(2, -2*a), R2(1, 1*a), R2(-2, 2*a), R2(3, -1*a), R2(-4, 0), R2(2, 0), R2(0, 2*a), R2(-2, 0), R2(0, -2*a)};
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*make123Combinatorial()), vectors);
+}
+
 inline auto make125Combinatorial() {
   auto vertices = vector<vector<int>>{{1, -3, -9, -21, 12, -13, 18, -19, -24, 22, 14, 6, -7, -17, 10, 4}, {-1, -5, -12, -23, 24, 16, 7, 2}, {-2, -6, -15, 13, 5, -4, -11, -22, 23, 21, -20, 17, -16, 19, 8, 3}, {-8, -18, 15, -14, 11, -10, 20, 9}};
   return std::make_shared<FlatTriangulationCombinatorial>(vertices);
