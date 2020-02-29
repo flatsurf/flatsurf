@@ -34,8 +34,8 @@ HalfEdgeSetIterator::HalfEdgeSetIterator(PrivateConstructor, Args&&... args) :
 }
 
 void HalfEdgeSetIterator::increment() {
-  ASSERT(impl->current.index() != impl->parent->impl->set.size(), "iterator already at end");
-  impl->current = HalfEdge::fromIndex(impl->parent->impl->set.find_next(impl->current.index()));
+  ASSERT(*this != impl->parent->end(), "iterator already at end");
+  impl->current = Implementation::makeHalfEdge(impl->parent, impl->parent->impl->set.find_next(impl->current.index()));
 }
 
 bool HalfEdgeSetIterator::equal(const HalfEdgeSetIterator& rhs) const {
@@ -47,15 +47,25 @@ const HalfEdge& HalfEdgeSetIterator::dereference() const {
 }
 
 HalfEdgeSetIterator HalfEdgeSet::begin() const {
-  return HalfEdgeSetIterator{PrivateConstructor{}, this, HalfEdge::fromIndex(impl->set.find_first())};
+  return HalfEdgeSetIterator{PrivateConstructor{}, this, impl->set.find_first()};
 }
 
 HalfEdgeSetIterator HalfEdgeSet::end() const {
-  return HalfEdgeSetIterator{PrivateConstructor{}, this, HalfEdge::fromIndex(impl->set.size())};
+  return HalfEdgeSetIterator{PrivateConstructor{}, this, impl->set.size()};
 }
+
+Implementation<HalfEdgeSetIterator>::Implementation(const HalfEdgeSet* parent, size_t current) :
+  Implementation(parent, makeHalfEdge(parent, current)) {}
 
 Implementation<HalfEdgeSetIterator>::Implementation(const HalfEdgeSet* parent, HalfEdge current) :
   parent(parent),
-  current(current) {}
+  current(current) {
+  ASSERT(parent->impl->set.size() == current.index() || parent->contains(current), "Current HalfEdge " << current << " not in set " << *parent);
+}
 
+HalfEdge Implementation<HalfEdgeSetIterator>::makeHalfEdge(const HalfEdgeSet* parent, typename decltype(::flatsurf::Implementation<HalfEdgeSet>::set)::size_type pos) {
+  if (pos == decltype(parent->impl->set)::npos)
+    pos = parent->impl->set.size();
+  return HalfEdge::fromIndex(pos);
+}
 }

@@ -45,6 +45,9 @@ class HalfEdgeSet : boost::equality_comparable<HalfEdgeSet> {
   HalfEdgeSetIterator begin() const;
   HalfEdgeSetIterator end() const;
 
+  bool empty() const;
+  size_t size() const;
+
   bool operator==(const HalfEdgeSet&) const;
 
   bool disjoint(const HalfEdgeSet&) const;

@@ -18,6 +18,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <unordered_set>
+
 #include "external/catch2/single_include/catch2/catch.hpp"
 
 #include <e-antic/renfxx_fwd.h>
@@ -71,6 +73,18 @@ TEST_CASE("Flat Triangulation Vertices", "[flat_triangulation_combinatorial][ver
 
   GIVEN("The Surface " << *surface) {
     auto vertices = surface->vertices();
+
+    THEN("Each Half Edge shows up as Outgoing Exactly Once") {
+      if (!surface->hasBoundary()) {
+        std::vector<HalfEdge> halfEdges;
+        for (auto vertex : vertices) {
+          for (auto halfEdge : surface->outgoing(vertex)) {
+            halfEdges.push_back(halfEdge);
+          }
+        }
+        REQUIRE(halfEdges.size() == surface->halfEdges().size());
+      }
+    }
   }
 }
 
