@@ -39,13 +39,13 @@ class Implementation<ContourConnection<Surface>> {
 
   // Return the collapsed vertical connections that need to be crossed when
   // turning clockwise from from (i.e., nextInFace(from)) to to.
-  static std::list<SaddleConnection<FlatTriangulation<T>>> turn(const ContourConnection<Surface>& from, const ContourConnection<Surface>& to);
+  static Path<FlatTriangulation<T>> turn(const ContourConnection<Surface>& from, const ContourConnection<Surface>& to);
 
   // Return the collapsed vertical connections that need to be crossed when going from from to to.
   // The connections are split in two buckets of continuous connections, the
   // ones attached to from and the ones attached to to.
   // The connections are oriented such they all point towards the interior.
-  static std::pair<std::list<SaddleConnection<FlatTriangulation<T>>>, std::list<SaddleConnection<FlatTriangulation<T>>>> cross(const ContourConnection<Surface>& from, const ContourConnection<Surface>& to);
+  static std::pair<Path<FlatTriangulation<T>>, Path<FlatTriangulation<T>>> cross(const ContourConnection<Surface>& from, const ContourConnection<Surface>& to);
 
   std::shared_ptr<ContourDecompositionState<Surface>> state;
   ContourComponentState<Surface>* const component;

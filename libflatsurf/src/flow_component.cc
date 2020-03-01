@@ -208,6 +208,11 @@ typename FlowComponent<Surface>::Perimeter FlowComponent<Surface>::perimeter() c
 
   ASSERT(std::unordered_set<FlowConnection<Surface>>(begin(perimeter), end(perimeter)).size() == perimeter.size(), fmt::format("Perimeter of component can not contain duplicates. The perimeter provided by libintervalxt mapped to FlowConnections as follows: {}", fmt::join(impl->component->dynamicalComponent.perimeter() | rx::transform([&](const auto& connection) { return fmt::format("{}: {}", connection, ::flatsurf::Implementation<FlowConnection<Surface>>::make(impl->state, *this, connection)); }) | rx::to_vector(), ", ")));
 
+  ASSERTIONS([&]() {
+    Path<FlatTriangulation<T>> path = perimeter | rx::transform([&](const auto connection) { return connection.saddleConnection();}) | rx::to_vector();
+    ASSERT(path.closed(), "Perimeter of FlowComponent must be closed but " << path << " is not.");
+  });
+
   return perimeter;
 }
 

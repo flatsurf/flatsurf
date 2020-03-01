@@ -142,6 +142,12 @@ class FlowConnection;
 template <typename Surface>
 class MaybeVerticalFlowConnection;
 
+template <typename Surface>
+class Path;
+
+template <typename Surface>
+class PathIterator;
+
 template <typename T>
 class Serializable;
 

@@ -38,6 +38,8 @@
 #include "../flatsurf/flow_connection.hpp"
 #include "../flatsurf/interval_exchange_transformation.hpp"
 #include "../flatsurf/orientation.hpp"
+#include "../flatsurf/path.hpp"
+#include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 
 #include "impl/flow_component_state.hpp"

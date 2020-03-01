@@ -22,6 +22,8 @@
 #include <fmt/format.h>
 
 #include "../flatsurf/fmt.hpp"
+#include "../flatsurf/path.hpp"
+#include "../flatsurf/path_iterator.hpp"
 
 #include "impl/collapsed_half_edge.hpp"
 

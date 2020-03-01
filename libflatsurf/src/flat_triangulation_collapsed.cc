@@ -41,6 +41,8 @@
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_map.hpp"
 #include "../flatsurf/orientation.hpp"
+#include "../flatsurf/path.hpp"
+#include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertical.hpp"
@@ -173,13 +175,12 @@ const SaddleConnection<FlatTriangulation<T>>& FlatTriangulationCollapsed<T>::fro
 }
 
 template <typename T>
-std::vector<SaddleConnection<FlatTriangulation<T>>> FlatTriangulationCollapsed<T>::cross(HalfEdge e) const {
-  auto& connections = impl->collapsedHalfEdges.get(e).connections;
-  return std::vector<SaddleConnection>(connections.begin(), connections.end());
+Path<FlatTriangulation<T>> FlatTriangulationCollapsed<T>::cross(HalfEdge e) const {
+  return impl->collapsedHalfEdges.get(e).connections | rx::to_vector();
 }
 
 template <typename T>
-std::vector<SaddleConnection<FlatTriangulation<T>>> FlatTriangulationCollapsed<T>::turn(HalfEdge from, HalfEdge to) const {
+Path<FlatTriangulation<T>> FlatTriangulationCollapsed<T>::turn(HalfEdge from, HalfEdge to) const {
   std::vector<SaddleConnection> connections;
 
   CHECK_ARGUMENT(Vertex::source(from, *this) == Vertex::source(to, *this), "can only turn between half edges starting at the same vertex but " << from << " and " << to << " do not start at the same vertex");
@@ -217,7 +218,7 @@ Implementation<FlatTriangulationCollapsed<T>>::Implementation(const FlatTriangul
   collapsedHalfEdges(
       &combinatorial,
       [&](HalfEdge) {
-        return CollapsedHalfEdge{{}};
+        return CollapsedHalfEdge();
       },
       CollapsedHalfEdge::updateAfterFlip,
       CollapsedHalfEdge::updateBeforeCollapse),

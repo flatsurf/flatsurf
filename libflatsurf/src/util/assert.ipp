@@ -78,6 +78,7 @@ void throw_for_assert(const E& e) { throw e; }
 #define ASSERT_ARGUMENT_(CONDITION) CHECK_ARGUMENT_(true || (CONDITION))
 #define ASSERT_ARGUMENT(CONDITION, MESSAGE) CHECK_ARGUMENT(true || (CONDITION), MESSAGE)
 #define ASSERT(CONDITION, MESSAGE) ASSERT_(true || (CONDITION), std::logic_error, MESSAGE)
+#define ASSERTIONS(LAMBDA) while(false) LAMBDA()
 #define UNREACHABLE(MESSAGE) ASSERT_(false, std::logic_error, MESSAGE)
 
 #else
@@ -85,6 +86,7 @@ void throw_for_assert(const E& e) { throw e; }
 #define ASSERT_ARGUMENT_(CONDITION) CHECK_ARGUMENT_(CONDITION)
 #define ASSERT_ARGUMENT(CONDITION, MESSAGE) CHECK_ARGUMENT(CONDITION, MESSAGE)
 #define ASSERT(CONDITION, MESSAGE) ASSERT_(CONDITION, std::logic_error, MESSAGE)
+#define ASSERTIONS(LAMBDA) LAMBDA()
 #define UNREACHABLE(MESSAGE) ASSERT_(false, std::logic_error, MESSAGE)
 
 #endif
