@@ -55,11 +55,11 @@ class ContourConnection : boost::equality_comparable<ContourComponent<Surface>> 
   // -right() - connection() + left().
   Path perimeter() const;
 
-  // The vertical connections on the left of this non-vertical connection going
-  // from the left end of `connection` towards the interior.
+  // The vertical connections on the left of this non-vertical connection; from
+  // top to bottom.
   Path left() const;
-  // The vertical connections on the right of this non-vertical connection going
-  // from the right end of `connection` towards the interior.
+  // The vertical connections on the right of this non-vertical connection;
+  // from bottom to top.
   Path right() const;
 
   ContourConnection nextInPerimeter() const;

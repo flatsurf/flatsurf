@@ -63,7 +63,7 @@ TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimet
     auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), {1, 1});
 
     CAPTURE(decomposition);
-    REQUIRE(lexical_cast<std::string>(decomposition) == "[ContourComponent(ContourConnection(←SaddleConnection((0, -1) from -2)→SaddleConnection((1, 1) from 3))→ContourConnection(SaddleConnection((-1, -1) from -3)←SaddleConnection((0, 1) from 2)→))]");
+    REQUIRE(lexical_cast<std::string>(decomposition) == "[ContourComponent(ContourConnection(SaddleConnection((0, -1) from -2)→SaddleConnection((1, 1) from 3))→ContourConnection(SaddleConnection((0, 1) from 2)→SaddleConnection((-1, -1) from -3)))]");
   }
 
   SECTION("A Less Trivial Case") {
@@ -75,7 +75,7 @@ TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimet
     auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), {2, 1});
 
     CAPTURE(decomposition);
-    REQUIRE(lexical_cast<std::string>(decomposition) == "[ContourComponent(ContourConnection(←SaddleConnection((-1, -1) from 5)→SaddleConnection((2, 1) from -4)→SaddleConnection((2, 1) from 6))→ContourConnection(SaddleConnection((-2, -1) from -1)←SaddleConnection((-2, -1) from 4)←SaddleConnection((1, 1) from -5)→)), ContourComponent(ContourConnection(←SaddleConnection((-1, -1) from -2)→SaddleConnection((2, 1) from 1))→ContourConnection(SaddleConnection((-2, -1) from -6)←SaddleConnection((1, 1) from 2)→))]");
+    REQUIRE(lexical_cast<std::string>(decomposition) == "[ContourComponent(ContourConnection(SaddleConnection((-1, -1) from 5)→SaddleConnection((2, 1) from -4)→SaddleConnection((2, 1) from 6))→ContourConnection(SaddleConnection((1, 1) from -5)→SaddleConnection((-2, -1) from 4)→SaddleConnection((-2, -1) from -1))), ContourComponent(ContourConnection(SaddleConnection((-1, -1) from -2)→SaddleConnection((2, 1) from 1))→ContourConnection(SaddleConnection((1, 1) from 2)→SaddleConnection((-2, -1) from -6)))]");
   }
 
   SECTION("A Complicated Surface With Some Collapsed Edges") {
@@ -87,7 +87,7 @@ TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimet
     auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), { static_cast<R2>(-surface->fromEdge(5)).x() + 3, static_cast<R2>(surface->fromEdge(5)).x() });
 
     CAPTURE(decomposition);
-		REQUIRE(lexical_cast<std::string>(decomposition) == "[ContourComponent(ContourConnection(←SaddleConnection(((1/2*x-2 ~ -1.2928932), (1/2*x-1 ~ -0.29289322)) from -24)→)→ContourConnection(←SaddleConnection(((-x+2 ~ 0.58578644), 0) from 13)→)→ContourConnection(←SaddleConnection(((-x+1 ~ -0.41421356), (-x+1 ~ -0.41421356)) from -4)→)→ContourConnection(←SaddleConnection(((x-1 ~ 0.41421356), 0) from -20)→)→ContourConnection(←SaddleConnection(((x-1 ~ 0.41421356), 0) from 15)→)→ContourConnection(←SaddleConnection(((-1/2*x-1 ~ -1.7071068), (1/2*x-1 ~ -0.29289322)) from 8)→)→ContourConnection(←SaddleConnection((1, 0) from 24)→)→ContourConnection(←SaddleConnection((1, 0) from 1)→)→ContourConnection(←SaddleConnection(((1/2*x+1 ~ 1.7071068), (-1/2*x+1 ~ 0.29289322)) from 24)→)→ContourConnection(←SaddleConnection(((x-2 ~ -0.58578644), 0) from 23)→SaddleConnection(((-2*x-1 ~ -3.8284271), (-x+1 ~ -0.41421356)) from 23))→ContourConnection(←SaddleConnection(((-x+1 ~ -0.41421356), 0) from -15)→)→ContourConnection(SaddleConnection(((-2*x-1 ~ -3.8284271), (-x+1 ~ -0.41421356)) from 23)←SaddleConnection(((-x+1 ~ -0.41421356), 0) from 20)→)→ContourConnection(←SaddleConnection(((x-1 ~ 0.41421356), (x-1 ~ 0.41421356)) from -20)→)→ContourConnection(←SaddleConnection(((-1/2*x+2 ~ 1.2928932), (-1/2*x+1 ~ 0.29289322)) from 13)→)→ContourConnection(←SaddleConnection((-1, 0) from -24)→)→ContourConnection(←SaddleConnection((-1, 0) from -1)→))]");
+		REQUIRE(lexical_cast<std::string>(decomposition) == "[ContourComponent(ContourConnection(SaddleConnection(((1/2*x-2 ~ -1.2928932), (1/2*x-1 ~ -0.29289322)) from -24))→ContourConnection(SaddleConnection(((-x+2 ~ 0.58578644), 0) from 13))→ContourConnection(SaddleConnection(((-x+1 ~ -0.41421356), (-x+1 ~ -0.41421356)) from -4))→ContourConnection(SaddleConnection(((x-1 ~ 0.41421356), 0) from -20))→ContourConnection(SaddleConnection(((x-1 ~ 0.41421356), 0) from 15))→ContourConnection(SaddleConnection(((-1/2*x-1 ~ -1.7071068), (1/2*x-1 ~ -0.29289322)) from 8))→ContourConnection(SaddleConnection((1, 0) from 24))→ContourConnection(SaddleConnection((1, 0) from 1))→ContourConnection(SaddleConnection(((1/2*x+1 ~ 1.7071068), (-1/2*x+1 ~ 0.29289322)) from 24))→ContourConnection(SaddleConnection(((2*x+1 ~ 3.8284271), (x-1 ~ 0.41421356)) from 19)→SaddleConnection(((x-2 ~ -0.58578644), 0) from 23))→ContourConnection(SaddleConnection(((-x+1 ~ -0.41421356), 0) from -15))→ContourConnection(SaddleConnection(((-x+1 ~ -0.41421356), 0) from 20)→SaddleConnection(((-2*x-1 ~ -3.8284271), (-x+1 ~ -0.41421356)) from 23))→ContourConnection(SaddleConnection(((x-1 ~ 0.41421356), (x-1 ~ 0.41421356)) from -20))→ContourConnection(SaddleConnection(((-1/2*x+2 ~ 1.2928932), (-1/2*x+1 ~ 0.29289322)) from 13))→ContourConnection(SaddleConnection((-1, 0) from -24))→ContourConnection(SaddleConnection((-1, 0) from -1)))]");
   }
 
   SECTION("A Complicated Case With Many Collapsed Edges") {
@@ -99,7 +99,7 @@ TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimet
     auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), { static_cast<R2>(surface->fromEdge(5)).x() + 1, static_cast<R2>(surface->fromEdge(5)).x() });
 
     CAPTURE(decomposition);
-    REQUIRE(lexical_cast<std::string>(decomposition) == "[ContourComponent(ContourConnection(←SaddleConnection(((-1/2*x ~ -0.70710678), (1/2*x-1 ~ -0.29289322)) from 22)→)→ContourConnection(←SaddleConnection(((-x+1 ~ -0.41421356), (-x+1 ~ -0.41421356)) from -4)→)→ContourConnection(←SaddleConnection(((x-1 ~ 0.41421356), 0) from -20)→)→ContourConnection(←SaddleConnection(((x-1 ~ 0.41421356), 0) from 15)→)→ContourConnection(←SaddleConnection(((-1/2*x ~ -0.70710678), (1/2*x-1 ~ -0.29289322)) from 3)→)→ContourConnection(←SaddleConnection((1, 0) from 1)→SaddleConnection(((3/2*x+1 ~ 3.1213203), (1/2*x ~ 0.70710678)) from 24))→ContourConnection(←SaddleConnection(((-x+1 ~ -0.41421356), 0) from 20)→)→ContourConnection(SaddleConnection(((-2*x+1 ~ -1.8284271), (-x+1 ~ -0.41421356)) from -15)←SaddleConnection(((1/2*x-2 ~ -1.2928932), (1/2*x-1 ~ -0.29289322)) from -24)←SaddleConnection(((1/2*x ~ 0.70710678), (-1/2*x+1 ~ 0.29289322)) from -22)→)→ContourConnection(←SaddleConnection(((x-1 ~ 0.41421356), (x-1 ~ 0.41421356)) from -20)→)→ContourConnection(←SaddleConnection(((1/2*x ~ 0.70710678), (-1/2*x+1 ~ 0.29289322)) from -3)→SaddleConnection(((1/2*x-2 ~ -1.2928932), (1/2*x-1 ~ -0.29289322)) from -24))→ContourConnection(SaddleConnection(((-3/2*x-1 ~ -3.1213203), (-1/2*x ~ -0.70710678)) from 20)←SaddleConnection(((-x+1 ~ -0.41421356), 0) from -15)→SaddleConnection(((-2*x+1 ~ -1.8284271), (-x+1 ~ -0.41421356)) from -15))→ContourConnection(←SaddleConnection((-1, 0) from -1)→))]");
+    REQUIRE(lexical_cast<std::string>(decomposition) == "[ContourComponent(ContourConnection(SaddleConnection(((-1/2*x ~ -0.70710678), (1/2*x-1 ~ -0.29289322)) from 22))→ContourConnection(SaddleConnection(((-x+1 ~ -0.41421356), (-x+1 ~ -0.41421356)) from -4))→ContourConnection(SaddleConnection(((x-1 ~ 0.41421356), 0) from -20))→ContourConnection(SaddleConnection(((x-1 ~ 0.41421356), 0) from 15))→ContourConnection(SaddleConnection(((-1/2*x ~ -0.70710678), (1/2*x-1 ~ -0.29289322)) from 3))→ContourConnection(SaddleConnection((1, 0) from 1)→SaddleConnection(((3/2*x+1 ~ 3.1213203), (1/2*x ~ 0.70710678)) from 24))→ContourConnection(SaddleConnection(((-x+1 ~ -0.41421356), 0) from 20))→ContourConnection(SaddleConnection(((1/2*x ~ 0.70710678), (-1/2*x+1 ~ 0.29289322)) from -22)→SaddleConnection(((1/2*x-2 ~ -1.2928932), (1/2*x-1 ~ -0.29289322)) from -24)→SaddleConnection(((-2*x+1 ~ -1.8284271), (-x+1 ~ -0.41421356)) from -15))→ContourConnection(SaddleConnection(((x-1 ~ 0.41421356), (x-1 ~ 0.41421356)) from -20))→ContourConnection(SaddleConnection(((-1/2*x+2 ~ 1.2928932), (-1/2*x+1 ~ 0.29289322)) from 13)→SaddleConnection(((1/2*x ~ 0.70710678), (-1/2*x+1 ~ 0.29289322)) from -3))→ContourConnection(SaddleConnection(((2*x-1 ~ 1.8284271), (x-1 ~ 0.41421356)) from 19)→SaddleConnection(((-x+1 ~ -0.41421356), 0) from -15)→SaddleConnection(((-3/2*x-1 ~ -3.1213203), (-1/2*x ~ -0.70710678)) from 20))→ContourConnection(SaddleConnection((-1, 0) from -1)))]");
   }
 }
 
@@ -142,13 +142,13 @@ TEMPLATE_TEST_CASE("Connections and IET from Contour Decomposition", "[contour_d
               track(top ? -contourConnection.connection() : contourConnection.connection());
               for (auto connection : contourConnection.left()) {
                 REQUIRE(vertical.perpendicular(connection) == 0);
-                REQUIRE(vertical.parallel(top ? -connection : connection) > 0);
-                track(top ? connection : -connection);
+                REQUIRE(vertical.parallel(connection) < 0);
+                track(connection);
               }
               for (auto connection : contourConnection.right()) {
                 REQUIRE(vertical.perpendicular(connection) == 0);
-                REQUIRE(vertical.parallel(top ? -connection : connection) > 0);
-                track(top ? -connection : connection);
+                REQUIRE(vertical.parallel(connection) > 0);
+                track(connection);
               }
             }
           }

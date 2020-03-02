@@ -44,7 +44,9 @@ class Implementation<ContourConnection<Surface>> {
   // Return the collapsed vertical connections that need to be crossed when going from from to to.
   // The connections are split in two buckets of continuous connections, the
   // ones attached to from and the ones attached to to.
-  // The connections are oriented such they all point towards the interior.
+  // The connections are oriented as they show up in the turn, i.e., you can
+  // walk the connections on the interior of the contour turning clockwise
+  // around the vertices.
   static std::pair<Path<FlatTriangulation<T>>, Path<FlatTriangulation<T>>> cross(const ContourConnection<Surface>& from, const ContourConnection<Surface>& to);
 
   std::shared_ptr<ContourDecompositionState<Surface>> state;
