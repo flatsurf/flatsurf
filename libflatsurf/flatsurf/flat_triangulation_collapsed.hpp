@@ -70,10 +70,10 @@ class FlatTriangulationCollapsed : public FlatTriangulationCombinatorial,
   bool inSector(HalfEdge, const Vertical<FlatTriangulationCollapsed<T>> &) const;
 
   // Return the saddle connections to go from this half edge's source to its negative's target.
-  std::vector<SaddleConnection> cross(HalfEdge) const;
+  Path<FlatTriangulation<T>> cross(HalfEdge) const;
 
   // Return the collapsed saddle connections to turn from one half edge clockwise to the other.
-  std::vector<SaddleConnection> turn(HalfEdge, HalfEdge) const;
+  Path<FlatTriangulation<T>> turn(HalfEdge, HalfEdge) const;
 
   FlatTriangulationCollapsed<T> &operator=(FlatTriangulationCollapsed<T> &&) noexcept;
 

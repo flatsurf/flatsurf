@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,54 +17,40 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_HALF_EDGE_SET_HPP
-#define LIBFLATSURF_HALF_EDGE_SET_HPP
+#ifndef LIBFLATSURF_PATH_ITERATOR_HPP
+#define LIBFLATSURF_PATH_ITERATOR_HPP
 
-#include <iosfwd>
-#include <vector>
+#include <boost/iterator/iterator_categories.hpp>
+#include <boost/iterator/iterator_facade.hpp>
 
-#include <boost/operators.hpp>
+#include <gmpxx.h>
 
 #include "external/spimpl/spimpl.h"
 
 #include "forward.hpp"
-#include "half_edge_set_iterator.hpp"
 
 namespace flatsurf {
 
-class HalfEdgeSet : boost::equality_comparable<HalfEdgeSet> {
-  template <typename ...Args> HalfEdgeSet(PrivateConstructor, Args&&...);
+template <typename Surface>
+class PathIterator : public boost::iterator_facade<PathIterator<Surface>, const SaddleConnection<Surface>&, boost::forward_traversal_tag> {
+  template <typename ...Args> PathIterator(PrivateConstructor, Args&&...);
 
  public:
-  HalfEdgeSet(const std::vector<HalfEdge>&);
+  using value_type = SaddleConnection<Surface>;
 
-  bool contains(HalfEdge) const;
-  void insert(HalfEdge);
-  void erase(HalfEdge);
+  void increment();
+  const value_type& dereference() const;
+  bool equal(const PathIterator &other) const;
 
-  HalfEdgeSetIterator begin() const;
-  HalfEdgeSetIterator end() const;
-
-  bool empty() const;
-  size_t size() const;
-
-  bool operator==(const HalfEdgeSet&) const;
-
-  bool disjoint(const HalfEdgeSet&) const;
-
-  friend std::ostream& operator<<(std::ostream&, const HalfEdgeSet&);
+  template <typename S>
+  friend std::ostream& operator<<(std::ostream&, const PathIterator<S>&);
 
  private:
-  using Implementation = ::flatsurf::Implementation<HalfEdgeSet>;
+  using Implementation = ::flatsurf::Implementation<PathIterator>;
   spimpl::impl_ptr<Implementation> impl;
   friend Implementation;
-  friend HalfEdgeSetIterator;
-  friend ::flatsurf::Implementation<HalfEdgeSetIterator>;
+  friend Path<Surface>;
 };
-
-HalfEdgeSetIterator begin(const HalfEdgeSet&);
-
-HalfEdgeSetIterator end(const HalfEdgeSet&);
 
 }
 

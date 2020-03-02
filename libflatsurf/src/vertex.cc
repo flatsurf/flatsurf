@@ -85,7 +85,7 @@ const HalfEdgeSet& Implementation<Vertex>::outgoing(const Vertex& v) {
 }
 
 Vertex Implementation<Vertex>::make(const std::vector<HalfEdge> sources) {
-  return Vertex(PrivateConstructor{}, HalfEdgeSet(sources));
+  return Vertex(PrivateConstructor{}, HalfEdgeSet(std::move(sources)));
 }
 
 }  // namespace flatsurf

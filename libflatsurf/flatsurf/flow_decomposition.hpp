@@ -40,13 +40,13 @@ class FlowDecomposition {
  public:
   FlowDecomposition(std::unique_ptr<Surface>, const Vector<T>& vertical);
 
+  static bool defaultTarget(const FlowComponent<Surface>& c) {
+    return (c.cylinder() || c.withoutPeriodicTrajectory()) ? true : false;
+  };
+
   // Return whether all resulting components satisfy target, i.e., target could
   // be established for all components without exceeding the limit.
-  bool decompose(
-      std::function<bool(const FlowComponent<Surface>&)> target = [](const auto& c) {
-        return (c.cylinder() || c.withoutPeriodicTrajectory()) ? true : false;
-      },
-      int limit = -1);
+  bool decompose(std::function<bool(const FlowComponent<Surface>&)> target = defaultTarget, int limit = -1);
 
   std::vector<FlowComponent<Surface>> components() const noexcept;
 

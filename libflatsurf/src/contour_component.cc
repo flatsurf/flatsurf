@@ -27,6 +27,8 @@
 #include "../flatsurf/contour_connection.hpp"
 #include "../flatsurf/flat_triangulation_collapsed.hpp"
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/path.hpp"
+#include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vertical.hpp"
 
@@ -37,7 +39,6 @@
 
 #include "util/assert.ipp"
 
-using std::list;
 using std::ostream;
 using std::vector;
 
@@ -61,8 +62,8 @@ std::vector<ContourConnection<Surface>> ContourComponent<Surface>::topContour() 
 }
 
 template <typename Surface>
-std::list<SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>> ContourComponent<Surface>::top() const {
-  return topContour() | rx::transform([&](const auto& contourConnection) { return contourConnection.perimeter(); }) | rx::to_vector() | rx::flatten<1>() | rx::to_list();
+Path<FlatTriangulation<typename Surface::Coordinate>> ContourComponent<Surface>::top() const {
+  return topContour() | rx::transform([&](const auto& contourConnection) { return contourConnection.perimeter() | rx::to_vector(); }) | rx::to_vector() | rx::flatten<1>() | rx::to_vector();
 }
 
 template <typename Surface>
@@ -73,8 +74,8 @@ std::vector<ContourConnection<Surface>> ContourComponent<Surface>::bottomContour
 }
 
 template <typename Surface>
-std::list<SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>> ContourComponent<Surface>::bottom() const {
-  return bottomContour() | rx::transform([&](const auto& contourConnection) { return contourConnection.perimeter(); }) | rx::to_vector() | rx::flatten<1>() | rx::to_list();
+Path<FlatTriangulation<typename Surface::Coordinate>> ContourComponent<Surface>::bottom() const {
+  return bottomContour() | rx::transform([&](const auto& contourConnection) { return contourConnection.perimeter() | rx::to_vector(); }) | rx::to_vector() | rx::flatten<1>() | rx::to_vector();
 }
 
 template <typename Surface>
@@ -85,9 +86,9 @@ std::vector<ContourConnection<Surface>> ContourComponent<Surface>::perimeterCont
 }
 
 template <typename Surface>
-std::list<SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>> ContourComponent<Surface>::perimeter() const {
-  auto perimeter = bottom();
-  perimeter.splice(end(perimeter), top());
+Path<FlatTriangulation<typename Surface::Coordinate>> ContourComponent<Surface>::perimeter() const {
+  Path<FlatTriangulation<T>> perimeter = rx::chain(bottom(), top()) | rx::to_vector();
+  ASSERT(perimeter.closed(), "Perimeter of a component must be closed but " << perimeter << " is not.");
   return perimeter;
 }
 

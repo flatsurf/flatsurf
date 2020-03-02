@@ -69,7 +69,7 @@ FlowDecomposition<FlatTriangulation<T>> makeFlowDecomposition(const FlatTriangul
 // TODO: Report this upstream
 template <typename T>
 void decomposeFlowDecomposition(FlowDecomposition<T> &decomposition, int limit = -1) {
-  decomposition.decompose();
+  decomposition.decompose(FlowDecomposition<T>::defaultTarget, limit);
 }
 
 // Work around https://bitbucket.org/wlav/cppyy/issues/96/cannot-make-wrapper-for-a-function

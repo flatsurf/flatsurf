@@ -17,6 +17,9 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+// TODO
+// #include <iostream>
+
 #include <map>
 #include <ostream>
 #include <unordered_set>
@@ -41,6 +44,8 @@
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_map.hpp"
 #include "../flatsurf/orientation.hpp"
+#include "../flatsurf/path.hpp"
+#include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertical.hpp"
@@ -142,11 +147,14 @@ void FlatTriangulationCollapsed<T>::flip(HalfEdge e) {
 
 template <typename T>
 std::pair<HalfEdge, HalfEdge> FlatTriangulationCollapsed<T>::collapse(HalfEdge e) {
+  // TODO
+  //std::cout << "collapse(" << e << " = " << fromEdge(e) << ")" << std::endl;
+  //std::cout << *this << std::endl;
   auto ret = FlatTriangulationCombinatorial::collapse(e);
 
   ASSERT(Implementation::area(*this) == area(), "Area inconsistent after collapse of edge. Area is " << Implementation::area(*this) << " but should still be " << area());
   ASSERT(halfEdges() | rx::all_of([&](const auto e) { return Implementation::faceClosed(*this, e); }), "Some faces are not closed after collapse of edge in " << *this);
-  ASSERT(([&]() {
+  ASSERTIONS([&]() {
     static Amortized cost;
 
     for (auto halfEdge : {ret.first, ret.second}) {
@@ -156,8 +164,10 @@ std::pair<HalfEdge, HalfEdge> FlatTriangulationCollapsed<T>::collapse(HalfEdge e
       ASSERT(connection == reconstruction, "Edges of Triangulation inconsistent after collapse. The half edge " << e << " in the collapsed surface " << *this << " claims to correspond to the " << connection << ", however, there is no such saddle connection in the original surface " << *impl->original << " instead it should probably be " << reconstruction);
     }
     return true;
-  }()),
-      "(the above can never return false)");
+  });
+
+  // TODO
+  // std::cout << *this << std::endl;
 
   return ret;
 }
@@ -173,13 +183,12 @@ const SaddleConnection<FlatTriangulation<T>>& FlatTriangulationCollapsed<T>::fro
 }
 
 template <typename T>
-std::vector<SaddleConnection<FlatTriangulation<T>>> FlatTriangulationCollapsed<T>::cross(HalfEdge e) const {
-  auto& connections = impl->collapsedHalfEdges.get(e).connections;
-  return std::vector<SaddleConnection>(connections.begin(), connections.end());
+Path<FlatTriangulation<T>> FlatTriangulationCollapsed<T>::cross(HalfEdge e) const {
+  return impl->collapsedHalfEdges.get(e).connections | rx::to_vector();
 }
 
 template <typename T>
-std::vector<SaddleConnection<FlatTriangulation<T>>> FlatTriangulationCollapsed<T>::turn(HalfEdge from, HalfEdge to) const {
+Path<FlatTriangulation<T>> FlatTriangulationCollapsed<T>::turn(HalfEdge from, HalfEdge to) const {
   std::vector<SaddleConnection> connections;
 
   CHECK_ARGUMENT(Vertex::source(from, *this) == Vertex::source(to, *this), "can only turn between half edges starting at the same vertex but " << from << " and " << to << " do not start at the same vertex");
@@ -217,7 +226,7 @@ Implementation<FlatTriangulationCollapsed<T>>::Implementation(const FlatTriangul
   collapsedHalfEdges(
       &combinatorial,
       [&](HalfEdge) {
-        return CollapsedHalfEdge{{}};
+        return CollapsedHalfEdge();
       },
       CollapsedHalfEdge::updateAfterFlip,
       CollapsedHalfEdge::updateBeforeCollapse),
@@ -346,6 +355,9 @@ void Implementation<FlatTriangulationCollapsed<T>>::updateBeforeCollapse(HalfEdg
     const HalfEdge c = surface.previousInFace(collapse);
     const HalfEdge d = surface.nextInFace(-collapse);
 
+    // TODO
+    // std::cout << a << ", " << b << ", " << c << ", " << d << std::endl;
+
     // The new connection we need to record
     auto connection = vectors.get(collapse).value;
 
@@ -366,7 +378,7 @@ void Implementation<FlatTriangulationCollapsed<T>>::updateBeforeCollapse(HalfEdg
     // The idea is to take the outer half edges of the collapsed gadget and
     // reset the vectors attached to the inner edges by flowing through the
     // gadget, e.g. we replace the inner edge a by flowing through the
-    // collapsed gadget to b, i.e., a := b …
+    // collapsed gadget to -d, i.e., a := -d …
 
     // However, things get more complicated when some of the edges are identified.
     // (Attempts to squeeze this into a generic piece of code, always ran into
@@ -407,8 +419,9 @@ void Implementation<FlatTriangulationCollapsed<T>>::updateBeforeCollapse(HalfEdg
     } else if (a == -d || b == -c) {
       // The left and/or right side collapses to a single edge.
       if (a == -d) {
-        // The right side collapses
-        vectors.set(-a, -vectors.get(a).value);
+        // The right side collapses. Since we pushed the SaddleConnection to
+        // the front of d, we need to account for that connection in d.
+        vectors.set(d, -vectors.get(-d).value);
       } else {
         // The right side does not collapse
         connections(-a).splice(connections(-a).end(), connections(d));
@@ -418,8 +431,9 @@ void Implementation<FlatTriangulationCollapsed<T>>::updateBeforeCollapse(HalfEdg
         set(d, -a);
       }
       if (b == -c) {
-        // The left side collapses
-        vectors.set(-b, -vectors.get(b).value);
+        // The left side collapses. Since we pushed the SaddleConnection to the
+        // front of b, we need to account for that connection in b.
+        vectors.set(b, -vectors.get(-b).value);
       } else {
         // The left side does not collapse
         connections(-b).splice(connections(-b).end(), connections(c));
@@ -436,10 +450,10 @@ void Implementation<FlatTriangulationCollapsed<T>>::updateBeforeCollapse(HalfEdg
       connections(-c).splice(connections(-c).end(), connections(b));
       connections(-d).splice(connections(-d).end(), connections(a));
 
-      set(a, -d);
-      set(b, -c);
-      set(c, -b);
       set(d, -a);
+      set(b, -c);
+      set(a, -d);
+      set(c, -b);
     }
 
     assert(collapsedHalfEdges.get(-a).connections.size());

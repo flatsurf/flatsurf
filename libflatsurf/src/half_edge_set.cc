@@ -30,6 +30,8 @@
 #include "impl/half_edge_set.impl.hpp"
 #include "impl/half_edge_set_iterator.impl.hpp"
 
+#include "util/assert.ipp"
+
 namespace flatsurf {
 
 template <typename ...Args>
@@ -44,12 +46,14 @@ HalfEdgeSet::HalfEdgeSet(const std::vector<HalfEdge>& items) :
 }
 
 bool HalfEdgeSet::contains(HalfEdge e) const {
+  ASSERT(e != HalfEdge(), "cannot check containment of invalid HalfEdge(0)");
   if (impl->set.size() <= e.index())
     return false;
   return impl->set.test(e.index());
 }
 
 void HalfEdgeSet::insert(HalfEdge e) {
+  ASSERT(e != HalfEdge(), "cannot insert invalid HalfEdge(0)");
   if (impl->set.size() <= e.index())
     impl->set.resize(e.index() + 1);
   impl->set.set(e.index());
@@ -69,7 +73,16 @@ bool HalfEdgeSet::disjoint(const HalfEdgeSet& rhs) const {
   return not impl->set.intersects(rhs.impl->set);
 }
 
+bool HalfEdgeSet::empty() const {
+  return begin() == end();
+}
+
+size_t HalfEdgeSet::size() const {
+  return impl->set.count();
+}
+
 void HalfEdgeSet::erase(HalfEdge e) {
+  ASSERT(e != HalfEdge(), "cannot remove invalid HalfEdge(0)");
   if (impl->set.size() <= e.index()) return;
   impl->set.reset(e.index());
 }

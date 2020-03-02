@@ -27,6 +27,8 @@ libflatsurf_la_SOURCES =                                            \
 	half_edge.cc                                                \
 	interval_exchange_transformation.cc                         \
 	lengths.cc                                                  \
+	path.cc                                                     \
+	path_iterator.cc                                            \
 	permutation.cc                                              \
 	saddle_connection.cc                                        \
 	saddle_connections.cc                                       \

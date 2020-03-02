@@ -42,6 +42,7 @@ class ContourConnection : boost::equality_comparable<ContourComponent<Surface>> 
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
   using T = typename Surface::Coordinate;
+  using Path = ::flatsurf::Path<FlatTriangulation<T>>;
 
  public:
   // TODO: Unify naming of saddle connection returning methods.
@@ -52,14 +53,14 @@ class ContourConnection : boost::equality_comparable<ContourComponent<Surface>> 
   // The saddle connections of left(), connection(), and right() in
   // contourclockwise order, i.e., either -left() + connection() + right() or
   // -right() - connection() + left().
-  std::list<SaddleConnection<FlatTriangulation<T>>> perimeter() const;
+  Path perimeter() const;
 
   // The vertical connections on the left of this non-vertical connection going
   // from the left end of `connection` towards the interior.
-  std::list<SaddleConnection<FlatTriangulation<T>>> left() const;
+  Path left() const;
   // The vertical connections on the right of this non-vertical connection going
   // from the right end of `connection` towards the interior.
-  std::list<SaddleConnection<FlatTriangulation<T>>> right() const;
+  Path right() const;
 
   ContourConnection nextInPerimeter() const;
   ContourConnection previousInPerimeter() const;

@@ -29,6 +29,8 @@
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/flat_triangulation_collapsed.hpp"
+#include "../flatsurf/path.hpp"
+#include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 

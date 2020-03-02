@@ -25,6 +25,7 @@
 #include <memory>
 
 #include "../../flatsurf/flat_triangulation.hpp"
+#include "../../flatsurf/path.hpp"
 #include "../../flatsurf/saddle_connection.hpp"
 
 #include "./flat_triangulation_collapsed.impl.hpp"
@@ -34,7 +35,6 @@ namespace flatsurf {
 template <typename T>
 class CollapsedHalfEdge {
   using Surface = FlatTriangulationCollapsed<T>;
-  using Connections = std::list<SaddleConnection<FlatTriangulation<T>>>;
 
  public:
   static void updateAfterFlip(HalfEdgeMap<CollapsedHalfEdge>&, HalfEdge);
@@ -48,7 +48,7 @@ class CollapsedHalfEdge {
   // Tracks the collapsed vertical saddle connections, namely the connections
   // that we need to cross to pass from this half edge's face to the one of
   // its corresponding negative half edge.
-  Connections connections;
+  Path<FlatTriangulation<T>> connections = Path<FlatTriangulation<T>>();
 };
 
 }  // namespace flatsurf
