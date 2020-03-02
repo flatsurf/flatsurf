@@ -61,7 +61,7 @@ bool Path<Surface>::operator==(const Path& rhs) const {
 template <typename Surface>
 bool Path<Surface>::closed() const {
   if (empty()) return true;
-  return Implementation::connected(impl->path[size() - 1], impl->path[0]);
+  return Implementation::connected(*std::rbegin(impl->path), *std::begin(impl->path));
 }
 
 template <typename Surface>

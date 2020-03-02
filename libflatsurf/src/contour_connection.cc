@@ -205,6 +205,7 @@ Path<FlatTriangulation<typename Surface::Coordinate>> Implementation<ContourConn
     turn.splice(end(turn), surface.turn(surface.previousAtVertex(-from.impl->halfEdge), to.impl->halfEdge) | rx::to_list());
   }
 
+  // TODO: This is already done by Path isn't it?
   std::list<SaddleConnection> simplified;
 
   for (auto& connection : turn) {
