@@ -142,7 +142,7 @@ Implementation<Path<Surface>>::Implementation() :
 template <typename Surface>
 Implementation<Path<Surface>>::Implementation(const std::vector<Segment>& path) {
   for (auto segment = begin(path); segment != end(path); segment++) {
-    ASSERT(segment + 1 == end(path) || connected(*segment, *(segment + 1)), "Path must be connected but " << *segment << " does not precede " << *(segment + 1) << " either because they are connected to different vertices or because the turn from " << -*segment << " to " << *(segment + 1) << " which is not turning clockwise in the range (0, 2π]");
+    ASSERT(segment + 1 == end(path) || connected(*segment, *(segment + 1)), "Path must be connected but " << *segment << " does not precede " << *(segment + 1) << " either because they are connected to different vertices or because the turn from " << -*segment << " to " << *(segment + 1) << " is not turning clockwise in the range (0, 2π]");
     if (!this->path.empty() && *segment == -*(end(this->path) - 1)) { 
       this->path.pop_back();
     } else {
