@@ -113,6 +113,19 @@ auto makeMcMullenL2111() {
   return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeMcMullenLCombinatorial()), vectors);
 }
 
+inline auto makeCathedralCombinatorial() {
+  auto vertices = vector<vector<int>>{{1, -3, 25, 22, 4, -6, -21, -23, -25, -26, -27, 10, -12, 8, -7, 12, -11, 13, -15, 26, 3, -2}, {-1, 5, -4, 20, 18, 9, -8, 7, -9, 17, 14, -13, -16, -17, -18, -19, 6, -5, 2}, {-10, 24, 21, 19, -20, -22, 23, -24, 27, 15, -14, 16, 11}};
+  return std::make_shared<FlatTriangulationCombinatorial>(vertices);
+}
+
+template <typename R2>
+auto makeCathedral() {
+  vector<R2> vectors;
+  vectors = vector{R2(1, 1), R2(-1, 0), R2(0, -1), R2(mpq_class(-1, 2), mpq_class(-3, 2)), R2(0, -1), R2(mpq_class(1, 2), mpq_class(5, 2)), R2(1, 1), R2(-1, 0), R2(0, -1), R2(mpq_class(1, 2), mpq_class(3, 2)), R2(mpq_class(-1, 2), mpq_class(-1, 2)), R2(0, -1), R2(mpq_class(-1, 2), mpq_class(3, 2)), R2(0, -1), R2(mpq_class(1, 2), mpq_class(-1, 2)), R2(-1, 1), R2(-1, 0), R2(-1, -1), R2(-1, -2), R2(0, 1), R2(mpq_class(-1, 2), mpq_class(1, 2)), R2(mpq_class(-1, 2), mpq_class(-1, 2)), R2(mpq_class(-5, 2), mpq_class(1, 2)), R2(2, 0), R2(-3, 0), R2(-3, -1), R2(mpq_class(-5, 2), mpq_class(-3, 2))};
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeCathedralCombinatorial()), vectors);
+}
+
+
 inline auto makeMcMullenGenus2Combinatorial() {
   auto vertices = vector<vector<int>>{{1, -3, -6, 9, 8, -7, -9, 4, 2, -1, 3, -2, -5, -8, 7, 5, -4, 6}};
   return std::make_shared<FlatTriangulationCombinatorial>(vertices);

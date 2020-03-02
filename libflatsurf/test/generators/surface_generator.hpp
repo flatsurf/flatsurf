@@ -42,6 +42,7 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::shared_ptr<Fl
     MCMULLEN_L1114,
     MCMULLEN_L2111,
     MCMULLEN_L3125,
+    CATHEDRAL,
     MCMULLEN_GENUS2,
     _123,
     _125,
@@ -73,6 +74,10 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::shared_ptr<Fl
         return makeMcMullenL2111<R2>();
       case Surface::MCMULLEN_L3125:
         return makeMcMullenL3125<R2>();
+      case Surface::CATHEDRAL:
+        if constexpr (hasFractions)
+          return makeCathedral<R2>();
+        else return nullptr;
       case Surface::MCMULLEN_GENUS2:
         if constexpr (hasNumberFieldElements)
           return makeMcMullenGenus2<R2>();
