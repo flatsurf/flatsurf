@@ -323,9 +323,13 @@ T FlatTriangulation<T>::area() const {
   T area = T();
   for (auto e : halfEdges()) {
     if (boundary(e)) continue;
+
+    // Do not count every triangle three times.
+    if (e.index() > nextInFace(e).index()) continue;
+    if (e.index() > previousInFace(e).index()) continue;
+
     area += Vector<T>::area({fromEdge(e), fromEdge(nextInFace(e)), fromEdge(nextInFace(nextInFace(e)))});
   }
-  // TODO: Divide by three (times two from ::area); and fix comparisons in collapsed
   return area;
 }
 

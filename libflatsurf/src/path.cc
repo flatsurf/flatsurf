@@ -116,6 +116,19 @@ void Path<Surface>::splice(const PathIterator<Surface>& pos, Path& other) {
 }
 
 template <typename Surface>
+void Path<Surface>::splice(const PathIterator<Surface>& pos, Path&& other) {
+  // TODO: Do this more efficiently.
+  Path tmp = other;
+  splice(pos, tmp);
+}
+
+template <typename Surface>
+typename Surface::Coordinate Path<Surface>::area() const {
+  CHECK_ARGUMENT(closed(), "Area can only be computed for closed paths but " << *this << " is not closed.");
+  return Vector<T>::area(*this | rx::transform([](const auto& connection) { return connection.vector(); }) | rx::to_vector());
+}
+
+template <typename Surface>
 template <typename ...Args>
 PathIterator<Surface>::PathIterator(PrivateConstructor, Args&& ... args) :
   impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
@@ -132,7 +145,7 @@ PathIterator<Surface> Path<Surface>::end() const {
 
 template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const Path<Surface>& path) {
-  return os << fmt::format("{}", fmt::join(path.impl->path, "→"));
+  return os << fmt::format("[{}]", fmt::join(path.impl->path, " → "));
 }
 
 template <typename Surface>
@@ -143,11 +156,7 @@ template <typename Surface>
 Implementation<Path<Surface>>::Implementation(const std::vector<Segment>& path) {
   for (auto segment = begin(path); segment != end(path); segment++) {
     ASSERT(segment + 1 == end(path) || connected(*segment, *(segment + 1)), "Path must be connected but " << *segment << " does not precede " << *(segment + 1) << " either because they are connected to different vertices or because the turn from " << -*segment << " to " << *(segment + 1) << " is not turning clockwise in the range (0, 2π]");
-    if (!this->path.empty() && *segment == -*(end(this->path) - 1)) { 
-      this->path.pop_back();
-    } else {
-      this->path.push_back(*segment);
-    }
+    this->path.push_back(*segment);
   }
 }
 

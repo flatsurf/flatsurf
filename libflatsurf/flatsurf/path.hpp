@@ -36,6 +36,7 @@ template <typename Surface>
 class Path : public Serializable<Path<Surface>>,
              boost::equality_comparable<Path<Surface>> {
   using Segment = SaddleConnection<Surface>;
+  using T = typename Surface::Coordinate;
  public:
   Path();
   Path(const std::vector<Segment>&);
@@ -46,12 +47,17 @@ class Path : public Serializable<Path<Surface>>,
 
   // Return whether the list is cyclic, i.e., the last element joins up with the first.
   bool closed() const;
-  // Return whether there are no duplicates.
+  // Return whether there are no segments showing up more than once.
   bool simple() const;
+  // Return whether there are no segments followed by their negatives.
+  bool reduced() const;
 
   Path reversed() const;
 
+  T area() const;
+
   void splice(const PathIterator<Surface>&, Path& other);
+  void splice(const PathIterator<Surface>&, Path&& other);
 
   void push_front(const Segment&);
   void push_back(const Segment&);

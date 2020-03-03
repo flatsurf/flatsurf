@@ -63,6 +63,8 @@ template <typename Surface>
 bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Surface>&)> target, int limit) {
   auto area = this->area();
 
+  // TODO: Instead use ContourDecomposition's check() assertions everywhere.
+
   while (!target(*this)) {
     auto step = impl->component->dynamicalComponent.decompositionStep(limit);
     // TODO: If Cylinder, assert that the perimeter is actually a cylinder.
@@ -183,8 +185,7 @@ Vertical<Surface> FlowComponent<Surface>::vertical() const {
 
 template <typename Surface>
 typename Surface::Coordinate FlowComponent<Surface>::area() const {
-  // TODO: Fix scaling
-  return 3 * Vector<T>::area(perimeter() | rx::transform([&](const auto & connection) { return static_cast<const Vector<T>&>(connection.saddleConnection()); }) | rx::to_vector());
+  return Vector<T>::area(perimeter() | rx::transform([&](const auto & connection) { return static_cast<const Vector<T>&>(connection.saddleConnection()); }) | rx::to_vector());
 }
 
 template <typename Surface>

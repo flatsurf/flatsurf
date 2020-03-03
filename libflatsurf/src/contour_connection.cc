@@ -94,21 +94,22 @@ Path<FlatTriangulation<typename Surface::Coordinate>> ContourConnection<Surface>
 
 template <typename Surface>
 Path<FlatTriangulation<typename Surface::Coordinate>> ContourConnection<Surface>::perimeter() const {
+  Path perimeter;
   if (top()) {
-    auto perimeter = rx::chain(right(), std::vector{ -connection() }, left()) | rx::to_vector();
+    perimeter = rx::chain(right(), std::vector{ -connection() }, left()) | rx::to_vector();
     ASSERTIONS([&]() {
         for (const  auto& connection : perimeter)
           ASSERT(impl->state->surface->vertical().perpendicular(connection) <= 0, "ContourConnection::perimeter() must be right-to-left but " << connection << " is not.");
     });
-    return perimeter;
   } else {
-    auto perimeter = rx::chain(left(), std::vector{ connection() }, right()) | rx::to_vector();
+    perimeter = rx::chain(left(), std::vector{ connection() }, right()) | rx::to_vector();
     ASSERTIONS([&]() {
         for (const  auto& connection : perimeter)
           ASSERT(impl->state->surface->vertical().perpendicular(connection) >= 0, "ContourConnection::perimeter() must be left-to-right but " << connection << " is not.");
     });
-    return perimeter;
   }
+  ASSERT(perimeter.simple(), "Perimeter must be simple but " << perimeter << " is not.");
+  return perimeter;
 }
 
 template <typename Surface>
@@ -159,49 +160,37 @@ Implementation<ContourConnection<Surface>>::Implementation(std::shared_ptr<Conto
 
 template <typename Surface>
 Path<FlatTriangulation<typename Surface::Coordinate>> Implementation<ContourConnection<Surface>>::turn(const ContourConnection<Surface>& from, const ContourConnection<Surface>& to) {
-  using SaddleConnection = flatsurf::SaddleConnection<FlatTriangulation<T>>;
-
   ASSERT(to == from.nextInPerimeter(), "can only cross between adjacent connections but " << to.impl->halfEdge << " does not follow " << from.impl->halfEdge);
 
   auto& surface = *from.impl->state->surface;
 
-  std::list<SaddleConnection> turn;
+  Path<FlatTriangulation<T>> turn;
 
   if (from.bottom() && to.bottom()) {
     // A typical pair of connections on the bottom of the contour.
-    turn = surface.turn(surface.nextInFace(from.impl->halfEdge), to.impl->halfEdge) | rx::to_list();
+    turn = surface.turn(surface.nextInFace(from.impl->halfEdge), to.impl->halfEdge);
   } else if (from.bottom() && to.top()) {
     // The last connection on the bottom of the contour and the first on the top of the contour.
     ASSERT(Vertex::target(from.impl->halfEdge, surface) == Vertex::source(to.impl->halfEdge, surface), "final connections must point to the same vertex but " << from.impl->halfEdge << " and " << to.impl->halfEdge << " do not");
-    turn = surface.cross(surface.nextInFace(from.impl->halfEdge)) | rx::to_list();
-    turn.splice(end(turn), surface.turn(surface.previousAtVertex(surface.nextInFace(from.impl->halfEdge)), surface.nextInFace(-to.impl->halfEdge)) | rx::to_list());
+    turn = surface.cross(surface.nextInFace(from.impl->halfEdge));
+    turn.splice(end(turn), surface.turn(surface.previousAtVertex(surface.nextInFace(from.impl->halfEdge)), surface.nextInFace(-to.impl->halfEdge)));
   } else if (from.top() && to.top()) {
     // A typical pair of connections on the top of the contour; note that even
     // here it is not enough to turn from -from.impl->halfEdge to
     // nextInFace(-to.impl->halfEdge) as these two half edges can be the same.
-    turn = surface.cross(-from.impl->halfEdge) | rx::to_list();
-    turn.splice(end(turn), surface.turn(surface.previousAtVertex(-from.impl->halfEdge), surface.nextInFace(-to.impl->halfEdge)) | rx::to_list());
+    turn = surface.cross(-from.impl->halfEdge);
+    turn.splice(end(turn), surface.turn(surface.previousAtVertex(-from.impl->halfEdge), surface.nextInFace(-to.impl->halfEdge)));
   } else {
     // The last connection on the top of the contour and the first on the bottom of the contour.
     ASSERT(from.top() && to.bottom(), "inconsistent top() / bottom()");
     ASSERT(Vertex::target(from.impl->halfEdge, surface) == Vertex::source(to.impl->halfEdge, surface), "initial connections must start at the same vertex but " << from << " and " << to << " do not");
-    turn = surface.cross(-from.impl->halfEdge) | rx::to_list();
-    turn.splice(end(turn), surface.turn(surface.previousAtVertex(-from.impl->halfEdge), to.impl->halfEdge) | rx::to_list());
+    turn = surface.cross(-from.impl->halfEdge);
+    turn.splice(end(turn), surface.turn(surface.previousAtVertex(-from.impl->halfEdge), to.impl->halfEdge));
   }
 
-  // TODO: This is already done by Path isn't it?
-  std::list<SaddleConnection> simplified;
+  ASSERT(turn.simple(), "Connections cannot appear more than once when moving from one contour connection to the next");
 
-  for (auto& connection : turn) {
-    if (!simplified.empty() && connection == -*rbegin(simplified))
-      simplified.pop_back();
-    else
-      simplified.push_back(connection);
-  }
-
-  ASSERT(std::unordered_set<SaddleConnection>(begin(simplified), end(simplified)).size() == simplified.size(), "connections cannot appear more than once when moving from one contour connection to the next");
-
-  return simplified | rx::to_vector();
+  return turn;
 }
 
 template <typename Surface>
@@ -254,7 +243,7 @@ std::pair<Path<FlatTriangulation<typename Surface::Coordinate>>, Path<FlatTriang
 
 template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const ContourConnection<Surface>& self) {
-  return os << fmt::format("ContourConnection({})", fmt::join(self.perimeter(), "→"));
+  return os << self.perimeter();
 }
 
 }  // namespace flatsurf

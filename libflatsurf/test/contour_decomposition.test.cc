@@ -63,7 +63,7 @@ TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimet
     auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), {1, 1});
 
     CAPTURE(decomposition);
-    REQUIRE(lexical_cast<std::string>(decomposition) == "[ContourComponent(ContourConnection(SaddleConnection((0, -1) from -2)→SaddleConnection((1, 1) from 3))→ContourConnection(SaddleConnection((0, 1) from 2)→SaddleConnection((-1, -1) from -3)))]");
+    REQUIRE(lexical_cast<std::string>(decomposition) == "[[(0, -1) from -2 to 2 → (1, 1) from 3 to -3 → (0, 1) from 2 to -2 → (-1, -1) from -3 to 3]]");
   }
 
   SECTION("A Less Trivial Case") {
@@ -75,7 +75,7 @@ TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimet
     auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), {2, 1});
 
     CAPTURE(decomposition);
-    REQUIRE(lexical_cast<std::string>(decomposition) == "[ContourComponent(ContourConnection(SaddleConnection((-1, -1) from 5)→SaddleConnection((2, 1) from -4)→SaddleConnection((2, 1) from 6))→ContourConnection(SaddleConnection((1, 1) from -5)→SaddleConnection((-2, -1) from 4)→SaddleConnection((-2, -1) from -1))), ContourComponent(ContourConnection(SaddleConnection((-1, -1) from -2)→SaddleConnection((2, 1) from 1))→ContourConnection(SaddleConnection((1, 1) from 2)→SaddleConnection((-2, -1) from -6)))]");
+    REQUIRE(lexical_cast<std::string>(decomposition) == "[[(-1, -1) from 5 to -5 → (2, 1) from -4 to -6 → (2, 1) from 6 to -1 → (1, 1) from -5 to 5 → (-2, -1) from 4 to 1 → (-2, -1) from -1 to 6], [(-1, -1) from -2 to 2 → (2, 1) from 1 to 4 → (1, 1) from 2 to -2 → (-2, -1) from -6 to -4]]");
   }
 
   SECTION("A Complicated Surface With Some Collapsed Edges") {
@@ -87,7 +87,7 @@ TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimet
     auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), { static_cast<R2>(-surface->fromEdge(5)).x() + 3, static_cast<R2>(surface->fromEdge(5)).x() });
 
     CAPTURE(decomposition);
-		REQUIRE(lexical_cast<std::string>(decomposition) == "[ContourComponent(ContourConnection(SaddleConnection(((1/2*x-2 ~ -1.2928932), (1/2*x-1 ~ -0.29289322)) from -24))→ContourConnection(SaddleConnection(((-x+2 ~ 0.58578644), 0) from 13))→ContourConnection(SaddleConnection(((-x+1 ~ -0.41421356), (-x+1 ~ -0.41421356)) from -4))→ContourConnection(SaddleConnection(((x-1 ~ 0.41421356), 0) from -20))→ContourConnection(SaddleConnection(((x-1 ~ 0.41421356), 0) from 15))→ContourConnection(SaddleConnection(((-1/2*x-1 ~ -1.7071068), (1/2*x-1 ~ -0.29289322)) from 8))→ContourConnection(SaddleConnection((1, 0) from 24))→ContourConnection(SaddleConnection((1, 0) from 1))→ContourConnection(SaddleConnection(((1/2*x+1 ~ 1.7071068), (-1/2*x+1 ~ 0.29289322)) from 24))→ContourConnection(SaddleConnection(((2*x+1 ~ 3.8284271), (x-1 ~ 0.41421356)) from 19)→SaddleConnection(((x-2 ~ -0.58578644), 0) from 23))→ContourConnection(SaddleConnection(((-x+1 ~ -0.41421356), 0) from -15))→ContourConnection(SaddleConnection(((-x+1 ~ -0.41421356), 0) from 20)→SaddleConnection(((-2*x-1 ~ -3.8284271), (-x+1 ~ -0.41421356)) from 23))→ContourConnection(SaddleConnection(((x-1 ~ 0.41421356), (x-1 ~ 0.41421356)) from -20))→ContourConnection(SaddleConnection(((-1/2*x+2 ~ 1.2928932), (-1/2*x+1 ~ 0.29289322)) from 13))→ContourConnection(SaddleConnection((-1, 0) from -24))→ContourConnection(SaddleConnection((-1, 0) from -1)))]");
+		REQUIRE(lexical_cast<std::string>(decomposition) == "[[((1/2*x-2 ~ -1.2928932), (1/2*x-1 ~ -0.29289322)) from -24 to 13 → ((-x+2 ~ 0.58578644), 0) from 13 to 23 → ((-x+1 ~ -0.41421356), (-x+1 ~ -0.41421356)) from -4 to -20 → ((x-1 ~ 0.41421356), 0) from -20 to 20 → ((x-1 ~ 0.41421356), 0) from 15 to -15 → ((-1/2*x-1 ~ -1.7071068), (1/2*x-1 ~ -0.29289322)) from 8 to 24 → (1, 0) from 24 to -24 → (1, 0) from 1 to -1 → ((1/2*x+1 ~ 1.7071068), (-1/2*x+1 ~ 0.29289322)) from 24 to 8 → ((2*x+1 ~ 3.8284271), (x-1 ~ 0.41421356)) from 19 to 23 → ((x-2 ~ -0.58578644), 0) from 23 to 13 → ((-x+1 ~ -0.41421356), 0) from -15 to 15 → ((-x+1 ~ -0.41421356), 0) from 20 to -20 → ((-2*x-1 ~ -3.8284271), (-x+1 ~ -0.41421356)) from 23 to 19 → ((x-1 ~ 0.41421356), (x-1 ~ 0.41421356)) from -20 to -4 → ((-1/2*x+2 ~ 1.2928932), (-1/2*x+1 ~ 0.29289322)) from 13 to -24 → (-1, 0) from -24 to 24 → (-1, 0) from -1 to 1]]");
   }
 
   SECTION("A Complicated Case With Many Collapsed Edges") {
@@ -99,7 +99,7 @@ TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimet
     auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), { static_cast<R2>(surface->fromEdge(5)).x() + 1, static_cast<R2>(surface->fromEdge(5)).x() });
 
     CAPTURE(decomposition);
-    REQUIRE(lexical_cast<std::string>(decomposition) == "[ContourComponent(ContourConnection(SaddleConnection(((-1/2*x ~ -0.70710678), (1/2*x-1 ~ -0.29289322)) from 22))→ContourConnection(SaddleConnection(((-x+1 ~ -0.41421356), (-x+1 ~ -0.41421356)) from -4))→ContourConnection(SaddleConnection(((x-1 ~ 0.41421356), 0) from -20))→ContourConnection(SaddleConnection(((x-1 ~ 0.41421356), 0) from 15))→ContourConnection(SaddleConnection(((-1/2*x ~ -0.70710678), (1/2*x-1 ~ -0.29289322)) from 3))→ContourConnection(SaddleConnection((1, 0) from 1)→SaddleConnection(((3/2*x+1 ~ 3.1213203), (1/2*x ~ 0.70710678)) from 24))→ContourConnection(SaddleConnection(((-x+1 ~ -0.41421356), 0) from 20))→ContourConnection(SaddleConnection(((1/2*x ~ 0.70710678), (-1/2*x+1 ~ 0.29289322)) from -22)→SaddleConnection(((1/2*x-2 ~ -1.2928932), (1/2*x-1 ~ -0.29289322)) from -24)→SaddleConnection(((-2*x+1 ~ -1.8284271), (-x+1 ~ -0.41421356)) from -15))→ContourConnection(SaddleConnection(((x-1 ~ 0.41421356), (x-1 ~ 0.41421356)) from -20))→ContourConnection(SaddleConnection(((-1/2*x+2 ~ 1.2928932), (-1/2*x+1 ~ 0.29289322)) from 13)→SaddleConnection(((1/2*x ~ 0.70710678), (-1/2*x+1 ~ 0.29289322)) from -3))→ContourConnection(SaddleConnection(((2*x-1 ~ 1.8284271), (x-1 ~ 0.41421356)) from 19)→SaddleConnection(((-x+1 ~ -0.41421356), 0) from -15)→SaddleConnection(((-3/2*x-1 ~ -3.1213203), (-1/2*x ~ -0.70710678)) from 20))→ContourConnection(SaddleConnection((-1, 0) from -1)))]");
+    REQUIRE(lexical_cast<std::string>(decomposition) == "[[((-1/2*x ~ -0.70710678), (1/2*x-1 ~ -0.29289322)) from 22 to -22 → ((-x+1 ~ -0.41421356), (-x+1 ~ -0.41421356)) from -4 to -20 → ((x-1 ~ 0.41421356), 0) from -20 to 20 → ((x-1 ~ 0.41421356), 0) from 15 to -15 → ((-1/2*x ~ -0.70710678), (1/2*x-1 ~ -0.29289322)) from 3 to -3 → (1, 0) from 1 to -1 → ((3/2*x+1 ~ 3.1213203), (1/2*x ~ 0.70710678)) from 24 to 20 → ((-x+1 ~ -0.41421356), 0) from 20 to -20 → ((1/2*x ~ 0.70710678), (-1/2*x+1 ~ 0.29289322)) from -22 to 22 → ((1/2*x-2 ~ -1.2928932), (1/2*x-1 ~ -0.29289322)) from -24 to 13 → ((-2*x+1 ~ -1.8284271), (-x+1 ~ -0.41421356)) from -15 to 19 → ((x-1 ~ 0.41421356), (x-1 ~ 0.41421356)) from -20 to -4 → ((-1/2*x+2 ~ 1.2928932), (-1/2*x+1 ~ 0.29289322)) from 13 to -24 → ((1/2*x ~ 0.70710678), (-1/2*x+1 ~ 0.29289322)) from -3 to 3 → ((2*x-1 ~ 1.8284271), (x-1 ~ 0.41421356)) from 19 to -15 → ((-x+1 ~ -0.41421356), 0) from -15 to 15 → ((-3/2*x-1 ~ -3.1213203), (-1/2*x ~ -0.70710678)) from 20 to 24 → (-1, 0) from -1 to 1]]");
   }
 }
 
@@ -119,138 +119,10 @@ TEMPLATE_TEST_CASE("Connections and IET from Contour Decomposition", "[contour_d
         CAPTURE(decomposition);
         CAPTURE(*decomposition.collapsed());
 
-        AND_THEN("All Connections Show Up Once With Both Signs in the Decomposition") {
-          std::unordered_map<SaddleConnection<FlatTriangulation<T>>, int> connections;
-
-          auto track = [&](const auto& connection) {
-            if (connections.find(connection) == connections.end()) {
-              connections[connection] = 1;
-              connections[-connection] = 0;
-            } else {
-              connections[connection]++;
-              REQUIRE(connections[connection] == 1);
-              REQUIRE(connections[-connection] == 1);
-            }
-          };
-
-          for (auto component : decomposition.components()) {
-            const auto vertical = decomposition.collapsed()->vertical();
-            CAPTURE(component);
-            for (auto contourConnection : component.perimeterContour()) {
-              const bool top = contourConnection.top();
-              REQUIRE(vertical.perpendicular(contourConnection.connection()) != 0);
-              track(top ? -contourConnection.connection() : contourConnection.connection());
-              for (auto connection : contourConnection.left()) {
-                REQUIRE(vertical.perpendicular(connection) == 0);
-                REQUIRE(vertical.parallel(connection) < 0);
-                track(connection);
-              }
-              for (auto connection : contourConnection.right()) {
-                REQUIRE(vertical.perpendicular(connection) == 0);
-                REQUIRE(vertical.parallel(connection) > 0);
-                track(connection);
-              }
-            }
-          }
-        }
-
-        AND_THEN("The Vertices of the Original Surface Are Still There") {
-          // Total angle at each vertex in multiples of π/2
-          std::unordered_map<Vertex, int> totalAngle;
-
-          for (auto component : decomposition.components()) {
-            auto connections = component.perimeter();
-            connections.push_back(*begin(connections));
-
-            enum CLASSIFICATION {
-              TOP,
-              BOTTOM,
-              LEFT,
-              RIGHT
-            };
-
-            const auto vertical = decomposition.collapsed()->vertical();
-
-            const auto classify = [&](const auto& connection) {
-              if (vertical.perpendicular(connection) == 0) { 
-                if (vertical.parallel(connection) > 0) {
-                  return RIGHT;
-                } else {
-                  return LEFT;
-                }
-              } else {
-                if (vertical.perpendicular(connection) > 0) {
-                  return BOTTOM;
-                } else {
-                  return TOP;
-                }
-              }
-            };
-            
-            auto connection = begin(connections);
-            auto nextConnection = ++begin(connections);
-            for (; nextConnection != end(connections); connection++, nextConnection++) {
-              const auto angle = [&](const auto& self, const auto& next) {
-                switch(classify(self)) {
-                  case TOP:
-                    switch(classify(next)) {
-                      case TOP:
-                        return 2;
-                      case BOTTOM:
-                        return 0;
-                      case LEFT:
-                        return 1;
-                      case RIGHT:
-                        return 3;
-                    }
-                  case BOTTOM:
-                    switch(classify(next)) {
-                      case TOP:
-                        return 0;
-                      case BOTTOM:
-                        return 2;
-                      case LEFT:
-                        return 3;
-                      case RIGHT:
-                        return 1;
-                    }
-                  case LEFT:
-                    switch(classify(next)) {
-                      case TOP:
-                        return 3;
-                      case BOTTOM:
-                        return 1;
-                      case LEFT:
-                        return 2;
-                      case RIGHT:
-                        return 4;
-                    }
-                  case RIGHT:
-                    switch(classify(next)) {
-                      case TOP:
-                        return 1;
-                      case BOTTOM:
-                        return 3;
-                      case LEFT:
-                        return 4;
-                      case RIGHT:
-                        return 2;
-                    }
-                }
-                throw std::logic_error("impossible classification");
-              };
-
-              totalAngle[Vertex::source(nextConnection->source(), *surface)] += angle(*connection, *nextConnection);
-            }
-          }
-
-          for (const auto vertex : surface->vertices())
-            REQUIRE(totalAngle[vertex] == 4*surface->angle(vertex));
-        }
-        
         AND_THEN("We can construct the IETs from the components") {
           for (auto component : decomposition.components()) {
             auto iet = component.intervalExchangeTransformation();
+            REQUIRE(iet.intervalExchangeTransformation().size() == component.topContour().size());
           }
         }
       }
