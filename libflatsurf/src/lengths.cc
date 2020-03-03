@@ -102,9 +102,6 @@ void Lengths<Surface>::subtract(Label minuend) {
     auto flowed = connections | rx::transform([&](const auto& connection) {
       return Implementation<FlowConnection<FlatTriangulation<T>>>::make(state.lock(), ::flatsurf::Implementation<FlowComponent<FlatTriangulation<T>>>::make(state.lock(), &component), connection).saddleConnection();
     }) | rx::transform([&](const auto& connection) {
-      // TODO: This happens to be correct because there can be no HalfEdges
-      // when reverse. These would be incorrectly oriented. See comments in
-      // intervalxt about orientation of HalfEdge TODO.
       return reverse ? -connection : connection;
     }) | rx::to_vector();
     if (reverse)
@@ -113,52 +110,50 @@ void Lengths<Surface>::subtract(Label minuend) {
   };
 
   auto& minuendConnection = lengths.get(fromLabel(minuend));
-
-  minuendConnection = -*minuendConnection;
-
-  HalfEdge target = minuendConnection->target();
-  Chain walk(minuendConnection->surface().shared_from_this());
-  ;
-  // Walk down on the minuend's left boundary
   {
-    for (const auto& connection : flow(begin(minuendContour)->left(), !minuendOnTop)) {
-      walk += connection;
-      target = connection.target();
-    }
-  }
+    minuendConnection = -*minuendConnection;
 
-  // Walk across every subtrahend
-  {
-    for (const auto& subtrahend : subtrahendContour) {
-      ASSERT(subtrahend != *rbegin(subtrahendContour), "Stack cannot contain every label in the IntervalExchangeTransformation");
+    HalfEdge target = minuendConnection->target();
+    Chain walk(minuendConnection->surface().shared_from_this());
 
-      for (const auto& connection : flow(subtrahend.cross(), !minuendOnTop)) {
+    // Walk down on the minuend's left boundary
+    {
+      // TODO: Annoyingly, left() is oriented from bottom to top so we need to reverse.
+      for (const auto& connection : flow(begin(minuendContour)->left() | rx::reverse() | rx::to_vector(), !minuendOnTop)) {
         walk += connection;
         target = connection.target();
       }
-
-      if (static_cast<::intervalxt::Label>(subtrahend) == stack.back())
-        break;
     }
+
+    // Walk across every subtrahend
+    {
+      for (const auto& subtrahend : subtrahendContour) {
+        ASSERT(subtrahend != *rbegin(subtrahendContour), "Stack cannot contain every label in the IntervalExchangeTransformation when subtracting.");
+
+        for (const auto& connection : flow(subtrahend.cross(), !minuendOnTop)) {
+          walk += connection;
+          target = connection.target();
+        }
+
+        if (static_cast<::intervalxt::Label>(subtrahend) == stack.back())
+          break;
+      }
+    }
+
+    auto source = minuendConnection->source();
+    if (vertical->perpendicular(minuendConnection->surface().fromEdge(source)) > 0)
+      source = minuendConnection->surface().nextAtVertex(source);
+    ASSERT(vertical->perpendicular(minuendConnection->surface().fromEdge(source)) <= 0, "minuend source edge in wrong half plane");
+
+    auto vector = walk + *minuendConnection;
+
+    // TODO: This is prohibitively slow.
+    minuendConnection = SaddleConnection<FlatTriangulation<T>>::inHalfPlane(minuendConnection->surface().shared_from_this(), source, *vertical, vector);
+
+    minuendConnection = -*minuendConnection;
+
+    std::cout << "Changed Length to " << *minuendConnection << std::endl;
   }
-
-  auto source = minuendConnection->source();
-  if (vertical->perpendicular(minuendConnection->surface().fromEdge(source)) > 0)
-    source = minuendConnection->surface().nextAtVertex(source);
-  ASSERT(vertical->perpendicular(minuendConnection->surface().fromEdge(source)) <= 0, "minuend source edge in wrong half plane");
-
-  auto vector = walk + *minuendConnection;
-
-  // TODO: I don't really believe that this is correct.
-  while (!minuendConnection->surface().inSector(target, -vector))
-    target = minuendOnTop ? minuendConnection->surface().previousAtVertex(target) : minuendConnection->surface().nextAtVertex(target);
-
-  // TODO: This is ridiculously slow but the source & target in the line above was not correct in general.
-  // minuendConnection = SaddleConnection<FlatTriangulation<T>>::inHalfPlane(minuendConnection.surface().shared_from_this(), source, *vertical, vector);
-
-  minuendConnection = SaddleConnection(minuendConnection->surface().shared_from_this(), source, target, vector);
-
-  minuendConnection = -*minuendConnection;
 
   // TODO: This is nice but too expensive for large vectors.
   // ::flatsurf::Implementation<SaddleConnection<FlatTriangulation<T>>>::check(minuendConnection);
