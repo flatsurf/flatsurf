@@ -254,7 +254,7 @@ std::pair<Path<FlatTriangulation<typename Surface::Coordinate>>, Path<FlatTriang
 
 template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const ContourConnection<Surface>& self) {
-  return os << fmt::format("ContourConnection({})", fmt::join(self.perimeter(), "→"));
+  return os << self.perimeter();
 }
 
 }  // namespace flatsurf

@@ -57,7 +57,7 @@ const Vertex& Vertex::target(const HalfEdge& e, const FlatTriangulationCombinato
 }
 
 ostream& operator<<(ostream& os, const Vertex& self) {
-  return os << fmt::format("Vertex([{}])", self.impl->sources);
+  return os << fmt::format("{}", self.impl->sources);
 }
 
 bool Implementation<Vertex>::comparable(const HalfEdgeSet& a, const HalfEdgeSet& b) {

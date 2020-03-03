@@ -138,7 +138,7 @@ PathIterator<Surface> Path<Surface>::end() const {
 
 template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const Path<Surface>& path) {
-  return os << fmt::format("{}", fmt::join(path.impl->path, "→"));
+  return os << fmt::format("[{}]", fmt::join(path.impl->path, " → "));
 }
 
 template <typename Surface>

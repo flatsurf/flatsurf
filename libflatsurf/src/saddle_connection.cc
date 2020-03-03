@@ -240,7 +240,7 @@ bool SaddleConnection<Surface>::operator<(const Bound bound) const {
 
 template <typename Surface, typename _>
 ostream& operator<<(ostream& os, const SaddleConnection<Surface>& self) {
-  return os << "SaddleConnection(" << static_cast<const Vector<typename Surface::Coordinate>&>(self) << " from " << self.source() << ")";
+  return os << static_cast<const Vector<typename Surface::Coordinate>&>(self) << " from " << self.source() << " to " << self.target();
 }
 
 template <typename Surface>

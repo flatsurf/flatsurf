@@ -169,8 +169,8 @@ void Implementation<ContourDecomposition<Surface>>::check(const std::vector<Path
     }
 
     for (const auto vertex : surface->vertices()) {
-      CHECK(totalAngle[vertex] != 0, "All marked vertices must still be present in decomposition but " << vertex << " was not found anywhere on the perimeters.");
-      CHECK(totalAngle[vertex] == 4*surface->angle(vertex), "Total angle at each vertex must not change in decomposition but " << vertex << " has angle " << totalAngle[vertex] << "·π/2 in decomposition [" << fmt::format("{}", fmt::join(decomposition, ", ")) << "] with vertical " << vertical << " but had angle " << surface->angle(vertex)*4 << "·π/2 in surface originally.");
+      CHECK(totalAngle[vertex] != 0, "All marked vertices must still be present in decomposition but " << vertex << " was not found anywhere on the perimeters " << fmt::format("[{}]", fmt::join(decomposition, ", ")));
+      CHECK(totalAngle[vertex] == 4*surface->angle(vertex), "Total angle at each vertex must not change in decomposition but " << vertex << " has angle " << totalAngle[vertex] << "·π/2 in decomposition [" << fmt::format("[{}]", fmt::join(decomposition, ", ")) << "] with vertical " << vertical << " but had angle " << surface->angle(vertex)*4 << "·π/2 in surface originally.");
     }
   }
 

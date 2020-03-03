@@ -194,7 +194,7 @@ bool ContourComponent<Surface>::operator==(const ContourComponent<Surface>& rhs)
 
 template <typename Surface>
 ostream& operator<<(ostream& os, const ContourComponent<Surface>& self) {
-  return os << "ContourComponent(" << fmt::format("{}", fmt::join(self.perimeterContour() | rx::transform([&](const auto& connection) { return fmt::format("{}", connection); }) | rx::to_vector(), "→")) << ")";
+  return os << self.perimeter();
 }
 
 }  // namespace flatsurf
