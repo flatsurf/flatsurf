@@ -111,11 +111,14 @@ FlowDecompositionState<Surface>::FlowDecompositionState(std::unique_ptr<Surface>
             // (this is not true for the final vertical connections but we use
             // the same approach to name them consistently.)
             ::intervalxt::Label source = label;
-            for (auto vertical : connection.right()) {
+            auto rights = static_cast<std::vector<SaddleConnection<Surface>>>(connection.right());
+            if (top)
+              std::reverse(begin(rights), end(rights));
+            for (auto vertical : rights) {
               // TODO: This is again a case where our normalization (or lack thereof) bites us.
               ASSERT(injectedConnections.find(vertical) == end(injectedConnections), "an injected connection and its inverse must appear on different sides (left/right) of the contour");
-              auto target = ::intervalxt::Label(-(injectedConnections.size() + 1));
-              injectHere.push_back(injectedConnections[vertical] = top ? std::pair{target, source} : std::pair{source, target});
+              const auto target = ::intervalxt::Label(-(injectedConnections.size() + 1));
+              injectHere.push_back(injectedConnections[vertical] = (top ? std::pair{target, source} : std::pair{source, target}));
               source = target;
               verticals.push_back(vertical);
               isTop[vertical] = top;
@@ -124,9 +127,12 @@ FlowDecompositionState<Surface>::FlowDecompositionState(std::unique_ptr<Surface>
           } else {
             // Now we inject the inverse connections on the left using the existing
             // naming scheme.
-            for (auto vertical : connection.left()) {
+            auto lefts = static_cast<std::vector<SaddleConnection<Surface>>>(connection.left());
+            if (!top)
+              std::reverse(begin(lefts), end(lefts));
+            for (auto vertical : lefts) {
               ASSERT(injectedConnections.find(-vertical) != end(injectedConnections), "a left connection must have a corresponding right connection");
-              auto corresponding = injectedConnections[-vertical];
+              const auto corresponding = injectedConnections[-vertical];
               injectHere.push_back({corresponding.second, corresponding.first});
               verticals.push_back(vertical);
             }
