@@ -75,6 +75,7 @@ class FlatTriangulation : public FlatTriangulationCombinatorial,
 
   void flip(HalfEdge);
 
+  // Return twice the area of this triangulation.
   T area() const;
 
   // Return the total angle at this vertex as a multiple of 2π.

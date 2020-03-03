@@ -273,12 +273,17 @@ T Implementation<FlatTriangulationCollapsed<T>>::area(const FlatTriangulationCol
   for (auto e : self.halfEdges()) {
     if (self.boundary(e)) throw std::logic_error("not implemented: area with boundary");
 
-    if (self.nextInFace(e) != self.previousInFace(e)) {
-      area += Vector<T>::area({self.fromEdge(e), self.fromEdge(self.nextInFace(e)), self.fromEdge(self.previousInFace(e))});
-    }
     for (auto connection : self.cross(e)) {
-      area += 3 * Vector<T>::area({connection, static_cast<Vector<T>>(self.fromEdge(e)) - connection, -self.fromEdge(e)});
+      area += Vector<T>::area({connection, static_cast<Vector<T>>(self.fromEdge(e)) - connection, -self.fromEdge(e)});
     }
+
+    // Fully collapsed triangles have no area themselves.
+    if (self.nextInFace(e) == self.previousInFace(e)) continue;
+    // Do not count triangles three times.
+    if (e.index() > self.nextInFace(e).index()) continue;
+    if (e.index() > self.previousInFace(e).index()) continue;
+    
+    area += Vector<T>::area({self.fromEdge(e), self.fromEdge(self.nextInFace(e)), self.fromEdge(self.previousInFace(e))});
   }
 
   return area;
