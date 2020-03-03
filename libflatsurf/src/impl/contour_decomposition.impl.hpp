@@ -38,6 +38,10 @@ class Implementation<ContourDecomposition<Surface>> {
  public:
   Implementation(std::unique_ptr<Surface>, const Vector<T>&);
 
+  // Verify that the lists of saddle connectionss in decomposition describe a
+  // valid decomposition of the surface they are defined on.
+  static void check(const std::vector<Path<FlatTriangulation<T>>>& decomposition, const Vertical<FlatTriangulation<T>>& vertical);
+
   std::shared_ptr<DecompositionState> state;
 };
 }  // namespace flatsurf

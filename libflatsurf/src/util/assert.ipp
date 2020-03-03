@@ -69,9 +69,10 @@ void throw_for_assert(const E& e) { throw e; }
 
 // Run a (cheap) check that a (user provided) argument is valid.
 // If the check should be disabled when NDEBUG is defined, e.g., because it
-// occurs in a hotspot, use ASSERT_ARGUMENT instead.
+// occurs in a hotspot, use ASSERT... instead.
 #define CHECK_ARGUMENT_(CONDITION) ASSERT_(CONDITION, std::invalid_argument, "")
 #define CHECK_ARGUMENT(CONDITION, MESSAGE) ASSERT_(CONDITION, std::invalid_argument, MESSAGE)
+#define CHECK(CONDITION, MESSAGE) ASSERT_(CONDITION, std::logic_error, MESSAGE);
 
 #ifdef NDEBUG
 

@@ -36,6 +36,7 @@ template <typename Surface>
 class Path : public Serializable<Path<Surface>>,
              boost::equality_comparable<Path<Surface>> {
   using Segment = SaddleConnection<Surface>;
+  using T = typename Surface::Coordinate;
  public:
   Path();
   Path(const std::vector<Segment>&);
@@ -50,6 +51,8 @@ class Path : public Serializable<Path<Surface>>,
   bool simple() const;
 
   Path reversed() const;
+
+  T area() const;
 
   void splice(const PathIterator<Surface>&, Path& other);
 

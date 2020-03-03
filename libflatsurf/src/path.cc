@@ -116,6 +116,12 @@ void Path<Surface>::splice(const PathIterator<Surface>& pos, Path& other) {
 }
 
 template <typename Surface>
+typename Surface::Coordinate Path<Surface>::area() const {
+  CHECK_ARGUMENT(closed(), "Area can only be computed for closed paths but " << *this << " is not closed.");
+  return Vector<T>::area(*this | rx::transform([](const auto& connection) { return connection.vector(); }) | rx::to_vector());
+}
+
+template <typename Surface>
 template <typename ...Args>
 PathIterator<Surface>::PathIterator(PrivateConstructor, Args&& ... args) :
   impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
