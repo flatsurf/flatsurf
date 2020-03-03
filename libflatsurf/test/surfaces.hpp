@@ -87,6 +87,58 @@ auto makeGoldenL() {
   return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeLCombinatorial()), vectors);
 }
 
+inline auto makeMcMullenLCombinatorial() {
+  auto vertices = vector<vector<int>>{{1, -3, 8, -7, 3, -2, 4, -6, 2, -1, 9, -8, 7, -9, 5, -4, 6, -5}};
+  return std::make_shared<FlatTriangulationCombinatorial>(vertices);
+}
+
+template <typename R2>
+auto makeMcMullenL3125() {
+  vector<R2> vectors;
+  vectors = vector{R2(2, 1), R2(-2, 0), R2(0, -1), R2(2, 3), R2(-2, 0), R2(0, -3), R2(5, 1), R2(-5, 0), R2(0, -1)};
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeMcMullenLCombinatorial()), vectors);
+}
+
+template <typename R2>
+auto makeMcMullenL1114() {
+  vector<R2> vectors;
+  vectors = vector{R2(1, 1), R2(-1, 0), R2(0, -1), R2(1, 1), R2(-1, 0), R2(0, -1), R2(4, 1), R2(-4, 0), R2(0, -1)};
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeMcMullenLCombinatorial()), vectors);
+}
+
+template <typename R2>
+auto makeMcMullenL2111() {
+  vector<R2> vectors;
+  vectors = vector{R2(1, 1), R2(-1, 0), R2(0, -1), R2(1, 2), R2(-1, 0), R2(0, -2), R2(1, 1), R2(-1, 0), R2(0, -1)};
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeMcMullenLCombinatorial()), vectors);
+}
+
+inline auto makeCathedralCombinatorial() {
+  auto vertices = vector<vector<int>>{{1, -3, 25, 22, 4, -6, -21, -23, -25, -26, -27, 10, -12, 8, -7, 12, -11, 13, -15, 26, 3, -2}, {-1, 5, -4, 20, 18, 9, -8, 7, -9, 17, 14, -13, -16, -17, -18, -19, 6, -5, 2}, {-10, 24, 21, 19, -20, -22, 23, -24, 27, 15, -14, 16, 11}};
+  return std::make_shared<FlatTriangulationCombinatorial>(vertices);
+}
+
+template <typename R2>
+auto makeCathedral() {
+  vector<R2> vectors;
+  vectors = vector{R2(1, 1), R2(-1, 0), R2(0, -1), R2(mpq_class(-1, 2), mpq_class(-3, 2)), R2(0, -1), R2(mpq_class(1, 2), mpq_class(5, 2)), R2(1, 1), R2(-1, 0), R2(0, -1), R2(mpq_class(1, 2), mpq_class(3, 2)), R2(mpq_class(-1, 2), mpq_class(-1, 2)), R2(0, -1), R2(mpq_class(-1, 2), mpq_class(3, 2)), R2(0, -1), R2(mpq_class(1, 2), mpq_class(-1, 2)), R2(-1, 1), R2(-1, 0), R2(-1, -1), R2(-1, -2), R2(0, 1), R2(mpq_class(-1, 2), mpq_class(1, 2)), R2(mpq_class(-1, 2), mpq_class(-1, 2)), R2(mpq_class(-5, 2), mpq_class(1, 2)), R2(2, 0), R2(-3, 0), R2(-3, -1), R2(mpq_class(-5, 2), mpq_class(-3, 2))};
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeCathedralCombinatorial()), vectors);
+}
+
+
+inline auto makeMcMullenGenus2Combinatorial() {
+  auto vertices = vector<vector<int>>{{1, -3, -6, 9, 8, -7, -9, 4, 2, -1, 3, -2, -5, -8, 7, 5, -4, 6}};
+  return std::make_shared<FlatTriangulationCombinatorial>(vertices);
+}
+
+template <typename R2>
+auto makeMcMullenGenus2() {
+  vector<R2> vectors;
+  auto a = 2*N->gen();
+  vectors = vector{R2(a, a), R2(-a, 0), R2(0, -a), R2(-a+1, 2), R2(-1, -2), R2(a, 0), R2(a-5, -2), R2(-a+4, 0), R2(-1, -2)};
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeMcMullenGenus2Combinatorial()), vectors);
+}
+
 inline auto makeHexagonCombinatorial() {
   auto vertices = vector<vector<int>>({{1, 3, -4, -5, -3, -2}, {2, -1, -6, 4, 5, 6}});
   return std::make_shared<FlatTriangulationCombinatorial>(vertices);
@@ -97,6 +149,19 @@ auto makeHexagon() {
   vector<R2> vectors;
   auto x = K->gen();
   vectors = vector{R2(2, 0), R2(1, x), R2(3, x), R2(1, -x), R2(4, 0), R2(3, x)};
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeHexagonCombinatorial()), vectors);
+}
+
+inline auto makeOctagonCombinatorial() {
+  auto vertices = vector<vector<int>>({{1, -3, 7, 2, -1, 6, -5, 8, 3, -2, 4, -6, 9, 5, -4, -7, -8, -9}});
+  return std::make_shared<FlatTriangulationCombinatorial>(vertices);
+}
+
+template <typename R2>
+auto makeOctagon() {
+  vector<R2> vectors;
+  auto a = N->gen();
+  vectors = vector{R2(-a/2, a/2+1), R2(0, -1), R2(a/2, -a/2), R2(-a/2-1, -a/2), R2(1, 0), R2(a/2, a/2), R2(-a/2-1, -a/2-1), R2(-1, -a-1), R2(0, -a-1)};
   return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeHexagonCombinatorial()), vectors);
 }
 

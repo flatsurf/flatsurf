@@ -73,5 +73,7 @@ template <typename T>
 struct fmt::formatter<::flatsurf::FlatTriangulationCollapsed<T>> : ::flatsurf::GenericFormatter<::flatsurf::FlatTriangulationCollapsed<T>> {};
 template <typename T>
 struct fmt::formatter<::flatsurf::Path<T>> : ::flatsurf::GenericFormatter<::flatsurf::Path<T>> {};
+template <typename T>
+struct fmt::formatter<::flatsurf::PathIterator<T>> : ::flatsurf::GenericFormatter<::flatsurf::PathIterator<T>> {};
 
 #endif

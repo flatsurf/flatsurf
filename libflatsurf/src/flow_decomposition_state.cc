@@ -113,24 +113,22 @@ FlowDecompositionState<Surface>::FlowDecompositionState(std::unique_ptr<Surface>
             ::intervalxt::Label source = label;
             for (auto vertical : connection.right()) {
               // TODO: This is again a case where our normalization (or lack thereof) bites us.
-              const auto oriented = top ? -vertical : vertical;
-              ASSERT(injectedConnections.find(oriented) == end(injectedConnections), "an injected connection and its inverse must appear on different sides (left/right) of the contour");
+              ASSERT(injectedConnections.find(vertical) == end(injectedConnections), "an injected connection and its inverse must appear on different sides (left/right) of the contour");
               auto target = ::intervalxt::Label(-(injectedConnections.size() + 1));
-              injectHere.push_back(injectedConnections[oriented] = top ? std::pair{target, source} : std::pair{source, target});
+              injectHere.push_back(injectedConnections[vertical] = top ? std::pair{target, source} : std::pair{source, target});
               source = target;
-              verticals.push_back(oriented);
-              isTop[oriented] = top;
+              verticals.push_back(vertical);
+              isTop[vertical] = top;
             }
             inject(label, {}, {}, injectHere, verticals);
           } else {
             // Now we inject the inverse connections on the left using the existing
             // naming scheme.
             for (auto vertical : connection.left()) {
-              const auto oriented = top ? vertical : -vertical;
-              ASSERT(injectedConnections.find(-oriented) != end(injectedConnections), "a left connection must have a corresponding right connection");
-              auto corresponding = injectedConnections[-oriented];
+              ASSERT(injectedConnections.find(-vertical) != end(injectedConnections), "a left connection must have a corresponding right connection");
+              auto corresponding = injectedConnections[-vertical];
               injectHere.push_back({corresponding.second, corresponding.first});
-              verticals.push_back(oriented);
+              verticals.push_back(vertical);
             }
             inject(label, injectHere, verticals, {}, {});
           }

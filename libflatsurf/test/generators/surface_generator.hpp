@@ -39,10 +39,16 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::shared_ptr<Fl
   enum class Surface {
     SQUARE,
     L,
+    MCMULLEN_L1114,
+    MCMULLEN_L2111,
+    MCMULLEN_L3125,
+    CATHEDRAL,
+    MCMULLEN_GENUS2,
     _123,
     _125,
     _1221,
     HEXAGON,
+    OCTAGON,
     HEPTAGON_L,
     GOLDEN_L,
     LAST = GOLDEN_L,
@@ -62,6 +68,20 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::shared_ptr<Fl
         return makeSquare<R2>();
       case Surface::L:
         return makeL<R2>();
+      case Surface::MCMULLEN_L1114:
+        return makeMcMullenL1114<R2>();
+      case Surface::MCMULLEN_L2111:
+        return makeMcMullenL2111<R2>();
+      case Surface::MCMULLEN_L3125:
+        return makeMcMullenL3125<R2>();
+      case Surface::CATHEDRAL:
+        if constexpr (hasFractions)
+          return makeCathedral<R2>();
+        else return nullptr;
+      case Surface::MCMULLEN_GENUS2:
+        if constexpr (hasNumberFieldElements)
+          return makeMcMullenGenus2<R2>();
+        else return nullptr;
       case Surface::_123:
         if constexpr (hasNumberFieldElements)
           return make123<R2>();
@@ -77,6 +97,10 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::shared_ptr<Fl
       case Surface::HEXAGON:
         if constexpr (hasFractions && hasNumberFieldElements)
           return makeHexagon<R2>();
+        else return nullptr;
+      case Surface::OCTAGON:
+        if constexpr (hasFractions && hasNumberFieldElements)
+          return makeOctagon<R2>();
         else return nullptr;
       case Surface::HEPTAGON_L:
         if constexpr (hasFractions && hasNumberFieldElements)
