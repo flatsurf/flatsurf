@@ -27,19 +27,27 @@
 
 #include <intervalxt/dynamical_decomposition.hpp>
 
+#include "external/rx-ranges/include/rx/ranges.hpp"
+
 #include "../flatsurf/contour_component.hpp"
 #include "../flatsurf/contour_decomposition.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/flat_triangulation_collapsed.hpp"
+#include "../flatsurf/flow_connection.hpp"
 #include "../flatsurf/flow_decomposition.hpp"
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/path.hpp"
 #include "../flatsurf/vector.hpp"
+#include "../flatsurf/vertical.hpp"
 
+#include "impl/contour_decomposition.impl.hpp"
 #include "impl/flow_component.impl.hpp"
 #include "impl/flow_component_state.hpp"
 #include "impl/flow_decomposition.impl.hpp"
 #include "impl/flow_decomposition_state.hpp"
 #include "impl/interval_exchange_transformation.impl.hpp"
+
+#include "util/assert.ipp"
 
 using std::ostream;
 
@@ -50,6 +58,15 @@ namespace flatsurf {
 template <typename Surface>
 FlowDecomposition<Surface>::FlowDecomposition(std::unique_ptr<Surface> surface, const Vector<T>& vertical) :
   impl(spimpl::make_unique_impl<Implementation>(std::move(surface), vertical)) {
+  ASSERTIONS(([&]() {
+    auto paths = components() | rx::transform([](const auto& component) { return Path(component.perimeter() | rx::transform([](const auto& connection) { return connection.saddleConnection(); }) | rx::to_vector()); }) | rx::to_vector();
+    ::flatsurf::Implementation<ContourDecomposition<Surface>>::check(paths, Vertical(this->surface(), vertical));
+  }));
+}
+
+template <typename Surface>
+std::shared_ptr<const Surface> FlowDecomposition<Surface>::surface() const {
+  return impl->state->contourDecomposition.collapsed()->uncollapsed();
 }
 
 template <typename Surface>

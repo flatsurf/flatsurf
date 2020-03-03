@@ -61,17 +61,21 @@ FlowComponent<Surface>::FlowComponent() :
 
 template <typename Surface>
 bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Surface>&)> target, int limit) {
-  auto area = this->area();
-
-  // TODO: Instead use ContourDecomposition's check() assertions everywhere.
+  // TODO: This looks evil
+  const auto check = [&]() {
+    ASSERTIONS(([&]() {
+      auto paths = impl->state->components | rx::transform([&](const auto& component) { return Path(::flatsurf::Implementation<FlowComponent<Surface>>::make(impl->state, &const_cast<FlowComponentState<Surface>&>(component)).perimeter() | rx::transform([](const auto& connection) { return connection.saddleConnection(); }) | rx::to_vector()); }) | rx::to_vector();
+    ::flatsurf::Implementation<ContourDecomposition<Surface>>::check(paths, vertical());
+    }));
+  };
 
   while (!target(*this)) {
+    check();
+
     auto step = impl->component->dynamicalComponent.decompositionStep(limit);
     // TODO: If Cylinder, assert that the perimeter is actually a cylinder.
-    if (step.result == intervalxt::DecompositionStep::Result::LIMIT_REACHED) {
-      ASSERT(area == this->area(), "Area of component has changed during flow decomposition. Started as " << area << " but now is " << this->area());
+    if (step.result == intervalxt::DecompositionStep::Result::LIMIT_REACHED)
       return false;
-    }
     if (step.equivalent) {
       const auto surface = ::flatsurf::Implementation<FlowConnection<Surface>>::make(impl->state, *this, *begin(*step.equivalent)).saddleConnection().surface().shared_from_this();
 
@@ -123,16 +127,14 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
         return ret;
       }();
 
-      // auto connection = SaddleConnection<Surface>::clockwise(clockwiseFrom, vector);
       auto connection = SaddleConnection<FlatTriangulation<T>>(surface, source, target, vector);
-
-      // TODO: This is nice but too expensive for large vectors.
-      // ::flatsurf::Implementation<SaddleConnection<Surface>>::check(connection);
 
       impl->state->detectedConnections.emplace(*step.connection, connection);
       impl->state->detectedConnections.emplace(-*step.connection, -connection);
 
-      ASSERT(clockwiseFrom.ccw(connection) != CCW::COUNTERCLOCKWISE, "Detected SaddleConnection must be reachable clocwise from the existing contour but " << connection << " is not clockwise from " << clockwiseFrom);
+      ASSERT(clockwiseFrom.ccw(connection) != CCW::COUNTERCLOCKWISE, "Detected SaddleConnection must be reachable clockwise from the existing contour but " << connection << " is not clockwise from " << clockwiseFrom);
+
+      check();
     }
     if (step.additionalComponent) {
       impl->state->components.push_back({
@@ -140,12 +142,12 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
           impl->component->iet,
           *step.additionalComponent,
       });
+
+      check();
+
       auto additionalComponent = Implementation::make(impl->state, &*impl->state->components.rbegin());
-      ASSERT(area == this->area() + additionalComponent.area(), "Area changed while creating additional component. Started as " << area << " but now is " << this->area() << " + " << additionalComponent.area() << " = " << this->area() + additionalComponent.area());
-      area = this->area();
+
       return decompose(target, limit) && additionalComponent.decompose(target, limit);
-    } else {
-      ASSERT(area == this->area(), "Area changed when non-separating connection detected. Started as " << area << " but now is " << this->area());
     }
   }
 
