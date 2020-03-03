@@ -162,7 +162,7 @@ auto makeOctagon() {
   vector<R2> vectors;
   auto a = N->gen();
   vectors = vector{R2(-a/2, a/2+1), R2(0, -1), R2(a/2, -a/2), R2(-a/2-1, -a/2), R2(1, 0), R2(a/2, a/2), R2(-a/2-1, -a/2-1), R2(-1, -a-1), R2(0, -a-1)};
-  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeHexagonCombinatorial()), vectors);
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeOctagonCombinatorial()), vectors);
 }
 
 inline auto makeHeptagonLCombinatorial() {
