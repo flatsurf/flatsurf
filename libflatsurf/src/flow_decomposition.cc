@@ -61,7 +61,7 @@ bool FlowDecomposition<Surface>::decompose(std::function<bool(const FlowComponen
 }
 
 template <typename Surface>
-std::vector<FlowComponent<Surface>> FlowDecomposition<Surface>::components() const noexcept {
+std::vector<FlowComponent<Surface>> FlowDecomposition<Surface>::components() const {
   std::vector<FlowComponent<Surface>> components;
   for (auto& component : impl->state->components) {
     components.push_back(::flatsurf::Implementation<FlowComponent<Surface>>::make(impl->state, &component));

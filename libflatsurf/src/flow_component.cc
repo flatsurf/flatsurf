@@ -153,13 +153,13 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
 }
 
 template <typename Surface>
-boost::logic::tribool FlowComponent<Surface>::cylinder() const noexcept { return impl->component->dynamicalComponent.cylinder(); }
+boost::logic::tribool FlowComponent<Surface>::cylinder() const { return impl->component->dynamicalComponent.cylinder(); }
 
 template <typename Surface>
-boost::logic::tribool FlowComponent<Surface>::withoutPeriodicTrajectory() const noexcept { return impl->component->dynamicalComponent.withoutPeriodicTrajectory(); }
+boost::logic::tribool FlowComponent<Surface>::withoutPeriodicTrajectory() const { return impl->component->dynamicalComponent.withoutPeriodicTrajectory(); }
 
 template <typename Surface>
-boost::logic::tribool FlowComponent<Surface>::keane() const noexcept { return impl->component->dynamicalComponent.keane(); }
+boost::logic::tribool FlowComponent<Surface>::keane() const { return impl->component->dynamicalComponent.keane(); }
 
 template <typename Surface>
 Implementation<FlowComponent<Surface>>::Implementation(std::shared_ptr<FlowDecompositionState<Surface>> state, FlowComponentState<Surface>* component) :
