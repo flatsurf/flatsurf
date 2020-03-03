@@ -17,12 +17,10 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-// TODO
-// #include <iostream>
-
 #include <map>
 #include <ostream>
 #include <unordered_set>
+#include <unordered_map>
 #include <vector>
 
 #include <fmt/format.h>
@@ -48,6 +46,7 @@
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vector.hpp"
+#include "../flatsurf/vertex.hpp"
 #include "../flatsurf/vertical.hpp"
 
 #include "impl/flat_triangulation_collapsed.impl.hpp"
@@ -131,14 +130,34 @@ void FlatTriangulationCollapsed<T>::flip(HalfEdge e) {
 
   ASSERT(Implementation::area(*this) == area(), "Area inconsistent after flip of edge. Area is " << Implementation::area(*this) << " but should still be " << area());
   ASSERT(Implementation::faceClosed(*this, e), "Face attached to " << e << " not closed after flip in " << *this);
-  ASSERT(([&]() {
+  ASSERTIONS([&]() {
     static Amortized cost;
     // TODO: It would maybe be better to estimate the cost by looking at the shortest vector in direction of e.
     const auto connection = fromEdge(e);
-    if (!cost.pay(relativeLength(static_cast<const Vector<T>&>(connection), impl->original->shortest(connection)) + 1)) return true;
-    return connection == SaddleConnection::inSector(impl->original, connection.source(), connection);
-  }()),
+
+    if (!cost.pay(relativeLength(static_cast<const Vector<T>&>(connection), impl->original->shortest(connection)) + 1)) return;
+
+    ASSERT(connection == SaddleConnection::inSector(impl->original, connection.source(), connection),
       "Edges of Triangulation inconsistent after flip. The half edge " << e << " in the collapsed surface " << *this << " claims to correspond to the " << fromEdge(e) << ", however, there is no such saddle connection in the original surface " << *impl->original << ".");
+  });
+  ASSERTIONS(([&]() {
+    std::unordered_map<Vertex, int> vertices;
+    for (auto& vertex : uncollapsed()->vertices())
+      vertices[vertex] = 0;
+
+    for (auto halfEdge : halfEdges()) {
+      const auto& connection = fromEdge(halfEdge);
+      vertices[Vertex::source(connection.source(), *uncollapsed())]++;
+
+      for (auto& collapsed: cross(halfEdge))
+        vertices[Vertex::source(collapsed.source(), *uncollapsed())]++;
+    }
+
+    for (auto& count : vertices) {
+      ASSERT(count.second != 0, "Vertex " << count.first << " disappeared from surface after flip; the vertex was still there in the original surface " << *uncollapsed() << " but is gone in the collapsed surface " << *this);
+      ASSERT(count.second >= 2, "Vertex " << count.first << " almost disappeared from surface after flip; the vertex was still there in the original surface " << *uncollapsed() << " but it has only one outgoing edge in the collapsed surface " << *this);
+    }
+  }));
 
   if (vertical().parallel(e)) {
     collapse(e);
@@ -147,9 +166,6 @@ void FlatTriangulationCollapsed<T>::flip(HalfEdge e) {
 
 template <typename T>
 std::pair<HalfEdge, HalfEdge> FlatTriangulationCollapsed<T>::collapse(HalfEdge e) {
-  // TODO
-  //std::cout << "collapse(" << e << " = " << fromEdge(e) << ")" << std::endl;
-  //std::cout << *this << std::endl;
   auto ret = FlatTriangulationCombinatorial::collapse(e);
 
   ASSERT(Implementation::area(*this) == area(), "Area inconsistent after collapse of edge. Area is " << Implementation::area(*this) << " but should still be " << area());
@@ -165,9 +181,24 @@ std::pair<HalfEdge, HalfEdge> FlatTriangulationCollapsed<T>::collapse(HalfEdge e
     }
     return true;
   });
+  ASSERTIONS(([&]() {
+    std::unordered_map<Vertex, int> vertices;
+    for (auto& vertex : uncollapsed()->vertices())
+      vertices[vertex] = 0;
 
-  // TODO
-  // std::cout << *this << std::endl;
+    for (auto halfEdge : halfEdges()) {
+      const auto& connection = fromEdge(halfEdge);
+      vertices[Vertex::source(connection.source(), *uncollapsed())]++;
+
+      for (auto& collapsed: cross(halfEdge))
+        vertices[Vertex::source(collapsed.source(), *uncollapsed())]++;
+    }
+
+    for (auto& count : vertices) {
+      ASSERT(count.second != 0, "Vertex " << count.first << " disappeared from surface after collapse; the vertex was still there in the original surface " << *uncollapsed() << " but is gone in the collapsed surface " << *this);
+      ASSERT(count.second >= 2, "Vertex " << count.first << " almost disappeared from surface after collapse; the vertex was still there in the original surface " << *uncollapsed() << " but it has only one outgoing edge in the collapsed surface " << *this);
+    }
+  }));
 
   return ret;
 }
@@ -359,9 +390,6 @@ void Implementation<FlatTriangulationCollapsed<T>>::updateBeforeCollapse(HalfEdg
     const HalfEdge b = surface.nextInFace(collapse);
     const HalfEdge c = surface.previousInFace(collapse);
     const HalfEdge d = surface.nextInFace(-collapse);
-
-    // TODO
-    // std::cout << a << ", " << b << ", " << c << ", " << d << std::endl;
 
     // The new connection we need to record
     auto connection = vectors.get(collapse).value;

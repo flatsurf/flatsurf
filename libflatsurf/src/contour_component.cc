@@ -89,6 +89,7 @@ template <typename Surface>
 Path<FlatTriangulation<typename Surface::Coordinate>> ContourComponent<Surface>::perimeter() const {
   Path<FlatTriangulation<T>> perimeter = rx::chain(bottom(), top()) | rx::to_vector();
   ASSERT(perimeter.closed(), "Perimeter of a component must be closed but " << perimeter << " is not.");
+  ASSERT(perimeter.simple(), "Perimeter of a component must be simple but " << perimeter << " is not.");
   return perimeter;
 }
 
