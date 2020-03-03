@@ -21,7 +21,11 @@
 #define LIBFLATSURF_UTIL_ASSERT_IPP
 
 #include <gmpxx.h>
+
+#ifndef NDEBUG
+#include <iostream>
 #include <sstream>
+#endif
 
 #include <boost/preprocessor/stringize.hpp>
 #include <boost/config.hpp>
@@ -64,6 +68,8 @@ void throw_for_assert(const E& e) { throw e; }
     else                                                                      \
       assertion_message << " ";                                               \
     assertion_message << " in " __FILE__ ":" BOOST_PP_STRINGIZE(__LINE__);    \
+    /* Print the assertion message so we see it even in a noexcept block. */  \
+    std::cerr << assertion_message.str() << std::endl;                        \
     ::flatsurf::throw_for_assert(EXCEPTION(assertion_message.str().c_str())); \
   }
 
