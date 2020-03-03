@@ -48,9 +48,11 @@ class FlowDecomposition {
   // be established for all components without exceeding the limit.
   bool decompose(std::function<bool(const FlowComponent<Surface>&)> target = defaultTarget, int limit = -1);
 
-  std::vector<FlowComponent<Surface>> components() const noexcept;
+  std::vector<FlowComponent<Surface>> components() const;
 
-  Vector<T> vertical() const noexcept;
+  std::shared_ptr<const Surface> surface() const;
+
+  Vector<T> vertical() const;
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const FlowDecomposition<S>&);

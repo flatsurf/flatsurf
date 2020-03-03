@@ -44,12 +44,12 @@ FlowConnection<Surface>::FlowConnection()
 }
 
 template <typename Surface>
-SaddleConnection<FlatTriangulation<typename Surface::Coordinate>> FlowConnection<Surface>::saddleConnection() const noexcept {
+SaddleConnection<FlatTriangulation<typename Surface::Coordinate>> FlowConnection<Surface>::saddleConnection() const {
   return impl->saddleConnection;
 }
 
 template <typename Surface>
-bool FlowConnection<Surface>::operator==(const FlowConnection<Surface>& rhs) const noexcept {
+bool FlowConnection<Surface>::operator==(const FlowConnection<Surface>& rhs) const {
   return impl->saddleConnection == rhs.impl->saddleConnection;
 }
 

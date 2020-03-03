@@ -46,9 +46,9 @@ class FlowComponent {
   // TODO: Should be circular list
   using Perimeter = std::list<FlowConnection<Surface>>;
 
-  boost::logic::tribool cylinder() const noexcept;
-  boost::logic::tribool withoutPeriodicTrajectory() const noexcept;
-  boost::logic::tribool keane() const noexcept;
+  boost::logic::tribool cylinder() const;
+  boost::logic::tribool withoutPeriodicTrajectory() const;
+  boost::logic::tribool keane() const;
 
   DecompositionStep<Surface> decompositionStep(int limit = -1);
 

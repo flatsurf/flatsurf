@@ -56,9 +56,9 @@ class FlowConnection : Serializable<FlowConnection<Surface>>,
   // connection.
   MaybeVerticalFlowConnection<Surface> previousAtSingularity();
 
-  FlowConnection<Surface> nextInPerimeter() const noexcept;
+  FlowConnection<Surface> nextInPerimeter() const;
 
-  FlowConnection<Surface> previousInPerimeter() const noexcept;
+  FlowConnection<Surface> previousInPerimeter() const;
 
   // Return whether this is a vertical (parallel or antiparallel) connection
   // with respect to the fixed vertical direction.
@@ -71,9 +71,9 @@ class FlowConnection : Serializable<FlowConnection<Surface>>,
   // Return whether this edge is a (vertical) boundary between two distinct FlowComponents.
   bool boundary() const;
 
-  bool operator==(const FlowConnection<Surface>&) const noexcept;
+  bool operator==(const FlowConnection<Surface>&) const;
 
-  SaddleConnection<FlatTriangulation<T>> saddleConnection() const noexcept;
+  SaddleConnection<FlatTriangulation<T>> saddleConnection() const;
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const FlowConnection<S>&);
