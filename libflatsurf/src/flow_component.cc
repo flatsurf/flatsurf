@@ -74,67 +74,163 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
 
     auto step = impl->component->dynamicalComponent.decompositionStep(limit);
     // TODO: If Cylinder, assert that the perimeter is actually a cylinder.
+
     if (step.result == intervalxt::DecompositionStep::Result::LIMIT_REACHED)
       return false;
-    if (step.equivalent) {
-      const auto surface = ::flatsurf::Implementation<FlowConnection<Surface>>::make(impl->state, *this, *begin(*step.equivalent)).saddleConnection().surface().shared_from_this();
 
-      // Register the saddle connection we just discovered
+    if (step.equivalent) {
+      // We found a SaddleConnection in intervalxt. step.equivalent contains a
+      // sequence of known FlowConnections that sum up to that new
+      // SaddleConnection. We now construct that new SaddleConnection by
+      // constructing the vector that describes it and finding where it starts
+      // and ends in the original surface.
+
+      const auto surface = vertical().surface();
+
+      // Reconstruct the vector of our new SaddleConnection.
       Chain<FlatTriangulation<T>> vector(surface);
       for (const auto& connection : *step.equivalent) {
         auto flowConnection = ::flatsurf::Implementation<FlowConnection<Surface>>::make(impl->state, *this, connection);
-        // TODO: Unfortunately, non-verticals are not correctly oriented in intervalxt (i.e., a positive HalfEdge is a top half edge, a negative one is bottom; however, we assume things to be in a counter-clockwise context and there is currently no way to write things in a clockwise context. I guess, intervalxt should simply report the equivalent of -connection instead.)
         if (!flowConnection.vertical()) {
+          // TODO: intervalxt reports non-verticals without explicit orientation.
+          // Since the default for ::make() is to assume that things were made
+          // for walking the contour counterclockwise, a HalfEdge on the top is
+          // left-to-right, and a HalfEdge on the bottom is right-to-left.
+          // However, here we need the opposite since we are walking
+          // step.equivalent clockwise.
           vector -= flowConnection.saddleConnection();
         } else {
           vector += flowConnection.saddleConnection();
         }
-        // TODO: Rename Implementation to ImplementationOf to simplify these things
       }
+
       ASSERT(vector, "SaddleConnection must not be the zero vector");
       ASSERT(!vertical().perpendicular(vector), "SaddleConnection must be vertical");
-      ASSERT(vertical().parallel(vector) > 0, "SaddleConnection must be parallel but " << vector << " is not.");
+      ASSERT(vertical().parallel(vector) > 0, "SaddleConnection must be parallel but " << vector << " is antiparallel.");
+
+      // The first SaddleConnection of step.equivalent. The new
+      // SaddleConnection must start clockwise from that one.
       auto clockwiseFrom = [&]() {
-        auto precedingFlowConnection = ::flatsurf::Implementation<FlowConnection<Surface>>::make(impl->state, *this, *begin(*step.equivalent));
-        // TODO: Again, the weird behaviour of HalfEdge bites us here.
+        const auto precedingFlowConnection = ::flatsurf::Implementation<FlowConnection<Surface>>::make(impl->state, *this, *begin(*step.equivalent));
+        // TODO: Similarly, to the above, we need to turn a connection coming
+        // from a HalfEdge around.
         return precedingFlowConnection.vertical() ? precedingFlowConnection.saddleConnection() : -precedingFlowConnection.saddleConnection();
       }();
 
+      // The negative of the last SaddleConnection of step.equivalent.
+      // The negative of the new SaddleConnection must start counterclockwise
+      // from that one.
       auto counterclockwiseTo = [&]() {
-        auto finalFlowConnection = ::flatsurf::Implementation<FlowConnection<Surface>>::make(impl->state, *this, *rbegin(*step.equivalent));
-        // TODO: Again, the weird behaviour of HalfEdge bites us here.
+        const auto finalFlowConnection = ::flatsurf::Implementation<FlowConnection<Surface>>::make(impl->state, *this, *rbegin(*step.equivalent));
+        // TODO: Similarly, to the above, we need to turn a connection coming
+        // from a HalfEdge around. (But since we want the negative, we need to
+        // turn it around twice.)
         return finalFlowConnection.vertical() ? -finalFlowConnection.saddleConnection() : finalFlowConnection.saddleConnection();
       }();
 
       ASSERT(clockwiseFrom.ccw(vector) != CCW::COUNTERCLOCKWISE, "Vertical must be clockwise from the half edge direction");
 
-      auto source = [&]() {
+      enum SECTOR {
+        NORTH,
+        NORTH_WEST,
+        WEST,
+        SOUTH_WEST,
+        SOUTH,
+        SOUTH_EAST,
+        EAST,
+        NORTH_EAST,
+      };
+
+      const auto classify = [](const auto& vertical, const auto& vector) {
+        if (vertical.perpendicular(vector) < 0) {
+          if (vertical.parallel(vector) < 0) return SOUTH_WEST;
+          if (vertical.parallel(vector) > 0) return NORTH_WEST;
+          return WEST;
+        }
+        if (vertical.perpendicular(vector) > 0) {
+          if (vertical.parallel(vector) < 0) return SOUTH_EAST;
+          if (vertical.parallel(vector) > 0) return NORTH_EAST;
+          return EAST;
+        }
+          if (vertical.parallel(vector) < 0) return SOUTH;
+          if (vertical.parallel(vector) > 0) return NORTH;
+          throw std::logic_error("cannot classify zero vector");
+      };
+
+      // TODO: The rotation logic below is somewhat generic and should go into SaddleConnection.
+
+      // The source of the new SaddleConnection, i.e.,
+      // counterclockwise to which HalfEdge of the original surface
+      // SaddleConnection starts (inclusive.)
+      const auto source = [&]() {
         auto ret = clockwiseFrom.source();
-        while (vertical().parallel(surface->fromEdge(ret)) < 0)
-          ret = surface->previousAtVertex(ret);
-        while (vertical().perpendicular(surface->fromEdge(ret)) < 0)
-          ret = surface->previousAtVertex(ret);
+
+        while(true) {
+          switch(classify(vertical(), surface->fromEdge(ret))) {
+            case NORTH:
+            case NORTH_EAST:
+            case EAST:
+            case SOUTH_EAST:
+              break;
+            default:
+              ret = surface->previousAtVertex(ret);
+              continue;
+          }
+          break;
+        }
+
+        ASSERT(surface->inSector(ret, vector), "We determined that the new SaddleConnection " << vector << " must start in the sector counterclockwise from " << ret << " but that vector is not in the sector.");
+
         return ret;
       }();
 
+      // The target of the new SaddleConnection, i.e.,
+      // counterclockwise to which HalfEdge of the original surface
+      // -SaddleConnection starts (inclusive.)
       auto target = [&]() {
         auto ret = counterclockwiseTo.source();
-        while (vertical().parallel(surface->fromEdge(ret)) > 0)
-          ret = surface->nextAtVertex(ret);
-        while (vertical().perpendicular(surface->fromEdge(ret)) <= 0)
-          ret = surface->nextAtVertex(ret);
+
+        while(true) {
+          switch(classify(vertical(), surface->fromEdge(ret))) {
+            case NORTH_WEST:
+            case WEST:
+            case SOUTH_WEST:
+              break;
+            default:
+              ret = surface->nextAtVertex(ret);
+              continue;
+          }
+          break;
+        }
+
+        while(true) {
+          switch(classify(vertical(), surface->fromEdge(ret))) {
+            case SOUTH_EAST:
+            case EAST:
+            case NORTH_EAST:
+              break;
+            default:
+              ret = surface->nextAtVertex(ret);
+              continue;
+          }
+          break;
+        }
+
         ret = surface->previousAtVertex(ret);
+
+        ASSERT(surface->inSector(ret, -vector), "We determined that the new SaddleConnection " << vector << " must end in the sector counterclockwise from " << ret << " but the negative of that vector is not in the sector.");
+
         return ret;
       }();
 
-      auto connection = SaddleConnection<FlatTriangulation<T>>(surface, source, target, vector);
+      const auto connection = SaddleConnection<FlatTriangulation<T>>(surface, source, target, vector);
+
+      ASSERT(connection.source() == source && connection.target() == target, "SaddleConnection normalization was unhappy with our source()/target() but we had picked them so they would be correct.");
+
+      ASSERT(clockwiseFrom.ccw(connection) == CCW::CLOCKWISE || (clockwiseFrom.ccw(connection) == CCW::COLLINEAR && clockwiseFrom.orientation(connection) == ORIENTATION::OPPOSITE), "Detected SaddleConnection must be reachable clockwise from the existing contour but " << connection << " is not clockwise from " << clockwiseFrom);
 
       impl->state->detectedConnections.emplace(*step.connection, connection);
       impl->state->detectedConnections.emplace(-*step.connection, -connection);
-
-      ASSERT(clockwiseFrom.ccw(connection) != CCW::COUNTERCLOCKWISE, "Detected SaddleConnection must be reachable clockwise from the existing contour but " << connection << " is not clockwise from " << clockwiseFrom);
-
-      check();
     }
     if (step.additionalComponent) {
       impl->state->components.push_back({
