@@ -61,6 +61,7 @@ FlowComponent<Surface>::FlowComponent() :
 
 template <typename Surface>
 bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Surface>&)> target, int limit) {
+  // TODO: Split this into more easily digestable chunks. (And audit code for other monsters of this kind.)
   // TODO: This looks evil
   const auto check = [&]() {
     ASSERTIONS(([&]() {
