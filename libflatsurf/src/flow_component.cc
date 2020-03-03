@@ -143,11 +143,13 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
           *step.additionalComponent,
       });
 
-      check();
-
       auto additionalComponent = Implementation::make(impl->state, &*impl->state->components.rbegin());
 
+      check();
+
       return decompose(target, limit) && additionalComponent.decompose(target, limit);
+    } else {
+      check();
     }
   }
 
