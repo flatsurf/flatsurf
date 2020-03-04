@@ -41,10 +41,12 @@ using eantic::renf_elem_class;
 using std::vector;
 
 namespace flatsurf::test {
-static auto K = renf_class::make("x^2 - 3", "x", "1.73 +/- 0.1");
-static auto L = renf_class::make("x^2 - x - 1", "x", "1.618 +/- 0.1");
-static auto M = renf_class::make("x^3 - x^2 - 2*x +1", "x", "1.802 +/- 0.1");
+static auto K = renf_class::make("x^2 - 3", "x", "1.73 +/- .1");
+static auto L = renf_class::make("x^2 - x - 1", "x", "1.618 +/- .1");
+static auto M = renf_class::make("x^3 - x^2 - 2*x +1", "x", "1.802 +/- .1");
 static auto N = renf_class::make("x^2 - 2", "x", "1.414 +/- .1");
+static auto O = renf_class::make("x^4 - 2", "x", "1.189 +/- .1");
+static auto P = renf_class::make("x^4 - 5*x^2 + 5", "x", "1.17557050 +/- .1");
 
 inline auto makeSquareCombinatorial() {
   auto vertices = vector<vector<int>>{{1, 3, 2, -1, -3, -2}};
@@ -125,6 +127,23 @@ auto makeCathedral() {
   return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeCathedralCombinatorial()), vectors);
 }
 
+template <typename R2>
+auto makeCathedralVeech() {
+  vector<R2> vectors;
+  auto a = N->gen();
+  const auto frac = [&](const auto& num, const auto& den) { return renf_elem_class(num) / renf_elem_class(den); };
+  vectors = vector{R2(a+frac(1, 2), 1), R2(-a-frac(1, 2), 0), R2(0, -1), R2(-frac(1, 2), -3*a+frac(5, 2)), R2(0, -1), R2(frac(1, 2), 3*a-frac(3, 2)), R2(a+frac(1, 2), 1), R2(-a-frac(1, 2), 0), R2(0, -1), R2(frac(1, 2), frac(3, 2)), R2(-frac(1, 2), -frac(1, 2)), R2(0, -1), R2(-frac(1, 2), 3*a-frac(5, 2)), R2(0, -3*a+3), R2(frac(1, 2), -frac(1, 2)), R2(-1, 3*a-3), R2(-1, 0), R2(-1, -1), R2(-1, -3*a+2), R2(0, 3*a-3), R2(-frac(1, 2), frac(1, 2)), R2(-frac(1, 2), -frac(1, 2)), R2(-2*a-frac(3, 2), frac(1, 2)), R2(2*a+1, 0), R2(-2*a-2, 0), R2(-2*a-2, -1), R2(-2*a-frac(3, 2), -frac(3, 2))};
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeCathedralCombinatorial()), vectors);
+}
+
+template <typename R2>
+auto makeCathedralQuartic() {
+  vector<R2> vectors;
+  auto a = O->gen();
+  const auto frac = [&](const auto& num, const auto& den) { return renf_elem_class(num) / renf_elem_class(den); };
+  vectors = vector{R2(a, 1), R2(-a, 0), R2(0, -1), R2(-frac(1, 2), -a*a - frac(3, 2)), R2(0, -1), R2(frac(1, 2), a*a + frac(5, 2)), R2(a, 1), R2(-a, 0), R2(0, -1), R2(frac(1, 2), frac(3, 2)), R2(-frac(1, 2), -frac(1, 2)), R2(0, -1), R2(-frac(1, 2), a*a + frac(3, 2)), R2(0, (-a*a - 1)), R2(frac(1, 2), -frac(1, 2)), R2(-1, a*a + 1), R2(-1, 0), R2(-1, -1), R2(-1, -a*a - 2), R2(0, a*a + 1), R2(-frac(1, 2), frac(1, 2)), R2(-frac(1, 2), -frac(1, 2)), R2(-2*a-frac(1, 2), frac(1, 2)), R2(2*a, 0), R2(-2*a-1, 0), R2(-2*a-1, -1), R2(-2*a-frac(1, 2), -frac(3, 2))};
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeCathedralCombinatorial()), vectors);
+}
 
 inline auto makeMcMullenGenus2Combinatorial() {
   auto vertices = vector<vector<int>>{{1, -3, -6, 9, 8, -7, -9, 4, 2, -1, 3, -2, -5, -8, 7, 5, -4, 6}};
@@ -230,6 +249,21 @@ auto make1221() {
   }
   return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*make1221Combinatorial()), vectors);
 }
+
+inline auto make1234Combinatorial() {
+  auto vertices = vector<vector<int>>({{1, -3, 10, -12, 22, -24, 28, -30, 16, -18, 7, -9, 19, -21, 25, -27, 13, -15, 4, -6}, {-1, 8, -7, 20, -19, 11, -10, 23, -22, 26, -25, 14, -13, 29, -28, 17, -16, 5, -4, 2}, {-2, 15, -14, 21, -20, 18, -17, 24, -23, 3}, {-5, 30, -29, 27, -26, 12, -11, 9, -8, 6}});
+  return std::make_shared<FlatTriangulationCombinatorial>(vertices);
+}
+
+template <typename R2>
+auto make1234() {
+  vector<R2> vectors;
+  auto a = P->gen();
+  const auto frac = [&](const auto& num, const auto& den) { return renf_elem_class(num) / renf_elem_class(den); };
+  vectors = vector{R2(frac(1, 2)*a*a + 4, -frac(1, 2)*a*a*a + frac(3, 2)*a), R2(-a*a - 2, 0), R2(frac(1, 2)*a*a - 2, frac(1, 2)*a*a*a - frac(3, 2)*a), R2(frac(1, 2)*a*a + 4, frac(1, 2)*a*a*a - frac(3, 2)*a), R2(-frac(1, 2)*a*a + 1, -frac(1, 2)*a*a*a + frac(3, 2)*a), R2(-5, 0), R2(3*a*a - frac(17, 2), -frac(1, 2)*a*a*a - 1*a), R2(-frac(1, 2)*a*a + 1, frac(1, 2)*a*a*a - frac(3, 2)*a), R2(-frac(5, 2)*a*a + frac(15, 2), frac(5, 2)*a), R2(-3*a*a + frac(13, 2), -frac(5, 2)*a*a*a + 7*a), R2(frac(1, 2)*a*a - frac(3, 2), frac(1, 2)*a), R2(frac(5, 2)*a*a - 5, frac(5, 2)*a*a*a - frac(15, 2)*a), R2(-3*a*a + frac(13, 2), frac(5, 2)*a*a*a - 7*a), R2(frac(5, 2)*a*a - frac(9, 2), -2*a*a*a + frac(11, 2)*a), R2(frac(1, 2)*a*a - 2, -frac(1, 2)*a*a*a + frac(3, 2)*a), R2(3*a*a - frac(17, 2), frac(1, 2)*a*a*a + 1*a), R2(-2*a*a + frac(11, 2), -frac(1, 2)*a*a*a - 1*a), R2(-a*a + 3, 0), R2(2*a*a - 6, -3*a), R2(-2*a*a + frac(11, 2), frac(1, 2)*a*a*a + 1*a), R2(frac(1, 2), -frac(1, 2)*a*a*a + 2*a), R2(-frac(5, 2)*a*a + 4, -frac(5, 2)*a*a*a + frac(15, 2)*a), R2(frac(5, 2)*a*a - frac(9, 2), 2*a*a*a - frac(11, 2)*a), R2(frac(1, 2), frac(1, 2)*a*a*a - 2*a), R2(-frac(5, 2)*a*a + 4, frac(5, 2)*a*a*a - frac(15, 2)*a), R2(1, 0), R2(frac(5, 2)*a*a - 5, -frac(5, 2)*a*a*a + frac(15, 2)*a), R2(2*a*a - 6, 3*a), R2(frac(1, 2)*a*a - frac(3, 2), -frac(1, 2)*a), R2(-frac(5, 2)*a*a + frac(15, 2), -frac(5, 2)*a)};
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*make1234Combinatorial()), vectors);
+}
+
 
 }  // namespace flatsurf::test
 

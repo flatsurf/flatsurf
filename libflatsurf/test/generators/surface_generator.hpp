@@ -43,10 +43,13 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::shared_ptr<Fl
     MCMULLEN_L2111,
     MCMULLEN_L3125,
     CATHEDRAL,
+    CATHEDRAL_QUARTIC,
+    CATHEDRAL_VEECH,
     MCMULLEN_GENUS2,
     _123,
     _125,
     _1221,
+    _1234,
     HEXAGON,
     OCTAGON,
     HEPTAGON_L,
@@ -78,6 +81,14 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::shared_ptr<Fl
         if constexpr (hasFractions)
           return makeCathedral<R2>();
         else return nullptr;
+      case Surface::CATHEDRAL_QUARTIC:
+        if constexpr (hasFractions && hasNumberFieldElements)
+          return makeCathedralQuartic<R2>();
+        else return nullptr;
+      case Surface::CATHEDRAL_VEECH:
+        if constexpr (hasFractions && hasNumberFieldElements)
+          return makeCathedralVeech<R2>();
+        else return nullptr;
       case Surface::MCMULLEN_GENUS2:
         if constexpr (hasNumberFieldElements)
           return makeMcMullenGenus2<R2>();
@@ -93,6 +104,10 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::shared_ptr<Fl
       case Surface::_1221:
         if constexpr (hasFractions && hasNumberFieldElements)
           return make1221<R2>();
+        else return nullptr;
+      case Surface::_1234:
+        if constexpr (hasFractions && hasNumberFieldElements)
+          return make1234<R2>();
         else return nullptr;
       case Surface::HEXAGON:
         if constexpr (hasFractions && hasNumberFieldElements)
