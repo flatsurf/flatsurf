@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -110,6 +110,10 @@ void Lengths<Surface>::subtract(Label minuend) {
   };
 
   auto& minuendConnection = lengths.get(fromLabel(minuend));
+
+  // TODO
+  // std::cout << "Changing Length " << *minuendConnection << std::endl;
+
   {
     minuendConnection = -*minuendConnection;
 
@@ -140,19 +144,31 @@ void Lengths<Surface>::subtract(Label minuend) {
       }
     }
 
-    auto source = minuendConnection->source();
-    if (vertical->perpendicular(minuendConnection->surface().fromEdge(source)) > 0)
-      source = minuendConnection->surface().nextAtVertex(source);
-    ASSERT(vertical->perpendicular(minuendConnection->surface().fromEdge(source)) <= 0, "minuend source edge in wrong half plane");
-
     auto vector = walk + *minuendConnection;
 
-    // TODO: This is prohibitively slow.
-    minuendConnection = SaddleConnection<FlatTriangulation<T>>::inHalfPlane(minuendConnection->surface().shared_from_this(), source, *vertical, vector);
+    // The tricky part is now to figure out the actual source/target sector of
+    // the updated SaddleConnection.
+    // TODO: This should all be done somewhat automatically by SaddleConnection.
 
-    minuendConnection = -*minuendConnection;
+    ASSERT(vertical->perpendicular(vector) < 0, "Length must be positive.");
 
-    std::cout << "Changed Length to " << *minuendConnection << std::endl;
+    auto source = minuendConnection->source();
+    while (vertical->perpendicular(minuendConnection->surface().fromEdge(source)) < 0)
+      source = minuendConnection->surface().previousAtVertex(source);
+    while (!minuendConnection->surface().inSector(source, vector))
+      source = minuendConnection->surface().nextAtVertex(source);
+
+    while (vertical->perpendicular(minuendConnection->surface().fromEdge(target)) < 0)
+      target = minuendConnection->surface().previousAtVertex(target);
+    while (!minuendConnection->surface().inSector(target, -vector))
+      target = minuendConnection->surface().nextAtVertex(target);
+
+    minuendConnection = SaddleConnection<FlatTriangulation<T>>(minuendConnection->surface().shared_from_this(), target, source, -vector);
+
+    ASSERT(minuendConnection->source() == target && minuendConnection->target() == source, "We tried to get SaddleConnection source/target right but SaddleConnection consturctor disagrees.");
+
+    // TODO
+    // std::cout << "Changed Length to " << *minuendConnection << std::endl;
   }
 
   // TODO: This is nice but too expensive for large vectors.
