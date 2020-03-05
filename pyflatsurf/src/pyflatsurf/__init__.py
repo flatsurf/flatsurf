@@ -46,3 +46,4 @@ Pickling works::
 from .cppyy_flatsurf import flatsurf
 
 from .factory import make_surface as Surface
+from .gl2r_orbit_closure import GL2ROrbitClosure
