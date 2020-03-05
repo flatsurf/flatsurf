@@ -88,6 +88,7 @@ SaddleConnection<Surface> SaddleConnection<Surface>::inSector(std::shared_ptr<co
   auto it = reconstruction.begin();
   for (; *it != vector; it++) {
     auto ccw = static_cast<const Vector<T>&>(*it).ccw(vector);
+    ASSERT(ccw != CCW::COLLINEAR, "Searching for vector " << vector << " in sector " << source << " we hit a vertex at " << *it << " before we could reach the vector.");
     it.skipSector(-ccw);
   }
   return *it;
