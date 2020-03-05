@@ -237,7 +237,7 @@ class Decomposition:
         indices = {}
         cyls = []
         k = 0
-        for c in self.components:
+        for c in self.decomposition.components():
             contour = [p for p in c.perimeter()]
             ibot = 0
             assert not contour[ibot].vertical()
@@ -519,7 +519,6 @@ class GL2ROrbitClosure:
     def holonomy_dual(self, v):
         return self.V(v) * self.Hdual
 
-    # H^1(S, Sigma; R) -> H_1(S; R)
     def absolute_homology(self):
         vert_index = {v:i for i,v in enumerate(self.surface.vertices())}
         m = len(vert_index)
@@ -527,17 +526,15 @@ class GL2ROrbitClosure:
             return self.V
         rows = []
         for e in self.spanning_set:
+            r = [0] * m
             i = vert_index[Vertex.target(e.positive(), self.surface)]
             j = vert_index[Vertex.source(e.positive(), self.surface)]
             if i != j:
-                r = [0] * m
                 r[i] = 1
                 r[j] = -1
-                rows.append(r)
+            rows.append(r)
         return matrix(rows).left_kernel()
 
-    # Veech double n-gons
-    #   (1, n-1, n)
     def absolute_dimension(self):
         r"""
         EXAMPLES::
