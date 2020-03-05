@@ -152,13 +152,16 @@ void Lengths<Surface>::subtract(Label minuend) {
 
     ASSERT(vertical->perpendicular(vector) < 0, "Length must be positive.");
 
+    // We know that minuendConnection (which we reversed in the beginning) is
+    // pointing left and that the new -minuendConnection must point left into
+    // the same half plane.
     auto source = minuendConnection->source();
     while (vertical->perpendicular(minuendConnection->surface().fromEdge(source)) < 0)
       source = minuendConnection->surface().previousAtVertex(source);
     while (!minuendConnection->surface().inSector(source, vector))
       source = minuendConnection->surface().nextAtVertex(source);
 
-    while (vertical->perpendicular(minuendConnection->surface().fromEdge(target)) < 0)
+    while (vertical->perpendicular(minuendConnection->surface().fromEdge(target)) <= 0)
       target = minuendConnection->surface().previousAtVertex(target);
     while (!minuendConnection->surface().inSector(target, -vector))
       target = minuendConnection->surface().nextAtVertex(target);
@@ -167,12 +170,28 @@ void Lengths<Surface>::subtract(Label minuend) {
 
     ASSERT(minuendConnection->source() == target && minuendConnection->target() == source, "We tried to get SaddleConnection source/target right but SaddleConnection consturctor disagrees.");
 
+    ASSERTIONS([&]() {
+      // TODO: I am doing essentially the same in flat_triangulation_collapsed.cc. Consolidate these.
+      static Amortized cost;
+
+      const auto abs = [](const auto& x) {
+        return x < 0 ? -x : x;
+      };
+
+      const auto relativeLength = [&](const Vector<T>& divident, const Vector<T>& divisor) -> mpz_class {
+        return sqrt(::intervalxt::sample::Arithmetic<T>::floorDivision((divident * divident) * (divident * divident), abs(divisor * divident)));
+      };
+
+      if (!cost.pay(relativeLength(static_cast<const Vector<T>&>(*minuendConnection), minuendConnection->surface().shortest(*minuendConnection)) + 1)) return;
+
+      const auto reconstruction = SaddleConnection<FlatTriangulation<T>>::inSector(minuendConnection->surface().shared_from_this(), minuendConnection->source(), *minuendConnection);
+      ASSERT(*minuendConnection == reconstruction,
+        "Connection after subtract does not actually exist in surface. We claimed it's " << *minuendConnection << " but it is more likely " << reconstruction);
+    });
+
     // TODO
     // std::cout << "Changed Length to " << *minuendConnection << std::endl;
   }
-
-  // TODO: This is nice but too expensive for large vectors.
-  // ::flatsurf::Implementation<SaddleConnection<FlatTriangulation<T>>>::check(minuendConnection);
 
   ASSERT(get(minuend), "lengths must be non-zero");
   ASSERT(length(minuend) == expected, "subtract inconsistent: subtracted " << length() << " from " << fromLabel(minuend) << " which should have yielded " << expected << " but got " << length(minuend) << " instead");
