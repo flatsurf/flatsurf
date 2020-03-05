@@ -32,6 +32,7 @@
 
 #include "generators/surface_generator.hpp"
 #include "generators/saddle_connections_generator.hpp"
+#include "surfaces.hpp"
 
 using eantic::renf_class;
 using eantic::renf_elem_class;
@@ -40,7 +41,27 @@ namespace flatsurf::test {
 
 using namespace flatsurf;
 
-TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEST_CASE("Flow Decompositions Over Number Fields", "[flow_decomposition]") {
+  using T = renf_elem_class;
+
+  SECTION("A Complicated Direction For A Veech Cathedral") {
+    const auto surface = makeCathedralVeech<Vector<T>>();
+    CAPTURE(*surface);
+
+    auto a = N->gen();
+
+    const auto direction = Vector<T>(a + mpq_class(1, 2), 1);
+
+    auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), direction);
+    CAPTURE(flowDecomposition);
+
+    REQUIRE(flowDecomposition.decompose());
+
+    REQUIRE(flowDecomposition.components().size() == 5);
+  }
+}
+
+TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (renf_elem_class)) {
   using T = TestType;
 
   const auto surface = GENERATE(makeSurface<T>());

@@ -45,7 +45,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Torus", "[saddle_connections]", (lon
       const auto connections = SaddleConnections(square, Bound(2, 0), HalfEdge(1));
       auto search = begin(connections);
 
-      REQUIRE(fmt::format("{}", *search) == "SaddleConnection((1, 0) from 1)");
+      REQUIRE(fmt::format("{}", *search) == "(1, 0) from 1 to -1");
       REQUIRE(++search == end(connections));
     }
 
