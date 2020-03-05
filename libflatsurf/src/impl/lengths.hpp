@@ -27,6 +27,7 @@
 #include <vector>
 
 #include <intervalxt/label.hpp>
+#include <intervalxt/lengths.hpp>
 
 #include "../../flatsurf/edge.hpp"
 #include "../../flatsurf/edge_map.hpp"
@@ -52,6 +53,9 @@ class Lengths {
   int cmp(intervalxt::Label, intervalxt::Label) const;
   T get(intervalxt::Label) const;
   std::string render(intervalxt::Label) const;
+  ::intervalxt::Lengths forget() const;
+  ::intervalxt::Lengths only(const std::unordered_set<::intervalxt::Label>&) const;
+  bool similar(::intervalxt::Label, ::intervalxt::Label, const ::intervalxt::Lengths&, ::intervalxt::Label, ::intervalxt::Label) const;
 
   // TODO: This is a hack. We should pass this at construction time but
   // flatsurf::IntervalExchangeTransformation wants to exist independently of a

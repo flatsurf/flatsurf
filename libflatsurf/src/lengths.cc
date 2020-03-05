@@ -24,6 +24,7 @@
 
 #include <intervalxt/length.hpp>
 #include <intervalxt/interval_exchange_transformation.hpp>
+#include <intervalxt/sample/lengths.hpp>
 #include <intervalxt/sample/arithmetic.hpp>
 #include <intervalxt/sample/e-antic-arithmetic.hpp>
 #include <intervalxt/sample/exact-real-arithmetic.hpp>
@@ -281,7 +282,7 @@ std::string Lengths<Surface>::render(Label label) const {
 }
 
 template <typename Surface>
-intervalxt::Label Lengths<Surface>::toLabel(Edge e) const {
+intervalxt::Label Lengths<Surface>::toLabel(const Edge e) const {
   ASSERT(lengths.get(e), "Cannot interact with edge that is vertical or not part of the original contour but " << e << " is of this type in " << *this);
   return Label(e.index());
 }
@@ -306,6 +307,30 @@ typename Surface::Coordinate Lengths<Surface>::length(intervalxt::Label label) c
   auto length = vertical->perpendicular(*lengths.get(fromLabel(label)));
   ASSERT(length > 0, "length must be positive");
   return length;
+}
+
+template <typename Surface>
+::intervalxt::Lengths Lengths<Surface>::forget() const {
+  std::vector<T> lengths;
+  for (const auto e : this->lengths.parent().edges()) {
+    if (this->lengths.get(e)) {
+      lengths.push_back(length(toLabel(e)));
+    } else {
+      lengths.emplace_back();
+    }
+  }
+
+  return ::intervalxt::sample::Lengths<T>(lengths);
+}
+
+template <typename Surface>
+::intervalxt::Lengths Lengths<Surface>::only(const std::unordered_set<Label>& labels) const {
+  return forget().only(labels);
+}
+
+template <typename Surface>
+bool Lengths<Surface>::similar(::intervalxt::Label a, ::intervalxt::Label b, const ::intervalxt::Lengths& other, ::intervalxt::Label aa, ::intervalxt::Label bb) const {
+  return forget().similar(a, b, other, aa, bb);
 }
 
 template <typename Surface>
