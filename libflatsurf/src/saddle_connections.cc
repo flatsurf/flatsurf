@@ -306,7 +306,7 @@ class SaddleConnections<Surface>::Iterator::Implementation {
   }
 
   void skipSector(CCW sector) {
-    ASSERT_ARGUMENT(sector != CCW::COLLINEAR, "There is no such thing like a collinear sector.");
+    ASSERT_ARGUMENT(sector != CCW::COLLINEAR, "Cannot skip this sector. There is no such thing as a collinear sector.");
     assert(state.size() && "cannot skip a sector in a completed search");
 
     switch (state.back()) {
