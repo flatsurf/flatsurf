@@ -360,7 +360,7 @@ ostream& operator<<(ostream& os, const FlowComponent<Surface>& self) {
     kind = "Component Without Periodic Trajectory";
   }
 
-  return os << fmt::format("{} with perimeter {}", kind, fmt::join(self.perimeter(), "→"));
+  return os << fmt::format("{} with perimeter [{}]", kind, fmt::join(self.perimeter(), " → "));
 }
 
 }  // namespace flatsurf
