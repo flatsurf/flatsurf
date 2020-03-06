@@ -88,6 +88,7 @@ else:
 sc_completely_periodic = True
 cyl_completely_periodic = True
 parabolic = True
+undetermined = 0
 
 # computation
 dim = O.U.dimension()
@@ -101,6 +102,7 @@ for d in O.decompositions(args.bound):
     # assert (nund != 0) == (not ans), (nund, ans)
     print("decomposes into %d cylinders and %d minimal components and %d undetermined" % (ncyl, nmin, nund))
     if nund:
+        undetermined += 1
         continue
 
     if sc_completely_periodic or cyl_completely_periodic or parabolic:
@@ -124,9 +126,19 @@ else:
 closure_dim = O.U.dimension()
 absolute_dim = O.absolute_dimension()
 print("Unfolding %s"%(args.angles))
+print("%d directions had undetermined components"%undetermined)
 print("ambient locus: %s (of dimension %s)"%(ambient_locus, ambient_locus.dimension()))
 print("orbit closure dimension: %d"%closure_dim)
 print("rank: %s"%QQ((absolute_dim,2)))
-print("saddle connection completely periodic: %s"%sc_completely_periodic)
-print("cylinder completely periodic: %s"%cyl_completely_periodic)
-print("parabolic: %s"%parabolic)
+if sc_completely_periodic and undetermined:
+    print("saddle connection completely periodic: ? (probably false)")
+else:
+    print("saddle connection completely periodic: %s"%sc_completely_periodic)
+if cyl_completely_periodic and undetermined:
+    print("cylinder completely periodic: ? (probably true)")
+else:
+    print("cylinder completely periodic: %s"%cyl_completely_periodic)
+if parabolic and undetermined:
+    print("parabolic: ? (probably true)")
+else:
+    print("parabolic: %s"%parabolic)
