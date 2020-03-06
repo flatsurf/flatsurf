@@ -81,14 +81,17 @@ for x in [a,b,c]:
         angles[y] = N//d
 
 if quad:
+    quad = True
     ambient_locus = surface_dynamics.QuadraticStratum({y-2: mult for y,mult in angles.items()})
 else:
+    quad = False
     ambient_locus = surface_dynamics.AbelianStratum({(y-2)//2: mult for y,mult in angles.items()})
 
 sc_completely_periodic = True
 cyl_completely_periodic = True
 parabolic = True
 undetermined = 0
+explored = 0
 
 # computation
 dim = O.U.dimension()
@@ -96,6 +99,7 @@ for d in O.decompositions(args.bound):
     print("Investigating in direction %s "%d.u, end='')
     sys.stdout.flush()
     ans = d.decompose(1024)  # return whether all components are determined
+    explored += 1
     
     ncyl, nmin, nund = d.num_cylinders_minimals_undetermined()
     # TODO: bug?
@@ -117,17 +121,20 @@ for d in O.decompositions(args.bound):
     if new_dim != dim:
         dim = new_dim
         print("new tangent vector: dim=%d"%dim)
-        if dim == ambient_locus.dimension() and not cyl_completely_periodic:
-            print("nothing more to be investigated")
-            break
+    if dim == ambient_locus.dimension() and not cyl_completely_periodic:
+        print("nothing more to be investigated")
+        break
 else:
     print("up to bound %s on the length of saddle connection"%args.bound)
 
 closure_dim = O.U.dimension()
 absolute_dim = O.absolute_dimension()
 print("Unfolding %s"%(args.angles))
-print("%d directions had undetermined components"%undetermined)
-print("ambient locus: %s (of dimension %s)"%(ambient_locus, ambient_locus.dimension()))
+print("%d directions explored (%d undetermined)"%(explored, undetermined))
+if quad:
+    print("ambient locus: %s inside %s (of dimension %s)"%(ambient_locus, ambient_locus.orientation_cover(), ambient_locus.dimension()))
+else:
+    print("ambient locus: %s (of dimension %s)"%(ambient_locus, ambient_locus.dimension()))
 print("orbit closure dimension: %d"%closure_dim)
 print("rank: %s"%QQ((absolute_dim,2)))
 if sc_completely_periodic and undetermined:
