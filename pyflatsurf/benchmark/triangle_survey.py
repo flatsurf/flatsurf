@@ -94,15 +94,18 @@ dim = O.U.dimension()
 for d in O.decompositions(args.bound):
     print("Investigating in direction %s "%d.u, end='')
     sys.stdout.flush()
-    d.decompose()
+    ans = d.decompose(1024)  # return whether all components are determined
     
     ncyl, nmin, nund = d.num_cylinders_minimals_undetermined()
-    assert nund == 0
-    print("decomposes into %d cylinders and %d minimal components" % (ncyl, nmin))
+    # TODO: bug?
+    # assert (nund != 0) == (not ans), (nund, ans)
+    print("decomposes into %d cylinders and %d minimal components and %d undetermined" % (ncyl, nmin, nund))
+    if nund:
+        continue
 
     if sc_completely_periodic or cyl_completely_periodic or parabolic:
         cyl_completely_periodic = cyl_completely_periodic and (ncyl == 0 or nmin == 0)
-        sc_completely_periodic = sc_completely_periodic and (nmin != 0)
+        sc_completely_periodic = sc_completely_periodic and (nmin == 0)
 
         if ncyl and parabolic:
             parabolic = parabolic and d.is_parabolic()
@@ -111,11 +114,16 @@ for d in O.decompositions(args.bound):
     new_dim = O.U.dimension()
     if new_dim != dim:
         dim = new_dim
-        print("NEW TANGENT VECTOR: dim=%d"%dim)
+        print("new tangent vector: dim=%d"%dim)
+        if dim == ambient_locus.dimension() and not cyl_completely_periodic:
+            print("nothing more to be investigated")
+            break
+else:
+    print("up to bound %s on the length of saddle connection"%args.bound)
 
 closure_dim = O.U.dimension()
 absolute_dim = O.absolute_dimension()
-print("Up to bound %s on the length of saddle connection"%args.bound)
+print("Unfolding %s"%(args.angles))
 print("ambient locus: %s (of dimension %s)"%(ambient_locus, ambient_locus.dimension()))
 print("orbit closure dimension: %d"%closure_dim)
 print("rank: %s"%QQ((absolute_dim,2)))
