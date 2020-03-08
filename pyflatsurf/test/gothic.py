@@ -19,8 +19,7 @@ def test_gothic_generic():
     a = K.gen()
     S = sage_flatsurf.translation_surfaces.cathedral(a, a**2)
     O = GL2ROrbitClosure(S)
-    for d in O.decompositions(4):
-        d.decompose()
+    for d in O.decompositions(4, 50):
         O.update_tangent_space_from_flow_decomposition(d)
     assert O.U.dimension() == O.absolute_dimension() == 4
 
@@ -34,10 +33,9 @@ def test_gothic_veech():
     b = -3*x -QQ((3,2)) + 3*y*sqrt2
     S = sage_flatsurf.translation_surfaces.cathedral(a,b)
     O = GL2ROrbitClosure(S)
-    for d in O.decompositions(4):
-        d.decompose()
-        assert d.is_parabolic()
-        assert d.cylinder_diagram().stratum() == O.stratum()
+    for d in O.decompositions(4, 50):
+        assert d.parabolic()
+        assert d.decomposition.cylinder_diagram().stratum() == O.stratum()
         O.update_tangent_space_from_flow_decomposition(d)
     assert O.U.dimension() == 2
 

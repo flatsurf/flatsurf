@@ -41,9 +41,8 @@ def test_veech_2n_gon(n, bound):
     S = sage_flatsurf.translation_surfaces.veech_2n_gon(n)
     O = GL2ROrbitClosure(S)
     for d in O.decompositions(bound):
-        d.decompose()
-        assert d.is_parabolic()
-        assert d.cylinder_diagram().stratum() == O.stratum()
+        assert d.parabolic()
+        assert d.decomposition.cylinder_diagram().stratum() == O.stratum()
         O.update_tangent_space_from_flow_decomposition(d)
     assert O.U.dimension() == 2
 
@@ -52,9 +51,8 @@ def test_veech_double_n_gon(n, bound):
     S = sage_flatsurf.translation_surfaces.veech_double_n_gon(n)
     O = GL2ROrbitClosure(S)
     for d in O.decompositions(bound):
-        d.decompose()
-        assert d.is_parabolic()
-        assert d.cylinder_diagram().stratum() == O.stratum()
+        assert d.parabolic()
+        assert d.decomposition.cylinder_diagram().stratum() == O.stratum()
         O.update_tangent_space_from_flow_decomposition(d)
     assert O.U.dimension() == 2
 

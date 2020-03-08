@@ -34,10 +34,9 @@ from pyflatsurf import GL2ROrbitClosure
 def test_H2(w,h,t,e):
     S = sage_flatsurf.translation_surfaces.mcmullen_genus2_prototype(w,h,t,e)
     O = GL2ROrbitClosure(S)
-    for d in O.decompositions(5):
-        d.decompose()
-        assert d.is_parabolic()
-        assert d.cylinder_diagram().stratum() == O.stratum()
+    for d in O.decompositions(5, 50):
+        assert d.parabolic()
+        assert d.decomposition.cylinder_diagram().stratum() == O.stratum()
         O.update_tangent_space_from_flow_decomposition(d)
     assert O.U.dimension() == 2
 
@@ -49,7 +48,6 @@ def test_H2(w,h,t,e):
 #    S = sage_flatsurf.translation_surfaces.mcmullen_genus2_prototype(2,1,0,-1,a/4)
 #    O = GL2ROrbitClosure(S)
 #    for d in O.decompositions(5):
-#        d.decompose()
 #        ncyl, nmin, nund = d.num_cylinders_minimals_undetermined()
 #        assert (nund == 0)
 #        assert ((nmin == 0) or (ncyl == 0 and 1 <= nmin <= 2))
@@ -59,8 +57,7 @@ def test_H2(w,h,t,e):
 def test_D33():
     S = sage_flatsurf.translation_surfaces.mcmullen_genus2_prototype(4,2,1,1,QQ((1,4)))
     O = GL2ROrbitClosure(S)
-    for d in O.decompositions(5):
-        d.decompose()
+    for d in O.decompositions(5, 100):
         ncyl, nmin, nund = d.num_cylinders_minimals_undetermined()
         assert (nund == 0)
         assert ((nmin == 0) or (ncyl == 0 and nmin == 2))
