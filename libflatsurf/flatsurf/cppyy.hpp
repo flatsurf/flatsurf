@@ -33,6 +33,7 @@
 #include "flow_component.hpp"
 #include "flow_decomposition.hpp"
 #include "flow_connection.hpp"
+#include "forward.hpp"
 #include "half_edge.hpp"
 #include "interval_exchange_transformation.hpp"
 #include "permutation.hpp"
@@ -40,6 +41,7 @@
 #include "saddle_connections.hpp"
 #include "vector.hpp"
 #include "vertex.hpp"
+#include "vertical.hpp"
 
 namespace flatsurf {
 // cppyy sometimes has trouble with rvalues, let's help it to create a FlatTriangulation
