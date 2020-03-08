@@ -20,10 +20,6 @@ GL(2,R)-orbit closure of translation surfaces.
 
     - implement complete periodicity detection
       https://github.com/flatsurf/intervalxt/issues/86
-
-TESTS:
-
-    ((-a^4 + 9/2*a^2 - 5/2 ~ 2.5244587), (1/2*a^3 - 1*a ~ 0.34794774))
 """
 ######################################################################
 #  This file is part of flatsurf.
@@ -53,7 +49,7 @@ from pyflatsurf import flatsurf
 # TODO: move into flatsurf
 Vertex = cppyy.gbl.flatsurf.Vertex
 
-from sage.all import VectorSpace, matrix, identity_matrix, ZZ, QQ, Unknown
+from sage.all import VectorSpace, FreeModule, matrix, identity_matrix, ZZ, QQ, Unknown
 
 def proj(v):
     x,y = v
@@ -69,6 +65,15 @@ class Decomposition:
         self.orbit = gl2rorbit
         self.decomposition = decomposition
 
+    def cylinders(self):
+        return [comp for comp in self.components() if comp.cylinder() == True]
+
+    def minimal_components(self):
+        return [comp for comp in self.components() if comp.withoutPeriodicTrajectory() == True]
+
+    def undetermined_components(self):
+        return [comp for comp in self.components() if comp.cylinder() == False and comp.withoutPeriodicTrajectory() == False]
+
     def num_cylinders_minimals_undetermined(self):
         ncyl = 0
         nmin = 0
@@ -83,12 +88,6 @@ class Decomposition:
             else:
                 nund += 1
         return (ncyl, nmin, nund)
-
-    def decompose(self, limit=-1):
-        r"""
-        Split the components into more pieces.
-        """
-        flatsurf.decomposeFlowDecomposition(self.decomposition, limit)
 
     def __repr__(self):
         ncyl, nmin, nund = self.num_cylinders_minimals_undetermined()
@@ -203,137 +202,73 @@ class Decomposition:
         assert A.det().is_unit()
         return A, sc_index, proj
 
-    def is_parabolic(self):
+    # TODO: move to C++
+    def parabolic(self):
         r"""
         Return whether this decomposition is completely periodic with cylinder with
         commensurable moduli.
 
-        .. NOTE::
-
-            This function triggers a call to ``kontsevich_zorich_cocycle``
-            which might be a little bit expensive.
-        """
-        cp = self.is_completely_periodic()
-        if cp is not True:
-            return cp
-
-        A, sc_index, proj = self.kontsevich_zorich_cocycle()
-        m = None
-        for comp in self.decomposition.components():
-            _,_,_,mm,_ = self.circumference_height_holonomy_module_area(comp, sc_index, proj)
-            if m is None:
-                m = mm
-            elif not (mm / m).is_rational():
-                return False
-        return True
-
-    def cylinder_diagram(self):
-        r"""
-        Transform a decomposition into a cylinder diagram (from ``surface_dynamics``).
-        """
-        if not self.is_completely_periodic():
-            raise ValueError("not a completely periodic direction")
-
-        indices = {}
-        cyls = []
-        k = 0
-        for c in self.decomposition.components():
-            contour = [p for p in c.perimeter()]
-            ibot = 0
-            assert not contour[ibot].vertical()
-            itop = 1
-            while contour[itop].vertical():
-                itop += 1
-            assert all(contour[i].vertical() for i in range(itop+1, len(contour)))
-            bot = []
-            for i in range(ibot+1, itop):
-                if contour[i] not in indices:
-                    indices[contour[i]] = k
-                    indices[-contour[i]] = k
-                    k += 1
-                bot.append(indices[contour[i]])
-            top = []
-            for i in range(itop+1, len(contour)):
-                if contour[i] not in indices:
-                    indices[contour[i]] = k
-                    indices[-contour[i]] = k
-                    k += 1
-                top.append(indices[contour[i]])
-            cyls.append((bot, top))
-
-        from surface_dynamics import CylinderDiagram
-        return CylinderDiagram(cyls)
-
-
-    def circumference_height_holonomy_module_area(self, component, sc_index, proj):
-        r"""
-        Return the circumference of the ``i``-th cylinder in the coordinate of
-        the original surface.
-
         EXAMPLES::
 
+            sage: from pyflatsurf import Surface, flatsurf, GL2ROrbitClosure
             sage: import flatsurf as sage_flatsurf
 
-        Calta-McMullen Veech surfaces in H(2) are completely periodic with 2 cylinder in
-        every saddle connection direction::
+        Veech surfaces have the property that any saddle connection direction is
+        parabolic (one half of the Veech dichotomy)::
 
-            sage: S = sage_flatsurf.translation_surfaces.mcmullen_genus2_prototype(2,1,0,0)
+            sage: S = sage_flatsurf.translation_surfaces.veech_double_n_gon(5)
             sage: O = GL2ROrbitClosure(S)
-            sage: print('%-16s %-16s %-16s %-16s' % ('direction', 'circum. ratio', 'modules ratio', 'area'))
-            sage: for (u, decomp) in O.decompositions(3):
-            ....:     assert len(decomp.components) == 2
-            ....:     assert decomp.is_completely_periodic()
-            ....:     c0,h0,m0,a0 = decomp.circumference_holonomy_module_area(0)
-            ....:     c1,h1,m1,a1 = decomp.circumference_holonomy_module_area(1)
-            ....:     if h0[0]:
-            ....:         r = h1[0] / h0[0]
-            ....:     else:
-            ....:         r = h1[1] / h0[1]
-            ....:     if r < 1: r = 1/r
-            ....:     mr = m0/m1 if m1 > m0 else m1/m0
-            ....:     print('%-16s %-16s %-16s %-16s' %(u, r, mr, (a0,a1)))
-            sage: print('%-16s %-16s %-16s' % ('direction', 'ratio', 'areas'))
-            direction        circum. ratio    modules ratio    area            
-            (1, 1)           a                1/2              (2, 2)          
-            (-a + 2, 1)      a                1/2              (2, 2)          
-            (1, 0)           a                1/2              (2, 2)          
-            (a, 1)           a                1/2              (2, 2)          
-            (2, 1)           a + 1            1                (a + 2, -a + 2) 
-            (0, 1)           a + 1            1                (-a + 2, a + 2) 
-            (-1, 1)          a                1/2              (2, 2)          
-            (a - 2, 1)       a                1/2              (2, 2)          
-            (-a, 1)          a                1/2              (2, 2)          
-            (-2, 1)          a + 1            1                (a + 2, -a + 2) 
-            (1/2*a - 1, 1)   a                1/2              (2, 2)          
-            (a - 4, 1)       a                1/2              (2, 2)          
-            (-1/2*a + 1, 1)  a                1/2              (2, 2)          
-            (-a + 4, 1)      a                1/2              (2, 2)          
+            sage: all(d.parabolic() for d in O.decompositions_depth_first(3))
+            True
 
-            sage: S = sage_flatsurf.translation_surfaces.mcmullen_genus2_prototype(4,1,0,1)
+        For surfaces in rank one loci, even though they are completely periodic,
+        they are generally not completely periodic::
+
+            sage: S = sage_flatsurf.translation_surfaces.mcmullen_genus2_prototype(4,2,1,1,1/4)
             sage: O = GL2ROrbitClosure(S)
-            sage: print('%-16s %-16s %-16s %-16s' % ('direction', 'circum. ratio', 'modules ratio', 'area'))
-            sage: for (u, decomp) in O.decompositions(3):
-            ....:     assert len(decomp.components) == 2
-            ....:     assert decomp.is_completely_periodic()
-            ....:     c0,h0,m0,a0 = decomp.circumference_holonomy_module_area(0)
-            ....:     c1,h1,m1,a1 = decomp.circumference_holonomy_module_area(1)
-            ....:     if h0[0]:
-            ....:         r = h1[0] / h0[0]
-            ....:     else:
-            ....:         r = h1[1] / h0[1]
-            ....:     if r < 1: r = 1/r
-            ....:     mr = m0/m1 if m1 > m0 else m1/m0
-            ....:     print('%-16s %-16s %-16s %-16s' %(u, r, mr, (a0,a1)))
-            direction        circum. ratio    modules ratio    area
-            (1, 0)           a - 1            1/4              (a + 4, 4)
-            (a, 1)           1/2*a            1                (4, a + 4)
-            (0, 1)           a + 1            1/2              (-a + 4, 2*a + 4)
-            (-a, 1)          1/2*a            1                (4, a + 4)
-            (a - 4, 1)       1/2*a            1                (a + 4, 4)
-            (1/2*a - 2, 1)   a - 1            1/4              (4, a + 4)
-            (-a + 4, 1)      1/2*a            1                (a + 4, 4)
-            (-1/2*a + 2, 1)  a - 1            1/4              (a + 4, 4)
+            sage: all((d.decomposition.hasCylinder() == False) or d.parabolic() for d in O.decompositions(6, 100))
+            False
+            sage: all((d.decomposition.completelyPeriodic() == True) or (d.decomposition.hasCylinder() == False) for d in O.decompositions(6, 100))
+            True
+
+        Because of https://github.com/flatsurf/flatsurf/issues/140 we set a limit to decompositions
+        but this should not be needed here.
         """
+        if self.orbit.Ksage == QQ:
+            return True
+
+        # from here we assume that the field self.orbit.K is a number field
+        state = True
+        mod0 = None
+        hol0 = None
+        for comp in self.decomposition.components():
+            if comp.cylinder() == False:
+                return False
+            elif comp.cylinder() != True:
+                state = Unknown
+            hol = comp.circumferenceHolonomy()
+            hol = self.orbit.V2((self.orbit.Ksage_constructor(hol.x()),
+                                 self.orbit.Ksage_constructor(hol.y())))
+            area = self.orbit.Ksage_constructor(comp.area())
+            mod = area / (hol[0]**2 + hol[1]**2)
+            if mod0 is None:
+                mod0 = mod
+                hol0 = hol
+            else:
+                # check parallelism
+                assert hol0[0] * hol[1] == hol0[1] * hol[0]
+                if not (mod / mod0).is_rational():
+                    return False
+        return state
+
+    def circumference_width(self, component, sc_index, proj):
+        r"""
+        Return the circumference and width of ``component`` in the coordinate of the original
+        surface.
+        """
+        if component.cylinder() != True:
+            raise ValueError
+
         A, sc_index, proj = self.kontsevich_zorich_cocycle()
         perimeters = [p for p in component.perimeter()]
         per = perimeters[0]
@@ -347,17 +282,21 @@ class Decomposition:
             s = 1
         v = s * proj.column(i)
         circumference = -A.solve_right(v)
+
+        # check
         hol = self.orbit.holonomy_dual(circumference)
+        holbis = component.circumferenceHolonomy()
+        holbis = self.orbit.V2((self.orbit.Ksage_constructor(holbis.x()),
+                                self.orbit.Ksage_constructor(holbis.y())))
+        assert hol == holbis, (hol, holbis)
 
         u = sc.vector()
         u = self.orbit.V2((self.orbit.Ksage_constructor(u.x()), self.orbit.Ksage_constructor(u.y())))
-        area = u[0] * hol[1] - u[1] * hol[0]
-        assert area > 0
+        width = self.u[1] * u[0] - self.u[0] * u[1]
+        widthbis = self.orbit.Ksage_constructor(component.width())
+        assert width == widthbis, (width, widthbis)
 
-        height = -self.u[1] * u[0] + self.u[0] * u[1]
-        module = area / (hol[0]**2 + hol[1]**2)
-
-        return (circumference, height, hol, module, area)
+        return circumference, width
 
     def cylinder_deformation_subspace(self):
         r"""
@@ -373,9 +312,13 @@ class Decomposition:
             if comp.cylinder() == False:
                 continue
             elif comp.cylinder() == True:
-                circ, height, hol, mod, area = self.circumference_height_holonomy_module_area(comp, sc_index, proj)
-                vcyls.append(height * circ)
-                modules.append(mod)
+                circ, width = self.circumference_width(comp, sc_index, proj)
+                vcyls.append(width * circ)
+                hol = comp.circumferenceHolonomy()
+                hol = self.orbit.V2((self.orbit.Ksage_constructor(hol.x()),
+                                     self.orbit.Ksage_constructor(hol.y())))
+                area = self.orbit.Ksage_constructor(comp.area())
+                modules.append(area / (hol[0]**2 + hol[1]**2))
             else:
                 return self.orbit.V.subspace([])
 
@@ -399,7 +342,7 @@ class GL2ROrbitClosure:
 
     EXAMPLES::
 
-        sage: import pyflatsurf
+        sage: from pyflatsurf import GL2ROrbitClosure
         sage: import flatsurf as sage_flatsurf
         sage: T = sage_flatsurf.polygons.triangle(3, 3, 5)
         sage: S = sage_flatsurf.similarity_surfaces.billiard(T)
@@ -407,40 +350,11 @@ class GL2ROrbitClosure:
         sage: O = GL2ROrbitClosure(S)
         sage: O
         GL(2,R)-orbit closure of dimension at least 2 in H_5(4, 2^2) (ambient dimension 12)
-
-    TESTS::
-
-        sage: from itertools import product
-        sage: for a in range(1,5):
-        ....:     for b in range(a, 5):
-        ....:         for c in range(b, 5):
-        ....:             if gcd([a, b, c]) != 1:
-        ....:                 continue
-        ....:             T = sage_flatsurf.polygons.triangle(a, b, c)
-        ....:             S = sage_flatsurf.similarity_surfaces.billiard(T)
-        ....:             S = S.minimal_cover(cover_type="translation")
-        ....:             O = GL2ROrbitClosure(S)
-        ....:             print(a, b, c, O)
-        1 1 1 GL(2,R)-orbit closure of dimension at least 2 in H_1(0^3) (ambient dimension 4)
-        1 1 2 GL(2,R)-orbit closure of dimension at least 2 in H_1(0^4) (ambient dimension 5)
-        1 1 3 GL(2,R)-orbit closure of dimension at least 2 in H_2(2, 0^2) (ambient dimension 6)
-        1 1 4 GL(2,R)-orbit closure of dimension at least 2 in H_2(1^2, 0^2) (ambient dimension 7)
-        1 2 2 GL(2,R)-orbit closure of dimension at least 2 in H_2(1^2, 0) (ambient dimension 6)
-        1 2 3 GL(2,R)-orbit closure of dimension at least 2 in H_1(0^6) (ambient dimension 7)
-        1 2 4 GL(2,R)-orbit closure of dimension at least 2 in H_3(3, 1, 0) (ambient dimension 8)
-        1 3 3 GL(2,R)-orbit closure of dimension at least 2 in H_3(2^2, 0) (ambient dimension 8)
-        1 3 4 GL(2,R)-orbit closure of dimension at least 2 in H_2(2, 0^5) (ambient dimension 9)
-        1 4 4 GL(2,R)-orbit closure of dimension at least 2 in H_4(3^2, 0) (ambient dimension 10)
-        2 2 3 GL(2,R)-orbit closure of dimension at least 2 in H_3(2, 1^2) (ambient dimension 8)
-        2 3 3 GL(2,R)-orbit closure of dimension at least 2 in H_3(2^2, 0^2) (ambient dimension 9)
-        2 3 4 GL(2,R)-orbit closure of dimension at least 2 in H_3(3, 1, 0^3) (ambient dimension 10)
-        3 3 4 GL(2,R)-orbit closure of dimension at least 2 in H_4(2^2, 1^2) (ambient dimension 11)
-        3 4 4 GL(2,R)-orbit closure of dimension at least 2 in H_5(3^2, 2) (ambient dimension 12)
     """
     def __init__(self, surface):
         self.surface = surface = pyflatsurf.Surface(surface)
         self.n = surface.size()
-            
+
         self.half_edge_to_face = {}
         self.half_edge_to_edge = {}
         for e in surface.edges():
@@ -539,6 +453,8 @@ class GL2ROrbitClosure:
         r"""
         EXAMPLES::
 
+            sage: import flatsurf as sage_flatsurf
+            sage: from pyflatsurf import GL2ROrbitClosure
             sage: T = sage_flatsurf.polygons.triangle(1,3,4)  # Veech octagon
             sage: S = sage_flatsurf.similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover("translation")
@@ -554,9 +470,7 @@ class GL2ROrbitClosure:
             sage: S = sage_flatsurf.similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover("translation")
             sage: O = GL2ROrbitClosure(S)
-            2
-            sage: for d in O.decompositions(5):
-            ....:     d.decompose()
+            sage: for d in O.decompositions(5, 100):
             ....:     O.update_tangent_space_from_flow_decomposition(d)
             ....:     if O.U.dimension() == 9:
             ....:         break
@@ -565,21 +479,20 @@ class GL2ROrbitClosure:
         """
         return (self.absolute_homology().matrix() * self.U.matrix().transpose()).rank()
 
-    # TODO: how do we do that!?
     def stratum(self):
         r"""
         Return the ambient stratum.
 
         EXAMPLES::
 
-            sage: import pyflatsurf
+            sage: from pyflatsurf import GL2ROrbitClosure
             sage: import flatsurf as sage_flatsurf
             sage: T = sage_flatsurf.polygons.triangle(1, 2, 4)
             sage: S = sage_flatsurf.similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover(cover_type="translation")
             sage: O = GL2ROrbitClosure(S)
             sage: O.stratum()
-            H(3, 1, 0)
+            H_3(3, 1, 0)
         """
         sings = [self.surface.angle(v)-1 for v in self.surface.vertices()]
         from surface_dynamics import AbelianStratum
@@ -704,6 +617,9 @@ class GL2ROrbitClosure:
 
         TESTS::
 
+            sage: import flatsurf as sage_flatsurf
+            sage: from pyflatsurf import GL2ROrbitClosure
+
             sage: from itertools import product
             sage: for a in range(1,5):
             ....:     for b in range(a, 5):
@@ -717,6 +633,7 @@ class GL2ROrbitClosure:
             ....:             for b in O.boundaries():
             ....:                 assert (O.proj * b).is_zero()
         """
+        V = FreeModule(ZZ, self.n)
         B = []
         for f1,F in self.half_edge_to_face.items():
             if f1 != F:
@@ -736,7 +653,7 @@ class GL2ROrbitClosure:
             v[i1] = 1
             v[i2] = s1 * s2
             v[i3] = s1 * s3
-            B.append(vector(ZZ, v))
+            B.append(V(v))
             B[-1].set_immutable()
 
         return B
@@ -760,41 +677,103 @@ class GL2ROrbitClosure:
     def decomposition(self, v, limit=-1):
         decomposition = flatsurf.makeFlowDecomposition(self.surface, v)
         u = self.V2((self.Ksage_constructor(v.x()), self.Ksage_constructor(v.y())))
+        if limit != 0:
+            flatsurf.decomposeFlowDecomposition(decomposition, int(limit))
         return Decomposition(self, decomposition, u)
 
-    def decompositions(self, bound, limit=-1):
-        # NOTE: for now there is a lot of duplicates!!
-        explored = set()
-        for connection in self.surface.saddle_connections(flatsurf.Bound(bound, 0)):
+    def decompositions_depth_first(self, bound, limit=-1, visited=None):
+        if visited is None:
+            visited = set()
+        for connection in self.surface.saddle_connections(flatsurf.Bound(int(bound), 0)):
             v = connection.vector()
             if v.y() == int(0):
-                u = self.V2((1, 0))
+                slope = self.V2((1, 0))
             else:
-                u = self.V2((self.Ksage_constructor(v.x() / v.y()), 1))
-            u.set_immutable()
-            if u in explored:
+                slope = self.V2((self.Ksage_constructor(v.x() / v.y()), 1))
+            slope.set_immutable()
+            if slope in visited:
                 continue
-            else:
-                explored.add(u)
+            visited.add(slope)
             yield self.decomposition(v, limit)
 
-    def completely_periodic_directions(self, bound):
+    def decompositions_breadth_first(self, bound, limit=-1, visited=None):
+        if visited is None:
+            visited = set()
+        for i in range(bound + 1):
+            for connection in self.surface.saddle_connections(flatsurf.Bound(i, 0)):
+                v = connection.vector()
+                if v.y() == int(0):
+                    slope = self.V2((1, 0))
+                else:
+                    slope = self.V2((self.Ksage_constructor(v.x() / v.y()), 1))
+                slope.set_immutable()
+                if slope in visited:
+                    continue
+                visited.add(slope)
+                yield self.decomposition(v, limit)
+
+    decompositions = decompositions_depth_first
+
+    def is_teichmueller_curve(self, bound, limit=-1):
         r"""
-        Iterator through completely directions
+        Return ``False`` when the program can find a direction which is either completely
+        periodic with incomensurable moduli or a direction with at least one cylinder
+        and at least one minimal component.
+
+        EXAMPLES::
+
+            sage: from pyflatsurf import flatsurf, Surface, GL2ROrbitClosure
+            sage: import flatsurf as sage_flatsurf
+            sage: for a in range(1,6):
+            ....:     for b in range(a,6):
+            ....:         for c in range(b,6):
+            ....:             if a + b + c > 7 or gcd([a,b,c]) != 1:
+            ....:                 continue
+            ....:             T = sage_flatsurf.polygons.triangle(a, b, c)
+            ....:             S = sage_flatsurf.similarity_surfaces.billiard(T)
+            ....:             S = S.minimal_cover(cover_type="translation")
+            ....:             O = GL2ROrbitClosure(S)
+            ....:             if O.is_teichmueller_curve(3, 50) != False:
+            ....:                 print(a,b,c)
+            1 1 1
+            1 1 2
+            1 1 4
+            1 2 2
+            1 2 3
+            1 3 3
         """
-        for decomp in self.decompositions(bound):
-            if decomp.is_completely_periodic():
-                yield decomp
+        if self.Ksage == QQ:
+            # square tiled surface
+            return True
+        # TODO: implement simpler criterion based on the holonomy field
+        # (e.g. one can compute the trace field and verify that it is
+        #  totally real, of degree at most the genus and that the surface
+        #  is algebraically completely periodic)
+        for decomposition in self.decompositions_depth_first(bound, limit):
+            if decomposition.parabolic() == False:
+                return False
+        # TODO: from there on one should run the program of Ronen Mukamel (or
+        # something similar) to certify that we do have a Veech surface
+        return Unknown
 
     def update_tangent_space_from_flow_decomposition(self, decomposition, verbose=False):
         r"""
-        There are several kind of things that we can do
+        Update the current tangent space by using the cylinder deformation vector from ``decomposition``.
 
-        - cylinder with independent moduli can be twisted independently
-        - cylinder deformation
+        EXAMPLES::
 
-        EXAMPLES:
+            sage: from pyflatsurf import flatsurf, Surface, GL2ROrbitClosure
+            sage: import flatsurf as sage_flatsurf
 
+        A Veech triangle::
+
+            sage: T = sage_flatsurf.polygons.triangle(1, 2, 5)
+            sage: S = sage_flatsurf.similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover(cover_type="translation")
+            sage: O = GL2ROrbitClosure(S)
+            sage: for d in O.decompositions(3, 50):
+            ....:     O.update_tangent_space_from_flow_decomposition(d)
+            sage: assert O.U.dimension() == 2
         """
         A = self.U.ambient_vector_space()
         ambient_dim = A.dimension()
