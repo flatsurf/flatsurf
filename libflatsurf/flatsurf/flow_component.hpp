@@ -69,6 +69,7 @@ class FlowComponent {
 
   T width() const;
   T area() const;
+  Vector<T> circumferenceHolonomy() const;
 
   Vertical<Surface> vertical() const;
 

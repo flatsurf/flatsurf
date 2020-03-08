@@ -54,6 +54,9 @@ class FlowDecomposition {
 
   Vector<T> vertical() const;
 
+  boost::logic::tribool hasCylinder() const;
+  boost::logic::tribool completelyPeriodic() const;
+
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const FlowDecomposition<S>&);
 
