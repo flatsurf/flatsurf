@@ -95,15 +95,12 @@ explored = 0
 
 # computation
 dim = O.U.dimension()
-for d in O.decompositions(args.bound):
+for d in O.decompositions_depth_first(args.bound, 1024):
     print("Investigating in direction %s "%d.u, end='')
     sys.stdout.flush()
-    ans = d.decompose(1024)  # return whether all components are determined
     explored += 1
     
     ncyl, nmin, nund = d.num_cylinders_minimals_undetermined()
-    # TODO: bug?
-    # assert (nund != 0) == (not ans), (nund, ans)
     print("decomposes into %d cylinders and %d minimal components and %d undetermined" % (ncyl, nmin, nund))
     if nund:
         undetermined += 1
@@ -114,7 +111,7 @@ for d in O.decompositions(args.bound):
         sc_completely_periodic = sc_completely_periodic and (nmin == 0)
 
         if ncyl and parabolic:
-            parabolic = parabolic and d.is_parabolic()
+            parabolic = parabolic and d.parabolic()
 
     O.update_tangent_space_from_flow_decomposition(d)
     new_dim = O.U.dimension()
