@@ -106,7 +106,6 @@ TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimet
 TEMPLATE_TEST_CASE("Connections and IET from Contour Decomposition", "[contour_decomposition][iet]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
-  // TODO: Use this everywhere to fix broken SECTION inside loop.
   const auto surface = GENERATE(makeSurface<T>());
 
   GIVEN("The surface " << *surface) {

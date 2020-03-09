@@ -33,6 +33,7 @@
 
 #include "cereal.helpers.hpp"
 #include "surfaces.hpp"
+#include "generators/saddle_connections_generator.hpp"
 
 namespace flatsurf::test {
 
@@ -87,10 +88,11 @@ TEST_CASE("Serialization of a FlatTriangulation", "[cereal]") {
 }
 
 TEST_CASE("Serialization of a SaddleConnection", "[cereal]") {
-  auto square = makeSquare<Vector<long long>>();
-  auto connections = SaddleConnections(square, Bound(3, 0));
-  for (auto c : connections)
-    testRoundtrip(c);
+  using T = long long;
+  using R2 = Vector<long long>;
+  auto square = makeSquare<R2>();
+  const auto saddleConnection = GENERATE_COPY(saddleConnections<T>(square));
+  testRoundtrip(saddleConnection);
 }
 
 }  // namespace flatsurf::test

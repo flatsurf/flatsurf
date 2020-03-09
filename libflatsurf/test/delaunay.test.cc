@@ -27,6 +27,7 @@
 #include "../flatsurf/half_edge.hpp"
 
 #include "surfaces.hpp"
+#include "generators/half_edge_generator.hpp"
 
 namespace flatsurf::test {
 
@@ -39,17 +40,15 @@ TEMPLATE_TEST_CASE("Delaunay Triangulation", "[delaunay]", (long long), (mpq_cla
 
     auto bound = Bound(2, 0);
 
-    for (auto halfEdge : square->halfEdges()) {
-      WHEN("We Flip Edge " << halfEdge) {
-        square->flip(halfEdge);
-        THEN("The Delaunay Condition holds after performing Delaunay Triangulation") {
-          DelaunayTriangulation<T>::transform(*square);
-          CAPTURE(*square);
-          for (auto edge : square->halfEdges()) {
-            CAPTURE(edge);
-            REQUIRE(DelaunayTriangulation<T>::test(*square, edge));
-            REQUIRE(square->fromEdge(edge) < bound);
-          }
+    auto halfEdge = GENERATE_COPY(halfEdges(square));
+    WHEN("We Flip Edge " << halfEdge) {
+      square->flip(halfEdge);
+      THEN("The Delaunay Condition holds after performing Delaunay Triangulation") {
+        DelaunayTriangulation<T>::transform(*square);
+        CAPTURE(*square);
+        for (auto edge : square->halfEdges()) {
+          REQUIRE(DelaunayTriangulation<T>::test(*square, edge));
+          REQUIRE(square->fromEdge(edge) < bound);
         }
       }
     }
