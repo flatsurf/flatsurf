@@ -78,7 +78,7 @@ class ContourConnection : boost::equality_comparable<ContourComponent<Surface>> 
   friend std::ostream &operator<<(std::ostream &, const ContourConnection<S> &);
 
  private:
-  using Implementation = ::flatsurf::Implementation<ContourConnection>;
+  using Implementation = ImplementationOf<ContourConnection>;
   spimpl::impl_ptr<Implementation> impl;
 
   friend Implementation;

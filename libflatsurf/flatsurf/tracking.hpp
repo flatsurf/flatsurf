@@ -67,7 +67,7 @@ class Tracking {
   friend std::ostream& operator<<(std::ostream&, const Tracking<S>&);
 
  private:
-  using Implementation = ::flatsurf::Implementation<Tracking>;
+  using Implementation = ImplementationOf<Tracking>;
   spimpl::unique_impl_ptr<Implementation> impl;
 
   static void noFlip(T&, const FlatTriangulationCombinatorial&, HalfEdge);

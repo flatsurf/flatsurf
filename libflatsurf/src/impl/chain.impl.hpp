@@ -36,18 +36,18 @@
 namespace flatsurf {
 
 template <typename Surface>
-class Implementation<Chain<Surface>> {
+class ImplementationOf<Chain<Surface>> {
   using T = typename Surface::Coordinate;
 
  public:
-  Implementation(const Implementation&);
-  Implementation(Implementation&&);
-  Implementation(std::shared_ptr<const Surface>);
+  ImplementationOf(const ImplementationOf&);
+  ImplementationOf(ImplementationOf&&);
+  ImplementationOf(std::shared_ptr<const Surface>);
 
-  ~Implementation();
+  ~ImplementationOf();
 
-  Implementation& operator=(const Implementation&);
-  Implementation& operator=(Implementation&&);
+  ImplementationOf& operator=(const ImplementationOf&);
+  ImplementationOf& operator=(ImplementationOf&&);
 
   operator const Vector<T>&() const;
   operator const Vector<exactreal::Arb>&() const;

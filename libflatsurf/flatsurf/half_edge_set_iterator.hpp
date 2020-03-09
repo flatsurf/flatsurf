@@ -40,7 +40,7 @@ class HalfEdgeSetIterator : public boost::iterator_facade<HalfEdgeSetIterator, c
   bool equal(const HalfEdgeSetIterator &other) const;
 
  private:
-  using Implementation = ::flatsurf::Implementation<HalfEdgeSetIterator>;
+  using Implementation = ImplementationOf<HalfEdgeSetIterator>;
   spimpl::impl_ptr<Implementation> impl;
   friend Implementation;
   friend HalfEdgeSet;

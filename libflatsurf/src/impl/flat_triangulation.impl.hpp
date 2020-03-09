@@ -29,9 +29,9 @@
 namespace flatsurf {
 
 template <typename T>
-class Implementation<FlatTriangulation<T>> {
+class ImplementationOf<FlatTriangulation<T>> {
  public:
-  Implementation(const FlatTriangulationCombinatorial&, const std::function<Vector<T>(HalfEdge)>&);
+  ImplementationOf(const FlatTriangulationCombinatorial&, const std::function<Vector<T>(HalfEdge)>&);
 
   static void updateAfterFlip(HalfEdgeMap<Vector<T>>& vectors, HalfEdge flip);
   static void updateApproximationAfterFlip(HalfEdgeMap<Vector<exactreal::Arb>>& vectors, HalfEdge flip);

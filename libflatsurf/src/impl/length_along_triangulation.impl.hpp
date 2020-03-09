@@ -33,7 +33,7 @@
 namespace flatsurf {
 
 template <typename Surface>
-class Implementation<LengthAlongTriangulation<Surface>> {
+class ImplementationOf<LengthAlongTriangulation<Surface>> {
   using T = typename Surface::Coordinate;
 
  public:
@@ -46,8 +46,8 @@ class Implementation<LengthAlongTriangulation<Surface>> {
 
   using Coefficient = std::conditional_t<std::is_same_v<long long, T>, long long, mpz_class>;
 
-  Implementation();
-  Implementation(HalfEdge, std::shared_ptr<const Vertical<Surface>> vertical);
+  ImplementationOf();
+  ImplementationOf(HalfEdge, std::shared_ptr<const Vertical<Surface>> vertical);
 
   operator T() const noexcept;
 
@@ -55,7 +55,7 @@ class Implementation<LengthAlongTriangulation<Surface>> {
 
   void apply(const std::function<void(HalfEdge, const Coefficient&)>&) const;
 
-  CLASSIFICATION classify(const Implementation& rhs) const;
+  CLASSIFICATION classify(const ImplementationOf& rhs) const;
 
   std::shared_ptr<const Vertical<Surface>> vertical;
   // The coefficients attached to the half edges with positive ids

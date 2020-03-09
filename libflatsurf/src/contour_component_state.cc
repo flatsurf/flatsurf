@@ -52,14 +52,14 @@ ContourComponentState<Surface>::ContourComponentState(const ContourDecomposition
   topEdges([&]() {
     std::vector<HalfEdge> topEdges;
 
-    ::flatsurf::Implementation<ContourComponent<FlatTriangulationCollapsed<T>>>::makeContour(back_inserter(topEdges), large, *state.surface, state.surface->vertical());
+    ImplementationOf<ContourComponent<FlatTriangulationCollapsed<T>>>::makeContour(back_inserter(topEdges), large, *state.surface, state.surface->vertical());
 
     return topEdges | rx::reverse() | rx::to_vector();
   }()),
   bottomEdges([&]() {
     std::vector<HalfEdge> bottomEdges;
 
-    ::flatsurf::Implementation<ContourComponent<FlatTriangulationCollapsed<T>>>::makeContour(back_inserter(bottomEdges), -large, *state.surface, -state.surface->vertical());
+    ImplementationOf<ContourComponent<FlatTriangulationCollapsed<T>>>::makeContour(back_inserter(bottomEdges), -large, *state.surface, -state.surface->vertical());
 
     return bottomEdges | rx::transform([&](const auto e) { return -e; }) | rx::reverse() | rx::to_vector();
   }()) {

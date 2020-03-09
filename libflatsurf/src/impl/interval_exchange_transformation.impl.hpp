@@ -31,11 +31,11 @@
 namespace flatsurf {
 
 template <typename Surface>
-class Implementation<IntervalExchangeTransformation<Surface>> {
+class ImplementationOf<IntervalExchangeTransformation<Surface>> {
   using T = typename Surface::Coordinate;
 
  public:
-  Implementation(std::shared_ptr<const Surface> surface, const Vector<T>& vertical, const std::vector<HalfEdge>& top, const std::vector<HalfEdge>& bottom);
+  ImplementationOf(std::shared_ptr<const Surface> surface, const Vector<T>& vertical, const std::vector<HalfEdge>& top, const std::vector<HalfEdge>& bottom);
 
   // TODO: This is a hack.
   static void registerDecomposition(const IntervalExchangeTransformation<Surface>&, std::shared_ptr<FlowDecompositionState<FlatTriangulation<T>>>);

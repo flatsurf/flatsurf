@@ -25,11 +25,11 @@
 namespace flatsurf {
 
 template <typename Surface>
-class Implementation<Path<Surface>> {
+class ImplementationOf<Path<Surface>> {
   using Segment = SaddleConnection<Surface>;
  public:
-  Implementation();
-  Implementation(const std::vector<Segment>&);
+  ImplementationOf();
+  ImplementationOf(const std::vector<Segment>&);
 
   std::vector<Segment> path = {};
 

@@ -25,9 +25,9 @@
 namespace flatsurf {
 
 template <typename Surface>
-class Implementation<ChainIterator<Surface>> {
+class ImplementationOf<ChainIterator<Surface>> {
  public:
-  Implementation(const Chain<Surface>*, int pos = 0);
+  ImplementationOf(const Chain<Surface>*, int pos = 0);
 
   static ChainIterator<Surface> begin(const Chain<Surface>*);
   static ChainIterator<Surface> end(const Chain<Surface>*);

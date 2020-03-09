@@ -79,7 +79,7 @@ class FlowConnection : Serializable<FlowConnection<Surface>>,
   friend std::ostream& operator<<(std::ostream&, const FlowConnection<S>&);
 
  private:
-  using Implementation = ::flatsurf::Implementation<FlowConnection>;
+  using Implementation = ImplementationOf<FlowConnection>;
   Copyable<Implementation> impl;
   friend Implementation;
 };

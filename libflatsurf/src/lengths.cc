@@ -101,7 +101,7 @@ void Lengths<Surface>::subtract(Label minuend) {
 
   const auto flow = [&](const auto& connections, bool reverse) {
     auto flowed = connections | rx::transform([&](const auto& connection) {
-      return Implementation<FlowConnection<FlatTriangulation<T>>>::make(state.lock(), ::flatsurf::Implementation<FlowComponent<FlatTriangulation<T>>>::make(state.lock(), &component), connection).saddleConnection();
+      return ImplementationOf<FlowConnection<FlatTriangulation<T>>>::make(state.lock(), ImplementationOf<FlowComponent<FlatTriangulation<T>>>::make(state.lock(), &component), connection).saddleConnection();
     }) | rx::transform([&](const auto& connection) {
       return reverse ? -connection : connection;
     }) | rx::to_vector();

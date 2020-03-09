@@ -32,7 +32,7 @@
 
 namespace flatsurf {
 template <typename Surface>
-class Implementation<ContourComponent<Surface>> {
+class ImplementationOf<ContourComponent<Surface>> {
   using DecompositionState = ContourDecompositionState<Surface>;
 
  public:
@@ -45,7 +45,7 @@ class Implementation<ContourComponent<Surface>> {
 
   HalfEdge large() const;
 
-  Implementation(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* component) :
+  ImplementationOf(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* component) :
     state(state),
     component(component) {}
 

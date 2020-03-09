@@ -71,11 +71,11 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
     // std::cout << impl->state->contourDecomposition << std::endl;
     // std::cout << impl->state->components.size() << " components:" << std::endl;
     // for (auto& component : impl->state->components) {
-    //   std::cout << ::flatsurf::Implementation<FlowComponent<Surface>>::make(impl->state, &const_cast<FlowComponentState<Surface>&>(component)) << std::endl;
+    //   std::cout << ImplementationOf<FlowComponent<Surface>>::make(impl->state, &const_cast<FlowComponentState<Surface>&>(component)) << std::endl;
     // }
     ASSERTIONS(([&]() {
-      auto paths = impl->state->components | rx::transform([&](const auto& component) { return Path(::flatsurf::Implementation<FlowComponent<Surface>>::make(impl->state, &const_cast<FlowComponentState<Surface>&>(component)).perimeter() | rx::transform([](const auto& connection) { return connection.saddleConnection(); }) | rx::to_vector()); }) | rx::to_vector();
-    ::flatsurf::Implementation<ContourDecomposition<Surface>>::check(paths, vertical());
+      auto paths = impl->state->components | rx::transform([&](const auto& component) { return Path(ImplementationOf<FlowComponent<Surface>>::make(impl->state, &const_cast<FlowComponentState<Surface>&>(component)).perimeter() | rx::transform([](const auto& connection) { return connection.saddleConnection(); }) | rx::to_vector()); }) | rx::to_vector();
+    ImplementationOf<ContourDecomposition<Surface>>::check(paths, vertical());
     }));
   };
 
@@ -100,7 +100,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
       // Reconstruct the vector of our new SaddleConnection.
       Chain<FlatTriangulation<T>> vector(surface);
       for (const auto& connection : *step.equivalent) {
-        auto flowConnection = ::flatsurf::Implementation<FlowConnection<Surface>>::make(impl->state, *this, connection);
+        auto flowConnection = ImplementationOf<FlowConnection<Surface>>::make(impl->state, *this, connection);
         if (!flowConnection.vertical()) {
           // TODO: intervalxt reports non-verticals without explicit orientation.
           // Since the default for ::make() is to assume that things were made
@@ -121,7 +121,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
       // The first SaddleConnection of step.equivalent. The new
       // SaddleConnection must start clockwise from that one.
       auto clockwiseFrom = [&]() {
-        const auto precedingFlowConnection = ::flatsurf::Implementation<FlowConnection<Surface>>::make(impl->state, *this, *begin(*step.equivalent));
+        const auto precedingFlowConnection = ImplementationOf<FlowConnection<Surface>>::make(impl->state, *this, *begin(*step.equivalent));
         // TODO: Similarly, to the above, we need to turn a connection coming
         // from a HalfEdge around.
         return precedingFlowConnection.vertical() ? precedingFlowConnection.saddleConnection() : -precedingFlowConnection.saddleConnection();
@@ -131,7 +131,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
       // The negative of the new SaddleConnection must start counterclockwise
       // from that one.
       auto counterclockwiseTo = [&]() {
-        const auto finalFlowConnection = ::flatsurf::Implementation<FlowConnection<Surface>>::make(impl->state, *this, *rbegin(*step.equivalent));
+        const auto finalFlowConnection = ImplementationOf<FlowConnection<Surface>>::make(impl->state, *this, *rbegin(*step.equivalent));
         // TODO: Similarly, to the above, we need to turn a connection coming
         // from a HalfEdge around. (But since we want the negative, we need to
         // turn it around twice.)
@@ -278,17 +278,6 @@ template <typename Surface>
 boost::logic::tribool FlowComponent<Surface>::keane() const { return impl->component->dynamicalComponent.keane(); }
 
 template <typename Surface>
-Implementation<FlowComponent<Surface>>::Implementation(std::shared_ptr<FlowDecompositionState<Surface>> state, FlowComponentState<Surface>* component) :
-  state(state),
-  component(component) {
-}
-
-template <typename Surface>
-std::string Implementation<FlowComponent<Surface>>::id() const {
-  throw std::logic_error("not implemented: id()");
-}
-
-template <typename Surface>
 Surface FlowComponent<Surface>::triangulation() const {
   throw std::logic_error("not implemented: triangulation()");
 }
@@ -321,7 +310,7 @@ typename FlowComponent<Surface>::Perimeter FlowComponent<Surface>::perimeter() c
   Perimeter perimeter;
 
   for (const auto& side : impl->component->dynamicalComponent.perimeter())
-    perimeter.push_back(::flatsurf::Implementation<FlowConnection<Surface>>::make(impl->state, *this, side));
+    perimeter.push_back(ImplementationOf<FlowConnection<Surface>>::make(impl->state, *this, side));
 
   ASSERTIONS([&]() {
     Path<FlatTriangulation<T>> path = perimeter | rx::transform([&](const auto connection) { return connection.saddleConnection();}) | rx::to_vector();
@@ -343,11 +332,23 @@ const IntervalExchangeTransformation<FlatTriangulationCollapsed<typename Surface
 }
 
 template <typename Surface>
-FlowComponent<Surface> Implementation<FlowComponent<Surface>>::make(std::shared_ptr<FlowDecompositionState<Surface>> state, FlowComponentState<Surface>* component) {
+FlowComponent<Surface> ImplementationOf<FlowComponent<Surface>>::make(std::shared_ptr<FlowDecompositionState<Surface>> state, FlowComponentState<Surface>* component) {
   FlowComponent<Surface> ret;
-  ret.impl = spimpl::make_impl<Implementation>(state, component);
+  ret.impl = spimpl::make_impl<ImplementationOf>(state, component);
   return ret;
 }
+
+template <typename Surface>
+ImplementationOf<FlowComponent<Surface>>::ImplementationOf(std::shared_ptr<FlowDecompositionState<Surface>> state, FlowComponentState<Surface>* component) :
+  state(state),
+  component(component) {
+}
+
+template <typename Surface>
+std::string ImplementationOf<FlowComponent<Surface>>::id() const {
+  throw std::logic_error("not implemented: id()");
+}
+
 
 template <typename Surface>
 ostream& operator<<(ostream& os, const FlowComponent<Surface>& self) {

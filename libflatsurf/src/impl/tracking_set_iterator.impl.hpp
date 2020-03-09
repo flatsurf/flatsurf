@@ -24,9 +24,9 @@
 
 namespace flatsurf {
 template <typename T>
-class Implementation<TrackingSetIterator<T>> {
+class ImplementationOf<TrackingSetIterator<T>> {
  public:
-  Implementation(const TrackingSet<T>*);
+  ImplementationOf(const TrackingSet<T>*);
 
   static TrackingSetIterator<T> begin(const TrackingSet<T>*);
   static TrackingSetIterator<T> end(const TrackingSet<T>*);

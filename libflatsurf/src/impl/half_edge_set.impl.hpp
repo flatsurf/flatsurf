@@ -28,12 +28,12 @@
 namespace flatsurf {
 
 template <>
-class Implementation<HalfEdgeSet> {
+class ImplementationOf<HalfEdgeSet> {
  public:
   mutable boost::dynamic_bitset<> set {};
 };
 
-static_assert(!std::is_pod_v<Implementation<HalfEdgeSet>>);
+static_assert(!std::is_pod_v<ImplementationOf<HalfEdgeSet>>);
 static_assert(!std::is_pod_v<boost::dynamic_bitset<>>);
 
 }

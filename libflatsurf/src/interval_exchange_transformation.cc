@@ -64,9 +64,9 @@ IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(std::sha
     vector<HalfEdge> top, bottom;
 
     // TODO: Can we use ContourComponent directly instead?
-    ::flatsurf::Implementation<ContourComponent<Surface>>::makeContour(back_inserter(top), large, *surface, Vertical(surface, vertical));
+    ImplementationOf<ContourComponent<Surface>>::makeContour(back_inserter(top), large, *surface, Vertical(surface, vertical));
 
-    ::flatsurf::Implementation<ContourComponent<Surface>>::makeContour(back_inserter(bottom), -large, *surface, Vertical(surface, -vertical));
+    ImplementationOf<ContourComponent<Surface>>::makeContour(back_inserter(bottom), -large, *surface, Vertical(surface, -vertical));
     reverse(bottom.begin(), bottom.end());
     std::transform(bottom.begin(), bottom.end(), bottom.begin(), [](HalfEdge e) { return -e; });
     assert(std::set<HalfEdge>(bottom.begin(), bottom.end()) == std::set<HalfEdge>(top.begin(), top.end()) && "top & bottom contour must contain the same half edges");
@@ -180,7 +180,7 @@ SaddleConnection<FlatTriangulation<typename Surface::Coordinate>> IntervalExchan
 }
 
 template <typename Surface>
-Implementation<IntervalExchangeTransformation<Surface>>::Implementation(std::shared_ptr<const Surface> surface, const Vector<T>& vertical, const vector<HalfEdge>& top, const vector<HalfEdge>& bottom) :
+ImplementationOf<IntervalExchangeTransformation<Surface>>::ImplementationOf(std::shared_ptr<const Surface> surface, const Vector<T>& vertical, const vector<HalfEdge>& top, const vector<HalfEdge>& bottom) :
   surface(surface) {
   using SaddleConnection = flatsurf::SaddleConnection<FlatTriangulation<T>>;
 
@@ -229,7 +229,7 @@ Implementation<IntervalExchangeTransformation<Surface>>::Implementation(std::sha
 }
 
 template <typename Surface>
-void Implementation<IntervalExchangeTransformation<Surface>>::registerDecomposition(const IntervalExchangeTransformation<Surface>& iet, std::shared_ptr<FlowDecompositionState<FlatTriangulation<T>>> state) {
+void ImplementationOf<IntervalExchangeTransformation<Surface>>::registerDecomposition(const IntervalExchangeTransformation<Surface>& iet, std::shared_ptr<FlowDecompositionState<FlatTriangulation<T>>> state) {
   iet.impl->lengths->registerDecomposition(state);
 }
 

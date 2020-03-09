@@ -101,7 +101,7 @@ class FlatTriangulation : public FlatTriangulationCombinatorial,
   friend std::ostream &operator<<(std::ostream &, const FlatTriangulation<W> &);
 
  private:
-  using Implementation = ::flatsurf::Implementation<FlatTriangulation>;
+  using Implementation = ImplementationOf<FlatTriangulation>;
   Moveable<Implementation> impl;
 
   friend Implementation;

@@ -30,15 +30,15 @@
 namespace flatsurf {
 
 template <>
-class Implementation<HalfEdgeSetIterator> {
+class ImplementationOf<HalfEdgeSetIterator> {
  public:
-  Implementation(const HalfEdgeSet* parent, HalfEdge current);
-  Implementation(const HalfEdgeSet* parent, size_t current);
+  ImplementationOf(const HalfEdgeSet* parent, HalfEdge current);
+  ImplementationOf(const HalfEdgeSet* parent, size_t current);
 
   const HalfEdgeSet* parent;
   HalfEdge current;
 
-  static HalfEdge makeHalfEdge(const HalfEdgeSet* parent, typename decltype(::flatsurf::Implementation<HalfEdgeSet>::set)::size_type pos);
+  static HalfEdge makeHalfEdge(const HalfEdgeSet* parent, typename decltype(ImplementationOf<HalfEdgeSet>::set)::size_type pos);
 };
 
 }

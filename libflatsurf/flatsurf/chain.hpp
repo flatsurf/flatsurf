@@ -81,11 +81,11 @@ class Chain : public Serializable<Chain<Surface>>,
   friend std::ostream& operator<<(std::ostream&, const Chain<S>&);
 
  private:
-  using Implementation = ::flatsurf::Implementation<Chain>;
+  using Implementation = ImplementationOf<Chain>;
   Copyable<Implementation> impl;
   friend Implementation;
   friend ChainIterator<Surface>;
-  friend ::flatsurf::Implementation<ChainIterator<Surface>>;
+  friend ImplementationOf<ChainIterator<Surface>>;
   friend std::hash<Chain<Surface>>;
 };
 

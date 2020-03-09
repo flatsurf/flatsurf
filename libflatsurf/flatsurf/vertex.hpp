@@ -43,7 +43,7 @@ class Vertex : Serializable<Vertex>,
   friend std::ostream &operator<<(std::ostream &, const Vertex &);
 
  private:
-  using Implementation = ::flatsurf::Implementation<Vertex>;
+  using Implementation = ImplementationOf<Vertex>;
   Copyable<Implementation> impl;
   friend Implementation;
   friend std::hash<Vertex>;

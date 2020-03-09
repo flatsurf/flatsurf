@@ -161,7 +161,7 @@ size_t hash<::flatsurf::TrackingMap<K, V>>::operator()(const ::flatsurf::Trackin
   LIBFLATSURF_INSTANTIATE_ONE((TrackingMap<Edge, SaddleConnection<FlatTriangulation<T>>>))                \
   LIBFLATSURF_INSTANTIATE_ONE((TrackingMap<Edge, std::optional<SaddleConnection<FlatTriangulation<T>>>>)) \
   LIBFLATSURF_INSTANTIATE_ONE((TrackingMap<HalfEdge, CollapsedHalfEdge<T>>))                              \
-  LIBFLATSURF_INSTANTIATE_ONE((TrackingMap<HalfEdge, typename Implementation<FlatTriangulationCollapsed<T>>::AsymmetricConnection>))
+  LIBFLATSURF_INSTANTIATE_ONE((TrackingMap<HalfEdge, typename ImplementationOf<FlatTriangulationCollapsed<T>>::AsymmetricConnection>))
 
 LIBFLATSURF_INSTANTIATE_MANY((LIBFLATSURF_INSTANTIATE_THIS), LIBFLATSURF_REAL_TYPES)
 

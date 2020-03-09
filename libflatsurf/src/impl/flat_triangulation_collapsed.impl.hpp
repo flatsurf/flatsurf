@@ -38,14 +38,14 @@ template <typename T>
 class CollapsedHalfEdge;
 
 template <typename T>
-class Implementation<FlatTriangulationCollapsed<T>> {
+class ImplementationOf<FlatTriangulationCollapsed<T>> {
   using SaddleConnection = flatsurf::SaddleConnection<FlatTriangulation<T>>;
   using CollapsedHalfEdge = flatsurf::CollapsedHalfEdge<T>;
 
   friend CollapsedHalfEdge;
 
  public:
-  Implementation(const FlatTriangulationCombinatorial&, std::unique_ptr<FlatTriangulation<T>>, const Vector<T>&);
+  ImplementationOf(const FlatTriangulationCombinatorial&, std::unique_ptr<FlatTriangulation<T>>, const Vector<T>&);
 
   // TODO: Move to its own file.
   // TODO: This is the same as TrackingStorage::Value; merge them

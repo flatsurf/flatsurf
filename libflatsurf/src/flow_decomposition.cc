@@ -66,10 +66,10 @@ FlowDecomposition<Surface>::FlowDecomposition(std::unique_ptr<Surface> surface, 
     // std::cout << impl->state->contourDecomposition << std::endl;
     // std::cout << impl->state->components.size() << " components:" << std::endl;
     // for (auto& component : impl->state->components) {
-    //   std::cout << ::flatsurf::Implementation<FlowComponent<Surface>>::make(impl->state, &const_cast<FlowComponentState<Surface>&>(component)) << std::endl;
+    //   std::cout << ImplementationOf<FlowComponent<Surface>>::make(impl->state, &const_cast<FlowComponentState<Surface>&>(component)) << std::endl;
     // }
     auto paths = components() | rx::transform([](const auto& component) { return Path(component.perimeter() | rx::transform([](const auto& connection) { return connection.saddleConnection(); }) | rx::to_vector()); }) | rx::to_vector();
-    ::flatsurf::Implementation<ContourDecomposition<Surface>>::check(paths, Vertical(this->surface(), vertical));
+    ImplementationOf<ContourDecomposition<Surface>>::check(paths, Vertical(this->surface(), vertical));
   }));
 }
 
@@ -90,16 +90,16 @@ template <typename Surface>
 std::vector<FlowComponent<Surface>> FlowDecomposition<Surface>::components() const {
   std::vector<FlowComponent<Surface>> components;
   for (auto& component : impl->state->components) {
-    components.push_back(::flatsurf::Implementation<FlowComponent<Surface>>::make(impl->state, &component));
+    components.push_back(ImplementationOf<FlowComponent<Surface>>::make(impl->state, &component));
   }
   return components;
 }
 
 template <typename Surface>
-Implementation<FlowDecomposition<Surface>>::Implementation(std::unique_ptr<Surface> surface, const Vector<T>& vertical) :
+ImplementationOf<FlowDecomposition<Surface>>::ImplementationOf(std::unique_ptr<Surface> surface, const Vector<T>& vertical) :
   state(std::make_shared<FlowDecompositionState<Surface>>(std::move(surface), vertical)) {
   for (auto& component : state->components)
-    Implementation<IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>>::registerDecomposition(*component.iet, state);
+    ImplementationOf<IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>>::registerDecomposition(*component.iet, state);
 }
 
 template <typename Surface>

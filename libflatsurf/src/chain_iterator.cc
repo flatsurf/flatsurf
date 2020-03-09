@@ -64,23 +64,23 @@ std::ostream& operator<<(std::ostream& os, const ChainIterator<Surface>& self) {
 }
 
 template <typename Surface>
-Implementation<ChainIterator<Surface>>::Implementation(const Chain<Surface>* parent, int pos) :
+ImplementationOf<ChainIterator<Surface>>::ImplementationOf(const Chain<Surface>* parent, int pos) :
   parent(parent),
   current(make(parent, findNext(parent, pos - 1))) {
 }
 
 template <typename Surface>
-ChainIterator<Surface> Implementation<ChainIterator<Surface>>::begin(const Chain<Surface>* chain) {
+ChainIterator<Surface> ImplementationOf<ChainIterator<Surface>>::begin(const Chain<Surface>* chain) {
   return ChainIterator<Surface>(PrivateConstructor{}, chain, 0);
 }
 
 template <typename Surface>
-ChainIterator<Surface> Implementation<ChainIterator<Surface>>::end(const Chain<Surface>* chain) {
+ChainIterator<Surface> ImplementationOf<ChainIterator<Surface>>::end(const Chain<Surface>* chain) {
   return ChainIterator<Surface>(PrivateConstructor{}, chain, static_cast<int>(chain->surface().size()));
 }
 
 template <typename Surface>
-size_t Implementation<ChainIterator<Surface>>::findNext(const Chain<Surface>* parent, int pos) {
+size_t ImplementationOf<ChainIterator<Surface>>::findNext(const Chain<Surface>* parent, int pos) {
   const size_t size = parent->surface().size();
 
   do {
@@ -91,7 +91,7 @@ size_t Implementation<ChainIterator<Surface>>::findNext(const Chain<Surface>* pa
 }
 
 template <typename Surface>
-std::pair<Edge, const mpz_class*> Implementation<ChainIterator<Surface>>::make(const Chain<Surface>*parent, size_t pos) {
+std::pair<Edge, const mpz_class*> ImplementationOf<ChainIterator<Surface>>::make(const Chain<Surface>*parent, size_t pos) {
   const Edge e = Edge::fromIndex(pos);
   if (pos != parent->surface().size())
     return std::pair(e, &(*parent)[e]);

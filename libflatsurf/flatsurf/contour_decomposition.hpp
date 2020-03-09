@@ -45,7 +45,7 @@ class ContourDecomposition {
   std::shared_ptr<const FlatTriangulationCollapsed<T>> collapsed() const;
 
  private:
-  using Implementation = ::flatsurf::Implementation<ContourDecomposition>;
+  using Implementation = ImplementationOf<ContourDecomposition>;
   spimpl::unique_impl_ptr<Implementation> impl;
 
   friend Implementation;

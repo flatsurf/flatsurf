@@ -163,7 +163,7 @@ ostream& operator<<(ostream& os, const Vertical<Surface>& self) {
 }
 
 template <typename Surface>
-Implementation<Vertical<Surface>>::Implementation(std::shared_ptr<const Surface> surface, const Vector<T>& vertical) :
+ImplementationOf<Vertical<Surface>>::ImplementationOf(std::shared_ptr<const Surface> surface, const Vector<T>& vertical) :
   surface(surface),
   vertical(vertical),
   horizontal(-vertical.perpendicular()) {
@@ -171,7 +171,7 @@ Implementation<Vertical<Surface>>::Implementation(std::shared_ptr<const Surface>
 }
 
 template <typename Surface>
-bool Implementation<Vertical<Surface>>::visit(const Vertical& self, HalfEdge start, std::unordered_set<HalfEdge>& component, std::function<bool(HalfEdge)> visitor) {
+bool ImplementationOf<Vertical<Surface>>::visit(const Vertical& self, HalfEdge start, std::unordered_set<HalfEdge>& component, std::function<bool(HalfEdge)> visitor) {
   if (component.find(start) != component.end())
     return true;
 

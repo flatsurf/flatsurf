@@ -74,7 +74,7 @@ class TrackingMap : boost::equality_comparable<TrackingMap<K, V>> {
 
   // TODO: I need to find a better solution for this.
  public:
-  using Implementation = ::flatsurf::Implementation<TrackingMap>;
+  using Implementation = ImplementationOf<TrackingMap>;
   spimpl::unique_impl_ptr<Implementation> impl;
 
   static void noFlip(TrackingMap&, HalfEdge);

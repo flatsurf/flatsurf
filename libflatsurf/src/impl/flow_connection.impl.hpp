@@ -34,11 +34,11 @@
 namespace flatsurf {
 
 template <typename Surface>
-class Implementation<FlowConnection<Surface>> {
+class ImplementationOf<FlowConnection<Surface>> {
   using T = typename Surface::Coordinate;
 
  public:
-  Implementation(std::shared_ptr<FlowDecompositionState<Surface>>, const FlowComponent<Surface>&, const SaddleConnection<FlatTriangulation<T>>&);
+  ImplementationOf(std::shared_ptr<FlowDecompositionState<Surface>>, const FlowComponent<Surface>&, const SaddleConnection<FlatTriangulation<T>>&);
 
   static FlowConnection<Surface> make(std::shared_ptr<FlowDecompositionState<Surface>>, const FlowComponent<Surface>&, const intervalxt::Connection&);
   static FlowConnection<Surface> make(std::shared_ptr<FlowDecompositionState<Surface>>, const FlowComponent<Surface>&, const intervalxt::HalfEdge&);

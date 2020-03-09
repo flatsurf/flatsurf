@@ -201,7 +201,7 @@ std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::
 }
 
 std::vector<HalfEdge> FlatTriangulationCombinatorial::outgoing(const Vertex& v) const {
-  const auto& outgoing = ::flatsurf::Implementation<Vertex>::outgoing(v);
+  const auto& outgoing = ImplementationOf<Vertex>::outgoing(v);
   ASSERT(outgoing.size() >= 3 || (hasBoundary() && outgoing.size() >= 2), "Vertex " << v << " has impossible number of outgoing edges " << outgoing.size());
   return std::vector<HalfEdge>(begin(outgoing), end(outgoing));
 }
@@ -230,7 +230,7 @@ void FlatTriangulationCombinatorial::flip(HalfEdge e) {
   impl->faces *= cycle{c, b, -e};
 
   for (auto& vertex : impl->vertexes)
-    ::flatsurf::Implementation<Vertex>::afterFlip(vertex, *this, e);
+    ImplementationOf<Vertex>::afterFlip(vertex, *this, e);
 
   // notify attached structures about this flip
   impl->change.emit(Implementation::MessageAfterFlip{e});
@@ -370,7 +370,7 @@ std::pair<HalfEdge, HalfEdge> FlatTriangulationCombinatorial::collapse(HalfEdge 
   }
 }
 
-Implementation<FlatTriangulationCombinatorial>::Implementation(const Permutation<HalfEdge>& vertices, const vector<HalfEdge>& boundaries) :
+ImplementationOf<FlatTriangulationCombinatorial>::ImplementationOf(const Permutation<HalfEdge>& vertices, const vector<HalfEdge>& boundaries) :
   vertices(vertices),
   faces(
       // In the triangulation, the order in which half edges are attached to a
@@ -401,7 +401,7 @@ Implementation<FlatTriangulationCombinatorial>::Implementation(const Permutation
   check();
 }
 
-void Implementation<FlatTriangulationCombinatorial>::check() {
+void ImplementationOf<FlatTriangulationCombinatorial>::check() {
   assert(faces.domain().size() == vertices.domain().size() && "faces and vertices must have the same half edges as domain");
   assert([&]() {
     for (auto edge : faces.domain()) {
@@ -426,13 +426,13 @@ void Implementation<FlatTriangulationCombinatorial>::check() {
   }() && "vertices must be consistent with faces");
 }
 
-void Implementation<FlatTriangulationCombinatorial>::resetVertexes() {
+void ImplementationOf<FlatTriangulationCombinatorial>::resetVertexes() {
   this->vertexes.clear();
   for (const auto& cycle : vertices.cycles())
-    vertexes.push_back(::flatsurf::Implementation<Vertex>::make(cycle));
+    vertexes.push_back(::flatsurf::ImplementationOf<Vertex>::make(cycle));
 }
 
-void Implementation<FlatTriangulationCombinatorial>::resetVertices() {
+void ImplementationOf<FlatTriangulationCombinatorial>::resetVertices() {
   std::vector<std::pair<HalfEdge, HalfEdge>> vertices;
   for (auto e : faces.domain()) {
     if (faces(e) == e)
@@ -446,7 +446,7 @@ void Implementation<FlatTriangulationCombinatorial>::resetVertices() {
   this->vertices = Permutation<HalfEdge>(vertices);
 }
 
-void Implementation<FlatTriangulationCombinatorial>::resetEdges() {
+void ImplementationOf<FlatTriangulationCombinatorial>::resetEdges() {
   std::set<Edge> edges;
   for (const auto& e : faces.domain())
     edges.insert(e);
@@ -456,10 +456,10 @@ void Implementation<FlatTriangulationCombinatorial>::resetEdges() {
   sort(begin(halfEdges), end(halfEdges));
 }
 
-void Implementation<FlatTriangulationCombinatorial>::swap(HalfEdge a, HalfEdge b) {
+void ImplementationOf<FlatTriangulationCombinatorial>::swap(HalfEdge a, HalfEdge b) {
   if (a == b) return;
 
-  change.emit(Implementation::MessageBeforeSwap{a, b});
+  change.emit(ImplementationOf::MessageBeforeSwap{a, b});
 
   vertices *= {a, b};
   std::vector{a, b} *= vertices;
@@ -480,7 +480,7 @@ void Implementation<FlatTriangulationCombinatorial>::swap(HalfEdge a, HalfEdge b
   resetVertexes();
 }
 
-Implementation<FlatTriangulationCombinatorial>::~Implementation() {
+ImplementationOf<FlatTriangulationCombinatorial>::~ImplementationOf() {
   change.emit(MessageAfterMove{nullptr});
 }
 

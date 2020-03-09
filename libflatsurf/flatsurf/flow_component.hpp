@@ -78,7 +78,7 @@ class FlowComponent {
   friend std::ostream& operator<<(std::ostream&, const FlowComponent<S>&);
 
  private:
-  using Implementation = ::flatsurf::Implementation<FlowComponent>;
+  using Implementation = ImplementationOf<FlowComponent>;
   Copyable<Implementation> impl;
 
   friend Implementation;

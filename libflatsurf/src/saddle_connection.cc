@@ -245,7 +245,7 @@ ostream& operator<<(ostream& os, const SaddleConnection<Surface>& self) {
 }
 
 template <typename Surface>
-Implementation<SaddleConnection<Surface>>::Implementation(std::shared_ptr<const Surface>& surface, HalfEdge e) :
+ImplementationOf<SaddleConnection<Surface>>::ImplementationOf(std::shared_ptr<const Surface>& surface, HalfEdge e) :
   surface(surface),
   source(e),
   target(-e),
@@ -253,7 +253,7 @@ Implementation<SaddleConnection<Surface>>::Implementation(std::shared_ptr<const 
 }
 
 template <typename Surface>
-Implementation<SaddleConnection<Surface>>::Implementation(std::shared_ptr<const Surface>& surface, HalfEdge source, HalfEdge target, const Chain<Surface>& chain) :
+ImplementationOf<SaddleConnection<Surface>>::ImplementationOf(std::shared_ptr<const Surface>& surface, HalfEdge source, HalfEdge target, const Chain<Surface>& chain) :
   surface(surface),
   source(source),
   target(target),
@@ -264,7 +264,7 @@ Implementation<SaddleConnection<Surface>>::Implementation(std::shared_ptr<const 
 }
 
 template <typename Surface>
-void Implementation<SaddleConnection<Surface>>::normalize() {
+void ImplementationOf<SaddleConnection<Surface>>::normalize() {
   const auto normalize = [&](HalfEdge& sector, const Vector<T>& vector) {
     while (surface->fromEdge(sector).ccw(vector) == CCW::COUNTERCLOCKWISE)
       sector = surface->nextAtVertex(sector);
@@ -279,7 +279,7 @@ void Implementation<SaddleConnection<Surface>>::normalize() {
 
 // TODO: Deleteme
 template <typename Surface>
-void Implementation<SaddleConnection<Surface>>::check(const SaddleConnection& connection) {
+void ImplementationOf<SaddleConnection<Surface>>::check(const SaddleConnection& connection) {
   // Run checks in constructor
   assert([&]() {
     SaddleConnection copy = connection;

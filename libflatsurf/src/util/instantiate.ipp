@@ -52,7 +52,7 @@
 
 #define LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION(T) \
   namespace flatsurf {                                 \
-  template class Implementation<LIBFLATSURF_REM(T)>;   \
+  template class ImplementationOf<LIBFLATSURF_REM(T)>;   \
   }                                                    \
   LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION(T)
 

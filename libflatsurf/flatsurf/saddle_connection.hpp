@@ -97,7 +97,7 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   friend std::ostream &operator<<(std::ostream &, const SaddleConnection<Surf> &);
 
  private:
-  using Implementation = ::flatsurf::Implementation<SaddleConnection>;
+  using Implementation = ImplementationOf<SaddleConnection>;
   Copyable<Implementation> impl;
 
   friend Implementation;

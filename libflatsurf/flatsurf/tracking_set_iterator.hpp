@@ -44,7 +44,7 @@ class TrackingSetIterator : public boost::iterator_facade<TrackingSetIterator<T>
     friend std::ostream& operator<<(std::ostream&, const TrackingSetIterator<S>&);
 
   private:
-    using Implementation = ::flatsurf::Implementation<TrackingSetIterator<T>>;
+    using Implementation = ImplementationOf<TrackingSetIterator<T>>;
     spimpl::impl_ptr<Implementation> impl;
     friend Implementation;
 };

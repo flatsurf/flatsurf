@@ -31,12 +31,12 @@
 
 namespace flatsurf {
 template <typename Surface>
-class Implementation<ContourDecomposition<Surface>> {
+class ImplementationOf<ContourDecomposition<Surface>> {
   using T = typename Surface::Coordinate;
   using DecompositionState = ContourDecompositionState<Surface>;
 
  public:
-  Implementation(std::unique_ptr<Surface>, const Vector<T>&);
+  ImplementationOf(std::unique_ptr<Surface>, const Vector<T>&);
 
   // Verify that the lists of saddle connectionss in decomposition describe a
   // valid decomposition of the surface they are defined on.

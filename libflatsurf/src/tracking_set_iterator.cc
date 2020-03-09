@@ -74,12 +74,12 @@ std::ostream& operator<<(std::ostream& os, const TrackingSetIterator<T>& self) {
 }
 
 template <typename T>
-Implementation<TrackingSetIterator<T>>::Implementation(const TrackingSet<T>* set) :
+ImplementationOf<TrackingSetIterator<T>>::ImplementationOf(const TrackingSet<T>* set) :
   set(set) {
 }
 
 template <typename T>
-TrackingSetIterator<T> Implementation<TrackingSetIterator<T>>::begin(const TrackingSet<T>* parent) {
+TrackingSetIterator<T> ImplementationOf<TrackingSetIterator<T>>::begin(const TrackingSet<T>* parent) {
   auto it = end(parent);
   if constexpr (std::is_same_v<T, HalfEdge>) {
     using std::begin;
@@ -94,7 +94,7 @@ TrackingSetIterator<T> Implementation<TrackingSetIterator<T>>::begin(const Track
 }
 
 template <typename T>
-TrackingSetIterator<T> Implementation<TrackingSetIterator<T>>::end(const TrackingSet<T>* parent) {
+TrackingSetIterator<T> ImplementationOf<TrackingSetIterator<T>>::end(const TrackingSet<T>* parent) {
   auto it = TrackingSetIterator<T>();
   it.impl = spimpl::make_impl<Implementation>(parent);
   return it;

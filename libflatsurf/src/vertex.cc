@@ -60,11 +60,11 @@ ostream& operator<<(ostream& os, const Vertex& self) {
   return os << fmt::format("{}", self.impl->sources);
 }
 
-bool Implementation<Vertex>::comparable(const HalfEdgeSet& a, const HalfEdgeSet& b) {
+bool ImplementationOf<Vertex>::comparable(const HalfEdgeSet& a, const HalfEdgeSet& b) {
   return a == b || a.disjoint(b);
 }
 
-void Implementation<Vertex>::afterFlip(Vertex& v, const FlatTriangulationCombinatorial& parent, HalfEdge flipped) {
+void ImplementationOf<Vertex>::afterFlip(Vertex& v, const FlatTriangulationCombinatorial& parent, HalfEdge flipped) {
   auto& sources = v.impl->sources;
 
   HalfEdge b = parent.previousAtVertex(-flipped);
@@ -77,14 +77,14 @@ void Implementation<Vertex>::afterFlip(Vertex& v, const FlatTriangulationCombina
   if (sources.contains(d)) sources.insert(flipped);
 }
 
-Implementation<Vertex>::Implementation(const HalfEdgeSet& sources) :
+ImplementationOf<Vertex>::ImplementationOf(const HalfEdgeSet& sources) :
   sources(sources) {}
 
-const HalfEdgeSet& Implementation<Vertex>::outgoing(const Vertex& v) {
+const HalfEdgeSet& ImplementationOf<Vertex>::outgoing(const Vertex& v) {
   return v.impl->sources;
 }
 
-Vertex Implementation<Vertex>::make(const std::vector<HalfEdge> sources) {
+Vertex ImplementationOf<Vertex>::make(const std::vector<HalfEdge> sources) {
   return Vertex(PrivateConstructor{}, HalfEdgeSet(std::move(sources)));
 }
 

@@ -149,11 +149,11 @@ std::ostream& operator<<(std::ostream& os, const Path<Surface>& path) {
 }
 
 template <typename Surface>
-Implementation<Path<Surface>>::Implementation() :
+ImplementationOf<Path<Surface>>::ImplementationOf() :
   path() {}
 
 template <typename Surface>
-Implementation<Path<Surface>>::Implementation(const std::vector<Segment>& path) {
+ImplementationOf<Path<Surface>>::ImplementationOf(const std::vector<Segment>& path) {
   for (auto segment = begin(path); segment != end(path); segment++) {
     ASSERT(segment + 1 == end(path) || connected(*segment, *(segment + 1)), "Path must be connected but " << *segment << " does not precede " << *(segment + 1) << " either because they are connected to different vertices or because the turn from " << -*segment << " to " << *(segment + 1) << " is not turning clockwise in the range (0, 2π]");
     this->path.push_back(*segment);
@@ -161,7 +161,7 @@ Implementation<Path<Surface>>::Implementation(const std::vector<Segment>& path) 
 }
 
 template <typename Surface>
-bool Implementation<Path<Surface>>::connected(const Segment& a, const Segment& b) {
+bool ImplementationOf<Path<Surface>>::connected(const Segment& a, const Segment& b) {
   const auto& surface = a.surface();
 
   const auto from = -a;

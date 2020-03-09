@@ -154,9 +154,8 @@ class Serializable;
 template <typename T>
 struct Serialization;
 
-// TODO; Rename to ImplementationOf.
 template <typename T>
-class Implementation;
+class ImplementationOf;
 
 }  // namespace flatsurf
 

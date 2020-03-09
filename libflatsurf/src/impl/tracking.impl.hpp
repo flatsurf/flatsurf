@@ -29,11 +29,11 @@
 namespace flatsurf {
 
 template <typename T>
-class Implementation<Tracking<T>> {
+class ImplementationOf<Tracking<T>> {
   void disconnect();
   void connect();
 
-  using Message = typename ::flatsurf::Implementation<FlatTriangulationCombinatorial>::Message;
+  using Message = typename ImplementationOf<FlatTriangulationCombinatorial>::Message;
 
  public:
   using FlipHandler = typename Tracking<T>::FlipHandler;
@@ -42,8 +42,8 @@ class Implementation<Tracking<T>> {
   using EraseHandler = typename Tracking<T>::EraseHandler;
   using DestructionHandler = typename Tracking<T>::DestructionHandler;
 
-  Implementation(const FlatTriangulationCombinatorial* parent, T* value, const FlipHandler& updateAfterFlip = Tracking<T>::noFlip, const CollapseHandler& updateBeforeCollapse = Tracking<T>::noCollapse, const SwapHandler& updateBeforeSwap = Tracking<T>::noSwap, const EraseHandler& updateBeforeErase = Tracking<T>::noErase, const DestructionHandler& updateBeforeDestruction = Tracking<T>::forgetParent);
-  ~Implementation();
+  ImplementationOf(const FlatTriangulationCombinatorial* parent, T* value, const FlipHandler& updateAfterFlip = Tracking<T>::noFlip, const CollapseHandler& updateBeforeCollapse = Tracking<T>::noCollapse, const SwapHandler& updateBeforeSwap = Tracking<T>::noSwap, const EraseHandler& updateBeforeErase = Tracking<T>::noErase, const DestructionHandler& updateBeforeDestruction = Tracking<T>::forgetParent);
+  ~ImplementationOf();
 
   // We keep a reference to the triangulation that we were created with so that
   // we can notify it on destruction that we do not need to be informed about

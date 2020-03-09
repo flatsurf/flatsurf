@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -251,7 +251,7 @@ std::shared_ptr<const FlatTriangulationCollapsed<T>> FlatTriangulationCollapsed<
 }
 
 template <typename T>
-Implementation<FlatTriangulationCollapsed<T>>::Implementation(const FlatTriangulationCombinatorial& combinatorial, std::unique_ptr<FlatTriangulation<T>> surface, const Vector<T>& vertical) :
+ImplementationOf<FlatTriangulationCollapsed<T>>::ImplementationOf(const FlatTriangulationCombinatorial& combinatorial, std::unique_ptr<FlatTriangulation<T>> surface, const Vector<T>& vertical) :
   original(std::move(surface)),
   vertical(vertical),
   collapsedHalfEdges(
@@ -271,7 +271,7 @@ Implementation<FlatTriangulationCollapsed<T>>::Implementation(const FlatTriangul
 
 template <typename T>
 template <typename M>
-void Implementation<FlatTriangulationCollapsed<T>>::handleFlip(M& map, HalfEdge flip, const std::function<void(const FlatTriangulationCollapsed<T>&, HalfEdge, HalfEdge, HalfEdge, HalfEdge)>& handler) {
+void ImplementationOf<FlatTriangulationCollapsed<T>>::handleFlip(M& map, HalfEdge flip, const std::function<void(const FlatTriangulationCollapsed<T>&, HalfEdge, HalfEdge, HalfEdge, HalfEdge)>& handler) {
   const auto& surface = static_cast<const FlatTriangulationCollapsed<T>&>(map.parent());
 
   // The flip turned (a b flip)(c d -flip) into (a -flip d)(c flip b)
@@ -285,7 +285,7 @@ void Implementation<FlatTriangulationCollapsed<T>>::handleFlip(M& map, HalfEdge 
 
 template <typename T>
 template <typename M>
-void Implementation<FlatTriangulationCollapsed<T>>::handleCollapse(M& map, Edge collapse_, const std::function<void(const FlatTriangulationCollapsed<T>&, HalfEdge)>& handler) {
+void ImplementationOf<FlatTriangulationCollapsed<T>>::handleCollapse(M& map, Edge collapse_, const std::function<void(const FlatTriangulationCollapsed<T>&, HalfEdge)>& handler) {
   const auto& surface = static_cast<const FlatTriangulationCollapsed<T>&>(map.parent());
   HalfEdge collapse = collapse_.positive();
 
@@ -298,7 +298,7 @@ void Implementation<FlatTriangulationCollapsed<T>>::handleCollapse(M& map, Edge 
 }
 
 template <typename T>
-T Implementation<FlatTriangulationCollapsed<T>>::area(const FlatTriangulationCollapsed<T>& self) {
+T ImplementationOf<FlatTriangulationCollapsed<T>>::area(const FlatTriangulationCollapsed<T>& self) {
   T area = T();
 
   for (auto e : self.halfEdges()) {
@@ -321,7 +321,7 @@ T Implementation<FlatTriangulationCollapsed<T>>::area(const FlatTriangulationCol
 }
 
 template <typename T>
-bool Implementation<FlatTriangulationCollapsed<T>>::faceClosed(const FlatTriangulationCollapsed<T>& self, HalfEdge face) {
+bool ImplementationOf<FlatTriangulationCollapsed<T>>::faceClosed(const FlatTriangulationCollapsed<T>& self, HalfEdge face) {
   if (self.boundary(face))
     return true;
   if (self.nextInFace(face) == -face)
@@ -333,12 +333,12 @@ bool Implementation<FlatTriangulationCollapsed<T>>::faceClosed(const FlatTriangu
 // TODO: Can I get rid of all of the .value here?
 
 template <typename T>
-void Implementation<FlatTriangulationCollapsed<T>>::updateAfterFlip(HalfEdgeMap<AsymmetricConnection>& vectors, HalfEdge flip) {
+void ImplementationOf<FlatTriangulationCollapsed<T>>::updateAfterFlip(HalfEdgeMap<AsymmetricConnection>& vectors, HalfEdge flip) {
   // TODO: Speed this up. We can very often get away without creating a new
   // Chain/SaddleConnection by using more move and inplace operations. There
   // should probably be a destructive static_cast from SaddleConnection&& to
   // Chain.
-  Implementation::handleFlip(vectors, flip, [&](const auto& surface, HalfEdge a, HalfEdge b, HalfEdge c, HalfEdge d) {
+  ImplementationOf::handleFlip(vectors, flip, [&](const auto& surface, HalfEdge a, HalfEdge b, HalfEdge c, HalfEdge d) {
     const auto sum = [&](const auto& lhs, const auto& rhs) {
       return SaddleConnection(surface.impl->original, lhs.source(), rhs.target(), static_cast<const Chain<FlatTriangulation<T>>&>(lhs) + static_cast<const Chain<FlatTriangulation<T>>&>(rhs));
     };
@@ -381,8 +381,8 @@ void Implementation<FlatTriangulationCollapsed<T>>::updateAfterFlip(HalfEdgeMap<
 }
 
 template <typename T>
-void Implementation<FlatTriangulationCollapsed<T>>::updateBeforeCollapse(HalfEdgeMap<AsymmetricConnection>& vectors, Edge collapse_) {
-  Implementation::handleCollapse(vectors, collapse_, [&](const auto& surface, HalfEdge collapse) {
+void ImplementationOf<FlatTriangulationCollapsed<T>>::updateBeforeCollapse(HalfEdgeMap<AsymmetricConnection>& vectors, Edge collapse_) {
+  ImplementationOf::handleCollapse(vectors, collapse_, [&](const auto& surface, HalfEdge collapse) {
     auto& collapsedHalfEdges = surface.impl->collapsedHalfEdges;
 
     // Consider the faces (a -collapse d) and (c collapse b)

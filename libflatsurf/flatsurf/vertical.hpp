@@ -81,7 +81,7 @@ class Vertical : boost::equality_comparable<Vertical<Surface>> {
 
   // TODO
  public:
-  using Implementation = ::flatsurf::Implementation<Vertical>;
+  using Implementation = ImplementationOf<Vertical>;
   spimpl::impl_ptr<Implementation> impl;
 
   friend Implementation;

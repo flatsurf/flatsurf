@@ -30,11 +30,11 @@
 namespace flatsurf {
 
 template <typename Surface>
-class Implementation<FlowComponent<Surface>> {
+class ImplementationOf<FlowComponent<Surface>> {
  public:
   class ComponentState;
 
-  Implementation(std::shared_ptr<FlowDecompositionState<Surface>>, FlowComponentState<Surface>*);
+  ImplementationOf(std::shared_ptr<FlowDecompositionState<Surface>>, FlowComponentState<Surface>*);
 
   static FlowComponent<Surface> make(std::shared_ptr<FlowDecompositionState<Surface>>, FlowComponentState<Surface>*);
 

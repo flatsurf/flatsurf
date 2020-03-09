@@ -73,12 +73,12 @@ class Path : public Serializable<Path<Surface>>,
   friend std::ostream& operator<<(std::ostream&, const Path<S>&);
 
  private:
-  using Implementation = ::flatsurf::Implementation<Path>;
+  using Implementation = ImplementationOf<Path>;
   Copyable<Implementation> impl;
 
   friend Implementation;
   friend PathIterator<Surface>;
-  friend ::flatsurf::Implementation<PathIterator<Surface>>;
+  friend ImplementationOf<PathIterator<Surface>>;
 };
 
 }  // namespace flatsurf

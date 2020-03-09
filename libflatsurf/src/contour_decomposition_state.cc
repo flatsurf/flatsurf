@@ -53,7 +53,7 @@ ContourDecompositionState<Surface>::ContourDecompositionState(std::unique_ptr<Su
 
 template <typename Surface>
 ContourComponent<Surface> ContourDecompositionState<Surface>::make(ComponentState* component) {
-  return Implementation<ContourComponent<Surface>>::make(this->shared_from_this(), component);
+  return ImplementationOf<ContourComponent<Surface>>::make(this->shared_from_this(), component);
 }
 
 template <typename Surface>

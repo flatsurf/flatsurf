@@ -64,7 +64,7 @@ class IntervalExchangeTransformation {
   friend std::ostream& operator<<(std::ostream&, const IntervalExchangeTransformation<S>&);
 
  private:
-  using Implementation = ::flatsurf::Implementation<IntervalExchangeTransformation>;
+  using Implementation = ImplementationOf<IntervalExchangeTransformation>;
   spimpl::unique_impl_ptr<Implementation> impl;
 
   friend Implementation;

@@ -117,7 +117,7 @@ class FlatTriangulationCombinatorial : Serializable<FlatTriangulationCombinatori
   // TODO
  public:
   // TODO: Use this everywhere
-  using Implementation = ::flatsurf::Implementation<FlatTriangulationCombinatorial>;
+  using Implementation = ImplementationOf<FlatTriangulationCombinatorial>;
   Moveable<Implementation> impl;
   friend Implementation;
 };

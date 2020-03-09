@@ -65,7 +65,7 @@ class Tracked {
   friend std::ostream& operator<<(std::ostream&, const Tracked<S>&);
 
  private:
-  using Implementation = ::flatsurf::Implementation<Tracked<T>>;
+  using Implementation = ImplementationOf<Tracked<T>>;
   spimpl::unique_impl_ptr<Implementation> impl;
   friend Implementation;
 
