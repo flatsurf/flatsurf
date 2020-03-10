@@ -46,12 +46,19 @@ cppyy.py.add_pythonization(enable_vector_print, "flatsurf")
 cppyy.py.add_pythonization(add_saddle_connections, "flatsurf")
 cppyy.py.add_pythonization(lambda proxy, name: enable_cereal(proxy, name, ["flatsurf/cereal.hpp"]), "flatsurf")
 
-from .decomposition import cylinder_diagram
 def add_cylinder_diagram(proxy, name):
     if proxy.__cpp_name__.startswith("flatsurf::FlowDecomposition<flatsurf::FlatTriangulation<"):
+        from .decomposition import cylinder_diagram
         proxy.cylinder_diagram = cylinder_diagram
 
 cppyy.py.add_pythonization(add_cylinder_diagram, "flatsurf")
+
+def add_stratum(proxy, name):
+    if proxy.__cpp_name__.startswith("flatsurf::FlatTriangulation<"):
+        from .surface import stratum
+        proxy.stratum = stratum
+
+cppyy.py.add_pythonization(add_stratum, "flatsurf")
 
 for path in os.environ.get('PYFLATSURF_INCLUDE','').split(':'):
     if path: cppyy.add_include_path(path)

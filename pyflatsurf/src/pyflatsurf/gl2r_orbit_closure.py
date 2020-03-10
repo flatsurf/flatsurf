@@ -45,11 +45,12 @@ import cppyy
 from pyeantic import RealEmbeddedNumberField
 import pyflatsurf
 from pyflatsurf import flatsurf
+from .vector import Vectors
 
 # TODO: move into flatsurf
 Vertex = cppyy.gbl.flatsurf.Vertex
 
-from sage.all import VectorSpace, FreeModule, matrix, identity_matrix, ZZ, QQ, Unknown
+from sage.all import VectorSpace, FreeModule, matrix, identity_matrix, ZZ, QQ, Unknown, vector
 
 def proj(v):
     x,y = v
@@ -58,6 +59,14 @@ def proj(v):
     if x:
         return v/x
     raise ValueError
+
+def is_between(e0, e1, f):
+    if e0[0] * e1[1] > e1[0] * e0[1]:
+        return e1[1] * f[0] > e1[0] * f[1] and e0[0] * f[1] > e0[1] * f[0]
+    elif e0[0] * e1[1] == e1[0] * e0[1]:
+        return e0[0] * f[1] > e0[1] * f[0]
+    else:
+        return e0[1] * f[0] <= e0[0] * f[1] or e1[0] * f[1] <= e1[1] * f[0]
 
 class Decomposition:
     def __init__(self, gl2rorbit, decomposition, u):
@@ -234,7 +243,7 @@ class Decomposition:
         Because of https://github.com/flatsurf/flatsurf/issues/140 we set a limit to decompositions
         but this should not be needed here.
         """
-        if self.orbit.Ksage == QQ:
+        if self.orbit.V2.sage_base_ring is ZZ or self.orbit.V2.sage_base_ring is QQ:
             return True
 
         # from here we assume that the field self.orbit.K is a number field
@@ -247,8 +256,7 @@ class Decomposition:
             elif comp.cylinder() != True:
                 state = Unknown
             hol = comp.circumferenceHolonomy()
-            hol = self.orbit.V2((self.orbit.Ksage_constructor(hol.x()),
-                                 self.orbit.Ksage_constructor(hol.y())))
+            hol = self.orbit.V2sage(self.orbit.V2(hol))
             area = self.orbit.Ksage_constructor(comp.area())
             mod = area / (hol[0]**2 + hol[1]**2)
             if mod0 is None:
@@ -286,12 +294,11 @@ class Decomposition:
         # check
         hol = self.orbit.holonomy_dual(circumference)
         holbis = component.circumferenceHolonomy()
-        holbis = self.orbit.V2((self.orbit.Ksage_constructor(holbis.x()),
-                                self.orbit.Ksage_constructor(holbis.y())))
+        holbis = self.orbit.V2sage(self.orbit.V2(holbis))
         assert hol == holbis, (hol, holbis)
 
         u = sc.vector()
-        u = self.orbit.V2((self.orbit.Ksage_constructor(u.x()), self.orbit.Ksage_constructor(u.y())))
+        u = self.orbit.V2sage(self.orbit.V2(u))
         width = self.u[1] * u[0] - self.u[0] * u[1]
         widthbis = self.orbit.Ksage_constructor(component.width())
         assert width == widthbis, (width, widthbis)
@@ -315,8 +322,7 @@ class Decomposition:
                 circ, width = self.circumference_width(comp, sc_index, proj)
                 vcyls.append(width * circ)
                 hol = comp.circumferenceHolonomy()
-                hol = self.orbit.V2((self.orbit.Ksage_constructor(hol.x()),
-                                     self.orbit.Ksage_constructor(hol.y())))
+                hol = self.orbit.V2sage(self.orbit.V2(hol))
                 area = self.orbit.Ksage_constructor(comp.area())
                 modules.append(area / (hol[0]**2 + hol[1]**2))
             else:
@@ -324,7 +330,7 @@ class Decomposition:
 
         # irrationally related cylinders can be twisted independently
         vectors = []
-        if self.orbit.Ksage is QQ:
+        if self.orbit.V2.sage_base_ring is ZZ or self.orbit.V2.sage_base_ring is QQ:
             vectors.append(sum(vcyls))
         else:
             ncyls = len(vcyls)
@@ -390,39 +396,48 @@ class GL2ROrbitClosure:
         assert 3*self.d - 3 == self.n
         assert m.rank() == self.d
         m = m.transpose()
+        # projection matrix from Z^E to H_1(S, Sigma; Z) in the basis
+        # of spanning edges
         self.proj = matrix(ZZ, [r for r in m.rows() if not r.is_zero()])
 
         self.Omega = self._intersection_matrix(t, self.spanning_set)
 
-        # ambient vector space and the tangent subspace
-        # NOTE:
-        # Sage number field: self.K.number_field
-        # eantic number field: self.K.renf
+        # TODO: this distinction between mpz/mpq/renf_elem_class is somehow annoying
+        # (and we completely ignore exact real)
         x = surface.fromEdge(surface.halfEdges()[0]).x()
-        if isinstance(x, cppyy.gbl.mpq_class):
-            self.Ksage = QQ
-            self.Ksage_constructor = lambda x: QQ(str(x))
+        if isinstance(x, cppyy.gbl.eantic.renf_elem_class):
+            base = x.parent()
         else:
-            k = x.parent()
-            self.K = RealEmbeddedNumberField(k)
-            self.Ksage = self.K.number_field
-            self.Ksage_constructor = lambda x: self.Ksage(self.K(x))
+            base = type(x)
+        self.V2 = Vectors(base)
+        self.V2sage = VectorSpace(self.V2.sage_base_ring, 2)
 
-        self.V = VectorSpace(self.Ksage, self.d)
-        self.V2 = VectorSpace(self.Ksage, 2)
+        if self.V2.sage_base_ring is ZZ or self.V2.sage_base_ring is QQ:
+            self.Ksage_constructor = lambda x: self.V2.sage_base_ring(str(x))
+        else:
+            self.Ksage_constructor = lambda x: self.V2.sage_base_ring(self.V2.base_ring()(x))
 
-        self.H = matrix(self.Ksage, self.d, 2)
+        self.V = VectorSpace(self.V2.sage_base_ring, self.d)
+        self.H = matrix(self.V2.sage_base_ring, self.d, 2)
         for i in range(self.d):
             s = self.surface.fromEdge(self.spanning_set[i].positive())
-            self.H[i] = self.V2((self.Ksage_constructor(s.x()), self.Ksage_constructor(s.y())))
+            self.H[i] = self.V2sage(self.V2(s))
         self.Hdual = self.Omega * self.H
         self.U = self.H.transpose()
-        # NOTE: if too slow use echelonize
+        # NOTE: if too slow use echelonize directly
         # self.U.echelonize()
         self.U = self.U.row_space()
 
+    def xy_vectors(self):
+        n = self.surface.edges().size()
+        H = matrix(self.V2.sage_base_ring, n, 2)
+        for i,e in enumerate(self.surface.edges()):
+            s = self.surface.fromEdge(e.positive())
+            H[i] = self.V2sage(self.V2(s))
+        return H.transpose()
+
     def __repr__(self):
-        return "GL(2,R)-orbit closure of dimension at least %d in %s (ambient dimension %d)" % (self.U.dimension(), self.stratum(), self.d)
+        return "GL(2,R)-orbit closure of dimension at least %d in %s (ambient dimension %d)" % (self.U.dimension(), self.surface.stratum(), self.d)
 
     def holonomy(self, v):
         r"""
@@ -432,6 +447,38 @@ class GL2ROrbitClosure:
 
     def holonomy_dual(self, v):
         return self.V(v) * self.Hdual
+
+    def lift(self, v):
+        r"""
+        Given a vector in the "spanning set basis" return a vector on the full basis of
+        edges.
+
+        EXAMPLES::
+
+            sage: from pyflatsurf import Surface, flatsurf, GL2ROrbitClosure                     
+            sage: import flatsurf as sage_flatsurf
+            sage: S = sage_flatsurf.translation_surfaces.mcmullen_genus2_prototype(4,2,1,1,0)
+            sage: O = GL2ROrbitClosure(S)
+            sage: u0,u1 = O.U.basis()
+            sage: v0 = O.lift(u0)
+            sage: v1 = O.lift(u1)
+            sage: span([v0, v1]) == span(O.xy_vectors().rows())
+            True
+        """
+        # given the values on the spanning edges we reconstruct the unique vector that
+        # vanishes on the boundary
+        bdry = self.boundaries()
+        n = self.surface.edges().size()
+        k = len(self.spanning_set)
+        assert k + len(bdry) == n + 1
+        A = matrix(self.V2.sage_base_ring, n+1, n)
+        for i,e in enumerate(self.spanning_set):
+            A[i,e.index()] = 1
+        for i,b in enumerate(bdry):
+            A[k+i,:] = b
+        u = vector(self.V2.sage_base_ring, n + 1)
+        u[:k] = v
+        return A.solve_right(u)
 
     def absolute_homology(self):
         vert_index = {v:i for i,v in enumerate(self.surface.vertices())}
@@ -478,25 +525,6 @@ class GL2ROrbitClosure:
             6
         """
         return (self.absolute_homology().matrix() * self.U.matrix().transpose()).rank()
-
-    def stratum(self):
-        r"""
-        Return the ambient stratum.
-
-        EXAMPLES::
-
-            sage: from pyflatsurf import GL2ROrbitClosure
-            sage: import flatsurf as sage_flatsurf
-            sage: T = sage_flatsurf.polygons.triangle(1, 2, 4)
-            sage: S = sage_flatsurf.similarity_surfaces.billiard(T)
-            sage: S = S.minimal_cover(cover_type="translation")
-            sage: O = GL2ROrbitClosure(S)
-            sage: O.stratum()
-            H_3(3, 1, 0)
-        """
-        sings = [self.surface.angle(v)-1 for v in self.surface.vertices()]
-        from surface_dynamics import AbelianStratum
-        return AbelianStratum(*sings)
 
     def _spanning_tree(self, root=None):
         r"""
@@ -615,6 +643,8 @@ class GL2ROrbitClosure:
         r"""
         Return the list of boundaries (ie sum of edges around a triangular face).
 
+        These are elements of H_1(S, Sigma; Z).
+
         TESTS::
 
             sage: import flatsurf as sage_flatsurf
@@ -658,54 +688,49 @@ class GL2ROrbitClosure:
 
         return B
 
-    def saddle_connection_directions(self, bound):
-        # NOTE: for now there is a lot of duplicates!!
-        explored = set()
-        for connection in self.surface.saddle_connections(flatsurf.Bound(bound, 0)):
-            v = connection.vector()
-            if v.y() == int(0):
-                u = self.V2((1, 0))
-            else:
-                u = self.V2((self.Ksage_constructor(v.x() / v.y()), 1))
-            u.set_immutable()
-            if u in explored:
-                continue
-            else:
-                explored.add(u)
-            yield v
-
     def decomposition(self, v, limit=-1):
-        decomposition = flatsurf.makeFlowDecomposition(self.surface, v)
-        u = self.V2((self.Ksage_constructor(v.x()), self.Ksage_constructor(v.y())))
+        v = self.V2(v)
+        decomposition = flatsurf.makeFlowDecomposition(self.surface, v.vector)
+        u = self.V2sage(v)
         if limit != 0:
             flatsurf.decomposeFlowDecomposition(decomposition, int(limit))
         return Decomposition(self, decomposition, u)
 
-    def decompositions_depth_first(self, bound, limit=-1, visited=None):
+    def decompositions_depth_first(self, bound, limit=-1, sector=None, visited=None):
+        # TODO: make the sector restriction at C++ level *without* filtering
+        limit = int(limit)
         if visited is None:
             visited = set()
         for connection in self.surface.saddle_connections(flatsurf.Bound(int(bound), 0)):
             v = connection.vector()
-            if v.y() == int(0):
-                slope = self.V2((1, 0))
+            slope = self.V2sage(self.V2(v))
+            if slope[1].is_zero():
+                slope = self.V2sage((1, 0))
             else:
-                slope = self.V2((self.Ksage_constructor(v.x() / v.y()), 1))
+                slope = slope / slope[1]
+            if sector is not None and not is_between(sector[0], sector[1], slope):
+                continue
             slope.set_immutable()
             if slope in visited:
                 continue
             visited.add(slope)
             yield self.decomposition(v, limit)
 
-    def decompositions_breadth_first(self, bound, limit=-1, visited=None):
+    def decompositions_breadth_first(self, bound, limit=-1, sector=None, visited=None):
+        # TODO: make the sector restriction at C++ level *without* filtering
+        limit = int(limit)
         if visited is None:
             visited = set()
         for i in range(bound + 1):
             for connection in self.surface.saddle_connections(flatsurf.Bound(i, 0)):
                 v = connection.vector()
-                if v.y() == int(0):
-                    slope = self.V2((1, 0))
+                slope = self.V2sage(self.V2(v))
+                if slope[1].is_zero():
+                    slope = self.V2sage((1, 0))
                 else:
-                    slope = self.V2((self.Ksage_constructor(v.x() / v.y()), 1))
+                    slope = slope / slope[1]
+                if sector is not None and not is_between(sector[0], sector[1], slope):
+                    continue
                 slope.set_immutable()
                 if slope in visited:
                     continue
@@ -742,7 +767,7 @@ class GL2ROrbitClosure:
             1 2 3
             1 3 3
         """
-        if self.Ksage == QQ:
+        if self.V2.sage_base_ring is ZZ or self.V2.sage_base_ring is QQ:
             # square tiled surface
             return True
         # TODO: implement simpler criterion based on the holonomy field
