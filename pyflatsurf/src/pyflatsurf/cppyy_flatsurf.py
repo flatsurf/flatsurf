@@ -58,7 +58,13 @@ def add_stratum(proxy, name):
         from .surface import stratum
         proxy.stratum = stratum
 
+def add_deformation(proxy, name):
+    if proxy.__cpp_name__.startswith("flatsurf::FlatTriangulation<"):
+        from .surface import deformation
+        proxy.__add__ = deformation
+
 cppyy.py.add_pythonization(add_stratum, "flatsurf")
+cppyy.py.add_pythonization(add_deformation, "flatsurf")
 
 for path in os.environ.get('PYFLATSURF_INCLUDE','').split(':'):
     if path: cppyy.add_include_path(path)

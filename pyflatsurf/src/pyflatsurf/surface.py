@@ -37,3 +37,45 @@ def stratum(surface):
     from surface_dynamics import AbelianStratum
     return AbelianStratum(*sings)
 
+# TODO: move at C++ level with v either a std::vector<Vector<T>>
+def deformation(surface, v):
+    r"""
+    A surface in the deformation given by ``v``.
+
+    EXAMPLES::
+
+        sage: from pyflatsurf import flatsurf, Surface
+        sage: from gmpxxyy import mpq
+        sage: import cppyy
+        sage: verts = [[int(1),int(-3),int(2),int(-1),int(3),int(-2)]]
+        sage: v1 = flatsurf.Vector[mpq](1,0)
+        sage: v2 = flatsurf.Vector[mpq](0,1)
+        sage: v3 = flatsurf.Vector[mpq](-1,-1)
+        sage: surface = Surface(verts, [v1, v2, v3])
+        FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors 1: (1, 0), 2: (0, 1), 3: (-1, -1)
+        sage: d1 = flatsurf.Vector[mpq]('1/4', 0)
+        sage: d2 = flatsurf.Vector[mpq]('-1/4', '1/4')
+        sage: d3 = flatsurf.Vector[mpq](0, '-1/4')
+        sage: surface + [d1,d2,d3]
+        FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors 1: (5/4, 0), 2: (-1/4, 5/4), 3: (-1, -5/4)
+    """
+    n = surface.size()
+    if len(v) != n:
+        raise ValueError("the number of vectors should match the number of edges of the surface")
+
+    from .vector import Vectors
+    import cppyy
+ 
+    def atVertex(S, v):
+         outgoing = [S.outgoing(v)[0]]
+         while S.nextAtVertex(outgoing[-1]) != outgoing[0]:
+             outgoing.append(S.nextAtVertex(outgoing[-1]))
+         return outgoing
+
+    vertices = [[he.id() for he in atVertex(surface, v)] for v in surface.vertices()]
+    holonomies = [surface.fromEdge(e.positive()) for e in surface.edges()]
+
+    for i in range(n):
+        holonomies[i] = holonomies[i] + v[i]
+
+    return cppyy.gbl.flatsurf.makeFlatTriangulation(vertices, holonomies)
