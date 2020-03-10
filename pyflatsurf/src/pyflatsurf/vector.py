@@ -21,8 +21,8 @@
 import cppyy
 
 from pyflatsurf import flatsurf
-import pyeantic
-import pyeantic.real_embedded_number_field
+from gmpxxyy import mpz, mpq
+from pyeantic import eantic, real_embedded_number_field
 
 from sage.all import ZZ, QQ, FreeModule, FreeModules, Morphism, Hom, SetsWithPartialMaps
 from sage.rings.number_field.number_field_base import NumberField as SageNumberField
@@ -33,6 +33,30 @@ from sage.structure.unique_representation import UniqueRepresentation
 class Vector(SageVector):
     r"""
     A two-dimensional vector that wraps ``flatsurf.Vector``.
+
+    EXAMPLES::
+
+        sage: from pyflatsurf import flatsurf
+        sage: from pyflatsurf.vector import Vectors
+        sage: from gmpxxyy import mpz, mpq
+        sage: from pyeantic import eantic, RealEmbeddedNumberField
+
+        sage: V = Vectors(ZZ)
+        sage: V(flatsurf.Vector[mpz](1, 2))
+        (1, 2)
+
+        sage: V = Vectors(QQ)
+        sage: V(flatsurf.Vector[mpq]('1/3', '-2/7'))
+        (1/3, -2/7)
+
+        sage: x = polygen(QQ)
+        sage: K = NumberField(x^3 - 2, 'a', embedding=AA(2)**(1/3))
+        sage: R = RealEmbeddedNumberField(K)
+        sage: V = Vectors(K)
+        sage: x = R(K.gen())
+        sage: y = R(K.gen()**2 - 2/3)
+        sage: V(flatsurf.Vector[eantic.renf_elem_class](x.renf_elem, y.renf_elem))
+        ((a ~ 1.2599210), (a^2 - 2/3 ~ 0.92073439))
     """
     def __init__(self, parent, value):
         SageVector.__init__(self, parent)
@@ -41,7 +65,7 @@ class Vector(SageVector):
             self.vector = value
         elif R is ZZ or R is QQ:
             self.vector = parent.Vector(parent.datatype(str(value[0])), parent.datatype(str(value[1])))
-        elif isinstance(R, pyeantic.real_embedded_number_field.RealEmbeddedNumberField):
+        elif isinstance(R, real_embedded_number_field.RealEmbeddedNumberField):
             self.vector = parent.Vector(R(value[0]).renf_elem, R(value[1]).renf_elem)
         else:
             raise NotImplementedError("unsupported cofficient type")
@@ -154,29 +178,41 @@ class Vectors(UniqueRepresentation, Parent):
         sage: from pyeantic import RealEmbeddedNumberField
         sage: R = RealEmbeddedNumberField(K)
         sage: assert Vectors(R) is V
+        sage: assert Vectors(R.renf) is V
+
+        sage: from gmpxxyy import mpz, mpq
+        sage: assert Vectors(QQ) is Vectors(mpq)
+        sage: assert Vectors(ZZ) is Vectors(mpz)
     """
     Element = Vector
 
     @staticmethod
-    def __classcall__(cls, base_ring, sage_base_ring=None, datatype=None):
-        if datatype is None:
-            if base_ring is ZZ:
-                from gmpxxyy import mpz
-                sage_base_ring = ZZ
-                datatype = mpz
-            elif base_ring is QQ:
-                from gmpxxyy import mpq
-                sage_base_ring = QQ
-                datatype = mpq
-            elif isinstance(base_ring, pyeantic.real_embedded_number_field.RealEmbeddedNumberField):
-                datatype = cppyy.gbl.eantic.renf_elem_class
-                sage_base_ring = base_ring.number_field
-            elif isinstance(base_ring, SageNumberField):
-                sage_base_ring = base_ring
-                base_ring = pyeantic.RealEmbeddedNumberField(base_ring)
-                datatype = cppyy.gbl.eantic.renf_elem_class
-            else:
-                raise ValueError
+    def __classcall__(cls, base_ring):
+        if base_ring is ZZ:
+            sage_base_ring = ZZ
+            datatype = mpz
+        elif base_ring is mpz:
+            base_ring = sage_base_ring = ZZ
+            datatype = mpz
+        elif base_ring is QQ:
+            sage_base_ring = QQ
+            datatype = mpq
+        elif base_ring is mpq:
+            base_ring = sage_base_ring = QQ
+            datatype = mpq
+        elif isinstance(base_ring, real_embedded_number_field.RealEmbeddedNumberField):
+            datatype = cppyy.gbl.eantic.renf_elem_class
+            sage_base_ring = base_ring.number_field
+        elif isinstance(base_ring, eantic.renf_class):
+            datatype = cppyy.gbl.eantic.renf_elem_class
+            base_ring = real_embedded_number_field.RealEmbeddedNumberField(base_ring)
+            sage_base_ring = base_ring.number_field
+        elif isinstance(base_ring, SageNumberField):
+            sage_base_ring = base_ring
+            base_ring = real_embedded_number_field.RealEmbeddedNumberField(base_ring)
+            datatype = cppyy.gbl.eantic.renf_elem_class
+        else:
+            raise ValueError
         return super(Vectors, cls).__classcall__(cls, base_ring, sage_base_ring, datatype)
 
     def __init__(self, base_ring, sage_base_ring, datatype):
