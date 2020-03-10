@@ -358,7 +358,9 @@ class GL2ROrbitClosure:
         GL(2,R)-orbit closure of dimension at least 2 in H_5(4, 2^2) (ambient dimension 12)
     """
     def __init__(self, surface):
-        self.surface = surface = pyflatsurf.Surface(surface)
+        if not type(surface).__name__.startswith('FlatTriangulation<'):
+            surface = pyflatsurf.Surface(surface)
+        self.surface = surface
         self.n = surface.size()
 
         self.half_edge_to_face = {}
@@ -464,6 +466,28 @@ class GL2ROrbitClosure:
             sage: v1 = O.lift(u1)
             sage: span([v0, v1]) == span(O.xy_vectors().rows())
             True
+
+        This can be used to deform the surface::
+
+            sage: from pyflatsurf import GL2ROrbitClosure
+            sage: import flatsurf as sage_flatsurf
+            sage: T = sage_flatsurf.polygons.triangle(3,4,13)
+            sage: S = sage_flatsurf.similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover("translation")
+            sage: O = GL2ROrbitClosure(S)
+            sage: for d in O.decompositions(4, 20):
+            ....:     O.update_tangent_space_from_flow_decomposition(d)
+            ....:     if O.U.dimension() == 6:
+            ....:         break
+            sage: d1,d2,d3,d4 = [O.lift(b) for b in O.U.basis()]
+            sage: dreal = (d1 + d2) / 15
+            sage: dimag = (d3 + d4) / 12
+            sage: d = [O.V2((x,y)).vector for x,y in zip(dreal,dimag)]
+            sage: S2 = O.surface + d
+            sage: O2 = GL2ROrbitClosure(S2)
+            sage: for d in O2.decompositions(4, 20, sector=((1,0),(5,1))):
+            ....:     O2.update_tangent_space_from_flow_decomposition(d)
+            sage: assert O.U == O2.U
         """
         # given the values on the spanning edges we reconstruct the unique vector that
         # vanishes on the boundary
