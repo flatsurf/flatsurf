@@ -48,12 +48,6 @@ class FlatTriangulationCollapsed;
 template <typename Surface>
 class Vertical;
 
-template <typename T, typename Approximation = void, typename Surface = FlatTriangulation<T>>
-class VectorAlongTriangulation;
-
-template <typename T>
-class LengthAlongTriangulation;
-
 template <typename Surface>
 class Chain;
 

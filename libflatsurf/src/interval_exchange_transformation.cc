@@ -103,6 +103,7 @@ void IntervalExchangeTransformation<Surface>::makeUniqueLargeEdges(Surface& surf
       if (splitContours) {
         bool trivial, trivialStart, trivialEnd;
         {
+          // TODO: There is no LengthAlongTriangulation anymore.
           // Currently, LengthAlongTriangulation cannot handle a collapse.
           // Therefore, we need to scope iet, so it is definitely gone when the
           // collapse below happens.
