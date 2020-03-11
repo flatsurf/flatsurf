@@ -45,10 +45,9 @@ class ContourConnection : boost::equality_comparable<ContourComponent<Surface>> 
   using Path = ::flatsurf::Path<FlatTriangulation<T>>;
 
  public:
-  // TODO: Unify naming of saddle connection returning methods.
   // The saddle connection in the surface corresponding to this contour
   // connection. Going from left to right.
-  const SaddleConnection<FlatTriangulation<T>>& connection() const;
+  const SaddleConnection<FlatTriangulation<T>>& horizontal() const;
 
   // The saddle connections of left(), connection(), and right() in
   // contourclockwise order, i.e., either -left() + connection() + right() or

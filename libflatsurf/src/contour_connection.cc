@@ -57,9 +57,9 @@ bool ContourConnection<Surface>::bottom() const {
 }
 
 template <typename Surface>
-const SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>& ContourConnection<Surface>::connection() const {
+const SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>& ContourConnection<Surface>::horizontal() const {
   auto& connection = impl->state->surface->fromEdge(top() ? -impl->halfEdge : impl->halfEdge);
-  ASSERT(impl->state->surface->vertical().perpendicular(connection) > 0, "ContourConnection::connection() must be left-to-right with respect to the vertical but " << connection << " is not.");
+  ASSERT(impl->state->surface->vertical().perpendicular(connection) > 0, "ContourConnection::horizontal() must be left-to-right with respect to the vertical but " << connection << " is not.");
   return connection;
 }
 
@@ -96,13 +96,13 @@ template <typename Surface>
 Path<FlatTriangulation<typename Surface::Coordinate>> ContourConnection<Surface>::perimeter() const {
   Path perimeter;
   if (top()) {
-    perimeter = rx::chain(right(), std::vector{ -connection() }, left()) | rx::to_vector();
+    perimeter = rx::chain(right(), std::vector{ -horizontal() }, left()) | rx::to_vector();
     ASSERTIONS([&]() {
         for (const  auto& connection : perimeter)
           ASSERT(impl->state->surface->vertical().perpendicular(connection) <= 0, "ContourConnection::perimeter() must be right-to-left but " << connection << " is not.");
     });
   } else {
-    perimeter = rx::chain(left(), std::vector{ connection() }, right()) | rx::to_vector();
+    perimeter = rx::chain(left(), std::vector{ horizontal() }, right()) | rx::to_vector();
     ASSERTIONS([&]() {
         for (const  auto& connection : perimeter)
           ASSERT(impl->state->surface->vertical().perpendicular(connection) >= 0, "ContourConnection::perimeter() must be left-to-right but " << connection << " is not.");
