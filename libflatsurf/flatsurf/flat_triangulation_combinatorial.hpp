@@ -114,9 +114,7 @@ class FlatTriangulationCombinatorial : Serializable<FlatTriangulationCombinatori
 
   friend std::ostream &operator<<(std::ostream &, const FlatTriangulationCombinatorial &);
 
-  // TODO
- public:
-  // TODO: Use this everywhere
+ private:
   using Implementation = ImplementationOf<FlatTriangulationCombinatorial>;
   Moveable<Implementation> impl;
   friend Implementation;

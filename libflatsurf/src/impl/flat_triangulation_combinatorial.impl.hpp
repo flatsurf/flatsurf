@@ -55,6 +55,9 @@ class ImplementationOf<FlatTriangulationCombinatorial> {
   // Sanity check this triangulation
   void check();
 
+  // Connect to change event.
+  static slimsig::signal<void(Message)>::connection connect(const FlatTriangulationCombinatorial&, std::function<void(Message)>);
+
   std::vector<Edge> edges;
   Permutation<HalfEdge> vertices;
   Permutation<HalfEdge> faces;

@@ -100,7 +100,7 @@ void ImplementationOf<Tracking<T>>::connect() {
 
   // This callback holds a reference to "this". This reference cannot be
   // dangling since we explicitly disconnect in ~Implementation.
-  onChange = parent->impl->change.connect([&](const Message& message) {
+  onChange = ImplementationOf<FlatTriangulationCombinatorial>::connect(*parent, [&](const Message& message) {
     if (auto flipMessage = std::get_if<ImplementationOf<FlatTriangulationCombinatorial>::MessageAfterFlip>(&message)) {
       updateAfterFlip(*value, *parent, flipMessage->e);
     } else if (auto collapseMessage = std::get_if<ImplementationOf<FlatTriangulationCombinatorial>::MessageBeforeCollapse>(&message)) {

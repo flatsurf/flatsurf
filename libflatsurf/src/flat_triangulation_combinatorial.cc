@@ -402,6 +402,10 @@ ImplementationOf<FlatTriangulationCombinatorial>::ImplementationOf(const Permuta
   check();
 }
 
+slimsig::signal<void(ImplementationOf<FlatTriangulationCombinatorial>::Message)>::connection ImplementationOf<FlatTriangulationCombinatorial>::connect(const FlatTriangulationCombinatorial& surface, std::function<void(Message)> handler) {
+  return surface.impl->change.connect(handler);
+}
+
 void ImplementationOf<FlatTriangulationCombinatorial>::check() {
   assert(faces.domain().size() == vertices.domain().size() && "faces and vertices must have the same half edges as domain");
   assert([&]() {

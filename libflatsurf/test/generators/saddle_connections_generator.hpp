@@ -39,7 +39,7 @@ class SaddleConnectionsGenerator : public Catch::Generators::IGenerator<SaddleCo
   typename SaddleConnections<FlatTriangulation<T>>::Iterator current;
 
 public:
-  SaddleConnectionsGenerator(std::shared_ptr<FlatTriangulation<T>> surface, Bound bound=Bound(8, 0)) :
+  SaddleConnectionsGenerator(std::shared_ptr<FlatTriangulation<T>> surface, Bound bound=Bound(3, 0)) :
     connections(surface, bound),
     current(begin(connections)) {}
 
