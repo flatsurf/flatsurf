@@ -103,10 +103,9 @@ void IntervalExchangeTransformation<Surface>::makeUniqueLargeEdges(Surface& surf
       if (splitContours) {
         bool trivial, trivialStart, trivialEnd;
         {
-          // TODO: There is no LengthAlongTriangulation anymore.
-          // Currently, LengthAlongTriangulation cannot handle a collapse.
-          // Therefore, we need to scope iet, so it is definitely gone when the
-          // collapse below happens.
+          // Some attached data might not be able to handle the following
+          // collapspe.  Therefore, we need to scope iet, so attached data is
+          // definitely gone when the collapse below happens.
           auto fromContour = IntervalExchangeTransformation(surface.shared_from_this(), vertical_, source);
           auto& iet = fromContour.intervalExchangeTransformation();
           trivial = iet.top().size() == 1;
