@@ -42,7 +42,6 @@ class Edge : boost::equality_comparable<Edge> {
   size_t index() const;
 
   bool operator==(const Edge&) const;
-  bool operator<(const Edge&) const;
 
   friend std::ostream& operator<<(std::ostream&, const Edge&);
 

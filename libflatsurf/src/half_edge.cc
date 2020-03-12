@@ -64,10 +64,6 @@ bool HalfEdge::operator==(const HalfEdge &rhs) const {
   return idx == rhs.idx;
 }
 
-bool HalfEdge::operator<(const HalfEdge &rhs) const {
-  return index() < rhs.index();
-}
-
 size_t HalfEdge::index() const noexcept {
   ASSERT(idx != static_cast<size_t>(-1), "id must be non-zero");
   return idx;

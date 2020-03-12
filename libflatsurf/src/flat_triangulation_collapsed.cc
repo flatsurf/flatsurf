@@ -17,7 +17,6 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <map>
 #include <ostream>
 #include <unordered_set>
 #include <unordered_map>
@@ -476,7 +475,7 @@ void ImplementationOf<FlatTriangulationCollapsed<T>>::updateBeforeCollapse(HalfE
         set(c, -b);
       }
     } else {
-      ASSERT(std::set({a, b, c, d, -a, -b, -c, -d}).size() == 8, "Unhandled identification in gadget (" << collapse << " " << b << " " << c << ")(" << -collapse << " " << d << " " << a << ")");
+      ASSERT(std::unordered_set<HalfEdge>({a, b, c, d, -a, -b, -c, -d}).size() == 8, "Unhandled identification in gadget (" << collapse << " " << b << " " << c << ")(" << -collapse << " " << d << " " << a << ")");
 
       connections(-a).splice(connections(-a).end(), connections(d));
       connections(-b).splice(connections(-b).end(), connections(c));
@@ -501,7 +500,7 @@ ostream& operator<<(ostream& os, const FlatTriangulationCollapsed<T>& self) {
   os << static_cast<const FlatTriangulationCombinatorial&>(self);
   os << " with vectors ";
 
-  std::map<HalfEdge, std::string> vectors;
+  std::unordered_map<HalfEdge, std::string> vectors;
   for (auto e : self.halfEdges()) {
     if (self.impl->vectors.get(e).value == -self.impl->vectors.get(-e).value && e == Edge(e).negative())
       continue;

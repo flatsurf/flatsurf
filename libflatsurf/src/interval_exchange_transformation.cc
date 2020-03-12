@@ -21,6 +21,7 @@
 #include <memory>
 #include <ostream>
 #include <vector>
+#include <unordered_set>
 
 #include <fmt/format.h>
 
@@ -69,7 +70,7 @@ IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(std::sha
     ImplementationOf<ContourComponent<Surface>>::makeContour(back_inserter(bottom), -large, *surface, Vertical(surface, -vertical));
     reverse(bottom.begin(), bottom.end());
     std::transform(bottom.begin(), bottom.end(), bottom.begin(), [](HalfEdge e) { return -e; });
-    assert(std::set<HalfEdge>(bottom.begin(), bottom.end()) == std::set<HalfEdge>(top.begin(), top.end()) && "top & bottom contour must contain the same half edges");
+    assert(std::unordered_set<HalfEdge>(bottom.begin(), bottom.end()) == std::unordered_set<HalfEdge>(top.begin(), top.end()) && "top & bottom contour must contain the same half edges");
 
     return spimpl::make_unique_impl<Implementation>(surface, vertical, top, bottom);
   }()) {
@@ -223,7 +224,7 @@ ImplementationOf<IntervalExchangeTransformation<Surface>>::ImplementationOf(std:
     return true;
   };
 
-  CHECK_ARGUMENT(std::multiset<HalfEdge>(top.begin(), top.end()) == std::multiset<HalfEdge>(bottom.begin(), bottom.end()), "top and bottom contour must contain the same half edges");
+  CHECK_ARGUMENT(std::unordered_multiset<HalfEdge>(top.begin(), top.end()) == std::unordered_multiset<HalfEdge>(bottom.begin(), bottom.end()), "top and bottom contour must contain the same half edges");
   CHECK_ARGUMENT(connected(top), fmt::format("top contour must be connected but {} is not connected in {}.", fmt::join(top, ", "),*surface));
   CHECK_ARGUMENT(connected(bottom), "bottom contour must be connected");
   ASSERT(std::all_of(begin(top), end(top), [&](Edge e) { return lengths->get(intervalxt::Label(e.index())) > 0; }), "lengths in contour must be positive");

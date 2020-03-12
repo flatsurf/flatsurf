@@ -21,7 +21,7 @@
 #include <ostream>
 #include <unordered_map>
 #include <vector>
-#include <set>
+#include <unordered_set>
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
@@ -45,7 +45,6 @@ using std::function;
 using std::ostream;
 using std::pair;
 using std::uintptr_t;
-using std::unordered_map;
 using std::vector;
 
 HalfEdge FlatTriangulationCombinatorial::nextInFace(const HalfEdge e) const {
@@ -160,7 +159,7 @@ std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::
   // We insert a new half edge ee into the vertex permutation next to e
   auto ee = HalfEdge(static_cast<int>(halfEdges().size()) / 2 + 1);
 
-  std::map<HalfEdge, HalfEdge> vertices;
+  std::unordered_map<HalfEdge, HalfEdge> vertices;
   for (auto h : halfEdges()) {
     if (h == e) {
       vertices[e] = ee;
@@ -261,7 +260,7 @@ std::pair<HalfEdge, HalfEdge> FlatTriangulationCombinatorial::collapse(HalfEdge 
   // Things get a bit more complicated when the faces at e and -e have
   // identified edges. In this case, we have to make sure we do not drop the
   // entire gadget surrounding e out of existence.
-  std::set<Edge> dropEdges{collapse};
+  std::unordered_set<Edge> dropEdges{collapse};
 
   {
     HalfEdge x = nextInFace(collapse);
@@ -286,7 +285,9 @@ std::pair<HalfEdge, HalfEdge> FlatTriangulationCombinatorial::collapse(HalfEdge 
   // So we need to make sure that these have the highest numbers since many
   // bits of the code assume that there is no gap in the half edge numbering.
   {
-    std::vector<Edge> originalDropEdges(dropEdges.rbegin(), dropEdges.rend());
+    std::vector<Edge> originalDropEdges(dropEdges.begin(), dropEdges.end());
+    // This is probably necessary to correctly identify the maxEdge, see https://github.com/flatsurf/flatsurf/issues/147
+    std::sort(begin(originalDropEdges), end(originalDropEdges), [&](const auto& lhs, const auto& rhs) { return lhs.index() < rhs.index(); });
 
     int maxEdge = static_cast<int>(edges().size());
     for (auto d : originalDropEdges) {
@@ -306,7 +307,7 @@ std::pair<HalfEdge, HalfEdge> FlatTriangulationCombinatorial::collapse(HalfEdge 
   }
 
   // The isolated half edges to remove
-  std::set<HalfEdge> dropHalfEdges;
+  std::unordered_set<HalfEdge> dropHalfEdges;
   for (auto d : dropEdges) {
     dropHalfEdges.insert(d.positive());
     dropHalfEdges.insert(d.negative());
@@ -447,13 +448,16 @@ void ImplementationOf<FlatTriangulationCombinatorial>::resetVertices() {
 }
 
 void ImplementationOf<FlatTriangulationCombinatorial>::resetEdges() {
-  std::set<Edge> edges;
+  std::unordered_set<Edge> edges;
   for (const auto& e : faces.domain())
     edges.insert(e);
   this->edges = std::vector<Edge>(begin(edges), end(edges));
+  // This can probably go away, see https://github.com/flatsurf/flatsurf/issues/147
+  std::sort(begin(this->edges), end(this->edges), [&](const auto& lhs, const auto& rhs) { return lhs.index() < rhs.index(); });
 
   halfEdges = vertices.domain();
-  sort(begin(halfEdges), end(halfEdges));
+  // This can probably go away, see https://github.com/flatsurf/flatsurf/issues/147
+  std::sort(begin(halfEdges), end(halfEdges), [&](const auto& lhs, const auto& rhs){ return lhs.index() < rhs.index(); });
 }
 
 void ImplementationOf<FlatTriangulationCombinatorial>::swap(HalfEdge a, HalfEdge b) {

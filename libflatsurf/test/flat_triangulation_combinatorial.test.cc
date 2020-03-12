@@ -53,7 +53,7 @@ TEST_CASE("Flat Triangulation Edges", "[flat_triangulation_combinatorial][edges]
     REQUIRE(edges.size() == surface->halfEdges().size() / 2);
 
     // This is assumed by TrackingStorage for efficiency.
-    REQUIRE(std::is_sorted(begin(edges), end(edges)));
+    REQUIRE(std::is_sorted(begin(edges), end(edges), [](const auto& lhs, const auto& rhs) { return lhs.index() < rhs.index(); }));
   }
 }
 
@@ -64,7 +64,7 @@ TEST_CASE("Flat Triangulation Half Edges", "[flat_triangulation_combinatorial][h
     auto halfEdges = surface->halfEdges();
 
     // This is assumed by TrackingStorage for efficiency.
-    REQUIRE(std::is_sorted(begin(halfEdges), end(halfEdges)));
+    REQUIRE(std::is_sorted(begin(halfEdges), end(halfEdges), [](const auto& lhs, const auto& rhs) { return lhs.index() < rhs.index(); }));
   }
 }
 

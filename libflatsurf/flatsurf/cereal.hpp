@@ -24,7 +24,7 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
-#include <cereal/types/map.hpp>
+#include <cereal/types/unordered_map.hpp>
 #include <cereal/types/memory.hpp>
 #include <cereal/types/utility.hpp>
 #include <cereal/types/vector.hpp>
@@ -125,7 +125,7 @@ struct Serialization<FlatTriangulation<T>> {
   void save(Archive& archive, const FlatTriangulation<T>& self) {
     archive(cereal::make_nvp("combinatorial", static_cast<const FlatTriangulationCombinatorial&>(self)));
 
-    std::map<HalfEdge, Vector<T>> vectors;
+    std::unordered_map<HalfEdge, Vector<T>> vectors;
     for (auto& edge : self.halfEdges())
       vectors[edge] = self.fromEdge(edge);
 
@@ -136,7 +136,7 @@ struct Serialization<FlatTriangulation<T>> {
   void load(Archive& archive, FlatTriangulation<T>& self) {
     FlatTriangulationCombinatorial combinatorial;
     archive(cereal::make_nvp("combinatorial", combinatorial));
-    std::map<HalfEdge, Vector<T>> map;
+    std::unordered_map<HalfEdge, Vector<T>> map;
     archive(cereal::make_nvp("vectors", map));
 
     self = FlatTriangulation<long long>(std::move(std::move(combinatorial)), [&](HalfEdge e) { return map.at(e); });

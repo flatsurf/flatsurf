@@ -44,8 +44,7 @@ class HalfEdge : boost::equality_comparable<HalfEdge> {
   HalfEdge operator-() const;
   HalfEdge &operator=(const HalfEdge &other);
   bool operator==(const HalfEdge &other) const;
-  // TODO: Remove operator< where it makes not mathematical sense.
-  bool operator<(const HalfEdge &other) const;
+
   friend std::ostream &operator<<(std::ostream &, const HalfEdge &);
 
   Edge edge() const;

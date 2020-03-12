@@ -23,7 +23,7 @@
 #include <boost/operators.hpp>
 #include <functional>
 #include <iosfwd>
-#include <map>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -41,7 +41,7 @@ class Permutation : boost::equality_comparable<Permutation<T>>, boost::multiplia
   Permutation();
   explicit Permutation(const std::vector<std::vector<T>> &cycles);
   explicit Permutation(const std::vector<std::pair<T, T>> &permutation);
-  explicit Permutation(const std::map<T, T> &permutation);
+  explicit Permutation(const std::unordered_map<T, T> &permutation);
   static Permutation<T> random(const std::vector<T> &domain);
 
   const T &operator()(const T &) const;

@@ -142,7 +142,7 @@ std::vector<K> TrackingStorage<SELF, K, V>::keys() const {
     throw std::logic_error("not implemented: keys()");
   }
 
-  sort(keys.begin(), keys.end());
+  sort(keys.begin(), keys.end(), [&](const auto& lhs, const auto& rhs) { return lhs.index() < rhs.index(); });
 
   return keys;
 }
