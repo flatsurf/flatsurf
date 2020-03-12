@@ -30,7 +30,6 @@
 #include <intervalxt/interval_exchange_transformation.hpp>
 #include <intervalxt/label.hpp>
 
-// TODO: Remove range-v3/boost ranges everywhere
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
 #include "../flatsurf/edge_set.hpp"
