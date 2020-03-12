@@ -43,7 +43,7 @@ class FlowComponent {
   FlowComponent();
 
  public:
-  // TODO: Should be circular list
+  // We should be using a FlowPath instead, see https://github.com/flatsurf/flatsurf/issues/146.
   using Perimeter = std::list<FlowConnection<Surface>>;
 
   boost::logic::tribool cylinder() const;

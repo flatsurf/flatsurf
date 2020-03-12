@@ -30,7 +30,6 @@
 
 namespace flatsurf {
 
-// TODO: Make sure this is used everywhere!
 // A connected list of SaddleConnections in a Surface.
 template <typename Surface>
 class Path : public Serializable<Path<Surface>>,
