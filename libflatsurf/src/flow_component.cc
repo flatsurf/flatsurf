@@ -64,15 +64,6 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
   // TODO: Split this into more easily digestable chunks. (And audit code for other monsters of this kind.)
   // TODO: This looks evil
   const auto check = [&]() {
-    // TODO
-    // std::cout << "check() ..." << std::endl;
-    // std::cout << *vertical().surface() << std::endl;
-    // std::cout << *impl->state->contourDecomposition.collapsed() << std::endl;
-    // std::cout << impl->state->contourDecomposition << std::endl;
-    // std::cout << impl->state->components.size() << " components:" << std::endl;
-    // for (auto& component : impl->state->components) {
-    //   std::cout << ImplementationOf<FlowComponent<Surface>>::make(impl->state, &const_cast<FlowComponentState<Surface>&>(component)) << std::endl;
-    // }
     ASSERTIONS(([&]() {
       auto paths = impl->state->components | rx::transform([&](const auto& component) { return Path(ImplementationOf<FlowComponent<Surface>>::make(impl->state, &const_cast<FlowComponentState<Surface>&>(component)).perimeter() | rx::transform([](const auto& connection) { return connection.saddleConnection(); }) | rx::to_vector()); }) | rx::to_vector();
     ImplementationOf<ContourDecomposition<Surface>>::check(paths, vertical());
@@ -237,9 +228,6 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
 
       ASSERT(vertical().perpendicular(connection) == 0, "Detected connection must be vertical but " << connection << " is not.");
       ASSERT(vertical().parallel(connection) > 0, " Detected connection is parallel but " << connection << " is antiparallel.");
-
-      // TODO
-      // std::cout << "Detected " << connection << std::endl; 
 
       ASSERT(connection.source() == source && connection.target() == target, "SaddleConnection normalization was unhappy with our source()/target() but we had picked them so they would be correct.");
 

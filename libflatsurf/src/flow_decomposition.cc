@@ -59,15 +59,6 @@ template <typename Surface>
 FlowDecomposition<Surface>::FlowDecomposition(std::unique_ptr<Surface> surface, const Vector<T>& vertical) :
   impl(spimpl::make_unique_impl<Implementation>(std::move(surface), vertical)) {
   ASSERTIONS(([&]() {
-    // TODO
-    // std::cout << "initial check() ..." << std::endl;
-    // std::cout << *this->surface() << std::endl;
-    // std::cout << *impl->state->contourDecomposition.collapsed() << std::endl;
-    // std::cout << impl->state->contourDecomposition << std::endl;
-    // std::cout << impl->state->components.size() << " components:" << std::endl;
-    // for (auto& component : impl->state->components) {
-    //   std::cout << ImplementationOf<FlowComponent<Surface>>::make(impl->state, &const_cast<FlowComponentState<Surface>&>(component)) << std::endl;
-    // }
     auto paths = components() | rx::transform([](const auto& component) { return Path(component.perimeter() | rx::transform([](const auto& connection) { return connection.saddleConnection(); }) | rx::to_vector()); }) | rx::to_vector();
     ImplementationOf<ContourDecomposition<Surface>>::check(paths, Vertical(this->surface(), vertical));
   }));

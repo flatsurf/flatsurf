@@ -112,9 +112,6 @@ void Lengths<Surface>::subtract(Label minuend) {
 
   auto& minuendConnection = lengths.get(fromLabel(minuend));
 
-  // TODO
-  // std::cout << "Changing Length " << *minuendConnection << std::endl;
-
   {
     minuendConnection = -*minuendConnection;
 
@@ -189,9 +186,6 @@ void Lengths<Surface>::subtract(Label minuend) {
       ASSERT(*minuendConnection == reconstruction,
         "Connection after subtract does not actually exist in surface. We claimed it's " << *minuendConnection << " but it is more likely " << reconstruction);
     });
-
-    // TODO
-    // std::cout << "Changed Length to " << *minuendConnection << std::endl;
   }
 
   ASSERT(get(minuend), "lengths must be non-zero");
