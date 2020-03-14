@@ -70,11 +70,8 @@ TEST_CASE("Serialization of a HalfEdge", "[cereal]") {
 }
 
 TEST_CASE("Serialization of a Vertex", "[cereal]") {
-  // TODO: Enable again
-  /*
   auto square = makeSquare<Vector<long long>>();
   testRoundtrip(square->vertices()[0]);
-  */
 }
 
 TEST_CASE("Serialization of a FlatTriangulationCombinatorial", "[cereal]") {

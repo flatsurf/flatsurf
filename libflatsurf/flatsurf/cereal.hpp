@@ -35,6 +35,7 @@
 #include "flat_triangulation.hpp"
 #include "flat_triangulation_combinatorial.hpp"
 #include "half_edge.hpp"
+#include "half_edge_set.hpp"
 #include "permutation.hpp"
 #include "saddle_connection.hpp"
 #include "saddle_connections.hpp"
@@ -188,6 +189,22 @@ struct Serialization<SaddleConnection<Surface>> {
     archive(cereal::make_nvp("chain", chain));
 
     self = SaddleConnection<Surface>(surface, source, target, chain);
+  }
+};
+
+template <>
+struct Serialization<Vertex> {
+  template <typename Archive>
+  void save(Archive& archive, const Vertex& self) {
+    auto outgoing = self.outgoing();
+    archive(cereal::make_nvp("outgoing", std::vector<HalfEdge>(begin(outgoing), end(outgoing))));
+  }
+
+  template <typename Archive>
+  void load(Archive& archive, Vertex& self) {
+    std::vector<HalfEdge> outgoing;
+    archive(cereal::make_nvp("outgoing", outgoing));
+    self = Vertex(PrivateConstructor{}, HalfEdgeSet(outgoing));
   }
 };
 

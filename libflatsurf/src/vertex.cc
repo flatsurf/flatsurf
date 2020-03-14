@@ -25,6 +25,7 @@
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/vertex.hpp"
+#include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/half_edge_set_iterator.hpp"
 #include "../flatsurf/fmt.hpp"
 
@@ -54,6 +55,17 @@ const Vertex& Vertex::source(const HalfEdge& e, const FlatTriangulationCombinato
 
 const Vertex& Vertex::target(const HalfEdge& e, const FlatTriangulationCombinatorial& surface) {
   return Vertex::source(-e, surface);
+}
+
+HalfEdgeSet Vertex::outgoing() const {
+  return impl->sources;
+}
+
+HalfEdgeSet Vertex::incoming() const {
+  HalfEdgeSet incoming({});
+  for (auto he : outgoing())
+    incoming.insert(-he);
+  return incoming;
 }
 
 ostream& operator<<(ostream& os, const Vertex& self) {
