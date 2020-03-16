@@ -17,6 +17,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+// TODO: Delete this file.
+
 #include <algorithm>
 
 #include "../flatsurf/edge.hpp"

@@ -14,6 +14,8 @@ libflatsurf_la_SOURCES =                                            \
 	contour_decomposition_state.cc                              \
 	delaunay_triangulation.cc                                   \
 	edge.cc                                                     \
+	edge_set_iterator.cc                                        \
+	edge_set.cc                                                 \
 	half_edge_set.cc                                            \
 	half_edge_set_iterator.cc                                   \
 	flat_triangulation.cc                                       \
@@ -25,6 +27,8 @@ libflatsurf_la_SOURCES =                                            \
 	flow_decomposition.cc                                       \
 	flow_decomposition_state.cc                                 \
 	half_edge.cc                                                \
+	indexed_set.cc                                              \
+	indexed_set_iterator.cc                                     \
 	interval_exchange_transformation.cc                         \
 	lengths.cc                                                  \
 	path.cc                                                     \

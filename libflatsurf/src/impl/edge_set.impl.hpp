@@ -17,21 +17,20 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_HALF_EDGE_SET_ITERATOR_IMPL_HPP
-#define LIBFLATSURF_HALF_EDGE_SET_ITERATOR_IMPL_HPP
+#ifndef LIBFLATSURF_HALF_EDGE_SET_IMPL_HPP
+#define LIBFLATSURF_HALF_EDGE_SET_IMPL_HPP
 
+#include <boost/dynamic_bitset.hpp>
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
 
-#include "../../flatsurf/half_edge_set_iterator.hpp"
-#include "../../flatsurf/half_edge.hpp"
+#include "../../flatsurf/half_edge_set.hpp"
 
 #include "indexed_set.hpp"
-#include "indexed_set_iterator.hpp"
 
 namespace flatsurf {
 
 template <>
-class ImplementationOf<HalfEdgeSetIterator> : public IndexedSetIterator<HalfEdge> {};
+class ImplementationOf<EdgeSet> : public IndexedSet<Edge> {};
 
 }
 

@@ -25,18 +25,13 @@
 
 #include "../../flatsurf/half_edge_set.hpp"
 
+#include "indexed_set.hpp"
+
 namespace flatsurf {
 
 template <>
-class ImplementationOf<HalfEdgeSet> {
- public:
-  mutable boost::dynamic_bitset<> set {};
-};
-
-static_assert(!std::is_pod_v<ImplementationOf<HalfEdgeSet>>);
-static_assert(!std::is_pod_v<boost::dynamic_bitset<>>);
+class ImplementationOf<HalfEdgeSet> : public IndexedSet<HalfEdge> {};
 
 }
 
 #endif
-

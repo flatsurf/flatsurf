@@ -33,9 +33,8 @@
 namespace flatsurf {
 
 class HalfEdgeSet : boost::equality_comparable<HalfEdgeSet> {
-  template <typename ...Args> HalfEdgeSet(PrivateConstructor, Args&&...);
-
  public:
+  HalfEdgeSet();
   HalfEdgeSet(const std::vector<HalfEdge>&);
 
   bool contains(HalfEdge) const;

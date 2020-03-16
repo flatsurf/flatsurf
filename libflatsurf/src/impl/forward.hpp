@@ -28,6 +28,12 @@ class ContourComponentState;
 template <typename Surface>
 class ContourDecompositionState;
 
+template <typename T>
+class IndexedSet;
+
+template <typename T>
+class IndexedSetIterator;
+
 }  // namespace flatsurf
 
 #endif

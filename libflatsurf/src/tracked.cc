@@ -42,43 +42,57 @@ const FlatTriangulationCombinatorial& Tracked<T>::parent() const {
 }
 
 template <typename T>
-void Tracked<T>::noFlip(T& self, const FlatTriangulationCombinatorial&, HalfEdge e) {
+void Tracked<T>::defaultFlip(T& self, const FlatTriangulationCombinatorial&, HalfEdge e) {
   if constexpr (std::is_same_v<T, HalfEdge>) {
     if (Edge(self) == Edge(e))
       throw std::logic_error("This Tracked<HalfEdge> cannot be flipped.");
   } else {
+    (void)e;
     throw std::logic_error("This Tracked<T> of a FlatTriangulationCombinatorial does not support flipping of edges.");
   }
 }
 
 template <typename T>
-void Tracked<T>::noCollapse(T& self, const FlatTriangulationCombinatorial&, Edge e) {
+void Tracked<T>::defaultCollapse(T& self, const FlatTriangulationCombinatorial&, Edge e) {
   if constexpr (std::is_same_v<T, HalfEdge>) {
     if (Edge(self) == e)
       throw std::logic_error("This Tracked<HalfEdge> cannot be collapsed.");
   } else {
+    (void)e;
     throw std::logic_error("This Tracked<T> of a FlatTriangulationCombinatorial does not support collapsing of edges.");
   }
 }
 
 template <typename T>
-void Tracked<T>::noSwap(T& self, const FlatTriangulationCombinatorial&, HalfEdge a, HalfEdge b) {
+void Tracked<T>::defaultSwap(T& self, const FlatTriangulationCombinatorial&, HalfEdge a, HalfEdge b) {
   ASSERT(a != b, "cannot swap HalfEdge with itself");
   if constexpr (std::is_same_v<T, HalfEdge>) {
     if (self == a) self = b;
     else if (self == -a) self = -b;
     else if (self == b) self = a;
     else if (self == -b) self = -a;
+  } else if constexpr (std::is_same_v<T, EdgeSet>) {
+    if (a == b || a == -b) return;
+    if (self.contains(a) && !self.contains(b)) {
+      self.erase(a);
+      self.insert(b);
+    } else if (!self.contains(a) && self.contains(b)) {
+      self.erase(b);
+      self.insert(a);
+    }
   } else {
     throw std::logic_error("This Tracked<T> of a FlatTriangulationCombinatorial does not support swapping of half edges.");
   }
 }
 
 template <typename T>
-void Tracked<T>::noErase(T& self, const FlatTriangulationCombinatorial&, const std::vector<Edge>& erase) {
+void Tracked<T>::defaultErase(T& self, const FlatTriangulationCombinatorial&, const std::vector<Edge>& erase) {
   if constexpr (std::is_same_v<T, HalfEdge>) {
     if (std::find(begin(erase), end(erase), Edge(self)) != end(erase))
       throw std::logic_error("This Tracked<HalfEdge> cannot be erased.");
+  } else if constexpr (std::is_same_v<T, EdgeSet>) {
+    for (auto e : erase)
+      self.erase(e);
   } else {
     throw std::logic_error("This Tracked<T> of a FlatTriangulationCombinatorial does not support removal of edges.");
   }
@@ -97,6 +111,16 @@ Tracked<T>::operator T&() {
 template <typename T>
 Tracked<T>::operator const T&() const {
   return impl->value;
+}
+
+template <typename T>
+const T* Tracked<T>::operator->() const {
+  return &impl->value;
+}
+
+template <typename T>
+T* Tracked<T>::operator->() {
+  return &impl->value;
 }
 
 template <typename T>
@@ -170,4 +194,9 @@ void ImplementationOf<Tracked<T>>::connect() {
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"
 
+#include "../flatsurf/half_edge_set.hpp"
+#include "../flatsurf/edge_set.hpp"
+
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<HalfEdge>))
+LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<HalfEdgeSet>))
+LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<EdgeSet>))

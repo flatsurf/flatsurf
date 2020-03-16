@@ -17,21 +17,46 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_HALF_EDGE_SET_ITERATOR_IMPL_HPP
-#define LIBFLATSURF_HALF_EDGE_SET_ITERATOR_IMPL_HPP
+#ifndef LIBFLATSURF_IMPL_INDEXED_SET_HPP
+#define LIBFLATSURF_IMPL_INDEXED_SET_HPP
 
+#include <boost/dynamic_bitset.hpp>
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
 
-#include "../../flatsurf/half_edge_set_iterator.hpp"
-#include "../../flatsurf/half_edge.hpp"
-
-#include "indexed_set.hpp"
-#include "indexed_set_iterator.hpp"
+#include "forward.hpp"
 
 namespace flatsurf {
 
-template <>
-class ImplementationOf<HalfEdgeSetIterator> : public IndexedSetIterator<HalfEdge> {};
+template <typename T>
+class IndexedSet {
+ public:
+  IndexedSet();
+  IndexedSet(const std::vector<T>&);
+
+  using Bitset = boost::dynamic_bitset<>;
+
+  bool contains(const T&) const;
+  void insert(const T&);
+
+  bool operator==(const IndexedSet&) const;
+
+  bool disjoint(const IndexedSet&) const;
+  bool empty() const;
+
+  size_t size() const;
+  void erase(const T&);
+
+  IndexedSetIterator<T> begin() const;
+  IndexedSetIterator<T> end() const;
+
+  template <typename S>
+  friend std::ostream& operator<<(std::ostream&, const IndexedSet<S>&);
+
+ private:
+  mutable Bitset set {};
+
+  friend IndexedSetIterator<T>;
+};
 
 }
 

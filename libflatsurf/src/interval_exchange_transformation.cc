@@ -77,13 +77,16 @@ IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(std::sha
 
 template <typename Surface>
 void IntervalExchangeTransformation<Surface>::makeUniqueLargeEdges(Surface& surface, const Vector<T>& vertical_) {
-  const typename EdgeSet::FlipHandler nopFlip = [](EdgeSet& self, HalfEdge e) {
-    assert(!self.contains(e) && "must not flip source edge");
-  };
-  const typename EdgeSet::CollapseHandler nopCollapse = [](EdgeSet& self, Edge e) {
-    assert(!self.contains(e) && "must not collapse source edge");
-  };
-  EdgeSet sources(&surface, [](Edge) { return false; }, nopFlip, nopCollapse);
+  Tracked<EdgeSet> sources(&surface, EdgeSet(), [](auto& sources, const auto&, HalfEdge e) {
+    ASSERT(!sources.contains(e), "Selected source edges cannot be flipped.");
+  }, [](auto& sources, const auto&, Edge e) {
+    ASSERT(!sources.contains(e), "Selected source edges cannot be collapsed.");
+  }, [](auto& sources, const auto& surface, HalfEdge a, HalfEdge b) {
+    Tracked<EdgeSet>::defaultSwap(sources, surface, a, b);
+  }, [](auto& sources, const auto& surface, const auto& edges) {
+    ASSERT(edges | rx::all_of([&](Edge e) { return !sources.contains(e); }), "Selected source edges cannot be erased.");
+    Tracked<EdgeSet>::defaultErase(sources, surface, edges);
+  });
 
   const bool splitContours = true;
 
@@ -92,7 +95,7 @@ void IntervalExchangeTransformation<Surface>::makeUniqueLargeEdges(Surface& surf
   while (true) {
     bool stalled = true;
     for (auto source : surface.halfEdges()) {
-      if (sources.contains(source))
+      if (sources->contains(source))
         continue;
       if (!vertical.large(source))
         continue;
@@ -122,7 +125,7 @@ void IntervalExchangeTransformation<Surface>::makeUniqueLargeEdges(Surface& surf
         }
       }
 
-      sources.insert(source);
+      sources->insert(source);
       stalled = false;
       break;
     }

@@ -17,21 +17,34 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_HALF_EDGE_SET_ITERATOR_IMPL_HPP
-#define LIBFLATSURF_HALF_EDGE_SET_ITERATOR_IMPL_HPP
+#ifndef LIBFLATSURF_EDGE_SET_ITERATOR_HPP
+#define LIBFLATSURF_EDGE_SET_ITERATOR_HPP
 
-#include <boost/dynamic_bitset/dynamic_bitset.hpp>
+#include <boost/iterator/iterator_categories.hpp>
+#include <boost/iterator/iterator_facade.hpp>
 
-#include "../../flatsurf/half_edge_set_iterator.hpp"
-#include "../../flatsurf/half_edge.hpp"
+#include "external/spimpl/spimpl.h"
 
-#include "indexed_set.hpp"
-#include "indexed_set_iterator.hpp"
+#include "forward.hpp"
 
 namespace flatsurf {
 
-template <>
-class ImplementationOf<HalfEdgeSetIterator> : public IndexedSetIterator<HalfEdge> {};
+class EdgeSetIterator : public boost::iterator_facade<EdgeSetIterator, const Edge&, boost::forward_traversal_tag> {
+  template <typename ...Args> EdgeSetIterator(PrivateConstructor, Args&&...);
+
+ public:
+  using value_type = Edge;
+
+  void increment();
+  const value_type &dereference() const;
+  bool equal(const EdgeSetIterator &other) const;
+
+ private:
+  using Implementation = ImplementationOf<EdgeSetIterator>;
+  spimpl::impl_ptr<Implementation> impl;
+  friend Implementation;
+  friend EdgeSet;
+};
 
 }
 

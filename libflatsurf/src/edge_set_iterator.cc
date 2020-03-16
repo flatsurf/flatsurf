@@ -17,40 +17,41 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "../flatsurf/half_edge_set_iterator.hpp"
-#include "../flatsurf/half_edge.hpp"
-#include "../flatsurf/half_edge_set.hpp"
+#include "../flatsurf/edge_set_iterator.hpp"
+#include "../flatsurf/edge.hpp"
+#include "../flatsurf/edge_set.hpp"
 
-#include "impl/half_edge_set_iterator.impl.hpp"
-#include "impl/half_edge_set.impl.hpp"
+#include "impl/edge_set_iterator.impl.hpp"
+#include "impl/edge_set.impl.hpp"
 
 #include "util/assert.ipp"
 
 namespace flatsurf {
 
 template <typename ...Args>
-HalfEdgeSetIterator::HalfEdgeSetIterator(PrivateConstructor, Args&&... args) :
+EdgeSetIterator::EdgeSetIterator(PrivateConstructor, Args&&... args) :
   impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {
 }
 
-void HalfEdgeSetIterator::increment() {
+void EdgeSetIterator::increment() {
   return impl->increment();
 }
 
-bool HalfEdgeSetIterator::equal(const HalfEdgeSetIterator& rhs) const {
+bool EdgeSetIterator::equal(const EdgeSetIterator& rhs) const {
   return impl->equal(*rhs.impl);
 }
 
-const HalfEdge& HalfEdgeSetIterator::dereference() const {
+const Edge& EdgeSetIterator::dereference() const {
   return impl->dereference();
 }
 
-HalfEdgeSetIterator HalfEdgeSet::begin() const {
-  return HalfEdgeSetIterator{PrivateConstructor{}, impl->begin()};
+EdgeSetIterator EdgeSet::begin() const {
+  return EdgeSetIterator{PrivateConstructor{}, impl->begin()};
 }
 
-HalfEdgeSetIterator HalfEdgeSet::end() const {
-  return HalfEdgeSetIterator{PrivateConstructor{}, impl->end()};
+EdgeSetIterator EdgeSet::end() const {
+  return EdgeSetIterator{PrivateConstructor{}, impl->end()};
 }
 
 }
+

@@ -97,13 +97,15 @@ using FaceMap = TrackingMap<Face, T>;
 template <typename T>
 class TrackingSet;
 
+class EdgeSet;
+
+class EdgeSetIterator;
+
 class HalfEdgeSet;
 
 class HalfEdgeSetIterator;
 
 using VertexSet = TrackingSet<Vertex>;
-
-using EdgeSet = TrackingSet<Edge>;
 
 using FaceSet = TrackingSet<Face>;
 
