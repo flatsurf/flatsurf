@@ -92,7 +92,13 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   bool operator>(const Bound) const;
   bool operator<(const Bound) const;
 
-  // See cppyy.hpp for the _ parameter.
+  // Strangely, when we do not put the _ here and try to print a
+  // FlatTriangulation<eantic::renf_elem_class> through cppyy, it would compile
+  // code that looks sane but fail because the overload resolution picked this
+  // overload (which seems to be completely unrelated.) This fails because
+  // renf_elem_class, does not have a ::Vector which SaddleConnection class
+  // requires. This is clearly a bug in cppyy, but we have not been able to
+  // create a minimal reproducer yet.
   template <typename Surf, typename _>
   friend std::ostream &operator<<(std::ostream &, const SaddleConnection<Surf> &);
 
@@ -102,6 +108,10 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
 
   friend Implementation;
 };
+
+// See above for this weird construction.
+template <typename Surface, typename _ = Vector<typename Surface::Coordinate>>
+std::ostream &operator<<(std::ostream &, const SaddleConnection<Surface> &);
 
 template <typename Surface, typename... T>
 SaddleConnection(std::shared_ptr<const Surface>, T &&...)->SaddleConnection<Surface>;
