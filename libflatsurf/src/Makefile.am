@@ -39,7 +39,6 @@ libflatsurf_la_SOURCES =                                            \
 	tracked.cc                                                  \
 	tracking.cc                                                 \
 	tracking_map.cc                                             \
-	tracking_set.cc                                             \
 	tracking_storage.cc                                         \
 	vector/vector.cc                                            \
 	vertex.cc                                                   \

@@ -303,11 +303,9 @@ std::ostream& operator<<(std::ostream&, const TrackingStorage<SELF, K, V>&) {
 
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/tracking_map.hpp"
-#include "../flatsurf/tracking_set.hpp"
 #include "impl/collapsed_half_edge.hpp"
 #include "impl/flat_triangulation_collapsed.impl.hpp"
 #include "impl/tracking_map.impl.hpp"
-#include "impl/tracking_set.impl.hpp"
 
 #include "util/instantiate.ipp"
 
@@ -323,8 +321,6 @@ std::ostream& operator<<(std::ostream&, const TrackingStorage<SELF, K, V>&) {
 
 LIBFLATSURF_INSTANTIATE_MANY((LIBFLATSURF_INSTANTIATE_THIS), LIBFLATSURF_REAL_TYPES)
 
-LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION), (TrackingStorage<TrackingSet<HalfEdge>, HalfEdge, bool>))
-LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION), (TrackingStorage<TrackingSet<Edge>, Edge, bool>))
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION), (TrackingStorage<TrackingMap<Edge, int>, Edge, int>))
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION), (TrackingStorage<TrackingMap<HalfEdge, int>, HalfEdge, int>))
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION), (TrackingStorage<TrackingMap<HalfEdge, Vector<exactreal::Arb>>, HalfEdge, Vector<exactreal::Arb>>))

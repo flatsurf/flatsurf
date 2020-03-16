@@ -90,8 +90,6 @@ template <>
 struct fmt::formatter<::flatsurf::TrackingFace> : ::flatsurf::GenericFormatter<::flatsurf::TrackingFace> {};
 template <typename K, typename V>
 struct fmt::formatter<::flatsurf::TrackingMap<K, V>> : ::flatsurf::GenericFormatter<::flatsurf::TrackingMap<K, V>> {};
-template <typename T>
-struct fmt::formatter<::flatsurf::TrackingSet<T>> : ::flatsurf::GenericFormatter<::flatsurf::TrackingSet<T>> {};
 template <>
 struct fmt::formatter<::flatsurf::HalfEdgeSet> : ::flatsurf::GenericFormatter<::flatsurf::HalfEdgeSet> {};
 template <>

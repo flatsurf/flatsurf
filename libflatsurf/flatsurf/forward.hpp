@@ -94,9 +94,6 @@ using VertexMap = TrackingMap<Vertex, T>;
 template <typename T>
 using FaceMap = TrackingMap<Face, T>;
 
-template <typename T>
-class TrackingSet;
-
 class EdgeSet;
 
 class EdgeSetIterator;
@@ -104,10 +101,6 @@ class EdgeSetIterator;
 class HalfEdgeSet;
 
 class HalfEdgeSetIterator;
-
-using VertexSet = TrackingSet<Vertex>;
-
-using FaceSet = TrackingSet<Face>;
 
 template <typename T>
 class Permutation;
@@ -169,8 +162,6 @@ template <typename T>
 std::ostream &operator<<(std::ostream &, const Permutation<T> &);
 template <typename K, typename V>
 std::ostream &operator<<(std::ostream &, const TrackingMap<K, V> &);
-template <typename K>
-std::ostream &operator<<(std::ostream &, const TrackingSet<K> &);
 template <typename T>
 std::ostream &operator<<(std::ostream &, const FlatTriangulation<T> &);
 // Strangely, when we do not put the _ here and try to print a
