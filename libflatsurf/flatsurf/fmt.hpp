@@ -76,18 +76,8 @@ template <>
 struct fmt::formatter<::flatsurf::Edge> : ::flatsurf::GenericFormatter<::flatsurf::Edge> {};
 template <>
 struct fmt::formatter<::flatsurf::Vertex> : ::flatsurf::GenericFormatter<::flatsurf::Vertex> {};
-template <>
-struct fmt::formatter<::flatsurf::Face> : ::flatsurf::GenericFormatter<::flatsurf::Face> {};
 template <typename T>
 struct fmt::formatter<::flatsurf::Tracking<T>> : ::flatsurf::GenericFormatter<::flatsurf::Tracking<T>> {};
-template <>
-struct fmt::formatter<::flatsurf::TrackingHalfEdge> : ::flatsurf::GenericFormatter<::flatsurf::TrackingHalfEdge> {};
-template <>
-struct fmt::formatter<::flatsurf::TrackingEdge> : ::flatsurf::GenericFormatter<::flatsurf::TrackingEdge> {};
-template <>
-struct fmt::formatter<::flatsurf::TrackingVertex> : ::flatsurf::GenericFormatter<::flatsurf::TrackingVertex> {};
-template <>
-struct fmt::formatter<::flatsurf::TrackingFace> : ::flatsurf::GenericFormatter<::flatsurf::TrackingFace> {};
 template <typename K, typename V>
 struct fmt::formatter<::flatsurf::TrackingMap<K, V>> : ::flatsurf::GenericFormatter<::flatsurf::TrackingMap<K, V>> {};
 template <>

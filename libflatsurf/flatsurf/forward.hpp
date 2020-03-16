@@ -68,18 +68,8 @@ class Edge;
 
 class Vertex;
 
-class Face;
-
 template <typename T>
 class Tracking;
-
-class TrackingHalfEdge;
-
-class TrackingEdge;
-
-class TrackingVertex;
-
-class TrackingFace;
 
 template <typename K, typename V>
 class TrackingMap;
@@ -89,12 +79,6 @@ using HalfEdgeMap = TrackingMap<HalfEdge, T>;
 
 template <typename T>
 using EdgeMap = TrackingMap<Edge, T>;
-
-template <typename T>
-using VertexMap = TrackingMap<Vertex, T>;
-
-template <typename T>
-using FaceMap = TrackingMap<Face, T>;
 
 class EdgeSet;
 
