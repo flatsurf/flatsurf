@@ -20,8 +20,6 @@
 #ifndef LIBFLATSURF_HALF_EDGE_MAP_HPP
 #define LIBFLATSURF_HALF_EDGE_MAP_HPP
 
-#include <iostream> // TODO
-
 #include "half_edge.hpp"
 #include "flat_triangulation_combinatorial.hpp"
 

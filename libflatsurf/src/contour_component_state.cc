@@ -17,8 +17,6 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <iostream>// TODO
-
 #include <unordered_set>
 #include <ostream>
 
