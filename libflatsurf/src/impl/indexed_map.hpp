@@ -17,35 +17,26 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_EDGE_MAP_HPP
-#define LIBFLATSURF_EDGE_MAP_HPP
+#ifndef LIBFLATSURF_IMPL_INDEXED_SET_HPP
+#define LIBFLATSURF_IMPL_INDEXED_SET_HPP
 
-#include "edge.hpp"
-#include "flat_triangulation_combinatorial.hpp"
+#include <iosfwd>
+#include <vector>
+
+#include "forward.hpp"
 
 namespace flatsurf {
 
-template <typename T>
-class EdgeMap {
+template <typename K, typename V>
+class IndexedMap {
  public:
-  EdgeMap(const FlatTriangulationCombinatorial& surface) :
-    values(surface.size()) {}
+  IndexedMap();
 
-  T& operator[](Edge e) { 
-    return values[e.index()];
-  }
-
-  const T& operator[](Edge e) const {
-    return const_cast<EdgeMap&>(*this)[e];
-  }
-
-  void apply(std::function<void(Edge, const T&)> f) const {
-    for (size_t i = 0; i < values.size(); i++)
-      f(Edge::fromIndex(i), values[i]);
-  }
+  template <typename KK, typename VV>
+  friend std::ostream& operator<<(std::ostream&, const IndexedMap<KK, VV>&);
 
  private:
-  std::vector<T> values;
+  std::vector<V> values {};
 };
 
 }

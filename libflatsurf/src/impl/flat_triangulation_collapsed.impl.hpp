@@ -30,7 +30,7 @@
 #include "../../flatsurf/half_edge_map.hpp"
 #include "../../flatsurf/saddle_connection.hpp"
 #include "../../flatsurf/vector.hpp"
-#include "../../flatsurf/vertex_map.hpp"
+#include "../../flatsurf/tracked.hpp"
 
 namespace flatsurf {
 
@@ -47,48 +47,30 @@ class ImplementationOf<FlatTriangulationCollapsed<T>> {
  public:
   ImplementationOf(const FlatTriangulationCombinatorial&, std::unique_ptr<FlatTriangulation<T>>, const Vector<T>&);
 
-  // TODO: Move to its own file.
-  // TODO: This is the same as TrackingStorage::Value; merge them
-  struct AsymmetricConnection {
-    AsymmetricConnection(SaddleConnection&& value) : value(std::move(value)) {}
-
-    operator const SaddleConnection&() const { return value; }
-
-    SaddleConnection value;
-
-    bool operator==(const AsymmetricConnection& rhs) const {
-      if constexpr (std::is_same_v<decltype(value == rhs.value), bool>)
-        return value == rhs.value;
-      else
-        throw std::logic_error("not implemented: operator== for operands that do not implement bool operator==");
-    }
-    friend std::ostream& operator<<(std::ostream& os, const AsymmetricConnection& self) { return os << self.value; }
-  };
-
   // Explicitly compute the area of this triangulation.
   static T area(const FlatTriangulationCollapsed<T>&);
   // Check that the face of this half edge is actually closed.
   static bool faceClosed(const FlatTriangulationCollapsed<T>&, HalfEdge);
 
-  static void updateAfterFlip(HalfEdgeMap<AsymmetricConnection>&, HalfEdge);
-  static void updateBeforeCollapse(HalfEdgeMap<AsymmetricConnection>&, Edge);
+  static void updateAfterFlip(HalfEdgeMap<SaddleConnection>&, const FlatTriangulationCombinatorial&, HalfEdge);
+  static void updateBeforeCollapse(HalfEdgeMap<SaddleConnection>&, const FlatTriangulationCombinatorial&, Edge);
 
   template <typename M>
-  static void handleCollapse(M&, Edge, const std::function<void(const FlatTriangulationCollapsed<T>&, HalfEdge)>&);
+  static void handleCollapse(M&, const FlatTriangulationCollapsed<T>&, Edge, const std::function<void(const FlatTriangulationCollapsed<T>&, HalfEdge)>&);
   template <typename M>
-  static void handleFlip(M&, HalfEdge, const std::function<void(const FlatTriangulationCollapsed<T>&, HalfEdge, HalfEdge, HalfEdge, HalfEdge)>&);
+  static void handleFlip(M&, const FlatTriangulationCollapsed<T>&, HalfEdge, const std::function<void(const FlatTriangulationCollapsed<T>&, HalfEdge, HalfEdge, HalfEdge, HalfEdge)>&);
 
   std::shared_ptr<const FlatTriangulation<T>> original;
 
   Vector<T> vertical;
 
   // Tracks collapsed vertical connections.
-  HalfEdgeMap<CollapsedHalfEdge> collapsedHalfEdges;
+  Tracked<HalfEdgeMap<CollapsedHalfEdge>> collapsedHalfEdges;
   // The vectors associated to half edges. Unlike in a FlatTriangulation,
   // vectors[-halfEdge] == -vectors[halfEdge] does not necessarily hold. These
   // vectors are only valid in the half edge's face. Use collapsedHalfEdges to
   // cross to the other face.
-  HalfEdgeMap<AsymmetricConnection> vectors;
+  Tracked<HalfEdgeMap<SaddleConnection>> vectors;
 };
 
 }  // namespace flatsurf

@@ -29,7 +29,7 @@
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
-#include "../flatsurf/half_edge_map.hpp"
+#include "../flatsurf/odd_half_edge_map.hpp"
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
@@ -84,12 +84,12 @@ Vector<T> FlatTriangulation<T>::shortest(const Vector<T> &direction) const {
 
 template <typename T>
 const Vector<T> &FlatTriangulation<T>::fromEdge(const HalfEdge e) const {
-  return impl->vectors.get(e);
+  return impl->vectors->get(e);
 }
 
 template <typename T>
 const flatsurf::Vector<exactreal::Arb> &FlatTriangulation<T>::fromEdgeApproximate(HalfEdge e) const {
-  return impl->approximations.get(e);
+  return impl->approximations->get(e);
 }
 
 template <typename T>
@@ -326,7 +326,7 @@ bool FlatTriangulation<T>::operator==(const FlatTriangulation<T> &rhs) const noe
   if (static_cast<const FlatTriangulationCombinatorial &>(*this) != static_cast<const FlatTriangulationCombinatorial &>(rhs))
     return false;
   for (auto &edge : halfEdges()) {
-    if (this->impl->vectors.get(edge) != rhs.impl->vectors.get(edge))
+    if (this->impl->vectors->get(edge) != rhs.impl->vectors->get(edge))
       return false;
   }
   return true;
@@ -352,24 +352,22 @@ int FlatTriangulation<T>::angle(const Vertex& vertex) const {
 
 template <typename T>
 ImplementationOf<FlatTriangulation<T>>::ImplementationOf(const FlatTriangulationCombinatorial &combinatorial, const std::function<Vector<T>(HalfEdge)> &vectors) :
-  vectors(&combinatorial, vectors, ImplementationOf::updateAfterFlip),
-  approximations(
-      &combinatorial,
-      [&](const HalfEdge e) {
-        return static_cast<flatsurf::Vector<exactreal::Arb>>(this->vectors.get(e));
-      },
-      ImplementationOf::updateApproximationAfterFlip) {
+  vectors(&combinatorial, OddHalfEdgeMap(combinatorial, vectors), ImplementationOf::updateAfterFlip),
+  approximations(&combinatorial,
+    OddHalfEdgeMap<Vector<exactreal::Arb>>(combinatorial, [&](const HalfEdge e) {
+      return static_cast<flatsurf::Vector<exactreal::Arb>>(this->vectors->get(e));
+    }),
+    ImplementationOf::updateApproximationAfterFlip) {
 }
 
 template <typename T>
-void ImplementationOf<FlatTriangulation<T>>::updateAfterFlip(HalfEdgeMap<Vector<T>> &vectors, HalfEdge flip) {
-  const FlatTriangulationCombinatorial &parent = vectors.parent();
+void ImplementationOf<FlatTriangulation<T>>::updateAfterFlip(OddHalfEdgeMap<Vector<T>> &vectors, const FlatTriangulationCombinatorial& parent, HalfEdge flip) {
   vectors.set(flip, vectors.get(-parent.nextInFace(flip)) + vectors.get(-parent.previousInFace(flip)));
 }
 
 template <typename T>
-void ImplementationOf<FlatTriangulation<T>>::updateApproximationAfterFlip(HalfEdgeMap<flatsurf::Vector<exactreal::Arb>> &vectors, HalfEdge flip) {
-  const auto &surface = static_cast<const FlatTriangulation<T> &>(vectors.parent());
+void ImplementationOf<FlatTriangulation<T>>::updateApproximationAfterFlip(OddHalfEdgeMap<flatsurf::Vector<exactreal::Arb>> &vectors, const FlatTriangulationCombinatorial& combinatorial, HalfEdge flip) {
+  const auto &surface = static_cast<const FlatTriangulation<T>&>(combinatorial);
   vectors.set(flip, static_cast<flatsurf::Vector<exactreal::Arb>>(surface.fromEdge(-surface.nextInFace(flip)) + surface.fromEdge(-surface.previousInFace(flip))));
 }
 

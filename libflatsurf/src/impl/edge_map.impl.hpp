@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,10 +17,23 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_VERTEX_MAP_HPP
-#define LIBFLATSURF_VERTEX_MAP_HPP
+#ifndef LIBFLATSURF_EDGE_MAP_IMPL_HPP
+#define LIBFLATSURF_EDGE_MAP_IMPL_HPP
 
-#include "tracking_map.hpp"
-#include "vertex.hpp"
+#include <boost/dynamic_bitset.hpp>
+#include <boost/dynamic_bitset/dynamic_bitset.hpp>
+
+#include "../../flatsurf/half_edge_map.hpp"
+
+#include "indexed_map.hpp"
+
+namespace flatsurf {
+
+template <typename T>
+class ImplementationOf<EdgeMap<T>> : public IndexedMap<Edge, T> {
+};
+
+}
 
 #endif
+

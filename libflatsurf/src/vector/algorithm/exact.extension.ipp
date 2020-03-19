@@ -59,6 +59,11 @@ template <typename Implementation>
 static constexpr bool has_eq = boost::is_detected_exact_v<bool, eq_t, Implementation>;
 
 template <typename Implementation>
+using ne_t = decltype(std::declval<const Implementation&>() != std::declval<const Implementation>());
+template <typename Implementation>
+static constexpr bool has_ne = boost::is_detected_exact_v<bool, ne_t, Implementation>;
+
+template <typename Implementation>
 using ccw_t = decltype(std::declval<Implementation>().ccw(std::declval<const typename Implementation::Vector&>()));
 template <typename Implementation>
 static constexpr bool has_ccw = boost::is_detected_exact_v<bool, ccw_t, Implementation>;

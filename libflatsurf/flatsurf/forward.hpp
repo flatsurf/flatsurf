@@ -75,10 +75,13 @@ template <typename K, typename V>
 class TrackingMap;
 
 template <typename T>
-using HalfEdgeMap = TrackingMap<HalfEdge, T>;
+class EdgeMap;
 
 template <typename T>
-using EdgeMap = TrackingMap<Edge, T>;
+class HalfEdgeMap;
+
+template <typename T>
+class OddHalfEdgeMap;
 
 class EdgeSet;
 

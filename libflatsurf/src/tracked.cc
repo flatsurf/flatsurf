@@ -19,11 +19,21 @@
 
 #include "../flatsurf/tracked.hpp"
 
+#include "external/rx-ranges/include/rx/ranges.hpp"
+
 #include "impl/tracked.impl.hpp"
 
 #include "util/assert.ipp"
 
 namespace flatsurf {
+
+namespace {
+template <typename T>
+struct is_half_edge_map : std::false_type {};
+
+template <typename T>
+struct is_half_edge_map<HalfEdgeMap<T>> : std::true_type {};
+}
 
 template <typename T>
 Tracked<T>::Tracked(const FlatTriangulationCombinatorial* parent, T value, const FlipHandler& updateAfterFlip, const CollapseHandler& updateBeforeCollapse, const SwapHandler& updateBeforeSwap, const EraseHandler& updateBeforeErase, const DestructionHandler& updateBeforeDestruction) :
@@ -80,6 +90,11 @@ void Tracked<T>::defaultSwap(T& self, const FlatTriangulationCombinatorial&, Hal
       self.erase(b);
       self.insert(a);
     }
+  } else if constexpr (is_half_edge_map<T>::value) {
+    if (a == b) return;
+    using std::swap;
+    swap(self[a], self[b]);
+    swap(self[-a], self[-b]);
   } else {
     throw std::logic_error("This Tracked<T> of a FlatTriangulationCombinatorial does not support swapping of half edges.");
   }
@@ -93,6 +108,9 @@ void Tracked<T>::defaultErase(T& self, const FlatTriangulationCombinatorial&, co
   } else if constexpr (std::is_same_v<T, EdgeSet>) {
     for (auto e : erase)
       self.erase(e);
+  } else if constexpr (is_half_edge_map<T>::value) {
+    ASSERT(erase | rx::all_of([&](const auto& e) { return e.positive().index() >= self.size() - 2*erase.size(); }), "Can only erase HalfEdges of maximal index from Tracked<HalfEdgeSet>. But the given edges are not maximal."); 
+    for (auto e : erase) self.pop();
   } else {
     throw std::logic_error("This Tracked<T> of a FlatTriangulationCombinatorial does not support removal of edges.");
   }
@@ -196,7 +214,21 @@ void ImplementationOf<Tracked<T>>::connect() {
 
 #include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/edge_set.hpp"
+#include "../flatsurf/odd_half_edge_map.hpp"
+#include "../flatsurf/vector.hpp"
+
+#include "impl/collapsed_half_edge.hpp"
+#include "impl/flat_triangulation_collapsed.impl.hpp"
 
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<HalfEdge>))
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<HalfEdgeSet>))
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<EdgeSet>))
+
+#define LIBFLATSURF_WRAP_ODD_HALF_EDGE_MAP_VECTOR(R, TYPE, T) (TYPE<OddHalfEdgeMap<Vector<T>>>)
+LIBFLATSURF_INSTANTIATE_MANY_FROM_TRANSFORMATION((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), Tracked, LIBFLATSURF_REAL_TYPES(exactreal::Arb), LIBFLATSURF_WRAP_ODD_HALF_EDGE_MAP_VECTOR)
+
+#define LIBFLATSURF_WRAP_HALF_EDGE_MAP_SADDLE_CONNECTION(R, TYPE, T) (TYPE<HalfEdgeMap<SaddleConnection<T>>>)
+LIBFLATSURF_INSTANTIATE_MANY_FROM_TRANSFORMATION((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), Tracked, LIBFLATSURF_FLAT_TRIANGULATION_TYPES, LIBFLATSURF_WRAP_HALF_EDGE_MAP_SADDLE_CONNECTION)
+
+#define LIBFLATSURF_WRAP_HALF_EDGE_MAP_COLLAPSED(R, TYPE, T) (TYPE<HalfEdgeMap<CollapsedHalfEdge<T>>>)
+LIBFLATSURF_INSTANTIATE_MANY_FROM_TRANSFORMATION((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), Tracked, LIBFLATSURF_REAL_TYPES, LIBFLATSURF_WRAP_HALF_EDGE_MAP_COLLAPSED)

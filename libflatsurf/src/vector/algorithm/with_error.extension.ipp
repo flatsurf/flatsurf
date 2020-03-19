@@ -44,6 +44,9 @@ template <typename Implementation>
 static constexpr bool has_optional_eq = boost::is_detected_exact_v<std::optional<bool>, eq_t, Implementation>;
 
 template <typename Implementation>
+static constexpr bool has_optional_ne = boost::is_detected_exact_v<std::optional<bool>, ne_t, Implementation>;
+
+template <typename Implementation>
 using optional_bool_t = decltype(static_cast<std::optional<bool>>(std::declval<const Implementation&>()));
 template <typename Implementation>
 static constexpr bool has_optional_bool = boost::is_detected_v<optional_bool_t, Implementation>;

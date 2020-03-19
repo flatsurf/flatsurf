@@ -17,6 +17,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <iostream>// TODO
+
 #include <unordered_set>
 #include <ostream>
 
@@ -33,6 +35,8 @@
 #include "impl/contour_component_state.hpp"
 #include "impl/contour_decomposition_state.hpp"
 
+#include "util/assert.ipp"
+
 namespace flatsurf {
 
 template <typename Surface>
@@ -46,6 +50,8 @@ ContourComponentState<Surface>::ContourComponentState(const ContourDecomposition
 
     if (vertical.perpendicular(state.surface->fromEdge(large)) < 0)
       large = -large;
+
+    ASSERT(vertical.perpendicular(state.surface->fromEdge(large)) > 0, "A large edge and it's negative cannot both be right-to-left");
 
     return large;
   }()),

@@ -37,8 +37,8 @@ class CollapsedHalfEdge {
   using Surface = FlatTriangulationCollapsed<T>;
 
  public:
-  static void updateAfterFlip(HalfEdgeMap<CollapsedHalfEdge>&, HalfEdge);
-  static void updateBeforeCollapse(HalfEdgeMap<CollapsedHalfEdge>&, Edge);
+  static void updateAfterFlip(HalfEdgeMap<CollapsedHalfEdge>&, const FlatTriangulationCombinatorial&, HalfEdge);
+  static void updateBeforeCollapse(HalfEdgeMap<CollapsedHalfEdge>&, const FlatTriangulationCombinatorial&, Edge);
 
   bool operator==(const CollapsedHalfEdge&) const;
 

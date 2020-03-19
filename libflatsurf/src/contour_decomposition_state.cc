@@ -39,6 +39,7 @@ ContourDecompositionState<Surface>::ContourDecompositionState(std::unique_ptr<Su
     } else {
       auto collapsed = FlatTriangulationCollapsed<T>::make(std::move(surface), vert);
       IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>::makeUniqueLargeEdges(*collapsed, vert);
+      std::cout << *collapsed << std::endl;
       return collapsed;
     }
   }()),

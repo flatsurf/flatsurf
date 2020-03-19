@@ -29,7 +29,6 @@
 #include "../../flatsurf/chain.hpp"
 #include "../../flatsurf/edge_map.hpp"
 #include "../../flatsurf/vector.hpp"
-#include "../../flatsurf/tracking.hpp"
 
 #include "chain_vector.hpp"
 

@@ -37,9 +37,6 @@ libflatsurf_la_SOURCES =                                            \
 	saddle_connection.cc                                        \
 	saddle_connections.cc                                       \
 	tracked.cc                                                  \
-	tracking.cc                                                 \
-	tracking_map.cc                                             \
-	tracking_storage.cc                                         \
 	vector/vector.cc                                            \
 	vertex.cc                                                   \
 	vertical.cc
@@ -74,8 +71,7 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/vector.hpp                                      \
 	../flatsurf/cereal.hpp                                      \
 	../flatsurf/vertex.hpp                                      \
-	../flatsurf/vertical.hpp                                    \
-	../flatsurf/vertex_map.hpp
+	../flatsurf/vertical.hpp
 
 nobase_pkginclude_HEADERS +=                                        \
 	../flatsurf/detail/vector_base.hpp                          \

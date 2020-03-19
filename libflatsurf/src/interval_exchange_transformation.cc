@@ -34,6 +34,7 @@
 
 #include "../flatsurf/edge_set.hpp"
 #include "../flatsurf/tracked.hpp"
+#include "../flatsurf/vertex.hpp"
 #include "../flatsurf/fmt.hpp"
 
 #include "impl/contour_component.impl.hpp"
@@ -101,6 +102,7 @@ void IntervalExchangeTransformation<Surface>::makeUniqueLargeEdges(Surface& surf
         continue;
       if (vertical.perpendicular(surface.fromEdge(source)) < 0)
         continue;
+
       auto component = makeUniqueLargeEdge(surface, vertical_, source);
 
       if (splitContours) {
@@ -143,6 +145,7 @@ typename intervalxt::IntervalExchangeTransformation& IntervalExchangeTransformat
 
 template <typename Surface>
 std::unordered_set<HalfEdge> IntervalExchangeTransformation<Surface>::makeUniqueLargeEdge(Surface& surface, const Vector<T>& vertical_, HalfEdge& unique_) {
+
   Tracked<HalfEdge> unique(&surface, HalfEdge(unique_));
 
   Vertical<Surface> vertical(surface.shared_from_this(), vertical_);
@@ -155,16 +158,16 @@ std::unordered_set<HalfEdge> IntervalExchangeTransformation<Surface>::makeUnique
   while (true) {
     std::unordered_set<HalfEdge> component;
     if (Vertical<Surface>::Implementation::visit(vertical, unique, component, [&](HalfEdge e) {
-          if (e == static_cast<HalfEdge>(unique) || e == -static_cast<HalfEdge>(unique))
-            return true;
+      if (e == static_cast<HalfEdge>(unique) || e == -static_cast<HalfEdge>(unique))
+        return true;
 
-          if (vertical.large(e)) {
-            surface.flip(e);
-            return false;
-          }
+      if (vertical.large(e)) {
+        surface.flip(e);
+        return false;
+      }
 
-          return true;
-        })) {
+      return true;
+    })) {
       assert(component.size() >= 2);
       unique_ = unique;
       return component;
@@ -179,7 +182,7 @@ Edge IntervalExchangeTransformation<Surface>::edge(const Label& label) const {
 
 template <typename Surface>
 SaddleConnection<FlatTriangulation<typename Surface::Coordinate>> IntervalExchangeTransformation<Surface>::connection(const intervalxt::Label& label) const {
-  return *impl->lengths->lengths.get(impl->lengths->fromLabel(label));
+  return *impl->lengths->lengths[impl->lengths->fromLabel(label)];
 }
 
 template <typename Surface>
@@ -194,21 +197,15 @@ ImplementationOf<IntervalExchangeTransformation<Surface>>::ImplementationOf(std:
       return surface->uncollapsed();
   }();
 
-  const auto erasedLengths = std::make_shared<intervalxt::Lengths>(Lengths<Surface>(std::make_shared<Vertical<FlatTriangulation<T>>>(uncollapsed, vertical), EdgeMap<std::optional<SaddleConnection>>(surface.get(), [&](const Edge& e) -> std::optional<SaddleConnection> {
-    if (std::find(begin(top), end(top), e.positive()) != end(top)) {
-      if constexpr (std::is_same_v<Surface, FlatTriangulation<T>>)
-        return SaddleConnection(surface, e.positive());
-      else
-        return surface->fromEdge(e.positive());
-    } else if (std::find(begin(top), end(top), e.negative()) != end(top)) {
-      if constexpr (std::is_same_v<Surface, FlatTriangulation<T>>)
-        return SaddleConnection(surface, e.negative());
-      else
-        return surface->fromEdge(e.negative());
-    }
+  auto nonzerolengths = EdgeMap<std::optional<SaddleConnection>>(*surface);
+  for (auto e : top) {
+    if constexpr (std::is_same_v<Surface, FlatTriangulation<T>>)
+      nonzerolengths[e] = SaddleConnection(surface, e);
+    else
+      nonzerolengths[e] = surface->fromEdge(e);
+  }
 
-    return std::optional<SaddleConnection>{};
-  })));
+  const auto erasedLengths = std::make_shared<intervalxt::Lengths>(Lengths<Surface>(std::make_shared<Vertical<FlatTriangulation<T>>>(uncollapsed, vertical), std::move(nonzerolengths)));
 
   iet = intervalxt::IntervalExchangeTransformation(
       erasedLengths,
