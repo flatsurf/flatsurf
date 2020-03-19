@@ -50,13 +50,11 @@ class FlatTriangulationCombinatorial : Serializable<FlatTriangulationCombinatori
   // consistent with the numbering in this triangulation, i.e., to single out
   // the new half edges, you may take a, the half edge that is nextAtVertex to
   // e, and then look at the successors of -a.
-  // TODO: Should be virtual
   std::unique_ptr<FlatTriangulationCombinatorial> insertAt(HalfEdge e) const;
 
   // Create an independent clone of this triangulation with an edded boundary
   // at the half edge e by removing the identification of the two corresponding
   // half edges there.
-  // TODO: should be virtual
   std::unique_ptr<FlatTriangulationCombinatorial> slot(HalfEdge e) const;
 
   HalfEdge nextAtVertex(HalfEdge e) const;
@@ -106,10 +104,9 @@ class FlatTriangulationCombinatorial : Serializable<FlatTriangulationCombinatori
   // Return whether rhs is combinatorial the same triangulation (with the same
   // numbering of edges.)
   // This method is not virtual so that non-combinatorial triangulations can
-  // also be compared combinatorially.
+  // also be compared combinatorically.
   bool operator==(const FlatTriangulationCombinatorial &rhs) const noexcept;
 
-  // TODO: virtual?
   FlatTriangulationCombinatorial &operator=(FlatTriangulationCombinatorial &&) noexcept;
 
   friend std::ostream &operator<<(std::ostream &, const FlatTriangulationCombinatorial &);
