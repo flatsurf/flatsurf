@@ -31,7 +31,6 @@ namespace flatsurf {
 
 template <typename T>
 class Tracked {
-  // TODO: Use this constructor pattern everywhere (no need for Implementation() consturctors anymore.)
   template <typename ...Args> Tracked(PrivateConstructor, Args&&...);
 
  public:

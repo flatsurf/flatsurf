@@ -37,12 +37,12 @@ class FlatTriangulationCollapsed : public FlatTriangulationCombinatorial,
                                    boost::equality_comparable<FlatTriangulationCollapsed<T>> {
   static_assert(std::is_same_v<T, std::decay_t<T>>, "type must not have modifiers such as const");
 
-  using SaddleConnection = ::flatsurf::SaddleConnection<FlatTriangulation<T>>;
-
+  // FlatTriangulationCollapsed cannot be created directly. Use make() to create a shared pointers holding a surface.
   FlatTriangulationCollapsed(std::unique_ptr<FlatTriangulation<T>>, const flatsurf::Vector<T> &vertical);
 
  public:
   using Coordinate = T;
+  using SaddleConnection = ::flatsurf::SaddleConnection<FlatTriangulation<T>>;
 
   static std::shared_ptr<FlatTriangulationCollapsed<T>> make(std::unique_ptr<FlatTriangulation<T>>, const Vector<T> &vertical);
 

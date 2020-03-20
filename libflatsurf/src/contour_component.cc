@@ -45,9 +45,9 @@ using std::vector;
 namespace flatsurf {
 
 template <typename Surface>
-ContourComponent<Surface>::ContourComponent() {
-  // we assume that the caller is aware that impl needs to be initialized.
-}
+template <typename ...Args>
+ContourComponent<Surface>::ContourComponent(PrivateConstructor, Args&&...args) :
+  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
 
 template <typename Surface>
 IntervalExchangeTransformation<FlatTriangulationCollapsed<typename Surface::Coordinate>> ContourComponent<Surface>::intervalExchangeTransformation() const {
@@ -105,9 +105,7 @@ typename Surface::Coordinate ContourComponent<Surface>::area() const {
 
 template <typename Surface>
 ContourComponent<Surface> ImplementationOf<ContourComponent<Surface>>::make(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* component) {
-  ContourComponent<Surface> ret;
-  ret.impl = spimpl::make_impl<ImplementationOf>(state, component);
-  return ret;
+  return ContourComponent<Surface>(PrivateConstructor{}, state, component);
 }
 
 template <typename Surface>

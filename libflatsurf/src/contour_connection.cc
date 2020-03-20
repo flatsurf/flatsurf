@@ -42,9 +42,9 @@
 namespace flatsurf {
 
 template <typename Surface>
-ContourConnection<Surface>::ContourConnection() :
-  // We assume that the caller initializes impl afterwards.
-  impl(nullptr) {}
+template <typename ...Args>
+ContourConnection<Surface>::ContourConnection(PrivateConstructor, Args&&...args) :
+  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
 
 template <typename Surface>
 bool ContourConnection<Surface>::top() const {
@@ -137,16 +137,14 @@ bool ContourConnection<Surface>::operator==(const ContourConnection<Surface>& rh
 
 template <typename Surface>
 ContourConnection<Surface> ImplementationOf<ContourConnection<Surface>>::makeTop(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* const component, HalfEdge e) {
-  ContourConnection<Surface> ret;
-  ret.impl = spimpl::make_impl<ImplementationOf>(state, component, e, true);
+  ContourConnection<Surface> ret(PrivateConstructor{}, state, component, e, true);
   ASSERT(state->surface->vertical().perpendicular(state->surface->fromEdge(e)) < 0, "HalfEdge must be from right to left but " << e << " is not in " << *state->surface);
   return ret;
 }
 
 template <typename Surface>
 ContourConnection<Surface> ImplementationOf<ContourConnection<Surface>>::makeBottom(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* const component, HalfEdge e) {
-  ContourConnection<Surface> ret;
-  ret.impl = spimpl::make_impl<ImplementationOf>(state, component, e, false);
+  ContourConnection<Surface> ret(PrivateConstructor{}, state, component, e, false);
   ASSERT(state->surface->vertical().perpendicular(state->surface->fromEdge(e)) > 0, "HalfEdge must be from left to right but " << e << " is not in " << *state->surface);
   return ret;
 }

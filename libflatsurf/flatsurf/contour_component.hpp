@@ -38,7 +38,7 @@ class ContourComponent : boost::equality_comparable<ContourComponent<Surface>> {
  private:
   // Components can not be created directly (other than by copying & moving
   // them.) They are byproducts of a ContourDecomposition.
-  ContourComponent();
+  template <typename ...Args> ContourComponent(PrivateConstructor, Args&&...);
 
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 

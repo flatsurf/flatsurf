@@ -54,10 +54,9 @@ using std::ostream;
 using std::string;
 
 template <typename Surface>
-FlowComponent<Surface>::FlowComponent() :
-  // We assume that the caller takes care of setting impl afterwards.
-  impl(nullptr) {
-}
+template <typename ...Args>
+FlowComponent<Surface>::FlowComponent(PrivateConstructor, Args&&...args) :
+  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
 
 template <typename Surface>
 bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Surface>&)> target, int limit) {
@@ -321,9 +320,7 @@ const IntervalExchangeTransformation<FlatTriangulationCollapsed<typename Surface
 
 template <typename Surface>
 FlowComponent<Surface> ImplementationOf<FlowComponent<Surface>>::make(std::shared_ptr<FlowDecompositionState<Surface>> state, FlowComponentState<Surface>* component) {
-  FlowComponent<Surface> ret;
-  ret.impl = spimpl::make_impl<ImplementationOf>(state, component);
-  return ret;
+  return FlowComponent<Surface>(PrivateConstructor{}, state, component);
 }
 
 template <typename Surface>

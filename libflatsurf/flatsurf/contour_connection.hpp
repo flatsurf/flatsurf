@@ -37,7 +37,7 @@ class ContourConnection : boost::equality_comparable<ContourComponent<Surface>> 
  private:
   // Connections can not be created directly (other than by copying & moving
   // them.) They are byproducts of a ContourDecomposition.
-  ContourConnection();
+  template <typename ...Args> ContourConnection(PrivateConstructor, Args&&...);
 
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
