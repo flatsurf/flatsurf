@@ -59,12 +59,6 @@ Vector<T> FlatTriangulation<T>::shortest() const {
   return fromEdge(shortest.positive());
 }
 
-// TODO: Move to the appropriate places
-template <typename T>
-T abs(const T &x) {
-  return x < 0 ? -x : x;
-}
-
 template <typename T>
 Vector<T> FlatTriangulation<T>::shortest(const Vector<T> &direction) const {
   const auto edges = this->edges();
@@ -77,6 +71,9 @@ Vector<T> FlatTriangulation<T>::shortest(const Vector<T> &direction) const {
 
     if (!xlen) return false;
     if (!ylen) return true;
+
+    const auto abs = [](const auto& x) { return x < 0 ? -x : x; };
+
     return abs(xlen) < abs(ylen);
   });
   return fromEdge(shortest.positive());
