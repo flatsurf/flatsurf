@@ -33,6 +33,8 @@
 #include "impl/contour_component_state.hpp"
 #include "impl/contour_decomposition_state.hpp"
 
+#include "util/assert.ipp"
+
 namespace flatsurf {
 
 template <typename Surface>
@@ -47,19 +49,21 @@ ContourComponentState<Surface>::ContourComponentState(const ContourDecomposition
     if (vertical.perpendicular(state.surface->fromEdge(large)) < 0)
       large = -large;
 
+    ASSERT(vertical.perpendicular(state.surface->fromEdge(large)) > 0, "A large edge and it's negative cannot both be right-to-left");
+
     return large;
   }()),
   topEdges([&]() {
     std::vector<HalfEdge> topEdges;
 
-    ::flatsurf::Implementation<ContourComponent<FlatTriangulationCollapsed<T>>>::makeContour(back_inserter(topEdges), large, *state.surface, state.surface->vertical());
+    ImplementationOf<ContourComponent<FlatTriangulationCollapsed<T>>>::makeContour(back_inserter(topEdges), large, *state.surface, state.surface->vertical());
 
     return topEdges | rx::reverse() | rx::to_vector();
   }()),
   bottomEdges([&]() {
     std::vector<HalfEdge> bottomEdges;
 
-    ::flatsurf::Implementation<ContourComponent<FlatTriangulationCollapsed<T>>>::makeContour(back_inserter(bottomEdges), -large, *state.surface, -state.surface->vertical());
+    ImplementationOf<ContourComponent<FlatTriangulationCollapsed<T>>>::makeContour(back_inserter(bottomEdges), -large, *state.surface, -state.surface->vertical());
 
     return bottomEdges | rx::transform([&](const auto e) { return -e; }) | rx::reverse() | rx::to_vector();
   }()) {

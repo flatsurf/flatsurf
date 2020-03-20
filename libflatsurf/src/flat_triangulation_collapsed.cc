@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <map>
 #include <ostream>
 #include <unordered_set>
 #include <unordered_map>
@@ -50,7 +49,6 @@
 #include "../flatsurf/vertical.hpp"
 
 #include "impl/flat_triangulation_collapsed.impl.hpp"
-// TODO: Maybe better use subdirectories
 #include "impl/collapsed_half_edge.hpp"
 #include "impl/flat_triangulation.impl.hpp"
 #include "impl/saddle_connection.impl.hpp"
@@ -97,7 +95,7 @@ Vertical<FlatTriangulationCollapsed<T>> FlatTriangulationCollapsed<T>::vertical(
 
 template <typename T>
 bool FlatTriangulationCollapsed<T>::inSector(HalfEdge sector, const Vector<T>& vector) const {
-  return fromEdge(sector).ccw(vector) != CCW::CLOCKWISE && (-fromEdge(previousInFace(sector))).ccw(vector) == CCW::CLOCKWISE;
+  return fromEdge(sector).vector().ccw(vector) != CCW::CLOCKWISE && (-fromEdge(previousInFace(sector))).vector().ccw(vector) == CCW::CLOCKWISE;
 }
 
 template <typename T>
@@ -105,16 +103,10 @@ bool FlatTriangulationCollapsed<T>::inSector(HalfEdge sector, const Vertical<Fla
   return inSector(sector, vector.vertical());
 }
 
-// TODO: Move to the appropriate places
-template <typename T>
-T abs(const T& x) {
-  return x < 0 ? -x : x;
-}
-
-// TODO: Move to vector?
 template <typename T>
 mpz_class relativeLength(const Vector<T>& divident, const Vector<T>& divisor) {
-  // TODO: Arithmetic is not a good pattern mostly. Instead, these should be free functions in a fixed namespace.
+  const auto abs = [](const auto& x) { return x < 0 ? -x : x; };
+
   return sqrt(::intervalxt::sample::Arithmetic<T>::floorDivision((divident * divident) * (divident * divident), abs(divisor * divident)));
 }
 
@@ -132,7 +124,8 @@ void FlatTriangulationCollapsed<T>::flip(HalfEdge e) {
   ASSERT(Implementation::faceClosed(*this, e), "Face attached to " << e << " not closed after flip in " << *this);
   ASSERTIONS([&]() {
     static Amortized cost;
-    // TODO: It would maybe be better to estimate the cost by looking at the shortest vector in direction of e.
+    // The cost approximation here is were crude. We should probably look at
+    // the shortest vector in direction of e instead.
     const auto connection = fromEdge(e);
 
     if (!cost.pay(relativeLength(static_cast<const Vector<T>&>(connection), impl->original->shortest(connection)) + 1)) return;
@@ -210,12 +203,12 @@ T FlatTriangulationCollapsed<T>::area() const noexcept {
 
 template <typename T>
 const SaddleConnection<FlatTriangulation<T>>& FlatTriangulationCollapsed<T>::fromEdge(HalfEdge e) const {
-  return impl->vectors.get(e).value;
+  return impl->vectors->operator[](e);
 }
 
 template <typename T>
 Path<FlatTriangulation<T>> FlatTriangulationCollapsed<T>::cross(HalfEdge e) const {
-  return impl->collapsedHalfEdges.get(e).connections | rx::to_vector();
+  return impl->collapsedHalfEdges->operator[](e).connections | rx::to_vector();
 }
 
 template <typename T>
@@ -251,29 +244,25 @@ std::shared_ptr<const FlatTriangulationCollapsed<T>> FlatTriangulationCollapsed<
 }
 
 template <typename T>
-Implementation<FlatTriangulationCollapsed<T>>::Implementation(const FlatTriangulationCombinatorial& combinatorial, std::unique_ptr<FlatTriangulation<T>> surface, const Vector<T>& vertical) :
+ImplementationOf<FlatTriangulationCollapsed<T>>::ImplementationOf(const FlatTriangulationCombinatorial& combinatorial, std::unique_ptr<FlatTriangulation<T>> surface, const Vector<T>& vertical) :
   original(std::move(surface)),
   vertical(vertical),
   collapsedHalfEdges(
       &combinatorial,
-      [&](HalfEdge) {
-        return CollapsedHalfEdge();
-      },
+      HalfEdgeMap<CollapsedHalfEdge>(combinatorial, [](const auto&) { return CollapsedHalfEdge(); }),
       CollapsedHalfEdge::updateAfterFlip,
       CollapsedHalfEdge::updateBeforeCollapse),
   vectors(
       &combinatorial,
-      [&](HalfEdge e) {
-        return AsymmetricConnection{SaddleConnection(original, e)};
-      },
+      HalfEdgeMap<SaddleConnection>(combinatorial, [&](HalfEdge e) {
+        return SaddleConnection(original, e);
+      }),
       updateAfterFlip, updateBeforeCollapse) {
 }
 
 template <typename T>
 template <typename M>
-void Implementation<FlatTriangulationCollapsed<T>>::handleFlip(M& map, HalfEdge flip, const std::function<void(const FlatTriangulationCollapsed<T>&, HalfEdge, HalfEdge, HalfEdge, HalfEdge)>& handler) {
-  const auto& surface = static_cast<const FlatTriangulationCollapsed<T>&>(map.parent());
-
+void ImplementationOf<FlatTriangulationCollapsed<T>>::handleFlip(M& map, const FlatTriangulationCollapsed<T>& surface, HalfEdge flip, const std::function<void(const FlatTriangulationCollapsed<T>&, HalfEdge, HalfEdge, HalfEdge, HalfEdge)>& handler) {
   // The flip turned (a b flip)(c d -flip) into (a -flip d)(c flip b)
   const HalfEdge a = surface.previousInFace(-flip);
   const HalfEdge b = surface.nextInFace(flip);
@@ -285,8 +274,7 @@ void Implementation<FlatTriangulationCollapsed<T>>::handleFlip(M& map, HalfEdge 
 
 template <typename T>
 template <typename M>
-void Implementation<FlatTriangulationCollapsed<T>>::handleCollapse(M& map, Edge collapse_, const std::function<void(const FlatTriangulationCollapsed<T>&, HalfEdge)>& handler) {
-  const auto& surface = static_cast<const FlatTriangulationCollapsed<T>&>(map.parent());
+void ImplementationOf<FlatTriangulationCollapsed<T>>::handleCollapse(M& map, const FlatTriangulationCollapsed<T>& surface, Edge collapse_, const std::function<void(const FlatTriangulationCollapsed<T>&, HalfEdge)>& handler) {
   HalfEdge collapse = collapse_.positive();
 
   ASSERT(surface.vertical().parallel(collapse), "cannot collapse non-vertical edge " << collapse);
@@ -298,7 +286,7 @@ void Implementation<FlatTriangulationCollapsed<T>>::handleCollapse(M& map, Edge 
 }
 
 template <typename T>
-T Implementation<FlatTriangulationCollapsed<T>>::area(const FlatTriangulationCollapsed<T>& self) {
+T ImplementationOf<FlatTriangulationCollapsed<T>>::area(const FlatTriangulationCollapsed<T>& self) {
   T area = T();
 
   for (auto e : self.halfEdges()) {
@@ -321,7 +309,7 @@ T Implementation<FlatTriangulationCollapsed<T>>::area(const FlatTriangulationCol
 }
 
 template <typename T>
-bool Implementation<FlatTriangulationCollapsed<T>>::faceClosed(const FlatTriangulationCollapsed<T>& self, HalfEdge face) {
+bool ImplementationOf<FlatTriangulationCollapsed<T>>::faceClosed(const FlatTriangulationCollapsed<T>& self, HalfEdge face) {
   if (self.boundary(face))
     return true;
   if (self.nextInFace(face) == -face)
@@ -330,15 +318,9 @@ bool Implementation<FlatTriangulationCollapsed<T>>::faceClosed(const FlatTriangu
   return zero == 0;
 }
 
-// TODO: Can I get rid of all of the .value here?
-
 template <typename T>
-void Implementation<FlatTriangulationCollapsed<T>>::updateAfterFlip(HalfEdgeMap<AsymmetricConnection>& vectors, HalfEdge flip) {
-  // TODO: Speed this up. We can very often get away without creating a new
-  // Chain/SaddleConnection by using more move and inplace operations. There
-  // should probably be a destructive static_cast from SaddleConnection&& to
-  // Chain.
-  Implementation::handleFlip(vectors, flip, [&](const auto& surface, HalfEdge a, HalfEdge b, HalfEdge c, HalfEdge d) {
+void ImplementationOf<FlatTriangulationCollapsed<T>>::updateAfterFlip(HalfEdgeMap<SaddleConnection>& vectors, const FlatTriangulationCombinatorial& combinatorial, HalfEdge flip) {
+  ImplementationOf::handleFlip(vectors, static_cast<const FlatTriangulationCollapsed<T>&>(combinatorial), flip, [&](const auto& surface, HalfEdge a, HalfEdge b, HalfEdge c, HalfEdge d) {
     const auto sum = [&](const auto& lhs, const auto& rhs) {
       return SaddleConnection(surface.impl->original, lhs.source(), rhs.target(), static_cast<const Chain<FlatTriangulation<T>>&>(lhs) + static_cast<const Chain<FlatTriangulation<T>>&>(rhs));
     };
@@ -348,41 +330,41 @@ void Implementation<FlatTriangulationCollapsed<T>>::updateAfterFlip(HalfEdgeMap<
     // The flip turned (a b flip)(c d -flip) into (a -flip d)(c flip b)
 
     // We pull b down over the connections hidden in flip …
-    for (const auto& connection : collapsedHalfEdges.get(flip).connections) {
-      vectors.set(b, sum(vectors.get(b).value, connection));
+    for (const auto& connection : collapsedHalfEdges->operator[](flip).connections) {
+      vectors[b] = sum(vectors[b], connection);
     }
 
     // … and push d up over the connections hidden in -flip.
-    for (const auto& connection : collapsedHalfEdges.get(-flip).connections) {
-      vectors.set(d, sum(vectors.get(d).value, connection));
+    for (const auto& connection : collapsedHalfEdges->operator[](-flip).connections) {
+      vectors[d] = sum(vectors[d], connection);
     }
 
     // Now the connections stored at flip actually belong into -b …
     {
-      auto& source = collapsedHalfEdges.get(flip).connections;
-      auto& target = collapsedHalfEdges.get(-b).connections;
+      auto& source = collapsedHalfEdges->operator[](flip).connections;
+      auto& target = collapsedHalfEdges->operator[](-b).connections;
       target.splice(target.end(), source);
     }
 
     // … and the connections stored at -flip actually belong into -d.
     {
-      auto& source = collapsedHalfEdges.get(-flip).connections;
-      auto& target = collapsedHalfEdges.get(-d).connections;
+      auto& source = collapsedHalfEdges->operator[](-flip).connections;
+      auto& target = collapsedHalfEdges->operator[](-d).connections;
       target.splice(target.end(), source);
     }
 
     // Since no connections are hidden inside flip and -flip anymore, we have a
     // regular pair of faces and can deduce their vectors:
-    vectors.set(flip, sum(vectors.get(d).value, vectors.get(a).value));
-    vectors.set(-flip, -vectors.get(flip).value);
+    vectors[flip] = sum(vectors[d], vectors[a]);
+    vectors[-flip] = -vectors[flip];
 
-    ASSERT(vectors.get(-flip).value == sum(vectors.get(b).value, vectors.get(c).value), "face not closed after flip");
+    ASSERT(vectors[-flip] == sum(vectors[b], vectors[c]), "face not closed after flip");
   });
 }
 
 template <typename T>
-void Implementation<FlatTriangulationCollapsed<T>>::updateBeforeCollapse(HalfEdgeMap<AsymmetricConnection>& vectors, Edge collapse_) {
-  Implementation::handleCollapse(vectors, collapse_, [&](const auto& surface, HalfEdge collapse) {
+void ImplementationOf<FlatTriangulationCollapsed<T>>::updateBeforeCollapse(HalfEdgeMap<SaddleConnection>& vectors, const FlatTriangulationCombinatorial& combinatorial, Edge collapse_) {
+  ImplementationOf::handleCollapse(vectors, static_cast<const FlatTriangulationCollapsed<T>&>(combinatorial), collapse_, [&](const auto& surface, HalfEdge collapse) {
     auto& collapsedHalfEdges = surface.impl->collapsedHalfEdges;
 
     // Consider the faces (a -collapse d) and (c collapse b)
@@ -392,20 +374,20 @@ void Implementation<FlatTriangulationCollapsed<T>>::updateBeforeCollapse(HalfEdg
     const HalfEdge d = surface.nextInFace(-collapse);
 
     // The new connection we need to record
-    auto connection = vectors.get(collapse).value;
+    auto connection = vectors[collapse];
 
-    ASSERT(-connection == vectors.get(-collapse), "the vertical half edge cannot hide collapsed saddle connections so it must be the same in both of its faces but " << collapse << " is " << connection << " and " << -collapse << " is " << vectors.get(-collapse));
+    ASSERT(-connection == vectors[-collapse], "the vertical half edge cannot hide collapsed saddle connections so it must be the same in both of its faces but " << collapse << " is " << connection << " and " << -collapse << " is " << vectors[-collapse]);
 
-    collapsedHalfEdges.get(b).connections.push_front(connection);
-    collapsedHalfEdges.get(d).connections.push_front(-connection);
+    collapsedHalfEdges->operator[](b).connections.push_front(connection);
+    collapsedHalfEdges->operator[](d).connections.push_front(-connection);
 
     auto set = [&](HalfEdge target, HalfEdge source) {
-      vectors.set(target, vectors.get(source));
-      collapsedHalfEdges.set(target, collapsedHalfEdges.get(source));
+      vectors[target] = vectors[source];
+      collapsedHalfEdges->operator[](target) = collapsedHalfEdges->operator[](source);
     };
 
     auto connections = [&](HalfEdge e) -> auto& {
-      return collapsedHalfEdges.get(e).connections;
+      return collapsedHalfEdges->operator[](e).connections;
     };
 
     // The idea is to take the outer half edges of the collapsed gadget and
@@ -420,7 +402,7 @@ void Implementation<FlatTriangulationCollapsed<T>>::updateBeforeCollapse(HalfEdg
       // Opposite sides are identified so the entire gadget collapses to a
       // single pair of half edges.
       // We squash everything into the half edge a here:
-      vectors.set(-a, -vectors.get(a).value);
+      vectors[-a] = -vectors[a];
 
       connections(a).splice(connections(a).end(), connections(b));
       connections(-a).splice(connections(-a).begin(), connections(-b));
@@ -454,7 +436,7 @@ void Implementation<FlatTriangulationCollapsed<T>>::updateBeforeCollapse(HalfEdg
       if (a == -d) {
         // The right side collapses. Since we pushed the SaddleConnection to
         // the front of d, we need to account for that connection in d.
-        vectors.set(d, -vectors.get(-d).value);
+        vectors[d] = -vectors[-d];
       } else {
         // The right side does not collapse
         connections(-a).splice(connections(-a).end(), connections(d));
@@ -466,7 +448,7 @@ void Implementation<FlatTriangulationCollapsed<T>>::updateBeforeCollapse(HalfEdg
       if (b == -c) {
         // The left side collapses. Since we pushed the SaddleConnection to the
         // front of b, we need to account for that connection in b.
-        vectors.set(b, -vectors.get(-b).value);
+        vectors[b] = -vectors[-b];
       } else {
         // The left side does not collapse
         connections(-b).splice(connections(-b).end(), connections(c));
@@ -476,7 +458,7 @@ void Implementation<FlatTriangulationCollapsed<T>>::updateBeforeCollapse(HalfEdg
         set(c, -b);
       }
     } else {
-      ASSERT(std::set({a, b, c, d, -a, -b, -c, -d}).size() == 8, "Unhandled identification in gadget (" << collapse << " " << b << " " << c << ")(" << -collapse << " " << d << " " << a << ")");
+      ASSERT(std::unordered_set<HalfEdge>({a, b, c, d, -a, -b, -c, -d}).size() == 8, "Unhandled identification in gadget (" << collapse << " " << b << " " << c << ")(" << -collapse << " " << d << " " << a << ")");
 
       connections(-a).splice(connections(-a).end(), connections(d));
       connections(-b).splice(connections(-b).end(), connections(c));
@@ -489,10 +471,10 @@ void Implementation<FlatTriangulationCollapsed<T>>::updateBeforeCollapse(HalfEdg
       set(c, -b);
     }
 
-    assert(collapsedHalfEdges.get(-a).connections.size());
-    assert(collapsedHalfEdges.get(b).connections.size());
-    assert(collapsedHalfEdges.get(-c).connections.size());
-    assert(collapsedHalfEdges.get(d).connections.size());
+    assert(collapsedHalfEdges->operator[](-a).connections.size());
+    assert(collapsedHalfEdges->operator[](b).connections.size());
+    assert(collapsedHalfEdges->operator[](-c).connections.size());
+    assert(collapsedHalfEdges->operator[](d).connections.size());
   });
 }
 
@@ -501,11 +483,11 @@ ostream& operator<<(ostream& os, const FlatTriangulationCollapsed<T>& self) {
   os << static_cast<const FlatTriangulationCombinatorial&>(self);
   os << " with vectors ";
 
-  std::map<HalfEdge, std::string> vectors;
+  std::unordered_map<HalfEdge, std::string> vectors;
   for (auto e : self.halfEdges()) {
-    if (self.impl->vectors.get(e).value == -self.impl->vectors.get(-e).value && e == Edge(e).negative())
+    if (self.impl->vectors->operator[](e) == -self.impl->vectors->operator[](-e) && e == Edge(e).negative())
       continue;
-    auto connection = self.impl->vectors.get(e).value;
+    auto connection = self.impl->vectors->operator[](e);
     if (connection.source() == e && connection.target() == -e)
       vectors[e] = format("{}", static_cast<Vector<T>>(connection));
     else

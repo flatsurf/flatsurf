@@ -18,8 +18,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_TEST_GENERATORS_SADDLE_CONNECTION_GENERATORS_HPP
-#define LIBFLATSURF_TEST_GENERATORS_SADDLE_CONNECTION_GENERATORS_HPP
+#ifndef LIBFLATSURF_TEST_GENERATORS_HALF_EDGE_GENERATORS_HPP
+#define LIBFLATSURF_TEST_GENERATORS_HALF_EDGE_GENERATORS_HPP
 
 #include <memory>
 
@@ -28,35 +28,34 @@
 
 #include "../external/catch2/single_include/catch2/catch.hpp"
 
-#include "../../flatsurf/saddle_connections.hpp"
-#include "../../flatsurf/bound.hpp"
+#include "../../flatsurf/half_edge.hpp"
 
 namespace flatsurf::test {
 
 template <typename T>
-class SaddleConnectionsGenerator : public Catch::Generators::IGenerator<SaddleConnection<FlatTriangulation<T>>> {
-  SaddleConnections<FlatTriangulation<T>> connections;
-  typename SaddleConnections<FlatTriangulation<T>>::Iterator current;
+class HalfEdgeGenerator : public Catch::Generators::IGenerator<HalfEdge> {
+  std::vector<HalfEdge> halfEdges;
+  typename std::vector<HalfEdge>::const_iterator current;
 
 public:
-  SaddleConnectionsGenerator(std::shared_ptr<FlatTriangulation<T>> surface, Bound bound=Bound(3, 0)) :
-    connections(surface, bound),
-    current(begin(connections)) {}
+  HalfEdgeGenerator(std::shared_ptr<FlatTriangulation<T>> surface) :
+    halfEdges(surface->halfEdges()),
+    current(begin(halfEdges)) {}
 
-  const SaddleConnection<FlatTriangulation<T>>& get() const override {
+  const HalfEdge& get() const override {
     return *current;
   }
 
   bool next() override {
     current++;
 
-    return current != end(connections);
+    return current != end(halfEdges);
   }
 };
 
 template <typename T>
-Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>> saddleConnections(std::shared_ptr<FlatTriangulation<T>> surface) {
-  return Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>>(std::unique_ptr<Catch::Generators::IGenerator<SaddleConnection<FlatTriangulation<T>>>>(new SaddleConnectionsGenerator<T>(surface)));
+Catch::Generators::GeneratorWrapper<HalfEdge> halfEdges(std::shared_ptr<FlatTriangulation<T>> surface) {
+  return Catch::Generators::GeneratorWrapper<HalfEdge>(std::unique_ptr<Catch::Generators::IGenerator<HalfEdge>>(new HalfEdgeGenerator<T>(surface)));
 }
 
 }

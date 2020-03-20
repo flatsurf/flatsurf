@@ -61,7 +61,7 @@ class FlowDecomposition {
   friend std::ostream& operator<<(std::ostream&, const FlowDecomposition<S>&);
 
  private:
-  using Implementation = ::flatsurf::Implementation<FlowDecomposition>;
+  using Implementation = ImplementationOf<FlowDecomposition>;
   Moveable<Implementation> impl;
   friend Implementation;
 };

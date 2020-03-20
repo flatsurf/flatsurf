@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
-#include "../flatsurf/half_edge_map.hpp"
+#include "../flatsurf/odd_half_edge_map.hpp"
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
@@ -59,12 +59,6 @@ Vector<T> FlatTriangulation<T>::shortest() const {
   return fromEdge(shortest.positive());
 }
 
-// TODO: Move to the appropriate places
-template <typename T>
-T abs(const T &x) {
-  return x < 0 ? -x : x;
-}
-
 template <typename T>
 Vector<T> FlatTriangulation<T>::shortest(const Vector<T> &direction) const {
   const auto edges = this->edges();
@@ -77,63 +71,22 @@ Vector<T> FlatTriangulation<T>::shortest(const Vector<T> &direction) const {
 
     if (!xlen) return false;
     if (!ylen) return true;
+
+    const auto abs = [](const auto& x) { return x < 0 ? -x : x; };
+
     return abs(xlen) < abs(ylen);
   });
   return fromEdge(shortest.positive());
 }
 
 template <typename T>
-Implementation<FlatTriangulation<T>>::Implementation(const FlatTriangulationCombinatorial &combinatorial, const std::function<Vector<T>(HalfEdge)> &vectors) :
-  vectors(&combinatorial, vectors, Implementation::updateAfterFlip),
-  approximations(
-      &combinatorial,
-      [&](const HalfEdge e) {
-        return static_cast<flatsurf::Vector<exactreal::Arb>>(this->vectors.get(e));
-      },
-      Implementation::updateApproximationAfterFlip) {
-}
-
-template <typename T>
-void Implementation<FlatTriangulation<T>>::updateAfterFlip(HalfEdgeMap<Vector<T>> &vectors, HalfEdge flip) {
-  const FlatTriangulationCombinatorial &parent = vectors.parent();
-  vectors.set(flip, vectors.get(-parent.nextInFace(flip)) + vectors.get(-parent.previousInFace(flip)));
-}
-
-template <typename T>
-void Implementation<FlatTriangulation<T>>::updateApproximationAfterFlip(HalfEdgeMap<flatsurf::Vector<exactreal::Arb>> &vectors, HalfEdge flip) {
-  const auto &surface = static_cast<const FlatTriangulation<T> &>(vectors.parent());
-  vectors.set(flip, static_cast<flatsurf::Vector<exactreal::Arb>>(surface.fromEdge(-surface.nextInFace(flip)) + surface.fromEdge(-surface.previousInFace(flip))));
-}
-
-template <typename T>
-void Implementation<FlatTriangulation<T>>::check(const FlatTriangulation<T> &self) {
-  // check that faces are closed
-  for (auto edge : self.halfEdges()) {
-    if (self.boundary(edge)) continue;
-    auto zero = self.fromEdge(edge);
-    CHECK_ARGUMENT(zero, "edges must not be trivial but " << edge << " is zero in " << self);
-    edge = self.nextInFace(edge);
-    zero += self.fromEdge(edge);
-    edge = self.nextInFace(edge);
-    zero += self.fromEdge(edge);
-    CHECK_ARGUMENT(!zero, "face at " << edge << " is not closed in " << self);
-  }
-  // check that faces are oriented correctly
-  for (auto edge : self.halfEdges()) {
-    if (self.boundary(edge)) continue;
-    auto next = self.nextInFace(edge);
-    CHECK_ARGUMENT(self.fromEdge(edge).ccw(self.fromEdge(next)) == CCW::COUNTERCLOCKWISE, "face at " << edge << " is not oriented correctly in " << self);
-  }
-}
-
-template <typename T>
 const Vector<T> &FlatTriangulation<T>::fromEdge(const HalfEdge e) const {
-  return impl->vectors.get(e);
+  return impl->vectors->get(e);
 }
 
 template <typename T>
 const flatsurf::Vector<exactreal::Arb> &FlatTriangulation<T>::fromEdgeApproximate(HalfEdge e) const {
-  return impl->approximations.get(e);
+  return impl->approximations->get(e);
 }
 
 template <typename T>
@@ -370,7 +323,7 @@ bool FlatTriangulation<T>::operator==(const FlatTriangulation<T> &rhs) const noe
   if (static_cast<const FlatTriangulationCombinatorial &>(*this) != static_cast<const FlatTriangulationCombinatorial &>(rhs))
     return false;
   for (auto &edge : halfEdges()) {
-    if (this->impl->vectors.get(edge) != rhs.impl->vectors.get(edge))
+    if (this->impl->vectors->get(edge) != rhs.impl->vectors->get(edge))
       return false;
   }
   return true;
@@ -393,6 +346,49 @@ int FlatTriangulation<T>::angle(const Vertex& vertex) const {
 
   return angle;
 }
+
+template <typename T>
+ImplementationOf<FlatTriangulation<T>>::ImplementationOf(const FlatTriangulationCombinatorial &combinatorial, const std::function<Vector<T>(HalfEdge)> &vectors) :
+  vectors(&combinatorial, OddHalfEdgeMap(combinatorial, vectors), ImplementationOf::updateAfterFlip),
+  approximations(&combinatorial,
+    OddHalfEdgeMap<Vector<exactreal::Arb>>(combinatorial, [&](const HalfEdge e) {
+      return static_cast<flatsurf::Vector<exactreal::Arb>>(this->vectors->get(e));
+    }),
+    ImplementationOf::updateApproximationAfterFlip) {
+}
+
+template <typename T>
+void ImplementationOf<FlatTriangulation<T>>::updateAfterFlip(OddHalfEdgeMap<Vector<T>> &vectors, const FlatTriangulationCombinatorial& parent, HalfEdge flip) {
+  vectors.set(flip, vectors.get(-parent.nextInFace(flip)) + vectors.get(-parent.previousInFace(flip)));
+}
+
+template <typename T>
+void ImplementationOf<FlatTriangulation<T>>::updateApproximationAfterFlip(OddHalfEdgeMap<flatsurf::Vector<exactreal::Arb>> &vectors, const FlatTriangulationCombinatorial& combinatorial, HalfEdge flip) {
+  const auto &surface = static_cast<const FlatTriangulation<T>&>(combinatorial);
+  vectors.set(flip, static_cast<flatsurf::Vector<exactreal::Arb>>(surface.fromEdge(-surface.nextInFace(flip)) + surface.fromEdge(-surface.previousInFace(flip))));
+}
+
+template <typename T>
+void ImplementationOf<FlatTriangulation<T>>::check(const FlatTriangulation<T> &self) {
+  // check that faces are closed
+  for (auto edge : self.halfEdges()) {
+    if (self.boundary(edge)) continue;
+    auto zero = self.fromEdge(edge);
+    CHECK_ARGUMENT(zero, "edges must not be trivial but " << edge << " is zero in " << self);
+    edge = self.nextInFace(edge);
+    zero += self.fromEdge(edge);
+    edge = self.nextInFace(edge);
+    zero += self.fromEdge(edge);
+    CHECK_ARGUMENT(!zero, "face at " << edge << " is not closed in " << self);
+  }
+  // check that faces are oriented correctly
+  for (auto edge : self.halfEdges()) {
+    if (self.boundary(edge)) continue;
+    auto next = self.nextInFace(edge);
+    CHECK_ARGUMENT(self.fromEdge(edge).ccw(self.fromEdge(next)) == CCW::COUNTERCLOCKWISE, "face at " << edge << " is not oriented correctly in " << self);
+  }
+}
+
 
 template <typename T>
 ostream &operator<<(ostream &os, const FlatTriangulation<T> &self) {

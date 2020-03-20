@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,33 @@
 #define LIBFLATSURF_EDGE_MAP_HPP
 
 #include "edge.hpp"
-#include "tracking_map.hpp"
+#include "flat_triangulation_combinatorial.hpp"
+
+namespace flatsurf {
+
+template <typename T>
+class EdgeMap {
+ public:
+  EdgeMap(const FlatTriangulationCombinatorial& surface) :
+    values(surface.size()) {}
+
+  T& operator[](Edge e) { 
+    return values[e.index()];
+  }
+
+  const T& operator[](Edge e) const {
+    return const_cast<EdgeMap&>(*this)[e];
+  }
+
+  void apply(std::function<void(Edge, const T&)> f) const {
+    for (size_t i = 0; i < values.size(); i++)
+      f(Edge::fromIndex(i), values[i]);
+  }
+
+ private:
+  std::vector<T> values;
+};
+
+}
 
 #endif

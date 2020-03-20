@@ -25,9 +25,9 @@
 
 namespace flatsurf {
 
-class TrackingHalfEdge::Implementation {
+class TrackingHalfEdge::ImplementationOf {
  public:
-  Implementation(const FlatTriangulationCombinatorial*, HalfEdge, bool followFlip);
+  ImplementationOf(const FlatTriangulationCombinatorial*, HalfEdge, bool followFlip);
 
   static void followFlip(HalfEdgeSet&, HalfEdge);
   static void noFlip(HalfEdgeSet&, HalfEdge);

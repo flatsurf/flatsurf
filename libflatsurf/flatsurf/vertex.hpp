@@ -20,6 +20,8 @@
 #ifndef LIBFLATSURF_VERTEX_HPP
 #define LIBFLATSURF_VERTEX_HPP
 
+#include <unordered_set>
+
 #include <boost/operators.hpp>
 
 #include "external/spimpl/spimpl.h"
@@ -38,15 +40,19 @@ class Vertex : Serializable<Vertex>,
   static const Vertex& source(const HalfEdge &, const FlatTriangulationCombinatorial &);
   static const Vertex& target(const HalfEdge &, const FlatTriangulationCombinatorial &);
 
+  HalfEdgeSet outgoing() const;
+  HalfEdgeSet incoming() const;
+
   bool operator==(const Vertex &) const;
 
   friend std::ostream &operator<<(std::ostream &, const Vertex &);
 
  private:
-  using Implementation = ::flatsurf::Implementation<Vertex>;
+  using Implementation = ImplementationOf<Vertex>;
   Copyable<Implementation> impl;
   friend Implementation;
   friend std::hash<Vertex>;
+  friend Serialization<Vertex>;
 };
 }  // namespace flatsurf
 

@@ -23,6 +23,8 @@
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/seq/for_each_product.hpp>
 #include <boost/preprocessor/seq/transform.hpp>
+#include <boost/preprocessor/seq/fold_left.hpp>
+#include <boost/preprocessor/seq/seq.hpp>
 
 #include <e-antic/renfxx.h>
 #include <gmpxx.h>
@@ -52,7 +54,7 @@
 
 #define LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION(T) \
   namespace flatsurf {                                 \
-  template class Implementation<LIBFLATSURF_REM(T)>;   \
+  template class ImplementationOf<LIBFLATSURF_REM(T)>;   \
   }                                                    \
   LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION(T)
 
@@ -86,11 +88,11 @@
 #define LIBFLATSURF_INSTANTIATE_MANY(TEMPLATES, TYPES) \
   BOOST_PP_SEQ_FOR_EACH(LIBFLATSURF_INSTANTIATE_R, TEMPLATES, TYPES)
 
-// LIBFLATSURF_INSTANTIATE_MANY_FROM_TRANSFORMATION((TEMP1)(TEMP2), T, (T1)(T2), TRANSFORMATION)
+// LIBFLATSURF_INSTANTIATE_MANY_FROM_TRANSFORMATION((TEMP1)(TEMP2), T, (T1)(T2), TRANSFORMATION) -> TEMP1<TRANSFORMATION(T, T1)>, …, TEMP2<TRANSFORMATION(T, T2)>
 #define LIBFLATSURF_INSTANTIATE_MANY_FROM_TRANSFORMATION(TEMPLATES, T, TYPES, TRANSFORMATION) \
   LIBFLATSURF_INSTANTIATE_MANY(TEMPLATES, BOOST_PP_SEQ_TRANSFORM(TRANSFORMATION, T, TYPES))
 
-// LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((TEMP1)(TEMP2), T, (T1)(T2))
+// LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((TEMP1)(TEMP2), T, (T1)(T2)) -> TEMP1(T<T1>), …, TEMP2(T<T2>)
 #define LIBFLATSURF_INSTANTIATE_MANY_WRAPPED(TEMPLATES, T, TYPES) \
   LIBFLATSURF_INSTANTIATE_MANY_FROM_TRANSFORMATION(TEMPLATES, T, TYPES, LIBFLATSURF_WRAP)
 

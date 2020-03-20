@@ -42,9 +42,9 @@
 namespace flatsurf {
 
 template <typename Surface>
-ContourConnection<Surface>::ContourConnection() :
-  // We assume that the caller initializes impl afterwards.
-  impl(nullptr) {}
+template <typename ...Args>
+ContourConnection<Surface>::ContourConnection(PrivateConstructor, Args&&...args) :
+  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
 
 template <typename Surface>
 bool ContourConnection<Surface>::top() const {
@@ -57,9 +57,9 @@ bool ContourConnection<Surface>::bottom() const {
 }
 
 template <typename Surface>
-const SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>& ContourConnection<Surface>::connection() const {
+const SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>& ContourConnection<Surface>::horizontal() const {
   auto& connection = impl->state->surface->fromEdge(top() ? -impl->halfEdge : impl->halfEdge);
-  ASSERT(impl->state->surface->vertical().perpendicular(connection) > 0, "ContourConnection::connection() must be left-to-right with respect to the vertical but " << connection << " is not.");
+  ASSERT(impl->state->surface->vertical().perpendicular(connection) > 0, "ContourConnection::horizontal() must be left-to-right with respect to the vertical but " << connection << " is not.");
   return connection;
 }
 
@@ -96,13 +96,13 @@ template <typename Surface>
 Path<FlatTriangulation<typename Surface::Coordinate>> ContourConnection<Surface>::perimeter() const {
   Path perimeter;
   if (top()) {
-    perimeter = rx::chain(right(), std::vector{ -connection() }, left()) | rx::to_vector();
+    perimeter = rx::chain(right(), std::vector{ -horizontal() }, left()) | rx::to_vector();
     ASSERTIONS([&]() {
         for (const  auto& connection : perimeter)
           ASSERT(impl->state->surface->vertical().perpendicular(connection) <= 0, "ContourConnection::perimeter() must be right-to-left but " << connection << " is not.");
     });
   } else {
-    perimeter = rx::chain(left(), std::vector{ connection() }, right()) | rx::to_vector();
+    perimeter = rx::chain(left(), std::vector{ horizontal() }, right()) | rx::to_vector();
     ASSERTIONS([&]() {
         for (const  auto& connection : perimeter)
           ASSERT(impl->state->surface->vertical().perpendicular(connection) >= 0, "ContourConnection::perimeter() must be left-to-right but " << connection << " is not.");
@@ -114,12 +114,12 @@ Path<FlatTriangulation<typename Surface::Coordinate>> ContourConnection<Surface>
 
 template <typename Surface>
 ContourConnection<Surface> ContourConnection<Surface>::previousInPerimeter() const {
-  return ::flatsurf::Implementation<ContourComponent<Surface>>::previousInPerimeter(impl->state, impl->component, impl->halfEdge);
+  return ImplementationOf<ContourComponent<Surface>>::previousInPerimeter(impl->state, impl->component, impl->halfEdge);
 }
 
 template <typename Surface>
 ContourConnection<Surface> ContourConnection<Surface>::nextInPerimeter() const {
-  return ::flatsurf::Implementation<ContourComponent<Surface>>::nextInPerimeter(impl->state, impl->component, impl->halfEdge);
+  return ImplementationOf<ContourComponent<Surface>>::nextInPerimeter(impl->state, impl->component, impl->halfEdge);
 }
 
 template <typename Surface>
@@ -136,30 +136,28 @@ bool ContourConnection<Surface>::operator==(const ContourConnection<Surface>& rh
 }
 
 template <typename Surface>
-ContourConnection<Surface> Implementation<ContourConnection<Surface>>::makeTop(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* const component, HalfEdge e) {
-  ContourConnection<Surface> ret;
-  ret.impl = spimpl::make_impl<Implementation>(state, component, e, true);
+ContourConnection<Surface> ImplementationOf<ContourConnection<Surface>>::makeTop(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* const component, HalfEdge e) {
+  ContourConnection<Surface> ret(PrivateConstructor{}, state, component, e, true);
   ASSERT(state->surface->vertical().perpendicular(state->surface->fromEdge(e)) < 0, "HalfEdge must be from right to left but " << e << " is not in " << *state->surface);
   return ret;
 }
 
 template <typename Surface>
-ContourConnection<Surface> Implementation<ContourConnection<Surface>>::makeBottom(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* const component, HalfEdge e) {
-  ContourConnection<Surface> ret;
-  ret.impl = spimpl::make_impl<Implementation>(state, component, e, false);
+ContourConnection<Surface> ImplementationOf<ContourConnection<Surface>>::makeBottom(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* const component, HalfEdge e) {
+  ContourConnection<Surface> ret(PrivateConstructor{}, state, component, e, false);
   ASSERT(state->surface->vertical().perpendicular(state->surface->fromEdge(e)) > 0, "HalfEdge must be from left to right but " << e << " is not in " << *state->surface);
   return ret;
 }
 
 template <typename Surface>
-Implementation<ContourConnection<Surface>>::Implementation(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* const component, HalfEdge halfEdge, bool top) :
+ImplementationOf<ContourConnection<Surface>>::ImplementationOf(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* const component, HalfEdge halfEdge, bool top) :
   state(state),
   component(component),
   halfEdge(halfEdge),
   contour(top ? Contour::TOP : Contour::BOTTOM) {}
 
 template <typename Surface>
-Path<FlatTriangulation<typename Surface::Coordinate>> Implementation<ContourConnection<Surface>>::turn(const ContourConnection<Surface>& from, const ContourConnection<Surface>& to) {
+Path<FlatTriangulation<typename Surface::Coordinate>> ImplementationOf<ContourConnection<Surface>>::turn(const ContourConnection<Surface>& from, const ContourConnection<Surface>& to) {
   ASSERT(to == from.nextInPerimeter(), "can only cross between adjacent connections but " << to.impl->halfEdge << " does not follow " << from.impl->halfEdge);
 
   auto& surface = *from.impl->state->surface;
@@ -194,7 +192,7 @@ Path<FlatTriangulation<typename Surface::Coordinate>> Implementation<ContourConn
 }
 
 template <typename Surface>
-std::pair<Path<FlatTriangulation<typename Surface::Coordinate>>, Path<FlatTriangulation<typename Surface::Coordinate>>> Implementation<ContourConnection<Surface>>::cross(const ContourConnection<Surface>& from, const ContourConnection<Surface>& to) {
+std::pair<Path<FlatTriangulation<typename Surface::Coordinate>>, Path<FlatTriangulation<typename Surface::Coordinate>>> ImplementationOf<ContourConnection<Surface>>::cross(const ContourConnection<Surface>& from, const ContourConnection<Surface>& to) {
   auto connections = turn(from, to) | rx::to_list();
 
   const auto& surface = *from.impl->state->surface;

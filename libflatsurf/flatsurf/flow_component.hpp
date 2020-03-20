@@ -28,6 +28,7 @@
 #include <boost/logic/tribool_fwd.hpp>
 
 #include "copyable.hpp"
+#include "forward.hpp"
 #include "vector.hpp"
 
 namespace flatsurf {
@@ -40,10 +41,11 @@ class FlowComponent {
 
   // Flow components cannot be created directly (other than copying & moving them.)
   // They are created during a FlowDecomposition.
-  FlowComponent();
+  template <typename ...Args>
+  FlowComponent(PrivateConstructor, Args&&...args);
 
  public:
-  // TODO: Should be circular list
+  // We should be using a FlowPath instead, see https://github.com/flatsurf/flatsurf/issues/146.
   using Perimeter = std::list<FlowConnection<Surface>>;
 
   boost::logic::tribool cylinder() const;
@@ -79,7 +81,7 @@ class FlowComponent {
   friend std::ostream& operator<<(std::ostream&, const FlowComponent<S>&);
 
  private:
-  using Implementation = ::flatsurf::Implementation<FlowComponent>;
+  using Implementation = ImplementationOf<FlowComponent>;
   Copyable<Implementation> impl;
 
   friend Implementation;

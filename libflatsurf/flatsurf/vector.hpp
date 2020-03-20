@@ -58,7 +58,7 @@ class Vector : public std::conditional_t<std::is_same_v<T, exactreal::Arb>, deta
   template <typename Archive>
   void load(Archive& archive);
 
-  using Implementation = ::flatsurf::Implementation<Vector<T>>;
+  using Implementation = ImplementationOf<Vector<T>>;
   spimpl::impl_ptr<Implementation> impl;
   friend Implementation;
 };

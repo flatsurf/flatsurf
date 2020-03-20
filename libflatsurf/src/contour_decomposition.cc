@@ -39,11 +39,6 @@
 
 #include "util/assert.ipp"
 
-// TODO: We could add a lot of constness here probably.
-// TODO: The "make()" from impl() pattern could probably be automated somewhat.
-// TODO: const properties are almost always the wrong thing to do. Instead they
-// should be private.
-
 namespace flatsurf {
 
 using std::ostream;
@@ -71,11 +66,11 @@ std::shared_ptr<const FlatTriangulationCollapsed<typename Surface::Coordinate>> 
 }
 
 template <typename Surface>
-Implementation<ContourDecomposition<Surface>>::Implementation(std::unique_ptr<Surface> surface, const Vector<T>& vertical) :
+ImplementationOf<ContourDecomposition<Surface>>::ImplementationOf(std::unique_ptr<Surface> surface, const Vector<T>& vertical) :
   state(new DecompositionState(std::move(surface), vertical)) {}
 
 template <typename Surface>
-void Implementation<ContourDecomposition<Surface>>::check(const std::vector<Path<FlatTriangulation<T>>>& decomposition, const Vertical<FlatTriangulation<T>>& vertical) {
+void ImplementationOf<ContourDecomposition<Surface>>::check(const std::vector<Path<FlatTriangulation<T>>>& decomposition, const Vertical<FlatTriangulation<T>>& vertical) {
   const auto& surface = vertical.surface();
 
   // All components are closed
@@ -186,7 +181,7 @@ void Implementation<ContourDecomposition<Surface>>::check(const std::vector<Path
 
   // Components do not overlap
   {
-    // TODO
+    // https://github.com/flatsurf/flatsurf/issues/150
   }
 }
 

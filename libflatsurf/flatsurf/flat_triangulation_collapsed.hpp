@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,12 +37,12 @@ class FlatTriangulationCollapsed : public FlatTriangulationCombinatorial,
                                    boost::equality_comparable<FlatTriangulationCollapsed<T>> {
   static_assert(std::is_same_v<T, std::decay_t<T>>, "type must not have modifiers such as const");
 
-  using SaddleConnection = ::flatsurf::SaddleConnection<FlatTriangulation<T>>;
-
+  // FlatTriangulationCollapsed cannot be created directly. Use make() to create a shared pointers holding a surface.
   FlatTriangulationCollapsed(std::unique_ptr<FlatTriangulation<T>>, const flatsurf::Vector<T> &vertical);
 
  public:
   using Coordinate = T;
+  using SaddleConnection = ::flatsurf::SaddleConnection<FlatTriangulation<T>>;
 
   static std::shared_ptr<FlatTriangulationCollapsed<T>> make(std::unique_ptr<FlatTriangulation<T>>, const Vector<T> &vertical);
 
@@ -86,14 +86,9 @@ class FlatTriangulationCollapsed : public FlatTriangulationCombinatorial,
   friend std::ostream &operator<<(std::ostream &, const FlatTriangulationCollapsed<S> &);
 
  private:
-  using Implementation = ::flatsurf::Implementation<FlatTriangulationCollapsed>;
+  using Implementation = ImplementationOf<FlatTriangulationCollapsed>;
   Moveable<Implementation> impl;
   friend Implementation;
-
-  // TODO: Remove
-  friend FlowComponent<FlatTriangulation<T>>;
-  // TODO: Remove
-  friend IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>;
 };
 
 }  // namespace flatsurf

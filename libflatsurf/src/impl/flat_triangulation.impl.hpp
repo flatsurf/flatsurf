@@ -25,24 +25,25 @@
 #include "../../flatsurf/flat_triangulation.hpp"
 #include "../../flatsurf/half_edge_map.hpp"
 #include "../../flatsurf/vector.hpp"
+#include "../../flatsurf/tracked.hpp"
 
 namespace flatsurf {
 
 template <typename T>
-class Implementation<FlatTriangulation<T>> {
+class ImplementationOf<FlatTriangulation<T>> {
  public:
-  Implementation(const FlatTriangulationCombinatorial&, const std::function<Vector<T>(HalfEdge)>&);
+  ImplementationOf(const FlatTriangulationCombinatorial&, const std::function<Vector<T>(HalfEdge)>&);
 
-  static void updateAfterFlip(HalfEdgeMap<Vector<T>>& vectors, HalfEdge flip);
-  static void updateApproximationAfterFlip(HalfEdgeMap<Vector<exactreal::Arb>>& vectors, HalfEdge flip);
+  static void updateAfterFlip(OddHalfEdgeMap<Vector<T>>&, const FlatTriangulationCombinatorial&, HalfEdge);
+  static void updateApproximationAfterFlip(OddHalfEdgeMap<Vector<exactreal::Arb>>&, const FlatTriangulationCombinatorial&, HalfEdge);
 
   static void check(const FlatTriangulation<T>&);
 
   static T area(const Vector<T>& a, const Vector<T>& b, const Vector<T>& c);
 
-  const HalfEdgeMap<Vector<T>> vectors;
+  const Tracked<OddHalfEdgeMap<Vector<T>>> vectors;
   // A cache of approximations for improved performance
-  const HalfEdgeMap<Vector<exactreal::Arb>> approximations;
+  const Tracked<OddHalfEdgeMap<Vector<exactreal::Arb>>> approximations;
 };
 
 }  // namespace flatsurf

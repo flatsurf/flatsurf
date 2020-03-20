@@ -28,12 +28,12 @@
 namespace flatsurf {
 
 template <typename Surface>
-class Implementation<Vertical<Surface>> {
+class ImplementationOf<Vertical<Surface>> {
   using Vertical = ::flatsurf::Vertical<Surface>;
   using T = typename Surface::Coordinate;
 
  public:
-  Implementation(std::shared_ptr<const Surface>, const Vector<T>&);
+  ImplementationOf(std::shared_ptr<const Surface>, const Vector<T>&);
 
   static bool visit(const Vertical& self, HalfEdge start, std::unordered_set<HalfEdge>& component, std::function<bool(HalfEdge)> visitor);
 

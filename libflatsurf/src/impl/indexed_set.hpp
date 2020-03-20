@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,22 +17,45 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_TRACKING_SET_ITERATOR_IMPL_HPP
-#define LIBFLATSURF_TRACKING_SET_ITERATOR_IMPL_HPP
+#ifndef LIBFLATSURF_IMPL_INDEXED_SET_HPP
+#define LIBFLATSURF_IMPL_INDEXED_SET_HPP
 
-#include "../../flatsurf/tracking_set_iterator.hpp"
+#include <boost/dynamic_bitset.hpp>
+#include <boost/dynamic_bitset/dynamic_bitset.hpp>
+
+#include "forward.hpp"
 
 namespace flatsurf {
+
 template <typename T>
-class Implementation<TrackingSetIterator<T>> {
+class IndexedSet {
  public:
-  Implementation(const TrackingSet<T>*);
+  IndexedSet();
+  IndexedSet(const std::vector<T>&);
 
-  static TrackingSetIterator<T> begin(const TrackingSet<T>*);
-  static TrackingSetIterator<T> end(const TrackingSet<T>*);
+  using Bitset = boost::dynamic_bitset<>;
 
-  const TrackingSet<T>* set;
-  const T* current;
+  bool contains(const T&) const;
+  void insert(const T&);
+
+  bool operator==(const IndexedSet&) const;
+
+  bool disjoint(const IndexedSet&) const;
+  bool empty() const;
+
+  size_t size() const;
+  void erase(const T&);
+
+  IndexedSetIterator<T> begin() const;
+  IndexedSetIterator<T> end() const;
+
+  template <typename S>
+  friend std::ostream& operator<<(std::ostream&, const IndexedSet<S>&);
+
+ private:
+  mutable Bitset set {};
+
+  friend IndexedSetIterator<T>;
 };
 
 }

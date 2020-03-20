@@ -45,9 +45,9 @@ using std::vector;
 namespace flatsurf {
 
 template <typename Surface>
-ContourComponent<Surface>::ContourComponent() {
-  // we assume that the caller is aware that impl needs to be initialized.
-}
+template <typename ...Args>
+ContourComponent<Surface>::ContourComponent(PrivateConstructor, Args&&...args) :
+  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
 
 template <typename Surface>
 IntervalExchangeTransformation<FlatTriangulationCollapsed<typename Surface::Coordinate>> ContourComponent<Surface>::intervalExchangeTransformation() const {
@@ -57,7 +57,7 @@ IntervalExchangeTransformation<FlatTriangulationCollapsed<typename Surface::Coor
 template <typename Surface>
 std::vector<ContourConnection<Surface>> ContourComponent<Surface>::topContour() const {
   return impl->component->topEdges | rx::transform([&](const HalfEdge e) {
-    return ::flatsurf::Implementation<ContourConnection<Surface>>::makeTop(impl->state, impl->component, -e);
+    return ImplementationOf<ContourConnection<Surface>>::makeTop(impl->state, impl->component, -e);
   }) | rx::to_vector();
 }
 
@@ -69,7 +69,7 @@ Path<FlatTriangulation<typename Surface::Coordinate>> ContourComponent<Surface>:
 template <typename Surface>
 std::vector<ContourConnection<Surface>> ContourComponent<Surface>::bottomContour() const {
   return impl->component->bottomEdges | rx::transform([&](const HalfEdge e) {
-    return ::flatsurf::Implementation<ContourConnection<Surface>>::makeBottom(impl->state, impl->component, e);
+    return ImplementationOf<ContourConnection<Surface>>::makeBottom(impl->state, impl->component, e);
   }) | rx::to_vector();
 }
 
@@ -94,70 +94,68 @@ Path<FlatTriangulation<typename Surface::Coordinate>> ContourComponent<Surface>:
 }
 
 template <typename Surface>
-HalfEdge Implementation<ContourComponent<Surface>>::large() const {
+HalfEdge ImplementationOf<ContourComponent<Surface>>::large() const {
   return component->large;
 }
 
 template <typename Surface>
 typename Surface::Coordinate ContourComponent<Surface>::area() const {
-  return 3 * Vector<T>::area(perimeter() | rx::transform([&](const auto& connection) { return static_cast<const Vector<T>&>(connection); }) | rx::to_vector());
+  return 3 * Vector<T>::area(perimeter() | rx::transform([&](const auto& connection) { return connection.vector(); }) | rx::to_vector());
 }
 
 template <typename Surface>
-ContourComponent<Surface> Implementation<ContourComponent<Surface>>::make(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* component) {
-  ContourComponent<Surface> ret;
-  ret.impl = spimpl::make_impl<Implementation>(state, component);
-  return ret;
+ContourComponent<Surface> ImplementationOf<ContourComponent<Surface>>::make(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* component) {
+  return ContourComponent<Surface>(PrivateConstructor{}, state, component);
 }
 
 template <typename Surface>
-ContourConnection<Surface> Implementation<ContourComponent<Surface>>::nextInPerimeter(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* const component, HalfEdge e) {
+ContourConnection<Surface> ImplementationOf<ContourComponent<Surface>>::nextInPerimeter(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* const component, HalfEdge e) {
   if (e == *rbegin(component->bottomEdges)) {
-    return ::flatsurf::Implementation<ContourConnection<Surface>>::makeTop(state, component, -*begin(component->topEdges));
+    return ::flatsurf::ImplementationOf<ContourConnection<Surface>>::makeTop(state, component, -*begin(component->topEdges));
   }
 
   if (e == -*rbegin(component->topEdges)) {
-    return ::flatsurf::Implementation<ContourConnection<Surface>>::makeBottom(state, component, *begin(component->bottomEdges));
+    return ::flatsurf::ImplementationOf<ContourConnection<Surface>>::makeBottom(state, component, *begin(component->bottomEdges));
   }
 
   auto bottom = std::find(begin(component->bottomEdges), end(component->bottomEdges), e);
   if (bottom != end(component->bottomEdges)) {
-    return ::flatsurf::Implementation<ContourConnection<Surface>>::makeBottom(state, component, *++bottom);
+    return ::flatsurf::ImplementationOf<ContourConnection<Surface>>::makeBottom(state, component, *++bottom);
   }
 
   auto top = std::find(begin(component->topEdges), end(component->topEdges), -e);
   if (top != end(component->topEdges)) {
-    return ::flatsurf::Implementation<ContourConnection<Surface>>::makeTop(state, component, -*++top);
+    return ::flatsurf::ImplementationOf<ContourConnection<Surface>>::makeTop(state, component, -*++top);
   }
 
   throw std::logic_error("Half Edge not in this component");
 }
 
 template <typename Surface>
-ContourConnection<Surface> Implementation<ContourComponent<Surface>>::previousInPerimeter(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* const component, HalfEdge e) {
+ContourConnection<Surface> ImplementationOf<ContourComponent<Surface>>::previousInPerimeter(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* const component, HalfEdge e) {
   if (e == *begin(component->bottomEdges)) {
-    return ::flatsurf::Implementation<ContourConnection<Surface>>::makeTop(state, component, -*rbegin(component->topEdges));
+    return ::flatsurf::ImplementationOf<ContourConnection<Surface>>::makeTop(state, component, -*rbegin(component->topEdges));
   }
 
   if (e == -*begin(component->topEdges)) {
-    return ::flatsurf::Implementation<ContourConnection<Surface>>::makeBottom(state, component, *rbegin(component->bottomEdges));
+    return ::flatsurf::ImplementationOf<ContourConnection<Surface>>::makeBottom(state, component, *rbegin(component->bottomEdges));
   }
 
   auto bottom = std::find(begin(component->bottomEdges), end(component->bottomEdges), e);
   if (bottom != end(component->bottomEdges)) {
-    return ::flatsurf::Implementation<ContourConnection<Surface>>::makeBottom(state, component, *--bottom);
+    return ::flatsurf::ImplementationOf<ContourConnection<Surface>>::makeBottom(state, component, *--bottom);
   }
 
   auto top = std::find(begin(component->topEdges), end(component->topEdges), -e);
   if (top != end(component->topEdges)) {
-    return ::flatsurf::Implementation<ContourConnection<Surface>>::makeTop(state, component, -*--top);
+    return ::flatsurf::ImplementationOf<ContourConnection<Surface>>::makeTop(state, component, -*--top);
   }
 
   throw std::logic_error("Half Edge not in this component");
 }
 
 template <typename Surface>
-void Implementation<ContourComponent<Surface>>::makeContour(std::back_insert_iterator<vector<HalfEdge>> target,
+void ImplementationOf<ContourComponent<Surface>>::makeContour(std::back_insert_iterator<vector<HalfEdge>> target,
     const HalfEdge source, const Surface& parent,
     const Vertical<Surface>& vertical) {
   ASSERT_ARGUMENT(!vertical.parallel(source), "vertical edges must have been collapsed before a contour can be built");

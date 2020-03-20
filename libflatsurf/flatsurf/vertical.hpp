@@ -33,8 +33,6 @@
 #include "forward.hpp"
 
 namespace flatsurf {
-// TODO: Maybe split into a base class Direction or Orientation or something
-// like that and this subclass Vertical which is attached to a Surface.
 template <typename Surface>
 class Vertical : boost::equality_comparable<Vertical<Surface>> {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
@@ -79,18 +77,10 @@ class Vertical : boost::equality_comparable<Vertical<Surface>> {
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const Vertical<S> &);
 
-  // TODO
- public:
-  using Implementation = ::flatsurf::Implementation<Vertical>;
+ private:
+  using Implementation = ImplementationOf<Vertical>;
   spimpl::impl_ptr<Implementation> impl;
-
   friend Implementation;
-
-  friend cereal::access;
-  template <typename Archive>
-  void save(Archive &archive) const;
-  template <typename Archive>
-  void load(Archive &archive);
 };
 
 template <typename Surface, typename ...Args>

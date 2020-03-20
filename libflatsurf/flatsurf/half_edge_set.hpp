@@ -33,9 +33,8 @@
 namespace flatsurf {
 
 class HalfEdgeSet : boost::equality_comparable<HalfEdgeSet> {
-  template <typename ...Args> HalfEdgeSet(PrivateConstructor, Args&&...);
-
  public:
+  HalfEdgeSet();
   HalfEdgeSet(const std::vector<HalfEdge>&);
 
   bool contains(HalfEdge) const;
@@ -55,11 +54,11 @@ class HalfEdgeSet : boost::equality_comparable<HalfEdgeSet> {
   friend std::ostream& operator<<(std::ostream&, const HalfEdgeSet&);
 
  private:
-  using Implementation = ::flatsurf::Implementation<HalfEdgeSet>;
+  using Implementation = ImplementationOf<HalfEdgeSet>;
   spimpl::impl_ptr<Implementation> impl;
   friend Implementation;
   friend HalfEdgeSetIterator;
-  friend ::flatsurf::Implementation<HalfEdgeSetIterator>;
+  friend ImplementationOf<HalfEdgeSetIterator>;
 };
 
 HalfEdgeSetIterator begin(const HalfEdgeSet&);

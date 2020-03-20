@@ -21,6 +21,7 @@
 
 #include <fmt/format.h>
 
+#include "../flatsurf/edge.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/path_iterator.hpp"
@@ -30,12 +31,12 @@
 namespace flatsurf {
 
 template <typename T>
-void CollapsedHalfEdge<T>::updateAfterFlip(HalfEdgeMap<CollapsedHalfEdge>&, HalfEdge) {
+void CollapsedHalfEdge<T>::updateAfterFlip(HalfEdgeMap<CollapsedHalfEdge>&, const FlatTriangulationCombinatorial&, HalfEdge) {
   // intentionally empty, Implementation::updateAfterFlip() already did all the necessary updates.
 }
 
 template <typename T>
-void CollapsedHalfEdge<T>::updateBeforeCollapse(HalfEdgeMap<CollapsedHalfEdge>&, Edge) {
+void CollapsedHalfEdge<T>::updateBeforeCollapse(HalfEdgeMap<CollapsedHalfEdge>&, const FlatTriangulationCombinatorial&, Edge) {
   // intentionally empty, CollapsedHalfEdge::updateBeforeFlip already did all the necessary updates
 }
 

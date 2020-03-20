@@ -36,10 +36,10 @@ class ChainVector {
  public:
   ChainVector(const ChainVector&) = delete;
   ChainVector(const ChainVector&&) = delete;
-  ChainVector(const Implementation<Chain<Surface>>*);
-  ChainVector(const Implementation<Chain<Surface>>*, Vector<T>);
-  ChainVector(const Implementation<Chain<Surface>>*, const ChainVector&);
-  ChainVector(const Implementation<Chain<Surface>>*, ChainVector&&);
+  ChainVector(const ImplementationOf<Chain<Surface>>*);
+  ChainVector(const ImplementationOf<Chain<Surface>>*, Vector<T>);
+  ChainVector(const ImplementationOf<Chain<Surface>>*, const ChainVector&);
+  ChainVector(const ImplementationOf<Chain<Surface>>*, ChainVector&&);
 
   operator const Vector<T>&() const;
 
@@ -64,7 +64,7 @@ class ChainVector {
   friend std::ostream& operator<<(std::ostream&, const ChainVector<S, TT>&);
 
  private:
-  const Implementation<Chain<Surface>>& chain;
+  const ImplementationOf<Chain<Surface>>& chain;
   
   mutable std::optional<Vector<T>> value = {};
 

@@ -634,18 +634,19 @@ namespace flatsurf {
 // cannot use a template:
 // https://stackoverflow.com/questions/18823618/overload-operator-for-nested-class-template
 std::ostream& operator<<(std::ostream& os, const typename SaddleConnections<FlatTriangulation<long long>>::Iterator& self) { return os << *self.impl; }
+std::ostream& operator<<(std::ostream& os, const typename SaddleConnections<FlatTriangulation<mpz_class>>::Iterator& self) { return os << *self.impl; }
 std::ostream& operator<<(std::ostream& os, const typename SaddleConnections<FlatTriangulation<mpq_class>>::Iterator& self) { return os << *self.impl; }
 std::ostream& operator<<(std::ostream& os, const typename SaddleConnections<FlatTriangulation<eantic::renf_elem_class>>::Iterator& self) { return os << *self.impl; }
 std::ostream& operator<<(std::ostream& os, const typename SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::IntegerRing>>>::Iterator& self) { return os << *self.impl; }
 std::ostream& operator<<(std::ostream& os, const typename SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::RationalField>>>::Iterator& self) { return os << *self.impl; }
 std::ostream& operator<<(std::ostream& os, const typename SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::NumberField>>>::Iterator& self) { return os << *self.impl; }
 
+template class SaddleConnections<FlatTriangulation<long long>>;
+template std::ostream& operator<<(std::ostream&, const SaddleConnections<FlatTriangulation<long long>>&);
 template class SaddleConnections<FlatTriangulation<mpz_class>>;
 template std::ostream& operator<<(std::ostream&, const SaddleConnections<FlatTriangulation<mpz_class>>&);
 template class SaddleConnections<FlatTriangulation<mpq_class>>;
 template std::ostream& operator<<(std::ostream&, const SaddleConnections<FlatTriangulation<mpq_class>>&);
-template class SaddleConnections<FlatTriangulation<long long>>;
-template std::ostream& operator<<(std::ostream&, const SaddleConnections<FlatTriangulation<long long>>&);
 template class SaddleConnections<FlatTriangulation<eantic::renf_elem_class>>;
 template std::ostream& operator<<(std::ostream&, const SaddleConnections<FlatTriangulation<eantic::renf_elem_class>>&);
 template class SaddleConnections<FlatTriangulation<exactreal::Element<exactreal::IntegerRing>>>;

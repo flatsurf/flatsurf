@@ -28,11 +28,11 @@
 namespace flatsurf {
 
 template <typename Surface>
-class Implementation<ContourConnection<Surface>> {
+class ImplementationOf<ContourConnection<Surface>> {
   using T = typename Surface::Coordinate;
 
  public:
-  Implementation(std::shared_ptr<ContourDecompositionState<Surface>>, ContourComponentState<Surface>* const component, HalfEdge, bool top);
+  ImplementationOf(std::shared_ptr<ContourDecompositionState<Surface>>, ContourComponentState<Surface>* const component, HalfEdge, bool top);
 
   static ContourConnection<Surface> makeTop(std::shared_ptr<ContourDecompositionState<Surface>>, ContourComponentState<Surface>* const component, HalfEdge);
   static ContourConnection<Surface> makeBottom(std::shared_ptr<ContourDecompositionState<Surface>>, ContourComponentState<Surface>* const component, HalfEdge);

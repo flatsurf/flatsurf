@@ -76,7 +76,7 @@ inline constexpr bool IsLongLong = Similar<T, long long>;
 
 namespace flatsurf {
 template <typename T>
-class Implementation<Vector<T>> : public Cartesian<T> {
+class ImplementationOf<Vector<T>> : public Cartesian<T> {
  public:
   using Cartesian<T>::Cartesian;
   using Vector = flatsurf::Vector<T>;
@@ -86,7 +86,7 @@ class Implementation<Vector<T>> : public Cartesian<T> {
   }
 
   template <bool Enable = IsArb<T>, If<Enable> = true>
-  Implementation& operator+=(const flatsurf::Vector<Arb>& rhs) {
+  ImplementationOf& operator+=(const flatsurf::Vector<Arb>& rhs) {
     // Unfortunately, exact-real's arb::yap adds too much overhead, in
     // particular in DEBUG builds for this operation that is called all the
     // time. So we have to call arb_add directly here.
@@ -101,14 +101,14 @@ class Implementation<Vector<T>> : public Cartesian<T> {
   }
 
   template <typename S, bool Enable = IsArb<T>, If<Enable> = true>
-  Implementation& operator*=(const S& rhs) {
+  ImplementationOf& operator*=(const S& rhs) {
     this->x *= Arb(rhs)(ARB_PRECISION_FAST);
     this->y *= Arb(rhs)(ARB_PRECISION_FAST);
     return *this;
   }
 
   template <typename S, bool Enable = IsLongLong<T>&& IsMPZ<S>, If<Enable> = true, typename = void>
-  Implementation& operator*=(const S& rhs) {
+  ImplementationOf& operator*=(const S& rhs) {
     using gmpxxll::mpz_class;
     ASSERT(rhs * mpz_class(this->x) <= mpz_class(LONG_LONG_MAX), "Multiplication overflow");
     ASSERT(rhs * mpz_class(this->y) <= mpz_class(LONG_LONG_MAX), "Multiplication overflow");

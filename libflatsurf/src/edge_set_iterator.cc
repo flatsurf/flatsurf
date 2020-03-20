@@ -17,34 +17,41 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_CHAIN_ITERATOR_IMPL_HPP
-#define LIBFLATSURF_CHAIN_ITERATOR_IMPL_HPP
+#include "../flatsurf/edge_set_iterator.hpp"
+#include "../flatsurf/edge.hpp"
+#include "../flatsurf/edge_set.hpp"
 
-#include "../../flatsurf/chain_iterator.hpp"
+#include "impl/edge_set_iterator.impl.hpp"
+#include "impl/edge_set.impl.hpp"
+
+#include "util/assert.ipp"
 
 namespace flatsurf {
 
-template <typename Surface>
-class ImplementationOf<ChainIterator<Surface>> {
- public:
-  ImplementationOf(const Chain<Surface>*, int pos = 0);
-
-  static ChainIterator<Surface> begin(const Chain<Surface>*);
-  static ChainIterator<Surface> end(const Chain<Surface>*);
-
-  const Chain<Surface>* parent;
-  std::pair<Edge, const mpz_class*> current;
-
- private:
-  // Return the index of the first non-zero entry in the chain after pos.
-  // Return the number of edges if none could be found.
-  static size_t findNext(const Chain<Surface>*, int pos);
-  static std::pair<Edge, const mpz_class*> make(const Chain<Surface>*, size_t pos);
-
-  friend ChainIterator<Surface>;
-};
-
+template <typename ...Args>
+EdgeSetIterator::EdgeSetIterator(PrivateConstructor, Args&&... args) :
+  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {
 }
 
-#endif
+void EdgeSetIterator::increment() {
+  return impl->increment();
+}
+
+bool EdgeSetIterator::equal(const EdgeSetIterator& rhs) const {
+  return impl->equal(*rhs.impl);
+}
+
+const Edge& EdgeSetIterator::dereference() const {
+  return impl->dereference();
+}
+
+EdgeSetIterator EdgeSet::begin() const {
+  return EdgeSetIterator{PrivateConstructor{}, impl->begin()};
+}
+
+EdgeSetIterator EdgeSet::end() const {
+  return EdgeSetIterator{PrivateConstructor{}, impl->end()};
+}
+
+}
 

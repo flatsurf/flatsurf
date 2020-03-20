@@ -60,6 +60,24 @@ std::optional<bool> VectorWithError<Vector>::operator==(const Vector& rhs) const
 }
 
 template <typename Vector>
+std::optional<bool> VectorWithError<Vector>::operator!=(const Vector& rhs) const noexcept {
+  using Implementation = typename Vector::Implementation;
+  const Vector& self = static_cast<const Vector&>(*this);
+
+  if constexpr (has_optional_ne<Implementation>) {
+    return *self.impl != *rhs.impl;
+  } else if constexpr (is_forward_v<Implementation>) {
+    return self.impl->vector != rhs.impl->vector;
+  } else if constexpr (is_cartesian_v<Implementation>) {
+    const auto eq = self == rhs;
+    if (eq) return !*eq;
+    return {};
+  } else {
+    static_assert(false_type_v<Implementation>, "Implementation is missing operator!=.");
+  }
+}
+
+template <typename Vector>
 std::optional<CCW> VectorWithError<Vector>::ccw(const Vector& rhs) const noexcept {
   using Implementation = typename Vector::Implementation;
   const Vector& self = static_cast<const Vector&>(*this);

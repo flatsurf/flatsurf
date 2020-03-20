@@ -31,7 +31,6 @@ namespace flatsurf {
 
 template <typename T>
 class Tracked {
-  // TODO: Use this constructor pattern everywhere (no need for Implementation() consturctors anymore.)
   template <typename ...Args> Tracked(PrivateConstructor, Args&&...);
 
  public:
@@ -48,10 +47,12 @@ class Tracked {
 
   Tracked(const Tracked&);
   Tracked(Tracked&&);
-  Tracked(const FlatTriangulationCombinatorial*, T value, const FlipHandler& updateAfterFlip = noFlip, const CollapseHandler& updateBeforeCollapse = noCollapse, const SwapHandler& updateBeforeSwap = noSwap, const EraseHandler& updateBeforeErase = noErase, const DestructionHandler& updateBeforeDestruction = forgetParent);
+  Tracked(const FlatTriangulationCombinatorial*, T value, const FlipHandler& updateAfterFlip = defaultFlip, const CollapseHandler& updateBeforeCollapse = defaultCollapse, const SwapHandler& updateBeforeSwap = defaultSwap, const EraseHandler& updateBeforeErase = defaultErase, const DestructionHandler& updateBeforeDestruction = forgetParent);
 
   operator T&();
   operator const T&() const;
+  const T* operator->() const;
+  T* operator->();
 
   const FlatTriangulationCombinatorial& parent() const;
 
@@ -64,16 +65,16 @@ class Tracked {
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const Tracked<S>&);
 
+  static void defaultFlip(T&, const FlatTriangulationCombinatorial&, HalfEdge);
+  static void defaultCollapse(T&, const FlatTriangulationCombinatorial&, Edge);
+  static void defaultSwap(T&, const FlatTriangulationCombinatorial&, HalfEdge, HalfEdge);
+  static void defaultErase(T&, const FlatTriangulationCombinatorial&, const std::vector<Edge>&);
+  static void forgetParent(T&, const FlatTriangulationCombinatorial&);
+
  private:
-  using Implementation = ::flatsurf::Implementation<Tracked<T>>;
+  using Implementation = ImplementationOf<Tracked<T>>;
   spimpl::unique_impl_ptr<Implementation> impl;
   friend Implementation;
-
-  static void noFlip(T&, const FlatTriangulationCombinatorial&, HalfEdge);
-  static void noCollapse(T&, const FlatTriangulationCombinatorial&, Edge);
-  static void noSwap(T&, const FlatTriangulationCombinatorial&, HalfEdge, HalfEdge);
-  static void noErase(T&, const FlatTriangulationCombinatorial&, const std::vector<Edge>&);
-  static void forgetParent(T&, const FlatTriangulationCombinatorial&);
 };
 
 }  // namespace flatsurf

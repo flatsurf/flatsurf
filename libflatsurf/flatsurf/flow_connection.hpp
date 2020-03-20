@@ -35,7 +35,8 @@ class FlowConnection : Serializable<FlowConnection<Surface>>,
 
   // Flow connections cannot be created directly (other than copying & moving them.)
   // They are created as products of FlowDecomposition.
-  FlowConnection();
+  template <typename ...Args>
+  FlowConnection(PrivateConstructor, Args&&...args);
 
  public:
   FlowComponent<Surface> component() const;
@@ -79,7 +80,7 @@ class FlowConnection : Serializable<FlowConnection<Surface>>,
   friend std::ostream& operator<<(std::ostream&, const FlowConnection<S>&);
 
  private:
-  using Implementation = ::flatsurf::Implementation<FlowConnection>;
+  using Implementation = ImplementationOf<FlowConnection>;
   Copyable<Implementation> impl;
   friend Implementation;
 };

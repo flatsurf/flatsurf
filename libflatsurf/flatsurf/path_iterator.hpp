@@ -46,7 +46,7 @@ class PathIterator : public boost::iterator_facade<PathIterator<Surface>, const 
   friend std::ostream& operator<<(std::ostream&, const PathIterator<S>&);
 
  private:
-  using Implementation = ::flatsurf::Implementation<PathIterator>;
+  using Implementation = ImplementationOf<PathIterator>;
   spimpl::impl_ptr<Implementation> impl;
   friend Implementation;
   friend Path<Surface>;

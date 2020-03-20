@@ -63,7 +63,7 @@ std::ostream& operator<<(std::ostream& os, const PathIterator<Surface>&) {
 }
 
 template <typename Surface>
-Implementation<PathIterator<Surface>>::Implementation(const Path<Surface>* parent, const Position& position) :
+ImplementationOf<PathIterator<Surface>>::ImplementationOf(const Path<Surface>* parent, const Position& position) :
   parent(parent),
   position(position) {
   if (position == std::end(parent->impl->path)) {

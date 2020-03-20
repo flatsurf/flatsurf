@@ -46,30 +46,17 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   SaddleConnection(std::shared_ptr<const Surface>, HalfEdge source, HalfEdge target, const Chain<Surface> &);
 
   static SaddleConnection<Surface> inSector(std::shared_ptr<const Surface>, HalfEdge source, const Vector<T> &);
-  // TODO: Should we introduce a Direction primitive to not abuse vertical here? (Maybe a superclass of Vertical?)
-  static SaddleConnection<Surface> inSector(std::shared_ptr<const Surface>, HalfEdge source, const Vertical<Surface> &);
+  static SaddleConnection<Surface> inSector(std::shared_ptr<const Surface>, HalfEdge source, const Vertical<Surface> & direction);
   static SaddleConnection<Surface> inHalfPlane(std::shared_ptr<const Surface>, HalfEdge side, const Vertical<Surface> &, const Vector<T> &);
   static SaddleConnection<Surface> inPlane(std::shared_ptr<const Surface>, HalfEdge plane, const Vector<T> &);
   static SaddleConnection<Surface> alongVertical(std::shared_ptr<const Surface>, const Vertical<Surface> &direction, HalfEdge plane);
   static SaddleConnection<Surface> clockwise(const SaddleConnection &from, const Vector<T> &);
 
-  // TODO: Does this also give me an implicit cast to Vector? If not, we should
-  // add this explicitly; the explicit vector() seems more sane anyway. Same
-  // applies to these operators in Chain<>.
-  operator const Vector<T> &() const;
-  operator const Chain<Surface> &() const;
+  const Vector<T>& vector() const;
+  const Chain<Surface>& chain() const;
 
-  Vector<T> vector() const;
-  Chain<Surface> chain() const;
-
-  // Return which direction we need to turn to go from this saddle connection
-  // to the given one. Both must start at the same vertex and the angle between
-  // them must be less than 2π.
-  // CCW ccw(const SaddleConnection&) const;
-  // TODO: This is a convenience method with a somewhat dubious semantic.
-  CCW ccw(const Vector<T> &) const;
-  // TODO: This is a convenience method with a somewhat dubious semantic.
-  ORIENTATION orientation(const Vector<T> &) const;
+  operator const Vector<T>&() const;
+  operator const Chain<Surface>&() const;
 
   // The saddle connection is leaving from the vertex at the source of source.
   // It is leaving in a direction that is contained in the sector next to
@@ -92,16 +79,26 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   bool operator>(const Bound) const;
   bool operator<(const Bound) const;
 
-  // See cppyy.hpp for the _ parameter.
+  // Strangely, when we do not put the _ here and try to print a
+  // FlatTriangulation<eantic::renf_elem_class> through cppyy, it would compile
+  // code that looks sane but fail because the overload resolution picked this
+  // overload (which seems to be completely unrelated.) This fails because
+  // renf_elem_class, does not have a ::Vector which SaddleConnection class
+  // requires. This is clearly a bug in cppyy, but we have not been able to
+  // create a minimal reproducer yet.
   template <typename Surf, typename _>
   friend std::ostream &operator<<(std::ostream &, const SaddleConnection<Surf> &);
 
  private:
-  using Implementation = ::flatsurf::Implementation<SaddleConnection>;
+  using Implementation = ImplementationOf<SaddleConnection>;
   Copyable<Implementation> impl;
 
   friend Implementation;
 };
+
+// See above for this weird construction.
+template <typename Surface, typename _ = Vector<typename Surface::Coordinate>>
+std::ostream &operator<<(std::ostream &, const SaddleConnection<Surface> &);
 
 template <typename Surface, typename... T>
 SaddleConnection(std::shared_ptr<const Surface>, T &&...)->SaddleConnection<Surface>;

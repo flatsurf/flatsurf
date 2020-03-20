@@ -28,9 +28,9 @@
 namespace flatsurf {
 
 template <>
-class Implementation<Vertex> {
+class ImplementationOf<Vertex> {
  public:
-  Implementation(const HalfEdgeSet&);
+  ImplementationOf(const HalfEdgeSet&);
 
   static bool comparable(const HalfEdgeSet&, const HalfEdgeSet&);
   static void afterFlip(Vertex&, const FlatTriangulationCombinatorial&, HalfEdge flip);

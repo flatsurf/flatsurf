@@ -86,18 +86,18 @@ struct Cost {
 }
 
 template <typename Surface, typename T>
-ChainVector<Surface, T>::ChainVector(const Implementation<Chain<Surface>>* chain) :
+ChainVector<Surface, T>::ChainVector(const ImplementationOf<Chain<Surface>>* chain) :
   chain(*chain) {
 }
 
 template <typename Surface, typename T>
-ChainVector<Surface, T>::ChainVector(const Implementation<Chain<Surface>>* chain, Vector<T> value) :
+ChainVector<Surface, T>::ChainVector(const ImplementationOf<Chain<Surface>>* chain, Vector<T> value) :
   chain(*chain),
   value(std::move(value)) {
 }
 
 template <typename Surface, typename T>
-ChainVector<Surface, T>::ChainVector(const Implementation<Chain<Surface>>* chain, const ChainVector& value) : ChainVector(chain, static_cast<const Vector<T>&>(value)) {}
+ChainVector<Surface, T>::ChainVector(const ImplementationOf<Chain<Surface>>* chain, const ChainVector& value) : ChainVector(chain, static_cast<const Vector<T>&>(value)) {}
 
 template <typename Surface, typename T>
 ChainVector<Surface, T>& ChainVector<Surface, T>::operator=(const Vector<T>& value) {

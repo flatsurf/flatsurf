@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 
 #ifndef LIBFLATSURF_FORWARD_HPP
 #define LIBFLATSURF_FORWARD_HPP
+
+#include <iosfwd>
 
 #include "local.hpp"
 
@@ -48,12 +50,6 @@ class FlatTriangulationCollapsed;
 template <typename Surface>
 class Vertical;
 
-template <typename T, typename Approximation = void, typename Surface = FlatTriangulation<T>>
-class VectorAlongTriangulation;
-
-template <typename T>
-class LengthAlongTriangulation;
-
 template <typename Surface>
 class Chain;
 
@@ -72,46 +68,28 @@ class Edge;
 
 class Vertex;
 
-class Face;
-
 template <typename T>
 class Tracking;
-
-class TrackingHalfEdge;
-
-class TrackingEdge;
-
-class TrackingVertex;
-
-class TrackingFace;
 
 template <typename K, typename V>
 class TrackingMap;
 
 template <typename T>
-using HalfEdgeMap = TrackingMap<HalfEdge, T>;
+class EdgeMap;
 
 template <typename T>
-using EdgeMap = TrackingMap<Edge, T>;
+class HalfEdgeMap;
 
 template <typename T>
-using VertexMap = TrackingMap<Vertex, T>;
+class OddHalfEdgeMap;
 
-template <typename T>
-using FaceMap = TrackingMap<Face, T>;
+class EdgeSet;
 
-template <typename T>
-class TrackingSet;
+class EdgeSetIterator;
 
 class HalfEdgeSet;
 
 class HalfEdgeSetIterator;
-
-using VertexSet = TrackingSet<Vertex>;
-
-using EdgeSet = TrackingSet<Edge>;
-
-using FaceSet = TrackingSet<Face>;
 
 template <typename T>
 class Permutation;
@@ -154,49 +132,8 @@ class Serializable;
 template <typename T>
 struct Serialization;
 
-// TODO; Rename to ImplementationOf.
 template <typename T>
-class Implementation;
-
-}  // namespace flatsurf
-
-// TODO: Move to cppyy.hpp?
-
-#include <iosfwd>
-
-// The following block of forward declarations is a bit odd. It only exists to
-// work around bugs in cppyy.
-
-// See https://bitbucket.org/wlav/cppyy/issues/95/lookup-of-friend-operator
-namespace flatsurf {
-std::ostream &operator<<(std::ostream &, const HalfEdge &);
-template <typename T>
-std::ostream &operator<<(std::ostream &, const Permutation<T> &);
-template <typename K, typename V>
-std::ostream &operator<<(std::ostream &, const TrackingMap<K, V> &);
-template <typename K>
-std::ostream &operator<<(std::ostream &, const TrackingSet<K> &);
-template <typename T>
-std::ostream &operator<<(std::ostream &, const FlatTriangulation<T> &);
-// Strangely, when we do not put the _ here and try to print a
-// FlatTriangulation<eantic::renf_elem_class> through cppyy, it would compile
-// code that looks sane but fail because the overload resolution picked this
-// overload (which seems to be completely unrelated.) This fails because
-// renf_elem_class, does not have a ::Vector which SaddleConnection class
-// requires. This is clearly a bug in cppyy, but we have not been able to
-// create a minimal reproducer yet.
-template <typename Surface, typename _ = Vector<typename Surface::Coordinate>>
-std::ostream &operator<<(std::ostream &, const SaddleConnection<Surface> &);
-template <typename Surface>
-std::ostream &operator<<(std::ostream &, const SaddleConnections<Surface> &);
-template <typename Surface>
-std::ostream &operator<<(std::ostream &, const FlowComponent<Surface> &);
-
-// This does not work due to https://bitbucket.org/wlav/cppyy/issues/112/operator-for-a-base-class-is-not-found
-// namespace detail {
-// template <typename V>
-// std::ostream &operator<<(std::ostream &, const detail::VectorBase<V> &);
-// }  // namespace detail
+class ImplementationOf;
 
 }  // namespace flatsurf
 

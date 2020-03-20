@@ -21,60 +21,57 @@
 
 #include <fmt/format.h>
 
-#include "../flatsurf/half_edge_set.hpp"
-#include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/edge_set.hpp"
+#include "../flatsurf/edge.hpp"
 #include "../flatsurf/fmt.hpp"
-#include "../flatsurf/half_edge_set_iterator.hpp"
+#include "../flatsurf/edge_set_iterator.hpp"
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
 
-#include "impl/half_edge_set.impl.hpp"
+#include "impl/edge_set.impl.hpp"
 
 #include "util/assert.ipp"
 
 namespace flatsurf {
 
-HalfEdgeSet::HalfEdgeSet() :
+EdgeSet::EdgeSet() :
   impl(spimpl::make_impl<Implementation>()) {}
 
-HalfEdgeSet::HalfEdgeSet(const std::vector<HalfEdge>& items) :
+EdgeSet::EdgeSet(const std::vector<Edge>& items) :
   impl(spimpl::make_impl<Implementation>(items)) {}
 
-bool HalfEdgeSet::contains(HalfEdge e) const {
-  ASSERT(e != HalfEdge(), "cannot check containment of invalid HalfEdge(0)");
+bool EdgeSet::contains(Edge e) const {
   return impl->contains(e);
 }
 
-void HalfEdgeSet::insert(HalfEdge e) {
-  ASSERT(e != HalfEdge(), "cannot insert invalid HalfEdge(0)");
+void EdgeSet::insert(Edge e) {
   impl->insert(e);
 }
 
-bool HalfEdgeSet::operator==(const HalfEdgeSet& rhs) const {
-  return *impl == *rhs.impl;
+bool EdgeSet::operator==(const EdgeSet& rhs) const {
+  return impl == rhs.impl;
 }
 
-bool HalfEdgeSet::disjoint(const HalfEdgeSet& rhs) const {
+bool EdgeSet::disjoint(const EdgeSet& rhs) const {
   return impl->disjoint(*rhs.impl);
 }
 
-bool HalfEdgeSet::empty() const {
+bool EdgeSet::empty() const {
   return impl->empty();
 }
 
-size_t HalfEdgeSet::size() const {
+size_t EdgeSet::size() const {
   return impl->size();
 }
 
-void HalfEdgeSet::erase(HalfEdge e) {
-  ASSERT(e != HalfEdge(), "cannot remove invalid HalfEdge(0)");
+void EdgeSet::erase(Edge e) {
   return impl->erase(e);
 }
 
-HalfEdgeSetIterator begin(const HalfEdgeSet& self) { return self.begin(); }
+EdgeSetIterator begin(const EdgeSet& self) { return self.begin(); }
 
-HalfEdgeSetIterator end(const HalfEdgeSet& self) { return self.end(); }
+EdgeSetIterator end(const EdgeSet& self) { return self.end(); }
 
-std::ostream& operator<<(std::ostream& os, const HalfEdgeSet& self) {
+std::ostream& operator<<(std::ostream& os, const EdgeSet& self) {
   return os << fmt::format("{{{}}}", fmt::join(begin(self), end(self), ", "));
 }
 

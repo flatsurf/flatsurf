@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,10 +17,22 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_VERTEX_MAP_HPP
-#define LIBFLATSURF_VERTEX_MAP_HPP
+#ifndef LIBFLATSURF_HALF_EDGE_SET_ITERATOR_IMPL_HPP
+#define LIBFLATSURF_HALF_EDGE_SET_ITERATOR_IMPL_HPP
 
-#include "tracking_map.hpp"
-#include "vertex.hpp"
+#include <boost/dynamic_bitset/dynamic_bitset.hpp>
+
+#include "../../flatsurf/half_edge_set_iterator.hpp"
+#include "../../flatsurf/half_edge.hpp"
+
+#include "indexed_set.hpp"
+#include "indexed_set_iterator.hpp"
+
+namespace flatsurf {
+
+template <>
+class ImplementationOf<EdgeSetIterator> : public IndexedSetIterator<Edge> {};
+
+}
 
 #endif

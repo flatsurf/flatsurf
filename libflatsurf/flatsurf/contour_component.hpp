@@ -38,7 +38,7 @@ class ContourComponent : boost::equality_comparable<ContourComponent<Surface>> {
  private:
   // Components can not be created directly (other than by copying & moving
   // them.) They are byproducts of a ContourDecomposition.
-  ContourComponent();
+  template <typename ...Args> ContourComponent(PrivateConstructor, Args&&...);
 
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
@@ -51,17 +51,19 @@ class ContourComponent : boost::equality_comparable<ContourComponent<Surface>> {
   // The connections going along the top of this component from right to left.
   Path<FlatTriangulation<T>> top() const;
 
-  // TODO: The *Contour naming scheme here is a bit clumsy.
   // The contour connections at the top of this component, from right to left.
+  // The naming here is a bit unfortunate, see https://github.com/flatsurf/flatsurf/issues/146.
   Contour topContour() const;
 
   // The connections going along the bottom of this component from left to right.
   Path<FlatTriangulation<T>> bottom() const;
 
   // The contour connections at the bottom of this component, from left to right.
+  // The naming here is a bit unfortunate, see https://github.com/flatsurf/flatsurf/issues/146.
   Contour bottomContour() const;
 
   // The contour connections going around this component in counter-clockwise order, i.e., bottomContour() + topContour().
+  // The naming here is a bit unfortunate, see https://github.com/flatsurf/flatsurf/issues/146.
   Contour perimeterContour() const;
 
   // The connections going around this component in counterclockwise order, i.e., bottom() + top().
@@ -76,7 +78,7 @@ class ContourComponent : boost::equality_comparable<ContourComponent<Surface>> {
   friend std::ostream &operator<<(std::ostream &, const ContourComponent<S> &);
 
  private:
-  using Implementation = ::flatsurf::Implementation<ContourComponent>;
+  using Implementation = ImplementationOf<ContourComponent>;
   spimpl::impl_ptr<Implementation> impl;
 
   friend Implementation;

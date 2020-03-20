@@ -52,28 +52,61 @@ struct GenericFormatter {
 
 }
 
-// TODO: Add everything here.
-template <typename T>
-struct fmt::formatter<::flatsurf::SaddleConnection<T>> : ::flatsurf::GenericFormatter<::flatsurf::SaddleConnection<T>> {};
-template <typename T>
-struct fmt::formatter<::flatsurf::FlowConnection<T>> : ::flatsurf::GenericFormatter<::flatsurf::FlowConnection<T>> {};
-template <>
-struct fmt::formatter<::flatsurf::Edge> : ::flatsurf::GenericFormatter<::flatsurf::Edge> {};
-template <>
-struct fmt::formatter<::flatsurf::HalfEdge> : ::flatsurf::GenericFormatter<::flatsurf::HalfEdge> {};
 template <typename T>
 struct fmt::formatter<::flatsurf::Vector<T>> : ::flatsurf::GenericFormatter<::flatsurf::Vector<T>> {};
-template <typename T>
-struct fmt::formatter<::flatsurf::ContourComponent<T>> : ::flatsurf::GenericFormatter<::flatsurf::ContourComponent<T>> {};
 template <>
-struct fmt::formatter<::flatsurf::HalfEdgeSet> : ::flatsurf::GenericFormatter<::flatsurf::HalfEdgeSet> {};
+struct fmt::formatter<::flatsurf::FlatTriangulationCombinatorial> : ::flatsurf::GenericFormatter<::flatsurf::FlatTriangulationCombinatorial> {};
 template <typename T>
 struct fmt::formatter<::flatsurf::FlatTriangulation<T>> : ::flatsurf::GenericFormatter<::flatsurf::FlatTriangulation<T>> {};
 template <typename T>
 struct fmt::formatter<::flatsurf::FlatTriangulationCollapsed<T>> : ::flatsurf::GenericFormatter<::flatsurf::FlatTriangulationCollapsed<T>> {};
+template <typename Surface>
+struct fmt::formatter<::flatsurf::Vertical<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::Vertical<Surface>> {};
+template <typename Surface>
+struct fmt::formatter<::flatsurf::Chain<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::Chain<Surface>> {};
+template <typename Surface>
+struct fmt::formatter<::flatsurf::SaddleConnections<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::SaddleConnections<Surface>> {};
+template <typename Surface>
+struct fmt::formatter<::flatsurf::ContourConnection<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::ContourConnection<Surface>> {};
+template <typename Surface>
+struct fmt::formatter<::flatsurf::SaddleConnection<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::SaddleConnection<Surface>> {};
+template <>
+struct fmt::formatter<::flatsurf::HalfEdge> : ::flatsurf::GenericFormatter<::flatsurf::HalfEdge> {};
+template <>
+struct fmt::formatter<::flatsurf::Edge> : ::flatsurf::GenericFormatter<::flatsurf::Edge> {};
+template <>
+struct fmt::formatter<::flatsurf::Vertex> : ::flatsurf::GenericFormatter<::flatsurf::Vertex> {};
 template <typename T>
-struct fmt::formatter<::flatsurf::Path<T>> : ::flatsurf::GenericFormatter<::flatsurf::Path<T>> {};
+struct fmt::formatter<::flatsurf::Tracking<T>> : ::flatsurf::GenericFormatter<::flatsurf::Tracking<T>> {};
+template <typename K, typename V>
+struct fmt::formatter<::flatsurf::TrackingMap<K, V>> : ::flatsurf::GenericFormatter<::flatsurf::TrackingMap<K, V>> {};
+template <>
+struct fmt::formatter<::flatsurf::HalfEdgeSet> : ::flatsurf::GenericFormatter<::flatsurf::HalfEdgeSet> {};
+template <>
+struct fmt::formatter<::flatsurf::HalfEdgeSetIterator> : ::flatsurf::GenericFormatter<::flatsurf::HalfEdgeSetIterator> {};
 template <typename T>
-struct fmt::formatter<::flatsurf::PathIterator<T>> : ::flatsurf::GenericFormatter<::flatsurf::PathIterator<T>> {};
+struct fmt::formatter<::flatsurf::Permutation<T>> : ::flatsurf::GenericFormatter<::flatsurf::Permutation<T>> {};
+template <>
+struct fmt::formatter<::flatsurf::Bound> : ::flatsurf::GenericFormatter<::flatsurf::Bound> {};
+template <typename Surface>
+struct fmt::formatter<::flatsurf::IntervalExchangeTransformation<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::IntervalExchangeTransformation<Surface>> {};
+template <typename Surface>
+struct fmt::formatter<::flatsurf::ContourDecomposition<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::ContourDecomposition<Surface>> {};
+template <typename Surface>
+struct fmt::formatter<::flatsurf::ContourComponent<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::ContourComponent<Surface>> {};
+template <typename Surface>
+struct fmt::formatter<::flatsurf::FlowDecomposition<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::FlowDecomposition<Surface>> {};
+template <typename Surface>
+struct fmt::formatter<::flatsurf::FlowComponent<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::FlowComponent<Surface>> {};
+template <typename Surface>
+struct fmt::formatter<::flatsurf::DecompositionStep<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::DecompositionStep<Surface>> {};
+template <typename Surface>
+struct fmt::formatter<::flatsurf::FlowConnection<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::FlowConnection<Surface>> {};
+template <typename Surface>
+struct fmt::formatter<::flatsurf::MaybeVerticalFlowConnection<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::MaybeVerticalFlowConnection<Surface>> {};
+template <typename Surface>
+struct fmt::formatter<::flatsurf::Path<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::Path<Surface>> {};
+template <typename Surface>
+struct fmt::formatter<::flatsurf::PathIterator<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::PathIterator<Surface>> {};
 
 #endif

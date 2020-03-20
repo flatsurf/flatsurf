@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,23 +17,21 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_TRACKING_MAP_IMPL_HPP
-#define LIBFLATSURF_TRACKING_MAP_IMPL_HPP
+#ifndef LIBFLATSURF_HALF_EDGE_SET_IMPL_HPP
+#define LIBFLATSURF_HALF_EDGE_SET_IMPL_HPP
 
-#include "../../flatsurf/tracking_map.hpp"
+#include <boost/dynamic_bitset.hpp>
+#include <boost/dynamic_bitset/dynamic_bitset.hpp>
 
-#include "./tracking_storage.hpp"
+#include "../../flatsurf/half_edge_set.hpp"
+
+#include "indexed_set.hpp"
 
 namespace flatsurf {
 
-template <typename K, typename V>
-class ImplementationOf<TrackingMap<K, V>> : public TrackingStorage<TrackingMap<K, V>, K, V> {
-  using Base = TrackingStorage<TrackingMap<K, V>, K, V>;
+template <>
+class ImplementationOf<EdgeSet> : public IndexedSet<Edge> {};
 
- public:
-  using Base::Base;
-};
-
-}  // namespace flatsurf
+}
 
 #endif

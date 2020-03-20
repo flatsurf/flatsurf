@@ -46,7 +46,7 @@ class ChainIterator : public boost::iterator_facade<ChainIterator<Surface>, cons
   friend std::ostream& operator<<(std::ostream&, const ChainIterator<S>&);
 
  private:
-  using Implementation = ::flatsurf::Implementation<ChainIterator>;
+  using Implementation = ImplementationOf<ChainIterator>;
   spimpl::impl_ptr<Implementation> impl;
   friend Implementation;
   friend Chain<Surface>;

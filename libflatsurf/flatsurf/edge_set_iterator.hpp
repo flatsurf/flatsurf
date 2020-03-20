@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,9 +17,10 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_TRACKING_SET_ITERATOR_HPP
-#define LIBFLATSURF_TRACKING_SET_ITERATOR_HPP
+#ifndef LIBFLATSURF_EDGE_SET_ITERATOR_HPP
+#define LIBFLATSURF_EDGE_SET_ITERATOR_HPP
 
+#include <boost/iterator/iterator_categories.hpp>
 #include <boost/iterator/iterator_facade.hpp>
 
 #include "external/spimpl/spimpl.h"
@@ -28,25 +29,21 @@
 
 namespace flatsurf {
 
-template <typename T>
-class TrackingSetIterator : public boost::iterator_facade<TrackingSetIterator<T>, const T&, boost::forward_traversal_tag> {
-    // Cannot be created directly. Use begin() and end() on a TrackingSet to create instances of a TrackingSetIterator.
-    TrackingSetIterator();
+class EdgeSetIterator : public boost::iterator_facade<EdgeSetIterator, const Edge&, boost::forward_traversal_tag> {
+  template <typename ...Args> EdgeSetIterator(PrivateConstructor, Args&&...);
 
-  public:
-    using value_type = T;
+ public:
+  using value_type = Edge;
 
-    void increment();
-    const T &dereference() const;
-    bool equal(const TrackingSetIterator &other) const;
+  void increment();
+  const value_type &dereference() const;
+  bool equal(const EdgeSetIterator &other) const;
 
-    template <typename S>
-    friend std::ostream& operator<<(std::ostream&, const TrackingSetIterator<S>&);
-
-  private:
-    using Implementation = ::flatsurf::Implementation<TrackingSetIterator<T>>;
-    spimpl::impl_ptr<Implementation> impl;
-    friend Implementation;
+ private:
+  using Implementation = ImplementationOf<EdgeSetIterator>;
+  spimpl::impl_ptr<Implementation> impl;
+  friend Implementation;
+  friend EdgeSet;
 };
 
 }

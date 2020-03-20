@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #include <memory>
 #include <ostream>
 #include <vector>
+#include <unordered_set>
 
 #include <fmt/format.h>
 
@@ -29,11 +30,11 @@
 #include <intervalxt/interval_exchange_transformation.hpp>
 #include <intervalxt/label.hpp>
 
-// TODO: Remove range-v3/boost ranges everywhere
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
 #include "../flatsurf/edge_set.hpp"
 #include "../flatsurf/tracked.hpp"
+#include "../flatsurf/vertex.hpp"
 #include "../flatsurf/fmt.hpp"
 
 #include "impl/contour_component.impl.hpp"
@@ -64,12 +65,12 @@ IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(std::sha
     vector<HalfEdge> top, bottom;
 
     // TODO: Can we use ContourComponent directly instead?
-    ::flatsurf::Implementation<ContourComponent<Surface>>::makeContour(back_inserter(top), large, *surface, Vertical(surface, vertical));
+    ImplementationOf<ContourComponent<Surface>>::makeContour(back_inserter(top), large, *surface, Vertical(surface, vertical));
 
-    ::flatsurf::Implementation<ContourComponent<Surface>>::makeContour(back_inserter(bottom), -large, *surface, Vertical(surface, -vertical));
+    ImplementationOf<ContourComponent<Surface>>::makeContour(back_inserter(bottom), -large, *surface, Vertical(surface, -vertical));
     reverse(bottom.begin(), bottom.end());
     std::transform(bottom.begin(), bottom.end(), bottom.begin(), [](HalfEdge e) { return -e; });
-    assert(std::set<HalfEdge>(bottom.begin(), bottom.end()) == std::set<HalfEdge>(top.begin(), top.end()) && "top & bottom contour must contain the same half edges");
+    assert(std::unordered_set<HalfEdge>(bottom.begin(), bottom.end()) == std::unordered_set<HalfEdge>(top.begin(), top.end()) && "top & bottom contour must contain the same half edges");
 
     return spimpl::make_unique_impl<Implementation>(surface, vertical, top, bottom);
   }()) {
@@ -77,13 +78,16 @@ IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(std::sha
 
 template <typename Surface>
 void IntervalExchangeTransformation<Surface>::makeUniqueLargeEdges(Surface& surface, const Vector<T>& vertical_) {
-  const typename EdgeSet::FlipHandler nopFlip = [](EdgeSet& self, HalfEdge e) {
-    assert(!self.contains(e) && "must not flip source edge");
-  };
-  const typename EdgeSet::CollapseHandler nopCollapse = [](EdgeSet& self, Edge e) {
-    assert(!self.contains(e) && "must not collapse source edge");
-  };
-  EdgeSet sources(&surface, [](Edge) { return false; }, nopFlip, nopCollapse);
+  Tracked<EdgeSet> sources(&surface, EdgeSet(), [](auto& sources, const auto&, HalfEdge e) {
+    ASSERT(!sources.contains(e), "Selected source edges cannot be flipped.");
+  }, [](auto& sources, const auto&, Edge e) {
+    ASSERT(!sources.contains(e), "Selected source edges cannot be collapsed.");
+  }, [](auto& sources, const auto& surface, HalfEdge a, HalfEdge b) {
+    Tracked<EdgeSet>::defaultSwap(sources, surface, a, b);
+  }, [](auto& sources, const auto& surface, const auto& edges) {
+    ASSERT(edges | rx::all_of([&](Edge e) { return !sources.contains(e); }), "Selected source edges cannot be erased.");
+    Tracked<EdgeSet>::defaultErase(sources, surface, edges);
+  });
 
   const bool splitContours = true;
 
@@ -92,20 +96,21 @@ void IntervalExchangeTransformation<Surface>::makeUniqueLargeEdges(Surface& surf
   while (true) {
     bool stalled = true;
     for (auto source : surface.halfEdges()) {
-      if (sources.contains(source))
+      if (sources->contains(source))
         continue;
       if (!vertical.large(source))
         continue;
       if (vertical.perpendicular(surface.fromEdge(source)) < 0)
         continue;
+
       auto component = makeUniqueLargeEdge(surface, vertical_, source);
 
       if (splitContours) {
         bool trivial, trivialStart, trivialEnd;
         {
-          // Currently, LengthAlongTriangulation cannot handle a collapse.
-          // Therefore, we need to scope iet, so it is definitely gone when the
-          // collapse below happens.
+          // Some attached data might not be able to handle the following
+          // collapspe.  Therefore, we need to scope iet, so attached data is
+          // definitely gone when the collapse below happens.
           auto fromContour = IntervalExchangeTransformation(surface.shared_from_this(), vertical_, source);
           auto& iet = fromContour.intervalExchangeTransformation();
           trivial = iet.top().size() == 1;
@@ -122,7 +127,7 @@ void IntervalExchangeTransformation<Surface>::makeUniqueLargeEdges(Surface& surf
         }
       }
 
-      sources.insert(source);
+      sources->insert(source);
       stalled = false;
       break;
     }
@@ -140,6 +145,7 @@ typename intervalxt::IntervalExchangeTransformation& IntervalExchangeTransformat
 
 template <typename Surface>
 std::unordered_set<HalfEdge> IntervalExchangeTransformation<Surface>::makeUniqueLargeEdge(Surface& surface, const Vector<T>& vertical_, HalfEdge& unique_) {
+
   Tracked<HalfEdge> unique(&surface, HalfEdge(unique_));
 
   Vertical<Surface> vertical(surface.shared_from_this(), vertical_);
@@ -151,17 +157,17 @@ std::unordered_set<HalfEdge> IntervalExchangeTransformation<Surface>::makeUnique
   // Eliminate other large edges
   while (true) {
     std::unordered_set<HalfEdge> component;
-    if (Vertical<Surface>::Implementation::visit(vertical, unique, component, [&](HalfEdge e) {
-          if (e == static_cast<HalfEdge>(unique) || e == -static_cast<HalfEdge>(unique))
-            return true;
+    if (ImplementationOf<Vertical<Surface>>::visit(vertical, unique, component, [&](HalfEdge e) {
+      if (e == static_cast<HalfEdge>(unique) || e == -static_cast<HalfEdge>(unique))
+        return true;
 
-          if (vertical.large(e)) {
-            surface.flip(e);
-            return false;
-          }
+      if (vertical.large(e)) {
+        surface.flip(e);
+        return false;
+      }
 
-          return true;
-        })) {
+      return true;
+    })) {
       assert(component.size() >= 2);
       unique_ = unique;
       return component;
@@ -175,12 +181,12 @@ Edge IntervalExchangeTransformation<Surface>::edge(const Label& label) const {
 }
 
 template <typename Surface>
-SaddleConnection<FlatTriangulation<typename Surface::Coordinate>> IntervalExchangeTransformation<Surface>::connection(const intervalxt::Label& label) const {
-  return *impl->lengths->lengths.get(impl->lengths->fromLabel(label));
+const SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>& IntervalExchangeTransformation<Surface>::operator[](const intervalxt::Label& label) const {
+  return *impl->lengths->lengths[impl->lengths->fromLabel(label)];
 }
 
 template <typename Surface>
-Implementation<IntervalExchangeTransformation<Surface>>::Implementation(std::shared_ptr<const Surface> surface, const Vector<T>& vertical, const vector<HalfEdge>& top, const vector<HalfEdge>& bottom) :
+ImplementationOf<IntervalExchangeTransformation<Surface>>::ImplementationOf(std::shared_ptr<const Surface> surface, const Vector<T>& vertical, const vector<HalfEdge>& top, const vector<HalfEdge>& bottom) :
   surface(surface) {
   using SaddleConnection = flatsurf::SaddleConnection<FlatTriangulation<T>>;
 
@@ -191,21 +197,15 @@ Implementation<IntervalExchangeTransformation<Surface>>::Implementation(std::sha
       return surface->uncollapsed();
   }();
 
-  const auto erasedLengths = std::make_shared<intervalxt::Lengths>(Lengths<Surface>(std::make_shared<Vertical<FlatTriangulation<T>>>(uncollapsed, vertical), EdgeMap<std::optional<SaddleConnection>>(surface.get(), [&](const Edge& e) -> std::optional<SaddleConnection> {
-    if (std::find(begin(top), end(top), e.positive()) != end(top)) {
-      if constexpr (std::is_same_v<Surface, FlatTriangulation<T>>)
-        return SaddleConnection(surface, e.positive());
-      else
-        return surface->fromEdge(e.positive());
-    } else if (std::find(begin(top), end(top), e.negative()) != end(top)) {
-      if constexpr (std::is_same_v<Surface, FlatTriangulation<T>>)
-        return SaddleConnection(surface, e.negative());
-      else
-        return surface->fromEdge(e.negative());
-    }
+  auto nonzerolengths = EdgeMap<std::optional<SaddleConnection>>(*surface);
+  for (auto e : top) {
+    if constexpr (std::is_same_v<Surface, FlatTriangulation<T>>)
+      nonzerolengths[e] = SaddleConnection(surface, e);
+    else
+      nonzerolengths[e] = surface->fromEdge(e);
+  }
 
-    return std::optional<SaddleConnection>{};
-  })));
+  const auto erasedLengths = std::make_shared<intervalxt::Lengths>(Lengths<Surface>(std::make_shared<Vertical<FlatTriangulation<T>>>(uncollapsed, vertical), std::move(nonzerolengths)));
 
   iet = intervalxt::IntervalExchangeTransformation(
       erasedLengths,
@@ -222,14 +222,14 @@ Implementation<IntervalExchangeTransformation<Surface>>::Implementation(std::sha
     return true;
   };
 
-  CHECK_ARGUMENT(std::multiset<HalfEdge>(top.begin(), top.end()) == std::multiset<HalfEdge>(bottom.begin(), bottom.end()), "top and bottom contour must contain the same half edges");
+  CHECK_ARGUMENT(std::unordered_multiset<HalfEdge>(top.begin(), top.end()) == std::unordered_multiset<HalfEdge>(bottom.begin(), bottom.end()), "top and bottom contour must contain the same half edges");
   CHECK_ARGUMENT(connected(top), fmt::format("top contour must be connected but {} is not connected in {}.", fmt::join(top, ", "),*surface));
   CHECK_ARGUMENT(connected(bottom), "bottom contour must be connected");
   ASSERT(std::all_of(begin(top), end(top), [&](Edge e) { return lengths->get(intervalxt::Label(e.index())) > 0; }), "lengths in contour must be positive");
 }
 
 template <typename Surface>
-void Implementation<IntervalExchangeTransformation<Surface>>::registerDecomposition(const IntervalExchangeTransformation<Surface>& iet, std::shared_ptr<FlowDecompositionState<FlatTriangulation<T>>> state) {
+void ImplementationOf<IntervalExchangeTransformation<Surface>>::registerDecomposition(const IntervalExchangeTransformation<Surface>& iet, std::shared_ptr<FlowDecompositionState<FlatTriangulation<T>>> state) {
   iet.impl->lengths->registerDecomposition(state);
 }
 

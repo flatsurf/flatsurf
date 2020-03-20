@@ -20,7 +20,7 @@
 #include <boost/range/numeric.hpp>
 #include <cassert>
 #include <ostream>
-#include <set>
+#include <unordered_set>
 
 #include "../flatsurf/permutation.hpp"
 #include "util/assert.ipp"
@@ -29,7 +29,6 @@ using boost::accumulate;
 using std::function;
 using std::ostream;
 using std::pair;
-using std::set;
 using std::vector;
 
 namespace flatsurf {
@@ -96,7 +95,7 @@ Permutation<T>::Permutation(const vector<pair<T, T>> &permutation) :
   }()) {}
 
 template <typename T>
-Permutation<T>::Permutation(const std::map<T, T> &permutation) :
+Permutation<T>::Permutation(const std::unordered_map<T, T> &permutation) :
   Permutation([&]() {
     vector<T> data(permutation.size());
     for (auto ab : permutation) {
@@ -108,7 +107,7 @@ Permutation<T>::Permutation(const std::map<T, T> &permutation) :
 
 template <typename T>
 Permutation<T> Permutation<T>::random(const vector<T> &domain) {
-  ASSERT_ARGUMENT(set<T>(domain.begin(), domain.end()).size() == domain.size(), "domain must not contain duplicates");
+  ASSERT_ARGUMENT(std::unordered_set<T>(domain.begin(), domain.end()).size() == domain.size(), "domain must not contain duplicates");
   vector<T> image = domain;
   std::random_shuffle(image.begin(), image.end());
   vector<pair<T, T>> permutation;
@@ -140,7 +139,7 @@ const vector<T> &Permutation<T>::domain() const noexcept {
 
 template <typename T>
 vector<vector<T>> Permutation<T>::cycles() const noexcept {
-  set<T> seen;
+  std::unordered_set<T> seen;
   vector<vector<T>> cycles;
   for (const auto &t : domain()) {
     if (seen.find(t) != seen.end())
@@ -197,9 +196,9 @@ bool Permutation<T>::trivial() const noexcept {
 
 template <typename T>
 Permutation<T> &operator*=(const vector<T> &cycle, Permutation<T> &self) {
-  if (set<T>(cycle.begin(), cycle.end()).size() <= 1) return self;
+  if (std::unordered_set<T>(cycle.begin(), cycle.end()).size() <= 1) return self;
 
-  CHECK_ARGUMENT(set<T>(cycle.begin(), cycle.end()).size() == cycle.size(), "cycle must consist of distinct entries");
+  CHECK_ARGUMENT(std::unordered_set<T>(cycle.begin(), cycle.end()).size() == cycle.size(), "cycle must consist of distinct entries");
 
   T tmp = self.preimage(cycle[0]);
   for (auto it = cycle.begin(); it != cycle.end() - 1; it++) {
@@ -214,9 +213,9 @@ Permutation<T> &operator*=(const vector<T> &cycle, Permutation<T> &self) {
 
 template <typename T>
 Permutation<T> &operator*=(Permutation<T> &self, const vector<T> &cycle) {
-  if (set<T>(cycle.begin(), cycle.end()).size() <= 1) return self;
+  if (std::unordered_set<T>(cycle.begin(), cycle.end()).size() <= 1) return self;
 
-  CHECK_ARGUMENT(set<T>(cycle.begin(), cycle.end()).size() == cycle.size(), "cycle must consist of distinct entries");
+  CHECK_ARGUMENT(std::unordered_set<T>(cycle.begin(), cycle.end()).size() == cycle.size(), "cycle must consist of distinct entries");
 
   T tmp = self(cycle[0]);
   for (auto it = cycle.begin(); it != cycle.end() - 1; it++) {
@@ -240,14 +239,17 @@ ostream &operator<<(ostream &os, const Permutation<T> &self) {
     return os << "()";
   }
 
-  set<T> remaining;
+  std::unordered_set<T> remaining;
   for (auto t : self.permutation) {
     remaining.insert(t);
   }
   assert(remaining.size() == self.permutation.size() && "data must not contain duplicates");
   while (remaining.size()) {
     os << "(";
-    const auto start = *remaining.begin();
+    // Start from smallest element in remaining so we get a consistent
+    // printing. (We could do this a bit smarter by using a std::set and fmt
+    // instead.)
+    const T start = *std::min_element(begin(remaining), end(remaining), [](const auto& lhs, const auto &rhs) { return lhs.index() < rhs.index(); });
     auto current = start;
     do {
       remaining.erase(current);

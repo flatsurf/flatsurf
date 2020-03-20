@@ -21,7 +21,7 @@
 #include <ostream>
 #include <unordered_map>
 #include <vector>
-#include <set>
+#include <unordered_set>
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
@@ -45,7 +45,6 @@ using std::function;
 using std::ostream;
 using std::pair;
 using std::uintptr_t;
-using std::unordered_map;
 using std::vector;
 
 HalfEdge FlatTriangulationCombinatorial::nextInFace(const HalfEdge e) const {
@@ -160,7 +159,7 @@ std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::
   // We insert a new half edge ee into the vertex permutation next to e
   auto ee = HalfEdge(static_cast<int>(halfEdges().size()) / 2 + 1);
 
-  std::map<HalfEdge, HalfEdge> vertices;
+  std::unordered_map<HalfEdge, HalfEdge> vertices;
   for (auto h : halfEdges()) {
     if (h == e) {
       vertices[e] = ee;
@@ -201,7 +200,7 @@ std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::
 }
 
 std::vector<HalfEdge> FlatTriangulationCombinatorial::outgoing(const Vertex& v) const {
-  const auto& outgoing = ::flatsurf::Implementation<Vertex>::outgoing(v);
+  const auto& outgoing = ImplementationOf<Vertex>::outgoing(v);
   ASSERT(outgoing.size() >= 3 || (hasBoundary() && outgoing.size() >= 2), "Vertex " << v << " has impossible number of outgoing edges " << outgoing.size());
   return std::vector<HalfEdge>(begin(outgoing), end(outgoing));
 }
@@ -230,7 +229,7 @@ void FlatTriangulationCombinatorial::flip(HalfEdge e) {
   impl->faces *= cycle{c, b, -e};
 
   for (auto& vertex : impl->vertexes)
-    ::flatsurf::Implementation<Vertex>::afterFlip(vertex, *this, e);
+    ImplementationOf<Vertex>::afterFlip(vertex, *this, e);
 
   // notify attached structures about this flip
   impl->change.emit(Implementation::MessageAfterFlip{e});
@@ -261,7 +260,7 @@ std::pair<HalfEdge, HalfEdge> FlatTriangulationCombinatorial::collapse(HalfEdge 
   // Things get a bit more complicated when the faces at e and -e have
   // identified edges. In this case, we have to make sure we do not drop the
   // entire gadget surrounding e out of existence.
-  std::set<Edge> dropEdges{collapse};
+  std::unordered_set<Edge> dropEdges{collapse};
 
   {
     HalfEdge x = nextInFace(collapse);
@@ -286,7 +285,9 @@ std::pair<HalfEdge, HalfEdge> FlatTriangulationCombinatorial::collapse(HalfEdge 
   // So we need to make sure that these have the highest numbers since many
   // bits of the code assume that there is no gap in the half edge numbering.
   {
-    std::vector<Edge> originalDropEdges(dropEdges.rbegin(), dropEdges.rend());
+    std::vector<Edge> originalDropEdges(dropEdges.begin(), dropEdges.end());
+    // This is probably necessary to correctly identify the maxEdge, see https://github.com/flatsurf/flatsurf/issues/147
+    std::sort(begin(originalDropEdges), end(originalDropEdges), [&](const auto& lhs, const auto& rhs) { return lhs.index() < rhs.index(); });
 
     int maxEdge = static_cast<int>(edges().size());
     for (auto d : originalDropEdges) {
@@ -306,7 +307,7 @@ std::pair<HalfEdge, HalfEdge> FlatTriangulationCombinatorial::collapse(HalfEdge 
   }
 
   // The isolated half edges to remove
-  std::set<HalfEdge> dropHalfEdges;
+  std::unordered_set<HalfEdge> dropHalfEdges;
   for (auto d : dropEdges) {
     dropHalfEdges.insert(d.positive());
     dropHalfEdges.insert(d.negative());
@@ -370,7 +371,7 @@ std::pair<HalfEdge, HalfEdge> FlatTriangulationCombinatorial::collapse(HalfEdge 
   }
 }
 
-Implementation<FlatTriangulationCombinatorial>::Implementation(const Permutation<HalfEdge>& vertices, const vector<HalfEdge>& boundaries) :
+ImplementationOf<FlatTriangulationCombinatorial>::ImplementationOf(const Permutation<HalfEdge>& vertices, const vector<HalfEdge>& boundaries) :
   vertices(vertices),
   faces(
       // In the triangulation, the order in which half edges are attached to a
@@ -401,7 +402,11 @@ Implementation<FlatTriangulationCombinatorial>::Implementation(const Permutation
   check();
 }
 
-void Implementation<FlatTriangulationCombinatorial>::check() {
+slimsig::signal<void(ImplementationOf<FlatTriangulationCombinatorial>::Message)>::connection ImplementationOf<FlatTriangulationCombinatorial>::connect(const FlatTriangulationCombinatorial& surface, std::function<void(Message)> handler) {
+  return surface.impl->change.connect(handler);
+}
+
+void ImplementationOf<FlatTriangulationCombinatorial>::check() {
   assert(faces.domain().size() == vertices.domain().size() && "faces and vertices must have the same half edges as domain");
   assert([&]() {
     for (auto edge : faces.domain()) {
@@ -426,13 +431,13 @@ void Implementation<FlatTriangulationCombinatorial>::check() {
   }() && "vertices must be consistent with faces");
 }
 
-void Implementation<FlatTriangulationCombinatorial>::resetVertexes() {
+void ImplementationOf<FlatTriangulationCombinatorial>::resetVertexes() {
   this->vertexes.clear();
   for (const auto& cycle : vertices.cycles())
-    vertexes.push_back(::flatsurf::Implementation<Vertex>::make(cycle));
+    vertexes.push_back(::flatsurf::ImplementationOf<Vertex>::make(cycle));
 }
 
-void Implementation<FlatTriangulationCombinatorial>::resetVertices() {
+void ImplementationOf<FlatTriangulationCombinatorial>::resetVertices() {
   std::vector<std::pair<HalfEdge, HalfEdge>> vertices;
   for (auto e : faces.domain()) {
     if (faces(e) == e)
@@ -446,20 +451,23 @@ void Implementation<FlatTriangulationCombinatorial>::resetVertices() {
   this->vertices = Permutation<HalfEdge>(vertices);
 }
 
-void Implementation<FlatTriangulationCombinatorial>::resetEdges() {
-  std::set<Edge> edges;
+void ImplementationOf<FlatTriangulationCombinatorial>::resetEdges() {
+  std::unordered_set<Edge> edges;
   for (const auto& e : faces.domain())
     edges.insert(e);
   this->edges = std::vector<Edge>(begin(edges), end(edges));
+  // This can probably go away, see https://github.com/flatsurf/flatsurf/issues/147
+  std::sort(begin(this->edges), end(this->edges), [&](const auto& lhs, const auto& rhs) { return lhs.index() < rhs.index(); });
 
   halfEdges = vertices.domain();
-  sort(begin(halfEdges), end(halfEdges));
+  // This can probably go away, see https://github.com/flatsurf/flatsurf/issues/147
+  std::sort(begin(halfEdges), end(halfEdges), [&](const auto& lhs, const auto& rhs){ return lhs.index() < rhs.index(); });
 }
 
-void Implementation<FlatTriangulationCombinatorial>::swap(HalfEdge a, HalfEdge b) {
+void ImplementationOf<FlatTriangulationCombinatorial>::swap(HalfEdge a, HalfEdge b) {
   if (a == b) return;
 
-  change.emit(Implementation::MessageBeforeSwap{a, b});
+  change.emit(ImplementationOf::MessageBeforeSwap{a, b});
 
   vertices *= {a, b};
   std::vector{a, b} *= vertices;
@@ -480,7 +488,7 @@ void Implementation<FlatTriangulationCombinatorial>::swap(HalfEdge a, HalfEdge b
   resetVertexes();
 }
 
-Implementation<FlatTriangulationCombinatorial>::~Implementation() {
+ImplementationOf<FlatTriangulationCombinatorial>::~ImplementationOf() {
   change.emit(MessageAfterMove{nullptr});
 }
 

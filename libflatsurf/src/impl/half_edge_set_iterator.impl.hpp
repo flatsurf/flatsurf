@@ -25,21 +25,13 @@
 #include "../../flatsurf/half_edge_set_iterator.hpp"
 #include "../../flatsurf/half_edge.hpp"
 
-#include "half_edge_set.impl.hpp"
+#include "indexed_set.hpp"
+#include "indexed_set_iterator.hpp"
 
 namespace flatsurf {
 
 template <>
-class Implementation<HalfEdgeSetIterator> {
- public:
-  Implementation(const HalfEdgeSet* parent, HalfEdge current);
-  Implementation(const HalfEdgeSet* parent, size_t current);
-
-  const HalfEdgeSet* parent;
-  HalfEdge current;
-
-  static HalfEdge makeHalfEdge(const HalfEdgeSet* parent, typename decltype(::flatsurf::Implementation<HalfEdgeSet>::set)::size_type pos);
-};
+class ImplementationOf<HalfEdgeSetIterator> : public IndexedSetIterator<HalfEdge> {};
 
 }
 

@@ -37,11 +37,10 @@ using std::ostream;
 namespace flatsurf {
 
 template <typename Surface>
-FlowConnection<Surface>::FlowConnection()
+template <typename ...Args>
+FlowConnection<Surface>::FlowConnection(PrivateConstructor, Args&&...args)
   // we assume that the caller is aware that impl has to be initialized explicitly.
-  :
-  impl(nullptr) {
-}
+  : impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
 
 template <typename Surface>
 SaddleConnection<FlatTriangulation<typename Surface::Coordinate>> FlowConnection<Surface>::saddleConnection() const {
@@ -72,10 +71,8 @@ bool FlowConnection<Surface>::antiparallel() const {
 
 template <typename Surface>
 FlowConnection<Surface> FlowConnection<Surface>::operator-() const {
-  FlowConnection<Surface> ret;
-
   for (auto& component_ : impl->state->components) {
-    auto component = ::flatsurf::Implementation<FlowComponent<Surface>>::make(impl->state, &component_);
+    auto component = ImplementationOf<FlowComponent<Surface>>::make(impl->state, &component_);
     for (const auto& connection : component.perimeter())
       if (connection.saddleConnection() == -saddleConnection()) {
         ASSERT(vertical() || this->component() == component, "Non-vertical connections can not be attached to distinct components.");
@@ -92,22 +89,19 @@ FlowComponent<Surface> FlowConnection<Surface>::component() const {
 }
 
 template <typename Surface>
-Implementation<FlowConnection<Surface>>::Implementation(std::shared_ptr<FlowDecompositionState<Surface>> state, const FlowComponent<Surface>& component, const SaddleConnection<FlatTriangulation<T>>& saddleConnection) :
+ImplementationOf<FlowConnection<Surface>>::ImplementationOf(std::shared_ptr<FlowDecompositionState<Surface>> state, const FlowComponent<Surface>& component, const SaddleConnection<FlatTriangulation<T>>& saddleConnection) :
   state(state),
   component(component),
   saddleConnection(saddleConnection) {
 }
 
 template <typename Surface>
-FlowConnection<Surface> Implementation<FlowConnection<Surface>>::make(std::shared_ptr<FlowDecompositionState<Surface>> state, const FlowComponent<Surface>& component, const intervalxt::Connection& connection) {
-  FlowConnection<Surface> ret;
-
+FlowConnection<Surface> ImplementationOf<FlowConnection<Surface>>::make(std::shared_ptr<FlowDecompositionState<Surface>> state, const FlowComponent<Surface>& component, const intervalxt::Connection& connection) {
   ASSERT(state->injectedConnections.find(connection) != end(state->injectedConnections) || state->detectedConnections.find(connection) != end(state->detectedConnections), "Connection " << connection << " not known to " << *state);
 
-  if (state->injectedConnections.find(connection) != state->injectedConnections.end())
-    ret.impl = spimpl::make_impl<Implementation>(state, component, state->injectedConnections.at(connection));
-  else
-    ret.impl = spimpl::make_impl<Implementation>(state, component, state->detectedConnections.at(connection));
+  FlowConnection<Surface> ret = (state->injectedConnections.find(connection) != state->injectedConnections.end())
+    ? FlowConnection<Surface>(PrivateConstructor{}, state, component, state->injectedConnections.at(connection))
+    : FlowConnection<Surface>(PrivateConstructor{}, state, component, state->detectedConnections.at(connection));
 
   ASSERT(ret.vertical(), "FlowConnection created from vertical Connection must be vertical but " << ret << " created from " << connection << " is not.");
   ASSERT(connection.parallel() == ret.parallel(), "FlowConnection must have same parallelity as Connection but " << ret << " and " << connection << " do not coincide");
@@ -116,12 +110,11 @@ FlowConnection<Surface> Implementation<FlowConnection<Surface>>::make(std::share
 }
 
 template <typename Surface>
-FlowConnection<Surface> Implementation<FlowConnection<Surface>>::make(std::shared_ptr<FlowDecompositionState<Surface>> state, const FlowComponent<Surface>& component, const intervalxt::HalfEdge& edge) {
-  auto connection = component.intervalExchangeTransformation().connection(static_cast<intervalxt::Label>(edge));
+FlowConnection<Surface> ImplementationOf<FlowConnection<Surface>>::make(std::shared_ptr<FlowDecompositionState<Surface>> state, const FlowComponent<Surface>& component, const intervalxt::HalfEdge& edge) {
+  auto connection = component.intervalExchangeTransformation()[static_cast<intervalxt::Label>(edge)];
   if (edge.top()) connection = -connection;
 
-  FlowConnection<Surface> ret;
-  ret.impl = spimpl::make_impl<Implementation>(state, component, connection);
+  FlowConnection<Surface> ret(PrivateConstructor{}, state, component, connection);
 
   ASSERT(!ret.vertical(), "FlowConnection created from HalfEdge must not be vertical but " << ret << " created from " << edge << " is vertical.");
 
@@ -129,11 +122,11 @@ FlowConnection<Surface> Implementation<FlowConnection<Surface>>::make(std::share
 }
 
 template <typename Surface>
-FlowConnection<Surface> Implementation<FlowConnection<Surface>>::make(std::shared_ptr<FlowDecompositionState<Surface>> state, const FlowComponent<Surface>& component, const std::variant<intervalxt::Connection, intervalxt::HalfEdge>& side) {
+FlowConnection<Surface> ImplementationOf<FlowConnection<Surface>>::make(std::shared_ptr<FlowDecompositionState<Surface>> state, const FlowComponent<Surface>& component, const std::variant<intervalxt::Connection, intervalxt::HalfEdge>& side) {
   if (auto connection = std::get_if<intervalxt::Connection>(&side)) {
-    return ::flatsurf::Implementation<FlowConnection<Surface>>::make(state, component, *connection);
+    return ImplementationOf<FlowConnection<Surface>>::make(state, component, *connection);
   } else if (auto e = std::get_if<intervalxt::HalfEdge>(&side)) {
-    return ::flatsurf::Implementation<FlowConnection<Surface>>::make(state, component, *e);
+    return ImplementationOf<FlowConnection<Surface>>::make(state, component, *e);
   } else {
     throw std::logic_error("not implemented: unknown intervalxt perimeter type");
   }

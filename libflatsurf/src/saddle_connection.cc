@@ -53,7 +53,7 @@ SaddleConnection<Surface>::SaddleConnection(std::shared_ptr<const Surface> surfa
 
 template <typename Surface>
 bool SaddleConnection<Surface>::operator==(const SaddleConnection<Surface>& rhs) const {
-  bool ret = *impl->surface == *rhs.impl->surface && static_cast<const Vector<T>&>(*this) == static_cast<const Vector<T>&>(rhs) && impl->source == rhs.impl->source;
+  bool ret = *impl->surface == *rhs.impl->surface && vector() == rhs.vector() && impl->source == rhs.impl->source;
 
   ASSERT((!ret || target() == rhs.target()), "saddle connection data is inconsistent, " << *this << " == " << rhs << " but their targets do not match since " << target() << " != " << rhs.target());
   return ret;
@@ -86,8 +86,8 @@ SaddleConnection<Surface> SaddleConnection<Surface>::inSector(std::shared_ptr<co
   // TODO: Bound should be length of vector
   auto reconstruction = SaddleConnections<Surface>(surface, Bound(INT_MAX, 0), source);
   auto it = reconstruction.begin();
-  for (; *it != vector; it++) {
-    auto ccw = static_cast<const Vector<T>&>(*it).ccw(vector);
+  for (; it->vector() != vector; it++) {
+    auto ccw = it->vector().ccw(vector);
     ASSERT(ccw != CCW::COLLINEAR, "Searching for vector " << vector << " in sector " << source << " we hit a vertex at " << *it << " before we could reach the vector.");
     it.skipSector(-ccw);
   }
@@ -130,7 +130,7 @@ template <typename Surface>
 SaddleConnection<Surface> SaddleConnection<Surface>::clockwise(const SaddleConnection<Surface>& clockwiseFrom, const Vector<T>& vector) {
   auto& surface = clockwiseFrom.surface();
   HalfEdge sector = clockwiseFrom.source();
-  if (clockwiseFrom.ccw(vector) != CCW::CLOCKWISE)
+  if (clockwiseFrom.vector().ccw(vector) != CCW::CLOCKWISE)
     sector = surface.previousAtVertex(sector);
   while (!surface.inSector(sector, vector)) sector = surface.previousAtVertex(sector);
   return SaddleConnection::inSector(surface.shared_from_this(), sector, vector);
@@ -163,8 +163,8 @@ SaddleConnection<Surface> SaddleConnection<Surface>::inSector(std::shared_ptr<co
   // TODO: Pull this reconstruction process out of the two inSector methods.
   auto reconstruction = SaddleConnections<Surface>(surface, Bound(INT_MAX, 0), source);
   auto it = reconstruction.begin();
-  for (; direction.perpendicular(*it); it++) {
-    auto ccw = static_cast<const Vector<T>&>(*it).ccw(direction.vertical());
+  for (; direction.perpendicular(it->vector()); it++) {
+    auto ccw = it->vector().ccw(direction.vertical());
     it.skipSector(-ccw);
   }
   return *it;
@@ -181,8 +181,8 @@ std::vector<HalfEdge> SaddleConnection<Surface>::crossings() const {
   auto reconstruction = SaddleConnections<Surface>(impl->surface, Bound(INT_MAX, 0), source());
   auto it = reconstruction.begin();
   while (*it != *this) {
-    auto ccw = it->ccw(*this);
-    ASSERT(ccw != CCW::COLLINEAR, "There cannot be another saddle connection in exactly the same direction as this one but in " << impl->surface << " at " << source() << " we found " << static_cast<const Vector<T>&>(*it) << " which has the same direction as " << static_cast<const Vector<T>&>(*this));
+    auto ccw = it->vector().ccw(vector());
+    ASSERT(ccw != CCW::COLLINEAR, "There cannot be another saddle connection in exactly the same direction as this one but in " << impl->surface << " at " << source() << " we found " << it->vector() << " which has the same direction as " << vector());
     it.skipSector(-ccw);
     while (true) {
       auto crossing = it.incrementWithCrossings();
@@ -194,58 +194,48 @@ std::vector<HalfEdge> SaddleConnection<Surface>::crossings() const {
     }
   }
 
-  ASSERT(it->target() == target(), "We reconstructed the saddle connection in " << impl->surface << " starting from " << source() << " with vector " << static_cast<const Vector<T>&>(*this) << " but it does not end at " << target() << " as claimed but at " << it->target());
+  ASSERT(it->target() == target(), "We reconstructed the saddle connection in " << impl->surface << " starting from " << source() << " with vector " << vector() << " but it does not end at " << target() << " as claimed but at " << it->target());
 
   return ret;
 }
 
 template <typename Surface>
-ORIENTATION SaddleConnection<Surface>::orientation(const Vector<T>& rhs) const {
-  return static_cast<const Vector<T>&>(*this).orientation(rhs);
+const Vector<typename Surface::Coordinate>& SaddleConnection<Surface>::vector() const {
+  return static_cast<const Vector<T>&>(chain());
 }
 
 template <typename Surface>
-CCW SaddleConnection<Surface>::ccw(const Vector<T>& rhs) const {
-  return static_cast<const Vector<T>&>(*this).ccw(rhs);
+SaddleConnection<Surface>::operator const Vector<typename Surface::Coordinate>&() const {
+  return vector();
 }
 
 template <typename Surface>
-SaddleConnection<Surface>::operator const Vector<T>&() const {
-  return static_cast<const Vector<T>&>(static_cast<const Chain<Surface>&>(*this));
-}
-
-template <typename Surface>
-Vector<typename Surface::Coordinate> SaddleConnection<Surface>::vector() const {
-  return *this;
+const Chain<Surface>& SaddleConnection<Surface>::chain() const {
+  return impl->chain;
 }
 
 template <typename Surface>
 SaddleConnection<Surface>::operator const Chain<Surface>&() const {
-  return impl->chain;
-}
-
-template <typename Surface>
-Chain<Surface> SaddleConnection<Surface>::chain() const {
-  return impl->chain;
+  return chain();
 }
 
 template <typename Surface>
 bool SaddleConnection<Surface>::operator>(const Bound bound) const {
-  return static_cast<const Vector<T>&>(*this) > bound;
+  return vector() > bound;
 }
 
 template <typename Surface>
 bool SaddleConnection<Surface>::operator<(const Bound bound) const {
-  return static_cast<const Vector<T>&>(*this) < bound;
+  return vector() < bound;
 }
 
 template <typename Surface, typename _>
 ostream& operator<<(ostream& os, const SaddleConnection<Surface>& self) {
-  return os << static_cast<const Vector<typename Surface::Coordinate>&>(self) << " from " << self.source() << " to " << self.target();
+  return os << self.vector() << " from " << self.source() << " to " << self.target();
 }
 
 template <typename Surface>
-Implementation<SaddleConnection<Surface>>::Implementation(std::shared_ptr<const Surface>& surface, HalfEdge e) :
+ImplementationOf<SaddleConnection<Surface>>::ImplementationOf(std::shared_ptr<const Surface>& surface, HalfEdge e) :
   surface(surface),
   source(e),
   target(-e),
@@ -253,7 +243,7 @@ Implementation<SaddleConnection<Surface>>::Implementation(std::shared_ptr<const 
 }
 
 template <typename Surface>
-Implementation<SaddleConnection<Surface>>::Implementation(std::shared_ptr<const Surface>& surface, HalfEdge source, HalfEdge target, const Chain<Surface>& chain) :
+ImplementationOf<SaddleConnection<Surface>>::ImplementationOf(std::shared_ptr<const Surface>& surface, HalfEdge source, HalfEdge target, const Chain<Surface>& chain) :
   surface(surface),
   source(source),
   target(target),
@@ -264,7 +254,7 @@ Implementation<SaddleConnection<Surface>>::Implementation(std::shared_ptr<const 
 }
 
 template <typename Surface>
-void Implementation<SaddleConnection<Surface>>::normalize() {
+void ImplementationOf<SaddleConnection<Surface>>::normalize() {
   const auto normalize = [&](HalfEdge& sector, const Vector<T>& vector) {
     while (surface->fromEdge(sector).ccw(vector) == CCW::COUNTERCLOCKWISE)
       sector = surface->nextAtVertex(sector);
@@ -279,7 +269,7 @@ void Implementation<SaddleConnection<Surface>>::normalize() {
 
 // TODO: Deleteme
 template <typename Surface>
-void Implementation<SaddleConnection<Surface>>::check(const SaddleConnection& connection) {
+void ImplementationOf<SaddleConnection<Surface>>::check(const SaddleConnection& connection) {
   // Run checks in constructor
   assert([&]() {
     SaddleConnection copy = connection;
@@ -301,7 +291,7 @@ using namespace flatsurf;
 
 template <typename Surface>
 size_t hash<SaddleConnection<Surface>>::operator()(const SaddleConnection<Surface>& self) const noexcept {
-  return hash_combine(self.source(), self.target(), static_cast<const Chain<Surface>&>(self));
+  return hash_combine(self.source(), self.target(), self.chain());
 }
 
 }  // namespace std

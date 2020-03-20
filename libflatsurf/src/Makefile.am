@@ -14,6 +14,8 @@ libflatsurf_la_SOURCES =                                            \
 	contour_decomposition_state.cc                              \
 	delaunay_triangulation.cc                                   \
 	edge.cc                                                     \
+	edge_set_iterator.cc                                        \
+	edge_set.cc                                                 \
 	half_edge_set.cc                                            \
 	half_edge_set_iterator.cc                                   \
 	flat_triangulation.cc                                       \
@@ -25,6 +27,8 @@ libflatsurf_la_SOURCES =                                            \
 	flow_decomposition.cc                                       \
 	flow_decomposition_state.cc                                 \
 	half_edge.cc                                                \
+	indexed_set.cc                                              \
+	indexed_set_iterator.cc                                     \
 	interval_exchange_transformation.cc                         \
 	lengths.cc                                                  \
 	path.cc                                                     \
@@ -33,10 +37,6 @@ libflatsurf_la_SOURCES =                                            \
 	saddle_connection.cc                                        \
 	saddle_connections.cc                                       \
 	tracked.cc                                                  \
-	tracking.cc                                                 \
-	tracking_map.cc                                             \
-	tracking_set.cc                                             \
-	tracking_storage.cc                                         \
 	vector/vector.cc                                            \
 	vertex.cc                                                   \
 	vertical.cc
@@ -71,8 +71,7 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/vector.hpp                                      \
 	../flatsurf/cereal.hpp                                      \
 	../flatsurf/vertex.hpp                                      \
-	../flatsurf/vertical.hpp                                    \
-	../flatsurf/vertex_map.hpp
+	../flatsurf/vertical.hpp
 
 nobase_pkginclude_HEADERS +=                                        \
 	../flatsurf/detail/vector_base.hpp                          \

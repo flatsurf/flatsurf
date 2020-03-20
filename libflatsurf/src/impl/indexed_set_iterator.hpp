@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,39 +17,39 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_CONTOUR_DECOMPOSITION_HPP
-#define LIBFLATSURF_CONTOUR_DECOMPOSITION_HPP
+#ifndef LIBFLATSURF_IMPL_INDEXED_SET_ITERATOR_HPP
+#define LIBFLATSURF_IMPL_INDEXED_SET_ITERATOR_HPP
 
-#include <memory>
-#include <vector>
-
-#include "external/spimpl/spimpl.h"
+#include <boost/iterator/iterator_categories.hpp>
+#include <boost/iterator/iterator_facade.hpp>
 
 #include "forward.hpp"
 
 namespace flatsurf {
-template <class Surface>
-class ContourDecomposition {
-  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
-  using T = typename Surface::Coordinate;
-
+template <typename T>
+class IndexedSetIterator : public boost::iterator_facade<IndexedSetIterator<T>, const T&, boost::forward_traversal_tag> {
  public:
-  ContourDecomposition(std::unique_ptr<Surface>, const Vector<T> &vertical);
+  IndexedSetIterator(const IndexedSet<T>* parent, const T& current);
+  IndexedSetIterator(const IndexedSet<T>* parent, size_t current);
 
-  std::vector<ContourComponent<Surface>> components() const;
+  using value_type = T;
+
+  void increment();
+  const value_type &dereference() const;
+  bool equal(const IndexedSetIterator &other) const;
 
   template <typename S>
-  friend std::ostream &operator<<(std::ostream &, const ContourDecomposition<S> &);
-
-  std::shared_ptr<const FlatTriangulationCollapsed<T>> collapsed() const;
+  friend std::ostream& operator<<(std::ostream&, const IndexedSetIterator&);
 
  private:
-  using Implementation = ImplementationOf<ContourDecomposition>;
-  spimpl::unique_impl_ptr<Implementation> impl;
+  const IndexedSet<T>* parent;
+  T current;
 
-  friend Implementation;
+  static T makeT(const IndexedSet<T>* parent, typename IndexedSet<T>::Bitset::size_type pos);
 };
-}  // namespace flatsurf
+
+}
 
 #endif
+

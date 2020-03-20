@@ -70,7 +70,7 @@ T& Tracking<T>::get() const {
 }
 
 template <typename T>
-Implementation<Tracking<T>>::Implementation(const FlatTriangulationCombinatorial* parent, T* value, const FlipHandler& updateAfterFlip, const CollapseHandler& updateBeforeCollapse, const SwapHandler& updateBeforeSwap, const EraseHandler& updateBeforeErase, const DestructionHandler& updateBeforeDestruction) :
+ImplementationOf<Tracking<T>>::ImplementationOf(const FlatTriangulationCombinatorial* parent, T* value, const FlipHandler& updateAfterFlip, const CollapseHandler& updateBeforeCollapse, const SwapHandler& updateBeforeSwap, const EraseHandler& updateBeforeErase, const DestructionHandler& updateBeforeDestruction) :
   parent(parent),
   value(value),
   updateAfterFlip(updateAfterFlip),
@@ -82,12 +82,12 @@ Implementation<Tracking<T>>::Implementation(const FlatTriangulationCombinatorial
 }
 
 template <typename T>
-Implementation<Tracking<T>>::~Implementation() {
+ImplementationOf<Tracking<T>>::~ImplementationOf() {
   disconnect();
 }
 
 template <typename T>
-void Implementation<Tracking<T>>::disconnect() {
+void ImplementationOf<Tracking<T>>::disconnect() {
   if (parent != nullptr) {
     onChange.disconnect();
     parent = nullptr;
@@ -95,21 +95,21 @@ void Implementation<Tracking<T>>::disconnect() {
 }
 
 template <typename T>
-void Implementation<Tracking<T>>::connect() {
+void ImplementationOf<Tracking<T>>::connect() {
   assert(parent != nullptr && "cannot connect without a parent FlatTriangulationCombinatorial");
 
   // This callback holds a reference to "this". This reference cannot be
   // dangling since we explicitly disconnect in ~Implementation.
-  onChange = parent->impl->change.connect([&](const Message& message) {
-    if (auto flipMessage = std::get_if<::flatsurf::Implementation<FlatTriangulationCombinatorial>::MessageAfterFlip>(&message)) {
+  onChange = ImplementationOf<FlatTriangulationCombinatorial>::connect(*parent, [&](const Message& message) {
+    if (auto flipMessage = std::get_if<ImplementationOf<FlatTriangulationCombinatorial>::MessageAfterFlip>(&message)) {
       updateAfterFlip(*value, *parent, flipMessage->e);
-    } else if (auto collapseMessage = std::get_if<::flatsurf::Implementation<FlatTriangulationCombinatorial>::MessageBeforeCollapse>(&message)) {
+    } else if (auto collapseMessage = std::get_if<ImplementationOf<FlatTriangulationCombinatorial>::MessageBeforeCollapse>(&message)) {
       updateBeforeCollapse(*value, *parent, collapseMessage->e);
-    } else if (auto swapMessage = std::get_if<::flatsurf::Implementation<FlatTriangulationCombinatorial>::MessageBeforeSwap>(&message)) {
+    } else if (auto swapMessage = std::get_if<ImplementationOf<FlatTriangulationCombinatorial>::MessageBeforeSwap>(&message)) {
       updateBeforeSwap(*value, *parent, swapMessage->a, swapMessage->b);
-    } else if (auto eraseMessage = std::get_if<::flatsurf::Implementation<FlatTriangulationCombinatorial>::MessageBeforeErase>(&message)) {
+    } else if (auto eraseMessage = std::get_if<ImplementationOf<FlatTriangulationCombinatorial>::MessageBeforeErase>(&message)) {
       updateBeforeErase(*value, *parent, eraseMessage->erase);
-    } else if (auto moveMessage = std::get_if<::flatsurf::Implementation<FlatTriangulationCombinatorial>::MessageAfterMove>(&message)) {
+    } else if (auto moveMessage = std::get_if<ImplementationOf<FlatTriangulationCombinatorial>::MessageAfterMove>(&message)) {
       if (moveMessage->target == nullptr) {
         updateBeforeDestruction(*value, *this->parent);
       }
@@ -144,16 +144,10 @@ std::ostream& operator<<(std::ostream&, const Tracking<T>&) {
   LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<Edge, SaddleConnection<FlatTriangulation<T>>>>))                      \
   LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<Edge, std::optional<SaddleConnection<FlatTriangulation<T>>>>>))                      \
   LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<HalfEdge, CollapsedHalfEdge<T>>>))                                    \
-  LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<HalfEdge, LengthAlongTriangulation<FlatTriangulation<T>>>>))          \
-  LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<HalfEdge, LengthAlongTriangulation<FlatTriangulationCollapsed<T>>>>)) \
-  LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<HalfEdge, typename Implementation<FlatTriangulationCollapsed<T>>::AsymmetricConnection>>))
+  LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION((Tracking<TrackingMap<HalfEdge, typename ImplementationOf<FlatTriangulationCollapsed<T>>::AsymmetricConnection>>))
 
 LIBFLATSURF_INSTANTIATE_MANY((LIBFLATSURF_INSTANTIATE_THIS), LIBFLATSURF_REAL_TYPES)
 
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracking<TrackingMap<Edge, int>>))
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracking<TrackingMap<HalfEdge, int>>))
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracking<TrackingMap<HalfEdge, Vector<exactreal::Arb>>>))
-
-LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracking<TrackingSet<HalfEdge>>))
-LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracking<TrackingSet<Edge>>))
-LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracking<TrackingSet<Vertex>>))

@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,39 +17,28 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_CONTOUR_DECOMPOSITION_HPP
-#define LIBFLATSURF_CONTOUR_DECOMPOSITION_HPP
+#ifndef LIBFLATSURF_IMPL_INDEXED_SET_HPP
+#define LIBFLATSURF_IMPL_INDEXED_SET_HPP
 
-#include <memory>
+#include <iosfwd>
 #include <vector>
-
-#include "external/spimpl/spimpl.h"
 
 #include "forward.hpp"
 
 namespace flatsurf {
-template <class Surface>
-class ContourDecomposition {
-  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
-  using T = typename Surface::Coordinate;
-
+template <typename K, typename V>
+class IndexedMap {
  public:
-  ContourDecomposition(std::unique_ptr<Surface>, const Vector<T> &vertical);
+  IndexedMap();
 
-  std::vector<ContourComponent<Surface>> components() const;
-
-  template <typename S>
-  friend std::ostream &operator<<(std::ostream &, const ContourDecomposition<S> &);
-
-  std::shared_ptr<const FlatTriangulationCollapsed<T>> collapsed() const;
+  template <typename KK, typename VV>
+  friend std::ostream& operator<<(std::ostream&, const IndexedMap<KK, VV>&);
 
  private:
-  using Implementation = ImplementationOf<ContourDecomposition>;
-  spimpl::unique_impl_ptr<Implementation> impl;
-
-  friend Implementation;
+  std::vector<V> values {};
 };
-}  // namespace flatsurf
+
+}
 
 #endif

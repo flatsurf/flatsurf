@@ -34,10 +34,10 @@
 namespace flatsurf {
 
 template <>
-class Implementation<FlatTriangulationCombinatorial> {
+class ImplementationOf<FlatTriangulationCombinatorial> {
  public:
-  Implementation(const Permutation<HalfEdge>&, const std::vector<HalfEdge>&);
-  ~Implementation();
+  ImplementationOf(const Permutation<HalfEdge>&, const std::vector<HalfEdge>&);
+  ~ImplementationOf();
 
   struct MessageAfterFlip { HalfEdge e; };
   struct MessageBeforeCollapse { Edge e; };
@@ -54,6 +54,9 @@ class Implementation<FlatTriangulationCombinatorial> {
 
   // Sanity check this triangulation
   void check();
+
+  // Connect to change event.
+  static slimsig::signal<void(Message)>::connection connect(const FlatTriangulationCombinatorial&, std::function<void(Message)>);
 
   std::vector<Edge> edges;
   Permutation<HalfEdge> vertices;

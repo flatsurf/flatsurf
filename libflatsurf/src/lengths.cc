@@ -101,7 +101,7 @@ void Lengths<Surface>::subtract(Label minuend) {
 
   const auto flow = [&](const auto& connections, bool reverse) {
     auto flowed = connections | rx::transform([&](const auto& connection) {
-      return Implementation<FlowConnection<FlatTriangulation<T>>>::make(state.lock(), ::flatsurf::Implementation<FlowComponent<FlatTriangulation<T>>>::make(state.lock(), &component), connection).saddleConnection();
+      return ImplementationOf<FlowConnection<FlatTriangulation<T>>>::make(state.lock(), ImplementationOf<FlowComponent<FlatTriangulation<T>>>::make(state.lock(), &component), connection).saddleConnection();
     }) | rx::transform([&](const auto& connection) {
       return reverse ? -connection : connection;
     }) | rx::to_vector();
@@ -110,10 +110,7 @@ void Lengths<Surface>::subtract(Label minuend) {
     return flowed;
   };
 
-  auto& minuendConnection = lengths.get(fromLabel(minuend));
-
-  // TODO
-  // std::cout << "Changing Length " << *minuendConnection << std::endl;
+  auto& minuendConnection = lengths[fromLabel(minuend)];
 
   {
     minuendConnection = -*minuendConnection;
@@ -189,9 +186,6 @@ void Lengths<Surface>::subtract(Label minuend) {
       ASSERT(*minuendConnection == reconstruction,
         "Connection after subtract does not actually exist in surface. We claimed it's " << *minuendConnection << " but it is more likely " << reconstruction);
     });
-
-    // TODO
-    // std::cout << "Changed Length to " << *minuendConnection << std::endl;
   }
 
   ASSERT(get(minuend), "lengths must be non-zero");
@@ -283,7 +277,7 @@ std::string Lengths<Surface>::render(Label label) const {
 
 template <typename Surface>
 intervalxt::Label Lengths<Surface>::toLabel(const Edge e) const {
-  ASSERT(lengths.get(e), "Cannot interact with edge that is vertical or not part of the original contour but " << e << " is of this type in " << *this);
+  ASSERT(lengths[e], "Cannot interact with edge that is vertical or not part of the original contour but " << e << " is of this type in " << *this);
   return Label(e.index());
 }
 
@@ -292,7 +286,7 @@ Edge Lengths<Surface>::fromLabel(Label l) const {
   const int index = static_cast<int>(std::hash<Label>()(l));
   Edge e(index + 1);
   ASSERT(toLabel(e) == l, "fromLabel is not the inverse of toLabel");
-  ASSERT(lengths.get(e), "Cannot interact with vertical edge " << e << " in " << *this);
+  ASSERT(lengths[e], "Cannot interact with vertical edge " << e << " in " << *this);
   return e;
 }
 
@@ -304,7 +298,7 @@ typename Surface::Coordinate Lengths<Surface>::length() const {
 
 template <typename Surface>
 typename Surface::Coordinate Lengths<Surface>::length(intervalxt::Label label) const {
-  auto length = vertical->perpendicular(*lengths.get(fromLabel(label)));
+  auto length = vertical->perpendicular(*lengths[fromLabel(label)]);
   ASSERT(length > 0, "length must be positive");
   return length;
 }
@@ -312,13 +306,13 @@ typename Surface::Coordinate Lengths<Surface>::length(intervalxt::Label label) c
 template <typename Surface>
 ::intervalxt::Lengths Lengths<Surface>::forget() const {
   std::vector<T> lengths;
-  for (const auto e : this->lengths.parent().edges()) {
-    if (this->lengths.get(e)) {
+  this->lengths.apply([&](const auto& e, const auto& v) {
+    if (v) { 
       lengths.push_back(length(toLabel(e)));
     } else {
       lengths.emplace_back();
     }
-  }
+  });
 
   return ::intervalxt::sample::Lengths<T>(lengths);
 }

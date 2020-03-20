@@ -28,13 +28,13 @@
 namespace flatsurf {
 
 template <typename Surface>
-class Implementation<SaddleConnection<Surface>> {
+class ImplementationOf<SaddleConnection<Surface>> {
   using SaddleConnection = flatsurf::SaddleConnection<Surface>;
   using T = typename Surface::Coordinate;
 
  public:
-  Implementation(std::shared_ptr<const Surface> &surface, HalfEdge source, HalfEdge target, const Chain<Surface> &vector);
-  Implementation(std::shared_ptr<const Surface> &surface, HalfEdge e);
+  ImplementationOf(std::shared_ptr<const Surface> &surface, HalfEdge source, HalfEdge target, const Chain<Surface> &vector);
+  ImplementationOf(std::shared_ptr<const Surface> &surface, HalfEdge e);
 
   static void check(const SaddleConnection &);
 

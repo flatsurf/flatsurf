@@ -52,10 +52,6 @@ bool Edge::operator==(const Edge& rhs) const {
   return id == rhs.id;
 }
 
-bool Edge::operator<(const Edge& rhs) const {
-  return index() < rhs.index();
-}
-
 std::ostream& operator<<(std::ostream& os, const Edge& e) {
   return os << e.id;
 }

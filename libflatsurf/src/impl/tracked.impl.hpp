@@ -29,8 +29,8 @@
 namespace flatsurf {
 
 template <typename T>
-class Implementation<Tracked<T>> {
-  using Message = typename ::flatsurf::Implementation<FlatTriangulationCombinatorial>::Message;
+class ImplementationOf<Tracked<T>> {
+  using Message = typename ImplementationOf<FlatTriangulationCombinatorial>::Message;
 
  public:
   using FlipHandler = typename Tracked<T>::FlipHandler;
@@ -39,9 +39,9 @@ class Implementation<Tracked<T>> {
   using EraseHandler = typename Tracked<T>::EraseHandler;
   using DestructionHandler = typename Tracked<T>::DestructionHandler;
 
-  Implementation(const FlatTriangulationCombinatorial* parent, T&& value, const FlipHandler& updateAfterFlip, const CollapseHandler& updateBeforeCollapse, const SwapHandler& updateBeforeSwap, const EraseHandler& updateBeforeErase, const DestructionHandler& updateBeforeDestruction);
+  ImplementationOf(const FlatTriangulationCombinatorial* parent, T&& value, const FlipHandler& updateAfterFlip, const CollapseHandler& updateBeforeCollapse, const SwapHandler& updateBeforeSwap, const EraseHandler& updateBeforeErase, const DestructionHandler& updateBeforeDestruction);
 
-  ~Implementation();
+  ~ImplementationOf();
 
   void connect();
   void disconnect();
