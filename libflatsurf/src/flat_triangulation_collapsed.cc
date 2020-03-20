@@ -96,7 +96,7 @@ Vertical<FlatTriangulationCollapsed<T>> FlatTriangulationCollapsed<T>::vertical(
 
 template <typename T>
 bool FlatTriangulationCollapsed<T>::inSector(HalfEdge sector, const Vector<T>& vector) const {
-  return fromEdge(sector).ccw(vector) != CCW::CLOCKWISE && (-fromEdge(previousInFace(sector))).ccw(vector) == CCW::CLOCKWISE;
+  return fromEdge(sector).vector().ccw(vector) != CCW::CLOCKWISE && (-fromEdge(previousInFace(sector))).vector().ccw(vector) == CCW::CLOCKWISE;
 }
 
 template <typename T>

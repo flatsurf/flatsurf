@@ -86,13 +86,13 @@ FlowDecompositionState<Surface>::FlowDecompositionState(std::unique_ptr<Surface>
 
         for (const auto& [vertical, injected] : rx::zip(leftVerticals, leftInjected)) {
           this->injectedConnections.emplace(injected, vertical);
-          ASSERT(vertical.ccw(direction) == CCW::COLLINEAR, "Injected verticals must be collinear with flow direction but " << vertical << " is not.");
+          ASSERT(vertical.vector().ccw(direction) == CCW::COLLINEAR, "Injected verticals must be collinear with flow direction but " << vertical << " is not.");
           ;
           ASSERT(direction.orientation(vertical) == ORIENTATION::OPPOSITE, "Injected left verticals must be antiparallel with flow direction but " << vertical << " is not.");
         }
         for (const auto& [vertical, injected] : rx::zip(rightVerticals, rightInjected)) {
           this->injectedConnections.emplace(injected, vertical);
-          ASSERT(vertical.ccw(direction) == CCW::COLLINEAR, "Injected verticals must be collinear with flow direction but " << vertical << " is not.");
+          ASSERT(vertical.vector().ccw(direction) == CCW::COLLINEAR, "Injected verticals must be collinear with flow direction but " << vertical << " is not.");
           ;
           ASSERT(direction.orientation(vertical) == ORIENTATION::SAME, "Injected right verticals must be parallel with flow direction but " << vertical << " is not.");
         }

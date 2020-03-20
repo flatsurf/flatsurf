@@ -52,23 +52,11 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   static SaddleConnection<Surface> alongVertical(std::shared_ptr<const Surface>, const Vertical<Surface> &direction, HalfEdge plane);
   static SaddleConnection<Surface> clockwise(const SaddleConnection &from, const Vector<T> &);
 
-  // TODO: Does this also give me an implicit cast to Vector? If not, we should
-  // add this explicitly; the explicit vector() seems more sane anyway. Same
-  // applies to these operators in Chain<>.
-  operator const Vector<T> &() const;
-  operator const Chain<Surface> &() const;
+  const Vector<T>& vector() const;
+  const Chain<Surface>& chain() const;
 
-  Vector<T> vector() const;
-  Chain<Surface> chain() const;
-
-  // Return which direction we need to turn to go from this saddle connection
-  // to the given one. Both must start at the same vertex and the angle between
-  // them must be less than 2π.
-  // CCW ccw(const SaddleConnection&) const;
-  // TODO: This is a convenience method with a somewhat dubious semantic.
-  CCW ccw(const Vector<T> &) const;
-  // TODO: This is a convenience method with a somewhat dubious semantic.
-  ORIENTATION orientation(const Vector<T> &) const;
+  operator const Vector<T>&() const;
+  operator const Chain<Surface>&() const;
 
   // The saddle connection is leaving from the vertex at the source of source.
   // It is leaving in a direction that is contained in the sector next to

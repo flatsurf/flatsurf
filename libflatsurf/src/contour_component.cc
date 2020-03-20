@@ -100,7 +100,7 @@ HalfEdge ImplementationOf<ContourComponent<Surface>>::large() const {
 
 template <typename Surface>
 typename Surface::Coordinate ContourComponent<Surface>::area() const {
-  return 3 * Vector<T>::area(perimeter() | rx::transform([&](const auto& connection) { return static_cast<const Vector<T>&>(connection); }) | rx::to_vector());
+  return 3 * Vector<T>::area(perimeter() | rx::transform([&](const auto& connection) { return connection.vector(); }) | rx::to_vector());
 }
 
 template <typename Surface>

@@ -129,7 +129,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
         return finalFlowConnection.vertical() ? -finalFlowConnection.saddleConnection() : finalFlowConnection.saddleConnection();
       }();
 
-      ASSERT(clockwiseFrom.ccw(vector) != CCW::COUNTERCLOCKWISE, "Vertical must be clockwise from the half edge direction");
+      ASSERT(clockwiseFrom.vector().ccw(vector) != CCW::COUNTERCLOCKWISE, "Vertical must be clockwise from the half edge direction");
 
       enum SECTOR {
         NORTH,
@@ -231,7 +231,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
 
       ASSERT(connection.source() == source && connection.target() == target, "SaddleConnection normalization was unhappy with our source()/target() but we had picked them so they would be correct.");
 
-      ASSERT(clockwiseFrom.ccw(connection) == CCW::CLOCKWISE || (clockwiseFrom.ccw(connection) == CCW::COLLINEAR && clockwiseFrom.orientation(connection) == ORIENTATION::OPPOSITE), "Detected SaddleConnection must be reachable clockwise from the existing contour but " << connection << " is not clockwise from " << clockwiseFrom);
+      ASSERT(clockwiseFrom.vector().ccw(connection) == CCW::CLOCKWISE || (clockwiseFrom.vector().ccw(connection) == CCW::COLLINEAR && clockwiseFrom.vector().orientation(connection) == ORIENTATION::OPPOSITE), "Detected SaddleConnection must be reachable clockwise from the existing contour but " << connection << " is not clockwise from " << clockwiseFrom);
 
       impl->state->detectedConnections.emplace(*step.connection, connection);
       impl->state->detectedConnections.emplace(-*step.connection, -connection);
