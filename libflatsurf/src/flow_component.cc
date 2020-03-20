@@ -60,8 +60,6 @@ FlowComponent<Surface>::FlowComponent(PrivateConstructor, Args&&...args) :
 
 template <typename Surface>
 bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Surface>&)> target, int limit) {
-  // TODO: Split this into more easily digestable chunks. (And audit code for other monsters of this kind.)
-  // TODO: This looks evil
   const auto check = [&]() {
     ASSERTIONS(([&]() {
       auto paths = impl->state->components | rx::transform([&](const auto& component) { return Path(ImplementationOf<FlowComponent<Surface>>::make(impl->state, &const_cast<FlowComponentState<Surface>&>(component)).perimeter() | rx::transform([](const auto& connection) { return connection.saddleConnection(); }) | rx::to_vector()); }) | rx::to_vector();
@@ -333,7 +331,6 @@ template <typename Surface>
 std::string ImplementationOf<FlowComponent<Surface>>::id() const {
   throw std::logic_error("not implemented: id()");
 }
-
 
 template <typename Surface>
 ostream& operator<<(ostream& os, const FlowComponent<Surface>& self) {
