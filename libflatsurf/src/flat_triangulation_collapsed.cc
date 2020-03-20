@@ -49,7 +49,6 @@
 #include "../flatsurf/vertical.hpp"
 
 #include "impl/flat_triangulation_collapsed.impl.hpp"
-// TODO: Maybe better use subdirectories
 #include "impl/collapsed_half_edge.hpp"
 #include "impl/flat_triangulation.impl.hpp"
 #include "impl/saddle_connection.impl.hpp"
@@ -104,16 +103,10 @@ bool FlatTriangulationCollapsed<T>::inSector(HalfEdge sector, const Vertical<Fla
   return inSector(sector, vector.vertical());
 }
 
-// TODO: Move to the appropriate places
-template <typename T>
-T abs(const T& x) {
-  return x < 0 ? -x : x;
-}
-
-// TODO: Move to vector?
 template <typename T>
 mpz_class relativeLength(const Vector<T>& divident, const Vector<T>& divisor) {
-  // TODO: Arithmetic is not a good pattern mostly. Instead, these should be free functions in a fixed namespace.
+  const auto abs = [](const auto& x) { return x < 0 ? -x : x; };
+
   return sqrt(::intervalxt::sample::Arithmetic<T>::floorDivision((divident * divident) * (divident * divident), abs(divisor * divident)));
 }
 
@@ -131,7 +124,8 @@ void FlatTriangulationCollapsed<T>::flip(HalfEdge e) {
   ASSERT(Implementation::faceClosed(*this, e), "Face attached to " << e << " not closed after flip in " << *this);
   ASSERTIONS([&]() {
     static Amortized cost;
-    // TODO: It would maybe be better to estimate the cost by looking at the shortest vector in direction of e.
+    // The cost approximation here is were crude. We should probably look at
+    // the shortest vector in direction of e instead.
     const auto connection = fromEdge(e);
 
     if (!cost.pay(relativeLength(static_cast<const Vector<T>&>(connection), impl->original->shortest(connection)) + 1)) return;
@@ -324,14 +318,8 @@ bool ImplementationOf<FlatTriangulationCollapsed<T>>::faceClosed(const FlatTrian
   return zero == 0;
 }
 
-// TODO: Can I get rid of all of the .value here?
-
 template <typename T>
 void ImplementationOf<FlatTriangulationCollapsed<T>>::updateAfterFlip(HalfEdgeMap<SaddleConnection>& vectors, const FlatTriangulationCombinatorial& combinatorial, HalfEdge flip) {
-  // TODO: Speed this up. We can very often get away without creating a new
-  // Chain/SaddleConnection by using more move and inplace operations. There
-  // should probably be a destructive static_cast from SaddleConnection&& to
-  // Chain.
   ImplementationOf::handleFlip(vectors, static_cast<const FlatTriangulationCollapsed<T>&>(combinatorial), flip, [&](const auto& surface, HalfEdge a, HalfEdge b, HalfEdge c, HalfEdge d) {
     const auto sum = [&](const auto& lhs, const auto& rhs) {
       return SaddleConnection(surface.impl->original, lhs.source(), rhs.target(), static_cast<const Chain<FlatTriangulation<T>>&>(lhs) + static_cast<const Chain<FlatTriangulation<T>>&>(rhs));
