@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -56,9 +56,7 @@ class IntervalExchangeTransformation {
   // The Edge in the (collapsed) surface from which this label was created originally.
   Edge edge(const Label&) const;
 
-  // TODO: Does this actually make sense here? We cannot in general determine
-  // the connection without knowing the  FlowDecomposition it seems.
-  SaddleConnection<FlatTriangulation<T>> connection(const Label&) const;
+  const SaddleConnection<FlatTriangulation<T>>& operator[](const Label&) const;
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const IntervalExchangeTransformation<S>&);

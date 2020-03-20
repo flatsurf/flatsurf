@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -181,7 +181,7 @@ Edge IntervalExchangeTransformation<Surface>::edge(const Label& label) const {
 }
 
 template <typename Surface>
-SaddleConnection<FlatTriangulation<typename Surface::Coordinate>> IntervalExchangeTransformation<Surface>::connection(const intervalxt::Label& label) const {
+const SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>& IntervalExchangeTransformation<Surface>::operator[](const intervalxt::Label& label) const {
   return *impl->lengths->lengths[impl->lengths->fromLabel(label)];
 }
 

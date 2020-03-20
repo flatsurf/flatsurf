@@ -117,7 +117,7 @@ FlowConnection<Surface> ImplementationOf<FlowConnection<Surface>>::make(std::sha
 
 template <typename Surface>
 FlowConnection<Surface> ImplementationOf<FlowConnection<Surface>>::make(std::shared_ptr<FlowDecompositionState<Surface>> state, const FlowComponent<Surface>& component, const intervalxt::HalfEdge& edge) {
-  auto connection = component.intervalExchangeTransformation().connection(static_cast<intervalxt::Label>(edge));
+  auto connection = component.intervalExchangeTransformation()[static_cast<intervalxt::Label>(edge)];
   if (edge.top()) connection = -connection;
 
   FlowConnection<Surface> ret;
