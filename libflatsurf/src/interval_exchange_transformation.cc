@@ -157,7 +157,7 @@ std::unordered_set<HalfEdge> IntervalExchangeTransformation<Surface>::makeUnique
   // Eliminate other large edges
   while (true) {
     std::unordered_set<HalfEdge> component;
-    if (Vertical<Surface>::Implementation::visit(vertical, unique, component, [&](HalfEdge e) {
+    if (ImplementationOf<Vertical<Surface>>::visit(vertical, unique, component, [&](HalfEdge e) {
       if (e == static_cast<HalfEdge>(unique) || e == -static_cast<HalfEdge>(unique))
         return true;
 
