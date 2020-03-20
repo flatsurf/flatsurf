@@ -39,11 +39,6 @@
 
 #include "util/assert.ipp"
 
-// TODO: We could add a lot of constness here probably.
-// TODO: The "make()" from impl() pattern could probably be automated somewhat.
-// TODO: const properties are almost always the wrong thing to do. Instead they
-// should be private.
-
 namespace flatsurf {
 
 using std::ostream;
@@ -186,7 +181,7 @@ void ImplementationOf<ContourDecomposition<Surface>>::check(const std::vector<Pa
 
   // Components do not overlap
   {
-    // TODO
+    // https://github.com/flatsurf/flatsurf/issues/150
   }
 }
 
