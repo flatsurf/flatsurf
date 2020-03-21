@@ -26,6 +26,7 @@ def cylinder_diagram(decomposition):
         raise ValueError("not a completely periodic direction")
 
     indices = {}
+    saddle_connections = []
     cyls = []
     k = 0
     for c in decomposition.components():
@@ -38,19 +39,23 @@ def cylinder_diagram(decomposition):
         assert all(contour[i].vertical() for i in range(itop+1, len(contour)))
         bot = []
         for i in range(ibot+1, itop):
-            if contour[i] not in indices:
-                indices[contour[i]] = k
-                indices[-contour[i]] = k
+            c = contour[i]
+            if c not in indices:
+                indices[c] = k
+                indices[-c] = k
+                saddle_connections.append(c.saddleConnection().vector())
                 k += 1
             bot.append(indices[contour[i]])
         top = []
         for i in range(itop+1, len(contour)):
-            if contour[i] not in indices:
-                indices[contour[i]] = k
-                indices[-contour[i]] = k
+            c = contour[i]
+            if c not in indices:
+                indices[c] = k
+                indices[-c] = k
+                saddle_connections.append((-c.saddleConnection()).vector())
                 k += 1
             top.append(indices[contour[i]])
         cyls.append((bot, top))
 
     from surface_dynamics import CylinderDiagram
-    return CylinderDiagram(cyls)
+    return CylinderDiagram(cyls), saddle_connections
