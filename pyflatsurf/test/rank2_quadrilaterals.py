@@ -29,21 +29,24 @@ the ambient rank 2 locus.
 import sys
 import pytest
 
+import itertools
+
 from sage.all import AA
 import flatsurf as sage_flatsurf
 from pyflatsurf import GL2ROrbitClosure
 
-@pytest.mark.parametrize("a,b,c,d,l1,l2,veech,length,depth", [
-    (1,1,1,7,1,1,True,4,100),
-    (1,1,1,7,AA(2).sqrt(),1,False,4,100),
-    (1,1,1,9,1,1,True,4,100),
-    (1,1,1,9,AA(2).sqrt(),1,False,4,100),
-    (1,1,2,8,1,1,False,4,50),
-    (1,1,2,12,1,1,False,4,50),
-    (1,2,2,11,1,1,False,4,50),
-#    (1,1,2,15,1,1,False,4,50)   # TOO BIG!?
+@pytest.mark.parametrize("a,b,c,d,l1,l2,veech", [
+    (1,1,1,7,1,1,True),
+    (1,1,1,7,AA(2).sqrt(),1,False),
+    (1,1,1,9,1,1,True),
+    (1,1,1,9,AA(2).sqrt(),1,False),
+    (2,2,3,13,1,1,False),
+    (1,1,2,8,1,1,False),
+    (1,1,2,12,1,1,False),
+    (1,2,2,11,1,1,False),
+#    (1,1,2,15,1,1,False)   # TOO BIG!?
 ])
-def test_rank2_quadrilateral(a, b, c, d, l1, l2, veech, length, depth):
+def test_rank2_quadrilateral(a, b, c, d, l1, l2, veech):
     E = sage_flatsurf.EquiangularPolygons(a, b, c, d)
     P = E([l1, l2])
     B = sage_flatsurf.similarity_surfaces.billiard(P)
@@ -51,15 +54,16 @@ def test_rank2_quadrilateral(a, b, c, d, l1, l2, veech, length, depth):
     S = S.erase_marked_points()
     S, _ = S.normalized_coordinates()
     O = GL2ROrbitClosure(S)
+    D = itertools.islice(O.decompositions(9, 100), 50)
     if veech:
         assert S.base_ring().degree() <= 2
-        for d in O.decompositions(length, depth):
-            O.update_tangent_space_from_flow_decomposition(d)
-            assert d.parabolic()
-        assert O.absolute_dimension() == O.U.dimension() == 2, (O.U.dimension(), O.absolute_dimension())
+        for dec in D:
+            O.update_tangent_space_from_flow_decomposition(dec)
+            assert dec.parabolic()
+            assert O.U.dimension() == 2, (O.U.dimension(), O.absolute_dimension())
     else:
-        for d in O.decompositions(length, depth):
-            O.update_tangent_space_from_flow_decomposition(d)
+        for dec in D:
+            O.update_tangent_space_from_flow_decomposition(dec)
         assert O.absolute_dimension() == O.U.dimension() == 4, (O.U.dimension(), O.absolute_dimension())
 
 if __name__ == '__main__': sys.exit(pytest.main(sys.argv))
