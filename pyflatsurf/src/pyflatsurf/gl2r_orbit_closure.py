@@ -341,6 +341,49 @@ class Decomposition:
 
         return self.orbit.V.subspace(vectors)
 
+    def plot_completely_periodic(self):
+        from sage.plot.all import polygon2d, Graphics, point2d, text
+        O = self.orbit
+        G = []
+        u = self.u  # direction (that we put horizontal)
+        m = matrix(2, [u[1], -u[0], u[1], u[0]])
+        indices = {}
+        xmin = xmax = ymin = ymax = 0
+        for comp in self.decomposition.components():
+            H = Graphics()
+            x = O.V2sage.zero()
+
+            pts = [x]
+            below = True
+            for p in comp.perimeter():
+                sc = p.saddleConnection()
+                y = x + m * O.V2sage(O.V2(p.saddleConnection().vector()))
+
+                if p.vertical():
+                    if sc in indices:
+                        i = indices[sc]
+                    else:
+                        i = len(indices) // 2
+                        indices[sc] = i
+                        indices[-sc] = i
+                    if below:
+                        H += text(str(i), (x+y)/2, color='black')
+                x = y
+                xmin = min(xmin, x[0])
+                xmax = max(xmax, x[0])
+                ymin = min(ymin, x[1])
+                ymax = max(ymax, x[1])
+                pts.append(x)
+            H += polygon2d(pts, color='blue', alpha=0.3)
+            H += point2d(pts, color='red', pointsize=20)
+            G.append(H)
+        aspect_ratio = float(xmax - xmin) / float(ymax - ymin)
+        for H in G:
+            H.set_axes_range(xmin, xmax, ymin, ymax)
+            H.axes(False)
+            H.set_aspect_ratio(aspect_ratio)
+        return G
+
 class GL2ROrbitClosure:
     r"""
     Approximation to the tangent space of a GL(2,R)-orbit closure of a
@@ -442,6 +485,19 @@ class GL2ROrbitClosure:
             H[i] = self.V2sage(self.V2(s))
         return H.transpose()
 
+    def relative_holonomy_field(self):
+        r"""
+        Compute the smallest field you need to express this surface.
+        """
+        e0 = self.surface.edges()[0].positive()
+        e1 = self.surface.previousInFace(e0)
+
+        u = self.surface.fromEdge(e0)
+        v = self.surface.fromEdge(-e1)
+        m = matrix(2, [self.V2sage(self.V2(u)), self.V2sage(self.V2(v))]).transpose().inverse()
+        return m * self.xy_vectors()
+
+
     def __repr__(self):
         return "GL(2,R)-orbit closure of dimension at least %d in %s (ambient dimension %d)" % (self.U.dimension(), self.surface.stratum(), self.d)
 
@@ -477,15 +533,15 @@ class GL2ROrbitClosure:
             sage: import flatsurf as sage_flatsurf
             sage: T = sage_flatsurf.polygons.triangle(3,4,13)
             sage: S = sage_flatsurf.similarity_surfaces.billiard(T)
-            sage: S = S.minimal_cover("translation")
+            sage: S = S.minimal_cover("translation").erase_marked_points()
             sage: O = GL2ROrbitClosure(S)
             sage: for d in O.decompositions(4, 20):
             ....:     O.update_tangent_space_from_flow_decomposition(d)
-            ....:     if O.U.dimension() == 6:
+            ....:     if O.U.dimension() == 4:
             ....:         break
             sage: d1,d2,d3,d4 = [O.lift(b) for b in O.U.basis()]
-            sage: dreal = (d1 + d2) / 15
-            sage: dimag = (d3 + d4) / 12
+            sage: dreal = d1/132 + d2/227 + d3/280 - d4/201
+            sage: dimag = d1/141 - d2/233 + d4/230 + d4/250
             sage: d = [O.V2((x,y)).vector for x,y in zip(dreal,dimag)]
             sage: S2 = O.surface + d
             sage: O2 = GL2ROrbitClosure(S2)
