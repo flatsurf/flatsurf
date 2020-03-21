@@ -116,7 +116,6 @@ FlowDecompositionState<Surface>::FlowDecompositionState(std::unique_ptr<Surface>
             if (top)
               std::reverse(begin(rights), end(rights));
             for (auto vertical : rights) {
-              // TODO: This is again a case where our normalization (or lack thereof) bites us.
               ASSERT(injectedConnections.find(vertical) == end(injectedConnections), "an injected connection and its inverse must appear on different sides (left/right) of the contour");
               const auto target = ::intervalxt::Label(-(injectedConnections.size() + 1));
               injectHere.push_back(injectedConnections[vertical] = (top ? std::pair{target, source} : std::pair{source, target}));
