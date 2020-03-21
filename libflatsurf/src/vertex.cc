@@ -62,7 +62,7 @@ HalfEdgeSet Vertex::outgoing() const {
 }
 
 HalfEdgeSet Vertex::incoming() const {
-  HalfEdgeSet incoming({});
+  HalfEdgeSet incoming;
   for (auto he : outgoing())
     incoming.insert(-he);
   return incoming;
