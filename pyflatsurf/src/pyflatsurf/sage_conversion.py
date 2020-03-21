@@ -90,6 +90,14 @@ def _cycle_decomposition(p):
             cycles.append(cycle)
     return cycles
 
+def make_vectors(vectors, base_ring):
+    r"""
+    Convert a list of sage vectors to pyflatsurf Vector.
+    """
+    from .vector import Vectors
+    V = Vectors(base_ring)
+    return [V(v).vector for v in vectors]
+
 def to_FlatTriangulation(S):
     r"""
     Given S a translation surface from flatsurf builds a flat polygonization
@@ -147,19 +155,6 @@ def to_FlatTriangulation(S):
 
     S = S.triangulate()
 
-    if S.base_ring() is QQ:
-        TYPE = 'mpq_class'
-        K = QQ
-        def elem_constructor(K, elt):
-            return cppyy.gbl.mpq_class(str(elt))
-    else:
-        from pyeantic.sage_conversion import sage_nf_to_eantic, sage_nf_elem_to_eantic
-        TYPE = 'eantic::renf_elem_class'
-        K = sage_nf_to_eantic(S.base_ring())
-        elem_constructor = sage_nf_elem_to_eantic
-
-    V = flatsurf.Vector[TYPE]
-
     # populate half edges and vectors
     n = sum(S.polygon(lab).num_edges() for lab in S.label_iterator())
     half_edge_labels = {}   # map: (face lab, edge num) in faltsurf -> integer
@@ -174,10 +169,7 @@ def to_FlatTriangulation(S):
 
         f0, e0 = t0
         p = S.polygon(f0)
-        e = p.edge(e0)
-        v0 = elem_constructor(K, e[0])
-        v1 = elem_constructor(K, e[1])
-        vec.append(V(v0, v1))
+        vec.append(p.edge(e0))
 
         k += 1
 
@@ -190,9 +182,10 @@ def to_FlatTriangulation(S):
         fp[e] = half_edge_labels[(t[0], j)]
         vp[fp[e]] = -e
 
-    _check_data(vp, fp, vec)
 
     # convert the vp permutation into cycles
     verts = _cycle_decomposition(vp)
+    vec = make_vectors(vec, S.base_ring())
+    _check_data(vp, fp, vec)
 
     return Surface(verts, vec)
