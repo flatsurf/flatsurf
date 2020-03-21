@@ -36,12 +36,8 @@ class FlowComponentState {
   using T = typename Surface::Coordinate;
 
  public:
-  // TODO: Why do I need to insist here that the IET is on a collapsed surface?
   FlowComponentState(const ContourComponent<Surface>& contour, std::shared_ptr<const IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>> iet, const intervalxt::Component& component);
 
-  // TODO: Why are the components held by value but the iet by ptr? I guess
-  // because the components are just thin wrappers so they can safely be copied
-  // and the iet isn't. But that has some smell to it.
   ContourComponent<Surface> contourComponent;
   std::shared_ptr<const IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>> iet;
   intervalxt::Component dynamicalComponent;

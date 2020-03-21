@@ -39,8 +39,9 @@ class ContourComponentState {
   std::unordered_set<HalfEdge> halfEdges;
 
   HalfEdge large;
-  // TODO: Currently, these are oriented left-to-right. It's probably better to turn these around.
+  // The edges on the top of this component, from right to left, oriented from right to left.
   std::vector<HalfEdge> topEdges;
+  // The edges on the bottom of this component, from left to right, oriented from left to right.
   std::vector<HalfEdge> bottomEdges;
 
   template <typename S>

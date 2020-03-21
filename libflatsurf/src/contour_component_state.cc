@@ -58,7 +58,7 @@ ContourComponentState<Surface>::ContourComponentState(const ContourDecomposition
 
     ImplementationOf<ContourComponent<FlatTriangulationCollapsed<T>>>::makeContour(back_inserter(topEdges), large, *state.surface, state.surface->vertical());
 
-    return topEdges | rx::reverse() | rx::to_vector();
+    return topEdges | rx::transform([](const auto& he) { return -he; }) | rx::reverse() | rx::to_vector();
   }()),
   bottomEdges([&]() {
     std::vector<HalfEdge> bottomEdges;

@@ -365,27 +365,6 @@ ostream& operator<<(ostream& os, const FlowComponent<Surface>& self) {
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
-#include <e-antic/renfxx.h>
-#include <exact-real/element.hpp>
-#include <exact-real/integer_ring.hpp>
-#include <exact-real/number_field.hpp>
-#include <exact-real/rational_field.hpp>
+#include "util/instantiate.ipp"
 
-namespace flatsurf {
-
-template class FlowComponent<FlatTriangulation<long long>>;
-template ostream& operator<<(ostream&, const FlowComponent<FlatTriangulation<long long>>&);
-template class FlowComponent<FlatTriangulation<mpz_class>>;
-template ostream& operator<<(ostream&, const FlowComponent<FlatTriangulation<mpz_class>>&);
-template class FlowComponent<FlatTriangulation<mpq_class>>;
-template ostream& operator<<(ostream&, const FlowComponent<FlatTriangulation<mpq_class>>&);
-template class FlowComponent<FlatTriangulation<eantic::renf_elem_class>>;
-template ostream& operator<<(ostream&, const FlowComponent<FlatTriangulation<eantic::renf_elem_class>>&);
-template class FlowComponent<FlatTriangulation<exactreal::Element<exactreal::IntegerRing>>>;
-template ostream& operator<<(ostream&, const FlowComponent<FlatTriangulation<exactreal::Element<exactreal::IntegerRing>>>&);
-template class FlowComponent<FlatTriangulation<exactreal::Element<exactreal::RationalField>>>;
-template ostream& operator<<(ostream&, const FlowComponent<FlatTriangulation<exactreal::Element<exactreal::RationalField>>>&);
-template class FlowComponent<FlatTriangulation<exactreal::Element<exactreal::NumberField>>>;
-template ostream& operator<<(ostream&, const FlowComponent<FlatTriangulation<exactreal::Element<exactreal::NumberField>>>&);
-
-}  // namespace flatsurf
+LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), FlowComponent, LIBFLATSURF_FLAT_TRIANGULATION_TYPES)
