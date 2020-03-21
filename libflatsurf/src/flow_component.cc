@@ -60,8 +60,6 @@ FlowComponent<Surface>::FlowComponent(PrivateConstructor, Args&&...args) :
 
 template <typename Surface>
 bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Surface>&)> target, int limit) {
-  // TODO: Split this into more easily digestable chunks. (And audit code for other monsters of this kind.)
-  // TODO: This looks evil
   const auto check = [&]() {
     ASSERTIONS(([&]() {
       auto paths = impl->state->components | rx::transform([&](const auto& component) { return Path(ImplementationOf<FlowComponent<Surface>>::make(impl->state, &const_cast<FlowComponentState<Surface>&>(component)).perimeter() | rx::transform([](const auto& connection) { return connection.saddleConnection(); }) | rx::to_vector()); }) | rx::to_vector();
@@ -73,7 +71,6 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
     check();
 
     auto step = impl->component->dynamicalComponent.decompositionStep(limit);
-    // TODO: If Cylinder, assert that the perimeter is actually a cylinder.
 
     if (step.result == intervalxt::DecompositionStep::Result::LIMIT_REACHED)
       return false;
@@ -92,12 +89,13 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
       for (const auto& connection : *step.equivalent) {
         auto flowConnection = ImplementationOf<FlowConnection<Surface>>::make(impl->state, *this, connection);
         if (!flowConnection.vertical()) {
-          // TODO: intervalxt reports non-verticals without explicit orientation.
           // Since the default for ::make() is to assume that things were made
           // for walking the contour counterclockwise, a HalfEdge on the top is
           // left-to-right, and a HalfEdge on the bottom is right-to-left.
           // However, here we need the opposite since we are walking
-          // step.equivalent clockwise.
+          // step.equivalent clockwise. intervalxt should probably report
+          // things more consistently, i.e., non-verticals with an explicit
+          // orientation so we do not need this switch anymore.
           vector -= flowConnection.saddleConnection();
         } else {
           vector += flowConnection.saddleConnection();
@@ -112,8 +110,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
       // SaddleConnection must start clockwise from that one.
       auto clockwiseFrom = [&]() {
         const auto precedingFlowConnection = ImplementationOf<FlowConnection<Surface>>::make(impl->state, *this, *begin(*step.equivalent));
-        // TODO: Similarly, to the above, we need to turn a connection coming
-        // from a HalfEdge around.
+        // Similarly, to the above, we need to turn a connection coming from a HalfEdge around.
         return precedingFlowConnection.vertical() ? precedingFlowConnection.saddleConnection() : -precedingFlowConnection.saddleConnection();
       }();
 
@@ -122,9 +119,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
       // from that one.
       auto counterclockwiseTo = [&]() {
         const auto finalFlowConnection = ImplementationOf<FlowConnection<Surface>>::make(impl->state, *this, *rbegin(*step.equivalent));
-        // TODO: Similarly, to the above, we need to turn a connection coming
-        // from a HalfEdge around. (But since we want the negative, we need to
-        // turn it around twice.)
+        // Similarly, to the above, we need to turn a connection coming from a HalfEdge around.
         return finalFlowConnection.vertical() ? -finalFlowConnection.saddleConnection() : finalFlowConnection.saddleConnection();
       }();
 
@@ -157,7 +152,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
           throw std::logic_error("cannot classify zero vector");
       };
 
-      // TODO: The rotation logic below is somewhat generic and should go into SaddleConnection.
+      // The following logic should probably be abstracted away into SaddleConnection somehow.
 
       // The source of the new SaddleConnection, i.e.,
       // counterclockwise to which HalfEdge of the original surface
@@ -352,7 +347,6 @@ template <typename Surface>
 std::string ImplementationOf<FlowComponent<Surface>>::id() const {
   throw std::logic_error("not implemented: id()");
 }
-
 
 template <typename Surface>
 ostream& operator<<(ostream& os, const FlowComponent<Surface>& self) {

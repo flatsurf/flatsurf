@@ -64,7 +64,6 @@ FlowDecompositionState<Surface>::FlowDecompositionState(std::unique_ptr<Surface>
   }
 
   // Inject collapsed verticals into intervalxt components.
-  // TODO: This is all quite messy...
 
   std::unordered_map<SaddleConnection<Surface>, std::pair<intervalxt::Label, intervalxt::Label>> injectedConnections;
 
