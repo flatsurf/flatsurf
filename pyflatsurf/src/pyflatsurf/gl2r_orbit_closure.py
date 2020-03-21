@@ -371,7 +371,9 @@ class GL2ROrbitClosure:
             if h1 not in self.half_edge_to_face:
                 h2 = surface.nextInFace(h1)
                 h3 = surface.nextInFace(h2)
-                h = min([h1, h2, h3])
+                from_index = {h1.index(): h1, h2.index(): h2, h3.index(): h3}
+                assert len(from_index) == 3
+                h = from_index[min(from_index)]
                 self.half_edge_to_face[h1] = h
                 self.half_edge_to_face[h2] = h
                 self.half_edge_to_face[h3] = h
@@ -381,7 +383,9 @@ class GL2ROrbitClosure:
             if h1 not in self.half_edge_to_face:
                 h2 = surface.nextInFace(h1)
                 h3 = surface.nextInFace(h2)
-                h = min([h1, h2, h3])
+                from_index = {h1.index(): h1, h2.index(): h2, h3.index(): h3}
+                assert len(from_index) == 3
+                h = from_index[min(from_index)]
                 self.half_edge_to_face[h1] = h
                 self.half_edge_to_face[h2] = h
                 self.half_edge_to_face[h3] = h
