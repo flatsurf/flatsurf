@@ -52,6 +52,7 @@ def deformation(surface, v):
         sage: v2 = flatsurf.Vector[mpq](0,1)
         sage: v3 = flatsurf.Vector[mpq](-1,-1)
         sage: surface = Surface(verts, [v1, v2, v3])
+        sage: surface
         FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors 1: (1, 0), 2: (0, 1), 3: (-1, -1)
         sage: d1 = flatsurf.Vector[mpq]('1/4', 0)
         sage: d2 = flatsurf.Vector[mpq]('-1/4', '1/4')

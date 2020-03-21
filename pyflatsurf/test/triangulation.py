@@ -4,7 +4,7 @@
 ######################################################################
 # This file is part of flatsurf.
 #
-#       Copyright (C) 2019 Julian Rüth
+#       Copyright (C) 2020 Vincent Delecroix
 #
 # flatsurf is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,19 +22,19 @@
 
 import sys
 import pytest
-import ctypes
 
-from pyflatsurf import flatsurf, Surface
-import flatsurf as sage_flatsurf
+import cppyy.gbl
+from gmpxxyy import mpq
+from pyflatsurf import flatsurf
 
-def test_unfold_triangle():
-    # Unfold the (5, 6, 7) triangle with sage-flatsurf
-    T = sage_flatsurf.polygons.triangle(5, 6, 7)
-    S = sage_flatsurf.similarity_surfaces.billiard(T)
-    S = S.minimal_cover(cover_type="translation")
-    surface = Surface(S)
-    assert str(surface).startswith("FlatTriangulationCombinatorial(vertices = (")
-
-    return surface
+def test_torus():
+    verts = [cppyy.gbl.std.vector[int]([1,-3,2,-1,3,-2])]
+    T = cppyy.gbl.flatsurf.FlatTriangulationCombinatorial(verts)
+    assert T.size() == T.edges().size() == 3
+    hols = [(1,0), (0,1), (-1,-1)]
+    hols = cppyy.gbl.vector[flatsurf.Vector[mpq]]([flatsurf.Vector[mpq](x,y) for x,y in hols])
+    F = cppyy.gbl.flatsurf.makeFlatTriangulation(T, hols)
+    assert F.size() == F.edges().size() == 3
 
 if __name__ == '__main__': sys.exit(pytest.main(sys.argv))
+

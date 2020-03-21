@@ -42,7 +42,7 @@ def test_veech_2n_gon(n, bound):
     O = GL2ROrbitClosure(S)
     for d in O.decompositions(bound):
         assert d.parabolic()
-        assert d.decomposition.cylinder_diagram().stratum() == O.surface.stratum()
+        assert d.decomposition.cylinder_diagram()[0].stratum() == O.surface.stratum()
         O.update_tangent_space_from_flow_decomposition(d)
     assert O.U.dimension() == 2
 
@@ -52,7 +52,7 @@ def test_veech_double_n_gon(n, bound):
     O = GL2ROrbitClosure(S)
     for d in O.decompositions(bound):
         assert d.parabolic()
-        assert d.decomposition.cylinder_diagram().stratum() == O.surface.stratum()
+        assert d.decomposition.cylinder_diagram()[0].stratum() == O.surface.stratum()
         O.update_tangent_space_from_flow_decomposition(d)
     assert O.U.dimension() == 2
 
