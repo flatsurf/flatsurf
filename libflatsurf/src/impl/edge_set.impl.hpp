@@ -30,7 +30,10 @@
 namespace flatsurf {
 
 template <>
-class ImplementationOf<EdgeSet> : public IndexedSet<Edge> {};
+class ImplementationOf<EdgeSet> : public IndexedSet<Edge> {
+ public:
+  using IndexedSet<Edge>::IndexedSet;
+};
 
 }
 

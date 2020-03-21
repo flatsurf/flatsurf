@@ -31,7 +31,12 @@
 namespace flatsurf {
 
 template <>
-class ImplementationOf<HalfEdgeSetIterator> : public IndexedSetIterator<HalfEdge> {};
+class ImplementationOf<HalfEdgeSetIterator> : public IndexedSetIterator<HalfEdge> {
+ public:
+  using  IndexedSetIterator<HalfEdge>::IndexedSetIterator;
+
+  ImplementationOf(IndexedSetIterator<HalfEdge>&&);
+};
 
 }
 

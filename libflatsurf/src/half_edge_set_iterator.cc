@@ -53,4 +53,6 @@ HalfEdgeSetIterator HalfEdgeSet::end() const {
   return HalfEdgeSetIterator{PrivateConstructor{}, impl->end()};
 }
 
+ImplementationOf<HalfEdgeSetIterator>::ImplementationOf(IndexedSetIterator<HalfEdge>&& self) : IndexedSetIterator(std::move(self)) {}
+
 }

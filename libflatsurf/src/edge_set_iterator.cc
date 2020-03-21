@@ -53,5 +53,7 @@ EdgeSetIterator EdgeSet::end() const {
   return EdgeSetIterator{PrivateConstructor{}, impl->end()};
 }
 
+ImplementationOf<EdgeSetIterator>::ImplementationOf(IndexedSetIterator<Edge>&& self) : IndexedSetIterator(std::move(self)) {}
+
 }
 
