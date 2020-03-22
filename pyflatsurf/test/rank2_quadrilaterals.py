@@ -44,7 +44,7 @@ from pyflatsurf import GL2ROrbitClosure
     (1,1,2,8,1,1,False),
     (1,1,2,12,1,1,False),
     (1,2,2,11,1,1,False),
-#    (1,1,2,15,1,1,False)   # TOO BIG!?
+    (1,2,2,15,1,1,False)
 ])
 def test_rank2_quadrilateral(a, b, c, d, l1, l2, veech):
     E = sage_flatsurf.EquiangularPolygons(a, b, c, d)
