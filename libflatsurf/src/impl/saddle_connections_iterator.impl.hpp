@@ -116,15 +116,6 @@ class ImplementationOf<SaddleConnectionsIterator<Surface>> {
   // The current connection so we can return it in dereference by reference.
   mutable SaddleConnection<Surface> connection;
 
-  // TODO: I introduced the
-  // START_OUTSIDE_SEARCH_RADIUS/START_INSIDE_SEARCH_RADIUS to be able to
-  // handle very small angles more efficiently. We should count how often we
-  // still recurse into a half edge that cannot possibly lead to new saddle
-  // connections. And check how much more expensive the new checks are in
-  // comparison.
-  // Maybe we can sometimes pick the SEARCH_* state heuristically or use only
-  // an approximate operator>.
-
   bool increment();
 
   bool onBoundary();

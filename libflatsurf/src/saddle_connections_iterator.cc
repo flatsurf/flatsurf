@@ -171,8 +171,6 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
           throw std::logic_error("unknown classification result");
       }
     case State::SADDLE_CONNECTION_FOUND:
-      // TODO: We should get rid of this state. It only exists to distinguish
-      // the initial saddle connection.
       return false;
     case State::SADDLE_CONNECTION_FOUND_SEARCHING_FIRST:
       // We have just come back from the search in the clockwise sector; now
