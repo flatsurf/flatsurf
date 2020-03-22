@@ -69,9 +69,10 @@ for q in Permutations(args.angles):
             S = S.minimal_cover(cover_type="translation")
             try:
                 S = S.erase_marked_points()
+                ambient_locus = E.billiard_unfolding_stratum()
             except NotImplementedError:
                 # TODO: sage-flatsurf does not know yet how to do that in all cases
-                pass
+                ambient_locus = E.billiard_unfolding_stratum(marked_points=True)
             S, _ = S.normalized_coordinates()
 
             # Dynamical orbit closure computation
