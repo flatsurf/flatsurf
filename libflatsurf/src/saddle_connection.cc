@@ -83,7 +83,7 @@ template <typename Surface>
 SaddleConnection<Surface> SaddleConnection<Surface>::inSector(std::shared_ptr<const Surface> surface, HalfEdge source, const Vector<T>& vector) {
   CHECK_ARGUMENT(surface->inSector(source, vector), "Cannot search for " << vector << " next to " << source << " in " << *surface << "; that direction is not in the search sector");
 
-  // TODO: Bound should be length of vector
+  // It would be good to use a finite bound instead, see https://github.com/flatsurf/flatsurf/issues/153
   auto reconstruction = SaddleConnections<Surface>(surface, Bound(INT_MAX, 0), source);
   auto it = reconstruction.begin();
   for (; it->vector() != vector; it++) {
