@@ -57,9 +57,8 @@ class Lengths {
   ::intervalxt::Lengths only(const std::unordered_set<::intervalxt::Label>&) const;
   bool similar(::intervalxt::Label, ::intervalxt::Label, const ::intervalxt::Lengths&, ::intervalxt::Label, ::intervalxt::Label) const;
 
-  // TODO: This is a hack. We should pass this at construction time but
-  // flatsurf::IntervalExchangeTransformation wants to exist independently of a
-  // FlowDecomposition. Maybe there should be several flavours of Lengths?
+  // This is a hack, see https://github.com/flatsurf/flatsurf/issues/152.
+  // Maybe the entire flatsurf::IntervalExchangeTransformation is a bit unfortunate actually.
   void registerDecomposition(std::shared_ptr<FlowDecompositionState<FlatTriangulation<T>>>);
 
   template <typename S>
