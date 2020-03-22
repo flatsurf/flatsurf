@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 #define LIBFLATSURF_SADDLE_CONNECTIONS_HPP
 
 #include <memory>
-#include <optional>
 
 #include <boost/iterator/iterator_facade.hpp>
 
@@ -38,6 +37,8 @@ class SaddleConnections {
   using T = typename Surface::Coordinate;
 
  public:
+  using Iterator = SaddleConnectionsIterator<Surface>;
+
   // All saddle connections on the surface starting at any vertex.
   SaddleConnections(const std::shared_ptr<const Surface> &, Bound searchRadius);
 
@@ -49,47 +50,15 @@ class SaddleConnections {
   // half edge (exclusive) in counter-clockwise order.
   SaddleConnections(const std::shared_ptr<const Surface> &, Bound searchRadius, HalfEdge sectorBegin);
 
-  class Iterator : public boost::iterator_facade<Iterator, const SaddleConnection<Surface>, boost::forward_traversal_tag> {
-    class Implementation;
-    spimpl::impl_ptr<Implementation> impl;
-
-    friend SaddleConnections;
-
-   public:
-    Iterator(spimpl::impl_ptr<Implementation> &&impl);
-
-    // Advance the iterator to the next saddle connection.
-    void increment();
-    // Advance the iterator to the next saddle connection or until a HalfEdge is
-    // being crossed during the search (in forward direction.) This can be useful
-    // if information about the exact path in the surface for a saddle connection
-    // needs to be reconstructed.
-    std::optional<HalfEdge> incrementWithCrossings();
-    bool equal(const Iterator &other) const;
-    const SaddleConnection<Surface> &dereference() const;
-
-    void skipSector(CCW sector);
-
-// Detect GCC (and skip clang/cling so we do not see warnings): https://stackoverflow.com/questions/38499462/how-to-tell-clang-to-stop-pretending-to-be-other-compilers
-#if defined(__GNUC__) && !defined(__llvm__)
-#pragma GCC diagnostic push
-// We cannot make the following operator a template: https://stackoverflow.com/questions/18823618/overload-operator-for-nested-class-template
-#pragma GCC diagnostic ignored "-Wnon-template-friend"
-#endif
-    friend std::ostream &operator<<(std::ostream &, const Iterator &);
-#if defined(__GNUC__) && !defined(__llvm__)
-#pragma GCC diagnostic pop
-#endif
-  };
-
-  Iterator begin() const;
-  Iterator end() const;
+  SaddleConnectionsIterator<Surface> begin() const;
+  SaddleConnectionsIterator<Surface> end() const;
 
   template <typename Surf>
   friend std::ostream &operator<<(std::ostream &, const SaddleConnections<Surf> &);
 
  private:
-  class Implementation;
+  using Implementation = ImplementationOf<SaddleConnections>;
+  friend Implementation;
   spimpl::impl_ptr<Implementation> impl;
 };
 

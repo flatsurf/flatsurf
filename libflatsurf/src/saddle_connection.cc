@@ -29,6 +29,7 @@
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
+#include "../flatsurf/saddle_connections_iterator.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertical.hpp"
 
