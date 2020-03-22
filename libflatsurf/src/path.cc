@@ -117,9 +117,8 @@ void Path<Surface>::splice(const PathIterator<Surface>& pos, Path& other) {
 
 template <typename Surface>
 void Path<Surface>::splice(const PathIterator<Surface>& pos, Path&& other) {
-  // TODO: Do this more efficiently.
-  Path tmp = other;
-  splice(pos, tmp);
+  // This could be done more efficiently if it shows up in the profiler.
+  splice(pos, other);
 }
 
 template <typename Surface>
