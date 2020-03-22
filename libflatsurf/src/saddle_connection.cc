@@ -178,7 +178,7 @@ std::vector<HalfEdge> SaddleConnection<Surface>::crossings() const {
   // We reconstruct the sequence of half edges that this saddle connection
   // crossed. This is expensive (but cheap in terms of the output size.) This
   // information seems to be essential to properly plot a saddle connection.
-  // TODO: Bound should be length of vector
+  // It would be good to use a finite bound instead, see https://github.com/flatsurf/flatsurf/issues/153
   auto reconstruction = SaddleConnections<Surface>(impl->surface, Bound(INT_MAX, 0), source());
   auto it = reconstruction.begin();
   while (*it != *this) {
@@ -266,22 +266,6 @@ void ImplementationOf<SaddleConnection<Surface>>::normalize() {
   const auto& vector = static_cast<const Vector<T>&>(chain);
   normalize(this->source, vector);
   normalize(this->target, -vector);
-}
-
-// TODO: Deleteme
-template <typename Surface>
-void ImplementationOf<SaddleConnection<Surface>>::check(const SaddleConnection& connection) {
-  // Run checks in constructor
-  assert([&]() {
-    SaddleConnection copy = connection;
-    return true;
-  }());
-
-  // Run expensive checks in crossings()
-  assert([&]() {
-    connection.crossings();
-    return true;
-  }());
 }
 
 }  // namespace flatsurf
