@@ -85,13 +85,18 @@ SaddleConnection<Surface> SaddleConnection<Surface>::inSector(std::shared_ptr<co
   CHECK_ARGUMENT(surface->inSector(source, vector), "Cannot search for " << vector << " next to " << source << " in " << *surface << "; that direction is not in the search sector");
 
   // It would be good to use a finite bound instead, see https://github.com/flatsurf/flatsurf/issues/153
-  auto reconstruction = SaddleConnections<Surface>(surface, Bound(INT_MAX, 0), source);
+  return reconstruct(surface, source, [&](const auto& it) {
+    return it->vector() == vector;
+  }, [&](const auto& it) {
+    return -it->vector().ccw(vector);
+  });
+}
+
+template <typename Surface>
+SaddleConnection<Surface> SaddleConnection<Surface>::reconstruct(std::shared_ptr<const Surface> surface, HalfEdge source, std::function<bool(const SaddleConnectionsIterator<Surface>&)> until, std::function<CCW(const SaddleConnectionsIterator<Surface>&)> skip, Bound bound) {
+  auto reconstruction = SaddleConnections<Surface>(surface, bound, source);
   auto it = reconstruction.begin();
-  for (; it->vector() != vector; it++) {
-    auto ccw = it->vector().ccw(vector);
-    ASSERT(ccw != CCW::COLLINEAR, "Searching for vector " << vector << " in sector " << source << " we hit a vertex at " << *it << " before we could reach the vector.");
-    it.skipSector(-ccw);
-  }
+  for (; !until(it); ++it) it.skipSector(skip(it));
   return *it;
 }
 
@@ -161,14 +166,11 @@ template <typename Surface>
 SaddleConnection<Surface> SaddleConnection<Surface>::inSector(std::shared_ptr<const Surface> surface, HalfEdge source, const Vertical<Surface>& direction) {
   CHECK_ARGUMENT(surface->inSector(source, direction.vertical()), "Cannot search in direction " << direction << " next to " << source << " in " << *surface << "; that direction is not in the search sector");
 
-  // TODO: Pull this reconstruction process out of the two inSector methods.
-  auto reconstruction = SaddleConnections<Surface>(surface, Bound(INT_MAX, 0), source);
-  auto it = reconstruction.begin();
-  for (; direction.perpendicular(it->vector()); it++) {
-    auto ccw = it->vector().ccw(direction.vertical());
-    it.skipSector(-ccw);
-  }
-  return *it;
+  return reconstruct(surface, source, [&](const auto& it) {
+    return !direction.perpendicular(it->vector());
+  }, [&](const auto& it) {
+    return -it->vector().ccw(direction.vertical());
+  });
 }
 
 template <typename Surface>
@@ -182,7 +184,7 @@ std::vector<HalfEdge> SaddleConnection<Surface>::crossings() const {
   auto reconstruction = SaddleConnections<Surface>(impl->surface, Bound(INT_MAX, 0), source());
   auto it = reconstruction.begin();
   while (*it != *this) {
-    auto ccw = it->vector().ccw(vector());
+    const auto ccw = it->vector().ccw(vector());
     ASSERT(ccw != CCW::COLLINEAR, "There cannot be another saddle connection in exactly the same direction as this one but in " << impl->surface << " at " << source() << " we found " << it->vector() << " which has the same direction as " << vector());
     it.skipSector(-ccw);
     while (true) {

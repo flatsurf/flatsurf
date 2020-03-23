@@ -28,6 +28,7 @@
 
 #include <gmpxx.h>
 
+#include "bound.hpp"
 #include "copyable.hpp"
 #include "half_edge.hpp"
 #include "serializable.hpp"
@@ -51,6 +52,7 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   static SaddleConnection<Surface> inPlane(std::shared_ptr<const Surface>, HalfEdge plane, const Vector<T> &);
   static SaddleConnection<Surface> alongVertical(std::shared_ptr<const Surface>, const Vertical<Surface> &direction, HalfEdge plane);
   static SaddleConnection<Surface> clockwise(const SaddleConnection &from, const Vector<T> &);
+  static SaddleConnection<Surface> reconstruct(std::shared_ptr<const Surface>, HalfEdge source, std::function<bool(const SaddleConnectionsIterator<Surface>&)> until, std::function<CCW(const SaddleConnectionsIterator<Surface>&)> skip, Bound = Bound(INT_MAX, 0));
 
   const Vector<T>& vector() const;
   const Chain<Surface>& chain() const;

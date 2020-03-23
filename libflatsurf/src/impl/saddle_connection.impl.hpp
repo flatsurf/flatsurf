@@ -36,8 +36,6 @@ class ImplementationOf<SaddleConnection<Surface>> {
   ImplementationOf(std::shared_ptr<const Surface> &surface, HalfEdge source, HalfEdge target, const Chain<Surface> &vector);
   ImplementationOf(std::shared_ptr<const Surface> &surface, HalfEdge e);
 
-  static void check(const SaddleConnection &);
-
   void normalize();
 
   std::shared_ptr<const Surface> surface;
