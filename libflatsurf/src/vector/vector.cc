@@ -117,6 +117,32 @@ class ImplementationOf<Vector<T>> : public Cartesian<T> {
     return *this;
   }
 
+  template <bool Enable = IsMPZ<T>, If<Enable> = true>
+  size_t hash() const {
+    return hash_combine(this->x.get_ui(), this->y.get_ui());
+  }
+
+  template <bool Enable = IsMPQ<T>, If<Enable> = true, typename = void>
+  size_t hash() const {
+    return hash_combine(this->x.get_num().get_ui(), this->x.get_den().get_ui(), this->y.get_num().get_ui(), this->y.get_den().get_ui());
+  }
+
+  template <bool Enable = IsEAntic<T>, If<Enable> = true, typename = void, typename = void>
+  size_t hash() const {
+    size_t ret = hash_combine(this->x.den().get_ui(), this->y.den().get_ui());
+    for (const auto& c : this->x.num_vector())
+      ret = hash_combine(ret, c.get_ui());
+    for (const auto& c : this->y.num_vector())
+      ret = hash_combine(ret, c.get_ui());
+    return ret;
+  }
+
+  // Delete this method once exactreal::Element is hashable, https://github.com/flatsurf/flatsurf/issues/154.
+  template <bool Enable = IsExactReal<T>, If<Enable> = true, typename = void, typename = void, typename = void>
+  size_t hash() const {
+    return hash_combine(this->x.floor().get_ui(), this->y.floor().get_ui());
+  }
+
   template <bool Enable = IsArb<T>, If<Enable> = true>
   std::optional<CCW> ccw(const flatsurf::Vector<exactreal::Arb>& rhs) const noexcept {
     const Arb a = (this->x * rhs.impl->y)(ARB_PRECISION_FAST);
@@ -248,10 +274,19 @@ namespace std {
 using namespace flatsurf;
 
 template <typename T>
-size_t hash<Vector<T>>::operator()(const Vector<T>&) const noexcept {
-  return 0;
-  // TODO: Teach coefficients how to hash.
-  // return hash_combine(self.x(), self.y());
+size_t hash<Vector<T>>::operator()(const Vector<T>& self) const noexcept {
+  using Implementation = typename Vector<T>::Implementation;
+  const Vector<T>& s = static_cast<const Vector<T>&>(self);
+
+  if constexpr (has_hash<Implementation>) {
+    return s.impl->hash();
+  } else if constexpr (is_forward_v<Implementation>) {
+    return std::hash<decltype(s.impl->vector)>{}(s.impl->vector);
+  } else if constexpr (is_cartesian_v<Implementation>) {
+    return hash_combine(s.x(), s.y());
+  } else {
+    static_assert(false_type_v<Implementation>, "Implementation is missing hash().");
+  }
 }
 
 }  // namespace std

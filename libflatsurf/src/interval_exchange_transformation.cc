@@ -64,7 +64,6 @@ IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(std::sha
 
     vector<HalfEdge> top, bottom;
 
-    // TODO: Can we use ContourComponent directly instead?
     ImplementationOf<ContourComponent<Surface>>::makeContour(back_inserter(top), large, *surface, Vertical(surface, vertical));
 
     ImplementationOf<ContourComponent<Surface>>::makeContour(back_inserter(bottom), -large, *surface, Vertical(surface, -vertical));

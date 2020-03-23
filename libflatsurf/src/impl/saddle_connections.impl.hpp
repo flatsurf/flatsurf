@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,32 +17,24 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_SADDLE_CONNECTION_IMPL_HPP
-#define LIBFLATSURF_SADDLE_CONNECTION_IMPL_HPP
+#ifndef LIBFLATSURF_SADDLE_CONNECTIONS_IMPL_HPP
+#define LIBFLATSURF_SADDLE_CONNECTIONS_IMPL_HPP
 
-#include "../../flatsurf/chain.hpp"
-#include "../../flatsurf/flat_triangulation.hpp"
-#include "../../flatsurf/flat_triangulation_collapsed.hpp"
-#include "../../flatsurf/saddle_connection.hpp"
+#include "../../flatsurf/saddle_connections.hpp"
+#include "../../flatsurf/bound.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-class ImplementationOf<SaddleConnection<Surface>> {
-  using SaddleConnection = flatsurf::SaddleConnection<Surface>;
-  using T = typename Surface::Coordinate;
-
+class ImplementationOf<SaddleConnections<Surface>> {
  public:
-  ImplementationOf(std::shared_ptr<const Surface> &surface, HalfEdge source, HalfEdge target, const Chain<Surface> &vector);
-  ImplementationOf(std::shared_ptr<const Surface> &surface, HalfEdge e);
-
-  void normalize();
+  ImplementationOf(std::shared_ptr<const Surface>, Bound, const std::vector<HalfEdge>&);
 
   std::shared_ptr<const Surface> surface;
-  HalfEdge source;
-  HalfEdge target;
-  Chain<Surface> chain;
+  Bound bound;
+  std::vector<HalfEdge> sectors;
 };
 
-}  // namespace flatsurf
+}
+
 #endif

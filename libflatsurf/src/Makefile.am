@@ -36,6 +36,7 @@ libflatsurf_la_SOURCES =                                            \
 	permutation.cc                                              \
 	saddle_connection.cc                                        \
 	saddle_connections.cc                                       \
+	saddle_connections_iterator.cc                              \
 	tracked.cc                                                  \
 	vector/vector.cc                                            \
 	vertex.cc                                                   \

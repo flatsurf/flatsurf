@@ -29,6 +29,7 @@
 #include "../external/catch2/single_include/catch2/catch.hpp"
 
 #include "../../flatsurf/saddle_connections.hpp"
+#include "../../flatsurf/saddle_connections_iterator.hpp"
 #include "../../flatsurf/bound.hpp"
 
 namespace flatsurf::test {

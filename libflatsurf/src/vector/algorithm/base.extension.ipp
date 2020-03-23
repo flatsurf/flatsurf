@@ -36,6 +36,11 @@ template <typename Implementation>
 static constexpr bool has_ostream_lshift = boost::is_detected_v<ostream_lshift_t, const Implementation>;
 
 template <typename Implementation>
+using hash_t = decltype(std::declval<const Implementation>().hash());
+template <typename Implementation>
+static constexpr bool has_hash = boost::is_detected_exact_v<size_t, hash_t, Implementation>;
+
+template <typename Implementation>
 using vector_arb_t = decltype(static_cast<flatsurf::Vector<exactreal::Arb>>(std::declval<const Implementation&>()));
 template <typename Implementation>
 static constexpr bool has_vector_arb = boost::is_detected_v<vector_arb_t, Implementation>;

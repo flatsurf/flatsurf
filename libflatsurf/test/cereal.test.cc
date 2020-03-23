@@ -23,12 +23,8 @@
 
 #include "external/catch2/single_include/catch2/catch.hpp"
 
-// TODO: This is not a good idea as it reports warnings from there as ours as
-// it ignores isystem.
 #include "external/cereal/include/cereal/archives/json.hpp"
 
-// TODO: Change all includes in the tests to this format so editors do not need
-// compile commands to figure out include paths.
 #include "../flatsurf/cereal.hpp"
 
 #include "cereal.helpers.hpp"
