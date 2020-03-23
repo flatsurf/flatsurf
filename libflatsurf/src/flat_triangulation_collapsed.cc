@@ -104,10 +104,10 @@ bool FlatTriangulationCollapsed<T>::inSector(HalfEdge sector, const Vertical<Fla
 }
 
 template <typename T>
-mpz_class relativeLength(const Vector<T>& divident, const Vector<T>& divisor) {
+mpz_class relativeCost(const Vector<T>& divident, const Vector<T>& divisor) {
   const auto abs = [](const auto& x) { return x < 0 ? -x : x; };
 
-  return gmpxxll::mpz_class(::intervalxt::sample::Arithmetic<T>::floorDivision(abs(divident * divisor), divisor * divisor));
+ return gmpxxll::mpz_class(::intervalxt::sample::Arithmetic<T>::floorDivision(divident * divident, abs(divident * divisor)));
 }
 
 template <typename T>
@@ -128,7 +128,7 @@ void FlatTriangulationCollapsed<T>::flip(HalfEdge e) {
     // the shortest vector in direction of e instead.
     const auto connection = fromEdge(e);
 
-    if (!cost.pay(relativeLength(static_cast<const Vector<T>&>(connection), impl->original->shortest(connection)) + 1)) return;
+    if (!cost.pay(relativeCost(connection.vector(), impl->original->shortest(connection)) + 1)) return;
 
     ASSERT(connection == SaddleConnection::inSector(impl->original, connection.source(), connection),
       "Edges of Triangulation inconsistent after flip. The half edge " << e << " in the collapsed surface " << *this << " claims to correspond to the " << fromEdge(e) << ", however, there is no such saddle connection in the original surface " << *impl->original << ".");
@@ -168,7 +168,7 @@ std::pair<HalfEdge, HalfEdge> FlatTriangulationCollapsed<T>::collapse(HalfEdge e
 
     for (auto halfEdge : {ret.first, ret.second}) {
       const auto connection = fromEdge(halfEdge);
-      if (!cost.pay(relativeLength(static_cast<const Vector<T>&>(connection), impl->original->shortest(connection)) + 1)) return true;
+      if (!cost.pay(relativeCost(static_cast<const Vector<T>&>(connection), impl->original->shortest(connection)) + 1)) return true;
       const auto reconstruction = SaddleConnection::inSector(impl->original, connection.source(), connection);
       ASSERT(connection == reconstruction, "Edges of Triangulation inconsistent after collapse. The half edge " << e << " in the collapsed surface " << *this << " claims to correspond to the " << connection << ", however, there is no such saddle connection in the original surface " << *impl->original << " instead it should probably be " << reconstruction);
     }

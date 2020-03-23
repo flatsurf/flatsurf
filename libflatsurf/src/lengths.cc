@@ -178,11 +178,11 @@ void Lengths<Surface>::subtract(Label minuend) {
         return x < 0 ? -x : x;
       };
 
-      const auto relativeLength = [&](const Vector<T>& divident, const Vector<T>& divisor) -> mpz_class {
-        return gmpxxll::mpz_class(::intervalxt::sample::Arithmetic<T>::floorDivision(abs(divident * divisor), divisor * divisor));
+      const auto relativeCost = [&](const Vector<T>& divident, const Vector<T>& divisor) -> mpz_class {
+        return gmpxxll::mpz_class(::intervalxt::sample::Arithmetic<T>::floorDivision(divident * divident, abs(divident * divisor)));
       };
 
-      if (!cost.pay(relativeLength(static_cast<const Vector<T>&>(*minuendConnection), minuendConnection->surface().shortest(*minuendConnection)) + 1)) return;
+      if (!cost.pay(relativeCost(static_cast<const Vector<T>&>(*minuendConnection), minuendConnection->surface().shortest(*minuendConnection)) + 1)) return;
 
       const auto reconstruction = SaddleConnection<FlatTriangulation<T>>::inSector(minuendConnection->surface().shared_from_this(), minuendConnection->source(), *minuendConnection);
       ASSERT(*minuendConnection == reconstruction,
