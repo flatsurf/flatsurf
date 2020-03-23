@@ -34,7 +34,8 @@ def test_unfold_triangle():
     S = sage_flatsurf.similarity_surfaces.billiard(T)
     S = S.minimal_cover(cover_type="translation")
 
-    # TODO: Make this a method in sage_flatsurf_conversion.py
+    # The following should be a library method instead. Probably these will be
+    # introduced with https://github.com/flatsurf/flatsurf/pull/138.
 
     # Map sage-flatsurf's (face, id) to flatsurf.HalfEdge 
     edges = {}
