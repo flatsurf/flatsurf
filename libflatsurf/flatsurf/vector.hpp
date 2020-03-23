@@ -51,6 +51,7 @@ class Vector : public std::conditional_t<std::is_same_v<T, exactreal::Arb>, deta
   friend detail::VectorExact<Vector<T>, T>;
   friend detail::VectorWithError<Vector<T>>;
   friend detail::VectorBase<Vector<T>>;
+  friend std::hash<Vector<T>>;
 
   friend cereal::access;
   template <typename Archive>

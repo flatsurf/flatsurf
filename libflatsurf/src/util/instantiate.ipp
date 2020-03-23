@@ -29,7 +29,6 @@
 #include <e-antic/renfxx.h>
 #include <gmpxx.h>
 #include <exact-real/element.hpp>
-// TODO: Forward declarations should be good enough here; probably something we should change in exactreal.
 #include <exact-real/integer_ring.hpp>
 #include <exact-real/number_field.hpp>
 #include <exact-real/rational_field.hpp>

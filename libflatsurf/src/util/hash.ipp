@@ -40,7 +40,6 @@ inline size_t hash_combine(const T& t) {
   return std::hash<T>()(t);
 }
 
-// TODO: Test this
 template <typename S, typename T, typename... Args>
 inline size_t hash_combine(const S& s, const T& t, const Args&... args) {
   if constexpr (std::is_same_v<size_t, uint64_t>) {
