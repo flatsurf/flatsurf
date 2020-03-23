@@ -36,6 +36,7 @@
 #include "../flatsurf/vertical.hpp"
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
+#include "external/gmpxxll/gmpxxll/mpz_class.hpp"
 
 #include "impl/flow_component.impl.hpp"
 #include "impl/flow_connection.impl.hpp"
@@ -178,7 +179,7 @@ void Lengths<Surface>::subtract(Label minuend) {
       };
 
       const auto relativeLength = [&](const Vector<T>& divident, const Vector<T>& divisor) -> mpz_class {
-        return sqrt(::intervalxt::sample::Arithmetic<T>::floorDivision((divident * divident) * (divident * divident), abs(divisor * divident)));
+        return gmpxxll::mpz_class(::intervalxt::sample::Arithmetic<T>::floorDivision(abs(divident * divisor), divisor * divisor));
       };
 
       if (!cost.pay(relativeLength(static_cast<const Vector<T>&>(*minuendConnection), minuendConnection->surface().shortest(*minuendConnection)) + 1)) return;

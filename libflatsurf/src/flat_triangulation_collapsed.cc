@@ -107,7 +107,7 @@ template <typename T>
 mpz_class relativeLength(const Vector<T>& divident, const Vector<T>& divisor) {
   const auto abs = [](const auto& x) { return x < 0 ? -x : x; };
 
-  return sqrt(::intervalxt::sample::Arithmetic<T>::floorDivision((divident * divident) * (divident * divident), abs(divisor * divident)));
+  return gmpxxll::mpz_class(::intervalxt::sample::Arithmetic<T>::floorDivision(abs(divident * divisor), divisor * divisor));
 }
 
 template <typename T>
