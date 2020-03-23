@@ -51,8 +51,7 @@ def test_L_with_slit_mpq():
     surface = surfaces.L(R2)
     slit = R2(mpq(5, 3), mpq(4, 3))
     e = flatsurf.HalfEdge(1)
-    # TODO: Patch the Python wrapper of FlatTriangulation instead of having to call this explicitly.
-    surface = cppyy.gbl.flatsurf.insertAt(surface, e, slit)
+    surface = surface.insertAt(e, slit)
     assert e != flatsurf.HalfEdge(1), "HalfEdge& not updated correctly in " + repr(surface)
     e = surface.nextAtVertex(e)
     surface = cppyy.gbl.flatsurf.slot(surface, e)

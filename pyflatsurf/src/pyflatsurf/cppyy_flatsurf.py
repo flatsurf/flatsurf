@@ -24,7 +24,7 @@ from cppyy.gbl import std
 from pyexactreal import exactreal
 from pyexactreal.cppyy_exactreal import enable_arithmetic, pretty_print, add_pythonization
 
-from .pythonization import enable_iterable, enable_vector_print, add_saddle_connections, enable_hash
+from .pythonization import enable_iterable, enable_vector_print, add_saddle_connections, enable_hash, share_unique_ptr
 
 from cppyythonizations.pickling.cereal import enable_cereal
 
@@ -42,6 +42,7 @@ cppyy.py.add_pythonization(enable_iterable, "flatsurf")
 add_pythonization(enable_arithmetic, "flatsurf", lambda proxy, name: name.startswith("Vector<"))
 cppyy.py.add_pythonization(pretty_print, "flatsurf")
 cppyy.py.add_pythonization(enable_hash, "flatsurf")
+cppyy.py.add_pythonization(share_unique_ptr, "flatsurf")
 cppyy.py.add_pythonization(enable_vector_print, "flatsurf")
 cppyy.py.add_pythonization(add_saddle_connections, "flatsurf")
 cppyy.py.add_pythonization(lambda proxy, name: enable_cereal(proxy, name, ["flatsurf/cereal.hpp"]), "flatsurf")
