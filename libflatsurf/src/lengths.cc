@@ -120,7 +120,7 @@ void Lengths<Surface>::subtract(Label minuend) {
 
     // Walk down on the minuend's left boundary
     {
-      // TODO: Annoyingly, left() is oriented from bottom to top so we need to reverse.
+      // left() is oriented from bottom to top so we need to reverse. This should probably be changed.
       for (const auto& connection : flow(begin(minuendContour)->left() | rx::reverse() | rx::to_vector(), !minuendOnTop)) {
         walk += connection;
         target = connection.target();
@@ -146,7 +146,7 @@ void Lengths<Surface>::subtract(Label minuend) {
 
     // The tricky part is now to figure out the actual source/target sector of
     // the updated SaddleConnection.
-    // TODO: This should all be done somewhat automatically by SaddleConnection.
+    // This should probably be moved into SaddleConnection at some point.
 
     ASSERT(vertical->perpendicular(vector) < 0, "Length must be positive.");
 
@@ -169,7 +169,8 @@ void Lengths<Surface>::subtract(Label minuend) {
     ASSERT(minuendConnection->source() == target && minuendConnection->target() == source, "We tried to get SaddleConnection source/target right but SaddleConnection consturctor disagrees.");
 
     ASSERTIONS([&]() {
-      // TODO: I am doing essentially the same in flat_triangulation_collapsed.cc. Consolidate these.
+      // A very similar bit of code lives in FlatTriangulationCollapsed. We
+      // might want to consolidate these when we touch this code again.
       static Amortized cost;
 
       const auto abs = [](const auto& x) {
@@ -202,29 +203,7 @@ void Lengths<Surface>::registerDecomposition(std::shared_ptr<FlowDecompositionSt
 
 template <typename Surface>
 Label Lengths<Surface>::subtractRepeated(Label minuend) {
-  /*
-  // TODO: The following is *not* correct. The geometry changes after the first subtraction.
-  // TODO: This should be properly accelerated.
-  auto stack = this->stack;
-  subtract(minuend);
-  Label last = stack.back();
-  while(true) {
-    for (auto l : stack) {
-      push(l);
-      if (cmp(minuend) >= 0) {
-        pop();
-        if (length())
-          subtract(minuend);
-        return last;
-      } else {
-        last = l;
-      }
-    }
-
-    subtract(minuend);
-  }
-  */
-
+  // This should be optimized, see https://github.com/flatsurf/flatsurf/issues/155.
   auto ret = stack.back();
   subtract(minuend);
   return ret;
@@ -234,9 +213,6 @@ template <typename Surface>
 std::vector<mpq_class> Lengths<Surface>::coefficients(Label label) const {
   auto coefficients = intervalxt::sample::Arithmetic<T>::coefficients(length(label));
   if (coefficients.size() == 0 || coefficients.size() == 1) {
-    // TODO: We are assuming that 0/1 lengths means zero/rational. Is that
-    // sane? Probably, yes, but we should assert somewhere else…
-    // It's also really weird that we call this from the constructor.
     while (coefficients.size() < degree)
       coefficients.emplace_back();
   }
