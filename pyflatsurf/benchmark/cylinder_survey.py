@@ -20,8 +20,6 @@
 #  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
-# TODO: Turn parts of this into a benchmark
-
 import argparse
 
 import cppyy
