@@ -63,18 +63,18 @@ template <typename T>
 Vector<T> FlatTriangulation<T>::shortest(const Vector<T> &direction) const {
   const auto edges = this->edges();
   Edge shortest = *std::min_element(begin(edges), end(edges), [&](const auto &a, const auto &b) {
-    const Vector<T> x = fromEdge(a.positive());
-    const Vector<T> y = fromEdge(b.positive());
+    const Vector<T> av = fromEdge(a.positive());
+    const Vector<T> bv = fromEdge(b.positive());
 
-    const auto xlen = x * direction;
-    const auto ylen = y * direction;
+    const auto alen = av * direction;
+    const auto blen = bv * direction;
 
-    if (!xlen) return false;
-    if (!ylen) return true;
+    if (!alen) return false;
+    if (!blen) return true;
 
     const auto abs = [](const auto& x) { return x < 0 ? -x : x; };
 
-    return abs(xlen) < abs(ylen);
+    return abs(alen) < abs(blen);
   });
   return fromEdge(shortest.positive());
 }

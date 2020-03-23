@@ -39,6 +39,7 @@
 #include "permutation.hpp"
 #include "saddle_connection.hpp"
 #include "saddle_connections.hpp"
+#include "saddle_connections_iterator.hpp"
 #include "vector.hpp"
 #include "vertex.hpp"
 #include "vertical.hpp"

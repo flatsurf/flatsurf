@@ -65,3 +65,15 @@ def add_saddle_connections(proxy, name):
         def saddle_connections(self, *args):
             return cppyy.gbl.flatsurf.SaddleConnections[type(self)](self, *args)
         proxy.saddle_connections = saddle_connections
+
+def share_unique_ptr(proxy, name):
+    if name.startswith("FlatTriangulation<"):
+        # cppyy gets the lifetime of the surfaces wrong when methods return a unique_ptr<Surface>
+        # See https://github.com/flatsurf/flatsurf/issues/148 for the upstream issue.
+        def insertAt(self, *args):
+            return cppyy.gbl.flatsurf.insertAt(self, *args)
+        proxy.insertAt = insertAt
+
+        def slot(self, *args):
+            return cppyy.gbl.flatsurf.slot(self, *args)
+        proxy.slot = slot
