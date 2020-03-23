@@ -47,13 +47,18 @@ if gcd([a, b, c, d]) != 1:
 def sample_lengths(E):
     L = E.lengths_polytope()
     r1, r2 = [v.vector() for v in L.rays()]
+    S = set()
     for i in range(4):
         if r1[i] == 0:
             continue
         for j in range(4):
             if r2[j] == 0:
                 continue
-            yield r1 / r1[i] + r2 / r2[j]
+            r = r1 / r1[i] + r2 / r2[j]
+            r /= r[0]
+            r.set_immutable()
+            S.add(r)
+    return S
 
 for q in Permutations(args.angles):
     if q[0] != d:
