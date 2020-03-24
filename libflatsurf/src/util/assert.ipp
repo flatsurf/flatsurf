@@ -27,8 +27,8 @@
 #include <sstream>
 #endif
 
-#include <boost/preprocessor/stringize.hpp>
 #include <boost/config.hpp>
+#include <boost/preprocessor/stringize.hpp>
 
 #define ASSERT_(CONDITION, EXCEPTION, MESSAGE)                                \
   while (BOOST_UNLIKELY(not(CONDITION))) {                                    \
@@ -57,7 +57,8 @@
 #define ASSERT_ARGUMENT_(CONDITION) CHECK_ARGUMENT_(true || (CONDITION))
 #define ASSERT_ARGUMENT(CONDITION, MESSAGE) CHECK_ARGUMENT(true || (CONDITION), MESSAGE)
 #define ASSERT(CONDITION, MESSAGE) ASSERT_(true || (CONDITION), std::logic_error, MESSAGE)
-#define ASSERTIONS(LAMBDA) while(false) LAMBDA()
+#define ASSERTIONS(LAMBDA) \
+  while (false) LAMBDA()
 #define UNREACHABLE(MESSAGE) ASSERT_(false, std::logic_error, MESSAGE)
 
 #else

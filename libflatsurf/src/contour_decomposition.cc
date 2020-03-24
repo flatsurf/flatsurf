@@ -104,52 +104,75 @@ void ImplementationOf<ContourDecomposition<Surface>>::check(const std::vector<Pa
     // Total angle at each vertex in multiples of π/2
     std::unordered_map<Vertex, int> totalAngle;
 
-    enum CLASSIFICATION { TOP, BOTTOM, LEFT, RIGHT };
+    enum CLASSIFICATION { TOP,
+      BOTTOM,
+      LEFT,
+      RIGHT };
 
     const auto classify = [&](const auto& connection) {
-      if (vertical.perpendicular(connection) == 0) { 
-        if (vertical.parallel(connection) > 0) return RIGHT;
-        else return LEFT;
+      if (vertical.perpendicular(connection) == 0) {
+        if (vertical.parallel(connection) > 0)
+          return RIGHT;
+        else
+          return LEFT;
       } else {
-        if (vertical.perpendicular(connection) > 0) return BOTTOM;
-        else return TOP;
+        if (vertical.perpendicular(connection) > 0)
+          return BOTTOM;
+        else
+          return TOP;
       }
     };
 
     const auto angle = [&](const auto& self, const auto& next) {
-      switch(classify(self)) {
+      switch (classify(self)) {
         case TOP:
-          switch(classify(next)) {
-            case TOP: return 2;
-            case BOTTOM: return 0;
-            case LEFT: return 1;
-            case RIGHT: return 3;
+          switch (classify(next)) {
+            case TOP:
+              return 2;
+            case BOTTOM:
+              return 0;
+            case LEFT:
+              return 1;
+            case RIGHT:
+              return 3;
           }
         case BOTTOM:
-          switch(classify(next)) {
-            case TOP: return 0;
-            case BOTTOM: return 2;
-            case LEFT: return 3;
-            case RIGHT: return 1;
+          switch (classify(next)) {
+            case TOP:
+              return 0;
+            case BOTTOM:
+              return 2;
+            case LEFT:
+              return 3;
+            case RIGHT:
+              return 1;
           }
         case LEFT:
-          switch(classify(next)) {
-            case TOP: return 3;
-            case BOTTOM: return 1;
-            case LEFT: return 2;
-            case RIGHT: return 4;
+          switch (classify(next)) {
+            case TOP:
+              return 3;
+            case BOTTOM:
+              return 1;
+            case LEFT:
+              return 2;
+            case RIGHT:
+              return 4;
           }
         case RIGHT:
-          switch(classify(next)) {
-            case TOP: return 1;
-            case BOTTOM: return 3;
-            case LEFT: return 4;
-            case RIGHT: return 2;
+          switch (classify(next)) {
+            case TOP:
+              return 1;
+            case BOTTOM:
+              return 3;
+            case LEFT:
+              return 4;
+            case RIGHT:
+              return 2;
           }
       }
       throw std::logic_error("impossible classification");
     };
-      
+
     for (auto& component : decomposition) {
       auto connection = begin(component);
       auto nextConnection = begin(component);
@@ -160,16 +183,18 @@ void ImplementationOf<ContourDecomposition<Surface>>::check(const std::vector<Pa
 
         ++connection;
         ++nextConnection;
-      } while(connection != begin(component));
+      } while (connection != begin(component));
     }
 
     for (const auto vertex : surface->vertices()) {
       CHECK(totalAngle[vertex] != 0, "All marked vertices must still be present in decomposition but " << vertex << " was not found anywhere on the perimeters " << fmt::format("[{}]", fmt::join(decomposition, ", ")));
       const auto formatAngle = [](const int angle) {
-        if (angle % 2) return fmt::format("{}·π/2", angle);
-        else return fmt::format("{}π", angle/2);
+        if (angle % 2)
+          return fmt::format("{}·π/2", angle);
+        else
+          return fmt::format("{}π", angle / 2);
       };
-      CHECK(totalAngle[vertex] == 4*surface->angle(vertex), "Total angle at each vertex must not change in decomposition but " << vertex << " has angle " << formatAngle(totalAngle[vertex]) << " in decomposition [" << fmt::format("[{}]", fmt::join(decomposition, ", ")) << "] with vertical " << vertical << " but had angle " << formatAngle(surface->angle(vertex)*4) << " in surface originally.");
+      CHECK(totalAngle[vertex] == 4 * surface->angle(vertex), "Total angle at each vertex must not change in decomposition but " << vertex << " has angle " << formatAngle(totalAngle[vertex]) << " in decomposition [" << fmt::format("[{}]", fmt::join(decomposition, ", ")) << "] with vertical " << vertical << " but had angle " << formatAngle(surface->angle(vertex) * 4) << " in surface originally.");
     }
   }
 

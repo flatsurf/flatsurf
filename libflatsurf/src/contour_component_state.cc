@@ -17,17 +17,17 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <unordered_set>
 #include <ostream>
+#include <unordered_set>
 
 #include <fmt/format.h>
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
-#include "../flatsurf/half_edge.hpp"
-#include "../flatsurf/vertical.hpp"
-#include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/fmt.hpp"
+#include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/vertical.hpp"
 
 #include "impl/contour_component.impl.hpp"
 #include "impl/contour_component_state.hpp"
@@ -74,7 +74,7 @@ std::ostream& operator<<(std::ostream& os, const ContourComponentState<Surface>&
   return os << fmt::format("[{}]", fmt::join(self.halfEdges, ", "));
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

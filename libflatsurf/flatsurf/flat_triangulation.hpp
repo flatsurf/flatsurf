@@ -79,7 +79,7 @@ class FlatTriangulation : public FlatTriangulationCombinatorial,
   T area() const;
 
   // Return the total angle at this vertex as a multiple of 2π.
-  int angle(const Vertex&) const;
+  int angle(const Vertex &) const;
 
   // Return whether the vector is in the sector counterclockwise next to the
   // half edge (including the half edge but not including the following half

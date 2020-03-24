@@ -22,8 +22,8 @@
 
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
 
-#include "../../flatsurf/half_edge_set_iterator.hpp"
 #include "../../flatsurf/half_edge.hpp"
+#include "../../flatsurf/half_edge_set_iterator.hpp"
 
 #include "indexed_set.hpp"
 #include "indexed_set_iterator.hpp"
@@ -38,6 +38,6 @@ class ImplementationOf<EdgeSetIterator> : public IndexedSetIterator<Edge> {
   ImplementationOf(IndexedSetIterator<Edge>&&);
 };
 
-}
+}  // namespace flatsurf
 
 #endif

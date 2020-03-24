@@ -18,8 +18,8 @@
  *********************************************************************/
 
 #include <ostream>
-#include <unordered_set>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include <fmt/format.h>
@@ -48,9 +48,9 @@
 #include "../flatsurf/vertex.hpp"
 #include "../flatsurf/vertical.hpp"
 
-#include "impl/flat_triangulation_collapsed.impl.hpp"
 #include "impl/collapsed_half_edge.hpp"
 #include "impl/flat_triangulation.impl.hpp"
+#include "impl/flat_triangulation_collapsed.impl.hpp"
 #include "impl/saddle_connection.impl.hpp"
 
 #include "util/assert.ipp"
@@ -107,7 +107,7 @@ template <typename T>
 mpz_class relativeCost(const Vector<T>& divident, const Vector<T>& divisor) {
   const auto abs = [](const auto& x) { return x < 0 ? -x : x; };
 
- return gmpxxll::mpz_class(::intervalxt::sample::Arithmetic<T>::floorDivision(divident * divident, abs(divident * divisor)));
+  return gmpxxll::mpz_class(::intervalxt::sample::Arithmetic<T>::floorDivision(divident * divident, abs(divident * divisor)));
 }
 
 template <typename T>
@@ -131,7 +131,7 @@ void FlatTriangulationCollapsed<T>::flip(HalfEdge e) {
     if (!cost.pay(relativeCost(connection.vector(), impl->original->shortest(connection)) + 1)) return;
 
     ASSERT(connection == SaddleConnection::inSector(impl->original, connection.source(), connection),
-      "Edges of Triangulation inconsistent after flip. The half edge " << e << " in the collapsed surface " << *this << " claims to correspond to the " << fromEdge(e) << ", however, there is no such saddle connection in the original surface " << *impl->original << ".");
+        "Edges of Triangulation inconsistent after flip. The half edge " << e << " in the collapsed surface " << *this << " claims to correspond to the " << fromEdge(e) << ", however, there is no such saddle connection in the original surface " << *impl->original << ".");
   });
   ASSERTIONS(([&]() {
     std::unordered_map<Vertex, int> vertices;
@@ -142,7 +142,7 @@ void FlatTriangulationCollapsed<T>::flip(HalfEdge e) {
       const auto& connection = fromEdge(halfEdge);
       vertices[Vertex::source(connection.source(), *uncollapsed())]++;
 
-      for (auto& collapsed: cross(halfEdge))
+      for (auto& collapsed : cross(halfEdge))
         vertices[Vertex::source(collapsed.source(), *uncollapsed())]++;
     }
 
@@ -183,7 +183,7 @@ std::pair<HalfEdge, HalfEdge> FlatTriangulationCollapsed<T>::collapse(HalfEdge e
       const auto& connection = fromEdge(halfEdge);
       vertices[Vertex::source(connection.source(), *uncollapsed())]++;
 
-      for (auto& collapsed: cross(halfEdge))
+      for (auto& collapsed : cross(halfEdge))
         vertices[Vertex::source(collapsed.source(), *uncollapsed())]++;
     }
 
@@ -301,7 +301,7 @@ T ImplementationOf<FlatTriangulationCollapsed<T>>::area(const FlatTriangulationC
     // Do not count triangles three times.
     if (e.index() > self.nextInFace(e).index()) continue;
     if (e.index() > self.previousInFace(e).index()) continue;
-    
+
     area += Vector<T>::area({self.fromEdge(e), self.fromEdge(self.nextInFace(e)), self.fromEdge(self.previousInFace(e))});
   }
 

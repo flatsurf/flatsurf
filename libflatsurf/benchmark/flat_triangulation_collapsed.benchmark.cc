@@ -21,8 +21,8 @@
 #include <benchmark/benchmark.h>
 #include <memory>
 
-#include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/flat_triangulation_collapsed.hpp"
+#include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/vertical.hpp"
 
 #include "surfaces.hpp"
@@ -45,7 +45,7 @@ void FlatTriangulationCollapsedFlipUncollapsed(State& state) {
 
   for (auto _ : state) {
     for (auto e : collapsedL->halfEdges())
-      if (vertical.large(e)){
+      if (vertical.large(e)) {
         collapsedL->flip(e);
         break;
       }
@@ -60,7 +60,7 @@ BENCHMARK_TEMPLATE(FlatTriangulationCollapsedFlipUncollapsed, Vector<exactreal::
 
 template <typename R2>
 void FlatTriangulationCollapsedFlipCollapsed(State& state) {
-  while(state.KeepRunning()) {
+  while (state.KeepRunning()) {
     state.PauseTiming();
 
     using T = typename R2::Coordinate;
@@ -71,8 +71,8 @@ void FlatTriangulationCollapsedFlipCollapsed(State& state) {
 
     assert(collapsedL->size() == 9);
 
-    while(collapsedL->size() == 9) {
-      for (auto e : { HalfEdge(7), HalfEdge(8) }) {
+    while (collapsedL->size() == 9) {
+      for (auto e : {HalfEdge(7), HalfEdge(8)}) {
         if (vertical.large(e)) {
           collapsedL->flip(e);
           break;
@@ -83,11 +83,11 @@ void FlatTriangulationCollapsedFlipCollapsed(State& state) {
     assert(collapsedL->size() == 6);
 
     state.ResumeTiming();
-    while(state.KeepRunning()) {
+    while (state.KeepRunning()) {
       if (collapsedL->size() != 6) break;
       for (auto e : collapsedL->halfEdges()) {
         if (collapsedL->nextInFace(collapsedL->nextInFace(collapsedL->nextInFace(e))) != e) continue;
-        if (vertical.large(e)){
+        if (vertical.large(e)) {
           collapsedL->flip(e);
           break;
         }
@@ -101,5 +101,3 @@ BENCHMARK_TEMPLATE(FlatTriangulationCollapsedFlipCollapsed, Vector<eantic::renf_
 BENCHMARK_TEMPLATE(FlatTriangulationCollapsedFlipCollapsed, Vector<exactreal::Element<exactreal::IntegerRing>>);
 
 }  // namespace flatsurf::benchmark
-
-

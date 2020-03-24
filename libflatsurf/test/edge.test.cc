@@ -27,7 +27,7 @@ namespace flatsurf::test {
 
 TEST_CASE("Edge Basics", "[edge]") {
   const int id = GENERATE(range(1, 1024));
-  
+
   const Edge e(id);
 
   REQUIRE(e == Edge(id));
@@ -38,4 +38,4 @@ TEST_CASE("Edge Basics", "[edge]") {
   REQUIRE(Edge::fromIndex(e.index()) == e);
 }
 
-}
+}  // namespace flatsurf::test

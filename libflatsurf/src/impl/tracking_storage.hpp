@@ -21,8 +21,8 @@
 #define LIBFLATSURF_TRACKING_STORAGE_HPP
 
 #include <functional>
-#include <unordered_map>
 #include <type_traits>
+#include <unordered_map>
 #include <vector>
 
 #include <boost/operators.hpp>

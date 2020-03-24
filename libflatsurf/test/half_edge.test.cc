@@ -26,7 +26,7 @@ namespace flatsurf::test {
 
 TEST_CASE("HalfEdge Basics", "[half_edge]") {
   const int id = GENERATE(range(-1024, 1024));
-  
+
   if (id == 0) return;
 
   const HalfEdge e(id);
@@ -39,4 +39,4 @@ TEST_CASE("HalfEdge Basics", "[half_edge]") {
   REQUIRE(HalfEdge::fromIndex(e.index()) == e);
 }
 
-}
+}  // namespace flatsurf::test

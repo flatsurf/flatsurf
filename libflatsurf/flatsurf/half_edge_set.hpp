@@ -65,6 +65,6 @@ HalfEdgeSetIterator begin(const HalfEdgeSet&);
 
 HalfEdgeSetIterator end(const HalfEdgeSet&);
 
-}
+}  // namespace flatsurf
 
 #endif

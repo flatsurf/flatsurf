@@ -34,11 +34,12 @@ namespace flatsurf {
 class Vertex : Serializable<Vertex>,
                boost::equality_comparable<Vertex> {
   // Vertex cannot be created directly; use source() and target() instead.
-  template <typename ...Args> Vertex(PrivateConstructor, Args&&...);
+  template <typename... Args>
+  Vertex(PrivateConstructor, Args &&...);
 
  public:
-  static const Vertex& source(const HalfEdge &, const FlatTriangulationCombinatorial &);
-  static const Vertex& target(const HalfEdge &, const FlatTriangulationCombinatorial &);
+  static const Vertex &source(const HalfEdge &, const FlatTriangulationCombinatorial &);
+  static const Vertex &target(const HalfEdge &, const FlatTriangulationCombinatorial &);
 
   HalfEdgeSet outgoing() const;
   HalfEdgeSet incoming() const;

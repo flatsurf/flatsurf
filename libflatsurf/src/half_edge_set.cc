@@ -21,11 +21,11 @@
 
 #include <fmt/format.h>
 
-#include "../flatsurf/half_edge_set.hpp"
-#include "../flatsurf/half_edge.hpp"
-#include "../flatsurf/fmt.hpp"
-#include "../flatsurf/half_edge_set_iterator.hpp"
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
+#include "../flatsurf/fmt.hpp"
+#include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/half_edge_set.hpp"
+#include "../flatsurf/half_edge_set_iterator.hpp"
 
 #include "impl/half_edge_set.impl.hpp"
 
@@ -78,4 +78,4 @@ std::ostream& operator<<(std::ostream& os, const HalfEdgeSet& self) {
   return os << fmt::format("{{{}}}", fmt::join(begin(self), end(self), ", "));
 }
 
-}
+}  // namespace flatsurf

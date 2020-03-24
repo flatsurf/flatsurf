@@ -34,8 +34,8 @@
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 
-#include "surfaces.hpp"
 #include "generators/saddle_connections_generator.hpp"
+#include "surfaces.hpp"
 
 namespace flatsurf::test {
 TEMPLATE_TEST_CASE("Collapse in a Flat Triangulation", "[flat_triangulation_collapsed][collapse]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
@@ -76,7 +76,6 @@ TEMPLATE_TEST_CASE("Collapse in a Flat Triangulation", "[flat_triangulation_coll
           }
         }
       }
-      
     }
   }
 
@@ -104,7 +103,6 @@ TEMPLATE_TEST_CASE("Collapse in a Flat Triangulation", "[flat_triangulation_coll
           }
         }
       }
-      
     }
   }
 }

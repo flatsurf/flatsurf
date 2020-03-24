@@ -36,9 +36,9 @@ class IndexedMap {
   friend std::ostream& operator<<(std::ostream&, const IndexedMap<KK, VV>&);
 
  private:
-  std::vector<V> values {};
+  std::vector<V> values{};
 };
 
-}
+}  // namespace flatsurf
 
 #endif

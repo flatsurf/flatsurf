@@ -42,8 +42,8 @@
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertical.hpp"
 
-#include "generators/surface_generator.hpp"
 #include "generators/saddle_connections_generator.hpp"
+#include "generators/surface_generator.hpp"
 
 using boost::lexical_cast;
 using eantic::renf_class;
@@ -84,10 +84,10 @@ TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimet
     auto surface = make125<R2>();
     CAPTURE(*surface);
 
-    auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), { static_cast<R2>(-surface->fromEdge(5)).x() + 3, static_cast<R2>(surface->fromEdge(5)).x() });
+    auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), {static_cast<R2>(-surface->fromEdge(5)).x() + 3, static_cast<R2>(surface->fromEdge(5)).x()});
 
     CAPTURE(decomposition);
-		REQUIRE(lexical_cast<std::string>(decomposition) == "[[((1/2*x-2 ~ -1.2928932), (1/2*x-1 ~ -0.29289322)) from -24 to 13 → ((-x+2 ~ 0.58578644), 0) from 13 to 23 → ((-x+1 ~ -0.41421356), (-x+1 ~ -0.41421356)) from -4 to -20 → ((x-1 ~ 0.41421356), 0) from -20 to 20 → ((x-1 ~ 0.41421356), 0) from 15 to -15 → ((-1/2*x-1 ~ -1.7071068), (1/2*x-1 ~ -0.29289322)) from 8 to 24 → (1, 0) from 24 to -24 → (1, 0) from 1 to -1 → ((1/2*x+1 ~ 1.7071068), (-1/2*x+1 ~ 0.29289322)) from 24 to 8 → ((2*x+1 ~ 3.8284271), (x-1 ~ 0.41421356)) from 19 to 23 → ((x-2 ~ -0.58578644), 0) from 23 to 13 → ((-x+1 ~ -0.41421356), 0) from -15 to 15 → ((-x+1 ~ -0.41421356), 0) from 20 to -20 → ((-2*x-1 ~ -3.8284271), (-x+1 ~ -0.41421356)) from 23 to 19 → ((x-1 ~ 0.41421356), (x-1 ~ 0.41421356)) from -20 to -4 → ((-1/2*x+2 ~ 1.2928932), (-1/2*x+1 ~ 0.29289322)) from 13 to -24 → (-1, 0) from -24 to 24 → (-1, 0) from -1 to 1]]");
+    REQUIRE(lexical_cast<std::string>(decomposition) == "[[((1/2*x-2 ~ -1.2928932), (1/2*x-1 ~ -0.29289322)) from -24 to 13 → ((-x+2 ~ 0.58578644), 0) from 13 to 23 → ((-x+1 ~ -0.41421356), (-x+1 ~ -0.41421356)) from -4 to -20 → ((x-1 ~ 0.41421356), 0) from -20 to 20 → ((x-1 ~ 0.41421356), 0) from 15 to -15 → ((-1/2*x-1 ~ -1.7071068), (1/2*x-1 ~ -0.29289322)) from 8 to 24 → (1, 0) from 24 to -24 → (1, 0) from 1 to -1 → ((1/2*x+1 ~ 1.7071068), (-1/2*x+1 ~ 0.29289322)) from 24 to 8 → ((2*x+1 ~ 3.8284271), (x-1 ~ 0.41421356)) from 19 to 23 → ((x-2 ~ -0.58578644), 0) from 23 to 13 → ((-x+1 ~ -0.41421356), 0) from -15 to 15 → ((-x+1 ~ -0.41421356), 0) from 20 to -20 → ((-2*x-1 ~ -3.8284271), (-x+1 ~ -0.41421356)) from 23 to 19 → ((x-1 ~ 0.41421356), (x-1 ~ 0.41421356)) from -20 to -4 → ((-1/2*x+2 ~ 1.2928932), (-1/2*x+1 ~ 0.29289322)) from 13 to -24 → (-1, 0) from -24 to 24 → (-1, 0) from -1 to 1]]");
   }
 
   SECTION("A Complicated Case With Many Collapsed Edges") {
@@ -96,7 +96,7 @@ TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimet
     auto surface = make125<R2>();
     CAPTURE(*surface);
 
-    auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), { static_cast<R2>(surface->fromEdge(5)).x() + 1, static_cast<R2>(surface->fromEdge(5)).x() });
+    auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), {static_cast<R2>(surface->fromEdge(5)).x() + 1, static_cast<R2>(surface->fromEdge(5)).x()});
 
     CAPTURE(decomposition);
     REQUIRE(lexical_cast<std::string>(decomposition) == "[[((-1/2*x ~ -0.70710678), (1/2*x-1 ~ -0.29289322)) from 22 to -22 → ((-x+1 ~ -0.41421356), (-x+1 ~ -0.41421356)) from -4 to -20 → ((x-1 ~ 0.41421356), 0) from -20 to 20 → ((x-1 ~ 0.41421356), 0) from 15 to -15 → ((-1/2*x ~ -0.70710678), (1/2*x-1 ~ -0.29289322)) from 3 to -3 → (1, 0) from 1 to -1 → ((3/2*x+1 ~ 3.1213203), (1/2*x ~ 0.70710678)) from 24 to 20 → ((-x+1 ~ -0.41421356), 0) from 20 to -20 → ((1/2*x ~ 0.70710678), (-1/2*x+1 ~ 0.29289322)) from -22 to 22 → ((1/2*x-2 ~ -1.2928932), (1/2*x-1 ~ -0.29289322)) from -24 to 13 → ((-2*x+1 ~ -1.8284271), (-x+1 ~ -0.41421356)) from -15 to 19 → ((x-1 ~ 0.41421356), (x-1 ~ 0.41421356)) from -20 to -4 → ((-1/2*x+2 ~ 1.2928932), (-1/2*x+1 ~ 0.29289322)) from 13 to -24 → ((1/2*x ~ 0.70710678), (-1/2*x+1 ~ 0.29289322)) from -3 to 3 → ((2*x-1 ~ 1.8284271), (x-1 ~ 0.41421356)) from 19 to -15 → ((-x+1 ~ -0.41421356), 0) from -15 to 15 → ((-3/2*x-1 ~ -3.1213203), (-1/2*x ~ -0.70710678)) from 20 to 24 → (-1, 0) from -1 to 1]]");

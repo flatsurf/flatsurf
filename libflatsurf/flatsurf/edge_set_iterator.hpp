@@ -29,8 +29,9 @@
 
 namespace flatsurf {
 
-class EdgeSetIterator : public boost::iterator_facade<EdgeSetIterator, const Edge&, boost::forward_traversal_tag> {
-  template <typename ...Args> EdgeSetIterator(PrivateConstructor, Args&&...);
+class EdgeSetIterator : public boost::iterator_facade<EdgeSetIterator, const Edge &, boost::forward_traversal_tag> {
+  template <typename... Args>
+  EdgeSetIterator(PrivateConstructor, Args &&...);
 
  public:
   using value_type = Edge;
@@ -46,6 +47,6 @@ class EdgeSetIterator : public boost::iterator_facade<EdgeSetIterator, const Edg
   friend EdgeSet;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

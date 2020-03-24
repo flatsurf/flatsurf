@@ -24,8 +24,8 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
-#include <cereal/types/unordered_map.hpp>
 #include <cereal/types/memory.hpp>
+#include <cereal/types/unordered_map.hpp>
 #include <cereal/types/utility.hpp>
 #include <cereal/types/vector.hpp>
 

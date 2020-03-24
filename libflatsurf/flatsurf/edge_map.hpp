@@ -31,7 +31,7 @@ class EdgeMap {
   EdgeMap(const FlatTriangulationCombinatorial& surface) :
     values(surface.size()) {}
 
-  T& operator[](Edge e) { 
+  T& operator[](Edge e) {
     return values[e.index()];
   }
 
@@ -48,6 +48,6 @@ class EdgeMap {
   std::vector<T> values;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

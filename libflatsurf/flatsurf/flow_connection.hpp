@@ -35,8 +35,8 @@ class FlowConnection : Serializable<FlowConnection<Surface>>,
 
   // Flow connections cannot be created directly (other than copying & moving them.)
   // They are created as products of FlowDecomposition.
-  template <typename ...Args>
-  FlowConnection(PrivateConstructor, Args&&...args);
+  template <typename... Args>
+  FlowConnection(PrivateConstructor, Args&&... args);
 
  public:
   FlowComponent<Surface> component() const;

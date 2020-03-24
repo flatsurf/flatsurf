@@ -20,8 +20,8 @@
 #ifndef LIBFLATSURF_CHAIN_VECTOR_IMPL_HPP
 #define LIBFLATSURF_CHAIN_VECTOR_IMPL_HPP
 
-#include <optional>
 #include <deque>
+#include <optional>
 
 #include "../../flatsurf/chain.hpp"
 
@@ -65,7 +65,7 @@ class ChainVector {
 
  private:
   const ImplementationOf<Chain<Surface>>& chain;
-  
+
   mutable std::optional<Vector<T>> value = {};
 
   enum class MOVE {
@@ -85,6 +85,6 @@ class ChainVector {
   ChainVector& record(MOVE, V&&);
 };
 
-}
+}  // namespace flatsurf
 
 #endif

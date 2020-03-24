@@ -31,7 +31,7 @@
 namespace flatsurf {
 
 template <typename Surface>
-template <typename ...Args>
+template <typename... Args>
 ChainIterator<Surface>::ChainIterator(PrivateConstructor, Args&&... args) :
   impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
 
@@ -43,7 +43,7 @@ void ChainIterator<Surface>::increment() {
 }
 
 template <typename Surface>
-const typename ChainIterator<Surface>::value_type &ChainIterator<Surface>::dereference() const {
+const typename ChainIterator<Surface>::value_type& ChainIterator<Surface>::dereference() const {
   ASSERT(impl->current.second != nullptr, "Cannot dereference iterator that is already at the end of Chain.");
   return impl->current;
 }
@@ -85,13 +85,13 @@ size_t ImplementationOf<ChainIterator<Surface>>::findNext(const Chain<Surface>* 
 
   do {
     pos++;
-  }while(pos < size && fmpz_is_zero(&parent->impl->coefficients[pos]));
+  } while (pos < size && fmpz_is_zero(&parent->impl->coefficients[pos]));
 
   return pos;
 }
 
 template <typename Surface>
-std::pair<Edge, const mpz_class*> ImplementationOf<ChainIterator<Surface>>::make(const Chain<Surface>*parent, size_t pos) {
+std::pair<Edge, const mpz_class*> ImplementationOf<ChainIterator<Surface>>::make(const Chain<Surface>* parent, size_t pos) {
   const Edge e = Edge::fromIndex(pos);
   if (pos != parent->surface().size())
     return std::pair(e, &(*parent)[e]);
@@ -99,7 +99,7 @@ std::pair<Edge, const mpz_class*> ImplementationOf<ChainIterator<Surface>>::make
     return std::pair(e, nullptr);
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

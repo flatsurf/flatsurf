@@ -26,9 +26,9 @@
 #include <exact-real/element.hpp>
 #include <exact-real/number_field.hpp>
 
+#include "../flatsurf/edge.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
-#include "../flatsurf/edge.hpp"
 #include "../flatsurf/vertex.hpp"
 
 #include "generators/combinatorial_surface_generator.hpp"

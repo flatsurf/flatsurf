@@ -83,4 +83,3 @@ void MoveChain(State& state) {
 BENCHMARK_TEMPLATE(MoveChain, long long);
 
 }  // namespace flatsurf::benchmark
-

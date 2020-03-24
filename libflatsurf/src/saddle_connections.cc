@@ -17,15 +17,15 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <fmt/format.h>
 #include <exact-real/arb.hpp>
 #include <stack>
-#include <fmt/format.h>
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/chain.hpp"
-#include "../flatsurf/fmt.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
+#include "../flatsurf/fmt.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
@@ -72,8 +72,8 @@ typename SaddleConnections<Surface>::Iterator SaddleConnections<Surface>::end() 
 }
 
 template <typename Surface>
-template <typename ...Args>
-SaddleConnectionsIterator<Surface>::SaddleConnectionsIterator(PrivateConstructor, Args&&...args) :
+template <typename... Args>
+SaddleConnectionsIterator<Surface>::SaddleConnectionsIterator(PrivateConstructor, Args&&... args) :
   impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
 
 template <typename Surface>

@@ -27,6 +27,7 @@ namespace flatsurf {
 template <typename Surface>
 class ImplementationOf<PathIterator<Surface>> {
   using Position = typename std::vector<SaddleConnection<Surface>>::const_iterator;
+
  public:
   ImplementationOf(const Path<Surface>* parent, const Position&);
 
@@ -36,6 +37,6 @@ class ImplementationOf<PathIterator<Surface>> {
   bool end = false;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

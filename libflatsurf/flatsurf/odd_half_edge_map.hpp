@@ -23,9 +23,9 @@
 #include <ostream>
 
 #include "edge.hpp"
+#include "flat_triangulation_combinatorial.hpp"
 #include "half_edge.hpp"
 #include "half_edge_map.hpp"
-#include "flat_triangulation_combinatorial.hpp"
 
 namespace flatsurf {
 
@@ -35,14 +35,16 @@ struct is_optional : std::false_type {};
 
 template <typename T>
 struct is_optional<std::optional<T>> : std::true_type {};
-}
+}  // namespace
 
 template <typename T>
 class OddHalfEdgeMap {
  public:
-  OddHalfEdgeMap(const FlatTriangulationCombinatorial& surface) : values(surface) {}
+  OddHalfEdgeMap(const FlatTriangulationCombinatorial& surface) :
+    values(surface) {}
 
-  OddHalfEdgeMap(const FlatTriangulationCombinatorial& surface, std::function<T(HalfEdge)> values) : values(surface, values) {}
+  OddHalfEdgeMap(const FlatTriangulationCombinatorial& surface, std::function<T(HalfEdge)> values) :
+    values(surface, values) {}
 
   const T& get(HalfEdge he) const {
     return values[he];
@@ -72,6 +74,6 @@ class OddHalfEdgeMap {
   HalfEdgeMap<T> values;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

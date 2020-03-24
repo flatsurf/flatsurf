@@ -35,6 +35,6 @@ class ImplementationOf<HalfEdgeSet> : public IndexedSet<HalfEdge> {
   using IndexedSet<HalfEdge>::IndexedSet;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

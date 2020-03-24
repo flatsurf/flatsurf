@@ -36,8 +36,8 @@ class SaddleConnectionsIterator : public boost::iterator_facade<SaddleConnection
 
   using T = typename Surface::Coordinate;
 
-  template <typename ...Args>
-  SaddleConnectionsIterator(PrivateConstructor, Args&&...args);
+  template <typename... Args>
+  SaddleConnectionsIterator(PrivateConstructor, Args &&... args);
 
  public:
   // Advance the iterator to the next saddle connection.
@@ -66,4 +66,3 @@ class SaddleConnectionsIterator : public boost::iterator_facade<SaddleConnection
 }  // namespace flatsurf
 
 #endif
-

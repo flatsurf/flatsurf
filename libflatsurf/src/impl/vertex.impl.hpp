@@ -22,8 +22,8 @@
 
 #include <vector>
 
-#include "../../flatsurf/vertex.hpp"
 #include "../../flatsurf/half_edge_set.hpp"
+#include "../../flatsurf/vertex.hpp"
 
 namespace flatsurf {
 

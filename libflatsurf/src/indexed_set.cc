@@ -21,11 +21,11 @@
 
 #include <fmt/format.h>
 
-#include "../flatsurf/half_edge_set.hpp"
-#include "../flatsurf/half_edge.hpp"
-#include "../flatsurf/fmt.hpp"
-#include "../flatsurf/half_edge_set_iterator.hpp"
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
+#include "../flatsurf/fmt.hpp"
+#include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/half_edge_set.hpp"
+#include "../flatsurf/half_edge_set_iterator.hpp"
 
 #include "impl/indexed_set.hpp"
 #include "impl/indexed_set_iterator.hpp"
@@ -106,7 +106,7 @@ std::ostream& operator<<(std::ostream& os, const IndexedSet<T>& self) {
   return os << fmt::format("{{{0}}}", fmt::join(self, ", "));
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

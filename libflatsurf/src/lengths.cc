@@ -22,12 +22,12 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
-#include <intervalxt/length.hpp>
 #include <intervalxt/interval_exchange_transformation.hpp>
-#include <intervalxt/sample/lengths.hpp>
+#include <intervalxt/length.hpp>
 #include <intervalxt/sample/arithmetic.hpp>
 #include <intervalxt/sample/e-antic-arithmetic.hpp>
 #include <intervalxt/sample/exact-real-arithmetic.hpp>
+#include <intervalxt/sample/lengths.hpp>
 #include <intervalxt/sample/rational-arithmetic.hpp>
 
 #include "../flatsurf/chain.hpp"
@@ -35,8 +35,8 @@
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertical.hpp"
 
-#include "external/rx-ranges/include/rx/ranges.hpp"
 #include "external/gmpxxll/gmpxxll/mpz_class.hpp"
+#include "external/rx-ranges/include/rx/ranges.hpp"
 
 #include "impl/flow_component.impl.hpp"
 #include "impl/flow_connection.impl.hpp"
@@ -186,7 +186,7 @@ void Lengths<Surface>::subtract(Label minuend) {
 
       const auto reconstruction = SaddleConnection<FlatTriangulation<T>>::inSector(minuendConnection->surface().shared_from_this(), minuendConnection->source(), *minuendConnection);
       ASSERT(*minuendConnection == reconstruction,
-        "Connection after subtract does not actually exist in surface. We claimed it's " << *minuendConnection << " but it is more likely " << reconstruction);
+          "Connection after subtract does not actually exist in surface. We claimed it's " << *minuendConnection << " but it is more likely " << reconstruction);
     });
   }
 
@@ -284,7 +284,7 @@ template <typename Surface>
 ::intervalxt::Lengths Lengths<Surface>::forget() const {
   std::vector<T> lengths;
   this->lengths.apply([&](const auto& e, const auto& v) {
-    if (v) { 
+    if (v) {
       lengths.push_back(length(toLabel(e)));
     } else {
       lengths.emplace_back();

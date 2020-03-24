@@ -39,11 +39,21 @@ class ImplementationOf<FlatTriangulationCombinatorial> {
   ImplementationOf(const Permutation<HalfEdge>&, const std::vector<HalfEdge>&);
   ~ImplementationOf();
 
-  struct MessageAfterFlip { HalfEdge e; };
-  struct MessageBeforeCollapse { Edge e; };
-  struct MessageBeforeSwap { HalfEdge a, b; };
-  struct MessageBeforeErase { std::vector<Edge> erase; };
-  struct MessageAfterMove { FlatTriangulationCombinatorial* target; };
+  struct MessageAfterFlip {
+    HalfEdge e;
+  };
+  struct MessageBeforeCollapse {
+    Edge e;
+  };
+  struct MessageBeforeSwap {
+    HalfEdge a, b;
+  };
+  struct MessageBeforeErase {
+    std::vector<Edge> erase;
+  };
+  struct MessageAfterMove {
+    FlatTriangulationCombinatorial* target;
+  };
 
   using Message = std::variant<MessageAfterFlip, MessageBeforeCollapse, MessageBeforeSwap, MessageBeforeErase, MessageAfterMove>;
 

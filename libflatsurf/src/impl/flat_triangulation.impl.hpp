@@ -24,8 +24,8 @@
 
 #include "../../flatsurf/flat_triangulation.hpp"
 #include "../../flatsurf/half_edge_map.hpp"
-#include "../../flatsurf/vector.hpp"
 #include "../../flatsurf/tracked.hpp"
+#include "../../flatsurf/vector.hpp"
 
 namespace flatsurf {
 

@@ -17,16 +17,16 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <flint/fmpz_vec.h>
 #include <flint/fmpz.h>
+#include <flint/fmpz_vec.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <gmp.h>
 #include <gmpxx.h>
 
+#include "../flatsurf/bound.hpp"
 #include "../flatsurf/chain.hpp"
 #include "../flatsurf/fmt.hpp"
-#include "../flatsurf/bound.hpp"
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
@@ -158,8 +158,7 @@ Chain<Surface>& Chain<Surface>::operator-=(Chain&& rhs) {
 
 template <typename Surface>
 bool Chain<Surface>::operator==(const Chain& rhs) const {
-  return surface() == rhs.surface()
-    && _fmpz_vec_equal(impl->coefficients, rhs.impl->coefficients, surface().size());
+  return surface() == rhs.surface() && _fmpz_vec_equal(impl->coefficients, rhs.impl->coefficients, surface().size());
 }
 
 template <typename Surface>
@@ -234,7 +233,7 @@ ImplementationOf<Chain<Surface>>::operator const Vector<exactreal::Arb>&() const
   return approximateVector;
 }
 
-}
+}  // namespace flatsurf
 
 namespace std {
 

@@ -47,18 +47,18 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   SaddleConnection(std::shared_ptr<const Surface>, HalfEdge source, HalfEdge target, const Chain<Surface> &);
 
   static SaddleConnection<Surface> inSector(std::shared_ptr<const Surface>, HalfEdge source, const Vector<T> &);
-  static SaddleConnection<Surface> inSector(std::shared_ptr<const Surface>, HalfEdge source, const Vertical<Surface> & direction);
+  static SaddleConnection<Surface> inSector(std::shared_ptr<const Surface>, HalfEdge source, const Vertical<Surface> &direction);
   static SaddleConnection<Surface> inHalfPlane(std::shared_ptr<const Surface>, HalfEdge side, const Vertical<Surface> &, const Vector<T> &);
   static SaddleConnection<Surface> inPlane(std::shared_ptr<const Surface>, HalfEdge plane, const Vector<T> &);
   static SaddleConnection<Surface> alongVertical(std::shared_ptr<const Surface>, const Vertical<Surface> &direction, HalfEdge plane);
   static SaddleConnection<Surface> clockwise(const SaddleConnection &from, const Vector<T> &);
-  static SaddleConnection<Surface> reconstruct(std::shared_ptr<const Surface>, HalfEdge source, std::function<bool(const SaddleConnectionsIterator<Surface>&)> until, std::function<CCW(const SaddleConnectionsIterator<Surface>&)> skip, Bound = Bound(INT_MAX, 0));
+  static SaddleConnection<Surface> reconstruct(std::shared_ptr<const Surface>, HalfEdge source, std::function<bool(const SaddleConnectionsIterator<Surface> &)> until, std::function<CCW(const SaddleConnectionsIterator<Surface> &)> skip, Bound = Bound(INT_MAX, 0));
 
-  const Vector<T>& vector() const;
-  const Chain<Surface>& chain() const;
+  const Vector<T> &vector() const;
+  const Chain<Surface> &chain() const;
 
-  operator const Vector<T>&() const;
-  operator const Chain<Surface>&() const;
+  operator const Vector<T> &() const;
+  operator const Chain<Surface> &() const;
 
   // The saddle connection is leaving from the vertex at the source of source.
   // It is leaving in a direction that is contained in the sector next to

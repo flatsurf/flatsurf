@@ -27,9 +27,9 @@
 #include <boost/operators.hpp>
 #include <exact-real/arb.hpp>
 
+#include "chain_iterator.hpp"
 #include "copyable.hpp"
 #include "serializable.hpp"
-#include "chain_iterator.hpp"
 
 namespace flatsurf {
 

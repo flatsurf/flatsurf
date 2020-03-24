@@ -61,5 +61,3 @@ class ImplementationOf<Tracked<T>> {
 }  // namespace flatsurf
 
 #endif
-
-

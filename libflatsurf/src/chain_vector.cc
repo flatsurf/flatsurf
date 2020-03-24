@@ -19,8 +19,8 @@
 
 #include <optional>
 
-#include "impl/chain_vector.hpp"
 #include "impl/chain.impl.hpp"
+#include "impl/chain_vector.hpp"
 
 #include "util/assert.ipp"
 
@@ -44,7 +44,7 @@ struct Cost {
   }
 
   // The cost of a Vector<T> copy.
-  static constexpr double copy () {
+  static constexpr double copy() {
     if (std::is_same_v<T, long long>) {
       return 1;
     } else if (std::is_same_v<T, mpz_class> || std::is_same_v<T, exactreal::Arb>) {
@@ -57,7 +57,7 @@ struct Cost {
   }
 
   // The cost of converting a Vector<T> to a Vector<Arb>.
-  static constexpr double convert () {
+  static constexpr double convert() {
     if (std::is_same_v<T, exactreal::Arb> || std::is_same_v<T, long long>) {
       return 1;
     } else if (std::is_same_v<T, mpz_class>) {
@@ -68,12 +68,12 @@ struct Cost {
   }
 
   // The cost of a Vector<T> move.
-  static constexpr double move () {
+  static constexpr double move() {
     return 1;
   }
 
   // The cost of a c * Vector<T> addition.
-  static constexpr double addmul () {
+  static constexpr double addmul() {
     return 2 * add();
   }
 
@@ -83,7 +83,7 @@ struct Cost {
   }
 };
 
-}
+}  // namespace
 
 template <typename Surface, typename T>
 ChainVector<Surface, T>::ChainVector(const ImplementationOf<Chain<Surface>>* chain) :
@@ -97,7 +97,8 @@ ChainVector<Surface, T>::ChainVector(const ImplementationOf<Chain<Surface>>* cha
 }
 
 template <typename Surface, typename T>
-ChainVector<Surface, T>::ChainVector(const ImplementationOf<Chain<Surface>>* chain, const ChainVector& value) : ChainVector(chain, static_cast<const Vector<T>&>(value)) {}
+ChainVector<Surface, T>::ChainVector(const ImplementationOf<Chain<Surface>>* chain, const ChainVector& value) :
+  ChainVector(chain, static_cast<const Vector<T>&>(value)) {}
 
 template <typename Surface, typename T>
 ChainVector<Surface, T>& ChainVector<Surface, T>::operator=(const Vector<T>& value) {
@@ -178,7 +179,7 @@ ChainVector<Surface, T>& ChainVector<Surface, T>::record(MOVE move, V&& rhs) {
           pendingMovesCost = 0;
           pendingMoves.clear();
         } else {
-          (void) static_cast<const Vector<T>&>(rhs);
+          (void)static_cast<const Vector<T>&>(rhs);
 
           if constexpr (std::is_rvalue_reference_v<V>) {
             pendingMoves.emplace_back(move, std::move(*rhs.value));
@@ -194,23 +195,23 @@ ChainVector<Surface, T>& ChainVector<Surface, T>::record(MOVE move, V&& rhs) {
       pendingMoves.clear();
     }
   }
-  
+
   return *this;
 }
 
 template <typename Surface, typename T>
 double ChainVector<Surface, T>::recomputeCost() {
   return std::is_same_v<T, exactreal::Arb> ?
-    // The Arb representation is computed from the exact representation.
-    (chain.vector.value ? (chain.vector.pendingMovesCost + Cost<typename Surface::Coordinate>::convert()) : (Cost<typename Surface::Coordinate>::recompute(chain.surface->size()) + Cost<typename Surface::Coordinate>::convert())) :
-    (chain.vector.value ? chain.vector.pendingMovesCost : Cost<T>::recompute(chain.surface->size()));
+                                           // The Arb representation is computed from the exact representation.
+             (chain.vector.value ? (chain.vector.pendingMovesCost + Cost<typename Surface::Coordinate>::convert()) : (Cost<typename Surface::Coordinate>::recompute(chain.surface->size()) + Cost<typename Surface::Coordinate>::convert()))
+                                           : (chain.vector.value ? chain.vector.pendingMovesCost : Cost<T>::recompute(chain.surface->size()));
 }
 
 template <typename Surface, typename T>
 ChainVector<Surface, T>::operator const Vector<T>&() const {
   if (value) {
     for (const auto& [move, v] : pendingMoves) {
-      switch(move) {
+      switch (move) {
         case MOVE::ADD:
           *value += std::move(v);
           break;
@@ -258,14 +259,14 @@ std::ostream& operator<<(std::ostream& os, const ChainVector<Surface, T>& self) 
   return os << static_cast<const Vector<T>&>(self);
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"
 
 #include "../flatsurf/vector.hpp"
 
-#define LIBFLATSURF_INSTANTIATE_THIS(SURFACE)                                                                  \
+#define LIBFLATSURF_INSTANTIATE_THIS(SURFACE)                                                          \
   LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION((ChainVector<SURFACE, typename SURFACE::Coordinate>)) \
   LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION((ChainVector<SURFACE, exactreal::Arb>))
 

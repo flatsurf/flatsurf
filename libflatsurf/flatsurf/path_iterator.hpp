@@ -33,14 +33,15 @@ namespace flatsurf {
 
 template <typename Surface>
 class PathIterator : public boost::iterator_facade<PathIterator<Surface>, const SaddleConnection<Surface>&, boost::forward_traversal_tag> {
-  template <typename ...Args> PathIterator(PrivateConstructor, Args&&...);
+  template <typename... Args>
+  PathIterator(PrivateConstructor, Args&&...);
 
  public:
   using value_type = SaddleConnection<Surface>;
 
   void increment();
   const value_type& dereference() const;
-  bool equal(const PathIterator &other) const;
+  bool equal(const PathIterator& other) const;
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const PathIterator<S>&);
@@ -52,6 +53,6 @@ class PathIterator : public boost::iterator_facade<PathIterator<Surface>, const 
   friend Path<Surface>;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

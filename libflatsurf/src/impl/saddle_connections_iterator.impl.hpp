@@ -20,14 +20,14 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTIONS_ITERATOR_IMPL_HPP
 #define LIBFLATSURF_SADDLE_CONNECTIONS_ITERATOR_IMPL_HPP
 
-#include <vector>
 #include <deque>
 #include <stack>
+#include <vector>
 
-#include "../../flatsurf/half_edge.hpp"
 #include "../../flatsurf/bound.hpp"
-#include "../../flatsurf/saddle_connections_iterator.hpp"
 #include "../../flatsurf/ccw.hpp"
+#include "../../flatsurf/half_edge.hpp"
+#include "../../flatsurf/saddle_connections_iterator.hpp"
 
 namespace flatsurf {
 
@@ -41,7 +41,7 @@ class ImplementationOf<SaddleConnectionsIterator<Surface>> {
     SADDLE_CONNECTION,
     OUTSIDE_SEARCH_SECTOR_COUNTERCLOCKWISE,
   };
-  
+
   enum class State {
     // The search will now cross nextEdge which starts and ends inside the search radius
     START_FROM_INSIDE_TO_INSIDE,
@@ -57,7 +57,7 @@ class ImplementationOf<SaddleConnectionsIterator<Surface>> {
     SADDLE_CONNECTION_FOUND_SEARCHING_SECOND,
     END,
   };
-  
+
   enum class Move {
     GOTO_OTHER_FACE,
     GOTO_NEXT_EDGE,
@@ -131,6 +131,6 @@ class ImplementationOf<SaddleConnectionsIterator<Surface>> {
   void pushStart(bool fromOutside, bool toOutside);
 };
 
-}
+}  // namespace flatsurf
 
 #endif

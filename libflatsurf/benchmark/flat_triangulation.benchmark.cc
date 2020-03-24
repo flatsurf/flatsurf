@@ -40,7 +40,7 @@ void FlatTriangulationFlip(State& state) {
 
   for (auto _ : state) {
     for (auto e : L->halfEdges())
-      if (vertical.large(e)){
+      if (vertical.large(e)) {
         L->flip(e);
         break;
       }

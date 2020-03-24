@@ -41,8 +41,8 @@ class FlowComponent {
 
   // Flow components cannot be created directly (other than copying & moving them.)
   // They are created during a FlowDecomposition.
-  template <typename ...Args>
-  FlowComponent(PrivateConstructor, Args&&...args);
+  template <typename... Args>
+  FlowComponent(PrivateConstructor, Args&&... args);
 
  public:
   // We should be using a FlowPath instead, see https://github.com/flatsurf/flatsurf/issues/146.

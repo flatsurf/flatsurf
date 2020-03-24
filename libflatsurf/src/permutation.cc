@@ -249,7 +249,7 @@ ostream &operator<<(ostream &os, const Permutation<T> &self) {
     // Start from smallest element in remaining so we get a consistent
     // printing. (We could do this a bit smarter by using a std::set and fmt
     // instead.)
-    const T start = *std::min_element(begin(remaining), end(remaining), [](const auto& lhs, const auto &rhs) { return lhs.index() < rhs.index(); });
+    const T start = *std::min_element(begin(remaining), end(remaining), [](const auto &lhs, const auto &rhs) { return lhs.index() < rhs.index(); });
     auto current = start;
     do {
       remaining.erase(current);

@@ -128,8 +128,8 @@ typename Surface::Coordinate Path<Surface>::area() const {
 }
 
 template <typename Surface>
-template <typename ...Args>
-PathIterator<Surface>::PathIterator(PrivateConstructor, Args&& ... args) :
+template <typename... Args>
+PathIterator<Surface>::PathIterator(PrivateConstructor, Args&&... args) :
   impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
 
 template <typename Surface>
@@ -181,7 +181,7 @@ bool ImplementationOf<Path<Surface>>::connected(const Segment& a, const Segment&
     // If from and to are not in the same sector, we go through the sectors until we hit to.source().
     // We keep track how far sector is turned from from.vector() in multiples of π.
     int turn = 0;
-    for(auto sector = surface.previousAtVertex(from.source()); turn != 2; sector = surface.previousAtVertex(sector)) {
+    for (auto sector = surface.previousAtVertex(from.source()); turn != 2; sector = surface.previousAtVertex(sector)) {
       if (turn == 0) {
         if (from.vector().ccw(surface.fromEdge(sector)) != CCW::CLOCKWISE) {
           turn = 1;
@@ -205,7 +205,7 @@ bool ImplementationOf<Path<Surface>>::connected(const Segment& a, const Segment&
     return false;
   }
 }
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

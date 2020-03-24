@@ -20,8 +20,8 @@
 #include <cstdint>
 #include <ostream>
 #include <unordered_map>
-#include <vector>
 #include <unordered_set>
+#include <vector>
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
@@ -29,9 +29,9 @@
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_map.hpp"
+#include "../flatsurf/half_edge_set_iterator.hpp"
 #include "../flatsurf/permutation.hpp"
 #include "../flatsurf/vertex.hpp"
-#include "../flatsurf/half_edge_set_iterator.hpp"
 
 #include "impl/flat_triangulation_combinatorial.impl.hpp"
 #include "impl/tracking.impl.hpp"
@@ -461,7 +461,7 @@ void ImplementationOf<FlatTriangulationCombinatorial>::resetEdges() {
 
   halfEdges = vertices.domain();
   // This can probably go away, see https://github.com/flatsurf/flatsurf/issues/147
-  std::sort(begin(halfEdges), end(halfEdges), [&](const auto& lhs, const auto& rhs){ return lhs.index() < rhs.index(); });
+  std::sort(begin(halfEdges), end(halfEdges), [&](const auto& lhs, const auto& rhs) { return lhs.index() < rhs.index(); });
 }
 
 void ImplementationOf<FlatTriangulationCombinatorial>::swap(HalfEdge a, HalfEdge b) {

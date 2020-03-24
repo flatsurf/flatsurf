@@ -23,8 +23,8 @@
 
 #include <memory>
 
-#include <gmpxx.h>
 #include <e-antic/renf_elem.h>
+#include <gmpxx.h>
 
 #include "../external/catch2/single_include/catch2/catch.hpp"
 
@@ -37,7 +37,7 @@ class HalfEdgeGenerator : public Catch::Generators::IGenerator<HalfEdge> {
   std::vector<HalfEdge> halfEdges;
   typename std::vector<HalfEdge>::const_iterator current;
 
-public:
+ public:
   HalfEdgeGenerator(std::shared_ptr<FlatTriangulation<T>> surface) :
     halfEdges(surface->halfEdges()),
     current(begin(halfEdges)) {}
@@ -58,7 +58,6 @@ Catch::Generators::GeneratorWrapper<HalfEdge> halfEdges(std::shared_ptr<FlatTria
   return Catch::Generators::GeneratorWrapper<HalfEdge>(std::unique_ptr<Catch::Generators::IGenerator<HalfEdge>>(new HalfEdgeGenerator<T>(surface)));
 }
 
-}
+}  // namespace flatsurf::test
 
 #endif
-

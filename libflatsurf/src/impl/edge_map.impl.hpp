@@ -33,7 +33,6 @@ template <typename T>
 class ImplementationOf<EdgeMap<T>> : public IndexedMap<Edge, T> {
 };
 
-}
+}  // namespace flatsurf
 
 #endif
-

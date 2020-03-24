@@ -20,8 +20,8 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTIONS_IMPL_HPP
 #define LIBFLATSURF_SADDLE_CONNECTIONS_IMPL_HPP
 
-#include "../../flatsurf/saddle_connections.hpp"
 #include "../../flatsurf/bound.hpp"
+#include "../../flatsurf/saddle_connections.hpp"
 
 namespace flatsurf {
 
@@ -35,6 +35,6 @@ class ImplementationOf<SaddleConnections<Surface>> {
   std::vector<HalfEdge> sectors;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

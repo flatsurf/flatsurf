@@ -23,11 +23,11 @@
 #include <fmt/format.h>
 
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
+#include "../flatsurf/fmt.hpp"
 #include "../flatsurf/half_edge.hpp"
-#include "../flatsurf/vertex.hpp"
 #include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/half_edge_set_iterator.hpp"
-#include "../flatsurf/fmt.hpp"
+#include "../flatsurf/vertex.hpp"
 
 #include "impl/vertex.impl.hpp"
 
@@ -38,7 +38,7 @@ using std::string;
 
 namespace flatsurf {
 
-template <typename ...Args>
+template <typename... Args>
 Vertex::Vertex(PrivateConstructor, Args&&... args) :
   impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {
 }
@@ -102,6 +102,6 @@ Vertex ImplementationOf<Vertex>::make(const std::vector<HalfEdge> sources) {
 
 }  // namespace flatsurf
 
-size_t std::hash<flatsurf::Vertex>::operator()(const flatsurf::Vertex &v) const noexcept {
+size_t std::hash<flatsurf::Vertex>::operator()(const flatsurf::Vertex& v) const noexcept {
   return std::hash<flatsurf::HalfEdge>()(*begin(v.impl->sources));
 }

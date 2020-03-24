@@ -53,7 +53,7 @@ class Edge : boost::equality_comparable<Edge> {
 namespace std {
 template <>
 struct hash<flatsurf::Edge> {
-  size_t operator()(const flatsurf::Edge &) const noexcept;
+  size_t operator()(const flatsurf::Edge&) const noexcept;
 };
 }  // namespace std
 
