@@ -3,90 +3,6 @@
 # -*- mode: yaml -*-
 
 jobs:
-# linux_name_flatsurf_python_36_target_benchmark linux-64 False
-- job: linux_name_flatsurf_python_36_target_benchmark
-  pool:
-    vmImage: ubuntu-16.04
-  variables:
-    CONFIG: linux_name_flatsurf_python_36_target_benchmark
-    UPLOAD_PACKAGES: False
-    DOCKER_IMAGE: condaforge/linux-anvil-comp7
-  timeoutInMinutes: 360
-  steps:
-  # configure qemu binfmt-misc running.  This allows us to run docker containers
-  # embedded qemu-static
-  - script: |
-      docker run --rm --privileged multiarch/qemu-user-static:register --reset --credential yes
-      ls /proc/sys/fs/binfmt_misc/
-    condition: not(startsWith(variables['CONFIG'], 'linux_64'))
-    displayName: Configure binfmt_misc
-  - download: current
-    patterns: '**/*.tar.bz2'
-  - script: |
-        export CI=azure
-        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
-        .scripts/run_docker_build.sh
-    displayName: Run docker build
-    env:
-      BINSTAR_TOKEN: $(BINSTAR_TOKEN)
-      CODECOV_TOKEN: $(CODECOV_TOKEN)
-      ASV_SECRET_KEY: $(ASV_SECRET_KEY)
-# linux_name_flatsurf_python_36_target_coverage linux-64 False
-- job: linux_name_flatsurf_python_36_target_coverage
-  pool:
-    vmImage: ubuntu-16.04
-  variables:
-    CONFIG: linux_name_flatsurf_python_36_target_coverage
-    UPLOAD_PACKAGES: False
-    DOCKER_IMAGE: condaforge/linux-anvil-comp7
-  timeoutInMinutes: 360
-  steps:
-  # configure qemu binfmt-misc running.  This allows us to run docker containers
-  # embedded qemu-static
-  - script: |
-      docker run --rm --privileged multiarch/qemu-user-static:register --reset --credential yes
-      ls /proc/sys/fs/binfmt_misc/
-    condition: not(startsWith(variables['CONFIG'], 'linux_64'))
-    displayName: Configure binfmt_misc
-  - download: current
-    patterns: '**/*.tar.bz2'
-  - script: |
-        export CI=azure
-        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
-        .scripts/run_docker_build.sh
-    displayName: Run docker build
-    env:
-      BINSTAR_TOKEN: $(BINSTAR_TOKEN)
-      CODECOV_TOKEN: $(CODECOV_TOKEN)
-      ASV_SECRET_KEY: $(ASV_SECRET_KEY)
-# linux_name_flatsurf_python_36_target_style linux-64 False
-- job: linux_name_flatsurf_python_36_target_style
-  pool:
-    vmImage: ubuntu-16.04
-  variables:
-    CONFIG: linux_name_flatsurf_python_36_target_style
-    UPLOAD_PACKAGES: False
-    DOCKER_IMAGE: condaforge/linux-anvil-comp7
-  timeoutInMinutes: 360
-  steps:
-  # configure qemu binfmt-misc running.  This allows us to run docker containers
-  # embedded qemu-static
-  - script: |
-      docker run --rm --privileged multiarch/qemu-user-static:register --reset --credential yes
-      ls /proc/sys/fs/binfmt_misc/
-    condition: not(startsWith(variables['CONFIG'], 'linux_64'))
-    displayName: Configure binfmt_misc
-  - download: current
-    patterns: '**/*.tar.bz2'
-  - script: |
-        export CI=azure
-        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
-        .scripts/run_docker_build.sh
-    displayName: Run docker build
-    env:
-      BINSTAR_TOKEN: $(BINSTAR_TOKEN)
-      CODECOV_TOKEN: $(CODECOV_TOKEN)
-      ASV_SECRET_KEY: $(ASV_SECRET_KEY)
 # linux_name_flatsurf_python_36_target_test linux-64 False
 - job: linux_name_flatsurf_python_36_target_test
   pool:
@@ -227,38 +143,9 @@ jobs:
       BINSTAR_TOKEN: $(BINSTAR_TOKEN)
       CODECOV_TOKEN: $(CODECOV_TOKEN)
       ASV_SECRET_KEY: $(ASV_SECRET_KEY)
-# linux_name_flatsurfpolygon_python_36_target_release linux-64 True
-- job: linux_name_flatsurfpolygon_python_36_target_release
-  pool:
-    vmImage: ubuntu-16.04
-  variables:
-    CONFIG: linux_name_flatsurfpolygon_python_36_target_release
-    UPLOAD_PACKAGES: True
-    DOCKER_IMAGE: condaforge/linux-anvil-comp7
-  timeoutInMinutes: 360
-  steps:
-  # configure qemu binfmt-misc running.  This allows us to run docker containers
-  # embedded qemu-static
-  - script: |
-      docker run --rm --privileged multiarch/qemu-user-static:register --reset --credential yes
-      ls /proc/sys/fs/binfmt_misc/
-    condition: not(startsWith(variables['CONFIG'], 'linux_64'))
-    displayName: Configure binfmt_misc
-  - download: current
-    patterns: '**/*.tar.bz2'
-  - script: |
-        export CI=azure
-        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
-        .scripts/run_docker_build.sh
-    displayName: Run docker build
-    env:
-      BINSTAR_TOKEN: $(BINSTAR_TOKEN)
-      CODECOV_TOKEN: $(CODECOV_TOKEN)
-      ASV_SECRET_KEY: $(ASV_SECRET_KEY)
-  - publish: $(System.DefaultWorkingDirectory)/build_artifacts
-    artifact: linux_name_flatsurfpolygon_python_36_target_release
 # linux_name_flatsurfpolygon_python_37_target_release linux-64 True
 - job: linux_name_flatsurfpolygon_python_37_target_release
+  dependsOn: linux_name_libflatsurf_python_37_target_release
   pool:
     vmImage: ubuntu-16.04
   variables:
@@ -287,36 +174,6 @@ jobs:
       ASV_SECRET_KEY: $(ASV_SECRET_KEY)
   - publish: $(System.DefaultWorkingDirectory)/build_artifacts
     artifact: linux_name_flatsurfpolygon_python_37_target_release
-# linux_name_libflatsurf_python_36_target_release linux-64 True
-- job: linux_name_libflatsurf_python_36_target_release
-  pool:
-    vmImage: ubuntu-16.04
-  variables:
-    CONFIG: linux_name_libflatsurf_python_36_target_release
-    UPLOAD_PACKAGES: True
-    DOCKER_IMAGE: condaforge/linux-anvil-comp7
-  timeoutInMinutes: 360
-  steps:
-  # configure qemu binfmt-misc running.  This allows us to run docker containers
-  # embedded qemu-static
-  - script: |
-      docker run --rm --privileged multiarch/qemu-user-static:register --reset --credential yes
-      ls /proc/sys/fs/binfmt_misc/
-    condition: not(startsWith(variables['CONFIG'], 'linux_64'))
-    displayName: Configure binfmt_misc
-  - download: current
-    patterns: '**/*.tar.bz2'
-  - script: |
-        export CI=azure
-        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
-        .scripts/run_docker_build.sh
-    displayName: Run docker build
-    env:
-      BINSTAR_TOKEN: $(BINSTAR_TOKEN)
-      CODECOV_TOKEN: $(CODECOV_TOKEN)
-      ASV_SECRET_KEY: $(ASV_SECRET_KEY)
-  - publish: $(System.DefaultWorkingDirectory)/build_artifacts
-    artifact: linux_name_libflatsurf_python_36_target_release
 # linux_name_libflatsurf_python_37_target_release linux-64 True
 - job: linux_name_libflatsurf_python_37_target_release
   pool:
@@ -349,6 +206,7 @@ jobs:
     artifact: linux_name_libflatsurf_python_37_target_release
 # linux_name_pyflatsurf_python_36_target_release linux-64 True
 - job: linux_name_pyflatsurf_python_36_target_release
+  dependsOn: linux_name_libflatsurf_python_37_target_release
   pool:
     vmImage: ubuntu-16.04
   variables:
@@ -379,6 +237,7 @@ jobs:
     artifact: linux_name_pyflatsurf_python_36_target_release
 # linux_name_pyflatsurf_python_37_target_release linux-64 True
 - job: linux_name_pyflatsurf_python_37_target_release
+  dependsOn: linux_name_libflatsurf_python_37_target_release
   pool:
     vmImage: ubuntu-16.04
   variables:
