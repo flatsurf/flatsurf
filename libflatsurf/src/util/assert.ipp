@@ -22,10 +22,8 @@
 
 #include <gmpxx.h>
 
-#ifndef NDEBUG
 #include <iostream>
 #include <sstream>
-#endif
 
 #include <boost/config.hpp>
 #include <boost/preprocessor/stringize.hpp>
