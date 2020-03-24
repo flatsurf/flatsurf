@@ -262,7 +262,7 @@ ImplementationOf<FlatTriangulationCollapsed<T>>::ImplementationOf(const FlatTria
 
 template <typename T>
 template <typename M>
-void ImplementationOf<FlatTriangulationCollapsed<T>>::handleFlip(M& map, const FlatTriangulationCollapsed<T>& surface, HalfEdge flip, const std::function<void(const FlatTriangulationCollapsed<T>&, HalfEdge, HalfEdge, HalfEdge, HalfEdge)>& handler) {
+void ImplementationOf<FlatTriangulationCollapsed<T>>::handleFlip(M&, const FlatTriangulationCollapsed<T>& surface, HalfEdge flip, const std::function<void(const FlatTriangulationCollapsed<T>&, HalfEdge, HalfEdge, HalfEdge, HalfEdge)>& handler) {
   // The flip turned (a b flip)(c d -flip) into (a -flip d)(c flip b)
   const HalfEdge a = surface.previousInFace(-flip);
   const HalfEdge b = surface.nextInFace(flip);
@@ -274,7 +274,7 @@ void ImplementationOf<FlatTriangulationCollapsed<T>>::handleFlip(M& map, const F
 
 template <typename T>
 template <typename M>
-void ImplementationOf<FlatTriangulationCollapsed<T>>::handleCollapse(M& map, const FlatTriangulationCollapsed<T>& surface, Edge collapse_, const std::function<void(const FlatTriangulationCollapsed<T>&, HalfEdge)>& handler) {
+void ImplementationOf<FlatTriangulationCollapsed<T>>::handleCollapse(M&, const FlatTriangulationCollapsed<T>& surface, Edge collapse_, const std::function<void(const FlatTriangulationCollapsed<T>&, HalfEdge)>& handler) {
   HalfEdge collapse = collapse_.positive();
 
   ASSERT(surface.vertical().parallel(collapse), "cannot collapse non-vertical edge " << collapse);
