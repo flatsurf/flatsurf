@@ -81,7 +81,7 @@ FlowConnection<Surface> FlowConnection<Surface>::operator-() const {
       }
   }
 
-  ASSERT(false, "Negative of " << *this << " not present in FlowDecomposition.");
+  UNREACHABLE("Negative of " << *this << " not present in FlowDecomposition.");
 }
 
 template <typename Surface>
