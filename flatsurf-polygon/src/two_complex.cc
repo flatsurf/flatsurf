@@ -40,7 +40,7 @@
 
 #include "flatsurf/flat_triangulation.hpp"
 #include "flatsurf/half_edge.hpp"
-#include "flatsurf/half_edge_map.hpp"
+#include "flatsurf/odd_half_edge_map.hpp"
 #include "flatsurf/permutation.hpp"
 
 using boost::adaptors::transformed;
@@ -49,7 +49,7 @@ using exactreal::Element;
 using flatsurf::FlatTriangulation;
 using flatsurf::FlatTriangulationCombinatorial;
 using flatsurf::HalfEdge;
-using flatsurf::HalfEdgeMap;
+using flatsurf::OddHalfEdgeMap;
 using flatsurf::Permutation;
 using flatsurf::Vector;
 using std::endl;
@@ -81,7 +81,7 @@ TwoComplex::operator FlatTriangulation<exactreal::Element<exactreal::NumberField
       alg_t<bigrat>().imag()};
 
   auto combinatorial = static_cast<FlatTriangulationCombinatorial>(*this);
-  auto vectors = HalfEdgeMap<Vector<exactreal::Element<exactreal::NumberField>>>(
+  auto vectors = OddHalfEdgeMap<Vector<exactreal::Element<exactreal::NumberField>>>(
       &combinatorial,
       [&](HalfEdge) { return zero; });
 

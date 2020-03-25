@@ -33,6 +33,7 @@
 #include "flatsurf/orientation.hpp"
 #include "flatsurf/saddle_connection.hpp"
 #include "flatsurf/saddle_connections.hpp"
+#include "flatsurf/saddle_connections_iterator.hpp"
 #include "flatsurf/vector.hpp"
 
 #include "./globals.h"
@@ -648,7 +649,7 @@ int main(int argc, char **argv) {
           if (!target.relevant()) continue;
           if (target.deleted()) continue;
 
-          auto ccw = saddle_connection_in_same_direction.ccw(saddle_connection);
+          auto ccw = saddle_connection_in_same_direction.vector().ccw(saddle_connection);
           if (ccw == flatsurf::CCW::COLLINEAR) {
             auto vector = static_cast<Vector<exactreal::Element<exactreal::NumberField>>>(saddle_connection_in_same_direction);
             assert(flat_triangulation->fromEdge(e).ccw(vector) == flatsurf::CCW::COUNTERCLOCKWISE);
