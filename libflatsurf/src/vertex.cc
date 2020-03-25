@@ -105,3 +105,10 @@ Vertex ImplementationOf<Vertex>::make(const std::vector<HalfEdge> sources) {
 size_t std::hash<flatsurf::Vertex>::operator()(const flatsurf::Vertex& v) const noexcept {
   return std::hash<flatsurf::HalfEdge>()(*begin(v.impl->sources));
 }
+
+// Instantiate constructor for cereal
+namespace flatsurf {
+
+template Vertex::Vertex(PrivateConstructor, HalfEdgeSet&&);
+
+}
