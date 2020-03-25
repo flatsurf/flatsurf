@@ -84,10 +84,21 @@ void Lengths<Surface>::pop() {
 
 template <typename Surface>
 void Lengths<Surface>::subtract(Label minuend) {
+  subtractRepeated(minuend, 1);
+}
+
+template <typename Surface>
+void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iterations) {
+  ASSERT(iterations > 0, "must subtract at least once");
   ASSERT(length(minuend) > 0, "lengths must be positive");
 
-  const T expected = length(minuend) - length();
-  ASSERT(expected > 0, "Lengths must be positive but subtracting " << length() << " from edge " << fromLabel(minuend) << " of length " << length(minuend) << " would yield " << expected << " which is non-positive.");
+  const T expected = [&]() {
+    if constexpr (std::is_same_v<T, long long>)
+       return length(minuend) - iterations.get_ui() * length();
+    else
+      return length(minuend) - iterations * length();
+  }();
+  ASSERT(expected > 0, "Lengths must be positive but subtracting " << length() << iterations << "times from edge " << fromLabel(minuend) << " of length " << length(minuend) << " would yield " << expected << " which is non-positive.");
   ASSERT(expected < length(minuend), "subtraction must shorten lengths");
 
   auto& component = *std::find_if(begin(state.lock()->components), end(state.lock()->components), [&](const auto& component) {
@@ -142,6 +153,14 @@ void Lengths<Surface>::subtract(Label minuend) {
           break;
       }
     }
+
+    // If we want to subtract this gadget more than once, we just need to scale
+    // the chain; source/target are not affected by this. (They might change,
+    // but they are still in the same half plane of the same vertex.)
+    // Note that this is more complicated when the bottom minuend has
+    // connections on its left.  Therefore we need to caller to do a simple
+    // subtract before doing a subtractRepeated.
+    walk *= iterations;
 
     auto vector = walk + *minuendConnection;
 
