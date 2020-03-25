@@ -27,11 +27,12 @@ import argparse
 import sys
 
 import cppyy
-from sage.all import gcd, QQ, Permutations
+from collections import defaultdict
+from itertools import permutations
+from sage.all import QQ
 from sage.arith.all import gcd
 from pyflatsurf import flatsurf, Surface, GL2ROrbitClosure
 import flatsurf as sage_flatsurf
-from pyeantic.sage_conversion import sage_nf_to_eantic, sage_nf_elem_to_eantic
 
 parser = argparse.ArgumentParser(description='Survey a Triangle')
 parser.add_argument('angles', metavar='N', type=int, nargs='+')
@@ -40,9 +41,11 @@ parser.add_argument('--bound', type=int, default=10)
 args = parser.parse_args()
 
 assert len(args.angles) == 4
-a,b,c,d = args.angles
-if gcd([a, b, c, d]) != 1:
-    raise ValueError
+s = sum(args.angles)
+if gcd(args.angles) != 1:
+    raise ValueError("gcd must be one")
+if any(2*i == s for i in args.angles):
+    raise ValueError("there is a pi angle")
 
 def sample_lengths(E):
     L = E.lengths_polytope()
@@ -60,11 +63,22 @@ def sample_lengths(E):
             S.add(r)
     return S
 
-for q in Permutations(args.angles):
-    if q[0] != d:
-        continue
+def angles_permutations(angles):
+    r"""
+    Enumerator of permutations of angles up to cyclic ordering (eg (a,b,c,d) ~ (b,c,d,a)) and
+    mirror (eg (a,b,c,d) ~ (a,d,c,b)).
+    """
+    S = set(permutations(angles))
+    while S:
+        p = min(S)
+        yield p
+        for i in range(4):
+            X = p[i:] + p[:i]
+            S.discard(X)
+            S.discard(X[::-1])
 
-    print("angles %s"%(q))
+for q in angles_permutations(args.angles):
+    print("angles %s"%(q,))
     E = sage_flatsurf.EquiangularPolygons(*q)
     ambient_locus = E.billiard_unfolding_stratum("half-translation", True)
     stratum = E.billiard_unfolding_stratum("translation", True)
@@ -76,7 +90,7 @@ for q in Permutations(args.angles):
         S = sage_flatsurf.similarity_surfaces.billiard(P)
         S = S.minimal_cover(cover_type="translation")
         S, _ = S.normalized_coordinates()
-        assert S.stratum() == stratum, (a, b, c, d, S.stratum(), stratum)
+        assert S.stratum() == stratum, (q, S.stratum(), stratum)
 
         # Dynamical orbit closure computation
         O = GL2ROrbitClosure(S)
@@ -121,7 +135,7 @@ for q in Permutations(args.angles):
 
         closure_dim = O.U.dimension()
         absolute_dim = O.absolute_dimension()
-        print("Unfolding %s with lengths %s"%(args.angles, lengths))
+        print("Unfolding %s with lengths %s"%(q, lengths))
         print("%d directions explored (%d undetermined)"%(explored, undetermined))
         if quad:
             print("ambient locus: %s inside %s (of dimension %s)"%(ambient_locus, ambient_locus.orientation_cover(), ambient_dim))
