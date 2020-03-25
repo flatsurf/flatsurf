@@ -82,7 +82,7 @@ TwoComplex::operator FlatTriangulation<exactreal::Element<exactreal::NumberField
 
   auto combinatorial = static_cast<FlatTriangulationCombinatorial>(*this);
   auto vectors = OddHalfEdgeMap<Vector<exactreal::Element<exactreal::NumberField>>>(
-      &combinatorial,
+      combinatorial,
       [&](HalfEdge) { return zero; });
 
   for (auto uedge : uedges) {
