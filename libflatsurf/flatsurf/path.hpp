@@ -36,6 +36,7 @@ class Path : public Serializable<Path<Surface>>,
              boost::equality_comparable<Path<Surface>> {
   using Segment = SaddleConnection<Surface>;
   using T = typename Surface::Coordinate;
+
  public:
   Path();
   Path(const std::vector<Segment>&);
@@ -82,4 +83,3 @@ class Path : public Serializable<Path<Surface>>,
 
 }  // namespace flatsurf
 #endif
-

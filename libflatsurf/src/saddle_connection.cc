@@ -85,11 +85,8 @@ SaddleConnection<Surface> SaddleConnection<Surface>::inSector(std::shared_ptr<co
   CHECK_ARGUMENT(surface->inSector(source, vector), "Cannot search for " << vector << " next to " << source << " in " << *surface << "; that direction is not in the search sector");
 
   // It would be good to use a finite bound instead, see https://github.com/flatsurf/flatsurf/issues/153
-  return reconstruct(surface, source, [&](const auto& it) {
-    return it->vector() == vector;
-  }, [&](const auto& it) {
-    return -it->vector().ccw(vector);
-  });
+  return reconstruct(
+      surface, source, [&](const auto& it) { return it->vector() == vector; }, [&](const auto& it) { return -it->vector().ccw(vector); });
 }
 
 template <typename Surface>
@@ -166,11 +163,8 @@ template <typename Surface>
 SaddleConnection<Surface> SaddleConnection<Surface>::inSector(std::shared_ptr<const Surface> surface, HalfEdge source, const Vertical<Surface>& direction) {
   CHECK_ARGUMENT(surface->inSector(source, direction.vertical()), "Cannot search in direction " << direction << " next to " << source << " in " << *surface << "; that direction is not in the search sector");
 
-  return reconstruct(surface, source, [&](const auto& it) {
-    return !direction.perpendicular(it->vector());
-  }, [&](const auto& it) {
-    return -it->vector().ccw(direction.vertical());
-  });
+  return reconstruct(
+      surface, source, [&](const auto& it) { return !direction.perpendicular(it->vector()); }, [&](const auto& it) { return -it->vector().ccw(direction.vertical()); });
 }
 
 template <typename Surface>

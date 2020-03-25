@@ -52,7 +52,7 @@ class VectorExact : public VectorBase<Vector>,
   Coordinate y() const noexcept;
 
   // Return twice the area of the polygon described by the (counter-clockwise) perimeter.
-  static T area(const std::vector<Vector>& perimeter);
+  static T area(const std::vector<Vector> &perimeter);
 };
 }  // namespace flatsurf::detail
 

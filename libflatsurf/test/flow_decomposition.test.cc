@@ -30,8 +30,8 @@
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
 
-#include "generators/surface_generator.hpp"
 #include "generators/saddle_connections_generator.hpp"
+#include "generators/surface_generator.hpp"
 #include "surfaces.hpp"
 
 using eantic::renf_class;

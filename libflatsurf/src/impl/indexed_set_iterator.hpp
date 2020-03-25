@@ -36,8 +36,8 @@ class IndexedSetIterator : public boost::iterator_facade<IndexedSetIterator<T>, 
   using value_type = T;
 
   void increment();
-  const value_type &dereference() const;
-  bool equal(const IndexedSetIterator &other) const;
+  const value_type& dereference() const;
+  bool equal(const IndexedSetIterator& other) const;
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const IndexedSetIterator&);
@@ -49,7 +49,6 @@ class IndexedSetIterator : public boost::iterator_facade<IndexedSetIterator<T>, 
   static T makeT(const IndexedSet<T>* parent, typename IndexedSet<T>::Bitset::size_type pos);
 };
 
-}
+}  // namespace flatsurf
 
 #endif
-

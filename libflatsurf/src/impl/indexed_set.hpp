@@ -53,11 +53,11 @@ class IndexedSet {
   friend std::ostream& operator<<(std::ostream&, const IndexedSet<S>&);
 
  private:
-  mutable Bitset set {};
+  mutable Bitset set{};
 
   friend IndexedSetIterator<T>;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

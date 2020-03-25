@@ -28,8 +28,8 @@
 #include "../flatsurf/cereal.hpp"
 
 #include "cereal.helpers.hpp"
-#include "surfaces.hpp"
 #include "generators/saddle_connections_generator.hpp"
+#include "surfaces.hpp"
 
 namespace flatsurf::test {
 

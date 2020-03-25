@@ -23,10 +23,10 @@
 
 #include <fmt/format.h>
 
-#include "../flatsurf/vector.hpp"
 #include "../flatsurf/chain.hpp"
-#include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/fmt.hpp"
+#include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/vector.hpp"
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
@@ -82,7 +82,7 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::prepareSearch() {
       ;
   }
 }
-  
+
 template <typename Surface>
 CCW ImplementationOf<SaddleConnectionsIterator<Surface>>::ccw(const Chain<Surface>& lhs, const Chain<Surface>& rhs) {
   auto ccw = static_cast<const Vector<exactreal::Arb>&>(lhs).ccw(static_cast<const Vector<exactreal::Arb>&>(rhs));
@@ -130,7 +130,7 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
           moves.push_back(Move::GOTO_NEXT_EDGE);
 
           state.push_back(State::OUTSIDE_SEARCH_SECTOR_CLOCKWISE);
-          
+
           pushStart(nothingBeyondThisVertex, s == State::START_FROM_INSIDE_TO_OUTSIDE);
 
           return false;
@@ -224,7 +224,7 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::skipSector(CCW sector
       if (sector == CCW::CLOCKWISE) {
         // Go directly to the second sector by skipping the recursive call,
         // i.e., the START.
-        switch(state.back()) {
+        switch (state.back()) {
           case State::START_FROM_INSIDE_TO_INSIDE:
           case State::START_FROM_INSIDE_TO_OUTSIDE:
           case State::START_FROM_OUTSIDE_TO_INSIDE:
@@ -237,12 +237,12 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::skipSector(CCW sector
       } else if (sector == CCW::COUNTERCLOCKWISE) {
         // Skip the second recursive call by dropping its START.
         std::stack<State> unchanged;
-        while(state.back() != State::SADDLE_CONNECTION_FOUND_SEARCHING_SECOND) {
+        while (state.back() != State::SADDLE_CONNECTION_FOUND_SEARCHING_SECOND) {
           unchanged.push(state.back());
           state.pop_back();
         }
 
-        switch(unchanged.top()) {
+        switch (unchanged.top()) {
           case State::START_FROM_INSIDE_TO_INSIDE:
           case State::START_FROM_INSIDE_TO_OUTSIDE:
           case State::START_FROM_OUTSIDE_TO_INSIDE:
@@ -251,7 +251,7 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::skipSector(CCW sector
             break;
         }
 
-        while(!unchanged.empty()) {
+        while (!unchanged.empty()) {
           state.push_back(unchanged.top());
           unchanged.pop();
         }
@@ -386,7 +386,7 @@ template <typename Surface>
 void ImplementationOf<SaddleConnectionsIterator<Surface>>::pushStart(bool fromOutside, bool toOutside) {
   if (fromOutside) {
     if (toOutside) {
-      ;  
+      ;
     } else {
       state.push_back(State::START_FROM_OUTSIDE_TO_INSIDE);
     }
@@ -401,17 +401,11 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::pushStart(bool fromOu
 
 template <typename Surface>
 bool SaddleConnectionsIterator<Surface>::equal(const SaddleConnectionsIterator<Surface>& other) const {
-  if (impl->surface == other.impl->surface
-    && impl->searchRadius == other.impl->searchRadius
-    && impl->sector == other.impl->sector
-    && impl->end == other.impl->end) {
+  if (impl->surface == other.impl->surface && impl->searchRadius == other.impl->searchRadius && impl->sector == other.impl->sector && impl->end == other.impl->end) {
     if (impl->sector == impl->end)
       return true;
 
-    return impl->boundary[0] == other.impl->boundary[0]
-      && impl->boundary[1] == other.impl->boundary[1]
-      && impl->nextEdgeEnd == other.impl->nextEdgeEnd
-      && impl->nextEdge == other.impl->nextEdge;
+    return impl->boundary[0] == other.impl->boundary[0] && impl->boundary[1] == other.impl->boundary[1] && impl->nextEdgeEnd == other.impl->nextEdgeEnd && impl->nextEdge == other.impl->nextEdge;
   }
 
   return false;
@@ -439,8 +433,7 @@ std::optional<HalfEdge> SaddleConnectionsIterator<Surface>::incrementWithCrossin
       switch (impl->state.back()) {
         case Implementation::State::START_FROM_INSIDE_TO_INSIDE:
         case Implementation::State::START_FROM_INSIDE_TO_OUTSIDE:
-        case Implementation::State::START_FROM_OUTSIDE_TO_INSIDE:
-        {
+        case Implementation::State::START_FROM_OUTSIDE_TO_INSIDE: {
           impl->applyMoves();
           const auto ret = impl->nextEdge;
           impl->increment();
@@ -482,10 +475,9 @@ std::ostream& operator<<(std::ostream& os, const SaddleConnectionsIterator<Surfa
 
   if (self.impl->sector == self.impl->end) {
     return os << "Iterator(END)";
-  }
-  else {
+  } else {
     return os << fmt::format("Iterator(sector={}, boundary=({}, {}), nextEdge={}, nextEdgeEnd={}, stack=[{}])", *self.impl->sector, static_cast<Vector<T>>(self.impl->boundary[0]), static_cast<Vector<T>>(self.impl->boundary[1]), self.impl->nextEdge, static_cast<Vector<T>>(self.impl->nextEdgeEnd), fmt::join(self.impl->state | rx::transform([](const auto& state) {
-      switch(state) {
+      switch (state) {
         case Implementation::State::START_FROM_INSIDE_TO_INSIDE:
           return "START_FROM_INSIDE_TO_INSIDE";
         case Implementation::State::START_FROM_INSIDE_TO_OUTSIDE:
@@ -507,11 +499,12 @@ std::ostream& operator<<(std::ostream& os, const SaddleConnectionsIterator<Surfa
         default:
           throw std::logic_error("unknown State");
       }
-    }) | rx::to_vector() , ", "));
+    }) | rx::to_vector(),
+                                                                                                                                                                                                                                                                                                             ", "));
   }
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

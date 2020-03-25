@@ -21,14 +21,14 @@
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_set.hpp"
 
-#include "impl/half_edge_set_iterator.impl.hpp"
 #include "impl/half_edge_set.impl.hpp"
+#include "impl/half_edge_set_iterator.impl.hpp"
 
 #include "util/assert.ipp"
 
 namespace flatsurf {
 
-template <typename ...Args>
+template <typename... Args>
 HalfEdgeSetIterator::HalfEdgeSetIterator(PrivateConstructor, Args&&... args) :
   impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {
 }
@@ -53,6 +53,7 @@ HalfEdgeSetIterator HalfEdgeSet::end() const {
   return HalfEdgeSetIterator{PrivateConstructor{}, impl->end()};
 }
 
-ImplementationOf<HalfEdgeSetIterator>::ImplementationOf(IndexedSetIterator<HalfEdge>&& self) : IndexedSetIterator(std::move(self)) {}
+ImplementationOf<HalfEdgeSetIterator>::ImplementationOf(IndexedSetIterator<HalfEdge>&& self) :
+  IndexedSetIterator(std::move(self)) {}
 
-}
+}  // namespace flatsurf

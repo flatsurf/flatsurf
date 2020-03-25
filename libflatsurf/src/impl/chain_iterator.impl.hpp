@@ -44,7 +44,6 @@ class ImplementationOf<ChainIterator<Surface>> {
   friend ChainIterator<Surface>;
 };
 
-}
+}  // namespace flatsurf
 
 #endif
-

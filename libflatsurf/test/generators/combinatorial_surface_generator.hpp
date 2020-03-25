@@ -23,8 +23,8 @@
 
 #include <memory>
 
-#include <gmpxx.h>
 #include <e-antic/renf_elem.h>
+#include <gmpxx.h>
 
 #include "../external/catch2/single_include/catch2/catch.hpp"
 
@@ -49,7 +49,7 @@ class CombinatorialSurfaceGenerator : public Catch::Generators::IGenerator<std::
   std::shared_ptr<FlatTriangulationCombinatorial> value;
 
   static std::shared_ptr<FlatTriangulationCombinatorial> make(Surface surface) {
-    switch(surface) {
+    switch (surface) {
       case Surface::SQUARE:
         return makeSquareCombinatorial();
       case Surface::L:
@@ -67,7 +67,7 @@ class CombinatorialSurfaceGenerator : public Catch::Generators::IGenerator<std::
     }
   }
 
-public:
+ public:
   CombinatorialSurfaceGenerator() :
     current(Surface::SQUARE),
     value(make(current)) {}
@@ -94,6 +94,6 @@ Catch::Generators::GeneratorWrapper<std::shared_ptr<FlatTriangulationCombinatori
   return Catch::Generators::GeneratorWrapper<std::shared_ptr<FlatTriangulationCombinatorial>>(std::unique_ptr<Catch::Generators::IGenerator<std::shared_ptr<FlatTriangulationCombinatorial>>>(new CombinatorialSurfaceGenerator()));
 }
 
-}
+}  // namespace flatsurf::test
 
 #endif

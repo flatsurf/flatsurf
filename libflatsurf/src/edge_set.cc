@@ -21,11 +21,11 @@
 
 #include <fmt/format.h>
 
-#include "../flatsurf/edge_set.hpp"
 #include "../flatsurf/edge.hpp"
-#include "../flatsurf/fmt.hpp"
+#include "../flatsurf/edge_set.hpp"
 #include "../flatsurf/edge_set_iterator.hpp"
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
+#include "../flatsurf/fmt.hpp"
 
 #include "impl/edge_set.impl.hpp"
 
@@ -75,4 +75,4 @@ std::ostream& operator<<(std::ostream& os, const EdgeSet& self) {
   return os << fmt::format("{{{}}}", fmt::join(begin(self), end(self), ", "));
 }
 
-}
+}  // namespace flatsurf

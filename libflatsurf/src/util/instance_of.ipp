@@ -22,12 +22,12 @@
 namespace flatsurf {
 
 template <typename T, template <typename...> typename Template>
-struct is_instance_of : std::false_type { };
+struct is_instance_of : std::false_type {};
 
 template <template <typename...> typename Template, typename... Args>
-struct is_instance_of<Template<Args...>, Template> : std::true_type { };
+struct is_instance_of<Template<Args...>, Template> : std::true_type {};
 
 template <typename T, template <typename...> typename Template>
 constexpr bool is_instance_of_v = is_instance_of<T, Template>::value;
 
-}
+}  // namespace flatsurf

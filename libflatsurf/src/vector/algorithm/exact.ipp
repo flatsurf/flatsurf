@@ -29,8 +29,8 @@
 
 #include "../../../flatsurf/bound.hpp"
 #include "../../../flatsurf/ccw.hpp"
-#include "../../../flatsurf/orientation.hpp"
 #include "../../../flatsurf/fmt.hpp"
+#include "../../../flatsurf/orientation.hpp"
 
 #include "../storage/cartesian.ipp"
 #include "../storage/forward.ipp"
@@ -231,7 +231,7 @@ T VectorExact<Vector, T>::area(const std::vector<Vector>& perimeter) {
   for (const auto& v : perimeter) {
     Vector next = current + v;
 
-    area += current.x()*next.y() - current.y()*next.x();
+    area += current.x() * next.y() - current.y() * next.x();
 
     current = next;
   }

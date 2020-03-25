@@ -29,8 +29,9 @@
 
 namespace flatsurf {
 
-class HalfEdgeSetIterator : public boost::iterator_facade<HalfEdgeSetIterator, const HalfEdge&, boost::forward_traversal_tag> {
-  template <typename ...Args> HalfEdgeSetIterator(PrivateConstructor, Args&&...);
+class HalfEdgeSetIterator : public boost::iterator_facade<HalfEdgeSetIterator, const HalfEdge &, boost::forward_traversal_tag> {
+  template <typename... Args>
+  HalfEdgeSetIterator(PrivateConstructor, Args &&...);
 
  public:
   using value_type = HalfEdge;
@@ -46,6 +47,6 @@ class HalfEdgeSetIterator : public boost::iterator_facade<HalfEdgeSetIterator, c
   friend HalfEdgeSet;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

@@ -21,14 +21,14 @@
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/edge_set.hpp"
 
-#include "impl/edge_set_iterator.impl.hpp"
 #include "impl/edge_set.impl.hpp"
+#include "impl/edge_set_iterator.impl.hpp"
 
 #include "util/assert.ipp"
 
 namespace flatsurf {
 
-template <typename ...Args>
+template <typename... Args>
 EdgeSetIterator::EdgeSetIterator(PrivateConstructor, Args&&... args) :
   impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {
 }
@@ -53,7 +53,7 @@ EdgeSetIterator EdgeSet::end() const {
   return EdgeSetIterator{PrivateConstructor{}, impl->end()};
 }
 
-ImplementationOf<EdgeSetIterator>::ImplementationOf(IndexedSetIterator<Edge>&& self) : IndexedSetIterator(std::move(self)) {}
+ImplementationOf<EdgeSetIterator>::ImplementationOf(IndexedSetIterator<Edge>&& self) :
+  IndexedSetIterator(std::move(self)) {}
 
-}
-
+}  // namespace flatsurf

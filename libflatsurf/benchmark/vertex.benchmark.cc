@@ -20,8 +20,8 @@
 
 #include <benchmark/benchmark.h>
 
-#include "../flatsurf/vertex.hpp"
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/vertex.hpp"
 
 #include "surfaces.hpp"
 
@@ -52,6 +52,3 @@ void VertexAtSource(State& state) {
 BENCHMARK(VertexAtSource);
 
 }  // namespace flatsurf::benchmark
-
-
-

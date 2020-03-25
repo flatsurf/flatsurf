@@ -20,8 +20,8 @@
 #include <intervalxt/forward.hpp>
 #include <memory>
 #include <ostream>
-#include <vector>
 #include <unordered_set>
+#include <vector>
 
 #include <fmt/format.h>
 
@@ -33,9 +33,9 @@
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
 #include "../flatsurf/edge_set.hpp"
+#include "../flatsurf/fmt.hpp"
 #include "../flatsurf/tracked.hpp"
 #include "../flatsurf/vertex.hpp"
-#include "../flatsurf/fmt.hpp"
 
 #include "impl/contour_component.impl.hpp"
 #include "impl/flat_triangulation_collapsed.impl.hpp"
@@ -77,16 +77,10 @@ IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(std::sha
 
 template <typename Surface>
 void IntervalExchangeTransformation<Surface>::makeUniqueLargeEdges(Surface& surface, const Vector<T>& vertical_) {
-  Tracked<EdgeSet> sources(&surface, EdgeSet(), [](auto& sources, const auto&, HalfEdge e) {
-    ASSERT(!sources.contains(e), "Selected source edges cannot be flipped.");
-  }, [](auto& sources, const auto&, Edge e) {
-    ASSERT(!sources.contains(e), "Selected source edges cannot be collapsed.");
-  }, [](auto& sources, const auto& surface, HalfEdge a, HalfEdge b) {
-    Tracked<EdgeSet>::defaultSwap(sources, surface, a, b);
-  }, [](auto& sources, const auto& surface, const auto& edges) {
+  Tracked<EdgeSet> sources(
+      &surface, EdgeSet(), [](auto& sources, const auto&, HalfEdge e) { ASSERT(!sources.contains(e), "Selected source edges cannot be flipped."); }, [](auto& sources, const auto&, Edge e) { ASSERT(!sources.contains(e), "Selected source edges cannot be collapsed."); }, [](auto& sources, const auto& surface, HalfEdge a, HalfEdge b) { Tracked<EdgeSet>::defaultSwap(sources, surface, a, b); }, [](auto& sources, const auto& surface, const auto& edges) {
     ASSERT(edges | rx::all_of([&](Edge e) { return !sources.contains(e); }), "Selected source edges cannot be erased.");
-    Tracked<EdgeSet>::defaultErase(sources, surface, edges);
-  });
+    Tracked<EdgeSet>::defaultErase(sources, surface, edges); });
 
   const bool splitContours = true;
 
@@ -144,7 +138,6 @@ typename intervalxt::IntervalExchangeTransformation& IntervalExchangeTransformat
 
 template <typename Surface>
 std::unordered_set<HalfEdge> IntervalExchangeTransformation<Surface>::makeUniqueLargeEdge(Surface& surface, const Vector<T>& vertical_, HalfEdge& unique_) {
-
   Tracked<HalfEdge> unique(&surface, HalfEdge(unique_));
 
   Vertical<Surface> vertical(surface.shared_from_this(), vertical_);
@@ -157,16 +150,16 @@ std::unordered_set<HalfEdge> IntervalExchangeTransformation<Surface>::makeUnique
   while (true) {
     std::unordered_set<HalfEdge> component;
     if (ImplementationOf<Vertical<Surface>>::visit(vertical, unique, component, [&](HalfEdge e) {
-      if (e == static_cast<HalfEdge>(unique) || e == -static_cast<HalfEdge>(unique))
-        return true;
+          if (e == static_cast<HalfEdge>(unique) || e == -static_cast<HalfEdge>(unique))
+            return true;
 
-      if (vertical.large(e)) {
-        surface.flip(e);
-        return false;
-      }
+          if (vertical.large(e)) {
+            surface.flip(e);
+            return false;
+          }
 
-      return true;
-    })) {
+          return true;
+        })) {
       assert(component.size() >= 2);
       unique_ = unique;
       return component;
@@ -222,7 +215,7 @@ ImplementationOf<IntervalExchangeTransformation<Surface>>::ImplementationOf(std:
   };
 
   CHECK_ARGUMENT(std::unordered_multiset<HalfEdge>(top.begin(), top.end()) == std::unordered_multiset<HalfEdge>(bottom.begin(), bottom.end()), "top and bottom contour must contain the same half edges");
-  CHECK_ARGUMENT(connected(top), fmt::format("top contour must be connected but {} is not connected in {}.", fmt::join(top, ", "),*surface));
+  CHECK_ARGUMENT(connected(top), fmt::format("top contour must be connected but {} is not connected in {}.", fmt::join(top, ", "), *surface));
   CHECK_ARGUMENT(connected(bottom), "bottom contour must be connected");
   ASSERT(std::all_of(begin(top), end(top), [&](Edge e) { return lengths->get(intervalxt::Label(e.index())) > 0; }), "lengths in contour must be positive");
 }

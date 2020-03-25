@@ -37,7 +37,8 @@ class ContourConnection : boost::equality_comparable<ContourComponent<Surface>> 
  private:
   // Connections can not be created directly (other than by copying & moving
   // them.) They are byproducts of a ContourDecomposition.
-  template <typename ...Args> ContourConnection(PrivateConstructor, Args&&...);
+  template <typename... Args>
+  ContourConnection(PrivateConstructor, Args &&...);
 
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
@@ -47,7 +48,7 @@ class ContourConnection : boost::equality_comparable<ContourComponent<Surface>> 
  public:
   // The saddle connection in the surface corresponding to this contour
   // connection. Going from left to right.
-  const SaddleConnection<FlatTriangulation<T>>& horizontal() const;
+  const SaddleConnection<FlatTriangulation<T>> &horizontal() const;
 
   // The saddle connections of left(), connection(), and right() in
   // contourclockwise order, i.e., either -left() + connection() + right() or

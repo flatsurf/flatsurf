@@ -23,8 +23,8 @@
 
 #include <memory>
 
-#include <gmpxx.h>
 #include <e-antic/renf_elem.h>
+#include <gmpxx.h>
 
 #include "../external/catch2/single_include/catch2/catch.hpp"
 
@@ -66,7 +66,7 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::shared_ptr<Fl
   static constexpr bool hasNumberFieldElements = std::is_same_v<T, eantic::renf_elem_class> || std::is_same_v<T, exactreal::Element<exactreal::NumberField>>;
 
   static std::shared_ptr<FlatTriangulation<T>> make(Surface surface) {
-    switch(surface) {
+    switch (surface) {
       case Surface::SQUARE:
         return makeSquare<R2>();
       case Surface::L:
@@ -80,57 +80,69 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::shared_ptr<Fl
       case Surface::CATHEDRAL:
         if constexpr (hasFractions)
           return makeCathedral<R2>();
-        else return nullptr;
+        else
+          return nullptr;
       case Surface::CATHEDRAL_QUARTIC:
         if constexpr (hasFractions && hasNumberFieldElements)
           return makeCathedralQuartic<R2>();
-        else return nullptr;
+        else
+          return nullptr;
       case Surface::CATHEDRAL_VEECH:
         if constexpr (hasFractions && hasNumberFieldElements)
           return makeCathedralVeech<R2>();
-        else return nullptr;
+        else
+          return nullptr;
       case Surface::MCMULLEN_GENUS2:
         if constexpr (hasNumberFieldElements)
           return makeMcMullenGenus2<R2>();
-        else return nullptr;
+        else
+          return nullptr;
       case Surface::_123:
         if constexpr (hasNumberFieldElements)
           return make123<R2>();
-        else return nullptr;
+        else
+          return nullptr;
       case Surface::_125:
         if constexpr (hasFractions && hasNumberFieldElements)
           return make125<R2>();
-        else return nullptr;
+        else
+          return nullptr;
       case Surface::_1221:
         if constexpr (hasFractions && hasNumberFieldElements)
           return make1221<R2>();
-        else return nullptr;
+        else
+          return nullptr;
       case Surface::_1234:
         if constexpr (hasFractions && hasNumberFieldElements)
           return make1234<R2>();
-        else return nullptr;
+        else
+          return nullptr;
       case Surface::HEXAGON:
         if constexpr (hasFractions && hasNumberFieldElements)
           return makeHexagon<R2>();
-        else return nullptr;
+        else
+          return nullptr;
       case Surface::OCTAGON:
         if constexpr (hasFractions && hasNumberFieldElements)
           return makeOctagon<R2>();
-        else return nullptr;
+        else
+          return nullptr;
       case Surface::HEPTAGON_L:
         if constexpr (hasFractions && hasNumberFieldElements)
           return makeHeptagonL<R2>();
-        else return nullptr;
+        else
+          return nullptr;
       case Surface::GOLDEN_L:
         if constexpr (hasNumberFieldElements)
           return makeGoldenL<R2>();
-        else return nullptr;
+        else
+          return nullptr;
       default:
         throw std::logic_error("unknown Surface type");
     }
   }
 
-public:
+ public:
   SurfaceGenerator() :
     current(Surface::SQUARE),
     value(make(current)) {}
@@ -158,6 +170,6 @@ Catch::Generators::GeneratorWrapper<std::shared_ptr<FlatTriangulation<T>>> makeS
   return Catch::Generators::GeneratorWrapper<std::shared_ptr<FlatTriangulation<T>>>(std::unique_ptr<Catch::Generators::IGenerator<std::shared_ptr<FlatTriangulation<T>>>>(new SurfaceGenerator<T>()));
 }
 
-}
+}  // namespace flatsurf::test
 
 #endif

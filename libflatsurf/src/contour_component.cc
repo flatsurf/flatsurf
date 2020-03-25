@@ -45,8 +45,8 @@ using std::vector;
 namespace flatsurf {
 
 template <typename Surface>
-template <typename ...Args>
-ContourComponent<Surface>::ContourComponent(PrivateConstructor, Args&&...args) :
+template <typename... Args>
+ContourComponent<Surface>::ContourComponent(PrivateConstructor, Args&&... args) :
   impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
 
 template <typename Surface>
@@ -187,8 +187,7 @@ bool ContourComponent<Surface>::operator==(const ContourComponent<Surface>& rhs)
   if (impl->state == rhs.impl->state)
     return false;
 
-  return impl->state->surface == rhs.impl->state->surface
-    && impl->component->halfEdges == rhs.impl->component->halfEdges;
+  return impl->state->surface == rhs.impl->state->surface && impl->component->halfEdges == rhs.impl->component->halfEdges;
 }
 
 template <typename Surface>

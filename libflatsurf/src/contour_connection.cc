@@ -25,16 +25,16 @@
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
 #include "../flatsurf/contour_connection.hpp"
+#include "../flatsurf/fmt.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vertex.hpp"
 #include "../flatsurf/vertical.hpp"
-#include "../flatsurf/fmt.hpp"
 
-#include "impl/contour_connection.impl.hpp"
 #include "impl/contour_component.impl.hpp"
+#include "impl/contour_connection.impl.hpp"
 #include "impl/contour_decomposition_state.hpp"
 
 #include "util/assert.ipp"
@@ -42,8 +42,8 @@
 namespace flatsurf {
 
 template <typename Surface>
-template <typename ...Args>
-ContourConnection<Surface>::ContourConnection(PrivateConstructor, Args&&...args) :
+template <typename... Args>
+ContourConnection<Surface>::ContourConnection(PrivateConstructor, Args&&... args) :
   impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
 
 template <typename Surface>
@@ -66,9 +66,9 @@ const SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>& Contour
 template <typename Surface>
 Path<FlatTriangulation<typename Surface::Coordinate>> ContourConnection<Surface>::left() const {
   auto left = top()
-    ? Implementation::cross(*this, nextInPerimeter()).first
-    : Implementation::cross(previousInPerimeter(), *this).second;
-  
+                  ? Implementation::cross(*this, nextInPerimeter()).first
+                  : Implementation::cross(previousInPerimeter(), *this).second;
+
   ASSERTIONS([&]() {
     for (const auto& connection : left) {
       ASSERT(impl->state->surface->vertical().perpendicular(connection) == 0, "ContourConnection::left() must be vertical but " << connection << " is not.");
@@ -81,8 +81,8 @@ Path<FlatTriangulation<typename Surface::Coordinate>> ContourConnection<Surface>
 template <typename Surface>
 Path<FlatTriangulation<typename Surface::Coordinate>> ContourConnection<Surface>::right() const {
   auto right = top()
-    ? Implementation::cross(previousInPerimeter(), *this).second
-    : Implementation::cross(*this, nextInPerimeter()).first;
+                   ? Implementation::cross(previousInPerimeter(), *this).second
+                   : Implementation::cross(*this, nextInPerimeter()).first;
   ASSERTIONS([&]() {
     for (const auto& connection : right) {
       ASSERT(impl->state->surface->vertical().perpendicular(connection) == 0, "ContourConnection::right() must be vertical but " << connection << " is not.");
@@ -96,16 +96,16 @@ template <typename Surface>
 Path<FlatTriangulation<typename Surface::Coordinate>> ContourConnection<Surface>::perimeter() const {
   Path perimeter;
   if (top()) {
-    perimeter = rx::chain(right(), std::vector{ -horizontal() }, left()) | rx::to_vector();
+    perimeter = rx::chain(right(), std::vector{-horizontal()}, left()) | rx::to_vector();
     ASSERTIONS([&]() {
-        for (const  auto& connection : perimeter)
-          ASSERT(impl->state->surface->vertical().perpendicular(connection) <= 0, "ContourConnection::perimeter() must be right-to-left but " << connection << " is not.");
+      for (const auto& connection : perimeter)
+        ASSERT(impl->state->surface->vertical().perpendicular(connection) <= 0, "ContourConnection::perimeter() must be right-to-left but " << connection << " is not.");
     });
   } else {
-    perimeter = rx::chain(left(), std::vector{ horizontal() }, right()) | rx::to_vector();
+    perimeter = rx::chain(left(), std::vector{horizontal()}, right()) | rx::to_vector();
     ASSERTIONS([&]() {
-        for (const  auto& connection : perimeter)
-          ASSERT(impl->state->surface->vertical().perpendicular(connection) >= 0, "ContourConnection::perimeter() must be left-to-right but " << connection << " is not.");
+      for (const auto& connection : perimeter)
+        ASSERT(impl->state->surface->vertical().perpendicular(connection) >= 0, "ContourConnection::perimeter() must be left-to-right but " << connection << " is not.");
     });
   }
   ASSERT(perimeter.simple(), "Perimeter must be simple but " << perimeter << " is not.");
@@ -236,7 +236,7 @@ std::pair<Path<FlatTriangulation<typename Surface::Coordinate>>, Path<FlatTriang
     }
   });
 
-  return {atFrom | rx::to_vector(), atTo | rx::to_vector() };
+  return {atFrom | rx::to_vector(), atTo | rx::to_vector()};
 }
 
 template <typename Surface>

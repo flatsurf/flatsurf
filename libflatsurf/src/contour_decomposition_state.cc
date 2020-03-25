@@ -25,8 +25,8 @@
 
 #include "util/assert.ipp"
 
-#include "impl/contour_decomposition_state.hpp"
 #include "impl/contour_component.impl.hpp"
+#include "impl/contour_decomposition_state.hpp"
 
 namespace flatsurf {
 

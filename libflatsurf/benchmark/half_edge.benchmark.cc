@@ -37,5 +37,3 @@ void HalfEdgeIndex(State& state) {
 BENCHMARK(HalfEdgeIndex)->Arg(-1)->Arg(1);
 
 }  // namespace flatsurf::benchmark
-
-

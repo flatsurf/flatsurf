@@ -54,8 +54,8 @@ using std::ostream;
 using std::string;
 
 template <typename Surface>
-template <typename ...Args>
-FlowComponent<Surface>::FlowComponent(PrivateConstructor, Args&&...args) :
+template <typename... Args>
+FlowComponent<Surface>::FlowComponent(PrivateConstructor, Args&&... args) :
   impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
 
 template <typename Surface>
@@ -63,7 +63,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
   const auto check = [&]() {
     ASSERTIONS(([&]() {
       auto paths = impl->state->components | rx::transform([&](const auto& component) { return Path(ImplementationOf<FlowComponent<Surface>>::make(impl->state, &const_cast<FlowComponentState<Surface>&>(component)).perimeter() | rx::transform([](const auto& connection) { return connection.saddleConnection(); }) | rx::to_vector()); }) | rx::to_vector();
-    ImplementationOf<ContourDecomposition<Surface>>::check(paths, vertical());
+      ImplementationOf<ContourDecomposition<Surface>>::check(paths, vertical());
     }));
   };
 
@@ -147,9 +147,9 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
           if (vertical.parallel(vector) > 0) return NORTH_EAST;
           return EAST;
         }
-          if (vertical.parallel(vector) < 0) return SOUTH;
-          if (vertical.parallel(vector) > 0) return NORTH;
-          throw std::logic_error("cannot classify zero vector");
+        if (vertical.parallel(vector) < 0) return SOUTH;
+        if (vertical.parallel(vector) > 0) return NORTH;
+        throw std::logic_error("cannot classify zero vector");
       };
 
       // The following logic should probably be abstracted away into SaddleConnection somehow.
@@ -160,8 +160,8 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
       const auto source = [&]() {
         auto ret = clockwiseFrom.source();
 
-        while(true) {
-          switch(classify(vertical(), surface->fromEdge(ret))) {
+        while (true) {
+          switch (classify(vertical(), surface->fromEdge(ret))) {
             case NORTH:
             case NORTH_EAST:
             case EAST:
@@ -185,8 +185,8 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
       auto target = [&]() {
         auto ret = counterclockwiseTo.source();
 
-        while(true) {
-          switch(classify(vertical(), surface->fromEdge(ret))) {
+        while (true) {
+          switch (classify(vertical(), surface->fromEdge(ret))) {
             case NORTH_WEST:
             case WEST:
             case SOUTH_WEST:
@@ -198,8 +198,8 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
           break;
         }
 
-        while(true) {
-          switch(classify(vertical(), surface->fromEdge(ret))) {
+        while (true) {
+          switch (classify(vertical(), surface->fromEdge(ret))) {
             case SOUTH_EAST:
             case EAST:
             case NORTH_EAST:
@@ -272,7 +272,7 @@ Vertical<Surface> FlowComponent<Surface>::vertical() const {
 
 template <typename Surface>
 typename Surface::Coordinate FlowComponent<Surface>::area() const {
-  return Vector<T>::area(perimeter() | rx::transform([&](const auto & connection) { return static_cast<const Vector<T>&>(connection.saddleConnection()); }) | rx::to_vector());
+  return Vector<T>::area(perimeter() | rx::transform([&](const auto& connection) { return static_cast<const Vector<T>&>(connection.saddleConnection()); }) | rx::to_vector());
 }
 
 template <typename Surface>
@@ -314,7 +314,7 @@ typename FlowComponent<Surface>::Perimeter FlowComponent<Surface>::perimeter() c
     perimeter.push_back(ImplementationOf<FlowConnection<Surface>>::make(impl->state, *this, side));
 
   ASSERTIONS([&]() {
-    Path<FlatTriangulation<T>> path = perimeter | rx::transform([&](const auto connection) { return connection.saddleConnection();}) | rx::to_vector();
+    Path<FlatTriangulation<T>> path = perimeter | rx::transform([&](const auto connection) { return connection.saddleConnection(); }) | rx::to_vector();
     ASSERT(path.simple(), "Perimeter of FlowComponent must not contain duplicates but " << path << " does.");
     ASSERT(path.closed(), "Perimeter of FlowComponent must be closed but " << path << " is not.");
   });

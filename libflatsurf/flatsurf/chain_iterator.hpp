@@ -33,14 +33,15 @@ namespace flatsurf {
 
 template <typename Surface>
 class ChainIterator : public boost::iterator_facade<ChainIterator<Surface>, const std::pair<Edge, const mpz_class*>&, boost::forward_traversal_tag> {
-  template <typename ...Args> ChainIterator(PrivateConstructor, Args&&...);
+  template <typename... Args>
+  ChainIterator(PrivateConstructor, Args&&...);
 
  public:
   using value_type = std::pair<Edge, const mpz_class*>;
 
   void increment();
   const value_type& dereference() const;
-  bool equal(const ChainIterator &other) const;
+  bool equal(const ChainIterator& other) const;
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const ChainIterator<S>&);
@@ -52,6 +53,6 @@ class ChainIterator : public boost::iterator_facade<ChainIterator<Surface>, cons
   friend Chain<Surface>;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

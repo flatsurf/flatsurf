@@ -63,7 +63,7 @@ TEST_CASE("Vertices And Modifications of Surfaces", "[vertex][flip]") {
     for (HalfEdge flip : hexagon->halfEdges()) {
       if (Edge(flip) == fixed) continue;
 
-      hexagon->flip(flip); 
+      hexagon->flip(flip);
 
       REQUIRE(Vertex::source(fixed.positive(), *hexagon) != Vertex::target(fixed.positive(), *hexagon));
       REQUIRE(hexagon->vertices().size() == 2);
@@ -71,4 +71,4 @@ TEST_CASE("Vertices And Modifications of Surfaces", "[vertex][flip]") {
   }
 }
 
-}
+}  // namespace flatsurf::test

@@ -23,14 +23,14 @@
 
 #include <memory>
 
-#include <gmpxx.h>
 #include <e-antic/renf_elem.h>
+#include <gmpxx.h>
 
 #include "../external/catch2/single_include/catch2/catch.hpp"
 
+#include "../../flatsurf/bound.hpp"
 #include "../../flatsurf/saddle_connections.hpp"
 #include "../../flatsurf/saddle_connections_iterator.hpp"
-#include "../../flatsurf/bound.hpp"
 
 namespace flatsurf::test {
 
@@ -39,8 +39,8 @@ class SaddleConnectionsGenerator : public Catch::Generators::IGenerator<SaddleCo
   SaddleConnections<FlatTriangulation<T>> connections;
   typename SaddleConnections<FlatTriangulation<T>>::Iterator current;
 
-public:
-  SaddleConnectionsGenerator(std::shared_ptr<FlatTriangulation<T>> surface, Bound bound=Bound(3, 0)) :
+ public:
+  SaddleConnectionsGenerator(std::shared_ptr<FlatTriangulation<T>> surface, Bound bound = Bound(3, 0)) :
     connections(surface, bound),
     current(begin(connections)) {}
 
@@ -60,7 +60,6 @@ Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>> sadd
   return Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>>(std::unique_ptr<Catch::Generators::IGenerator<SaddleConnection<FlatTriangulation<T>>>>(new SaddleConnectionsGenerator<T>(surface)));
 }
 
-}
+}  // namespace flatsurf::test
 
 #endif
-

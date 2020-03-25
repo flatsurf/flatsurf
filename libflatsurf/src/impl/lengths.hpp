@@ -48,6 +48,7 @@ class Lengths {
   void pop();
   void subtract(intervalxt::Label);
   intervalxt::Label subtractRepeated(intervalxt::Label);
+  void subtractRepeated(intervalxt::Label, const mpz_class&);
   std::vector<mpq_class> coefficients(intervalxt::Label) const;
   int cmp(intervalxt::Label) const;
   int cmp(intervalxt::Label, intervalxt::Label) const;

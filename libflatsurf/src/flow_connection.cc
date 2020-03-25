@@ -37,10 +37,11 @@ using std::ostream;
 namespace flatsurf {
 
 template <typename Surface>
-template <typename ...Args>
-FlowConnection<Surface>::FlowConnection(PrivateConstructor, Args&&...args)
+template <typename... Args>
+FlowConnection<Surface>::FlowConnection(PrivateConstructor, Args&&... args)
   // we assume that the caller is aware that impl has to be initialized explicitly.
-  : impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
+  :
+  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
 
 template <typename Surface>
 SaddleConnection<FlatTriangulation<typename Surface::Coordinate>> FlowConnection<Surface>::saddleConnection() const {
@@ -80,7 +81,7 @@ FlowConnection<Surface> FlowConnection<Surface>::operator-() const {
       }
   }
 
-  ASSERT(false, "Negative of " << *this << " not present in FlowDecomposition.");
+  UNREACHABLE("Negative of " << *this << " not present in FlowDecomposition.");
 }
 
 template <typename Surface>
@@ -100,8 +101,8 @@ FlowConnection<Surface> ImplementationOf<FlowConnection<Surface>>::make(std::sha
   ASSERT(state->injectedConnections.find(connection) != end(state->injectedConnections) || state->detectedConnections.find(connection) != end(state->detectedConnections), "Connection " << connection << " not known to " << *state);
 
   FlowConnection<Surface> ret = (state->injectedConnections.find(connection) != state->injectedConnections.end())
-    ? FlowConnection<Surface>(PrivateConstructor{}, state, component, state->injectedConnections.at(connection))
-    : FlowConnection<Surface>(PrivateConstructor{}, state, component, state->detectedConnections.at(connection));
+                                    ? FlowConnection<Surface>(PrivateConstructor{}, state, component, state->injectedConnections.at(connection))
+                                    : FlowConnection<Surface>(PrivateConstructor{}, state, component, state->detectedConnections.at(connection));
 
   ASSERT(ret.vertical(), "FlowConnection created from vertical Connection must be vertical but " << ret << " created from " << connection << " is not.");
   ASSERT(connection.parallel() == ret.parallel(), "FlowConnection must have same parallelity as Connection but " << ret << " and " << connection << " do not coincide");

@@ -35,6 +35,6 @@ class ImplementationOf<EdgeSet> : public IndexedSet<Edge> {
   using IndexedSet<Edge>::IndexedSet;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

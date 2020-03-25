@@ -20,11 +20,11 @@
 #ifndef LIBFLATSURF_UTIL_INSTANTIATE_IPP
 #define LIBFLATSURF_UTIL_INSTANTIATE_IPP
 
+#include <boost/preprocessor/seq/fold_left.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/seq/for_each_product.hpp>
-#include <boost/preprocessor/seq/transform.hpp>
-#include <boost/preprocessor/seq/fold_left.hpp>
 #include <boost/preprocessor/seq/seq.hpp>
+#include <boost/preprocessor/seq/transform.hpp>
 
 #include <e-antic/renfxx.h>
 #include <gmpxx.h>
@@ -53,7 +53,7 @@
 
 #define LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION(T) \
   namespace flatsurf {                                 \
-  template class ImplementationOf<LIBFLATSURF_REM(T)>;   \
+  template class ImplementationOf<LIBFLATSURF_REM(T)>; \
   }                                                    \
   LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION(T)
 

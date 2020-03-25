@@ -20,8 +20,8 @@
 #ifndef LIBFLATSURF_HALF_EDGE_MAP_HPP
 #define LIBFLATSURF_HALF_EDGE_MAP_HPP
 
-#include "half_edge.hpp"
 #include "flat_triangulation_combinatorial.hpp"
+#include "half_edge.hpp"
 
 namespace flatsurf {
 
@@ -35,7 +35,8 @@ class HalfEdgeMap {
     }
   }
 
-  HalfEdgeMap(const std::vector<T>& values) : values(values) {}
+  HalfEdgeMap(const std::vector<T>& values) :
+    values(values) {}
 
   T& operator[](HalfEdge he) {
     return values[he.index()];
@@ -68,6 +69,6 @@ class HalfEdgeMap {
   std::vector<T> values;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

@@ -26,8 +26,8 @@
 #include "../flatsurf/delaunay_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
 
-#include "surfaces.hpp"
 #include "generators/half_edge_generator.hpp"
+#include "surfaces.hpp"
 
 namespace flatsurf::test {
 

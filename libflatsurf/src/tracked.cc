@@ -33,7 +33,7 @@ struct is_half_edge_map : std::false_type {};
 
 template <typename T>
 struct is_half_edge_map<HalfEdgeMap<T>> : std::true_type {};
-}
+}  // namespace
 
 template <typename T>
 Tracked<T>::Tracked(const FlatTriangulationCombinatorial* parent, T value, const FlipHandler& updateAfterFlip, const CollapseHandler& updateBeforeCollapse, const SwapHandler& updateBeforeSwap, const EraseHandler& updateBeforeErase, const DestructionHandler& updateBeforeDestruction) :
@@ -77,10 +77,14 @@ template <typename T>
 void Tracked<T>::defaultSwap(T& self, const FlatTriangulationCombinatorial&, HalfEdge a, HalfEdge b) {
   ASSERT(a != b, "cannot swap HalfEdge with itself");
   if constexpr (std::is_same_v<T, HalfEdge>) {
-    if (self == a) self = b;
-    else if (self == -a) self = -b;
-    else if (self == b) self = a;
-    else if (self == -b) self = -a;
+    if (self == a)
+      self = b;
+    else if (self == -a)
+      self = -b;
+    else if (self == b)
+      self = a;
+    else if (self == -b)
+      self = -a;
   } else if constexpr (std::is_same_v<T, EdgeSet>) {
     if (a == b || a == -b) return;
     if (self.contains(a) && !self.contains(b)) {
@@ -109,8 +113,11 @@ void Tracked<T>::defaultErase(T& self, const FlatTriangulationCombinatorial&, co
     for (auto e : erase)
       self.erase(e);
   } else if constexpr (is_half_edge_map<T>::value) {
-    ASSERT(erase | rx::all_of([&](const auto& e) { return e.positive().index() >= self.size() - 2*erase.size(); }), "Can only erase HalfEdges of maximal index from Tracked<HalfEdgeSet>. But the given edges are not maximal."); 
-    for (auto e : erase) self.pop();
+    ASSERT(erase | rx::all_of([&](const auto& e) { return e.positive().index() >= self.size() - 2 * erase.size(); }), "Can only erase HalfEdges of maximal index from Tracked<HalfEdgeSet>. But the given edges are not maximal.");
+    for (auto e : erase) {
+      (void)e;
+      self.pop();
+    }
   } else {
     throw std::logic_error("This Tracked<T> of a FlatTriangulationCombinatorial does not support removal of edges.");
   }
@@ -207,13 +214,13 @@ void ImplementationOf<Tracked<T>>::connect() {
   });
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"
 
-#include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/edge_set.hpp"
+#include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/odd_half_edge_map.hpp"
 #include "../flatsurf/vector.hpp"
 

@@ -22,12 +22,12 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
-#include <intervalxt/length.hpp>
 #include <intervalxt/interval_exchange_transformation.hpp>
-#include <intervalxt/sample/lengths.hpp>
+#include <intervalxt/length.hpp>
 #include <intervalxt/sample/arithmetic.hpp>
 #include <intervalxt/sample/e-antic-arithmetic.hpp>
 #include <intervalxt/sample/exact-real-arithmetic.hpp>
+#include <intervalxt/sample/lengths.hpp>
 #include <intervalxt/sample/rational-arithmetic.hpp>
 
 #include "../flatsurf/chain.hpp"
@@ -35,8 +35,8 @@
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertical.hpp"
 
-#include "external/rx-ranges/include/rx/ranges.hpp"
 #include "external/gmpxxll/gmpxxll/mpz_class.hpp"
+#include "external/rx-ranges/include/rx/ranges.hpp"
 
 #include "impl/flow_component.impl.hpp"
 #include "impl/flow_connection.impl.hpp"
@@ -84,10 +84,21 @@ void Lengths<Surface>::pop() {
 
 template <typename Surface>
 void Lengths<Surface>::subtract(Label minuend) {
+  subtractRepeated(minuend, 1);
+}
+
+template <typename Surface>
+void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iterations) {
+  ASSERT(iterations > 0, "must subtract at least once");
   ASSERT(length(minuend) > 0, "lengths must be positive");
 
-  const T expected = length(minuend) - length();
-  ASSERT(expected > 0, "Lengths must be positive but subtracting " << length() << " from edge " << fromLabel(minuend) << " of length " << length(minuend) << " would yield " << expected << " which is non-positive.");
+  const T expected = [&]() {
+    if constexpr (std::is_same_v<T, long long>)
+       return length(minuend) - iterations.get_ui() * length();
+    else
+      return length(minuend) - iterations * length();
+  }();
+  ASSERT(expected > 0, "Lengths must be positive but subtracting " << length() << iterations << "times from edge " << fromLabel(minuend) << " of length " << length(minuend) << " would yield " << expected << " which is non-positive.");
   ASSERT(expected < length(minuend), "subtraction must shorten lengths");
 
   auto& component = *std::find_if(begin(state.lock()->components), end(state.lock()->components), [&](const auto& component) {
@@ -143,6 +154,14 @@ void Lengths<Surface>::subtract(Label minuend) {
       }
     }
 
+    // If we want to subtract this gadget more than once, we just need to scale
+    // the chain; source/target are not affected by this. (They might change,
+    // but they are still in the same half plane of the same vertex.)
+    // Note that this is more complicated when the bottom minuend has
+    // connections on its left.  Therefore we need to caller to do a simple
+    // subtract before doing a subtractRepeated.
+    walk *= iterations;
+
     auto vector = walk + *minuendConnection;
 
     // The tricky part is now to figure out the actual source/target sector of
@@ -186,7 +205,7 @@ void Lengths<Surface>::subtract(Label minuend) {
 
       const auto reconstruction = SaddleConnection<FlatTriangulation<T>>::inSector(minuendConnection->surface().shared_from_this(), minuendConnection->source(), *minuendConnection);
       ASSERT(*minuendConnection == reconstruction,
-        "Connection after subtract does not actually exist in surface. We claimed it's " << *minuendConnection << " but it is more likely " << reconstruction);
+          "Connection after subtract does not actually exist in surface. We claimed it's " << *minuendConnection << " but it is more likely " << reconstruction);
     });
   }
 
@@ -284,7 +303,7 @@ template <typename Surface>
 ::intervalxt::Lengths Lengths<Surface>::forget() const {
   std::vector<T> lengths;
   this->lengths.apply([&](const auto& e, const auto& v) {
-    if (v) { 
+    if (v) {
       lengths.push_back(length(toLabel(e)));
     } else {
       lengths.emplace_back();

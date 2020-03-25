@@ -42,7 +42,7 @@ template <typename Surface>
 const SaddleConnection<Surface>& PathIterator<Surface>::dereference() const {
   ASSERT(!impl->parent->empty(), "cannot dereference iterator into empty path");
   ASSERT(!impl->end, "cannot dereference end() iterator");
-  ASSERT(impl->position != end(impl->parent->impl->path),  "iterator in impossible end state");
+  ASSERT(impl->position != end(impl->parent->impl->path), "iterator in impossible end state");
   return *impl->position;
 }
 
@@ -71,10 +71,9 @@ ImplementationOf<PathIterator<Surface>>::ImplementationOf(const Path<Surface>* p
     this->position = begin(parent->impl->path);
   }
 }
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"
 
 LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), PathIterator, LIBFLATSURF_FLAT_TRIANGULATION_TYPES)
-

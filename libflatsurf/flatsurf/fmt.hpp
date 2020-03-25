@@ -50,7 +50,7 @@ struct GenericFormatter {
   }
 };
 
-}
+}  // namespace flatsurf
 
 template <typename T>
 struct fmt::formatter<::flatsurf::Vector<T>> : ::flatsurf::GenericFormatter<::flatsurf::Vector<T>> {};

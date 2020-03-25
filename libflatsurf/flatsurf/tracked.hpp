@@ -31,7 +31,8 @@ namespace flatsurf {
 
 template <typename T>
 class Tracked {
-  template <typename ...Args> Tracked(PrivateConstructor, Args&&...);
+  template <typename... Args>
+  Tracked(PrivateConstructor, Args&&...);
 
  public:
   // A callback of this type is invoked after an edge is flipped.
@@ -80,4 +81,3 @@ class Tracked {
 }  // namespace flatsurf
 
 #endif
-

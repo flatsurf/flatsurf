@@ -22,8 +22,8 @@
 
 #include <iosfwd>
 #include <memory>
-#include <unordered_set>
 #include <type_traits>
+#include <unordered_set>
 #include <vector>
 
 #include <boost/operators.hpp>
@@ -83,11 +83,11 @@ class Vertical : boost::equality_comparable<Vertical<Surface>> {
   friend Implementation;
 };
 
-template <typename Surface, typename ...Args>
-Vertical(std::shared_ptr<const Surface>, Args&&...) -> Vertical<Surface>;
+template <typename Surface, typename... Args>
+Vertical(std::shared_ptr<const Surface>, Args &&...)->Vertical<Surface>;
 
-template <typename Surface, typename ...Args>
-Vertical(std::shared_ptr<Surface>, Args&&...) -> Vertical<Surface>;
+template <typename Surface, typename... Args>
+Vertical(std::shared_ptr<Surface>, Args &&...)->Vertical<Surface>;
 
 template <typename Surface>
 Vertical(std::shared_ptr<const Surface>, const Vector<typename Surface::Coordinate> &)->Vertical<Surface>;

@@ -27,13 +27,14 @@
 
 #include "external/spimpl/spimpl.h"
 
-#include "forward.hpp"
 #include "edge_set_iterator.hpp"
+#include "forward.hpp"
 
 namespace flatsurf {
 
 class EdgeSet : boost::equality_comparable<EdgeSet> {
-  template <typename ...Args> EdgeSet(PrivateConstructor, Args&&...);
+  template <typename... Args>
+  EdgeSet(PrivateConstructor, Args&&...);
 
  public:
   EdgeSet();
@@ -67,6 +68,6 @@ EdgeSetIterator begin(const EdgeSet&);
 
 EdgeSetIterator end(const EdgeSet&);
 
-}
+}  // namespace flatsurf
 
 #endif
