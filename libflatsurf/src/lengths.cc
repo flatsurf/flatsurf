@@ -94,11 +94,11 @@ void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iteratio
 
   const T expected = [&]() {
     if constexpr (std::is_same_v<T, long long>)
-       return length(minuend) - iterations.get_ui() * length();
+      return length(minuend) - iterations.get_ui() * length();
     else
       return length(minuend) - iterations * length();
   }();
-  ASSERT(expected > 0, "Lengths must be positive but subtracting " << length() << iterations << "times from edge " << fromLabel(minuend) << " of length " << length(minuend) << " would yield " << expected << " which is non-positive.");
+  ASSERT(expected > 0, "Lengths must be positive but subtracting " << length() << " " << iterations << "times from edge " << fromLabel(minuend) << " of length " << length(minuend) << " would yield " << expected << " which is non-positive.");
   ASSERT(expected < length(minuend), "subtraction must shorten lengths");
 
   auto& component = *std::find_if(begin(state.lock()->components), end(state.lock()->components), [&](const auto& component) {

@@ -55,7 +55,7 @@ AC_ARG_WITH([local-libflatsurf], AS_HELP_STRING([--without-local-libflatsurf], [
 AS_IF([test "x$with_local_libflatsurf" != "xno"],
       [with_local_libflatsurf=yes],
       [
-       AX_CXX_CHECK_LIB([flatsurf], [flatsurf::HalfEdge], [], AC_MSG_ERROR([libflatsurf not found]))])
+       AX_CXX_CHECK_LIB([flatsurf], [flatsurf::HalfEdge], [], AC_MSG_ERROR([libflatsurf not found]), [-lfmt])])
 AM_CONDITIONAL([HAVE_LOCAL_LIBFLATSURF], [test "x$with_local_libflatsurf" = "xyes"])
 
 
