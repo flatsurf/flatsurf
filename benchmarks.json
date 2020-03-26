@@ -1,7 +1,7 @@
 {
-    "Benchmarks.track_SaddleConnectionsSquare_Vector_eantic::renf_elem_class___64_980": {
+    "Benchmarks.track_CopyAssignChain_long long_": {
         "code": "def asv_method(self, t=time): return t",
-        "name": "Benchmarks.track_SaddleConnectionsSquare_Vector_eantic::renf_elem_class___64_980",
+        "name": "Benchmarks.track_CopyAssignChain_long long_",
         "param_names": [],
         "params": [],
         "timeout": 60.0,
@@ -9,9 +9,599 @@
         "unit": "ns",
         "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
     },
-    "Benchmarks.track_SaddleConnectionsSquare_Vector_long long___64_980": {
+    "Benchmarks.track_CopyConstructChain_long long_": {
         "code": "def asv_method(self, t=time): return t",
-        "name": "Benchmarks.track_SaddleConnectionsSquare_Vector_long long___64_980",
+        "name": "Benchmarks.track_CopyConstructChain_long long_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_CreateChain_long long_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_CreateChain_long long_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_FlatTriangulationCollapsedFlipCollapsed_Vector_eantic::renf_elem_class__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_FlatTriangulationCollapsedFlipCollapsed_Vector_eantic::renf_elem_class__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_FlatTriangulationCollapsedFlipCollapsed_Vector_exactreal::Element_exactreal::IntegerRing___": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_FlatTriangulationCollapsedFlipCollapsed_Vector_exactreal::Element_exactreal::IntegerRing___",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_FlatTriangulationCollapsedFlipCollapsed_Vector_long long__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_FlatTriangulationCollapsedFlipCollapsed_Vector_long long__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_FlatTriangulationCollapsedFlipCollapsed_Vector_mpq_class__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_FlatTriangulationCollapsedFlipCollapsed_Vector_mpq_class__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_FlatTriangulationCollapsedFlipUncollapsed_Vector_eantic::renf_elem_class__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_FlatTriangulationCollapsedFlipUncollapsed_Vector_eantic::renf_elem_class__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_FlatTriangulationCollapsedFlipUncollapsed_Vector_exactreal::Element_exactreal::IntegerRing___": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_FlatTriangulationCollapsedFlipUncollapsed_Vector_exactreal::Element_exactreal::IntegerRing___",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_FlatTriangulationCollapsedFlipUncollapsed_Vector_long long__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_FlatTriangulationCollapsedFlipUncollapsed_Vector_long long__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_FlatTriangulationCollapsedFlipUncollapsed_Vector_mpq_class__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_FlatTriangulationCollapsedFlipUncollapsed_Vector_mpq_class__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_FlatTriangulationCombinatorialFlip": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_FlatTriangulationCombinatorialFlip",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_FlatTriangulationFlip_Vector_eantic::renf_elem_class__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_FlatTriangulationFlip_Vector_eantic::renf_elem_class__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_FlatTriangulationFlip_Vector_exactreal::Element_exactreal::IntegerRing___": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_FlatTriangulationFlip_Vector_exactreal::Element_exactreal::IntegerRing___",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_FlatTriangulationFlip_Vector_long long__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_FlatTriangulationFlip_Vector_long long__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_FlatTriangulationFlip_Vector_mpq_class__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_FlatTriangulationFlip_Vector_mpq_class__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_HalfEdgeIndex_-1": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_HalfEdgeIndex_-1",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_HalfEdgeIndex_1": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_HalfEdgeIndex_1",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_MoveChain_long long_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_MoveChain_long long_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsLWithSlot_Vector_eantic::renf_elem_class___1": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsLWithSlot_Vector_eantic::renf_elem_class___1",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsLWithSlot_Vector_eantic::renf_elem_class___256": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsLWithSlot_Vector_eantic::renf_elem_class___256",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsLWithSlot_Vector_eantic::renf_elem_class___64": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsLWithSlot_Vector_eantic::renf_elem_class___64",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsLWithSlot_Vector_eantic::renf_elem_class___8": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsLWithSlot_Vector_eantic::renf_elem_class___8",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsLWithSlot_Vector_mpq_class___1": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsLWithSlot_Vector_mpq_class___1",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsLWithSlot_Vector_mpq_class___256": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsLWithSlot_Vector_mpq_class___256",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsLWithSlot_Vector_mpq_class___64": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsLWithSlot_Vector_mpq_class___64",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsLWithSlot_Vector_mpq_class___8": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsLWithSlot_Vector_mpq_class___8",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsL_Vector_eantic::renf_elem_class___1": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsL_Vector_eantic::renf_elem_class___1",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsL_Vector_eantic::renf_elem_class___256": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsL_Vector_eantic::renf_elem_class___256",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsL_Vector_eantic::renf_elem_class___64": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsL_Vector_eantic::renf_elem_class___64",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsL_Vector_eantic::renf_elem_class___8": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsL_Vector_eantic::renf_elem_class___8",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsL_Vector_exactreal::Element_exactreal::IntegerRing____1": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsL_Vector_exactreal::Element_exactreal::IntegerRing____1",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsL_Vector_exactreal::Element_exactreal::IntegerRing____256": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsL_Vector_exactreal::Element_exactreal::IntegerRing____256",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsL_Vector_exactreal::Element_exactreal::IntegerRing____64": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsL_Vector_exactreal::Element_exactreal::IntegerRing____64",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsL_Vector_exactreal::Element_exactreal::IntegerRing____8": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsL_Vector_exactreal::Element_exactreal::IntegerRing____8",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsL_Vector_long long___1": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsL_Vector_long long___1",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsL_Vector_long long___256": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsL_Vector_long long___256",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsL_Vector_long long___64": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsL_Vector_long long___64",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsL_Vector_long long___8": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsL_Vector_long long___8",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsL_Vector_mpq_class___1": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsL_Vector_mpq_class___1",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsL_Vector_mpq_class___256": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsL_Vector_mpq_class___256",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsL_Vector_mpq_class___64": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsL_Vector_mpq_class___64",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsL_Vector_mpq_class___8": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsL_Vector_mpq_class___8",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsSquare_Vector_eantic::renf_elem_class___1": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSquare_Vector_eantic::renf_elem_class___1",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsSquare_Vector_eantic::renf_elem_class___256": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSquare_Vector_eantic::renf_elem_class___256",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsSquare_Vector_eantic::renf_elem_class___64": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSquare_Vector_eantic::renf_elem_class___64",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsSquare_Vector_eantic::renf_elem_class___8": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSquare_Vector_eantic::renf_elem_class___8",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsSquare_Vector_exactreal::Element_exactreal::IntegerRing____1": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSquare_Vector_exactreal::Element_exactreal::IntegerRing____1",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsSquare_Vector_exactreal::Element_exactreal::IntegerRing____256": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSquare_Vector_exactreal::Element_exactreal::IntegerRing____256",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsSquare_Vector_exactreal::Element_exactreal::IntegerRing____64": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSquare_Vector_exactreal::Element_exactreal::IntegerRing____64",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsSquare_Vector_exactreal::Element_exactreal::IntegerRing____8": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSquare_Vector_exactreal::Element_exactreal::IntegerRing____8",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsSquare_Vector_long long___1": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSquare_Vector_long long___1",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsSquare_Vector_long long___256": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSquare_Vector_long long___256",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsSquare_Vector_long long___64": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSquare_Vector_long long___64",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsSquare_Vector_long long___8": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSquare_Vector_long long___8",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsSquare_Vector_mpq_class___1": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSquare_Vector_mpq_class___1",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsSquare_Vector_mpq_class___256": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSquare_Vector_mpq_class___256",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsSquare_Vector_mpq_class___64": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSquare_Vector_mpq_class___64",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsSquare_Vector_mpq_class___8": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSquare_Vector_mpq_class___8",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VertexAtSource": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VertexAtSource",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VertexAtTarget": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VertexAtTarget",
         "param_names": [],
         "params": [],
         "timeout": 60.0,
