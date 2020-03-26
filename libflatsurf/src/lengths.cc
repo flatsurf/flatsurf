@@ -94,7 +94,7 @@ void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iteratio
 
   const T expected = [&]() {
     if constexpr (std::is_same_v<T, long long>)
-       return length(minuend) - iterations.get_ui() * length();
+      return length(minuend) - iterations.get_ui() * length();
     else
       return length(minuend) - iterations * length();
   }();
