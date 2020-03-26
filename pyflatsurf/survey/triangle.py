@@ -22,7 +22,6 @@
 
 import argparse
 
-import cppyy
 from pyflatsurf import flatsurf, Surface
 import flatsurf as sage_flatsurf
 from pyeantic.sage_conversion import sage_nf_to_eantic, sage_nf_elem_to_eantic
