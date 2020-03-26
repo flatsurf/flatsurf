@@ -45,8 +45,9 @@ Dir<PointT>::Dir(list<OEdge>::iterator e) {
 }
 
 template <typename PointT>
-Dir<PointT>::Dir(const flatsurf::HalfEdge &e, const PointT &p)
-    : vec(p), v(OEdge(e).head()) {
+Dir<PointT>::Dir(const flatsurf::HalfEdge &e, const PointT &p) :
+  vec(p),
+  v(OEdge(e).head()) {
   for (ep = v->out_edges.begin();
        ep != v->out_edges.end() && !(**ep == OEdge(e)); ++ep)
     ;
@@ -60,7 +61,8 @@ Dir<PointT>::Dir(const flatsurf::HalfEdge &e, const PointT &p)
 }
 
 template <typename PointT>
-Dir<PointT>::Dir(Vertex *vp, const PointT &p) : vec(p) {
+Dir<PointT>::Dir(Vertex *vp, const PointT &p) :
+  vec(p) {
   list<list<OEdge>::iterator>::iterator i, j;
 
   v = vp;
@@ -73,7 +75,7 @@ Dir<PointT>::Dir(Vertex *vp, const PointT &p) : vec(p) {
   while (i != v->out_edges.end()) {
     if (aligned((*i)->template vec<PointT>(), p) ||
         ((!colinear((*i)->vec<PointT>(), p)) && CCW_((*i)->vec<PointT>(), p) &&
-         (!aligned((*j)->vec<PointT>(), p)) && CCW_(p, (*j)->vec<PointT>()))) {
+            (!aligned((*j)->vec<PointT>(), p)) && CCW_(p, (*j)->vec<PointT>()))) {
       ep = i;
       Check();
       return;
@@ -173,7 +175,7 @@ Dir<Point> Dir<Point>::RotateF(COORD theta) {
   }
 
   Point p = Point(cos(theta) * vec.real() - sin(theta) * vec.imag(),
-                  +sin(theta) * vec.real() + cos(theta) * vec.imag());
+      +sin(theta) * vec.real() + cos(theta) * vec.imag());
 
   n = RotateCCwToVec(p);
 

@@ -33,6 +33,7 @@
 #include "./two_complex.h"
 #include "./vertex.h"
 #include "flatsurf/flat_triangulation_combinatorial.hpp"
+#include "flatsurf/half_edge.hpp"
 #include "flatsurf/vertex.hpp"
 
 using boost::math::iround;
@@ -44,7 +45,8 @@ using std::ostream;
 using std::string;
 
 namespace polygon {
-Simplex::Simplex() : color("#") {
+Simplex::Simplex() :
+  color("#") {
   int i;
   char tmp[10];
   string tmp2;
@@ -54,7 +56,7 @@ Simplex::Simplex() : color("#") {
 
   for (i = 0; i < 12; i++) {
     sprintf(tmp, "%x",
-            std::uniform_int_distribution<int>(0, 15)(random_engine));
+        std::uniform_int_distribution<int>(0, 15)(random_engine));
     tmp2 = tmp;
     color += tmp2;
   }
@@ -64,7 +66,8 @@ int Simplex::id() const { return ID; }
 
 void Simplex::Print(ostream &out) { out << tag << id(); }
 
-Vertex::Vertex() : Simplex() {
+Vertex::Vertex() :
+  Simplex() {
   tag = 'V';
   order = 0;
   euclidean = UNDEFINED;

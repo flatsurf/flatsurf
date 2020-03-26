@@ -43,12 +43,16 @@ def enable_iterable(proxy, name):
 
         if not hasattr(proxy, '__len__'):
             def len(self):
-                return std.distance(self.begin(), self.end())
+                return cppyy.gbl.std.distance(self.begin(), self.end())
 
             proxy.__len__ = len
 
 def enable_pretty_print(proxy, name):
     proxy.__repr__ = proxy.__str__
+
+# see https://bitbucket.org/wlav/cppyy/issues/170/std-hash-is-not-picked-up-by-__hash__
+def enable_hash(proxy, name):
+    proxy.__hash__ = lambda self: cppyy.gbl.std.hash[proxy]()(self)
 
 # Work around https://bitbucket.org/wlav/cppyy/issues/112/operator-for-a-base-class-is-not-found
 def enable_vector_print(proxy, name):
@@ -58,12 +62,18 @@ def enable_vector_print(proxy, name):
 
 def add_saddle_connections(proxy, name):
     if name.startswith("FlatTriangulation<"):
-        def saddle_connections(self, bound, source = None):
-            # Strangely, a T fails to convert implicitly to a Length<T> even
-            # though there is a non-explicit constructor Length(const T&).
-            # Therefore, we need to cast bound explicitly:
-            bound = cppyy.gbl.intervalxt.Length['long long'](bound)
-            sc = flatsurf.SaddleConnections[type(self).__cppname__]
-            return sc(self, bound) if source is None else sc(self, bound, source)
+        def saddle_connections(self, *args):
+            return cppyy.gbl.flatsurf.SaddleConnections[type(self)](self, *args)
         proxy.saddle_connections = saddle_connections
 
+def share_unique_ptr(proxy, name):
+    if name.startswith("FlatTriangulation<"):
+        # cppyy gets the lifetime of the surfaces wrong when methods return a unique_ptr<Surface>
+        # See https://github.com/flatsurf/flatsurf/issues/148 for the upstream issue.
+        def insertAt(self, *args):
+            return cppyy.gbl.flatsurf.insertAt(self, *args)
+        proxy.insertAt = insertAt
+
+        def slot(self, *args):
+            return cppyy.gbl.flatsurf.slot(self, *args)
+        proxy.slot = slot

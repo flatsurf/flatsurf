@@ -23,9 +23,10 @@
 #include <intervalxt/forward.hpp>
 #include <optional>
 
-#include "flatsurf/detail/vector_base.hpp"
+#include "../../../flatsurf/detail/vector_base.hpp"
 
-#include "../../util/type_traits.ipp"
+#include <boost/type_traits/is_detected.hpp>
+#include <boost/type_traits/is_detected_exact.hpp>
 
 // Vector::Implementation classes can implement the following
 // extension points to provide specialized implementations for the operations supported by VectorExact.
@@ -35,52 +36,58 @@ namespace {
 template <typename Implementation>
 using bool_t = decltype(static_cast<bool>(std::declval<const Implementation&>()));
 template <typename Implementation>
-static constexpr bool has_bool = is_detected_v<bool_t, Implementation>;
+static constexpr bool has_bool = boost::is_detected_v<bool_t, Implementation>;
+
+template <typename Implementation>
+using bound_t = decltype(std::declval<const Implementation&>().bound());
+template <typename Implementation>
+static constexpr bool has_bound = boost::is_detected_exact_v<Bound, bound_t, Implementation>;
 
 template <typename Implementation>
 using lt_bound_t = decltype(std::declval<const Implementation&>() < std::declval<const Bound>());
 template <typename Implementation>
-static constexpr bool has_lt_bound = is_detected_exact_v<bool, lt_bound_t, Implementation>;
+static constexpr bool has_lt_bound = boost::is_detected_exact_v<bool, lt_bound_t, Implementation>;
 
 template <typename Implementation>
 using gt_bound_t = decltype(std::declval<const Implementation&>() > std::declval<Bound>());
 template <typename Implementation>
-static constexpr bool has_gt_bound = is_detected_exact_v<bool, gt_bound_t, Implementation>;
+static constexpr bool has_gt_bound = boost::is_detected_exact_v<bool, gt_bound_t, Implementation>;
 
 template <typename Implementation>
 using eq_t = decltype(std::declval<const Implementation&>() == std::declval<const Implementation>());
 template <typename Implementation>
-static constexpr bool has_eq = is_detected_exact_v<bool, eq_t, Implementation>;
+static constexpr bool has_eq = boost::is_detected_exact_v<bool, eq_t, Implementation>;
+
+template <typename Implementation>
+using ne_t = decltype(std::declval<const Implementation&>() != std::declval<const Implementation>());
+template <typename Implementation>
+static constexpr bool has_ne = boost::is_detected_exact_v<bool, ne_t, Implementation>;
 
 template <typename Implementation>
 using ccw_t = decltype(std::declval<Implementation>().ccw(std::declval<const typename Implementation::Vector&>()));
 template <typename Implementation>
-static constexpr bool has_ccw = is_detected_exact_v<bool, ccw_t, Implementation>;
+static constexpr bool has_ccw = boost::is_detected_exact_v<bool, ccw_t, Implementation>;
 
 template <typename Implementation>
 using orientation_t = decltype(std::declval<Implementation>().orientation(std::declval<const typename Implementation::Vector&>()));
 template <typename Implementation>
-static constexpr bool has_orientation = is_detected_exact_v<bool, orientation_t, Implementation>;
+static constexpr bool has_orientation = boost::is_detected_exact_v<bool, orientation_t, Implementation>;
 
 template <typename Implementation>
 using x_t = decltype(std::declval<const Implementation&>().x());
 template <typename Implementation>
-static constexpr bool has_x = is_detected_exact_v<typename Implementation::Vector::Coordinate, x_t, Implementation>;
+static constexpr bool has_x = boost::is_detected_exact_v<typename Implementation::Vector::Coordinate, x_t, Implementation>;
 
 template <typename Implementation>
 using y_t = decltype(std::declval<const Implementation&>().y());
 template <typename Implementation>
-static constexpr bool has_y = is_detected_exact_v<typename Implementation::Vector::Coordinate, y_t, Implementation>;
-
-template <typename Implementation>
-using length_t = decltype(std::declval<const Implementation&>().length());
-template <typename Implementation>
-static constexpr bool has_length = is_detected_exact_v<intervalxt::Length<typename Implementation::Vector::Coordinate>, length_t, Implementation>;
+static constexpr bool has_y = boost::is_detected_exact_v<typename Implementation::Vector::Coordinate, y_t, Implementation>;
 
 template <typename Implementation>
 using scalar_product_t = decltype(std::declval<const Implementation>() * (std::declval<const typename Implementation::Vector&>()));
 template <typename Implementation>
-static constexpr bool has_scalar_product = is_detected_exact_v<typename Implementation::Vector::Coordinate, scalar_product_t, Implementation>;
+static constexpr bool has_scalar_product = boost::is_detected_exact_v<typename Implementation::Vector::Coordinate, scalar_product_t, Implementation>;
+
 }  // namespace
 }  // namespace flatsurf::detail
 

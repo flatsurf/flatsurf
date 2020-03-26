@@ -20,14 +20,14 @@
 #include <ostream>
 #include <vector>
 
-#include "flatsurf/delaunay_triangulation.hpp"
-#include "flatsurf/flat_triangulation.hpp"
-#include "flatsurf/half_edge.hpp"
-#include "flatsurf/vector.hpp"
+#include "../flatsurf/delaunay_triangulation.hpp"
+#include "../flatsurf/flat_triangulation.hpp"
+#include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/vector.hpp"
 
 namespace {
-template <typename T>
-T det(const T& x00, const T& x01, const T& x02, const T& x10, const T& x11, const T& x12, const T& x20, const T& x21, const T& x22) {
+template <typename T, typename S>
+T det(const T& x00, const T& x01, const S& x02, const T& x10, const T& x11, const S& x12, const T& x20, const T& x21, const S& x22) {
   return x00 * (x11 * x22 - x12 * x21) - x10 * (x01 * x22 - x02 * x21) + x20 * (x01 * x12 - x02 * x11);
 }
 }  // namespace
@@ -79,6 +79,7 @@ bool DelaunayTriangulation<T>::test(const FlatTriangulation<T>& triangulation, c
 using namespace flatsurf;
 
 template class flatsurf::DelaunayTriangulation<long long>;
+template class flatsurf::DelaunayTriangulation<mpq_class>;
 template class flatsurf::DelaunayTriangulation<eantic::renf_elem_class>;
 template class flatsurf::DelaunayTriangulation<exactreal::Element<exactreal::IntegerRing>>;
 template class flatsurf::DelaunayTriangulation<exactreal::Element<exactreal::RationalField>>;

@@ -18,91 +18,118 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <gtest/gtest.h>
-#include <boost/lexical_cast.hpp>
+#include "external/catch2/single_include/catch2/catch.hpp"
 
+#include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <exact-real/element.hpp>
 #include <exact-real/number_field.hpp>
-#include <intervalxt/length.hpp>
 
-#include <flatsurf/flat_triangulation.hpp>
-#include <flatsurf/half_edge.hpp>
-#include <flatsurf/saddle_connection.hpp>
-#include <flatsurf/saddle_connections.hpp>
-#include <flatsurf/vector.hpp>
-#include <flatsurf/vector_along_triangulation.hpp>
+#include "../flatsurf/bound.hpp"
+#include "../flatsurf/flat_triangulation.hpp"
+#include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/saddle_connections.hpp"
+#include "../flatsurf/saddle_connections_iterator.hpp"
+#include "../flatsurf/vector.hpp"
 
 #include "surfaces.hpp"
 
-using std::vector;
-using testing::Test;
-using testing::Types;
-using namespace flatsurf;
-using eantic::renf_class;
-using eantic::renf_elem_class;
+namespace flatsurf::test {
 
-namespace {
-template <class R2>
-class SaddleConnectionsTest : public Test {};
+TEMPLATE_TEST_CASE("Saddle Connections on a Torus", "[saddle_connections]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+  using R2 = Vector<TestType>;
+  auto square = makeSquare<R2>();
 
-using ExactVectors = Types<Vector<long long>, Vector<renf_elem_class>, Vector<exactreal::Element<exactreal::NumberField>>>;
-TYPED_TEST_CASE(SaddleConnectionsTest, ExactVectors);
+  GIVEN("The Square " << *square) {
+    THEN("Saddle Connections in a Sector are between the Starting Half Edge (inclusive) and the Ending Half Edge (exclusive)") {
+      const auto connections = SaddleConnections(square, Bound(2, 0), HalfEdge(1));
+      auto search = begin(connections);
 
-TYPED_TEST(SaddleConnectionsTest, Trivial) {
-  auto square = makeSquare<TypeParam>();
-  auto connections = SaddleConnections(square, 0, HalfEdge(1));
-  EXPECT_EQ(connections.begin(), connections.end());
-}
+      REQUIRE(fmt::format("{}", *search) == "(1, 0) from 1 to -1");
+      REQUIRE(++search == end(connections));
+    }
 
-TYPED_TEST(SaddleConnectionsTest, Square) {
-  auto square = makeSquare<TypeParam>();
-  auto bound = 16;
-  auto expected = 60;
-  auto connections = SaddleConnections(square, bound, HalfEdge(1));
-  EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-  connections = SaddleConnections(square, bound, HalfEdge(3));
-  EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-  connections = SaddleConnections(square, bound, HalfEdge(2));
-  EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected * 2);
-  connections = SaddleConnections(square, bound, HalfEdge(-1));
-  EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-  connections = SaddleConnections(square, bound, HalfEdge(-3));
-  EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected);
-  connections = SaddleConnections(square, bound, HalfEdge(-2));
-  EXPECT_EQ(std::distance(connections.begin(), connections.end()), expected * 2);
+    THEN("Saddle Connections Within a Fixed Bound Correspond to Coprime Coordinates") {
+      auto bound = GENERATE(0, 2, 16);
 
-  connections = SaddleConnections(square, bound);
-  EXPECT_EQ(std::distance(connections.begin(), connections.end()), 480);
+      int expected = 0;
+      for (int x = 1; x < bound + 1; x++)
+        for (int y = 1; y <= x; y++)
+          if (x * x + y * y < bound * bound && std::gcd(x, y) == 1)
+            expected++;
 
-  EXPECT_EQ(boost::lexical_cast<std::string>(**connections.begin()), "SaddleConnection(3 -> -1 in direction (0, 1))");
+      auto connections = SaddleConnections(square, Bound(bound, 0));
+      auto count = std::distance(begin(connections), end(connections));
 
-  EXPECT_EQ(**connections.begin(), **connections.begin());
-}
+      REQUIRE(count == expected * 8);
 
-TYPED_TEST(SaddleConnectionsTest, Hexagon) {
-  if constexpr (std::is_same_v<TypeParam, Vector<long long>>) {
-    // An regular hexagon can not be constructed with integer coordinates.
-    return;
-  } else {
-    auto hexagon = makeHexagon<TypeParam>();
-    auto bound = Bound(16);
-    auto connections = SaddleConnections(hexagon, bound, HalfEdge(1));
-    EXPECT_EQ(std::distance(connections.begin(), connections.end()), 10);
-    connections = SaddleConnections(hexagon, bound, HalfEdge(2));
-    EXPECT_EQ(std::distance(connections.begin(), connections.end()), 36);
-    connections = SaddleConnections(hexagon, bound, HalfEdge(3));
-    EXPECT_EQ(std::distance(connections.begin(), connections.end()), 26);
-    connections = SaddleConnections(hexagon, bound, HalfEdge(4));
-    EXPECT_EQ(std::distance(connections.begin(), connections.end()), 18);
-    connections = SaddleConnections(hexagon, bound, HalfEdge(5));
-    EXPECT_EQ(std::distance(connections.begin(), connections.end()), 8);
-    connections = SaddleConnections(hexagon, bound, HalfEdge(6));
-    EXPECT_EQ(std::distance(connections.begin(), connections.end()), 10);
+      AND_THEN("Saddle Connections are Equally Distributed Next to the Half Edges") {
+        auto [edge, required] = GENERATE_REF(table<HalfEdge, int>({{HalfEdge(1), expected}, {HalfEdge(2), 2 * expected}, {HalfEdge(3), expected}, {HalfEdge(-1), expected}, {HalfEdge(-2), 2 * expected}, {HalfEdge(-3), expected}}));
 
-    connections = SaddleConnections(hexagon, bound);
-    EXPECT_EQ(std::distance(connections.begin(), connections.end()), 216);
+        CAPTURE(edge);
+        connections = SaddleConnections(square, Bound(bound, 0), edge);
+        count = std::distance(begin(connections), end(connections));
+        REQUIRE(count == required);
+      }
+    }
   }
 }
-}  // namespace
 
-#include "main.hpp"
+TEMPLATE_TEST_CASE("Saddle Connections on a Square With Boundary", "[saddle_connections]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+  using R2 = Vector<TestType>;
+  auto square = makeSquareWithBoundary<R2>();
+
+  GIVEN("The Square With Boundaries " << *square) {
+    auto bound = GENERATE(2, 16);
+    THEN("Saddle Connections Within a Bound of " << bound << " Are Essentially Trivial") {
+      auto connections = SaddleConnections(square, Bound(bound, 0));
+      auto count = std::distance(begin(connections), end(connections));
+
+      REQUIRE(count == bound * 4);
+
+      auto [edge, required] = GENERATE_REF(table<HalfEdge, int>({{HalfEdge(2), 0}, {HalfEdge(-4), 0}, {HalfEdge(1), 1}, {HalfEdge(-1), 1}, {HalfEdge(3), bound - 1}, {HalfEdge(-3), bound - 1}, {HalfEdge(-2), bound}, {HalfEdge(4), bound}}));
+
+      CAPTURE(edge);
+      connections = SaddleConnections(square, Bound(bound, 0), edge);
+      count = std::distance(begin(connections), end(connections));
+      REQUIRE(count == required);
+    }
+  }
+}
+
+TEMPLATE_TEST_CASE("Saddle Connections on an L with an Added Slit", "[saddle_connections][slit]", (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using R2 = Vector<TestType>;
+  auto L = makeL<R2>();
+
+  auto slit = R2(TestType(3) / 13371337, TestType(2) / 13371337);
+  auto source = HalfEdge(1);
+
+  L = L->insertAt(source, slit);
+  L = L->slot(L->nextAtVertex(source));
+
+  GIVEN("The L with Slit " << *L) {
+    auto bound = GENERATE(2, 16);
+    THEN("We can count Saddle Connections Within the Bound of " << bound) {
+      auto connections = SaddleConnections(L, Bound(bound, 0));
+      (void)std::distance(begin(connections), end(connections));
+    }
+  }
+}
+
+TEMPLATE_TEST_CASE("Saddle Connections on a Hexagon", "[saddle_connections]", (renf_elem_class), (exactreal::Element<exactreal::NumberField>)) {
+  using R2 = Vector<TestType>;
+  auto hexagon = makeHexagon<R2>();
+
+  GIVEN("The Hexagon " << *hexagon) {
+    auto bound = Bound(16, 0);
+    auto [edge, required] = GENERATE(table<HalfEdge, int>({{HalfEdge(1), 10}, {HalfEdge(2), 36}, {HalfEdge(3), 26}, {HalfEdge(4), 18}, {HalfEdge(5), 8}, {HalfEdge(6), 10}}));
+
+    CAPTURE(edge);
+    auto connections = SaddleConnections(hexagon, bound, edge);
+    auto count = std::distance(begin(connections), end(connections));
+    REQUIRE(count == required);
+  }
+}
+
+}  // namespace flatsurf::test

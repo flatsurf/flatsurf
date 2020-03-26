@@ -71,7 +71,7 @@ class BigPoint {
   friend BigPoint<T> operator+<>(BigPoint<T>, const BigPoint<T>&);
 
   friend std::ostream& operator<<<>(std::ostream& outputStream,
-                                    const BigPoint<T>& num);
+      const BigPoint<T>& num);
   friend bool operator==<>(const BigPoint<T>&, const BigPoint<T>&);
   friend bool operator!=<>(const BigPoint<T>&, const BigPoint<T>&);
 

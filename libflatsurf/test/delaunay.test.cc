@@ -18,36 +18,41 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <gtest/gtest.h>
-#include <boost/lexical_cast.hpp>
+#include "external/catch2/single_include/catch2/catch.hpp"
 
-#include <flatsurf/delaunay_triangulation.hpp>
-#include <flatsurf/half_edge.hpp>
-#include <intervalxt/length.hpp>
+#include <exact-real/element.hpp>
 
+#include "../flatsurf/bound.hpp"
+#include "../flatsurf/delaunay_triangulation.hpp"
+#include "../flatsurf/half_edge.hpp"
+
+#include "generators/half_edge_generator.hpp"
 #include "surfaces.hpp"
 
-using namespace flatsurf;
-using eantic::renf_class;
-using std::vector;
-using testing::Test;
-using testing::Types;
+namespace flatsurf::test {
 
-namespace {
-TEST(DelaunayTest, Square) {
-  using T = Element<exactreal::IntegerRing>;
+TEMPLATE_TEST_CASE("Delaunay Triangulation", "[delaunay]", (long long), (mpq_class), (eantic::renf_elem_class), (Element<exactreal::IntegerRing>)) {
+  using T = TestType;
   using Vector = Vector<T>;
-  auto square = makeSquare<Vector>();
 
-  for (auto halfEdge : square->halfEdges()) {
-    square->flip(halfEdge);
-    DelaunayTriangulation<T>::transform(*square);
-    for (auto edge : square->halfEdges()) {
-      EXPECT_TRUE(DelaunayTriangulation<T>::test(*square, edge));
-      EXPECT_LT(square->fromEdge(edge), Bound(2));
+  GIVEN("A Flat Triangulation of a Square") {
+    auto square = makeSquare<Vector>();
+
+    auto bound = Bound(2, 0);
+
+    auto halfEdge = GENERATE_COPY(halfEdges(square));
+    WHEN("We Flip Edge " << halfEdge) {
+      square->flip(halfEdge);
+      THEN("The Delaunay Condition holds after performing Delaunay Triangulation") {
+        DelaunayTriangulation<T>::transform(*square);
+        CAPTURE(*square);
+        for (auto edge : square->halfEdges()) {
+          REQUIRE(DelaunayTriangulation<T>::test(*square, edge));
+          REQUIRE(square->fromEdge(edge) < bound);
+        }
+      }
     }
   }
 }
-}  // namespace
 
-#include "main.hpp"
+}  // namespace flatsurf::test

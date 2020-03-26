@@ -33,7 +33,7 @@ class algebraic;
 
 template <typename T>
 void divide(poly<T> &quotient, poly<T> &remainder, const poly<T> &f,
-            const poly<T> &g);  // f divided by g.
+    const poly<T> &g);  // f divided by g.
 template <typename T>
 poly<T> operator*(poly<T>, const poly<T> &);
 template <typename T>
@@ -69,7 +69,7 @@ class poly {
   T leading_coefficient() const;
 
   friend void divide<>(poly<T> &quotient, poly<T> &remainder, const poly<T> &f,
-                       const poly<T> &g);  // f divided by g
+      const poly<T> &g);  // f divided by g
 
   void print();  // for debugging: prints coefficients
 
@@ -82,7 +82,7 @@ class poly {
   poly<T> operator()(const poly<T> &) const;
 
   friend std::ostream &operator<<<>(std::ostream &outputStream,
-                                    const poly<T> &poly);
+      const poly<T> &poly);
   friend bool operator==<>(const poly<T> &, const poly<T> &);
   friend bool operator!=<>(const poly<T> &, const poly<T> &);
 

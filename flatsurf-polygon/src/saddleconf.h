@@ -72,7 +72,7 @@ class SaddleConf {
 
   int shortest_saddle_id(); /*id of shortest saddle */
   void get_saddle_by_id(int id, int& in_vp_index, int& in_at, int& out_vp_index,
-                        int& out_at);
+      int& out_at);
 
   COORD get_length_by_id(int id);
   //    int follow_right(int i);

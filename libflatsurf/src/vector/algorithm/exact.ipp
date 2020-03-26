@@ -20,8 +20,17 @@
 #ifndef LIBFLATSURF_VECTOR_ALGORITHM_EXACT_IPP
 #define LIBFLATSURF_VECTOR_ALGORITHM_EXACT_IPP
 
-#include <intervalxt/length.hpp>
 #include <optional>
+
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+
+#include "../../external/gmpxxll/gmpxxll/mpz_class.hpp"
+
+#include "../../../flatsurf/bound.hpp"
+#include "../../../flatsurf/ccw.hpp"
+#include "../../../flatsurf/fmt.hpp"
+#include "../../../flatsurf/orientation.hpp"
 
 #include "../storage/cartesian.ipp"
 #include "../storage/forward.ipp"
@@ -71,7 +80,7 @@ bool VectorExact<Vector, T>::operator<(Bound bound) const noexcept {
       return *maybe;
     return static_cast<const typename Implementation::Exact>(*self.impl) < bound;
   } else {
-    return self.x() * self.x() + self.y() * self.y() < bound.length() * bound.length();
+    return self.x() * self.x() + self.y() * self.y() < ::gmpxxll::mpz_class(bound.squared());
   }
 }
 
@@ -90,7 +99,7 @@ bool VectorExact<Vector, T>::operator>(Bound bound) const noexcept {
       return *maybe;
     return static_cast<const typename Implementation::Exact>(*self.impl) > bound;
   } else {
-    return self.x() * self.x() + self.y() * self.y() > bound.length() * bound.length();
+    return self.x() * self.x() + self.y() * self.y() > ::gmpxxll::mpz_class(bound.squared());
   }
 }
 
@@ -135,8 +144,8 @@ CCW VectorExact<Vector, T>::ccw(const Vector& rhs) const noexcept {
     // Presumably, all of this could happen automagically with yap just by
     // looking at the predicate sgn(x*y - x'*y').
 
-    const auto a = self.x() * rhs.y();
-    const auto b = rhs.x() * self.y();
+    const T a = self.x() * rhs.y();
+    const T b = rhs.x() * self.y();
 
     if (a > b) {
       return CCW::COUNTERCLOCKWISE;
@@ -201,7 +210,7 @@ ORIENTATION VectorExact<Vector, T>::orientation(const Vector& rhs) const noexcep
     // increase precision until the approximations are good enough to decide.
     // Presumably, all of this could happen automagically with yap just by
     // looking at the predicate sgn(x*x' + y*y').
-    const auto dot = self.x() * rhs.x() + self.y() * rhs.y();
+    const T dot = self.x() * rhs.x() + self.y() * rhs.y();
 
     if (dot > 0) {
       return ORIENTATION::SAME;
@@ -214,6 +223,27 @@ ORIENTATION VectorExact<Vector, T>::orientation(const Vector& rhs) const noexcep
 }
 
 template <typename Vector, typename T>
+T VectorExact<Vector, T>::area(const std::vector<Vector>& perimeter) {
+  Vector current;
+
+  T area = T();
+
+  for (const auto& v : perimeter) {
+    Vector next = current + v;
+
+    area += current.x() * next.y() - current.y() * next.x();
+
+    current = next;
+  }
+
+  ASSERT(!current, fmt::format("Polygon must be closed but this polygon's sides [{}] summed to {}", fmt::join(perimeter, ", "), current));
+
+  ASSERT(area >= 0, fmt::format("Area of polygon must be positive but the area of this polygon [{}] was {}; maybe the polygon was not oriented counterclockwise?", fmt::join(perimeter, ", "), area));
+
+  return area;
+}
+
+template <typename Vector, typename T>
 T VectorExact<Vector, T>::operator*(const Vector& rhs) const noexcept {
   using Implementation = typename Vector::Implementation;
   const Vector& self = static_cast<const Vector&>(*this);
@@ -223,7 +253,7 @@ T VectorExact<Vector, T>::operator*(const Vector& rhs) const noexcept {
   } else if constexpr (is_cartesian_v<Implementation>) {
     return self.impl->x * rhs.impl->x + self.impl->y * rhs.impl->y;
   } else if constexpr (is_forward_v<Implementation>) {
-    return self.impl->value * rhs.impl->value;
+    return self.impl->vector * rhs.impl->vector;
   } else {
     static_assert(false_type_v<Implementation>, "Implementation is missing scalar product operator*().");
   }

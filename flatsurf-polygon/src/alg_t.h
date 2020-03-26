@@ -81,7 +81,7 @@ class [[deprecated("Use flatsurf VectorExactReal instead.")]] alg_t {
   alg_t<T>& operator/=(int);
 
   friend std::ostream& operator<<<>(std::ostream& outputStream,
-                                    const alg_t<T>& num);
+      const alg_t<T>& num);
   friend bool operator==<>(const alg_t<T>&, const alg_t<T>&);
   friend bool operator!=<>(const alg_t<T>&, const alg_t<T>&);
 
@@ -94,8 +94,8 @@ class [[deprecated("Use flatsurf VectorExactReal instead.")]] alg_t {
   friend bool colinear<>(const alg_t<T>& u, const alg_t<T>& v);
   // p1 divided by p2. Only works if it algebraic.
   friend bool is_alg_quotient(const alg_t<int64_t>& p1,
-                              const alg_t<int64_t>& p2,
-                              algebraic<bigrat>& ratio);
+      const alg_t<int64_t>& p2,
+      algebraic<bigrat>& ratio);
 
   bool get_direction(
       algebraic<T> & direction);  // is direction in C independent of parameters?

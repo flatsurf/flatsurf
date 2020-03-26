@@ -111,8 +111,11 @@ ehthumbs_vista.db
 *.dat
 final_results
 
-### Bear outputs for C++ tools
+### C++ tools
 compile_commands.json
+compile_flags.txt
+.clangd
+.ccls
 
 ### ASV Benchmark Tool
 .asv

@@ -22,9 +22,11 @@
 
 #include <optional>
 
-#include "flatsurf/detail/vector_base.hpp"
+#include <boost/type_traits/is_detected.hpp>
+#include <boost/type_traits/is_detected_exact.hpp>
 
-#include "../../util/type_traits.ipp"
+#include "../../../flatsurf/detail/vector_base.hpp"
+
 #include "exact.extension.ipp"
 
 // Vector::Implementation classes can implement the following
@@ -33,27 +35,30 @@
 namespace flatsurf::detail {
 namespace {
 template <typename Implementation>
-static constexpr bool has_optional_ccw = is_detected_exact_v<std::optional<CCW>, ccw_t, Implementation>;
+static constexpr bool has_optional_ccw = boost::is_detected_exact_v<std::optional<CCW>, ccw_t, Implementation>;
 
 template <typename Implementation>
-static constexpr bool has_optional_orientation = is_detected_exact_v<std::optional<ORIENTATION>, orientation_t, Implementation>;
+static constexpr bool has_optional_orientation = boost::is_detected_exact_v<std::optional<ORIENTATION>, orientation_t, Implementation>;
 
 template <typename Implementation>
-static constexpr bool has_optional_eq = is_detected_exact_v<std::optional<bool>, eq_t, Implementation>;
+static constexpr bool has_optional_eq = boost::is_detected_exact_v<std::optional<bool>, eq_t, Implementation>;
+
+template <typename Implementation>
+static constexpr bool has_optional_ne = boost::is_detected_exact_v<std::optional<bool>, ne_t, Implementation>;
 
 template <typename Implementation>
 using optional_bool_t = decltype(static_cast<std::optional<bool>>(std::declval<const Implementation&>()));
 template <typename Implementation>
-static constexpr bool has_optional_bool = is_detected_v<optional_bool_t, Implementation>;
+static constexpr bool has_optional_bool = boost::is_detected_v<optional_bool_t, Implementation>;
 
 template <typename Implementation>
-static constexpr bool has_optional_lt_bound = is_detected_exact_v<std::optional<bool>, lt_bound_t, Implementation>;
+static constexpr bool has_optional_lt_bound = boost::is_detected_exact_v<std::optional<bool>, lt_bound_t, Implementation>;
 
 template <typename Implementation>
-static constexpr bool has_optional_gt_bound = is_detected_exact_v<std::optional<bool>, gt_bound_t, Implementation>;
+static constexpr bool has_optional_gt_bound = boost::is_detected_exact_v<std::optional<bool>, gt_bound_t, Implementation>;
 
 template <typename Implementation>
-static constexpr bool has_arb_scalar_product = is_detected_exact_v<exactreal::Arb, scalar_product_t, Implementation>;
+static constexpr bool has_arb_scalar_product = boost::is_detected_exact_v<exactreal::Arb, scalar_product_t, Implementation>;
 }  // namespace
 }  // namespace flatsurf::detail
 

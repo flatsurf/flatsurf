@@ -31,16 +31,21 @@
 *.exe
 *.out
 *.app
-/saddle_connections
-/saddle_connections_benchmark
-/vector_exactreal
+/cereal
+/chain
+/contour_decomposition
 /delaunay
-/vector_longlong
+/flat_triangulation
+/flat_triangulation_collapsed
+/flat_triangulation_combinatorial
+/flow_decomposition
 /interval_exchange_transformation
 /length_along_triangulation
 /permutation
-/cereal
-/flat_triangulation_combinatorial
+/saddle_connections
+/saddle_connections_benchmark
+/vector_exactreal
+/vector_longlong
 
 ### Autotools Generated Files
 .deps

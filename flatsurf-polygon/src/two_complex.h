@@ -60,8 +60,8 @@ class TwoComplex {
   void ReadComplex(std::string filename);
 
   void BuildTriangle(int a, int b,
-                     int c);  // adds a single triangle with angles
-                              // pi*a/(a+b+c), pi*b/(a+b+c), pi*c/(a+b+c)
+      int c);  // adds a single triangle with angles
+               // pi*a/(a+b+c), pi*b/(a+b+c), pi*c/(a+b+c)
   void BuildQuad(
       int a, int b, int c,
       int d);  // adds a quadrilateral with angles  2*pi*a/(a+b+c+d),
@@ -95,7 +95,7 @@ class TwoComplex {
   void TriangulateFace(Face* f);
   void TriangulateAll();
   std::list<OEdge>::iterator BisectFace(Face* f, std::list<OEdge>::iterator i,
-                                        std::list<OEdge>::iterator j);
+      std::list<OEdge>::iterator j);
   void AddSteinerPoint(Face* f); /* for debug */
   Face* RemoveVertex(Vertex* v0);
   void RetriangulateSurface();
@@ -112,13 +112,13 @@ class TwoComplex {
   template <typename PointT>
   void Sweep(COORD length, Dir<PointT> start_dir, COORD GoalTotalAngle);
   void issueFinalReport(Summary& fsm, std::ostream& out, int start_vertex,
-                        double part_done = 1.0, double part_group = 1.0);
+      double part_done = 1.0, double part_group = 1.0);
   template <typename PointT>
   Vertex* SweepNextLeft(const Dir<PointT>& start, Dir<PointT>& end, COORD len2,
-                        COORD threshold);
+      COORD threshold);
   template <typename PointT>
   void DrawSaddle(const Dir<PointT>& start, COORD len2, int id,
-                  COORD cyl_length);
+      COORD cyl_length);
   COORD GetSaddles(Dir<Point>& start, COORD depth, int N);  // for RandomShoot
   template <typename PointT>
   bool FollowDir(const Dir<PointT>& start, Dir<PointT>& end, COORD len2);
@@ -130,8 +130,8 @@ class TwoComplex {
   Face* ReflectFace(UEdge* e, Face* f);
   UEdge* IdentifyEdges(UEdge* e1, UEdge* e2);
   Vertex* IdentifyVertices(Vertex* v0,
-                           Vertex* v1);  // any UEdge pointing to v1 now
-                                         // points to v0.  v1 is deleted.
+      Vertex* v1);  // any UEdge pointing to v1 now
+                    // points to v0.  v1 is deleted.
   UEdge* FindMatchingEdge(UEdge* e);
 
   Vertex* AddVertex(
@@ -144,7 +144,7 @@ class TwoComplex {
                        // ID=id or cur_uedge_id if id=UNDEFINED.
   UEdge* AddUEdge(int id, Vertex* v0, Vertex* v1, Point vec);
   Face* AddFace(int id,
-                std::list<OEdge>);  // Adds new face with oedges= list<OEdge>
+      std::list<OEdge>);  // Adds new face with oedges= list<OEdge>
 
   UEdge* GetUEdge(int id);
   Vertex* GetVertex(int id);

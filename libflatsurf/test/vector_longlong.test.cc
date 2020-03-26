@@ -18,24 +18,30 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <gtest/gtest.h>
 #include <boost/lexical_cast.hpp>
 
-#include <flatsurf/vector.hpp>
+#include "external/catch2/single_include/catch2/catch.hpp"
 
+#include "../flatsurf/ccw.hpp"
+#include "../flatsurf/vector.hpp"
+
+namespace flatsurf::test {
 using namespace flatsurf;
-using testing::Test;
-using testing::Types;
 
-TEST(VectorLongLongTest, CCW) {
+TEST_CASE("Vector<long long>", "[vector_long_long]") {
   using V = Vector<long long>;
   V vertical(2, 3);
 
-  EXPECT_EQ(vertical.ccw(V(1, 2)), CCW::COUNTERCLOCKWISE);
-  EXPECT_EQ(vertical.ccw(V(-1, -1)), CCW::COUNTERCLOCKWISE);
-  EXPECT_EQ(vertical.ccw(V(0, -1)), CCW::CLOCKWISE);
+  GIVEN("The Vertical Direction " << vertical) {
+    THEN("CCWs are Computed") {
+      REQUIRE(vertical.ccw(V(1, 2)) == CCW::COUNTERCLOCKWISE);
+      REQUIRE(vertical.ccw(V(-1, -1)) == CCW::COUNTERCLOCKWISE);
+      REQUIRE(vertical.ccw(V(0, -1)) == CCW::CLOCKWISE);
+    }
 
-  EXPECT_EQ(boost::lexical_cast<std::string>(vertical), "(2, 3)");
+    THEN("It Prints") {
+      REQUIRE(boost::lexical_cast<std::string>(vertical) == "(2, 3)");
+    }
+  }
 }
-
-#include "main.hpp"
+}  // namespace flatsurf::test

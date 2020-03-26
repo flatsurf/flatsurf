@@ -23,8 +23,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "../../util/type_traits.ipp"
-
 using std::is_base_of_v;
 
 namespace flatsurf {
@@ -38,8 +36,10 @@ class Forward {
   using ForwardTo = Vector;
 
   Forward() {}
-  explicit Forward(const Vector& vector) : vector(vector) {}
-  explicit Forward(Vector&& vector) : vector(std::move(vector)) {}
+  explicit Forward(const Vector& vector) :
+    vector(vector) {}
+  explicit Forward(Vector&& vector) :
+    vector(std::move(vector)) {}
 
   Vector vector;
 };

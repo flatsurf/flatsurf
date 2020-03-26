@@ -33,6 +33,7 @@ AS_IF([test "x$with_pytest" != "xno" && test "x$have_python" = "xyes"],
        AS_IF([$PYTHON -c 'import pytest'], , AC_MSG_ERROR([pytest for make check not found; run --without-pytest to disable Python tests in make check]))
        AS_IF([$PYTHON -c 'import pyexactreal'], , AC_MSG_ERROR([pyexactreal for make check not found; run --without-pytest to disable Python tests in make check]))
        AS_IF([$PYTHON -c 'import cppyy'], , AC_MSG_ERROR([cppyy for make check not found; run --without-pytest to disable Python tests in make check]))
+       AS_IF([$PYTHON -c 'import cppyythonizations'], , AC_MSG_ERROR([cppyythonizations for make check not found; run --without-pytest to disable Python tests in make check]))
       ], [])
 AM_CONDITIONAL([HAVE_PYTEST], [test "x$with_pytest" = "xyes"])
 
@@ -42,6 +43,7 @@ AS_IF([test "x$with_sage" != "xno" && test "x$have_python" = "xyes"],
       [
        with_sage=yes
        AS_IF([$PYTHON -c 'import sage'], , AC_MSG_ERROR([SageMath for make check not found; run --without-sage to disable SageMath tests in make check]))
+       AS_IF([$PYTHON -c 'import flatsurf'], , AC_MSG_ERROR([sage-flatsurf for make check not found; run --without-sage to disable SageMath tests in make check]))
        ], [])
 AM_CONDITIONAL([HAVE_SAGE], [test "x$with_sage" = "xyes"])
 

@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 ######################################################################
-#  This file is part of flatsurf.
+# This file is part of flatsurf.
 #
-#        Copyright (C) 2019 Julian Rüth
+#       Copyright (C) 2019 Julian Rüth
 #
-#  flatsurf is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
+# flatsurf is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
-#  flatsurf is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# flatsurf is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-#  You should have received a copy of the GNU General Public License
-#  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
+# You should have received a copy of the GNU General Public License
+# along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
 from pyflatsurf import flatsurf, Surface
@@ -33,6 +33,11 @@ K = eantic.renf_class.make("x^2 - 3", "x", "1.73 +/- 0.1")
 def square(R2):
     vectors = [R2(1, 0), R2(0, 1), R2(1, 1)]
     vertices = [[1, 3, 2, -1, -3, -2]]
+    return Surface(vertices, vectors)
+
+def L(R2):
+    vectors = [R2(1, 0), R2(1, 1), R2(0, 1), R2(-1, 0), R2(-1, -1), R2(1, 0), R2(1, 1), R2(0, 1), R2(0, -1)]
+    vertices = [[1, 2, 3, 4, 5, -3, 6, 7, 8, -6, -2, 9, -4, -5, -9, -1, -7, -8]]
     return Surface(vertices, vectors)
 
 def hexagon():

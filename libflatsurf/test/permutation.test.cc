@@ -18,33 +18,25 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <gtest/gtest.h>
-#include <boost/lexical_cast.hpp>
+#include "external/catch2/single_include/catch2/catch.hpp"
 
-#include <flatsurf/half_edge.hpp>
-#include <flatsurf/permutation.hpp>
+#include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/permutation.hpp"
 
-using std::vector;
-using testing::Test;
-using testing::Types;
-using namespace flatsurf;
-
-namespace flatsurf {
-namespace {
-TEST(Permutation, Cycles) {
-  for (int n = 0; n < 10; n++) {
-    auto domain = vector<HalfEdge>();
-    for (int i = 1; i <= n; i++) {
+namespace flatsurf::test {
+TEST_CASE("Permutation", "[permutation]") {
+  auto size = GENERATE(range(0, 10));
+  GIVEN("A Random Permutation on the Half Edges indexed from " << -size << " to " << size) {
+    auto domain = std::vector<HalfEdge>();
+    for (int i = 1; i <= size; i++) {
       domain.push_back(HalfEdge(i));
       domain.push_back(HalfEdge(-i));
     }
-    for (int run = 0; run < 128; run++) {
-      auto p = Permutation<HalfEdge>::random(domain);
-      EXPECT_EQ(p, Permutation<HalfEdge>(p.cycles()));
+    auto p = Permutation<HalfEdge>::random(domain);
+
+    THEN("It can be Reconstructed From its Cycles") {
+      REQUIRE(p == Permutation<HalfEdge>(p.cycles()));
     }
   }
 }
-}  // namespace
-}  // namespace flatsurf
-
-#include "main.hpp"
+}  // namespace flatsurf::test

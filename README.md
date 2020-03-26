@@ -79,7 +79,7 @@ Additionally, you might want to run with configure with ` --disable-static`
 which improves the build time.
 
 [perf](https://perf.wiki.kernel.org/index.php/Main_Page) works well to profile
-when you make sure that `CXXFLAGS` contains `-fno-omit-framepointer`. You can
+when you make sure that `CXXFLAGS` contains `-fno-omit-frame-pointer`. You can
 then for example run our test suite with `perf record --call-graph dwarf make
 check` Apart from perf itself there are several ways to analyze the output,
 [hotspot](https://github.com/KDAB/hotspot) might be the most convenient one at
@@ -96,7 +96,7 @@ then run
 ```
 conda config --add channels conda-forge
 conda config --add channels flatsurf # if you want to pull in the latest version of dependencies
-conda create -n flatsurf-build cxx-compiler libtool automake boost-cpp libexactreal gtest benchmark ccache pytest sage cppyy
+conda create -n flatsurf-build cxx-compiler libtool automake boost-cpp libexactreal pyexactreal libintervalxt pyintervalxt benchmark ccache pytest sage cppyy eigen fmt cppyythonizations sage-flatsurf
 conda activate flatsurf-build
 export CPPFLAGS="-isystem $CONDA_PREFIX/include"
 export CFLAGS="$CPPFLAGS"

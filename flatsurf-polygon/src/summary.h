@@ -31,7 +31,7 @@ class Summary {
  public:
   Summary();
   void print(std::ostream& output_stream, COORD part_total, COORD part_group,
-             COORD volume, COORD depth, int start_vertex);
+      COORD volume, COORD depth, int start_vertex);
 
   size_t add_new_conf(SaddleConf& sc);
   size_t add_one_conf(SaddleConf& sc);

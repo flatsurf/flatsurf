@@ -40,7 +40,7 @@ class UEdge : public Simplex {  // unoriented edge
 
  public:
   UEdge(Vertex* a, Vertex* b,
-        Point vec);  // Edge begining at vertex a, ending at b with holonomy vec
+      Point vec);  // Edge begining at vertex a, ending at b with holonomy vec
   UEdge(Vertex* a, Vertex* b, BigPointQ vec);
   void Print(std::ostream&);
   bool deleted();

@@ -1,2 +1,7 @@
 BasedOnStyle: Google
 ColumnLimit: 0
+AlignAfterOpenBracket: DontAlign
+ConstructorInitializerAllOnOneLineOrOnePerLine
+BreakConstructorInitializers: AfterColon
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+ConstructorInitializerIndentWidth: 2

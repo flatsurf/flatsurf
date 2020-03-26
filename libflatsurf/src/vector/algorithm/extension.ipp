@@ -20,9 +20,9 @@
 #ifndef LIBFLATSURF_VECTOR_ALGORITHM_EXTENSION_IPP
 #define LIBFLATSURF_VECTOR_ALGORITHM_EXTENSION_IPP
 
-#include "flatsurf/vector.hpp"
+#include "../../../flatsurf/vector.hpp"
 
-#include "../../util/type_traits.ipp"
+#include <boost/type_traits/is_detected_exact.hpp>
 
 // Vector::Implementation classes can implement the following
 // extension points to provide specialized implementations for some operations.
@@ -37,7 +37,7 @@ namespace {
 template <typename Implementation>
 using approximation_t = decltype(std::declval<const Implementation&>().approximation());
 template <typename Implementation>
-static constexpr bool has_approximation_v = is_detected_exact_v<Vector<exactreal::Arb>, approximation_t, Implementation>;
+static constexpr bool has_approximation_v = boost::is_detected_exact_v<Vector<exactreal::Arb>, approximation_t, Implementation>;
 }  // namespace
 }  // namespace flatsurf
 

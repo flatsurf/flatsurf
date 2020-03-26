@@ -33,7 +33,8 @@ using std::list;
 using std::ostream;
 
 namespace polygon {
-OEdge::OEdge(UEdge *e, int dir) : from_edge(NULL_OEdgeIter) {
+OEdge::OEdge(UEdge *e, int dir) :
+  from_edge(NULL_OEdgeIter) {
   assert(dir == -1 || dir == 1);
   ue = e;
   direction = dir;
@@ -45,7 +46,8 @@ bool OEdge::operator==(const OEdge &b) {
 
 int OEdge::id() { return (ue->id()); }
 
-OEdge::OEdge(const flatsurf::HalfEdge &he) : from_edge(NULL_OEdgeIter) {
+OEdge::OEdge(const flatsurf::HalfEdge &he) :
+  from_edge(NULL_OEdgeIter) {
   for (auto ue : S->uedges) {
     if (static_cast<flatsurf::HalfEdge>(OEdge(ue, 1)) == he) {
       this->ue = ue;

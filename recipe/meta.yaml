@@ -60,6 +60,7 @@ requirements:
     - libexactreal
     - e-antic 1.*
     - gmp
+    - fmt
 {%- endif %}
 {%- if name in ["flatsurf", "pyflatsurf"] %}
     - python
@@ -91,7 +92,6 @@ requirements:
     - ipywidgets
     - sympy
     # enable test/libflatsurf tests in ./configure
-    - gtest
     - benchmark
     # enable check-valgrind in ./configure
     - valgrind >=3.15.0
@@ -101,6 +101,10 @@ requirements:
     - asv
 {%- endif %}
   run:
+{%- if name == "libflatsurf" %}
+    # fmt is missing a run_exports rule, see https://github.com/conda-forge/fmt-feedstock/pull/11
+    - fmt
+{%- endif %}
 {%- if name == "pyflatsurf" %}
     - python
     - cppyy

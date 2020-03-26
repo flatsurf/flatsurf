@@ -21,8 +21,9 @@
 #define LIBFLATSURF_VECTOR_ALGORITHM_WITH_ERROR_IPP
 
 #include <exact-real/arb.hpp>
-#include <intervalxt/length.hpp>
 #include <optional>
+
+#include "../../../flatsurf/bound.hpp"
 
 #include "../storage/cartesian.ipp"
 #include "../storage/forward.ipp"
@@ -55,6 +56,24 @@ std::optional<bool> VectorWithError<Vector>::operator==(const Vector& rhs) const
     return true;
   } else {
     static_assert(false_type_v<Implementation>, "Implementation is missing operator==.");
+  }
+}
+
+template <typename Vector>
+std::optional<bool> VectorWithError<Vector>::operator!=(const Vector& rhs) const noexcept {
+  using Implementation = typename Vector::Implementation;
+  const Vector& self = static_cast<const Vector&>(*this);
+
+  if constexpr (has_optional_ne<Implementation>) {
+    return *self.impl != *rhs.impl;
+  } else if constexpr (is_forward_v<Implementation>) {
+    return self.impl->vector != rhs.impl->vector;
+  } else if constexpr (is_cartesian_v<Implementation>) {
+    const auto eq = self == rhs;
+    if (eq) return !*eq;
+    return {};
+  } else {
+    static_assert(false_type_v<Implementation>, "Implementation is missing operator!=.");
   }
 }
 
@@ -112,7 +131,7 @@ optional<bool> VectorWithError<Vector>::operator<(Bound bound) const noexcept {
   } else if constexpr (is_forward_v<Implementation>) {
     return self.impl->vector < bound;
   } else if constexpr (is_cartesian_v<Implementation>) {
-    return self.impl->x * self.impl->x + self.impl->y * self.impl->y < bound.length() * bound.length();
+    return std::make_pair(self.impl->x, self.impl->y) < bound;
   } else {
     static_assert(false_type_v<Implementation>, "Implementation is missing operator<(Bound).");
   }
@@ -128,7 +147,7 @@ optional<bool> VectorWithError<Vector>::operator>(Bound bound) const noexcept {
   } else if constexpr (is_forward_v<Implementation>) {
     return self.impl->vector > bound;
   } else if constexpr (is_cartesian_v<Implementation>) {
-    return self.impl->x * self.impl->x + self.impl->y * self.impl->y > bound.length() * bound.length();
+    return std::make_pair(self.impl->x, self.impl->y) > bound;
   } else {
     static_assert(false_type_v<Implementation>, "Implementation is missing operator>(Bound).");
   }
