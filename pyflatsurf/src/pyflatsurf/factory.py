@@ -25,7 +25,6 @@ def make_FlatTriangulation(vertices, vectors):
     vertices = cppyy.gbl.std.vector[cppyy.gbl.std.vector[int]]([cppyy.gbl.std.vector[int](l) for l in vertices])
     R2 = type(vectors[0])
     vectors = cppyy.gbl.std.vector[R2](vectors)
-    combinatorial = flatsurf.FlatTriangulationCombinatorial(vertices)
     return cppyy.gbl.flatsurf.makeFlatTriangulation(vertices, vectors);
 
 def make_surface(surface_or_vertices, vectors = None):
