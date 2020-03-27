@@ -71,6 +71,10 @@ class Lengths {
 
   T length(intervalxt::Label) const;
   T length() const;
+  // Return whether this label is the leftmost label on a top contour.
+  bool minuendOnTop(intervalxt::Label) const;
+  // Return the component that holds this label.
+  FlowComponentState<FlatTriangulation<T>>& component(intervalxt::Label) const;
 
   std::weak_ptr<FlowDecompositionState<FlatTriangulation<T>>> state;
   std::shared_ptr<const Vertical<FlatTriangulation<T>>> vertical;
