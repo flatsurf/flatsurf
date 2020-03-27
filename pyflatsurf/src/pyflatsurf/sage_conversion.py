@@ -89,6 +89,14 @@ def _cycle_decomposition(p):
             cycles.append(cycle)
     return cycles
 
+def make_vectors(vectors, base_ring):
+    r"""
+    Convert a list of sage vectors to pyflatsurf Vector.
+    """
+    from .vector import Vectors
+    V = Vectors(base_ring)
+    return [V(v).vector for v in vectors]
+
 def to_FlatTriangulation(S):
     r"""
     Given S a translation surface from flatsurf builds a flat polygonization
@@ -98,15 +106,26 @@ def to_FlatTriangulation(S):
         sage: import flatsurf
         sage: from pyflatsurf import Surface
 
-    Building the regular 2n-gons for n=5,7 (Veech surfaces)::
+    Origamis (defined over QQ)::
 
-        sage: S5 = flatsurf.translation_surfaces.veech_double_n_gon(5)
-        sage: T5 = Surface(S5)
+        sage: G = SymmetricGroup(2)
+        sage: r = u = G('(1,2)')
+        sage: O = flatsurf.translation_surfaces.origami(r, u)
+        sage: Surface(O)
+        FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 6, -5)(-2, 4, -6, 5, -4, 3), faces = (1, 2, 3)(-1, -5, -6)(-2, -3, -4)(4, 5, 6)) with vectors 1: (1, 1), 2: (-1, 0), 3: (0, -1), 4: (1, 1), 5: (-1, 0), 6: (0, -1)
 
-    ::
+        sage: G = SymmetricGroup(3)
+        sage: r = G('(1,2,3)')
+        sage: u = G('(1,2)')
+        sage: O = flatsurf.translation_surfaces.origami(r, u)
+        sage: Surface(O)
+        FlatTriangulationCombinatorial(vertices = (1, -3, 8, -7, 3, -2, 4, -6, 5, -4, 9, -8, 7, -9, 2, -1, 6, -5), faces = (1, 2, 3)(-1, -5, -6)(-2, -9, -4)(-3, -7, -8)(4, 5, 6)(7, 8, 9)) with vectors 1: (1, 1), 2: (-1, 0), 3: (0, -1), 4: (1, 1), 5: (-1, 0), 6: (0, -1), 7: (1, 1), 8: (-1, 0), 9: (0, -1)
 
-        sage: S7 = flatsurf.translation_surfaces.veech_double_n_gon(7)
-        sage: T7 = Surface(S7)
+    Building the regular 2n-gons for n=3,5,7 (Veech surfaces)::
+
+        sage: for n in range(3,8,2):
+        ....:     S = flatsurf.translation_surfaces.veech_double_n_gon(5)
+        ....:     T = Surface(S)
 
     Arnoux-Yoccoz surfaces in genus 3 and 4::
 
@@ -135,19 +154,8 @@ def to_FlatTriangulation(S):
 
     S = S.triangulate()
 
-    # number of half edges
-    n = sum(S.polygon(lab).num_edges() for lab in S.label_iterator())
-
-    if S.base_ring() is QQ:
-        # see https://github.com/flatsurf/flatsurf/issues/83
-        raise NotImplementedError
-    else:
-        from pyeantic.sage_conversion import sage_nf_to_eantic, sage_nf_elem_to_eantic
-        K = sage_nf_to_eantic(S.base_ring())
-        make_K_elem = lambda x: sage_nf_elem_to_eantic(K, x)
-        V = flatsurf.Vector['eantic::renf_elem_class']
-
     # populate half edges and vectors
+    n = sum(S.polygon(lab).num_edges() for lab in S.label_iterator())
     half_edge_labels = {}   # map: (face lab, edge num) in faltsurf -> integer
     vec = []                # vectors
     k = 1                   # half edge label in {1, ..., n}
@@ -160,10 +168,7 @@ def to_FlatTriangulation(S):
 
         f0, e0 = t0
         p = S.polygon(f0)
-        e = p.edge(e0)
-        v0 = make_K_elem(e[0])
-        v1 = make_K_elem(e[1])
-        vec.append(V(v0, v1))
+        vec.append(p.edge(e0))
 
         k += 1
 
@@ -176,9 +181,10 @@ def to_FlatTriangulation(S):
         fp[e] = half_edge_labels[(t[0], j)]
         vp[fp[e]] = -e
 
-    _check_data(vp, fp, vec)
 
     # convert the vp permutation into cycles
     verts = _cycle_decomposition(vp)
+    vec = make_vectors(vec, S.base_ring())
+    _check_data(vp, fp, vec)
 
     return Surface(verts, vec)

@@ -41,6 +41,7 @@
 #include "saddle_connections_iterator.hpp"
 #include "vector.hpp"
 #include "vertex.hpp"
+#include "vertical.hpp"
 
 namespace flatsurf {
 // cppyy sometimes has trouble with rvalues, let's help it to create a FlatTriangulation
