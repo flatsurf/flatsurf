@@ -287,6 +287,25 @@ typename Surface::Coordinate FlowComponent<Surface>::width() const {
   return sum;
 }
 
+// Holonomy of the circumference of a cylinder
+template <typename Surface>
+Vector<typename Surface::Coordinate> FlowComponent<Surface>::circumferenceHolonomy() const {
+  if (not this->cylinder())
+    throw std::logic_error("circumferenceHolonomy can only be called on cylinders");
+  Vector<T> h = Vector<T>();
+  bool basis = false;
+  for (const auto& c : perimeter()) {
+    if (!c.vertical()) {
+      if (basis) break;
+      basis = true;
+    }
+    else {
+      h += c.saddleConnection().vector();
+    }
+  }
+  return h;
+}
+
 template <typename Surface>
 typename FlowComponent<Surface>::Perimeter FlowComponent<Surface>::perimeter() const {
   Perimeter perimeter;

@@ -87,6 +87,25 @@ std::vector<FlowComponent<Surface>> FlowDecomposition<Surface>::components() con
 }
 
 template <typename Surface>
+boost::logic::tribool FlowDecomposition<Surface>::hasCylinder() const {
+  boost::logic::tribool state = false;
+  for (auto& component : components()) {
+    state = state || component.cylinder();
+  if (state) return true;
+  }
+  return state;
+}
+
+template <typename Surface>
+boost::logic::tribool FlowDecomposition<Surface>::completelyPeriodic() const {
+  for (auto& component : components()) {
+    boost::logic::tribool state = component.cylinder();
+  if (state != true) return state;
+  }
+  return true;
+}
+
+template <typename Surface>
 ImplementationOf<FlowDecomposition<Surface>>::ImplementationOf(std::unique_ptr<Surface> surface, const Vector<T>& vertical) :
   state(std::make_shared<FlowDecompositionState<Surface>>(std::move(surface), vertical)) {
   for (auto& component : state->components)
