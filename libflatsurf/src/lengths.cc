@@ -83,8 +83,50 @@ void Lengths<Surface>::pop() {
 }
 
 template <typename Surface>
+FlowComponentState<FlatTriangulation<typename Surface::Coordinate>>& Lengths<Surface>::component(Label label) const {
+  const auto component = std::find_if(begin(state.lock()->components), end(state.lock()->components), [&](const auto& component) {
+    return static_cast<::intervalxt::Label>(*begin(component.dynamicalComponent.topContour())) == label || static_cast<::intervalxt::Label>(*begin(component.dynamicalComponent.bottomContour())) == label;
+  });
+  ASSERT(component != end(state.lock()->components), "Label nowhere in flow decomposition contour.")
+  return *component;
+}
+
+template <typename Surface>
+bool Lengths<Surface>::minuendOnTop(Label minuend) const {
+  const auto& component = this->component(minuend);
+  bool minuendOnTop = static_cast<::intervalxt::Label>(*begin(component.dynamicalComponent.topContour())) == minuend;
+  ASSERT(minuendOnTop || static_cast<::intervalxt::Label>(*begin(component.dynamicalComponent.bottomContour())) == minuend, "minuend not found on any contour");
+  return minuendOnTop;
+}
+
+template <typename Surface>
 void Lengths<Surface>::subtract(Label minuend) {
   subtractRepeated(minuend, 1);
+}
+
+template <typename Surface>
+Label Lengths<Surface>::subtractRepeated(Label minuend) {
+  const auto& component = this->component(minuend);
+  const bool minuendOnTop = this->minuendOnTop(minuend);
+  const auto subtrahendContour = minuendOnTop ? component.dynamicalComponent.bottomContour() : component.dynamicalComponent.topContour();
+  const auto bottomMinuend = std::find_if(begin(subtrahendContour), end(subtrahendContour), [&](const auto& he) { return static_cast<Label>(he) == minuend; });
+
+  ASSERT(bottomMinuend != end(subtrahendContour), "each label must be in the top and bottom contour but minuend only found in the top contour");
+
+  const bool stableCombinatorics = bottomMinuend->left().size() == 0;
+
+  auto ret = stack.back();
+  if (stableCombinatorics) {
+    const auto quotient = ::intervalxt::sample::Arithmetic<T>::floorDivision(length(minuend), length());
+    mpz_class iterations = gmpxxll::mpz_class(quotient);
+    if (quotient * length() == length(minuend))
+      iterations -= 1;
+    ASSERT(iterations > mpz_class(), "subtractRepeated() should not be called when there is no full subtract possible; but the labels on the stack fit only " << iterations << " times into the minuend label " << render(minuend) << "; the code cannot handle partial subtracts yet.");
+    subtractRepeated(minuend, iterations);
+  } else {
+    subtract(minuend);
+  }
+  return ret;
 }
 
 template <typename Surface>
@@ -98,15 +140,12 @@ void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iteratio
     else
       return length(minuend) - iterations * length();
   }();
-  ASSERT(expected > 0, "Lengths must be positive but subtracting " << length() << " " << iterations << "times from edge " << fromLabel(minuend) << " of length " << length(minuend) << " would yield " << expected << " which is non-positive.");
+  ASSERT(expected > 0, "Lengths must be positive but subtracting " << length() << " " << iterations << " times from edge " << fromLabel(minuend) << " of length " << length(minuend) << " would yield " << expected << " which is non-positive.");
   ASSERT(expected < length(minuend), "subtraction must shorten lengths");
 
-  auto& component = *std::find_if(begin(state.lock()->components), end(state.lock()->components), [&](const auto& component) {
-    return static_cast<::intervalxt::Label>(*begin(component.dynamicalComponent.topContour())) == minuend || static_cast<::intervalxt::Label>(*begin(component.dynamicalComponent.bottomContour())) == minuend;
-  });
+  auto& component = this->component(minuend);
 
-  bool minuendOnTop = static_cast<::intervalxt::Label>(*begin(component.dynamicalComponent.topContour())) == minuend;
-  ASSERT(minuendOnTop || static_cast<::intervalxt::Label>(*begin(component.dynamicalComponent.bottomContour())) == minuend, "minuend not found on any contour");
+  const bool minuendOnTop = this->minuendOnTop(minuend);
 
   const auto minuendContour = minuendOnTop ? component.dynamicalComponent.topContour() : component.dynamicalComponent.bottomContour();
   const auto subtrahendContour = minuendOnTop ? component.dynamicalComponent.bottomContour() : component.dynamicalComponent.topContour();
@@ -219,14 +258,6 @@ void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iteratio
 template <typename Surface>
 void Lengths<Surface>::registerDecomposition(std::shared_ptr<FlowDecompositionState<FlatTriangulation<T>>> state) {
   this->state = state;
-}
-
-template <typename Surface>
-Label Lengths<Surface>::subtractRepeated(Label minuend) {
-  // This should be optimized, see https://github.com/flatsurf/flatsurf/issues/155.
-  auto ret = stack.back();
-  subtract(minuend);
-  return ret;
 }
 
 template <typename Surface>
