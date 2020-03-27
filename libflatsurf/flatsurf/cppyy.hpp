@@ -32,7 +32,6 @@
 #include "flat_triangulation_combinatorial.hpp"
 #include "flow_component.hpp"
 #include "flow_connection.hpp"
-#include "forward.hpp"
 #include "flow_decomposition.hpp"
 #include "half_edge.hpp"
 #include "interval_exchange_transformation.hpp"
