@@ -34,7 +34,6 @@ try:
 except ImportError:
     raise ImportError("pyflatsurf.sage_conversion needs sage-flatsurf, see https://github.com/videlec/sage-flatsurf")
 
-import cppyy
 from .cppyy_flatsurf import flatsurf
 from .factory import make_surface as Surface
 
