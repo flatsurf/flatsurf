@@ -1,5 +1,5 @@
 if HAVE_SAGE
-  MAYBE_SAGE = sage-doctest.sh sage_flatsurf.py
+  MAYBE_SAGE = sage-doctest.sh sage_flatsurf.py veech.py
 endif
 TESTS = half_edge.py saddle_connections.py vector_renf_elem.py vector_gmp.py python-doctest.sh $(MAYBE_SAGE)
 EXTRA_DIST = $(TESTS) surfaces.py
