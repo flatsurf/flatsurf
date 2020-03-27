@@ -32,6 +32,7 @@
 #include "flat_triangulation_combinatorial.hpp"
 #include "flow_component.hpp"
 #include "flow_connection.hpp"
+#include "forward.hpp"
 #include "flow_decomposition.hpp"
 #include "half_edge.hpp"
 #include "interval_exchange_transformation.hpp"
@@ -41,6 +42,7 @@
 #include "saddle_connections_iterator.hpp"
 #include "vector.hpp"
 #include "vertex.hpp"
+#include "vertical.hpp"
 
 namespace flatsurf {
 // cppyy sometimes has trouble with rvalues, let's help it to create a FlatTriangulation
