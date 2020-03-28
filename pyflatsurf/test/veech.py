@@ -35,9 +35,8 @@ def test_veech_ngon(n, bound):
         decomposition = flatsurf.makeFlowDecomposition(S, v)
         flatsurf.decomposeFlowDecomposition(decomposition, -1)
 
-        # TODO: we should actually check parabolicity
-        # see https://github.com/flatsurf/flatsurf/issues/161
-        assert decomposition.completelyPeriodic()
+        assert decomposition.completelyPeriodic() == True
+        assert decomposition.parabolic() == True
 
         for dec in decomposition.components():
             h = dec.circumferenceHolonomy()
