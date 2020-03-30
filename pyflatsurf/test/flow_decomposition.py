@@ -28,7 +28,7 @@ import surfaces
 
 def test_hexagon_eantic():
     surface = surfaces.hexagon()
-    decompositions = {}
+    decompositions = {(1, 0): 0, (2, 0): 0}
 
     for connection in surface.saddle_connections(flatsurf.Bound(16, 0), flatsurf.HalfEdge(1)):
         decomposition = flatsurf.makeFlowDecomposition(surface, connection.vector())
@@ -61,10 +61,40 @@ def test_hexagon_eantic():
                 assert area3 == area2 * (vx*vx + vy*vy)
 
         t = (n_cylinders, n_without_periodic_components)
-        if t not in decompositions:
-            decompositions[t] = 0
         decompositions[t] += 1
 
+        if n_without_periodic_components == 0:
+            assert decomposition.parabolic()
+
     assert decompositions == {(1, 0): 7, (2, 0): 3}
+
+def test_D33():
+    S = surfaces.D33()
+    decompositions = {(2, 0): 0, (3, 0): 0, (0, 2): 0}
+    for connection in S.saddle_connections(flatsurf.Bound(4, 0)):
+        v = connection.vector()
+        decomposition = flatsurf.makeFlowDecomposition(S, v)
+        flatsurf.decomposeFlowDecomposition(decomposition, -1)
+        n_cylinders, n_without_periodic_components, n_indeterminate = 0, 0, 0
+        for dec in decomposition.components():
+            if dec.cylinder() == True:
+                n_cylinders += 1
+                h = dec.circumferenceHolonomy()
+                assert h.x() or h.y()
+                assert h.x() * v.y() == h.y() * v.x()
+            elif dec.cylinder() == False:
+                n_without_periodic_components += 1
+            else:
+                n_indeterminate = 0
+        assert n_indeterminate == 0
+        decompositions[(n_cylinders, n_without_periodic_components)] += 1
+
+        if not n_without_periodic_components:
+            if n_cylinders == 2:
+                assert decomposition.parabolic() == True
+            elif n_cylinders == 3:
+                assert decomposition.parabolic() == False
+
+    assert decompositions == {(0, 2): 8, (2, 0): 20, (3, 0): 12}
 
 if __name__ == '__main__': sys.exit(pytest.main(sys.argv))
