@@ -49,6 +49,13 @@ using std::vector;
 namespace flatsurf {
 
 template <typename T>
+std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfEdgeMap<Vector<T>> &shift) const {
+  return std::make_unique<FlatTriangulation<T>>(
+      std::move(*static_cast<const FlatTriangulationCombinatorial &>(*this).clone()),
+      [&](const HalfEdge he) { return impl->vectors->get(he) + shift.get(he); });
+}
+
+template <typename T>
 Vector<T> FlatTriangulation<T>::shortest() const {
   const auto edges = this->edges();
   Edge shortest = *std::min_element(begin(edges), end(edges), [&](const auto &a, const auto &b) {
