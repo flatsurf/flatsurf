@@ -23,9 +23,6 @@
 
 #include <memory>
 
-#include <e-antic/renf_elem.h>
-#include <gmpxx.h>
-
 #include "../external/catch2/single_include/catch2/catch.hpp"
 
 #include "../../flatsurf/bound.hpp"
