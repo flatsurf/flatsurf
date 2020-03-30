@@ -1,4 +1,4 @@
-check_PROGRAMS = half_edge chain vector_longlong contour_decomposition delaunay saddle_connections vector_exactreal cereal permutation flat_triangulation_combinatorial flat_triangulation flow_decomposition flat_triangulation_collapsed vertex edge
+check_PROGRAMS = half_edge chain vector_longlong contour_decomposition delaunay saddle_connections vector_exactreal cereal permutation flat_triangulation_combinatorial flat_triangulation flow_decomposition flat_triangulation_collapsed vertex edge parabolic
 
 TESTS = $(check_PROGRAMS)
 
@@ -17,6 +17,7 @@ saddle_connections_SOURCES = saddle_connections.test.cc main.cc surfaces.hpp
 vector_exactreal_SOURCES = vector_exactreal.test.cc main.cc
 vector_longlong_SOURCES = vector_longlong.test.cc main.cc
 vertex_SOURCES = vertex.test.cc main.cc surfaces.hpp
+parabolic_SOURCES = parabolic.test.cc main.cc surfaces.hpp
 
 # We vendor the header-only library Cereal (serialization with C++ to be able
 # to run the tests even when cereal is not installed.
