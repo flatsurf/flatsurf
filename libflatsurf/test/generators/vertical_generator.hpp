@@ -79,4 +79,3 @@ Catch::Generators::GeneratorWrapper<Vector<T>> verticals(std::shared_ptr<FlatTri
 }  // namespace flatsurf::test
 
 #endif
-
