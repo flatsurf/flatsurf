@@ -42,8 +42,8 @@
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertical.hpp"
 
-#include "generators/saddle_connections_generator.hpp"
 #include "generators/surface_generator.hpp"
+#include "generators/vertical_generator.hpp"
 
 using boost::lexical_cast;
 using eantic::renf_class;
@@ -109,7 +109,7 @@ TEMPLATE_TEST_CASE("Connections and IET from Contour Decomposition", "[contour_d
   const auto surface = GENERATE(makeSurface<T>());
 
   GIVEN("The surface " << *surface) {
-    const auto saddleConnection = GENERATE_COPY(saddleConnections<T>(surface));
+    const auto saddleConnection = GENERATE_COPY(verticals<T>(surface));
 
     AND_GIVEN("A direction of a Saddle Connection " << saddleConnection) {
       THEN("The Contour Decomposition in that Direction can be Computed") {

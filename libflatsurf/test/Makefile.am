@@ -4,12 +4,12 @@ TESTS = $(check_PROGRAMS)
 
 cereal_SOURCES = cereal.test.cc cereal.helpers.hpp main.cc surfaces.hpp generators/saddle_connections_generator.hpp
 chain_SOURCES = chain.test.cc main.cc
-contour_decomposition_SOURCES = contour_decomposition.test.cc main.cc surfaces.hpp generators/saddle_connections_generator.hpp generators/surface_generator.hpp
+contour_decomposition_SOURCES = contour_decomposition.test.cc main.cc surfaces.hpp generators/vertical_generator.hpp generators/surface_generator.hpp
 delaunay_SOURCES = delaunay.test.cc main.cc generators/half_edge_generator.hpp
 flat_triangulation_SOURCES = flat_triangulation.test.cc main.cc surfaces.hpp
 flat_triangulation_collapsed_SOURCES = flat_triangulation_collapsed.test.cc main.cc surfaces.hpp generators/saddle_connections_generator.hpp
 flat_triangulation_combinatorial_SOURCES = flat_triangulation_combinatorial.test.cc main.cc surfaces.hpp generators/combinatorial_surface_generator.hpp
-flow_decomposition_SOURCES = flow_decomposition.test.cc main.cc surfaces.hpp generators/saddle_connections_generator.hpp generators/surface_generator.hpp
+flow_decomposition_SOURCES = flow_decomposition.test.cc main.cc surfaces.hpp generators/vertical_generator.hpp generators/surface_generator.hpp
 half_edge_SOURCES = half_edge.test.cc main.cc
 edge_SOURCES = edge.test.cc main.cc
 permutation_SOURCES = permutation.test.cc main.cc
