@@ -53,6 +53,8 @@ cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(add_met
 cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(add_method("insertAt")(lambda self, *args: cppyy.gbl.flatsurf.insertAtFlatTriangulation(self, *args))), "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(add_method("slot")(lambda self, *args: cppyy.gbl.flatsurf.slotFlatTriangulation(self, *args))), "flatsurf")
 
+cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_method("decompose")(lambda self, *args: cppyy.gbl.flatsurf.decomposeFlowDecomposition(self, *args))), "flatsurf")
+
 for path in os.environ.get('PYFLATSURF_INCLUDE','').split(':'):
     if path: cppyy.add_include_path(path)
 

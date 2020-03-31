@@ -70,8 +70,8 @@ FlowDecomposition<FlatTriangulation<T>> makeFlowDecomposition(const FlatTriangul
 // cppyy has trouble with std::function arguments in headers
 // See https://github.com/flatsurf/flatsurf/issues/149 for the upstream issue.
 template <typename T>
-void decomposeFlowDecomposition(FlowDecomposition<T> &decomposition, int limit = -1) {
-  decomposition.decompose(FlowDecomposition<T>::defaultTarget, limit);
+bool decomposeFlowDecomposition(FlowDecomposition<T> &decomposition, int limit = -1) {
+  return decomposition.decompose(FlowDecomposition<T>::defaultTarget, limit);
 }
 
 // The following block of forward declarations is a bit odd. It only exists to
