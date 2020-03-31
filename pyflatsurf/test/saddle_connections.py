@@ -54,7 +54,7 @@ def test_L_with_slit_mpq():
     surface = surface.insertAt(e, slit)
     assert e != flatsurf.HalfEdge(1), "HalfEdge& not updated correctly in " + repr(surface)
     e = surface.nextAtVertex(e)
-    surface = cppyy.gbl.flatsurf.slot(surface, e)
+    surface = surface.slot(e)
 
     connections = surface.saddle_connections(flatsurf.Bound(16, 0), flatsurf.HalfEdge(1))
     assert len([1 for c in connections]) == 15

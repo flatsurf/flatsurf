@@ -53,12 +53,12 @@ std::shared_ptr<FlatTriangulation<T>> makeFlatTriangulation(const std::vector<st
 // cppyy gets the lifetime of the surfaces wrong when methods return a unique_ptr<Surface>
 // See https://github.com/flatsurf/flatsurf/issues/148 for the upstream issue.
 template <typename T>
-std::shared_ptr<FlatTriangulation<T>> insertAt(const FlatTriangulation<T> &surface, HalfEdge &e, const Vector<T> &v) {
+std::shared_ptr<FlatTriangulation<T>> insertAtFlatTriangulation(const FlatTriangulation<T> &surface, HalfEdge &e, const Vector<T> &v) {
   return surface.insertAt(e, v);
 }
 
 template <typename T>
-std::shared_ptr<FlatTriangulation<T>> slot(const FlatTriangulation<T> &surface, HalfEdge e) {
+std::shared_ptr<FlatTriangulation<T>> slotFlatTriangulation(const FlatTriangulation<T> &surface, HalfEdge e) {
   return surface.slot(e);
 }
 
@@ -70,8 +70,8 @@ FlowDecomposition<FlatTriangulation<T>> makeFlowDecomposition(const FlatTriangul
 // cppyy has trouble with std::function arguments in headers
 // See https://github.com/flatsurf/flatsurf/issues/149 for the upstream issue.
 template <typename T>
-void decomposeFlowDecomposition(FlowDecomposition<T> &decomposition, int limit = -1) {
-  decomposition.decompose(FlowDecomposition<T>::defaultTarget, limit);
+bool decomposeFlowDecomposition(FlowDecomposition<T> &decomposition, int limit = -1) {
+  return decomposition.decompose(FlowDecomposition<T>::defaultTarget, limit);
 }
 
 // The following block of forward declarations is a bit odd. It only exists to
