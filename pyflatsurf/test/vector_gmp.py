@@ -37,5 +37,11 @@ def test_creation():
     v = flatsurf.Vector[mpq](1, (mpq(mpz(1), mpz(3))))
     assert str(v) == "(1, 1/3)"
 
-if __name__ == '__main__': sys.exit(pytest.main(sys.argv))
+def test_arithmetic():
+    v = flatsurf.Vector['mpz_class'](1, 1)
 
+    import cppyy
+    mpz = cppyy.gbl.mpz_class
+    assert str(mpz(2) * v) == "(2, 2)"
+
+if __name__ == '__main__': sys.exit(pytest.main(sys.argv))
