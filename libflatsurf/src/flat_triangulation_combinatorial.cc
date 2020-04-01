@@ -153,6 +153,10 @@ std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::
   return ret;
 }
 
+std::vector<std::vector<HalfEdge>> FlatTriangulationCombinatorial::faces() const {
+  return impl->faces.cycles();
+}
+
 std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::slot(HalfEdge e) const {
   CHECK_ARGUMENT(!boundary(e) && !boundary(-e), "cannot disconnect half edge that is already boundary");
 

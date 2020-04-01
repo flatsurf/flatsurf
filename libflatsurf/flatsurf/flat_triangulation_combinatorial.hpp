@@ -83,6 +83,8 @@ class FlatTriangulationCombinatorial : Serializable<FlatTriangulationCombinatori
   const std::vector<Edge> &edges() const;
   const std::vector<HalfEdge> &halfEdges() const;
   const std::vector<Vertex> &vertices() const;
+  // Return the triples of half edges of each face in counterclockwise order.
+  std::vector<std::vector<HalfEdge>> faces() const;
 
   // Return the outgoing half edges from this vertex.
   std::vector<HalfEdge> outgoing(const Vertex &) const;
