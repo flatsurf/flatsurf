@@ -54,6 +54,7 @@ class Vertex : Serializable<Vertex>,
   friend Implementation;
   friend std::hash<Vertex>;
   friend Serialization<Vertex>;
+  friend FlatTriangulationCombinatorial;
 };
 }  // namespace flatsurf
 

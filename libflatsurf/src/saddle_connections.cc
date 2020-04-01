@@ -55,7 +55,7 @@ SaddleConnections<Surface>::SaddleConnections(const std::shared_ptr<const Surfac
 
 template <typename Surface>
 SaddleConnections<Surface>::SaddleConnections(const std::shared_ptr<const Surface>& surface, const Bound searchRadius, const Vertex source) :
-  impl(spimpl::make_impl<Implementation>(surface, searchRadius, surface->outgoing(source))) {}
+  impl(spimpl::make_impl<Implementation>(surface, searchRadius, surface->atVertex(source))) {}
 
 template <typename Surface>
 SaddleConnections<Surface>::SaddleConnections(const std::shared_ptr<const Surface>& surface, const Bound searchRadius, const HalfEdge sectorBegin) :
