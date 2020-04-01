@@ -203,10 +203,8 @@ std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::
   return ret;
 }
 
-std::vector<HalfEdge> FlatTriangulationCombinatorial::outgoing(const Vertex& v) const {
-  const auto& outgoing = ImplementationOf<Vertex>::outgoing(v);
-  ASSERT(outgoing.size() >= 3 || (hasBoundary() && outgoing.size() >= 2), "Vertex " << v << " has impossible number of outgoing edges " << outgoing.size());
-  return std::vector<HalfEdge>(begin(outgoing), end(outgoing));
+std::vector<HalfEdge> FlatTriangulationCombinatorial::atVertex(const Vertex& v) const {
+  return impl->vertices.cycle(*begin(v.impl->sources));
 }
 
 void FlatTriangulationCombinatorial::flip(HalfEdge e) {

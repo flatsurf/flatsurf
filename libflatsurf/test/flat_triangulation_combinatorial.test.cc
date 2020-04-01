@@ -78,7 +78,7 @@ TEST_CASE("Flat Triangulation Vertices", "[flat_triangulation_combinatorial][ver
       if (!surface->hasBoundary()) {
         std::vector<HalfEdge> halfEdges;
         for (auto vertex : vertices) {
-          for (auto halfEdge : surface->outgoing(vertex)) {
+          for (auto halfEdge : surface->atVertex(vertex)) {
             halfEdges.push_back(halfEdge);
           }
         }

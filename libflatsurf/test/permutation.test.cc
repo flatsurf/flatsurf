@@ -37,6 +37,17 @@ TEST_CASE("Permutation", "[permutation]") {
     THEN("It can be Reconstructed From its Cycles") {
       REQUIRE(p == Permutation<HalfEdge>(p.cycles()));
     }
+
+    THEN("Individual Cycles Are Consistent") {
+      for (const auto he : domain) {
+        const auto cycle = p.cycle(he);
+        REQUIRE(std::find(begin(cycle), end(cycle), he) != end(cycle));
+        for (int i = 0; i < cycle.size(); i++) {
+          if (cycle[i] == he)
+            REQUIRE(cycle[(i + 1) % cycle.size()] == p(he));
+        }
+      }
+    }
   }
 }
 }  // namespace flatsurf::test
