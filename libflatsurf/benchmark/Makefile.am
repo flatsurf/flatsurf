@@ -1,6 +1,6 @@
 noinst_PROGRAMS = benchmark
 
-benchmark_SOURCES = main.cc flat_triangulation_combinatorial.benchmark.cc vertex.benchmark.cc half_edge.benchmark.cc saddle_connections.benchmark.cc chain.benchmark.cc flat_triangulation_collapsed.benchmark.cc flat_triangulation.benchmark.cc surfaces.hpp
+benchmark_SOURCES = main.cc flat_triangulation_combinatorial.benchmark.cc vertex.benchmark.cc half_edge.benchmark.cc saddle_connection.benchmark.cc saddle_connections.benchmark.cc chain.benchmark.cc flat_triangulation_collapsed.benchmark.cc flat_triangulation.benchmark.cc surfaces.hpp
 
 AM_CPPFLAGS = -I $(srcdir)/.. -I $(builddir)/..
 AM_LDFLAGS = $(builddir)/../src/libflatsurf.la

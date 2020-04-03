@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -44,7 +44,11 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
 
  public:
   SaddleConnection(std::shared_ptr<const Surface>, HalfEdge e);
+  // The saddle connection described by the given chain that starts in the
+  // sector counterclockwise next to source and ends in the sector
+  // counterclockwise next to target.
   SaddleConnection(std::shared_ptr<const Surface>, HalfEdge source, HalfEdge target, const Chain<Surface> &);
+  SaddleConnection(std::shared_ptr<const Surface>, HalfEdge source, HalfEdge target, Chain<Surface> &&);
 
   static SaddleConnection<Surface> inSector(std::shared_ptr<const Surface>, HalfEdge source, const Vector<T> &);
   static SaddleConnection<Surface> inSector(std::shared_ptr<const Surface>, HalfEdge source, const Vertical<Surface> &direction);
@@ -52,6 +56,11 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   static SaddleConnection<Surface> inPlane(std::shared_ptr<const Surface>, HalfEdge plane, const Vector<T> &);
   static SaddleConnection<Surface> alongVertical(std::shared_ptr<const Surface>, const Vertical<Surface> &direction, HalfEdge plane);
   static SaddleConnection<Surface> clockwise(const SaddleConnection &from, const Vector<T> &);
+  // Return the saddle connection that starts counterclockwise from source
+  // (but not necessarily in the sector next to source) and ends
+  // counterclockwise from target (but not necessarily in the sector next to
+  // source.)
+  static SaddleConnection<Surface> counterclockwise(std::shared_ptr<const Surface>, HalfEdge source, HalfEdge target, const Chain<Surface> &);
   static SaddleConnection<Surface> reconstruct(std::shared_ptr<const Surface>, HalfEdge source, std::function<bool(const SaddleConnectionsIterator<Surface> &)> until, std::function<CCW(const SaddleConnectionsIterator<Surface> &)> skip, Bound = Bound(INT_MAX, 0));
 
   const Vector<T> &vector() const;
