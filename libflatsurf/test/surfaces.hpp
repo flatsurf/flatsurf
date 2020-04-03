@@ -116,7 +116,7 @@ auto makeMcMullenL2111() {
 }
 
 template <typename R2>
-auto makeLParabolicNonParabolic () {
+auto makeLParabolicNonParabolic() {
   vector<R2> vectors;
   auto a = K->gen();
   vectors = vector{R2(1, a), R2(-1, 0), R2(0, -a), R2(1, 1), R2(-1, 0), R2(0, -1), R2(a - 1, a), R2(-a + 1, 0), R2(0, -a)};
