@@ -98,7 +98,7 @@ boost::logic::tribool FlowDecomposition<Surface>::hasCylinder() const {
   boost::logic::tribool state = false;
   for (auto& component : components()) {
     state = state || component.cylinder();
-  if (state) return true;
+    if (state) return true;
   }
   return state;
 }
@@ -107,7 +107,7 @@ template <typename Surface>
 boost::logic::tribool FlowDecomposition<Surface>::completelyPeriodic() const {
   for (auto& component : components()) {
     boost::logic::tribool state = component.cylinder();
-  if (state != true) return state;
+    if (state != true) return state;
   }
   return true;
 }
@@ -121,13 +121,12 @@ boost::logic::tribool FlowDecomposition<Surface>::parabolic() const {
     if (state == false) return false;
     ans = ans && state;
     Vector<T> h = component.circumferenceHolonomy();
-    T hnorm2 = h.x()*h.x() + h.y()*h.y();
+    T hnorm2 = h.x() * h.x() + h.y() * h.y();
     T a = component.area();
     if (hnorm20 == 0) {
       hnorm20 = hnorm2;
       a0 = a;
-    }
-    else {
+    } else {
       std::vector<mpq_class> u = intervalxt::sample::Arithmetic<T>::coefficients(a0 * hnorm2);
       std::vector<mpq_class> v = intervalxt::sample::Arithmetic<T>::coefficients(a * hnorm20);
       for (size_t i = 1; i < u.size(); i++) {

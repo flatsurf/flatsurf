@@ -298,8 +298,7 @@ Vector<typename Surface::Coordinate> FlowComponent<Surface>::circumferenceHolono
     if (!c.vertical()) {
       if (basis) break;
       basis = true;
-    }
-    else {
+    } else {
       h += c.saddleConnection().vector();
     }
   }
