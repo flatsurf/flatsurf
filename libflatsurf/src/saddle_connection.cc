@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -44,12 +44,19 @@ namespace flatsurf {
 
 template <typename Surface>
 SaddleConnection<Surface>::SaddleConnection(std::shared_ptr<const Surface> surface, HalfEdge e) :
-  impl(spimpl::make_impl<Implementation>(surface, e)) {
+  impl(spimpl::make_impl<Implementation>(surface, e, -e, Chain(surface, e))) {
 }
 
 template <typename Surface>
 SaddleConnection<Surface>::SaddleConnection(std::shared_ptr<const Surface> surface, HalfEdge source, HalfEdge target, const Chain<Surface>& chain) :
   impl(spimpl::make_impl<Implementation>(surface, source, target, chain)) {
+  ASSERT_ARGUMENT(impl->chain, "saddle connection cannot be trivial");
+}
+
+template <typename Surface>
+SaddleConnection<Surface>::SaddleConnection(std::shared_ptr<const Surface> surface, HalfEdge source, HalfEdge target, Chain<Surface>&& chain) :
+  impl(spimpl::make_impl<Implementation>(surface, source, target, std::move(chain))) {
+  ASSERT_ARGUMENT(impl->chain, "saddle connection cannot be trivial");
 }
 
 template <typename Surface>
@@ -197,6 +204,22 @@ std::vector<HalfEdge> SaddleConnection<Surface>::crossings() const {
 }
 
 template <typename Surface>
+SaddleConnection<Surface> SaddleConnection<Surface>::counterclockwise(std::shared_ptr<const Surface> surface, HalfEdge source, HalfEdge target, const Chain<Surface>& chain) {
+  const auto normalize = [&](HalfEdge& sector, const Vector<T>& vector) {
+    while (surface->fromEdge(sector).ccw(vector) == CCW::COUNTERCLOCKWISE)
+      sector = surface->nextAtVertex(sector);
+    while (surface->fromEdge(sector).ccw(vector) == CCW::CLOCKWISE)
+      sector = surface->previousAtVertex(sector);
+  };
+
+  const auto& vector = static_cast<const Vector<T>&>(chain);
+  normalize(source, vector);
+  normalize(target, -vector);
+
+  return SaddleConnection(surface, source, target, chain);
+}
+
+template <typename Surface>
 const Vector<typename Surface::Coordinate>& SaddleConnection<Surface>::vector() const {
   return static_cast<const Vector<T>&>(chain());
 }
@@ -232,37 +255,18 @@ ostream& operator<<(ostream& os, const SaddleConnection<Surface>& self) {
 }
 
 template <typename Surface>
-ImplementationOf<SaddleConnection<Surface>>::ImplementationOf(std::shared_ptr<const Surface>& surface, HalfEdge e) :
-  surface(surface),
-  source(e),
-  target(-e),
-  chain(surface, e) {
-}
-
-template <typename Surface>
-ImplementationOf<SaddleConnection<Surface>>::ImplementationOf(std::shared_ptr<const Surface>& surface, HalfEdge source, HalfEdge target, const Chain<Surface>& chain) :
-  surface(surface),
+ImplementationOf<SaddleConnection<Surface>>::ImplementationOf(std::shared_ptr<const Surface> surface, HalfEdge source, HalfEdge target, const Chain<Surface>& chain) :
+  surface(std::move(surface)),
   source(source),
   target(target),
-  chain(chain) {
-  ASSERT_ARGUMENT(chain, "saddle connection cannot be trivial");
-
-  normalize();
-}
+  chain(chain) {}
 
 template <typename Surface>
-void ImplementationOf<SaddleConnection<Surface>>::normalize() {
-  const auto normalize = [&](HalfEdge& sector, const Vector<T>& vector) {
-    while (surface->fromEdge(sector).ccw(vector) == CCW::COUNTERCLOCKWISE)
-      sector = surface->nextAtVertex(sector);
-    while (surface->fromEdge(sector).ccw(vector) == CCW::CLOCKWISE)
-      sector = surface->previousAtVertex(sector);
-  };
-
-  const auto& vector = static_cast<const Vector<T>&>(chain);
-  normalize(this->source, vector);
-  normalize(this->target, -vector);
-}
+ImplementationOf<SaddleConnection<Surface>>::ImplementationOf(std::shared_ptr<const Surface> surface, HalfEdge source, HalfEdge target, Chain<Surface>&& chain) :
+  surface(std::move(surface)),
+  source(source),
+  target(target),
+  chain(std::move(chain)) {}
 
 }  // namespace flatsurf
 

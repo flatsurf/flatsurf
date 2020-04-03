@@ -457,7 +457,7 @@ const SaddleConnection<Surface>& SaddleConnectionsIterator<Surface>::dereference
       impl->connection = SaddleConnection(impl->surface, *impl->sector);
       break;
     case Implementation::State::SADDLE_CONNECTION_FOUND:
-      impl->connection = SaddleConnection<Surface>(impl->surface, *impl->sector, -impl->nextEdge, impl->nextEdgeEnd);
+      impl->connection = SaddleConnection<Surface>(impl->surface, *impl->sector, impl->surface->previousAtVertex(-impl->nextEdge), impl->nextEdgeEnd);
       break;
     default:
       ASSERT(false, "iterator cannot hold in this state");
