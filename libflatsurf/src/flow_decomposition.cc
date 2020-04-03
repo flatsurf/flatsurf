@@ -31,8 +31,8 @@
 #include <intervalxt/sample/arithmetic.hpp>
 #include <intervalxt/sample/e-antic-arithmetic.hpp>
 #include <intervalxt/sample/exact-real-arithmetic.hpp>
-#include <intervalxt/sample/rational-arithmetic.hpp>
 #include <intervalxt/sample/long-long-int-arithmetic.hpp>
+#include <intervalxt/sample/rational-arithmetic.hpp>
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
