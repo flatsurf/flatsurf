@@ -40,13 +40,12 @@ namespace flatsurf {
 
 template <typename Surface>
 Chain<Surface>::Chain(std::shared_ptr<const Surface> surface) :
-  impl(spimpl::make_impl<Implementation>(std::move(surface))) {
+  impl(spimpl::make_impl<Implementation>(surface)) {
 }
 
 template <typename Surface>
 Chain<Surface>::Chain(std::shared_ptr<const Surface> surface, HalfEdge e) :
-  Chain(surface) {
-  *this += e;
+  impl(spimpl::make_impl<Implementation>(surface, e)) {
 }
 
 template <typename Surface>
@@ -197,6 +196,16 @@ ImplementationOf<Chain<Surface>>::ImplementationOf(std::shared_ptr<const Surface
   coefficients(_fmpz_vec_init(this->surface->size())),
   vector(this),
   approximateVector(this) {
+}
+
+template <typename Surface>
+ImplementationOf<Chain<Surface>>::ImplementationOf(std::shared_ptr<const Surface> surface, HalfEdge halfEdge) :
+  surface(std::move(surface)),
+  coefficients(_fmpz_vec_init(this->surface->size())),
+  vector(this, this->surface->fromEdge(halfEdge)),
+  approximateVector(this, this->surface->fromEdgeApproximate(halfEdge)) {
+  Edge edge(halfEdge);
+  fmpz_add_si(coefficients + edge.index(), coefficients + edge.index(), halfEdge == edge.positive() ? 1 : -1);
 }
 
 template <typename Surface>
