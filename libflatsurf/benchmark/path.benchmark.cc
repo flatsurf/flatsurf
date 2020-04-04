@@ -21,8 +21,8 @@
 #include <memory>
 
 #include "../flatsurf/half_edge.hpp"
-#include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/path.hpp"
+#include "../flatsurf/saddle_connection.hpp"
 
 #include "surfaces.hpp"
 
@@ -47,5 +47,4 @@ void PathConstructor(State& state) {
 BENCHMARK_TEMPLATE(PathConstructor, Vector<long long>);
 BENCHMARK_TEMPLATE(PathConstructor, Vector<eantic::renf_elem_class>);
 
-}
-
+}  // namespace flatsurf::benchmark

@@ -255,7 +255,7 @@ size_t hash<Chain<Surface>>::operator()(const Chain<Surface>& self) const noexce
     if (fmpz_fits_si(x)) {
       return fmpz_get_si(x);
     } else {
-      __mpz_struct *y = _fmpz_promote_val(x);
+      __mpz_struct* y = _fmpz_promote_val(x);
       const size_t lowest_limb = mpz_get_ui(y);
       _fmpz_demote_val(x);
       return lowest_limb;
