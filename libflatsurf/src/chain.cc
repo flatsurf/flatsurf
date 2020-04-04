@@ -34,6 +34,7 @@
 #include "impl/chain_iterator.impl.hpp"
 
 #include "util/assert.ipp"
+#include "util/hash.ipp"
 
 namespace flatsurf {
 
@@ -241,7 +242,22 @@ using namespace flatsurf;
 
 template <typename Surface>
 size_t hash<Chain<Surface>>::operator()(const Chain<Surface>& self) const noexcept {
-  return hash<Vector<typename Surface::Coordinate>>()(static_cast<const Vector<typename Surface::Coordinate>&>(self));
+  const auto hash_fmpz = [](fmpz_t x) -> size_t {
+    if (fmpz_fits_si(x)) {
+      return fmpz_get_si(x);
+    } else {
+      __mpz_struct *y = _fmpz_promote_val(x);
+      const size_t lowest_limb = mpz_get_ui(y);
+      _fmpz_demote_val(x);
+      return lowest_limb;
+    }
+  };
+
+  size_t ret = hash_fmpz(&self.impl->coefficients[0]);
+  for (size_t i = 1; i < self.surface().size(); i++)
+    ret = hash_combine(ret, hash_fmpz(&self.impl->coefficients[i]));
+
+  return ret;
 }
 
 }  // namespace std
