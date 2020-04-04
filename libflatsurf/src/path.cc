@@ -24,6 +24,7 @@
 #include <fmt/format.h>
 
 #include "../flatsurf/ccw.hpp"
+#include "../flatsurf/chain.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/path_iterator.hpp"

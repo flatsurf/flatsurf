@@ -85,6 +85,9 @@ class ChainVector {
   ChainVector& record(MOVE, V&&);
 };
 
+template <typename Surface, typename T>
+ChainVector(const ImplementationOf<Chain<Surface>>*, const ChainVector<Surface, T>&) -> ChainVector<Surface, T>;
+
 }  // namespace flatsurf
 
 #endif
