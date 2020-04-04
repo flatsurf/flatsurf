@@ -42,11 +42,12 @@ class ImplementationOf<Chain<Surface>> {
   ImplementationOf(const ImplementationOf&);
   ImplementationOf(ImplementationOf&&);
   ImplementationOf(std::shared_ptr<const Surface>);
+  ImplementationOf(std::shared_ptr<const Surface>, HalfEdge);
 
   ~ImplementationOf();
 
-  ImplementationOf& operator=(const ImplementationOf&);
-  ImplementationOf& operator=(ImplementationOf&&);
+  ImplementationOf& operator=(const ImplementationOf&) = delete;
+  ImplementationOf& operator=(ImplementationOf&&) = delete;
 
   operator const Vector<T>&() const;
   operator const Vector<exactreal::Arb>&() const;

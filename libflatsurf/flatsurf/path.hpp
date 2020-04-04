@@ -81,5 +81,8 @@ class Path : public Serializable<Path<Surface>>,
   friend ImplementationOf<PathIterator<Surface>>;
 };
 
+template <typename Surface>
+Path(const std::vector<SaddleConnection<Surface>>&)->Path<Surface>;
+
 }  // namespace flatsurf
 #endif
