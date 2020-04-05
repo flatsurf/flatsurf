@@ -25,7 +25,14 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/lexical_cast.hpp>
 
+#include <gmpxx.h>
+
 #include <intervalxt/dynamical_decomposition.hpp>
+#include <intervalxt/sample/arithmetic.hpp>
+#include <intervalxt/sample/e-antic-arithmetic.hpp>
+#include <intervalxt/sample/exact-real-arithmetic.hpp>
+#include <intervalxt/sample/long-long-int-arithmetic.hpp>
+#include <intervalxt/sample/rational-arithmetic.hpp>
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
@@ -84,6 +91,52 @@ std::vector<FlowComponent<Surface>> FlowDecomposition<Surface>::components() con
     components.push_back(ImplementationOf<FlowComponent<Surface>>::make(impl->state, &component));
   }
   return components;
+}
+
+template <typename Surface>
+boost::logic::tribool FlowDecomposition<Surface>::hasCylinder() const {
+  boost::logic::tribool state = false;
+  for (auto& component : components()) {
+    state = state || component.cylinder();
+    if (state) return true;
+  }
+  return state;
+}
+
+template <typename Surface>
+boost::logic::tribool FlowDecomposition<Surface>::completelyPeriodic() const {
+  for (auto& component : components()) {
+    boost::logic::tribool state = component.cylinder();
+    if (state != true) return state;
+  }
+  return true;
+}
+
+template <typename Surface>
+boost::logic::tribool FlowDecomposition<Surface>::parabolic() const {
+  T a0(0), hnorm20(0);
+  boost::logic::tribool ans = true;
+  for (auto& component : components()) {
+    boost::logic::tribool state = component.cylinder();
+    if (state == false) return false;
+    ans = ans && state;
+    Vector<T> h = component.circumferenceHolonomy();
+    T hnorm2 = h.x() * h.x() + h.y() * h.y();
+    T a = component.area();
+    if (hnorm20 == 0) {
+      hnorm20 = hnorm2;
+      a0 = a;
+    } else {
+      std::vector<mpq_class> u = intervalxt::sample::Arithmetic<T>::coefficients(a0 * hnorm2);
+      std::vector<mpq_class> v = intervalxt::sample::Arithmetic<T>::coefficients(a * hnorm20);
+      for (size_t i = 1; i < u.size(); i++) {
+        if (u[0] * v[i] != u[i] * v[0]) {
+          return false;
+        }
+      }
+    }
+  }
+  return ans;
 }
 
 template <typename Surface>
