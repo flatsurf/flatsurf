@@ -189,6 +189,26 @@
         "unit": "ns",
         "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
     },
+    "Benchmarks.track_PathConstructor_Vector_eantic::renf_elem_class__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_PathConstructor_Vector_eantic::renf_elem_class__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_PathConstructor_Vector_long long__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_PathConstructor_Vector_long long__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
     "Benchmarks.track_SaddleConnectionUnaryMinus_Vector_eantic::renf_elem_class__": {
         "code": "def asv_method(self, t=time): return t",
         "name": "Benchmarks.track_SaddleConnectionUnaryMinus_Vector_eantic::renf_elem_class__",
