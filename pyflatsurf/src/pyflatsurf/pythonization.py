@@ -37,7 +37,7 @@ def enable_iterable(proxy, name):
                     elif hasattr(i, 'increment'):
                         i.increment()
                     else:
-                        raise Exception("iterator has not preinc method")
+                        raise Exception("iterator has no preinc method")
 
             proxy.__iter__ = iter
 
@@ -59,21 +59,3 @@ def enable_vector_print(proxy, name):
     if name.startswith("Vector<"):
         proxy.__str__ = lambda self: "(" + str(self.x()) + ", " + str(self.y()) + ")"
         proxy.__repr__ = proxy.__str__
-
-def add_saddle_connections(proxy, name):
-    if name.startswith("FlatTriangulation<"):
-        def saddle_connections(self, *args):
-            return cppyy.gbl.flatsurf.SaddleConnections[type(self)](self, *args)
-        proxy.saddle_connections = saddle_connections
-
-def share_unique_ptr(proxy, name):
-    if name.startswith("FlatTriangulation<"):
-        # cppyy gets the lifetime of the surfaces wrong when methods return a unique_ptr<Surface>
-        # See https://github.com/flatsurf/flatsurf/issues/148 for the upstream issue.
-        def insertAt(self, *args):
-            return cppyy.gbl.flatsurf.insertAt(self, *args)
-        proxy.insertAt = insertAt
-
-        def slot(self, *args):
-            return cppyy.gbl.flatsurf.slot(self, *args)
-        proxy.slot = slot

@@ -340,7 +340,7 @@ template <typename T>
 int FlatTriangulation<T>::angle(const Vertex &vertex) const {
   int angle = 0;
 
-  const HalfEdge first = *begin(outgoing(vertex));
+  const HalfEdge first = *begin(atVertex(vertex));
   HalfEdge current = first;
   do {
     const HalfEdge next = nextAtVertex(current);

@@ -20,6 +20,8 @@
 
 #include "external/catch2/single_include/catch2/catch.hpp"
 
+#include <e-antic/renfxx.h>
+#include <gmpxx.h>
 #include <exact-real/element.hpp>
 #include <exact-real/integer_ring.hpp>
 #include <exact-real/number_field.hpp>
@@ -30,8 +32,8 @@
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
 
-#include "generators/saddle_connections_generator.hpp"
 #include "generators/surface_generator.hpp"
+#include "generators/vertical_generator.hpp"
 #include "surfaces.hpp"
 
 using eantic::renf_class;
@@ -67,11 +69,11 @@ TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (renf_elem_clas
   const auto surface = GENERATE(makeSurface<T>());
 
   GIVEN("The surface " << *surface) {
-    const auto saddleConnection = GENERATE_COPY(saddleConnections<T>(surface));
+    const auto vertical = GENERATE_COPY(verticals<T>(surface));
 
-    AND_GIVEN("A direction of a Saddle Connection " << saddleConnection) {
+    AND_GIVEN("A direction of a Saddle Connection " << vertical) {
       THEN("The flow decomposition in that direction can be computed") {
-        auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), saddleConnection);
+        auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), vertical);
 
         const auto area = [](const auto& decomposition) {
           T sum = T();

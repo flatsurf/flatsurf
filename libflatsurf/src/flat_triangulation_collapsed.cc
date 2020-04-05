@@ -322,7 +322,7 @@ template <typename T>
 void ImplementationOf<FlatTriangulationCollapsed<T>>::updateAfterFlip(HalfEdgeMap<SaddleConnection>& vectors, const FlatTriangulationCombinatorial& combinatorial, HalfEdge flip) {
   ImplementationOf::handleFlip(vectors, static_cast<const FlatTriangulationCollapsed<T>&>(combinatorial), flip, [&](const auto& surface, HalfEdge a, HalfEdge b, HalfEdge c, HalfEdge d) {
     const auto sum = [&](const auto& lhs, const auto& rhs) {
-      return SaddleConnection(surface.impl->original, lhs.source(), rhs.target(), static_cast<const Chain<FlatTriangulation<T>>&>(lhs) + static_cast<const Chain<FlatTriangulation<T>>&>(rhs));
+      return SaddleConnection::counterclockwise(surface.impl->original, lhs.source(), rhs.target(), static_cast<const Chain<FlatTriangulation<T>>&>(lhs) + static_cast<const Chain<FlatTriangulation<T>>&>(rhs));
     };
 
     auto& collapsedHalfEdges = surface.impl->collapsedHalfEdges;

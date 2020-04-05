@@ -54,6 +54,15 @@ class FlowDecomposition {
 
   Vector<T> vertical() const;
 
+  boost::logic::tribool hasCylinder() const;
+  boost::logic::tribool completelyPeriodic() const;
+
+  // Return
+  //   false: if there is a minimal component or there are two cylinders with incommensurable moduli
+  //   true: if all components are cylinders and moduli are commensurable
+  //   unknown: otherwise
+  boost::logic::tribool parabolic() const;
+
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const FlowDecomposition<S>&);
 

@@ -29,6 +29,7 @@ from pyeantic import eantic
 # (segfault.) Eventually we want renf_class/Module to use shared_ptr here. Then
 # this won't be a problem anymore.
 K = eantic.renf_class.make("x^2 - 3", "x", "1.73 +/- 0.1")
+O = eantic.renf_class.make("x^2 - x - 8", "x", "3.37 +/- 0.1")
 
 def square(R2):
     vectors = [R2(1, 0), R2(0, 1), R2(1, 1)]
@@ -62,4 +63,23 @@ def random_hexagon():
     w = R2(-ν, x*ν)
     vectors = [u, v, u + v, -w, u + v - w, u+v]
     vertices = [[1, 3, -4, -5, -3, -2], [2, -1, -6, 4, 5, 6]]
+    return Surface(vertices, vectors)
+
+def D33():
+    R2 = flatsurf.Vector['eantic::renf_elem_class']
+    R = eantic.renf_elem
+    zero = R(O, 0)
+    one = R(O, 1)
+    two = R(O, 2)
+    one_fourth = R(O, 1) / R(O, 4)
+    three_fourth = R(O, 3) / R(O, 4)
+    eleven_fourth = R(O, 11) / R(O, 4)
+    fifteen_fourth = R(O, 15) / R(O, 4)
+    x = O.gen()
+    vectors = [R2(x + one_fourth, x), R2(-x, zero), R2(-one_fourth, -x),
+               R2(x + three_fourth, 2), R2(-x, zero), R2(-three_fourth, -two),
+               R2(one, two), R2(-one_fourth, zero), R2(-three_fourth, -two),
+               R2(one, two), R2(x - fifteen_fourth, zero), R2(eleven_fourth - x, -two)]
+    vertices = [[1, -3, 5, -4, 9, -8, 10, -12, 11, -10, 6, -5],
+                [3, -2, 4, -6, 8, -7, 12, -11, 7, -9, 2, -1]]
     return Surface(vertices, vectors)

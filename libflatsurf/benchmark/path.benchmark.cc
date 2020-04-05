@@ -17,27 +17,34 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_PATH_IMPL_HPP
-#define LIBFLATSURF_PATH_IMPL_HPP
+#include <benchmark/benchmark.h>
+#include <memory>
 
-#include "../../flatsurf/path.hpp"
+#include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/path.hpp"
+#include "../flatsurf/saddle_connection.hpp"
 
-namespace flatsurf {
+#include "surfaces.hpp"
 
-template <typename Surface>
-class ImplementationOf<Path<Surface>> {
-  using T = typename Surface::Coordinate;
+using benchmark::DoNotOptimize;
+using benchmark::State;
+
+namespace flatsurf::benchmark {
+using namespace flatsurf::test;
+
+template <typename R2>
+void PathConstructor(State& state) {
+  using Surface = FlatTriangulation<typename R2::Coordinate>;
+  auto L = makeL<R2>();
+
   using Segment = SaddleConnection<Surface>;
+  const auto segments = std::vector{Segment(L, HalfEdge(1)), Segment(L, HalfEdge(-9)), Segment(L, HalfEdge(-2))};
 
- public:
-  ImplementationOf();
-  ImplementationOf(const std::vector<Segment>&);
+  for (auto _ : state) {
+    DoNotOptimize(Path(segments));
+  }
+}
+BENCHMARK_TEMPLATE(PathConstructor, Vector<long long>);
+BENCHMARK_TEMPLATE(PathConstructor, Vector<eantic::renf_elem_class>);
 
-  std::vector<Segment> path = {};
-
-  static bool connected(const Segment&, const Segment&);
-};
-
-}  // namespace flatsurf
-
-#endif
+}  // namespace flatsurf::benchmark

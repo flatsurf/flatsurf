@@ -89,8 +89,11 @@ class Chain : public Serializable<Chain<Surface>>,
   friend std::hash<Chain<Surface>>;
 };
 
-template <typename Surface>
-Chain(std::shared_ptr<Surface>)->Chain<Surface>;
+template <typename Surface, typename... Args>
+Chain(std::shared_ptr<const Surface>, Args&&... args)->Chain<Surface>;
+
+template <typename Surface, typename... Args>
+Chain(std::shared_ptr<Surface>, Args&&... args)->Chain<Surface>;
 
 }  // namespace flatsurf
 

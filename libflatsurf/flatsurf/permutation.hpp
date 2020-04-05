@@ -60,6 +60,8 @@ class Permutation : boost::equality_comparable<Permutation<T>>, boost::multiplia
   size_t size() const noexcept;
   const std::vector<T> &domain() const noexcept;
   std::vector<std::vector<T>> cycles() const noexcept;
+  // Return the cycle containing this T.
+  std::vector<T> cycle(const T &) const noexcept;
   void drop(const std::vector<T> &);
 
   bool trivial() const noexcept;

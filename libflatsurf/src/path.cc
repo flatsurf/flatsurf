@@ -24,6 +24,7 @@
 #include <fmt/format.h>
 
 #include "../flatsurf/ccw.hpp"
+#include "../flatsurf/chain.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/path_iterator.hpp"
@@ -160,11 +161,19 @@ ImplementationOf<Path<Surface>>::ImplementationOf(const std::vector<Segment>& pa
 }
 
 template <typename Surface>
-bool ImplementationOf<Path<Surface>>::connected(const Segment& a, const Segment& b) {
+bool ImplementationOf<Path<Surface>>::connected(const Segment& a, const Segment& to) {
   const auto& surface = a.surface();
 
   const auto from = -a;
-  const auto to = b;
+
+  const auto ccw = [](const Chain<Surface>& lhs, const Chain<Surface>& rhs) {
+    // In typical flow decompositions, running ccw on approximations first
+    // does not seem to help the runtime of this method:
+    const auto approximate = static_cast<const Vector<exactreal::Arb>&>(lhs).ccw(static_cast<const Vector<exactreal::Arb>&>(rhs));
+    if (approximate)
+      return *approximate;
+    return static_cast<const Vector<T>&>(lhs).ccw(static_cast<const Vector<T>&>(rhs));
+  };
 
   if (Vertex::source(from.source(), surface) != Vertex::source(to.source(), surface))
     return false;
@@ -172,7 +181,7 @@ bool ImplementationOf<Path<Surface>>::connected(const Segment& a, const Segment&
   if (from.source() == to.source()) {
     // If from and to are in the same sector, we essentially check whether
     // we have to turn clockwise between them.
-    if (from.vector().ccw(to.vector()) == CCW::CLOCKWISE) {
+    if (ccw(from, to) == CCW::CLOCKWISE) {
       return true;
     } else {
       return surface.angle(Vertex::source(from.source(), surface)) == 1;
@@ -182,12 +191,13 @@ bool ImplementationOf<Path<Surface>>::connected(const Segment& a, const Segment&
     // We keep track how far sector is turned from from.vector() in multiples of π.
     int turn = 0;
     for (auto sector = surface.previousAtVertex(from.source()); turn != 2; sector = surface.previousAtVertex(sector)) {
+      const auto chain = Chain(surface.shared_from_this(), sector);
       if (turn == 0) {
-        if (from.vector().ccw(surface.fromEdge(sector)) != CCW::CLOCKWISE) {
+        if (ccw(from, chain) != CCW::CLOCKWISE) {
           turn = 1;
         }
       } else if (turn == 1) {
-        if (from.vector().ccw(surface.fromEdge(sector)) == CCW::CLOCKWISE) {
+        if (ccw(from, chain) == CCW::CLOCKWISE) {
           turn = 2;
         }
       }
@@ -198,7 +208,7 @@ bool ImplementationOf<Path<Surface>>::connected(const Segment& a, const Segment&
           return true;
         } else {
           // Parts of the sector are more than a 2π turn from the "from" vector.
-          return from.vector().ccw(to.vector()) != CCW::CLOCKWISE;
+          return ccw(from, to) != CCW::CLOCKWISE;
         }
       }
     }

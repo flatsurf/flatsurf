@@ -103,7 +103,7 @@ print(surface)
 for connection in surface.saddle_connections(flatsurf.Bound(args.bound, 0)):
     print("Investigating in direction %s"%(connection.vector()))
     decomposition = flatsurf.makeFlowDecomposition(surface, connection.vector())
-    flatsurf.decomposeFlowDecomposition(decomposition)
+    decomposition.decompose()
     if not all([bool(component.cylinder()) for component in decomposition.components()]):
         for component in decomposition.components():
             print(component)

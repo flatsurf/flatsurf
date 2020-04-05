@@ -195,6 +195,19 @@ bool Permutation<T>::trivial() const noexcept {
 }
 
 template <typename T>
+std::vector<T> Permutation<T>::cycle(const T &first) const noexcept {
+  std::vector<T> cycle{first};
+
+  do {
+    cycle.push_back(this->operator()(*rbegin(cycle)));
+  } while (*begin(cycle) != *rbegin(cycle));
+
+  cycle.pop_back();
+
+  return cycle;
+}
+
+template <typename T>
 Permutation<T> &operator*=(const vector<T> &cycle, Permutation<T> &self) {
   if (std::unordered_set<T>(cycle.begin(), cycle.end()).size() <= 1) return self;
 
