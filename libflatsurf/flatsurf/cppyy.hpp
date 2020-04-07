@@ -79,11 +79,11 @@ bool decomposeFlowDecomposition(FlowDecomposition<T> &decomposition, int limit =
 
 // cppyy can not call methods that take a std::function yet so we need more pythonic flavours of such methods
 template <typename T>
-auto makeOddHalfEdgeMap(const FlatTriangulationCombinatorial& surface, const std::vector<T>& values) {
+auto makeOddHalfEdgeMap(const FlatTriangulationCombinatorial &surface, const std::vector<T> &values) {
   if (values.size() != surface.edges().size())
     throw std::invalid_argument("number of entries does not match number of edges");
 
-  return OddHalfEdgeMap<T>(surface, [&](const HalfEdge& e) { return e == Edge(e).positive() ? values.at(Edge(e).index()) : -values.at(Edge(e).index()); });
+  return OddHalfEdgeMap<T>(surface, [&](const HalfEdge &e) { return e == Edge(e).positive() ? values.at(Edge(e).index()) : -values.at(Edge(e).index()); });
 }
 
 // The following block of forward declarations is a bit odd. It only exists to
