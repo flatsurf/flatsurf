@@ -24,9 +24,19 @@ import sys
 import pytest
 
 from pyflatsurf import flatsurf
+import surfaces
 
-def test_edge():
-    half_edge = flatsurf.HalfEdge(1)
-    assert half_edge.edge().positive() == half_edge
+def test_addition():
+    vector = flatsurf.Vector['mpq_class']
+
+    L = surfaces.L(vector)
+
+    # A stretched L
+    shift = [vector(0, L.fromEdge(e.positive()).y()) for e in L.edges()]
+    print(shift)
+    L += shift
+
+    for halfEdge in L.halfEdges():
+        assert L.fromEdge(halfEdge).y() != 1
 
 if __name__ == '__main__': sys.exit(pytest.main(sys.argv))

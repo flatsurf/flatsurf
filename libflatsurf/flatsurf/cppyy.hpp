@@ -20,9 +20,11 @@
 #ifndef LIBFLATSURF_CPPYY_HPP
 #define LIBFLATSURF_CPPYY_HPP
 
-#include <e-antic/renfxx_fwd.h>
 #include <iosfwd>
 #include <memory>
+#include <stdexcept>
+
+#include <e-antic/renfxx_fwd.h>
 
 #include "bound.hpp"
 #include "chain.hpp"
@@ -35,6 +37,7 @@
 #include "flow_decomposition.hpp"
 #include "half_edge.hpp"
 #include "interval_exchange_transformation.hpp"
+#include "odd_half_edge_map.hpp"
 #include "permutation.hpp"
 #include "saddle_connection.hpp"
 #include "saddle_connections.hpp"
@@ -72,6 +75,15 @@ FlowDecomposition<FlatTriangulation<T>> makeFlowDecomposition(const FlatTriangul
 template <typename T>
 bool decomposeFlowDecomposition(FlowDecomposition<T> &decomposition, int limit = -1) {
   return decomposition.decompose(FlowDecomposition<T>::defaultTarget, limit);
+}
+
+// cppyy can not call methods that take a std::function yet so we need more pythonic flavours of such methods
+template <typename T>
+auto makeOddHalfEdgeMap(const FlatTriangulationCombinatorial& surface, const std::vector<T>& values) {
+  if (values.size() != surface.edges().size())
+    throw std::invalid_argument("number of entries does not match number of edges");
+
+  return OddHalfEdgeMap<T>(surface, [&](const HalfEdge& e) { return e == Edge(e).positive() ? values.at(Edge(e).index()) : -values.at(Edge(e).index()); });
 }
 
 // The following block of forward declarations is a bit odd. It only exists to

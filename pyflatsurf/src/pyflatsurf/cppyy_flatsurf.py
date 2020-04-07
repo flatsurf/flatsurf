@@ -29,7 +29,7 @@ from pyexactreal.cppyy_exactreal import pretty_print
 from .pythonization import enable_iterable, enable_vector_print, enable_hash
 
 from cppyythonizations.pickling.cereal import enable_cereal
-from cppyythonizations.util import filtered, add_method
+from cppyythonizations.util import filtered, add_method, wrap_method
 from cppyythonizations.operators.arithmetic import enable_arithmetic
 
 # Importing cysignals after cppyy gives us proper stack traces on segfaults
@@ -55,6 +55,8 @@ cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(add_met
 cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(add_method("slot")(lambda self, *args: cppyy.gbl.flatsurf.slotFlatTriangulation(self, *args))), "flatsurf")
 
 cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_method("decompose")(lambda self, *args: cppyy.gbl.flatsurf.decomposeFlowDecomposition(self, *args))), "flatsurf")
+
+cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(wrap_method("__add__")(lambda self, cpp, rhs: cpp(self, cppyy.gbl.flatsurf.makeOddHalfEdgeMap[cppyy.gbl.flatsurf.Vector[type(self).Coordinate]](self, rhs)))), "flatsurf")
 
 for path in os.environ.get('PYFLATSURF_INCLUDE','').split(':'):
     if path: cppyy.add_include_path(path)
