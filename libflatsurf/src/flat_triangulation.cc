@@ -64,17 +64,15 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddH
       const auto e = outgoing.at(i);
       const auto e_ = outgoing.at((i + 1) % outgoing.size());
 
-      const T a = u(e)*v(e_) - u(e_)*v(e);
-      const T b = -u(e)*y(e_) + u(e_)*y(e) - x(e)*v(e_) + x(e_)*v(e);
-      const T c = x(e)*y(e_) - x(e_)*y(e);
+      const T a = u(e) * v(e_) - u(e_) * v(e);
+      const T b = -u(e) * y(e_) + u(e_) * y(e) - x(e) * v(e_) + x(e_) * v(e);
+      const T c = x(e) * y(e_) - x(e_) * y(e);
 
       CHECK_ARGUMENT(
-        (a == 0 && (c > b && c > 0))
-        ||
-        (a > 0 && (b < 0 || b > 2*a || b*b + 4*a*c > 0))
-        ||
-        (a < 0 && (b > 0 || b < 2*a || b*b + 4*a*c < 0)),
-        "not a valid transformation");
+          (a == 0 && (c > b && c > 0)) ||
+              (a > 0 && (b < 0 || b > 2 * a || b * b + 4 * a * c > 0)) ||
+              (a < 0 && (b > 0 || b < 2 * a || b * b + 4 * a * c < 0)),
+          "not a valid transformation");
     }
   }
 
