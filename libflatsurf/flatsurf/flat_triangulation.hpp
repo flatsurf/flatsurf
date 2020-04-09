@@ -69,6 +69,10 @@ class FlatTriangulation : public FlatTriangulationCombinatorial,
   // half edges there.
   std::unique_ptr<FlatTriangulation<T>> slot(const HalfEdge e) const;
 
+  // Create an independent clone of this triangulation with the vector
+  // v(h) associated to a half edge replaced by v(h) + shift[h].
+  std::unique_ptr<FlatTriangulation<T>> operator+(const OddHalfEdgeMap<Vector<T>> &shift) const;
+
   Vector<T> shortest() const;
   // Return the shortest vector relative to this direction which is not orthogonal to it.
   Vector<T> shortest(const Vector<T> &) const;

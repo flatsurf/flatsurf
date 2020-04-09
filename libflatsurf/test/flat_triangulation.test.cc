@@ -31,6 +31,7 @@
 
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/odd_half_edge_map.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
@@ -38,7 +39,7 @@
 #include "surfaces.hpp"
 
 namespace flatsurf::test {
-TEMPLATE_TEST_CASE("Flip in a Flat Triangulation", "[flat_triangulation][flip]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Flip in a Flat Triangulation", "[flat_triangulation][flip]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using R2 = Vector<TestType>;
   auto square = makeSquare<R2>();
   auto vertices = square->vertices();
@@ -63,7 +64,7 @@ TEMPLATE_TEST_CASE("Flip in a Flat Triangulation", "[flat_triangulation][flip]",
   }
 }
 
-TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[flat_triangulation][insert][slit]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[flat_triangulation][insert][slit]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using R2 = Vector<TestType>;
 
   SECTION("Insert into an L") {
@@ -132,6 +133,26 @@ TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[flat_triangulation][ins
         }
       }
     }
+  }
+}
+
+TEMPLATE_TEST_CASE("Deform a Flat Triangulation", "[flat_triangulation][deformation]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using R2 = Vector<TestType>;
+
+  const auto surface = makeL<R2>();
+
+  SECTION("Trivially deform an L") {
+    auto shift = OddHalfEdgeMap<R2>(*surface);
+    REQUIRE(*surface->operator+(shift) == *surface);
+  }
+
+  SECTION("Stretch an L") {
+    auto shift = OddHalfEdgeMap<R2>(*surface);
+
+    shift.set(HalfEdge(8), R2(0, 1));
+    shift.set(HalfEdge(7), R2(0, 1));
+
+    REQUIRE(*surface->operator+(shift) != *surface);
   }
 }
 

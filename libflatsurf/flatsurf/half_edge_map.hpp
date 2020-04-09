@@ -28,6 +28,9 @@ namespace flatsurf {
 template <typename T>
 class HalfEdgeMap {
  public:
+  HalfEdgeMap(const FlatTriangulationCombinatorial& surface) :
+    values(surface.size() * 2) {}
+
   HalfEdgeMap(const FlatTriangulationCombinatorial& surface, std::function<T(HalfEdge)> values) {
     for (auto he : surface.halfEdges()) {
       assert(he.index() == this->values.size() && "halfEdges() must be sorted by index");

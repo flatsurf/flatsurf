@@ -49,6 +49,39 @@ using std::vector;
 namespace flatsurf {
 
 template <typename T>
+std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfEdgeMap<Vector<T>> &shift) const {
+  // Check that shift produces a valid deformation, see the Lemma in the
+  // section "Following Tangent Vectors" in our document explaining the algorithms.
+  for (auto vertex : vertices()) {
+    const auto outgoing = atVertex(vertex);
+
+    const auto x = [&](const HalfEdge he) { return fromEdge(he).x(); };
+    const auto y = [&](const HalfEdge he) { return fromEdge(he).y(); };
+    const auto u = [&](const HalfEdge he) { return shift.get(he).x(); };
+    const auto v = [&](const HalfEdge he) { return shift.get(he).y(); };
+
+    for (size_t i = 0; i < outgoing.size(); i++) {
+      const auto e = outgoing.at(i);
+      const auto e_ = outgoing.at((i + 1) % outgoing.size());
+
+      const T a = u(e) * v(e_) - u(e_) * v(e);
+      const T b = -u(e) * y(e_) + u(e_) * y(e) - x(e) * v(e_) + x(e_) * v(e);
+      const T c = x(e) * y(e_) - x(e_) * y(e);
+
+      CHECK_ARGUMENT(
+          (a == 0 && (c > b && c > 0)) ||
+              (a > 0 && (b < 0 || b > 2 * a || b * b + 4 * a * c > 0)) ||
+              (a < 0 && (b > 0 || b < 2 * a || b * b + 4 * a * c < 0)),
+          "not a valid transformation");
+    }
+  }
+
+  return std::make_unique<FlatTriangulation<T>>(
+      std::move(*static_cast<const FlatTriangulationCombinatorial &>(*this).clone()),
+      [&](const HalfEdge he) { return impl->vectors->get(he) + shift.get(he); });
+}
+
+template <typename T>
 Vector<T> FlatTriangulation<T>::shortest() const {
   const auto edges = this->edges();
   Edge shortest = *std::min_element(begin(edges), end(edges), [&](const auto &a, const auto &b) {

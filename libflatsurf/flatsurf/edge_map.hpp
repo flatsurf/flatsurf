@@ -20,6 +20,8 @@
 #ifndef LIBFLATSURF_EDGE_MAP_HPP
 #define LIBFLATSURF_EDGE_MAP_HPP
 
+#include <stdexcept>
+
 #include "edge.hpp"
 #include "flat_triangulation_combinatorial.hpp"
 
