@@ -32,6 +32,9 @@ build:
     # bother with incompatibilities in our nightly builds.
     - {{ pin_subpackage(component, exact=True) }}
 {%- endif %}
+  script_env:
+    - CODECOV_TOKEN
+    - ASV_SECRET_KEY
 
 requirements:
   build:
