@@ -3,8 +3,8 @@ set -ex
 
 source $RECIPE_DIR/environment.sh
 
-if [[ "$name" != "flatsurf" ]]; then
-  cd $name
+if [[ "$component" != "flatsurf" ]]; then
+  cd $component
 fi
 
 $SNIPPETS_DIR/autoconf/run.sh

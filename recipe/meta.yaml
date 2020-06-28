@@ -3,11 +3,11 @@
 # conda-smithy assumes that the build number is >= 1000 when building with the new anaconda compilers,
 # this probably is not important but make_build_number otherwise complains during the build
 {% set build_number = (environ.get('GIT_DESCRIBE_NUMBER')|int + 1000)|string %}
-{% set name = name or 'flatsurf' %}
-{% set target = target or 'release' %}
+{% set component = component or 'flatsurf' %}
+{% set action = action or 'release' %}
 
 package:
-  name: {{ name }}
+  name: {{ component }}
   version: {{ version }}
 
 source:
@@ -15,14 +15,10 @@ source:
 
 build:
   number: {{ build_number }}
-{%- if target == "release" %}
-{%- if name in ["libflatsurf", "flatsurf-polygon"] %}
+{%- if component in ["libflatsurf", "flatsurf-polygon"] %}
   string: {{ build_number }}
 {%- else %}
-  string: py{{ python }}_{{ build_number }}
-{%- endif %}
-{%- else %}
-  string: {{ target }}
+  string: py{{ _python | replace('*', '') | replace(' ', '') | replace('.', '') }}_{{ build_number }}
 {%- endif %}
   # intervalxt is not available on Windows yet
   skip: True  # [win]
@@ -30,15 +26,11 @@ build:
   skip: True  # [osx]
   # we do not support old versions of Python
   skip: True  # [py < 36]
-{%- if name != "pyflatsurf" and target != "test" %}
-  # ignore Python version where it does not matter (conda-smithy still renders these but conda-build stops immediately)
-  skip: True  # [py != 37]
-{%- endif %}
-{%- if name == "libflatsurf" %}
+{%- if component == "libflatsurf" %}
   run_exports:
     # We pin the version of libflatsurf exactly since we do not want to
     # bother with incompatibilities in our nightly builds.
-    - {{ pin_subpackage(name, exact=True) }}
+    - {{ pin_subpackage(component, exact=True) }}
 {%- endif %}
 
 requirements:
@@ -47,13 +39,13 @@ requirements:
     - automake
     - coreutils
     - {{ compiler('cxx') }}
-{%- if target == "benchmark" %}
+{%- if action == "benchmark" %}
     - git
-{%- elif target == "style" %}
+{%- elif action == "style" %}
     - clangdev ==8.0.0
 {%- endif %}
   host:
-{%- if name in ["flatsurf", "libflatsurf"] %}
+{%- if component in ["flatsurf", "libflatsurf"] %}
     - arb
     - boost-cpp
     - libintervalxt
@@ -62,13 +54,13 @@ requirements:
     - gmp
     - fmt
 {%- endif %}
-{%- if name in ["flatsurf", "pyflatsurf"] %}
-    - python
+{%- if component in ["flatsurf", "pyflatsurf"] %}
+    - python {{ _python }}
     - setuptools
     - pyexactreal
     - cppyythonizations
 {%- endif %}
-{%- if name in ["flatsurf", "flatsurf-polygon"] %}
+{%- if component in ["flatsurf", "flatsurf-polygon"] %}
     - arb
     - boost-cpp
     - libexactreal
@@ -78,10 +70,10 @@ requirements:
     - ntl
     - eigen
 {%- endif %}
-{%- if name in ["pyflatsurf", "flatsurf-polygon"] %}
+{%- if component in ["pyflatsurf", "flatsurf-polygon"] %}
     - libflatsurf {{ version }} {{ build_number }}
 {%- endif %}
-{%- if target in ["test", "coverage", "benchmark"] %}
+{%- if action in ["test", "coverage", "benchmark"] %}
     # enable test/pyflatsurf tests in ./configure
     - pytest
     - cppyy
@@ -96,17 +88,17 @@ requirements:
     # enable check-valgrind in ./configure
     - valgrind >=3.15.0
 {%- endif %}
-{%- if target == "benchmark" %}
+{%- if action == "benchmark" %}
     # requirements for ASV benchmarks
     - asv
 {%- endif %}
   run:
-{%- if name == "libflatsurf" %}
+{%- if component == "libflatsurf" %}
     # fmt is missing a run_exports rule, see https://github.com/conda-forge/fmt-feedstock/pull/11
     - fmt
 {%- endif %}
-{%- if name == "pyflatsurf" %}
-    - python
+{%- if component == "pyflatsurf" %}
+    - python {{ _python }}
     - cppyy
     - pyexactreal
     - boost-cpp
@@ -114,16 +106,16 @@ requirements:
 {%- endif %}
 
 outputs:
-  - name: {{ name }}
-{%- if target == "release" %}
-    script: install-{{ name }}.sh
+  - name: {{ component }}
+{%- if action == "release" %}
+    script: install-{{ component }}.sh
 {%- endif %}
-{%- if name == "pyflatsurf" %}
+{%- if component == "pyflatsurf" %}
     test:
       imports:
-        - {{ name }}
+        - {{ component }}
 {%- endif %}
-{%- if name == "flatsurf-polygon" %}
+{%- if component == "flatsurf-polygon" %}
     test:
       commands:
         - flatsurf-polygon 1 2 2 1
@@ -139,3 +131,7 @@ extra:
   recipe-maintainers:
     - saraedum
     - videlec
+  variables:
+    action: {{ action }}
+    job: {{ job }}
+    component: {{ component }}
