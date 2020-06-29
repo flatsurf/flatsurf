@@ -5,7 +5,6 @@
 {% set py = _python | replace('*', '') | replace(' ', '') | replace('.', '') %}
 {% set pyflatsurf_requirements = component in ["flatsurf", "pyflatsurf"] %}
 {% set libflatsurf_requirements = component in ["flatsurf", "libflatsurf"] %}
-{% set flatsurf_polygon_requirements = component in ["flatsurf", "flatsurf-polygon"] %}
 {% set test_requirements = action in ["test", "coverage", "benchmark"] %}
 
 package:
@@ -66,17 +65,7 @@ requirements:
     - pyexactreal
     - cppyythonizations
 {%- endif %}
-{%- if flatsurf_polygon_requirements %}
-    - arb
-    - boost-cpp
-    - libexactreal
-    - libintervalxt
-    - e-antic 1.*
-    - gmp
-    - ntl
-    - eigen
-{%- endif %}
-{%- if component in ["pyflatsurf", "flatsurf-polygon"] %}
+{%- if component == "pyflatsurf" %}
     - libflatsurf {{ version }} {{ build_number }}
 {%- endif %}
 {%- if test_requirements %}
@@ -118,11 +107,6 @@ test:
 test:
   imports:
     - {{ component }}
-{%- endif %}
-{%- if component == "flatsurf-polygon" %}
-test:
-  commands:
-    - flatsurf-polygon 1 2 2 1
 {%- endif %}
 
 about:

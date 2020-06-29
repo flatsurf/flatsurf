@@ -6,14 +6,12 @@ job:
   - release
   - release
   - release
-  - release
   - style
   - test36
   - test37
   - coverage
   - benchmark
 action:
-  - release
   - release
   - release
   - release
@@ -27,7 +25,6 @@ _python:
   - 3.6.* *_cpython
   - 3.7.* *_cpython
   - 3.7.* *_cpython
-  - 3.7.* *_cpython
   - 3.6.* *_cpython
   - 3.7.* *_cpython
   - 3.7.* *_cpython
@@ -36,7 +33,6 @@ component:
   - libflatsurf
   - pyflatsurf
   - pyflatsurf
-  - flatsurf-polygon
   - flatsurf
   - flatsurf
   - flatsurf

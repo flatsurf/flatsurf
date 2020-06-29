@@ -14,9 +14,4 @@ source $SNIPPETS_DIR/make/environment.sh
 source $SNIPPETS_DIR/asv/environment.sh
 source $SNIPPETS_DIR/codecov/environment.sh
 
-export SUBDIRS=libflatsurf:pyflatsurf:flatsurf-polygon
-
-# When building flatsurf-polygon we use the installed libflatsurf.so
-if [[ "$target" == "release" ]]; then
-  export CONFIGURE_FLAGS=--without-local-libflatsurf
-fi
+export SUBDIRS=libflatsurf:pyflatsurf
