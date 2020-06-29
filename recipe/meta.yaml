@@ -1,10 +1,13 @@
 # See https://github.com/conda/conda-build/issues/2666 for the missing tag
-{% set version = environ.get('GIT_DESCRIBE_TAG', 'untagged')|string|replace('-','_') %}
-# conda-smithy assumes that the build number is >= 1000 when building with the new anaconda compilers,
-# this probably is not important but make_build_number otherwise complains during the build
-{% set build_number = (environ.get('GIT_DESCRIBE_NUMBER')|int + 1000)|string %}
+{% set version = environ.get('GIT_DESCRIBE_TAG', 'untagged')| string | replace('-','_') %}
+{% set build_number = environ.get('GIT_DESCRIBE_NUMBER') %}
 {% set component = component or 'flatsurf' %}
 {% set action = action or 'release' %}
+{% set py = _python | replace('*', '') | replace(' ', '') | replace('.', '') %}
+{% set pyflatsurf_requirements = component in ["flatsurf", "pyflatsurf"] %}
+{% set libflatsurf_requirements = component in ["flatsurf", "libflatsurf"] %}
+{% set flatsurf_polygon_requirements = component in ["flatsurf", "flatsurf-polygon"] %}
+{% set test_requirements = action in ["test", "coverage", "benchmark"] %}
 
 package:
   name: {{ component }}
@@ -15,17 +18,13 @@ source:
 
 build:
   number: {{ build_number }}
-{%- if component in ["libflatsurf", "flatsurf-polygon"] %}
-  string: {{ build_number }}
-{%- else %}
-  string: py{{ _python | replace('*', '') | replace(' ', '') | replace('.', '') }}_{{ build_number }}
+{%- if component in ["pyflatsurf"] %}
+  string: py{{ py }}_{{ build_number }}
 {%- endif %}
   # intervalxt is not available on Windows yet
   skip: True  # [win]
   # intervalxt is not available on macOS yet
   skip: True  # [osx]
-  # we do not support old versions of Python
-  skip: True  # [py < 36]
 {%- if component == "libflatsurf" %}
   run_exports:
     # We pin the version of libflatsurf exactly since we do not want to
@@ -33,8 +32,11 @@ build:
     - {{ pin_subpackage(component, exact=True) }}
 {%- endif %}
   script_env:
+{%- if action == "coverage" %}
     - CODECOV_TOKEN
+{%- elif action == "benchmark" %}
     - ASV_SECRET_KEY
+{%- endif %}
 
 requirements:
   build:
@@ -48,7 +50,7 @@ requirements:
     - clangdev ==8.0.0
 {%- endif %}
   host:
-{%- if component in ["flatsurf", "libflatsurf"] %}
+{%- if libflatsurf_requirements %}
     - arb
     - boost-cpp
     - libintervalxt
@@ -57,13 +59,13 @@ requirements:
     - gmp
     - fmt
 {%- endif %}
-{%- if component in ["flatsurf", "pyflatsurf"] %}
+{%- if pyflatsurf_requirements %}
     - python {{ _python }}
     - setuptools
     - pyexactreal
     - cppyythonizations
 {%- endif %}
-{%- if component in ["flatsurf", "flatsurf-polygon"] %}
+{%- if flatsurf_polygon_requirements %}
     - arb
     - boost-cpp
     - libexactreal
@@ -76,7 +78,7 @@ requirements:
 {%- if component in ["pyflatsurf", "flatsurf-polygon"] %}
     - libflatsurf {{ version }} {{ build_number }}
 {%- endif %}
-{%- if action in ["test", "coverage", "benchmark"] %}
+{%- if test_requirements %}
     # enable test/pyflatsurf tests in ./configure
     - pytest
     - cppyy
@@ -90,8 +92,6 @@ requirements:
     - benchmark
     # enable check-valgrind in ./configure
     - valgrind >=3.15.0
-{%- endif %}
-{%- if action == "benchmark" %}
     # requirements for ASV benchmarks
     - asv
 {%- endif %}
@@ -108,25 +108,20 @@ requirements:
     - cppyythonizations
 {%- endif %}
 
-outputs:
-  - name: {{ component }}
-{%- if action == "release" %}
-    script: install-{{ component }}.sh
-{%- endif %}
 {%- if component == "pyflatsurf" %}
-    test:
-      imports:
-        - {{ component }}
+test:
+  imports:
+    - {{ component }}
 {%- endif %}
 {%- if component == "flatsurf-polygon" %}
-    test:
-      commands:
-        - flatsurf-polygon 1 2 2 1
+test:
+  commands:
+    - flatsurf-polygon 1 2 2 1
 {%- endif %}
 
 about:
   home: https://github.com/flatsurf/flatsurf
-  license: GPL3
+  license: GPL-3.0-or-later
   license_file: COPYING
   summary: TBD
 
