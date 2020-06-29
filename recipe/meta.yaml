@@ -1,4 +1,3 @@
-# See https://github.com/conda/conda-build/issues/2666 for the missing tag
 {% set version = environ.get('GIT_DESCRIBE_TAG', 'untagged')| string | replace('-','_') %}
 {% set build_number = environ.get('GIT_DESCRIBE_NUMBER') %}
 {% set component = component or 'flatsurf' %}
@@ -20,6 +19,8 @@ build:
   number: {{ build_number }}
 {%- if component in ["pyflatsurf"] %}
   string: py{{ py }}_{{ build_number }}
+{%- else %}
+  string: {{ build_number }}
 {%- endif %}
   # intervalxt is not available on Windows yet
   skip: True  # [win]
@@ -92,7 +93,7 @@ requirements:
     - benchmark
     # enable check-valgrind in ./configure
     - valgrind >=3.15.0
-    # requirements for ASV benchmarks
+    # to run benchmarks
     - asv
 {%- endif %}
   run:
@@ -112,6 +113,7 @@ requirements:
 test:
   commands:
     - test -f ${PREFIX}/lib/libflatsurf.so
+{%- endif %}
 {%- if component == "pyflatsurf" %}
 test:
   imports:
