@@ -24,8 +24,6 @@ gmp:
 - '6'
 job:
 - test37
-ntl:
-- 11.4.3
 pin_run_as_build:
   boost-cpp:
     max_pin: x.x.x
