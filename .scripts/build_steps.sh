@@ -21,8 +21,8 @@ CONDARC
 
 conda install --yes --quiet conda-forge-ci-setup=3 conda-build pip patch -c conda-forge
 
-patch -p1 -d "`python -c 'import conda_build.variants, os.path;print(os.path.dirname(os.path.dirname(conda_build.variants.__file__)))'`" < ${CI_SUPPORT}/conda_build.3979.patch
 
+patch -p1 -d "`python -c 'import conda_build.variants, os.path;print(os.path.dirname(os.path.dirname(conda_build.variants.__file__)))'`" < ${CI_SUPPORT}/conda_build.3979.patch
 
 # set up the condarc
 setup_conda_rc "${FEEDSTOCK_ROOT}" "${RECIPE_ROOT}" "${CONFIG_FILE}"

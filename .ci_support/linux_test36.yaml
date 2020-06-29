@@ -1,5 +1,5 @@
 _python:
-- 3.7.* *_cpython
+- 3.6.* *_cpython
 action:
 - test
 arb:
