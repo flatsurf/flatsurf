@@ -33,7 +33,9 @@ namespace flatsurf::detail {
 template <typename Vector>
 class VectorBase : private boost::additive<Vector>,
                    private boost::multipliable<Vector, int>,
-                   private boost::multipliable<Vector, mpz_class> {
+                   private boost::multipliable<Vector, mpz_class>,
+                   private boost::dividable<Vector, int>,
+                   private boost::dividable<Vector, mpz_class> {
  public:
   template <typename V>
   friend std::ostream &operator<<(std::ostream &, const VectorBase<V> &);
@@ -42,6 +44,8 @@ class VectorBase : private boost::additive<Vector>,
   Vector &operator-=(const Vector &);
   Vector &operator*=(const int);
   Vector &operator*=(const mpz_class &);
+  Vector &operator/=(const int);
+  Vector &operator/=(const mpz_class &);
 
   // Return the perpendicular vector in CCW direction
   // to this vector.

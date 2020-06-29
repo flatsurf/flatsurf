@@ -68,6 +68,12 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddH
       const T b = -u(e) * y(e_) + u(e_) * y(e) - x(e) * v(e_) + x(e_) * v(e);
       const T c = x(e) * y(e_) - x(e_) * y(e);
 
+      const T p0 = c;
+      ASSERT(p0 > 0, "Original surface " << *this << " already had a triangle with non-positive area before applying any shift to it.");
+
+      const T p1 = a - b + c;
+      CHECK_ARGUMENT(p1 > 0, "Surface after applying shift " << shift << " is not valid anymore since some triangle has non-positive area.");
+
       CHECK_ARGUMENT(
           (a == 0 && (c > b && c > 0)) ||
               (a > 0 && (b < 0 || b > 2 * a || b * b + 4 * a * c > 0)) ||

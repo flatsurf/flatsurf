@@ -117,6 +117,30 @@ class ImplementationOf<Vector<T>> : public Cartesian<T> {
     return *this;
   }
 
+  template <typename S, bool Enable = IsArb<T>, If<Enable> = true>
+  ImplementationOf& operator/=(const S& rhs) {
+    this->x /= Arb(rhs)(ARB_PRECISION_FAST);
+    this->y /= Arb(rhs)(ARB_PRECISION_FAST);
+    return *this;
+  }
+
+  template <typename S, bool Enable = IsLongLong<T>&& IsMPZ<S>, If<Enable> = true, typename = void>
+  ImplementationOf& operator/=(const S& rhs) {
+    using gmpxxll::mpz_class;
+    if (rhs >= mpz_class(LONG_LONG_MAX)) {
+      this->x = 0;
+      this->y = 0;
+    }
+    this->x /= mpz_class(rhs).get_sll();
+    this->y /= mpz_class(rhs).get_sll();
+    return *this;
+  }
+
+  template <typename S, bool Enable = Similar<T, exactreal::Element<exactreal::IntegerRing>>, If<Enable> = true, typename = void, typename = void>
+  ImplementationOf& operator/=(const S&) {
+    throw std::logic_error("not implemented: division of Element<IntegerRing>");
+  }
+
   template <bool Enable = IsMPZ<T>, If<Enable> = true>
   size_t hash() const {
     return hash_combine(this->x.get_ui(), this->y.get_ui());

@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 r"""
 Vector wrapper and sage conversion for ``flatsurf.Vector``.
-
-.. TODO::
-
-    Implement the case of exact real coefficients.
 """
 #*********************************************************************
 #  This file is part of flatsurf.

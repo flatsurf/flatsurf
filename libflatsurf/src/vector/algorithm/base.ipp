@@ -146,6 +146,44 @@ Vector& VectorBase<Vector>::operator*=(const mpz_class& c) {
 }
 
 template <typename Vector>
+Vector& VectorBase<Vector>::operator/=(const int c) {
+  using Implementation = typename Vector::Implementation;
+  Vector& self = static_cast<Vector&>(*this);
+
+  if constexpr (has_binary_inplace_div_int<Implementation>) {
+    *self.impl /= c;
+  } else if constexpr (is_cartesian_v<Implementation>) {
+    self.impl->x /= c;
+    self.impl->y /= c;
+  } else if constexpr (is_forward_v<Implementation>) {
+    self.impl->vector /= c;
+  } else {
+    static_assert(false_type_v<Implementation>, "Implementation is missing operator/=.");
+  }
+
+  return self;
+}
+
+template <typename Vector>
+Vector& VectorBase<Vector>::operator/=(const mpz_class& c) {
+  using Implementation = typename Vector::Implementation;
+  Vector& self = static_cast<Vector&>(*this);
+
+  if constexpr (has_binary_inplace_div_mpz<Implementation>) {
+    *self.impl /= c;
+  } else if constexpr (is_cartesian_v<Implementation>) {
+    self.impl->x /= c;
+    self.impl->y /= c;
+  } else if constexpr (is_forward_v<Implementation>) {
+    self.impl->vector /= c;
+  } else {
+    static_assert(false_type_v<Implementation>, "Implementation is missing operator/=.");
+  }
+
+  return self;
+}
+
+template <typename Vector>
 Vector VectorBase<Vector>::perpendicular() const {
   using Implementation = typename Vector::Implementation;
   const Vector& self = static_cast<const Vector&>(*this);
