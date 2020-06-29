@@ -108,6 +108,10 @@ requirements:
     - cppyythonizations
 {%- endif %}
 
+{%- if component == "libflatsurf" %}
+test:
+  commands:
+    - test -f ${PREFIX}/lib/libflatsurf.so
 {%- if component == "pyflatsurf" %}
 test:
   imports:
