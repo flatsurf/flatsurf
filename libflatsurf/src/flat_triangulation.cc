@@ -17,16 +17,21 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <exact-real/arb.hpp>
 #include <intervalxt/sample/arithmetic.hpp>
 #include <map>
 #include <ostream>
 #include <vector>
 
-#include <exact-real/arb.hpp>
+#include <exact-real/yap/arb.hpp>
+#include <exact-real/integer_ring.hpp>
+#include <exact-real/rational_field.hpp>
+#include <exact-real/number_field.hpp>
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/edge.hpp"
+#include "../flatsurf/edge_set.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/odd_half_edge_map.hpp"
@@ -48,43 +53,329 @@ using std::vector;
 
 namespace flatsurf {
 
+// Return an approximation of x with precision prec
+// TODO: I should probably move that to a shared place.
+template <typename T>
+auto arb(const T& x, const long prec) {
+  if constexpr (std::is_same_v<T, mpz_class>) {
+    (void)(prec);
+    return exactreal::Arb(x);
+  } else if constexpr (std::is_same_v<T, long long>) {
+    (void)(prec);
+    return exactreal::Arb(x);
+  } else if constexpr (std::is_same_v<T, mpq_class>) {
+    return exactreal::Arb(x, prec);
+  } else if constexpr (std::is_same_v<T, eantic::renf_elem_class>) {
+    return exactreal::Arb(x, prec);
+  } else if constexpr (std::is_same_v<T, exactreal::Element<exactreal::IntegerRing>>) {
+    return x.arb(prec);
+  } else if constexpr (std::is_same_v<T, exactreal::Element<exactreal::RationalField>>) {
+    return x.arb(prec);
+  } else if constexpr (std::is_same_v<T, exactreal::Element<exactreal::NumberField>>) {
+    return x.arb(prec);
+  } else {
+    // TODO: static assert this must not happen.
+    return x;
+  }
+};
+
+// Return the smallest approximate solution of a*t^2 - b*t + c = 0 for t in [0, 1]
+// TODO: Move this to a more generic place.
+template <typename T>
+std::optional<exactreal::Arb> root(const T& a, const T& b, const T& c, const long prec) {
+  const auto validate = [&](const exactreal::Arb& solution) -> std::optional<exactreal::Arb> {
+    auto lt0 = solution < 0;
+    auto gt1 = solution > 1;
+
+    if (!lt0.has_value() || !gt1.has_value()) return root(a, b, c, 2*prec);
+    if (*lt0) return {};
+    if (*gt1) return {};
+
+    return solution;
+  };
+
+  const exactreal::Arb a_ = arb(a, prec),
+        b_ = arb(b, prec),
+        c_ = arb(c, prec);
+
+  if (a == 0) {
+    if (c == 0)
+      return exactreal::Arb();
+    CHECK_ARGUMENT(b != 0, "equation c = 0 has no solutions");
+    exactreal::Arb solution = (c_ / b_)(prec);
+    return validate(solution);
+  }
+
+  const T discriminant = b*b - 4*a*c;
+  if (discriminant < 0) {
+    return {};
+  } else if (discriminant == 0) {
+    return validate((b_ / (2 * a_))(prec));
+  } else {
+    exactreal::Arb sqrt_discriminant = (b_*b_ - 4*a_*c_)(prec);
+    arb_sqrt(sqrt_discriminant.arb_t(), sqrt_discriminant.arb_t(), prec);
+
+    const auto t0 = validate(((b_ + sqrt_discriminant) / (2*a_))(prec));
+    const auto t1 = validate(((b_ - sqrt_discriminant) / (2*a_))(prec));
+
+    if (t0 && t1) {
+      const auto lt = *t0 < *t1;
+      if (!lt.has_value() || *lt)
+        return t0;
+      return t1;
+    } else if (t0)
+      return t0;
+    else if (t1)
+      return t1;
+    else
+      return {};
+  }
+};
+
 template <typename T>
 std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfEdgeMap<Vector<T>> &shift) const {
-  // Check that shift produces a valid deformation, see the Lemma in the
-  // section "Following Tangent Vectors" in our document explaining the algorithms.
+  // Half edges that collapse at the end of the shift.
+  EdgeSet collapse;
+
+  // Records that the half edge e needs to be flipped at a time t in (0, 1]
+  // that is given by a solution to a*t^2 - b*t + c = 0.
+  // Unfortunately, we can in general only solve this approximately.
+  struct RequiredFlip {
+    HalfEdge flip;
+    T a, b, c;
+
+    exactreal::Arb t(slong prec = exactreal::ARB_PRECISION_FAST) const {
+      const auto ret = root(a, b, c, prec);
+      ASSERT(ret, "A required flip must have a critical time in (0, 1]");
+      return *ret;
+    }
+
+    // Return whether this flip needs to happen before the one required by rhs.
+    bool operator<(const RequiredFlip& rhs) const {
+      // When the two polynomials are just multiples of each other, the critical time is the same.
+      if (a * rhs.b == b * rhs.a && a * rhs.c == c * rhs.a && b * rhs.c == c * rhs.b)
+        return false;
+
+      // Compute approximate values for the respective critical times t and compare them.
+      for(slong prec = exactreal::ARB_PRECISION_FAST;; prec *= 2) {
+        const auto t = this->t(prec);
+        const auto s = rhs.t(prec);
+
+        const auto lt = t < s;
+        if (lt)
+          return *lt;
+
+        // We computed balls around the roots t and s of the two quadratic
+        // equations but they overlappped so we cannot decide which one is
+        // first. (Typically, this happens because they are actually equal.)
+
+        // If the quadratic polynomials have no common root, then we can
+        // eventually separate the times s and t.
+
+        // If both polynomials are only linear, then we decide whether they
+        // have the same root by comparing coefficients: namely if c/b = c'/b'.
+        if (!a && !rhs.a) {
+          if (c * rhs.b == rhs.c * b)
+            return false;
+          continue;
+        }
+
+        // In the non-linear case, they have a common root iff their
+        // resultant is zero.
+        if (c*c*rhs.a*rhs.a - b*c*rhs.a*rhs.b + a*c*rhs.b*rhs.b + b*b*rhs.a*rhs.c - 2*a*c*rhs.a*rhs.c - a*b*rhs.b*rhs.c + a*a*rhs.c*rhs.c != 0)
+          continue;
+
+        // When they have a common root, it does not necessarily have to be the
+        // root we care about.
+        // We already know that not both of their roots can be the same since
+        // then the polynomials would be multiples of each other which we
+        // checked before. We could now probably compute the gcd of the
+        // polynomials and then look at the common linear factor but for all
+        // cases that we can imagine it is probably safe to assume that the
+        // root that is the same is actually the root that also looks like it's
+        // approximately the same, i.e., the two critical times are equal.
+        return false;
+      }
+    }
+  };
+
+  std::optional<RequiredFlip> flip;
+
   for (auto vertex : vertices()) {
     const auto outgoing = atVertex(vertex);
 
+    // The x, y coordinates of the half edge he
     const auto x = [&](const HalfEdge he) { return fromEdge(he).x(); };
     const auto y = [&](const HalfEdge he) { return fromEdge(he).y(); };
+    // The x, y shifts of the half edge he at time t = 1
     const auto u = [&](const HalfEdge he) { return shift.get(he).x(); };
     const auto v = [&](const HalfEdge he) { return shift.get(he).y(); };
 
+    // One reason why the area of a triangle is zero for a time t in [0, 1] is
+    // that two singularities were shifted into each other. We can make sense
+    // of this when it happens at time t=1 by collapsing triangles.
     for (size_t i = 0; i < outgoing.size(); i++) {
-      const auto e = outgoing.at(i);
-      const auto e_ = outgoing.at((i + 1) % outgoing.size());
+      const auto he = outgoing.at(i);
 
-      const T a = u(e) * v(e_) - u(e_) * v(e);
-      const T b = -u(e) * y(e_) + u(e_) * y(e) - x(e) * v(e_) + x(e_) * v(e);
-      const T c = x(e) * y(e_) - x(e_) * y(e);
+      if (fromEdge(he).ccw(shift.get(he)) == CCW::COLLINEAR) {
+        switch (fromEdge(he).orientation(fromEdge(he) + shift.get(he))) {
+          case ORIENTATION::SAME:
+            // The critical time t is not in [0, 1]
+            break;
+          case ORIENTATION::OPPOSITE:
+            throw std::invalid_argument("shift must not collapse half edges for a time t in (0, 1)");
+          case ORIENTATION::ORTHOGONAL:
+            collapse.insert(he);
+        }
+      }
+    }
 
-      const T p0 = c;
-      ASSERT(p0 > 0, "Original surface " << *this << " already had a triangle with non-positive area before applying any shift to it.");
+    // The more common reason why the area of a triangle is zero is that a
+    // singularity is shifted onto the interior of an edge. When this happens
+    // we can flip that edge just before to make sure that our triangulation
+    // remains valid at all times.
+    for (size_t i = 0; i < outgoing.size(); i++) {
+      const auto he = outgoing.at(i);
+      const auto he_ = outgoing.at((i + 1) % outgoing.size());
 
-      const T p1 = a - b + c;
-      CHECK_ARGUMENT(p1 > 0, "Surface after applying shift " << shift << " is not valid anymore since some triangle has non-positive area.");
+      // The determinant of the vectors spanned by the edges he and he_ at time
+      // t is given by a*t^2 - b*t + c.
+      const T a = u(he) * v(he_) - u(he_) * v(he);
+      const T b = -u(he) * y(he_) + u(he_) * y(he) - x(he) * v(he_) + x(he_) * v(he);
+      const T c = x(he) * y(he_) - x(he_) * y(he);
 
-      CHECK_ARGUMENT(
+      // If the determinant has a zero for any t in [0, 1], the area of a
+      // triangle vanishes or becomes negative.
+      const T det0 = c;
+      ASSERT(det0 > 0, "Original surface " << *this << " already had a triangle with non-positive area before applying any shift to it.");
+
+      const T det1 = a - b + c;
+      if (det1 > 0) {
+        // We handle the easiest case first: the area remains positive for all
+        // times t in [0, 1].
+        if (
+          // The critical point of a*t^2 - b*t + c is outside [0, 1].
           (a == 0 && (c > b && c > 0)) ||
-              (a > 0 && (b < 0 || b > 2 * a || b * b + 4 * a * c > 0)) ||
-              (a < 0 && (b > 0 || b < 2 * a || b * b + 4 * a * c < 0)),
-          "not a valid transformation");
+          // The critical point is a maximum
+          (a < 0) ||
+          // The critical point is positive so there can be no root in [0, 1].
+          (a > 0 && (b < 0 || b > 2 * a || b * b - 4 * a * c < 0))) {
+          continue;
+        }
+      }
+
+      // We can now assume that the determinant is zero for some t in (0, 1].
+      // We need to flip a half edge of this triangle if it has a vertex on its
+      // interior at that critical time t.
+
+      // But first we exclude the case that
+      // the vertex ends up on the boundary of the half edge, i.e., a half edge
+      // collapses.
+      if (collapse.contains(he) || collapse.contains(he_)) {
+        continue;
+      }
+
+      // Determine whether our vertex moves onto the half edge opposite to it,
+      // i.e., the one following e in this triangle.
+      const auto vertex_hits_interior = [&]() {
+        for (long  prec = exactreal::ARB_PRECISION_FAST;; prec *= 2) {
+          const auto t = root(a, b, c, prec);
+          ASSERT(t, "determinant " << a << " * t^2 - " << b << " * t + " << c << " must have a root in [0, 1]");
+          const auto et = Vector<exactreal::Arb>(
+              (arb(fromEdge(he).x(), prec) + *t * arb(shift.get(he).x(), prec))(prec),
+              (arb(fromEdge(he).y(), prec) + *t * arb(shift.get(he).y(), prec))(prec));
+          const auto e_t = Vector<exactreal::Arb>(
+              (arb(fromEdge(he_).x(), prec) + *t * arb(shift.get(he_).x(), prec))(prec),
+              (arb(fromEdge(he_).y(), prec) + *t * arb(shift.get(he_).y(), prec))(prec));
+
+          const auto orientation = et.orientation(e_t);
+
+          if (orientation) {
+            switch(*orientation) {
+              case ORIENTATION::ORTHOGONAL:
+                UNREACHABLE("vectors cannot be orthogonal when their determinant is vanishing");
+              case ORIENTATION::SAME:
+                // The half edges he and he_ meet but the vertex at their source
+                // does not end up on the interior of the half edge opposite to
+                // it. We can ignore this case as another vertex will take care
+                // of this vanishing triangle.
+                return false;
+              case ORIENTATION::OPPOSITE:
+                // The two edges attached to this vertex point in opposite
+                // directions at time t so this vertex ends up on the interior
+                // of the opposite edge.
+                return true;
+            }
+          }
+        }
+      };
+
+      if (!vertex_hits_interior())
+        // The half edge following e does not need to be flipped.
+        continue;
+
+      const RequiredFlip proposedFlip{nextInFace(he), a, b, c};
+
+      // Record that a half edge needs to be flipped at time t. We'll later
+      // actually flip the one that needs to be flipped first and recurse.
+      if (!flip || proposedFlip < *flip)
+        flip = proposedFlip;
     }
   }
 
-  return std::make_unique<FlatTriangulation<T>>(
-      std::move(*static_cast<const FlatTriangulationCombinatorial &>(*this).clone()),
-      [&](const HalfEdge he) { return impl->vectors->get(he) + shift.get(he); });
+  if (flip) {
+    // We want to flip the half edge that we found needs to be flipped first.
+    // However, just flipping that edge right now might lead to infinite loops
+    // where the same edge gets flipped again and again without making any
+    // progress. So instead we get a bit closer to the critical time and
+    // perform the flip just then.
+    // Note that this also solves the problem that the flip might not actually
+    // be possibly as it might lead to a non-convex triangulation since
+    // eventually, when we are close enough to the critical time, the flip will
+    // be valid.
+    // TODO: This leads to quite some coefficient blow-up along the way though
+    // which eventually goes away.
+    const auto t = flip->t();
+
+    for (auto s = mpq_class(1, 2);; s /= 2) {
+      const auto lt = exactreal::Arb(s, exactreal::ARB_PRECISION_FAST) < t;
+      if (lt && *lt) {
+        const OddHalfEdgeMap<Vector<T>> partial(*this, [&](const HalfEdge he) { return shift.get(he) / s.get_den(); });
+        const auto closer = *this + partial;
+
+        const Tracked<OddHalfEdgeMap<Vector<T>>> remaining(&*closer, OddHalfEdgeMap<Vector<T>>(*closer, [&](const HalfEdge he) { return shift.get(he) - partial.get(he); }), Implementation::updateAfterFlip);
+
+        // TODO: This was copied from flip(). Break it out instead.
+        if (fromEdge(previousAtVertex(flip->flip)).ccw(fromEdge(nextAtVertex(flip->flip))) == CCW::COUNTERCLOCKWISE &&
+          fromEdge(previousAtVertex(-flip->flip)).ccw(fromEdge(nextAtVertex(-flip->flip))) == CCW::COUNTERCLOCKWISE) {
+          closer->flip(flip->flip);
+        }
+
+        return *closer + remaining;
+      }
+    }
+  } else {
+    // Now we perform shifts of half edges on a copy of the surface's vector
+    // structure and collapse on the combinatorial structure.
+    auto combinatorial = static_cast<const FlatTriangulationCombinatorial &>(*this).clone(); 
+    Tracked<OddHalfEdgeMap<Vector<T>>> vectors(&*combinatorial, OddHalfEdgeMap<Vector<T>>(*combinatorial, [&](const HalfEdge he) { return fromEdge(he) + shift.get(he); }),
+      Tracked<OddHalfEdgeMap<Vector<T>>>::defaultFlip,
+      [](OddHalfEdgeMap<Vector<T>>& vectors, const FlatTriangulationCombinatorial&, Edge e) {
+        ASSERT(!vectors.get(e.positive()), "can only collapse half edges that have become trivial");
+      });
+    Tracked<EdgeSet> collapse_(&*combinatorial, collapse,
+      Tracked<EdgeSet>::defaultFlip,
+      [](EdgeSet& collapse, const FlatTriangulationCombinatorial&, Edge e) {
+        ASSERT(collapse.contains(e), "will only collapse edges that have been found to collapse at t=1");
+      });
+
+    while (!collapse_->empty())
+      combinatorial->collapse(begin(static_cast<const EdgeSet&>(collapse_))->positive());
+
+    return std::make_unique<FlatTriangulation<T>>(
+        std::move(*combinatorial),
+        [&](const HalfEdge he) { return vectors->get(he); });
+  }
 }
 
 template <typename T>
@@ -210,6 +501,8 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &n
   };
 
   // Search for half edges that slot would be crossing and flip them.
+  // TODO: Use operator+ here instead: Insert the vertex at a short distance
+  // without flips, then shift it to its final position with operator+.
   [&]() {
     while (true) {
       if (surface->fromEdge(nextTo).ccw(slot) == CCW::COLLINEAR) {
