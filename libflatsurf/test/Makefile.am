@@ -1,7 +1,8 @@
-check_PROGRAMS = half_edge chain vector_longlong contour_decomposition delaunay saddle_connections vector_exactreal cereal permutation flat_triangulation_combinatorial flat_triangulation flow_decomposition flat_triangulation_collapsed vertex edge parabolic
+check_PROGRAMS = approximation half_edge chain vector_longlong contour_decomposition delaunay saddle_connections vector_exactreal cereal permutation flat_triangulation_combinatorial flat_triangulation flow_decomposition flat_triangulation_collapsed vertex edge parabolic
 
 TESTS = $(check_PROGRAMS)
 
+approximation_SOURCES = approximation.test.cc main.cc generators/real_generator.hpp
 cereal_SOURCES = cereal.test.cc cereal.helpers.hpp main.cc surfaces.hpp generators/saddle_connections_generator.hpp
 chain_SOURCES = chain.test.cc main.cc
 contour_decomposition_SOURCES = contour_decomposition.test.cc main.cc surfaces.hpp generators/vertical_generator.hpp generators/surface_generator.hpp

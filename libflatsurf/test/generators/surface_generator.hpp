@@ -32,6 +32,8 @@
 
 #include "../surfaces.hpp"
 
+#include "real_generator.hpp"
+
 namespace flatsurf::test {
 
 template <typename T>
@@ -62,9 +64,6 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::shared_ptr<Fl
 
   using R2 = Vector<T>;
 
-  static constexpr bool hasFractions = std::is_same_v<T, mpq_class> || std::is_same_v<T, eantic::renf_elem_class> || std::is_same_v<T, exactreal::Element<exactreal::RationalField>> || std::is_same_v<T, exactreal::Element<exactreal::NumberField>>;
-  static constexpr bool hasNumberFieldElements = std::is_same_v<T, eantic::renf_elem_class> || std::is_same_v<T, exactreal::Element<exactreal::NumberField>>;
-
   static std::shared_ptr<FlatTriangulation<T>> make(Surface surface) {
     switch (surface) {
       case Surface::SQUARE:
@@ -78,62 +77,62 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::shared_ptr<Fl
       case Surface::MCMULLEN_L3125:
         return makeMcMullenL3125<R2>();
       case Surface::CATHEDRAL:
-        if constexpr (hasFractions)
+        if constexpr (hasFractions<T>)
           return makeCathedral<R2>();
         else
           return nullptr;
       case Surface::CATHEDRAL_QUARTIC:
-        if constexpr (hasFractions && hasNumberFieldElements)
+        if constexpr (hasFractions<T> && hasNumberFieldElements<T>)
           return makeCathedralQuartic<R2>();
         else
           return nullptr;
       case Surface::CATHEDRAL_VEECH:
-        if constexpr (hasFractions && hasNumberFieldElements)
+        if constexpr (hasFractions<T> && hasNumberFieldElements<T>)
           return makeCathedralVeech<R2>();
         else
           return nullptr;
       case Surface::MCMULLEN_GENUS2:
-        if constexpr (hasNumberFieldElements)
+        if constexpr (hasNumberFieldElements<T>)
           return makeMcMullenGenus2<R2>();
         else
           return nullptr;
       case Surface::_123:
-        if constexpr (hasNumberFieldElements)
+        if constexpr (hasNumberFieldElements<T>)
           return make123<R2>();
         else
           return nullptr;
       case Surface::_125:
-        if constexpr (hasFractions && hasNumberFieldElements)
+        if constexpr (hasFractions<T> && hasNumberFieldElements<T>)
           return make125<R2>();
         else
           return nullptr;
       case Surface::_1221:
-        if constexpr (hasFractions && hasNumberFieldElements)
+        if constexpr (hasFractions<T> && hasNumberFieldElements<T>)
           return make1221<R2>();
         else
           return nullptr;
       case Surface::_1234:
-        if constexpr (hasFractions && hasNumberFieldElements)
+        if constexpr (hasFractions<T> && hasNumberFieldElements<T>)
           return make1234<R2>();
         else
           return nullptr;
       case Surface::HEXAGON:
-        if constexpr (hasFractions && hasNumberFieldElements)
+        if constexpr (hasFractions<T> && hasNumberFieldElements<T>)
           return makeHexagon<R2>();
         else
           return nullptr;
       case Surface::OCTAGON:
-        if constexpr (hasFractions && hasNumberFieldElements)
+        if constexpr (hasFractions<T> && hasNumberFieldElements<T>)
           return makeOctagon<R2>();
         else
           return nullptr;
       case Surface::HEPTAGON_L:
-        if constexpr (hasFractions && hasNumberFieldElements)
+        if constexpr (hasFractions<T> && hasNumberFieldElements<T>)
           return makeHeptagonL<R2>();
         else
           return nullptr;
       case Surface::GOLDEN_L:
-        if constexpr (hasNumberFieldElements)
+        if constexpr (hasNumberFieldElements<T>)
           return makeGoldenL<R2>();
         else
           return nullptr;
