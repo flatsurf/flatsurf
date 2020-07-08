@@ -6,7 +6,6 @@ channels:
 dependencies:
   - libflatsurf
   - pyflatsurf
-  - flatsurf-polygon
   - sage-flatsurf
   - boost-cpp
   - notebook
