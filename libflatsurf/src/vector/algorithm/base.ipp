@@ -27,6 +27,7 @@
 
 #include <exact-real/arb.hpp>
 
+#include "../../impl/approximation.hpp"
 #include "../../util/false.ipp"
 #include "../storage/cartesian.ipp"
 #include "../storage/forward.ipp"
@@ -90,7 +91,8 @@ VectorBase<Vector>::operator flatsurf::Vector<exactreal::Arb>() const noexcept {
   } else if constexpr (is_forward_v<Implementation>) {
     return static_cast<flatsurf::Vector<exactreal::Arb>>(self.impl->vector);
   } else if constexpr (is_cartesian_v<Implementation>) {
-    return flatsurf::Vector<exactreal::Arb>(exactreal::Arb(self.impl->x), exactreal::Arb(self.impl->y));
+    using T = typename Implementation::CartesianCoordinate;
+    return flatsurf::Vector<exactreal::Arb>(Approximation<T>::arb(self.impl->x), Approximation<T>::arb(self.impl->y));
   } else {
     static_assert(false_type_v<Implementation>, "Implementation is missing operator<Vector<Arb>>.");
   }

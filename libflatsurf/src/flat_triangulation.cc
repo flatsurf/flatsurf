@@ -46,38 +46,13 @@
 #include "util/assert.ipp"
 
 #include "impl/flat_triangulation.impl.hpp"
+#include "impl/approximation.hpp"
 
 using std::map;
 using std::ostream;
 using std::vector;
 
 namespace flatsurf {
-
-// Return an approximation of x with precision prec
-// TODO: I should probably move that to a shared place.
-template <typename T>
-auto arb(const T& x, const long prec) {
-  if constexpr (std::is_same_v<T, mpz_class>) {
-    (void)(prec);
-    return exactreal::Arb(x);
-  } else if constexpr (std::is_same_v<T, long long>) {
-    (void)(prec);
-    return exactreal::Arb(x);
-  } else if constexpr (std::is_same_v<T, mpq_class>) {
-    return exactreal::Arb(x, prec);
-  } else if constexpr (std::is_same_v<T, eantic::renf_elem_class>) {
-    return exactreal::Arb(x, prec);
-  } else if constexpr (std::is_same_v<T, exactreal::Element<exactreal::IntegerRing>>) {
-    return x.arb(prec);
-  } else if constexpr (std::is_same_v<T, exactreal::Element<exactreal::RationalField>>) {
-    return x.arb(prec);
-  } else if constexpr (std::is_same_v<T, exactreal::Element<exactreal::NumberField>>) {
-    return x.arb(prec);
-  } else {
-    // TODO: static assert this must not happen.
-    return x;
-  }
-};
 
 // Return the smallest approximate solution of a*t^2 - b*t + c = 0 for t in [0, 1]
 // TODO: Move this to a more generic place.
@@ -94,9 +69,9 @@ std::optional<exactreal::Arb> root(const T& a, const T& b, const T& c, const lon
     return solution;
   };
 
-  const exactreal::Arb a_ = arb(a, prec),
-        b_ = arb(b, prec),
-        c_ = arb(c, prec);
+  const exactreal::Arb a_ = Approximation<T>::arb(a, prec),
+        b_ = Approximation<T>::arb(b, prec),
+        c_ = Approximation<T>::arb(c, prec);
 
   if (a == 0) {
     if (c == 0)
@@ -282,11 +257,11 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddH
           const auto t = root(a, b, c, prec);
           ASSERT(t, "determinant " << a << " * t^2 - " << b << " * t + " << c << " must have a root in [0, 1]");
           const auto et = Vector<exactreal::Arb>(
-              (arb(fromEdge(he).x(), prec) + *t * arb(shift.get(he).x(), prec))(prec),
-              (arb(fromEdge(he).y(), prec) + *t * arb(shift.get(he).y(), prec))(prec));
+              (Approximation<T>::arb(fromEdge(he).x(), prec) + *t * Approximation<T>::arb(shift.get(he).x(), prec))(prec),
+              (Approximation<T>::arb(fromEdge(he).y(), prec) + *t * Approximation<T>::arb(shift.get(he).y(), prec))(prec));
           const auto e_t = Vector<exactreal::Arb>(
-              (arb(fromEdge(he_).x(), prec) + *t * arb(shift.get(he_).x(), prec))(prec),
-              (arb(fromEdge(he_).y(), prec) + *t * arb(shift.get(he_).y(), prec))(prec));
+              (Approximation<T>::arb(fromEdge(he_).x(), prec) + *t * Approximation<T>::arb(shift.get(he_).x(), prec))(prec),
+              (Approximation<T>::arb(fromEdge(he_).y(), prec) + *t * Approximation<T>::arb(shift.get(he_).y(), prec))(prec));
 
           const auto orientation = et.orientation(e_t);
 

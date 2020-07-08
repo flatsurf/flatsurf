@@ -1,6 +1,7 @@
 lib_LTLIBRARIES = libflatsurf.la
 
 libflatsurf_la_SOURCES =                                            \
+	approximation.cc                                            \
 	bound.cc                                                    \
 	ccw.cc                                                      \
 	chain.cc                                                    \
