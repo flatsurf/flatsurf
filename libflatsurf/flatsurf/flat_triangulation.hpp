@@ -77,7 +77,11 @@ class FlatTriangulation : public FlatTriangulationCombinatorial,
   // Return the shortest vector relative to this direction which is not orthogonal to it.
   Vector<T> shortest(const Vector<T> &) const;
 
+  // Flip this half edge whose attached triangles form a strictly convex quadrilateral.
   void flip(HalfEdge);
+
+  // Return whether the two triangles attached to this half edge form a (strictly) convex quadrilateral.
+  bool convex(HalfEdge, bool strict=false) const;
 
   // Return twice the area of this triangulation.
   T area() const;

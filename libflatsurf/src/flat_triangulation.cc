@@ -206,11 +206,8 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddH
 
         const Tracked<OddHalfEdgeMap<Vector<T>>> remaining(&*closer, OddHalfEdgeMap<Vector<T>>(*closer, [&](const HalfEdge he) { return shift.get(he) - partial.get(he); }), Implementation::updateAfterFlip);
 
-        // TODO: This was copied from flip(). Break it out instead.
-        if (fromEdge(previousAtVertex(flip->flip)).ccw(fromEdge(nextAtVertex(flip->flip))) == CCW::COUNTERCLOCKWISE &&
-          fromEdge(previousAtVertex(-flip->flip)).ccw(fromEdge(nextAtVertex(-flip->flip))) == CCW::COUNTERCLOCKWISE) {
+        if (convex(flip->flip, true))
           closer->flip(flip->flip);
-        }
 
         return *closer + remaining;
       }
@@ -486,11 +483,18 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::scale(const mpz_clas
 }
 
 template <typename T>
+bool FlatTriangulation<T>::convex(HalfEdge e, bool strict) const {
+  if (strict)
+    return fromEdge(previousAtVertex(e)).ccw(fromEdge(nextAtVertex(e))) == CCW::COUNTERCLOCKWISE &&
+          fromEdge(previousAtVertex(-e)).ccw(fromEdge(nextAtVertex(-e))) == CCW::COUNTERCLOCKWISE;
+  else
+    return fromEdge(previousAtVertex(e)).ccw(fromEdge(nextAtVertex(e))) != CCW::CLOCKWISE &&
+          fromEdge(previousAtVertex(-e)).ccw(fromEdge(nextAtVertex(-e))) != CCW::CLOCKWISE;
+}
+
+template <typename T>
 void FlatTriangulation<T>::flip(HalfEdge e) {
-  CHECK_ARGUMENT(
-      fromEdge(previousAtVertex(e)).ccw(fromEdge(nextAtVertex(e))) == CCW::COUNTERCLOCKWISE &&
-          fromEdge(previousAtVertex(-e)).ccw(fromEdge(nextAtVertex(-e))) == CCW::COUNTERCLOCKWISE,
-      "cannot flip this edge as a resulting face would not be strictly convex");
+  CHECK_ARGUMENT(convex(e, true), "cannot flip this edge as a resulting face would not be strictly convex");
 
   FlatTriangulationCombinatorial::flip(e);
 
