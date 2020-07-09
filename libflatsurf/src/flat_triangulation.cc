@@ -362,8 +362,7 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &n
   };
 
   // Search for half edges that slot would be crossing and flip them.
-  // TODO: Use operator+ here instead: Insert the vertex at a short distance
-  // without flips, then shift it to its final position with operator+.
+  // We should replace all this with a simple call to operator+, see #183.
   [&]() {
     while (true) {
       if (surface->fromEdge(nextTo).ccw(slot) == CCW::COLLINEAR) {
