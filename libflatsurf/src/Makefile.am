@@ -35,6 +35,7 @@ libflatsurf_la_SOURCES =                                            \
 	path.cc                                                     \
 	path_iterator.cc                                            \
 	permutation.cc                                              \
+	quadratic_polynomial.cc                                     \
 	saddle_connection.cc                                        \
 	saddle_connections.cc                                       \
 	saddle_connections_iterator.cc                              \
@@ -127,6 +128,7 @@ noinst_HEADERS =                                                    \
 	impl/lengths.hpp                                            \
 	impl/path.impl.hpp                                          \
 	impl/path_iterator.impl.hpp                                 \
+	impl/quadratic_polynomial.hpp                               \
 	impl/saddle_connection.impl.hpp                             \
 	impl/saddle_connections.impl.hpp                            \
 	impl/saddle_connections_iterator.impl.hpp                   \

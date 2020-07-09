@@ -47,6 +47,7 @@
 
 #include "impl/flat_triangulation.impl.hpp"
 #include "impl/approximation.hpp"
+#include "impl/quadratic_polynomial.hpp"
 
 using std::map;
 using std::ostream;
@@ -54,127 +55,19 @@ using std::vector;
 
 namespace flatsurf {
 
-// Return the smallest approximate solution of a*t^2 - b*t + c = 0 for t in [0, 1]
-// TODO: Move this to a more generic place.
-template <typename T>
-std::optional<exactreal::Arb> root(const T& a, const T& b, const T& c, const long prec) {
-  const auto validate = [&](const exactreal::Arb& solution) -> std::optional<exactreal::Arb> {
-    auto lt0 = solution < 0;
-    auto gt1 = solution > 1;
-
-    if (!lt0.has_value() || !gt1.has_value()) return root(a, b, c, 2*prec);
-    if (*lt0) return {};
-    if (*gt1) return {};
-
-    return solution;
-  };
-
-  const exactreal::Arb a_ = Approximation<T>::arb(a, prec),
-        b_ = Approximation<T>::arb(b, prec),
-        c_ = Approximation<T>::arb(c, prec);
-
-  if (a == 0) {
-    if (c == 0)
-      return exactreal::Arb();
-    CHECK_ARGUMENT(b != 0, "equation c = 0 has no solutions");
-    exactreal::Arb solution = (c_ / b_)(prec);
-    return validate(solution);
-  }
-
-  const T discriminant = b*b - 4*a*c;
-  if (discriminant < 0) {
-    return {};
-  } else if (discriminant == 0) {
-    return validate((b_ / (2 * a_))(prec));
-  } else {
-    exactreal::Arb sqrt_discriminant = (b_*b_ - 4*a_*c_)(prec);
-    arb_sqrt(sqrt_discriminant.arb_t(), sqrt_discriminant.arb_t(), prec);
-
-    const auto t0 = validate(((b_ + sqrt_discriminant) / (2*a_))(prec));
-    const auto t1 = validate(((b_ - sqrt_discriminant) / (2*a_))(prec));
-
-    if (t0 && t1) {
-      const auto lt = *t0 < *t1;
-      if (!lt.has_value() || *lt)
-        return t0;
-      return t1;
-    } else if (t0)
-      return t0;
-    else if (t1)
-      return t1;
-    else
-      return {};
-  }
-};
-
 template <typename T>
 std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfEdgeMap<Vector<T>> &shift) const {
   // Half edges that collapse at the end of the shift.
   EdgeSet collapse;
 
   // Records that the half edge e needs to be flipped at a time t in (0, 1]
-  // that is given by a solution to a*t^2 - b*t + c = 0.
-  // Unfortunately, we can in general only solve this approximately.
-  struct RequiredFlip {
+  // that is given by a solution to det(t) = a*t^2 + b*t + c = 0.
+  struct Flip {
     HalfEdge flip;
-    T a, b, c;
-
-    exactreal::Arb t(slong prec = exactreal::ARB_PRECISION_FAST) const {
-      const auto ret = root(a, b, c, prec);
-      ASSERT(ret, "A required flip must have a critical time in (0, 1]");
-      return *ret;
-    }
-
-    // Return whether this flip needs to happen before the one required by rhs.
-    bool operator<(const RequiredFlip& rhs) const {
-      // When the two polynomials are just multiples of each other, the critical time is the same.
-      if (a * rhs.b == b * rhs.a && a * rhs.c == c * rhs.a && b * rhs.c == c * rhs.b)
-        return false;
-
-      // Compute approximate values for the respective critical times t and compare them.
-      for(slong prec = exactreal::ARB_PRECISION_FAST;; prec *= 2) {
-        const auto t = this->t(prec);
-        const auto s = rhs.t(prec);
-
-        const auto lt = t < s;
-        if (lt)
-          return *lt;
-
-        // We computed balls around the roots t and s of the two quadratic
-        // equations but they overlappped so we cannot decide which one is
-        // first. (Typically, this happens because they are actually equal.)
-
-        // If the quadratic polynomials have no common root, then we can
-        // eventually separate the times s and t.
-
-        // If both polynomials are only linear, then we decide whether they
-        // have the same root by comparing coefficients: namely if c/b = c'/b'.
-        if (!a && !rhs.a) {
-          if (c * rhs.b == rhs.c * b)
-            return false;
-          continue;
-        }
-
-        // In the non-linear case, they have a common root iff their
-        // resultant is zero.
-        if (c*c*rhs.a*rhs.a - b*c*rhs.a*rhs.b + a*c*rhs.b*rhs.b + b*b*rhs.a*rhs.c - 2*a*c*rhs.a*rhs.c - a*b*rhs.b*rhs.c + a*a*rhs.c*rhs.c != 0)
-          continue;
-
-        // When they have a common root, it does not necessarily have to be the
-        // root we care about.
-        // We already know that not both of their roots can be the same since
-        // then the polynomials would be multiples of each other which we
-        // checked before. We could now probably compute the gcd of the
-        // polynomials and then look at the common linear factor but for all
-        // cases that we can imagine it is probably safe to assume that the
-        // root that is the same is actually the root that also looks like it's
-        // approximately the same, i.e., the two critical times are equal.
-        return false;
-      }
-    }
+    QuadraticPolynomial<T> det;
   };
 
-  std::optional<RequiredFlip> flip;
+  std::optional<Flip> flip;
 
   for (auto vertex : vertices()) {
     const auto outgoing = atVertex(vertex);
@@ -215,29 +108,19 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddH
 
       // The determinant of the vectors spanned by the edges he and he_ at time
       // t is given by a*t^2 - b*t + c.
-      const T a = u(he) * v(he_) - u(he_) * v(he);
-      const T b = -u(he) * y(he_) + u(he_) * y(he) - x(he) * v(he_) + x(he_) * v(he);
-      const T c = x(he) * y(he_) - x(he_) * y(he);
+      const auto det = QuadraticPolynomial<T>(
+        u(he) * v(he_) - u(he_) * v(he),
+        u(he) * y(he_) - u(he_) * y(he) + x(he) * v(he_) - x(he_) * v(he),
+        x(he) * y(he_) - x(he_) * y(he));
+
+      ASSERT(det(T()) > 0, "Original surface " << *this << " already had a triangle with non-positive area before applying any shift to it.");
 
       // If the determinant has a zero for any t in [0, 1], the area of a
       // triangle vanishes or becomes negative.
-      const T det0 = c;
-      ASSERT(det0 > 0, "Original surface " << *this << " already had a triangle with non-positive area before applying any shift to it.");
-
-      const T det1 = a - b + c;
-      if (det1 > 0) {
-        // We handle the easiest case first: the area remains positive for all
-        // times t in [0, 1].
-        if (
-          // The critical point of a*t^2 - b*t + c is outside [0, 1].
-          (a == 0 && (c > b && c > 0)) ||
-          // The critical point is a maximum
-          (a < 0) ||
-          // The critical point is positive so there can be no root in [0, 1].
-          (a > 0 && (b < 0 || b > 2 * a || b * b - 4 * a * c < 0))) {
-          continue;
-        }
-      }
+      // We handle the easiest case first: the area remains positive for all
+      // times t in [0, 1].
+      if (det.positive())
+        continue;
 
       // We can now assume that the determinant is zero for some t in (0, 1].
       // We need to flip a half edge of this triangle if it has a vertex on its
@@ -246,22 +129,22 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddH
       // But first we exclude the case that
       // the vertex ends up on the boundary of the half edge, i.e., a half edge
       // collapses.
-      if (collapse.contains(he) || collapse.contains(he_)) {
+      if (collapse.contains(he) || collapse.contains(he_))
         continue;
-      }
 
       // Determine whether our vertex moves onto the half edge opposite to it,
       // i.e., the one following e in this triangle.
       const auto vertex_hits_interior = [&]() {
         for (long  prec = exactreal::ARB_PRECISION_FAST;; prec *= 2) {
-          const auto t = root(a, b, c, prec);
-          ASSERT(t, "determinant " << a << " * t^2 - " << b << " * t + " << c << " must have a root in [0, 1]");
+          const auto t = det.root(prec);
+          const auto arb = Approximation<T>::arb;
+          ASSERT(t, "determinant " << det << " must have a root in [0, 1]");
           const auto et = Vector<exactreal::Arb>(
-              (Approximation<T>::arb(fromEdge(he).x(), prec) + *t * Approximation<T>::arb(shift.get(he).x(), prec))(prec),
-              (Approximation<T>::arb(fromEdge(he).y(), prec) + *t * Approximation<T>::arb(shift.get(he).y(), prec))(prec));
+              (arb(fromEdge(he).x(), prec) + *t * arb(shift.get(he).x(), prec))(prec),
+              (arb(fromEdge(he).y(), prec) + *t * arb(shift.get(he).y(), prec))(prec));
           const auto e_t = Vector<exactreal::Arb>(
-              (Approximation<T>::arb(fromEdge(he_).x(), prec) + *t * Approximation<T>::arb(shift.get(he_).x(), prec))(prec),
-              (Approximation<T>::arb(fromEdge(he_).y(), prec) + *t * Approximation<T>::arb(shift.get(he_).y(), prec))(prec));
+              (arb(fromEdge(he_).x(), prec) + *t * arb(shift.get(he_).x(), prec))(prec),
+              (arb(fromEdge(he_).y(), prec) + *t * arb(shift.get(he_).y(), prec))(prec));
 
           const auto orientation = et.orientation(e_t);
 
@@ -289,12 +172,12 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddH
         // The half edge following e does not need to be flipped.
         continue;
 
-      const RequiredFlip proposedFlip{nextInFace(he), a, b, c};
+      const Flip proposed{nextInFace(he), det};
 
       // Record that a half edge needs to be flipped at time t. We'll later
       // actually flip the one that needs to be flipped first and recurse.
-      if (!flip || proposedFlip < *flip)
-        flip = proposedFlip;
+      if (!flip || proposed.det < flip->det)
+        flip = proposed;
     }
   }
 
@@ -310,7 +193,7 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddH
     // be valid.
     // TODO: This leads to quite some coefficient blow-up along the way though
     // which eventually goes away.
-    const auto t = flip->t();
+    const auto t = *flip->det.root(exactreal::ARB_PRECISION_FAST);
 
     for (auto s = mpq_class(1, 2);; s /= 2) {
       const auto lt = exactreal::Arb(s, exactreal::ARB_PRECISION_FAST) < t;
