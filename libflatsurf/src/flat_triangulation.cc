@@ -191,8 +191,11 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddH
     // be possibly as it might lead to a non-convex triangulation since
     // eventually, when we are close enough to the critical time, the flip will
     // be valid.
-    // TODO: This leads to quite some coefficient blow-up along the way though
-    // which eventually goes away.
+    // Note that this leads to quite some coefficient blow-up along the way;
+    // every flip introduces a factor of two in the denominators. These
+    // coefficients go away in the final surface. It would likely be more
+    // efficient not to move before the flip if this still makes the critical
+    // time t increase.
     const auto t = *flip->det.root(exactreal::ARB_PRECISION_FAST);
 
     for (auto s = mpq_class(1, 2);; s /= 2) {
