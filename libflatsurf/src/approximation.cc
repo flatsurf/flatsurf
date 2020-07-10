@@ -18,8 +18,8 @@
  *********************************************************************/
 
 #include <exact-real/integer_ring.hpp>
-#include <exact-real/rational_field.hpp>
 #include <exact-real/number_field.hpp>
+#include <exact-real/rational_field.hpp>
 
 #include "impl/approximation.hpp"
 #include "util/false.ipp"
@@ -49,7 +49,7 @@ exactreal::Arb Approximation<T>::arb(const T& x, slong prec) {
   }
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

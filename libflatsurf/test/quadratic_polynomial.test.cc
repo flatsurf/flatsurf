@@ -110,4 +110,3 @@ TEMPLATE_TEST_CASE("Quadratic Polynomial", "[quadratic_polynomial]", LIBFLATSURF
 }
 
 }  // namespace flatsurf::test
-

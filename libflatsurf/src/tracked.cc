@@ -107,7 +107,7 @@ void Tracked<T>::defaultSwap(T& self, const FlatTriangulationCombinatorial&, Hal
     swap(self[-a], self[-b]);
   } else if constexpr (is_odd_half_edge_map<T>::value) {
     if (a == b) return;
-    if (a == -b) 
+    if (a == -b)
       self.set(a, self.get(b));
     else {
       auto tmp = self.get(a);

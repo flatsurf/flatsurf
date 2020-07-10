@@ -51,6 +51,6 @@ class QuadraticPolynomial {
   friend std::ostream& operator<<(std::ostream&, const QuadraticPolynomial<S>&);
 };
 
-}
+}  // namespace flatsurf
 
 #endif

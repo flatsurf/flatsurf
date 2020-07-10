@@ -23,10 +23,10 @@
 #include <ostream>
 #include <vector>
 
-#include <exact-real/yap/arb.hpp>
 #include <exact-real/integer_ring.hpp>
-#include <exact-real/rational_field.hpp>
 #include <exact-real/number_field.hpp>
+#include <exact-real/rational_field.hpp>
+#include <exact-real/yap/arb.hpp>
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/ccw.hpp"
@@ -45,8 +45,8 @@
 #include <iosfwd>
 #include "util/assert.ipp"
 
-#include "impl/flat_triangulation.impl.hpp"
 #include "impl/approximation.hpp"
+#include "impl/flat_triangulation.impl.hpp"
 #include "impl/quadratic_polynomial.hpp"
 
 using std::map;
@@ -109,9 +109,9 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddH
       // The determinant of the vectors spanned by the edges he and he_ at time
       // t is given by a*t^2 - b*t + c.
       const auto det = QuadraticPolynomial<T>(
-        u(he) * v(he_) - u(he_) * v(he),
-        u(he) * y(he_) - u(he_) * y(he) + x(he) * v(he_) - x(he_) * v(he),
-        x(he) * y(he_) - x(he_) * y(he));
+          u(he) * v(he_) - u(he_) * v(he),
+          u(he) * y(he_) - u(he_) * y(he) + x(he) * v(he_) - x(he_) * v(he),
+          x(he) * y(he_) - x(he_) * y(he));
 
       ASSERT(det(T()) > 0, "Original surface " << *this << " already had a triangle with non-positive area before applying any shift to it.");
 
@@ -135,7 +135,7 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddH
       // Determine whether our vertex moves onto the half edge opposite to it,
       // i.e., the one following e in this triangle.
       const auto vertex_hits_interior = [&]() {
-        for (long  prec = exactreal::ARB_PRECISION_FAST;; prec *= 2) {
+        for (long prec = exactreal::ARB_PRECISION_FAST;; prec *= 2) {
           const auto t = det.root(prec);
           const auto arb = Approximation<T>::arb;
           ASSERT(t, "determinant " << det << " must have a root in [0, 1]");
@@ -149,7 +149,7 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddH
           const auto orientation = et.orientation(e_t);
 
           if (orientation) {
-            switch(*orientation) {
+            switch (*orientation) {
               case ORIENTATION::ORTHOGONAL:
                 UNREACHABLE("vectors cannot be orthogonal when their determinant is vanishing");
               case ORIENTATION::SAME:
@@ -215,20 +215,20 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddH
   } else {
     // Now we perform shifts of half edges on a copy of the surface's vector
     // structure and collapse on the combinatorial structure.
-    auto combinatorial = static_cast<const FlatTriangulationCombinatorial &>(*this).clone(); 
+    auto combinatorial = static_cast<const FlatTriangulationCombinatorial &>(*this).clone();
     Tracked<OddHalfEdgeMap<Vector<T>>> vectors(&*combinatorial, OddHalfEdgeMap<Vector<T>>(*combinatorial, [&](const HalfEdge he) { return fromEdge(he) + shift.get(he); }),
-      Tracked<OddHalfEdgeMap<Vector<T>>>::defaultFlip,
-      [](OddHalfEdgeMap<Vector<T>>& vectors, const FlatTriangulationCombinatorial&, Edge e) {
-        ASSERT(!vectors.get(e.positive()), "can only collapse half edges that have become trivial");
-      });
+        Tracked<OddHalfEdgeMap<Vector<T>>>::defaultFlip,
+        [](OddHalfEdgeMap<Vector<T>> &vectors, const FlatTriangulationCombinatorial &, Edge e) {
+          ASSERT(!vectors.get(e.positive()), "can only collapse half edges that have become trivial");
+        });
     Tracked<EdgeSet> collapse_(&*combinatorial, collapse,
-      Tracked<EdgeSet>::defaultFlip,
-      [](EdgeSet& collapse, const FlatTriangulationCombinatorial&, Edge e) {
-        ASSERT(collapse.contains(e), "will only collapse edges that have been found to collapse at t=1");
-      });
+        Tracked<EdgeSet>::defaultFlip,
+        [](EdgeSet &collapse, const FlatTriangulationCombinatorial &, Edge e) {
+          ASSERT(collapse.contains(e), "will only collapse edges that have been found to collapse at t=1");
+        });
 
     while (!collapse_->empty())
-      combinatorial->collapse(begin(static_cast<const EdgeSet&>(collapse_))->positive());
+      combinatorial->collapse(begin(static_cast<const EdgeSet &>(collapse_))->positive());
 
     return std::make_unique<FlatTriangulation<T>>(
         std::move(*combinatorial),
@@ -486,10 +486,10 @@ template <typename T>
 bool FlatTriangulation<T>::convex(HalfEdge e, bool strict) const {
   if (strict)
     return fromEdge(previousAtVertex(e)).ccw(fromEdge(nextAtVertex(e))) == CCW::COUNTERCLOCKWISE &&
-          fromEdge(previousAtVertex(-e)).ccw(fromEdge(nextAtVertex(-e))) == CCW::COUNTERCLOCKWISE;
+           fromEdge(previousAtVertex(-e)).ccw(fromEdge(nextAtVertex(-e))) == CCW::COUNTERCLOCKWISE;
   else
     return fromEdge(previousAtVertex(e)).ccw(fromEdge(nextAtVertex(e))) != CCW::CLOCKWISE &&
-          fromEdge(previousAtVertex(-e)).ccw(fromEdge(nextAtVertex(-e))) != CCW::CLOCKWISE;
+           fromEdge(previousAtVertex(-e)).ccw(fromEdge(nextAtVertex(-e))) != CCW::CLOCKWISE;
 }
 
 template <typename T>

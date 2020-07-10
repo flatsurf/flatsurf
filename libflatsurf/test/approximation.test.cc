@@ -31,7 +31,7 @@ TEMPLATE_TEST_CASE("Approximation", "[arb]", LIBFLATSURF_TEST_REAL_TYPES) {
   using Arf = exactreal::Arf;
 
   const auto arb = Approximation<T>::arb;
-  
+
   SECTION("Integers Convert As Expected") {
     auto n = GENERATE(-3, 0, 3);
 
@@ -71,4 +71,3 @@ TEMPLATE_TEST_CASE("Approximation", "[arb]", LIBFLATSURF_TEST_REAL_TYPES) {
 }
 
 }  // namespace flatsurf::test
-

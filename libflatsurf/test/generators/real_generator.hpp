@@ -20,11 +20,11 @@
 #ifndef LIBFLATSURF_TEST_GENERATORS_REAL_GENERATOR_HPP
 #define LIBFLATSURF_TEST_GENERATORS_REAL_GENERATOR_HPP
 
+#include <e-antic/renfxx.h>
 #include <exact-real/element.hpp>
 #include <exact-real/integer_ring.hpp>
-#include <exact-real/rational_field.hpp>
 #include <exact-real/number_field.hpp>
-#include <e-antic/renfxx.h>
+#include <exact-real/rational_field.hpp>
 
 namespace flatsurf::test {
 
@@ -39,7 +39,7 @@ T frac(const S& num, const S& den) {
   return T(num) / den;
 }
 
-}
+}  // namespace flatsurf::test
 
 #define LIBFLATSURF_TEST_REAL_TYPES (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)
 

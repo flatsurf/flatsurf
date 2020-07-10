@@ -81,7 +81,7 @@ class FlatTriangulation : public FlatTriangulationCombinatorial,
   void flip(HalfEdge);
 
   // Return whether the two triangles attached to this half edge form a (strictly) convex quadrilateral.
-  bool convex(HalfEdge, bool strict=false) const;
+  bool convex(HalfEdge, bool strict = false) const;
 
   // Return twice the area of this triangulation.
   T area() const;

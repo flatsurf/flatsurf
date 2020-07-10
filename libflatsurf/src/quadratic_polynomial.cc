@@ -27,7 +27,10 @@
 namespace flatsurf {
 
 template <typename T>
-QuadraticPolynomial<T>::QuadraticPolynomial(const T& a, const T& b, const T& c) : a(a), b(b), c(c) {}
+QuadraticPolynomial<T>::QuadraticPolynomial(const T& a, const T& b, const T& c) :
+  a(a),
+  b(b),
+  c(c) {}
 
 template <typename T>
 std::optional<exactreal::Arb> QuadraticPolynomial<T>::root(const long prec) const {
@@ -37,11 +40,11 @@ std::optional<exactreal::Arb> QuadraticPolynomial<T>::root(const long prec) cons
 
     if (!lt0) {
       if ((*this)(T()) == 0) return exactreal::Arb();
-      return root(2*prec);
+      return root(2 * prec);
     }
     if (!gt1) {
       if ((*this)(T(1)) == 0) return exactreal::Arb(1);
-      return root(2*prec);
+      return root(2 * prec);
     }
     if (*lt0) return {};
     if (*gt1) return {};
@@ -50,8 +53,8 @@ std::optional<exactreal::Arb> QuadraticPolynomial<T>::root(const long prec) cons
   };
 
   const exactreal::Arb a_ = Approximation<T>::arb(a, prec),
-        b_ = Approximation<T>::arb(b, prec),
-        c_ = Approximation<T>::arb(c, prec);
+                       b_ = Approximation<T>::arb(b, prec),
+                       c_ = Approximation<T>::arb(c, prec);
 
   if (c == 0)
     return exactreal::Arb();
@@ -67,17 +70,17 @@ std::optional<exactreal::Arb> QuadraticPolynomial<T>::root(const long prec) cons
     return validate(solution);
   }
 
-  const T discriminant = b*b - 4*a*c;
+  const T discriminant = b * b - 4 * a * c;
   if (discriminant < 0) {
     return {};
   } else if (discriminant == 0) {
     return validate((-b_ / (2 * a_))(prec));
   } else {
-    exactreal::Arb sqrt_discriminant = (b_*b_ - 4*a_*c_)(prec);
+    exactreal::Arb sqrt_discriminant = (b_ * b_ - 4 * a_ * c_)(prec);
     arb_sqrt(sqrt_discriminant.arb_t(), sqrt_discriminant.arb_t(), prec);
 
-    const auto t0 = validate(((- b_ + sqrt_discriminant) / (2*a_))(prec));
-    const auto t1 = validate(((- b_ - sqrt_discriminant) / (2*a_))(prec));
+    const auto t0 = validate(((-b_ + sqrt_discriminant) / (2 * a_))(prec));
+    const auto t1 = validate(((-b_ - sqrt_discriminant) / (2 * a_))(prec));
 
     if (t0 && t1) {
       const auto lt = *t0 < *t1;
@@ -100,7 +103,7 @@ bool QuadraticPolynomial<T>::operator<(const QuadraticPolynomial<T>& rhs) const 
     return false;
 
   // Compute approximate values for the respective critical times t and compare them.
-  for(slong prec = exactreal::ARB_PRECISION_FAST;; prec *= 2) {
+  for (slong prec = exactreal::ARB_PRECISION_FAST;; prec *= 2) {
     const auto t = *this->root(prec);
     const auto s = *rhs.root(prec);
 
@@ -125,7 +128,7 @@ bool QuadraticPolynomial<T>::operator<(const QuadraticPolynomial<T>& rhs) const 
 
     // In the non-linear case, they have a common root iff their
     // resultant is zero.
-    if (c*c*rhs.a*rhs.a - b*c*rhs.a*rhs.b + a*c*rhs.b*rhs.b + b*b*rhs.a*rhs.c - 2*a*c*rhs.a*rhs.c - a*b*rhs.b*rhs.c + a*a*rhs.c*rhs.c != 0)
+    if (c * c * rhs.a * rhs.a - b * c * rhs.a * rhs.b + a * c * rhs.b * rhs.b + b * b * rhs.a * rhs.c - 2 * a * c * rhs.a * rhs.c - a * b * rhs.b * rhs.c + a * a * rhs.c * rhs.c != 0)
       continue;
 
     // When they have a common root, it does not necessarily have to be the
@@ -145,7 +148,7 @@ template <typename T>
 T QuadraticPolynomial<T>::operator()(const T& t) const {
   if (t == 0) return c;
   if (t == 1) return a + b + c;
-  return a*t*t + b*t + c;
+  return a * t * t + b * t + c;
 }
 
 template <typename T>
@@ -158,12 +161,12 @@ bool QuadraticPolynomial<T>::positive() const {
   const T det1 = (*this)(T(1));
   if (det1 > 0) {
     if (
-      // The critical point of a*t^2 + b*t + c is outside [0, 1].
-      (a == 0 && (c > -b && c > 0)) ||
-      // The critical point is a maximum
-      (a < 0) ||
-      // The critical point is positive so there can be no root in [0, 1].
-      (a > 0 && (-b < 0 || -b > 2 * a || b * b - 4 * a * c < 0))) {
+        // The critical point of a*t^2 + b*t + c is outside [0, 1].
+        (a == 0 && (c > -b && c > 0)) ||
+        // The critical point is a maximum
+        (a < 0) ||
+        // The critical point is positive so there can be no root in [0, 1].
+        (a > 0 && (-b < 0 || -b > 2 * a || b * b - 4 * a * c < 0))) {
       return true;
     }
   }
@@ -176,7 +179,7 @@ std::ostream& operator<<(std::ostream& os, const QuadraticPolynomial<T>& self) {
   return os << self.a << " * t^2 + " << self.b << " * t + " << self.c;
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"
