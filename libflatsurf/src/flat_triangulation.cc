@@ -58,7 +58,7 @@ namespace flatsurf {
 template <typename T>
 std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfEdgeMap<Vector<T>> &shift) const {
   // Half edges that collapse at the end of the shift.
-  EdgeSet collapse;
+  EdgeSet collapsing;
 
   // Records that the half edge e needs to be flipped at a time t in (0, 1]
   // that is given by a solution to det(t) = a*t^2 + b*t + c = 0.
@@ -93,7 +93,7 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddH
           case ORIENTATION::OPPOSITE:
             throw std::invalid_argument("shift must not collapse half edges for a time t in (0, 1)");
           case ORIENTATION::ORTHOGONAL:
-            collapse.insert(he);
+            collapsing.insert(he);
         }
       }
     }
@@ -129,7 +129,7 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddH
       // But first we exclude the case that
       // the vertex ends up on the boundary of the half edge, i.e., a half edge
       // collapses.
-      if (collapse.contains(he) || collapse.contains(he_))
+      if (collapsing.contains(he) || collapsing.contains(he_))
         continue;
 
       // Determine whether our vertex moves onto the half edge opposite to it,
@@ -221,14 +221,14 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddH
         [](OddHalfEdgeMap<Vector<T>> &vectors, const FlatTriangulationCombinatorial &, Edge e) {
           ASSERT(!vectors.get(e.positive()), "can only collapse half edges that have become trivial");
         });
-    Tracked<EdgeSet> collapse_(&*combinatorial, collapse,
+    Tracked<EdgeSet> collapsing_(&*combinatorial, collapsing,
         Tracked<EdgeSet>::defaultFlip,
-        [](EdgeSet &collapse, const FlatTriangulationCombinatorial &, Edge e) {
-          ASSERT(collapse.contains(e), "will only collapse edges that have been found to collapse at t=1");
+        [](EdgeSet &self, const FlatTriangulationCombinatorial &, Edge e) {
+          ASSERT(self.contains(e), "will only collapse edges that have been found to collapse at t=1");
         });
 
-    while (!collapse_->empty())
-      combinatorial->collapse(begin(static_cast<const EdgeSet &>(collapse_))->positive());
+    while (!collapsing_->empty())
+      combinatorial->collapse(begin(static_cast<const EdgeSet &>(collapsing_))->positive());
 
     return std::make_unique<FlatTriangulation<T>>(
         std::move(*combinatorial),
