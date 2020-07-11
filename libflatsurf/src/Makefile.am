@@ -45,6 +45,7 @@ libflatsurf_la_SOURCES =                                            \
 	vertical.cc
 
 nobase_pkginclude_HEADERS =                                         \
+	../flatsurf/approximation.hpp                               \
 	../flatsurf/bound.hpp                                       \
 	../flatsurf/ccw.hpp                                         \
 	../flatsurf/cereal.hpp                                      \
