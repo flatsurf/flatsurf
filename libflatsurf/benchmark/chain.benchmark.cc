@@ -24,7 +24,7 @@
 #include <exact-real/integer_ring.hpp>
 #include "../flatsurf/chain.hpp"
 
-#include "surfaces.hpp"
+#include "../test/surfaces.hpp"
 
 using benchmark::DoNotOptimize;
 using benchmark::State;

@@ -24,7 +24,7 @@
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 
-#include "surfaces.hpp"
+#include "../test/surfaces.hpp"
 
 using benchmark::DoNotOptimize;
 using benchmark::State;
