@@ -581,6 +581,7 @@ void ImplementationOf<FlatTriangulation<T>>::check(const FlatTriangulation<T> &s
   for (auto edge : self.halfEdges()) {
     if (self.boundary(edge)) continue;
     auto next = self.nextInFace(edge);
+    CHECK_ARGUMENT(self.fromEdge(edge).ccw(self.fromEdge(next)) != CCW::COLLINEAR, "face at " << edge << " has vanishing area in " << self);
     CHECK_ARGUMENT(self.fromEdge(edge).ccw(self.fromEdge(next)) == CCW::COUNTERCLOCKWISE, "face at " << edge << " is not oriented correctly in " << self);
   }
 }

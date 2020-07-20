@@ -26,6 +26,7 @@
 #include <vector>
 
 #include <boost/logic/tribool_fwd.hpp>
+#include <boost/operators.hpp>
 
 #include "copyable.hpp"
 #include "forward.hpp"
@@ -34,7 +35,7 @@
 namespace flatsurf {
 
 template <typename Surface>
-class FlowComponent {
+class FlowComponent : boost::equality_comparable<FlowComponent<Surface>> {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
   using T = typename Surface::Coordinate;

@@ -24,6 +24,7 @@
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/flow_connection.hpp"
 #include "../flatsurf/vertical.hpp"
+#include "../flatsurf/ccw.hpp"
 
 #include "impl/flow_component.impl.hpp"
 #include "impl/flow_connection.impl.hpp"
@@ -68,6 +69,20 @@ template <typename Surface>
 bool FlowConnection<Surface>::antiparallel() const {
   auto vertical = component().vertical();
   return !vertical.perpendicular(saddleConnection()) && vertical.parallel(saddleConnection()) < 0;
+}
+
+template <typename Surface>
+bool FlowConnection<Surface>::bottom() const {
+  if (vertical()) return false;
+  auto vertical = component().vertical();
+  return vertical.vertical().ccw(saddleConnection()) == CCW::CLOCKWISE;
+}
+
+template <typename Surface>
+bool FlowConnection<Surface>::top() const {
+  if (vertical()) return false;
+  auto vertical = component().vertical();
+  return vertical.vertical().ccw(saddleConnection()) == CCW::COUNTERCLOCKWISE;
 }
 
 template <typename Surface>

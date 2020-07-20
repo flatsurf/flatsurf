@@ -17,9 +17,15 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <stack>
 #include <memory>
 #include <unordered_set>
 
+// TODO: Deleteme
+#include <boost/lexical_cast.hpp>
+
+#include "../flatsurf/ccw.hpp"
+#include "../flatsurf/vertical.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
@@ -48,33 +54,16 @@ std::shared_ptr<const FlatTriangulation<typename Surface::Coordinate>> FlowTrian
 }
 
 template <typename Surface>
+HalfEdge FlowTriangulation<Surface>::halfEdge(const FlowConnection<Surface>& connection) const {
+  return impl->perimeter.at(connection);
+}
+
+template <typename Surface>
 ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowComponent<Surface>& component) {
   std::unordered_map<HalfEdge, Vector<T>> vectors;
   std::vector<std::tuple<HalfEdge, HalfEdge, HalfEdge>> faces;
 
-  for (const auto& connection : component.perimeter()) {
-    ASSERT(perimeter.find(connection) == perimeter.end(), "connection cannot show up more than once in a perimeter");
-    HalfEdge he = perimeter.find(-connection) == perimeter.end() ? HalfEdge(vectors.size() / 2 + 1) : -perimeter[-connection];
-    perimeter[connection] = he;
-    vectors[he] = connection.saddleConnection();
-    vectors[-he] = -vectors[he];
-  }
-
-  // We build the triangulation quite naively by walking the horizontal bits of
-  // the top & bottom contour simultaneously from left to right and
-  // triangulating everything that is between these two edges.
-  // We know that this does not always work. In particular it usually does not
-  // work when the contours are intersecting.
-  const auto horizontal = component.perimeter() | rx::filter([](const auto& connection) { return !connection.vertical(); }) | rx::to_vector();
-  ASSERT(horizontal.size() % 2 == 0, "horizontal connections must come in pairs since they come from intervals of an IET");
-
-  std::vector<FlowConnection<Surface>> bottoms(begin(horizontal), begin(horizontal) + horizontal.size() / 2);
-  std::vector<FlowConnection<Surface>> tops(end(horizontal) - horizontal.size() / 2, end(horizontal));
-  std::reverse(begin(tops), end(tops));
-
-  ASSERT(std::unordered_set<FlowConnection<Surface>>(begin(bottoms), end(bottoms)) == [&](){ const auto _ = (tops | rx::transform([](const auto& connection) { return -connection; }) | rx::to_vector()); return std::unordered_set<FlowConnection<Surface>>(begin(_), end(_)); }(), "top & bottom contour must contain the same connections with reversed directions");      
-
-  const auto insert = [&](HalfEdge f, HalfEdge g) {
+  const auto face = [&](HalfEdge f, HalfEdge g) {
     HalfEdge e(vectors.size() / 2 + 1);
 
     ASSERT([&]() {
@@ -83,9 +72,13 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
       edges.insert(f);
       edges.insert(g);
       return edges.size() == 3;
-    }(), "(" << e << ", " << f << ", " << g << ") can not form a face");
+    }(), "(" << e << " " << f << " " << g << ") can not form a face");
 
-    ASSERT(vectors.find(f) != vectors.end() && vectors.find(g) != vectors.end(), "at least two of (" << e << ", " << f << ", " << g << ") must be known when inserting a new face");
+    ASSERT(vectors.find(f) != vectors.end() && vectors.find(g) != vectors.end(), "at least two of (" << e << " " << f << " " << g << ") must be known when inserting a new face");
+
+    ASSERT(vectors[f].ccw(vectors[g]) == CCW::COUNTERCLOCKWISE, "half edges " << f << " and " << g << " do not form a convex corner");
+
+    std::cout << "(" << e << " " << f << " " << g << ")" << std::endl;
 
     faces.emplace_back(e, f, g);
     vectors[-e] = vectors[f] + vectors[g];
@@ -94,70 +87,221 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
     return e;
   };
 
-  // As we swipe over the triangulation, we track the edge that we introduced
-  // to connect from the top to the bottom contour here.
-  HalfEdge gap;
+  // We map the contour to half edges 1, 2, …
+  for (const auto& connection : component.perimeter()) {
+    ASSERT(perimeter.find(connection) == perimeter.end(), "connection cannot show up more than once in a perimeter");
+    const HalfEdge halfEdge = perimeter.find(-connection) == perimeter.end() ? HalfEdge(vectors.size() / 2 + 1) : -perimeter[-connection];
+    perimeter[connection] = halfEdge;
+    ASSERT(vectors.find(halfEdge) == vectors.end() || vectors[halfEdge] == connection.saddleConnection(), "top & bottom contour vectors are inconsistent");
+    vectors[halfEdge] = connection.saddleConnection();
+    vectors[-halfEdge] = -vectors[halfEdge];
+  }
 
-  for (auto bottom = begin(bottoms); bottom != end(bottoms); bottom++) {
-    const bool initial = bottom == begin(bottoms);
-    const bool final = bottom + 1 == end(bottoms);
+  {
+    std::vector<std::tuple<std::string, Vector<T>, Vector<T>>> segments;
 
-    auto top = begin(tops) + (bottom - begin(bottoms));
+    bool bottom = true;
+    int id = 0;
+    int sid = 0;
 
-    // We triangulate everything between the vertical edges attached to left
-    // and right of bottom.
-    HalfEdge bottomLeftToRight = perimeter[*bottom];
-    {
-      // First by connecting the bottom left to vertices on the right…
-      auto bottomRight = bottom->nextInPerimeter();
-      while (bottomRight.parallel()) {
-        bottomLeftToRight = -insert(bottomLeftToRight, perimeter[bottomRight]);
-        bottomRight = bottomRight.nextInPerimeter();
+    Vector<T> a;
+    for (const auto& connection : component.perimeter()) {
+      Vector<T> b = a + connection.saddleConnection();
+
+      if (connection.top()) {
+        bottom = false;
+        id--;
+        sid = 0;
       }
-      ASSERT((bottomRight == *top) == final, "only the last pair of intervals has a right that is connected");
-    }
-    {
-      // …then by connecting the vertices on the left to the topmost vertex on the right.
-      auto bottomLeft = bottom->previousInPerimeter();
-      while (bottomLeft.antiparallel()) {
-        bottomLeftToRight = -insert(perimeter[bottomLeft], bottomLeftToRight);
-        bottomLeft = bottomLeft.previousInPerimeter();
+
+      std::string name = (bottom ? "b" : "t") + boost::lexical_cast<std::string>(id);
+      if (connection.parallel()) {
+        name += "up";
+        name += boost::lexical_cast<std::string>(sid);
+        sid++;
+      } else if (connection.antiparallel()) {
+        name += "down";
+        name += boost::lexical_cast<std::string>(sid);
+        sid++;
+      } else if (connection.bottom()) {
+        id++;
+        sid = 0;
       }
-      ASSERT((bottomLeft == *top) == initial, "only the first pair of intervals has a left that is connected");
+      std::cout << name << "=" << perimeter[connection] << " ";
+      segments.emplace_back(name, a, b);
+
+      a = b;
+    }
+    std::cout << std::endl;
+
+    ASSERT(!a, "contour is not closed");
+
+    for (const auto& v : segments) {
+      for (const auto& w : segments) {
+        if (v == w) continue;
+
+        const auto ne = [](const auto& x, const auto& y, const auto& xx, const auto& yy) {
+          if (x != y && xx != yy) {
+            if ((x == CCW::COLLINEAR || y == CCW::COLLINEAR) && (xx == CCW::COLLINEAR || yy == CCW::COLLINEAR))
+              return false;
+            return true;
+          }
+          return false;
+        };
+
+        const auto vavb = std::get<2>(v) - std::get<1>(v);
+        const auto vawa = std::get<1>(w) - std::get<1>(v);
+        const auto vawb = std::get<2>(w) - std::get<1>(v);
+        const auto wawb = std::get<2>(w) - std::get<1>(w);
+        const auto wava = std::get<1>(v) - std::get<1>(w);
+        const auto wavb = std::get<2>(v) - std::get<1>(w);
+        if (ne(vavb.ccw(vawa), vavb.ccw(vawb),wawb.ccw(wava), wawb.ccw(wavb))) {
+          std::cout << std::get<0>(v) << " intersects " << std::get<0>(w) << std::endl;
+        }
+      }
+    }
+  }
+
+  // We build the triangulation using a standard algorithm for triangulating
+  // simple monotone polygons. Note that our polygon might be self-intersecting
+  // and therefore not simple. However, it is monotone: at most two edges
+  // intersect any vertical. For the algorithm see e.g. Mark de Berg,
+  // Computational Geometry, Springer 1997 p.57. The statement there about
+  // rotating the plane is a bit confusing. Simply rotating the plane could
+  // make the polygon non-monotone. Instead, we are a bit more careful how we
+  // order vertices that appear on a vertical to make our ordering actually
+  // correspond to a strictly-monotone polygon.
+  
+  struct Vertex {
+    Vertex(const T& x, bool bottom, HalfEdge halfEdge) : x(x), bottom(bottom), halfEdge(halfEdge) {
+      CHECK_ARGUMENT(x >= 0, "all vertices must be to the right of the bottom-left vertex");
     }
 
-    // We now do the same for the top, i.e., we triangulate everything between
-    // the vertical edges attached to top.
-    HalfEdge topRightToLeft = perimeter[*top];
-    if (!initial) {
-      // First by connecting the top right to the verticas on the left…
-      auto topLeft = top->nextInPerimeter();
-      while (topLeft.antiparallel()) {
-        topRightToLeft = -insert(topRightToLeft, perimeter[topLeft]);
-        topLeft = topLeft.nextInPerimeter();
-      }
-    }
-    if (!final) {
-      // …then by connecting the vertices on the right to the bottommost vertex on the left.
-      auto topRight = top->previousInPerimeter();
-      while (topRight.parallel()) {
-        topRightToLeft = -insert(perimeter[topRight], topRightToLeft);
-        topRight = topRight.previousInPerimeter();
-      }
+    // A measure for the horizontal position of this vertex; the sort order in the monotone chain.
+    T x;
+
+    // Whether this vertex is considered to be on the monotone bottom chain.
+    bool bottom;
+
+    // The half edge leading to this vertex (if bottom) or leaving from this
+    // vertex (if top).
+    HalfEdge halfEdge;
+
+    bool operator<(const Vertex& rhs) const { return x < rhs.x; }
+  };
+  
+  // We collect the vertices on the contour accompanied by a value that
+  // corresponds to their horizontal coordinate.
+  std::vector<Vertex> chain;
+
+  {
+    chain.emplace_back(T(), true, HalfEdge(404));
+    
+    T x = T();
+
+    for (const auto& connection : component.perimeter()) {
+      const HalfEdge halfEdge = perimeter[connection];
+      if (connection.top()) break;
+      x += component.vertical().perpendicular(connection.saddleConnection());
+      chain.emplace_back(x, true, halfEdge);
     }
 
-    // Finally, triangulate the remaining quadrilateral.
-    if (!initial && !final) {
-      topRightToLeft = -insert(topRightToLeft, gap);
+    const HalfEdge bottomChainEnd = rbegin(chain)->halfEdge;
+    x = T();
+
+    for (const auto& connection : component.perimeter() | rx::reverse() | rx::to_vector()) {
+      const HalfEdge halfEdge = perimeter[connection];
+      if (halfEdge == bottomChainEnd) break;
+      x -= component.vertical().perpendicular(connection.saddleConnection());
+      chain.emplace_back(x, false, halfEdge);
     }
-    if (!final) {
-      gap = -insert(topRightToLeft, bottomLeftToRight);
+
+    std::stable_sort(begin(chain), end(chain));
+  }
+
+
+  {
+    std::deque<Vertex> S;
+
+    auto u = begin(chain);
+
+    S.push_back(*u++);
+    S.push_back(*u++);
+
+    for(; u != end(chain) - 1; u++) {
+      ASSERT(S.size() >= 2, "The pending triangulation funnel cannot consists of a single vertex.");
+      if (S.back().bottom != u->bottom) {
+        std::cout << "cross" << std::endl;
+        while (S.size() > 1) {
+          S.pop_front();
+          Vertex v = S.front();
+
+          if (u == end(chain) - 2 && S.size() == 1) {
+            // The final face in the triangulation: All the half edges are
+            // already there, we just need to add the combinatorial data for
+            // this face.
+            ASSERT(u->bottom && !rbegin(chain)->bottom, "Since we consider the rightmost verticals to be part of the bottom contour, the second to last edge must be a bottom edge and the last edge a top edge.");
+            faces.emplace_back(v.halfEdge, u->halfEdge, rbegin(chain)->halfEdge);
+            continue;
+          }
+
+          // Create a face in the triangulation by adding a cross edge.
+          u->halfEdge = - (u->bottom ? face(v.halfEdge, u->halfEdge) : face(u->halfEdge, v.halfEdge));
+        }
+        S.front().halfEdge = HalfEdge(404);
+        S.push_back(*u);
+      } else {
+        std::cout << "same" << std::endl;
+        do {
+          Vertex v = S.back();
+          ASSERT(u->bottom == v.bottom, "All vertices on the stack must be on the same chain.");
+
+          if (u == end(chain) - 2 && S.size() <= 2) {
+            // The final face in the triangulation: All the half edges are
+            // already there, we just need to add the combinatorial data for
+            // this face.
+            ASSERT(u->bottom && !rbegin(chain)->bottom, "Since we consider the rightmost verticals to be part of the bottom contour, the second to last edge must be a bottom edge and the last edge a top edge.");
+            S.pop_back();
+            faces.emplace_back(v.halfEdge, u->halfEdge, rbegin(chain)->halfEdge);
+            break;
+          }
+
+          if (vectors[v.halfEdge].ccw(vectors[u->halfEdge]) != (u->bottom ? CCW::COUNTERCLOCKWISE : CCW::CLOCKWISE)) {
+            ASSERT(u != end(chain) - 2, "no concave angles can remain from the final vertex");
+            break;
+          }
+
+          // Create a face clipping this convex ear of the contour.
+          S.pop_back();
+          u->halfEdge = -(u->bottom ? face(v.halfEdge, u->halfEdge) : face(u->halfEdge, v.halfEdge));
+        } while(S.size() > 1);
+
+        S.push_back(*u);
+      }
     }
   }
 
   triangulation = std::make_shared<FlatTriangulation<T>>(FlatTriangulationCombinatorial(faces), [&](const HalfEdge he) {
     return vectors[he];
   });
+
+  ASSERT([&]() {
+      std::unordered_set<HalfEdge> boundary;
+
+      for (auto halfEdge : triangulation->halfEdges())
+        if (triangulation->boundary(halfEdge))
+          boundary.insert(halfEdge);
+
+      return boundary;
+    }() == [&]() {
+      std::unordered_set<HalfEdge> boundary;
+
+      for (auto connection : component.perimeter())
+        if (connection.component() != (-connection).component())
+          boundary.insert(-perimeter[connection]);
+
+      return boundary;
+    }(), "boundaries of flow component " << component << " and its triangulation " << *triangulation << " are inconsistent.");
 }
 
 template <typename Surface>

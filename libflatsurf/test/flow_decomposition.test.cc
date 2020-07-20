@@ -33,6 +33,8 @@
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
 
+#include "../src/external/rx-ranges/include/rx/ranges.hpp"
+
 #include "generators/surface_generator.hpp"
 #include "generators/vertical_generator.hpp"
 #include "surfaces.hpp"
@@ -76,24 +78,21 @@ TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (renf_elem_clas
       THEN("The flow decomposition in that direction can be computed") {
         auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), vertical);
 
-        const auto area = [](const auto& decomposition) {
-          T sum = T();
-          for (const auto& component : decomposition.components()) sum += component.area();
-          return sum;
+        const auto area = [](const auto& components) {
+          return components | rx::transform([](const auto& component) { return component.area(); }) | rx::sum();
         };
 
         CAPTURE(flowDecomposition);
-        REQUIRE(area(flowDecomposition) == surface->area());
+        REQUIRE(area(flowDecomposition.components()) == surface->area());
 
         REQUIRE(flowDecomposition.decompose());
 
         CAPTURE(flowDecomposition);
-        REQUIRE(area(flowDecomposition) == surface->area());
+        REQUIRE(area(flowDecomposition.components()) == surface->area());
 
         AND_THEN("Each of its components can be triangulated") {
-          for (const auto& component : flowDecomposition.components()) {
-            component.triangulation();
-          }
+          const auto triangulations = flowDecomposition.components() | rx::transform([](const auto& component) { return component.triangulation(); }) | rx::to_vector();
+          REQUIRE((triangulations | rx::transform([](const auto& component) { return component.triangulation()->area(); }) | rx::sum()) == surface->area());
         }
       }
     }
