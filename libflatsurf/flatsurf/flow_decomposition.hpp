@@ -50,9 +50,16 @@ class FlowDecomposition {
 
   std::vector<FlowComponent<Surface>> components() const;
 
+  // Return the original surface from which this flow decomposition was created.
   std::shared_ptr<const Surface> surface() const;
 
   Vector<T> vertical() const;
+
+  // Return a triangulation of surface consistent with the decomposition into flow components.
+  std::shared_ptr<const FlatTriangulation<T>> triangulation() const;
+
+  // Return the half edge in triangulation() corresponding to this flow connection.
+  HalfEdge halfEdge(const FlowConnection<Surface>&) const;
 
   boost::logic::tribool hasCylinder() const;
   boost::logic::tribool completelyPeriodic() const;

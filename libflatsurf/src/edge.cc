@@ -27,7 +27,7 @@
 namespace flatsurf {
 
 Edge::Edge() :
-  Edge(HalfEdge()) {}
+  id(HalfEdge()) {}
 
 Edge::Edge(int id) :
   Edge(HalfEdge(id)) {}

@@ -28,6 +28,7 @@
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/flow_decomposition.hpp"
+#include "../flatsurf/flow_triangulation.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
@@ -88,6 +89,12 @@ TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (renf_elem_clas
 
         CAPTURE(flowDecomposition);
         REQUIRE(area(flowDecomposition) == surface->area());
+
+        AND_THEN("Each of its components can be triangulated") {
+          for (const auto& component : flowDecomposition.components()) {
+            component.triangulation();
+          }
+        }
       }
     }
   }

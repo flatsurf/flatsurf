@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,31 +17,30 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_FLOW_COMPONENT_IMPL_HPP
-#define LIBFLATSURF_FLOW_COMPONENT_IMPL_HPP
+#ifndef LIBFLATSURF_FLOW_TRIANGULATION_IMPL_HPP
+#define LIBFLATSURF_FLOW_TRIANGULATION_IMPL_HPP
 
+#include <unordered_map>
 #include <memory>
 
-#include "../../flatsurf/flow_component.hpp"
-
-#include "flow_component_state.hpp"
-#include "flow_decomposition_state.hpp"
+#include "../../flatsurf/flow_connection.hpp"
+#include "../../flatsurf/flow_triangulation.hpp"
+#include "../../flatsurf/half_edge.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-class ImplementationOf<FlowComponent<Surface>> {
+class ImplementationOf<FlowTriangulation<Surface>> {
+  using T = typename Surface::Coordinate;
+
  public:
-  class ComponentState;
+  ImplementationOf(const FlowComponent<Surface>&);
 
-  ImplementationOf(std::shared_ptr<FlowDecompositionState<Surface>>, FlowComponentState<Surface>*);
+  static FlowTriangulation<Surface> make(const FlowComponent<Surface>&);
 
-  static FlowComponent<Surface> make(std::shared_ptr<FlowDecompositionState<Surface>>, FlowComponentState<Surface>*);
+  std::shared_ptr<const FlatTriangulation<T>> triangulation;
 
-  std::string id() const;
-
-  std::shared_ptr<FlowDecompositionState<Surface>> state;
-  FlowComponentState<Surface>* const component;
+  std::unordered_map<FlowConnection<Surface>, HalfEdge> perimeter;
 };
 
 }  // namespace flatsurf

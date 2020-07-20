@@ -27,6 +27,7 @@ libflatsurf_la_SOURCES =                                            \
 	flow_connection.cc                                          \
 	flow_decomposition.cc                                       \
 	flow_decomposition_state.cc                                 \
+	flow_triangulation.cc                                       \
 	half_edge.cc                                                \
 	indexed_set.cc                                              \
 	indexed_set_iterator.cc                                     \
@@ -45,7 +46,6 @@ libflatsurf_la_SOURCES =                                            \
 	vertical.cc
 
 nobase_pkginclude_HEADERS =                                         \
-	../flatsurf/approximation.hpp                               \
 	../flatsurf/bound.hpp                                       \
 	../flatsurf/ccw.hpp                                         \
 	../flatsurf/cereal.hpp                                      \
@@ -69,6 +69,7 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/flow_component.hpp                              \
 	../flatsurf/flow_connection.hpp                             \
 	../flatsurf/flow_decomposition.hpp                          \
+	../flatsurf/flow_triangulation.hpp                          \
 	../flatsurf/fmt.hpp                                         \
 	../flatsurf/forward.hpp                                     \
 	../flatsurf/half_edge.hpp                                   \
@@ -99,6 +100,7 @@ nobase_pkginclude_HEADERS +=                                        \
 	../flatsurf/external/spimpl/spimpl.h
 
 noinst_HEADERS =                                                    \
+	impl/approximation.hpp                                      \
 	impl/chain.impl.hpp                                         \
 	impl/chain_iterator.impl.hpp                                \
 	impl/chain_vector.hpp                                       \
@@ -119,6 +121,7 @@ noinst_HEADERS =                                                    \
 	impl/flow_connection.impl.hpp                               \
 	impl/flow_decomposition.impl.hpp                            \
 	impl/flow_decomposition_state.hpp                           \
+	impl/flow_triangulation.impl.hpp                            \
 	impl/forward.hpp                                            \
 	impl/half_edge_set.impl.hpp                                 \
 	impl/half_edge_set_iterator.impl.hpp                        \

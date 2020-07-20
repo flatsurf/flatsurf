@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_COMPONENT_HPP
-#define LIBFLATSURF_COMPONENT_HPP
+#ifndef LIBFLATSURF_FLOW_COMPONENT_HPP
+#define LIBFLATSURF_FLOW_COMPONENT_HPP
 
 #include <functional>
 #include <list>
@@ -65,7 +65,7 @@ class FlowComponent {
   // A walk around this component in counter clockwise order along saddle connections.
   Perimeter perimeter() const;
 
-  Surface triangulation() const;
+  FlowTriangulation<Surface> triangulation() const;
 
   const IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>& intervalExchangeTransformation() const;
 

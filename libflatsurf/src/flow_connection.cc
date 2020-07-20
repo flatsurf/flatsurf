@@ -72,6 +72,7 @@ bool FlowConnection<Surface>::antiparallel() const {
 
 template <typename Surface>
 FlowConnection<Surface> FlowConnection<Surface>::operator-() const {
+  // TODO: Benchmark this
   for (auto& component_ : impl->state->components) {
     auto component = ImplementationOf<FlowComponent<Surface>>::make(impl->state, &component_);
     for (const auto& connection : component.perimeter())
@@ -82,6 +83,35 @@ FlowConnection<Surface> FlowConnection<Surface>::operator-() const {
   }
 
   UNREACHABLE("Negative of " << *this << " not present in FlowDecomposition.");
+}
+
+template <typename Surface>
+FlowConnection<Surface> FlowConnection<Surface>::previousInPerimeter() const {
+  // TODO: Can this be sped up in intervalxt? Anyway, we should add it to the benchmarks.
+  const auto perimeter = impl->component.perimeter();
+  for (auto it = begin(perimeter); it != end(perimeter); it++) {
+    if (*it == *this) {
+      if (it == begin(perimeter))
+        it = end(perimeter);
+      return *--it;
+    }
+  }
+  UNREACHABLE("connection must appear in its own perimeter")
+}
+
+template <typename Surface>
+FlowConnection<Surface> FlowConnection<Surface>::nextInPerimeter() const {
+  // TODO: Can this be sped up in intervalxt? Anyway, we should add it to the benchmarks.
+  const auto perimeter = impl->component.perimeter();
+  for (auto it = begin(perimeter); it != end(perimeter); it++) {
+    if (*it == *this) {
+      it++;
+      if (it == end(perimeter))
+        it = begin(perimeter);
+      return *it;
+    }
+  }
+  UNREACHABLE("connection must appear in its own perimeter")
 }
 
 template <typename Surface>
