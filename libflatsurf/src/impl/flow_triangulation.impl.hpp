@@ -40,7 +40,10 @@ class ImplementationOf<FlowTriangulation<Surface>> {
 
   std::shared_ptr<const FlatTriangulation<T>> triangulation;
 
-  std::unordered_map<FlowConnection<Surface>, HalfEdge> perimeter;
+  FlowComponent<Surface> component;
+
+  std::unordered_map<FlowConnection<Surface>, HalfEdge> toHalfEdge;
+  std::unordered_map<HalfEdge, FlowConnection<Surface>> toConnection;
 };
 
 }  // namespace flatsurf

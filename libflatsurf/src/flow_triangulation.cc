@@ -33,9 +33,11 @@
 #include "../flatsurf/flow_connection.hpp"
 #include "../flatsurf/flow_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/half_edge_map.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 
 #include "impl/flow_triangulation.impl.hpp"
+#include "impl/flow_decomposition.impl.hpp"
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
@@ -55,11 +57,39 @@ std::shared_ptr<const FlatTriangulation<typename Surface::Coordinate>> FlowTrian
 
 template <typename Surface>
 HalfEdge FlowTriangulation<Surface>::halfEdge(const FlowConnection<Surface>& connection) const {
-  return impl->perimeter.at(connection);
+  return impl->toHalfEdge.at(connection);
 }
 
 template <typename Surface>
-ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowComponent<Surface>& component) {
+HalfEdgeMap<HalfEdge> FlowTriangulation<Surface>::embedding() const {
+  const auto triangulation = this->triangulation();
+  const auto innerEdges = triangulation->edges() | rx::filter([&](const auto& edge) {
+    return impl->toConnection.find(edge.positive()) == impl->toConnection.end() && impl->toConnection.find(edge.negative()) == impl->toConnection.end();
+  }) | rx::to_vector();
+  const auto localFirstInnerEdge = *std::min_element(begin(innerEdges), end(innerEdges), [](const auto a, const auto b) { return a.index() < b.index(); });
+  Edge globalFirstInnerEdge = ImplementationOf<FlowDecomposition<Surface>>::firstInnerEdge(component());
+  int shift = globalFirstInnerEdge.index() - localFirstInnerEdge.index();
+  ASSERT(shift >= 0, "global triangulation cannot have fewer inner edges than local triangulation");
+
+  auto embedding = HalfEdgeMap<HalfEdge>(*triangulation, [&](const HalfEdge source) {
+    if (triangulation->boundary(source)) {
+      // TODO: HalfEdgeMap should skip the boundary
+      return HalfEdge(404);
+    } else if (impl->toConnection.find(source) != impl->toConnection.end()) {
+      return ImplementationOf<FlowDecomposition<Surface>>::halfEdge(impl->toConnection.at(source));
+    } else {
+      return (source == source.edge().positive()) ?  HalfEdge(source.id() + shift) : HalfEdge(source.id() - shift);
+    }
+  });
+
+  return embedding;
+}
+
+template <typename Surface>
+FlowComponent<Surface> FlowTriangulation<Surface>::component() const { return impl->component; }
+
+template <typename Surface>
+ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowComponent<Surface>& component) : component(component) {
   std::unordered_map<HalfEdge, Vector<T>> vectors;
   std::vector<std::tuple<HalfEdge, HalfEdge, HalfEdge>> faces;
 
@@ -78,8 +108,6 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
 
     ASSERT(vectors[f].ccw(vectors[g]) == CCW::COUNTERCLOCKWISE, "half edges " << f << " and " << g << " do not form a convex corner");
 
-    std::cout << "(" << e << " " << f << " " << g << ")" << std::endl;
-
     faces.emplace_back(e, f, g);
     vectors[-e] = vectors[f] + vectors[g];
     vectors[e] = -vectors[-e];
@@ -89,14 +117,16 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
 
   // We map the contour to half edges 1, 2, …
   for (const auto& connection : component.perimeter()) {
-    ASSERT(perimeter.find(connection) == perimeter.end(), "connection cannot show up more than once in a perimeter");
-    const HalfEdge halfEdge = perimeter.find(-connection) == perimeter.end() ? HalfEdge(vectors.size() / 2 + 1) : -perimeter[-connection];
-    perimeter[connection] = halfEdge;
+    ASSERT(toHalfEdge.find(connection) == toHalfEdge.end(), "connection cannot show up more than once in a perimeter");
+    const HalfEdge halfEdge = toHalfEdge.find(-connection) == toHalfEdge.end() ? HalfEdge(vectors.size() / 2 + 1) : -toHalfEdge[-connection];
+    toHalfEdge[connection] = halfEdge;
+    toConnection.insert({halfEdge, connection});
     ASSERT(vectors.find(halfEdge) == vectors.end() || vectors[halfEdge] == connection.saddleConnection(), "top & bottom contour vectors are inconsistent");
     vectors[halfEdge] = connection.saddleConnection();
     vectors[-halfEdge] = -vectors[halfEdge];
   }
 
+  /*
   {
     std::vector<std::tuple<std::string, Vector<T>, Vector<T>>> segments;
 
@@ -127,7 +157,6 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
         id++;
         sid = 0;
       }
-      std::cout << name << "=" << perimeter[connection] << " ";
       segments.emplace_back(name, a, b);
 
       a = b;
@@ -161,6 +190,7 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
       }
     }
   }
+  */
 
   // We build the triangulation using a standard algorithm for triangulating
   // simple monotone polygons. Note that our polygon might be self-intersecting
@@ -200,7 +230,7 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
     T x = T();
 
     for (const auto& connection : component.perimeter()) {
-      const HalfEdge halfEdge = perimeter[connection];
+      const HalfEdge halfEdge = toHalfEdge[connection];
       if (connection.top()) break;
       x += component.vertical().perpendicular(connection.saddleConnection());
       chain.emplace_back(x, true, halfEdge);
@@ -210,7 +240,7 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
     x = T();
 
     for (const auto& connection : component.perimeter() | rx::reverse() | rx::to_vector()) {
-      const HalfEdge halfEdge = perimeter[connection];
+      const HalfEdge halfEdge = toHalfEdge[connection];
       if (halfEdge == bottomChainEnd) break;
       x -= component.vertical().perpendicular(connection.saddleConnection());
       chain.emplace_back(x, false, halfEdge);
@@ -231,7 +261,6 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
     for(; u != end(chain) - 1; u++) {
       ASSERT(S.size() >= 2, "The pending triangulation funnel cannot consists of a single vertex.");
       if (S.back().bottom != u->bottom) {
-        std::cout << "cross" << std::endl;
         while (S.size() > 1) {
           S.pop_front();
           Vertex v = S.front();
@@ -251,7 +280,6 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
         S.front().halfEdge = HalfEdge(404);
         S.push_back(*u);
       } else {
-        std::cout << "same" << std::endl;
         do {
           Vertex v = S.back();
           ASSERT(u->bottom == v.bottom, "All vertices on the stack must be on the same chain.");
@@ -298,7 +326,7 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
 
       for (auto connection : component.perimeter())
         if (connection.component() != (-connection).component())
-          boundary.insert(-perimeter[connection]);
+          boundary.insert(-toHalfEdge[connection]);
 
       return boundary;
     }(), "boundaries of flow component " << component << " and its triangulation " << *triangulation << " are inconsistent.");

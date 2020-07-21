@@ -27,7 +27,7 @@
 #include <boost/logic/tribool.hpp>
 
 #include "flow_component.hpp"
-#include "moveable.hpp"
+#include "copyable.hpp"
 
 namespace flatsurf {
 
@@ -36,6 +36,9 @@ class FlowDecomposition {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
   using T = typename Surface::Coordinate;
+
+  template <typename... Args>
+  FlowDecomposition(PrivateConstructor, Args&&... args);
 
  public:
   FlowDecomposition(std::unique_ptr<Surface>, const Vector<T>& vertical);
@@ -75,7 +78,7 @@ class FlowDecomposition {
 
  private:
   using Implementation = ImplementationOf<FlowDecomposition>;
-  Moveable<Implementation> impl;
+  Copyable<Implementation> impl;
   friend Implementation;
 };
 

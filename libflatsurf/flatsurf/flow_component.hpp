@@ -55,6 +55,9 @@ class FlowComponent : boost::equality_comparable<FlowComponent<Surface>> {
 
   DecompositionStep<Surface> decompositionStep(int limit = -1);
 
+  FlowDecomposition<Surface> decomposition();
+  const FlowDecomposition<Surface> decomposition() const;
+
   // Return whether all resulting components satisfy target, i.e., the limit
   // was not reached.
   bool decompose(
