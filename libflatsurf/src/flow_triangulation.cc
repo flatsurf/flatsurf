@@ -65,7 +65,7 @@ HalfEdgeMap<HalfEdge> FlowTriangulation<Surface>::embedding() const {
   }) | rx::to_vector();
   const auto localFirstInnerEdge = *std::min_element(begin(innerEdges), end(innerEdges), [](const auto a, const auto b) { return a.index() < b.index(); });
   Edge globalFirstInnerEdge = ImplementationOf<FlowDecomposition<Surface>>::firstInnerEdge(component());
-  int shift = globalFirstInnerEdge.index() - localFirstInnerEdge.index();
+  int shift = static_cast<int>(globalFirstInnerEdge.index()) - static_cast<int>(localFirstInnerEdge.index());
   ASSERT(shift >= 0, "global triangulation cannot have fewer inner edges than local triangulation");
 
   auto embedding = HalfEdgeMap<HalfEdge>(*triangulation, [&](const HalfEdge source) {
@@ -91,7 +91,7 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
   std::vector<std::tuple<HalfEdge, HalfEdge, HalfEdge>> faces;
 
   const auto face = [&](HalfEdge f, HalfEdge g) {
-    HalfEdge e(vectors.size() / 2 + 1);
+    HalfEdge e(static_cast<int>(vectors.size() / 2 + 1));
 
     ASSERT([&]() {
       std::unordered_set<Edge> edges;
@@ -115,7 +115,7 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
   // We map the contour to half edges 1, 2, …
   for (const auto& connection : component.perimeter()) {
     ASSERT(toHalfEdge.find(connection) == toHalfEdge.end(), "connection cannot show up more than once in a perimeter");
-    const HalfEdge halfEdge = toHalfEdge.find(-connection) == toHalfEdge.end() ? HalfEdge(vectors.size() / 2 + 1) : -toHalfEdge[-connection];
+    const HalfEdge halfEdge = toHalfEdge.find(-connection) == toHalfEdge.end() ? HalfEdge(static_cast<int>(vectors.size() / 2 + 1)) : -toHalfEdge[-connection];
     toHalfEdge[connection] = halfEdge;
     toConnection.insert({halfEdge, connection});
     ASSERT(vectors.find(halfEdge) == vectors.end() || vectors[halfEdge] == connection.saddleConnection(), "top & bottom contour vectors are inconsistent");

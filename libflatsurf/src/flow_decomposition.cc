@@ -178,18 +178,19 @@ ImplementationOf<FlowDecomposition<Surface>>::ImplementationOf(std::shared_ptr<F
 
 template <typename Surface>
 Edge ImplementationOf<FlowDecomposition<Surface>>::firstInnerEdge(const FlowComponent<Surface>& component) {
-  int perimeterHalfEdges = 0;
+  size_t perimeterHalfEdges = 0;
   for (const auto& other : component.decomposition().components())
     perimeterHalfEdges += other.perimeter().size();
   ASSERT(perimeterHalfEdges % 2 == 0, "edges on the perimeter must come in pairs");
   
-  int innerHalfEdges = 0;
+  size_t innerHalfEdges = 0;
   for (const auto& other : component.decomposition().components()) {
     if (other == component) break;
+    ASSERT(other.perimeter().size() >= 4, "component has no area");
     innerHalfEdges += 2 * (other.perimeter().size() - 3);
   }
 
-  return Edge((perimeterHalfEdges + innerHalfEdges) / 2 + 1);
+  return Edge(static_cast<int>((perimeterHalfEdges + innerHalfEdges) / 2 + 1));
 }
 
 template <typename Surface>
@@ -198,7 +199,7 @@ HalfEdge ImplementationOf<FlowDecomposition<Surface>>::halfEdge(const FlowConnec
   for (const auto component : connection.component().decomposition().components()) {
     for (const auto other : component.perimeter()) {
       if (toHalfEdge.find(other) == toHalfEdge.end()) {
-        toHalfEdge[other] = HalfEdge(toHalfEdge.size() / 2 + 1);
+        toHalfEdge[other] = HalfEdge(static_cast<int>(toHalfEdge.size() / 2 + 1));
         toHalfEdge[-other] = -toHalfEdge.at(other);
       }
       if (other == connection || other == -connection)
