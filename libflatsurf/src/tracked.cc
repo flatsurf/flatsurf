@@ -33,6 +33,12 @@ struct is_half_edge_map : std::false_type {};
 
 template <typename T>
 struct is_half_edge_map<HalfEdgeMap<T>> : std::true_type {};
+
+template <typename T>
+struct is_odd_half_edge_map : std::false_type {};
+
+template <typename T>
+struct is_odd_half_edge_map<OddHalfEdgeMap<T>> : std::true_type {};
 }  // namespace
 
 template <typename T>
@@ -99,6 +105,15 @@ void Tracked<T>::defaultSwap(T& self, const FlatTriangulationCombinatorial&, Hal
     using std::swap;
     swap(self[a], self[b]);
     swap(self[-a], self[-b]);
+  } else if constexpr (is_odd_half_edge_map<T>::value) {
+    if (a == b) return;
+    if (a == -b)
+      self.set(a, self.get(b));
+    else {
+      auto tmp = self.get(a);
+      self.set(a, self.get(b));
+      self.set(b, tmp);
+    }
   } else {
     throw std::logic_error("This Tracked<T> of a FlatTriangulationCombinatorial does not support swapping of half edges.");
   }
@@ -112,7 +127,7 @@ void Tracked<T>::defaultErase(T& self, const FlatTriangulationCombinatorial&, co
   } else if constexpr (std::is_same_v<T, EdgeSet>) {
     for (auto e : erase)
       self.erase(e);
-  } else if constexpr (is_half_edge_map<T>::value) {
+  } else if constexpr (is_half_edge_map<T>::value || is_odd_half_edge_map<T>::value) {
     ASSERT(erase | rx::all_of([&](const auto& e) { return e.positive().index() >= self.size() - 2 * erase.size(); }), "Can only erase HalfEdges of maximal index from Tracked<HalfEdgeSet>. But the given edges are not maximal.");
     for (auto e : erase) {
       (void)e;

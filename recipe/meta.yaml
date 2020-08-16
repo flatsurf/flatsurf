@@ -55,7 +55,8 @@ requirements:
     - boost-cpp
     - libintervalxt
     - libexactreal
-    - e-antic 1.*
+    # use an e-antic version with an external antic (earlier versions shipped the relevant bits of antic.)
+    - e-antic >=1.0a master_1110
     - gmp
     - fmt
 {%- endif %}

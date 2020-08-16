@@ -30,7 +30,7 @@
 #include "../flatsurf/saddle_connections_iterator.hpp"
 #include "../flatsurf/vector.hpp"
 
-#include "surfaces.hpp"
+#include "../test/surfaces.hpp"
 
 using benchmark::DoNotOptimize;
 using benchmark::State;

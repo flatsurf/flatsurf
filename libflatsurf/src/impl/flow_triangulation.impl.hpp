@@ -17,34 +17,35 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <benchmark/benchmark.h>
+#ifndef LIBFLATSURF_FLOW_TRIANGULATION_IMPL_HPP
+#define LIBFLATSURF_FLOW_TRIANGULATION_IMPL_HPP
+
 #include <memory>
+#include <unordered_map>
 
-#include "../flatsurf/half_edge.hpp"
-#include "../flatsurf/path.hpp"
-#include "../flatsurf/saddle_connection.hpp"
+#include "../../flatsurf/flow_connection.hpp"
+#include "../../flatsurf/flow_triangulation.hpp"
+#include "../../flatsurf/half_edge.hpp"
 
-#include "../test/surfaces.hpp"
+namespace flatsurf {
 
-using benchmark::DoNotOptimize;
-using benchmark::State;
+template <typename Surface>
+class ImplementationOf<FlowTriangulation<Surface>> {
+  using T = typename Surface::Coordinate;
 
-namespace flatsurf::benchmark {
-using namespace flatsurf::test;
+ public:
+  ImplementationOf(const FlowComponent<Surface>&);
 
-template <typename R2>
-void PathConstructor(State& state) {
-  using Surface = FlatTriangulation<typename R2::Coordinate>;
-  auto L = makeL<R2>();
+  static FlowTriangulation<Surface> make(const FlowComponent<Surface>&);
 
-  using Segment = SaddleConnection<Surface>;
-  const auto segments = std::vector{Segment(L, HalfEdge(1)), Segment(L, HalfEdge(-9)), Segment(L, HalfEdge(-2))};
+  std::shared_ptr<const FlatTriangulation<T>> triangulation;
 
-  for (auto _ : state) {
-    DoNotOptimize(Path(segments));
-  }
-}
-BENCHMARK_TEMPLATE(PathConstructor, Vector<long long>);
-BENCHMARK_TEMPLATE(PathConstructor, Vector<eantic::renf_elem_class>);
+  FlowComponent<Surface> component;
 
-}  // namespace flatsurf::benchmark
+  std::unordered_map<FlowConnection<Surface>, HalfEdge> toHalfEdge;
+  std::unordered_map<HalfEdge, FlowConnection<Surface>> toConnection;
+};
+
+}  // namespace flatsurf
+
+#endif

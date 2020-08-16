@@ -17,34 +17,21 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <benchmark/benchmark.h>
-#include <memory>
+#ifndef LIBFLATSURF_IMPL_APPROXIMATION_HPP
+#define LIBFLATSURF_IMPL_APPROXIMATION_HPP
 
-#include "../flatsurf/half_edge.hpp"
-#include "../flatsurf/path.hpp"
-#include "../flatsurf/saddle_connection.hpp"
+#include <exact-real/arb.hpp>
 
-#include "../test/surfaces.hpp"
+namespace flatsurf {
 
-using benchmark::DoNotOptimize;
-using benchmark::State;
+template <typename T>
+class Approximation final {
+ public:
+  Approximation() = delete;
 
-namespace flatsurf::benchmark {
-using namespace flatsurf::test;
+  static exactreal::Arb arb(const T& value, slong prec = exactreal::ARB_PRECISION_FAST);
+};
 
-template <typename R2>
-void PathConstructor(State& state) {
-  using Surface = FlatTriangulation<typename R2::Coordinate>;
-  auto L = makeL<R2>();
+}  // namespace flatsurf
 
-  using Segment = SaddleConnection<Surface>;
-  const auto segments = std::vector{Segment(L, HalfEdge(1)), Segment(L, HalfEdge(-9)), Segment(L, HalfEdge(-2))};
-
-  for (auto _ : state) {
-    DoNotOptimize(Path(segments));
-  }
-}
-BENCHMARK_TEMPLATE(PathConstructor, Vector<long long>);
-BENCHMARK_TEMPLATE(PathConstructor, Vector<eantic::renf_elem_class>);
-
-}  // namespace flatsurf::benchmark
+#endif

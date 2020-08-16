@@ -13,7 +13,7 @@ clean-local:
 	-rm -rf pyflatsurf/__pycache__ pyflatsurf.egg-info build .pytest_cache
 
 BUILT_SOURCES = setup.py MANIFEST.in
-EXTRA_DIST = setup.py.in MANIFEST.in.in pyflatsurf/__init__.py pyflatsurf/cppyy_flatsurf.py pyflatsurf/factory.py pyflatsurf/__init__.py pyflatsurf/pythonization.py pyflatsurf/sage_conversion.py pyflatsurf/vector.py
+EXTRA_DIST = setup.py.in MANIFEST.in.in pyflatsurf/__init__.py pyflatsurf/cppyy_flatsurf.py pyflatsurf/factory.py pyflatsurf/__init__.py pyflatsurf/pythonization.py pyflatsurf/vector.py
 
 CLEANFILES = setup.py MANIFEST.in
 $(builddir)/setup.py: $(srcdir)/setup.py.in Makefile

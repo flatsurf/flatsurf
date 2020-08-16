@@ -33,6 +33,12 @@ class ImplementationOf<FlowDecomposition<Surface>> {
 
  public:
   ImplementationOf(std::unique_ptr<Surface> surface, const Vector<T>& vertical);
+  ImplementationOf(std::shared_ptr<FlowDecompositionState<Surface>>);
+
+  static FlowDecomposition<Surface> make(std::shared_ptr<FlowDecompositionState<Surface>>);
+
+  static Edge firstInnerEdge(const FlowComponent<Surface>&);
+  static HalfEdge halfEdge(const FlowConnection<Surface>&);
 
   std::shared_ptr<FlowDecompositionState<Surface>> state;
 };

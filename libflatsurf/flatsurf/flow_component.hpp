@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_COMPONENT_HPP
-#define LIBFLATSURF_COMPONENT_HPP
+#ifndef LIBFLATSURF_FLOW_COMPONENT_HPP
+#define LIBFLATSURF_FLOW_COMPONENT_HPP
 
 #include <functional>
 #include <list>
@@ -26,6 +26,7 @@
 #include <vector>
 
 #include <boost/logic/tribool_fwd.hpp>
+#include <boost/operators.hpp>
 
 #include "copyable.hpp"
 #include "forward.hpp"
@@ -34,7 +35,7 @@
 namespace flatsurf {
 
 template <typename Surface>
-class FlowComponent {
+class FlowComponent : boost::equality_comparable<FlowComponent<Surface>> {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
   using T = typename Surface::Coordinate;
@@ -54,6 +55,9 @@ class FlowComponent {
 
   DecompositionStep<Surface> decompositionStep(int limit = -1);
 
+  FlowDecomposition<Surface> decomposition();
+  const FlowDecomposition<Surface> decomposition() const;
+
   // Return whether all resulting components satisfy target, i.e., the limit
   // was not reached.
   bool decompose(
@@ -65,7 +69,7 @@ class FlowComponent {
   // A walk around this component in counter clockwise order along saddle connections.
   Perimeter perimeter() const;
 
-  Surface triangulation() const;
+  FlowTriangulation<Surface> triangulation() const;
 
   const IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>& intervalExchangeTransformation() const;
 

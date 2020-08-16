@@ -26,8 +26,8 @@
 
 #include <boost/logic/tribool.hpp>
 
+#include "copyable.hpp"
 #include "flow_component.hpp"
-#include "moveable.hpp"
 
 namespace flatsurf {
 
@@ -36,6 +36,9 @@ class FlowDecomposition {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
   using T = typename Surface::Coordinate;
+
+  template <typename... Args>
+  FlowDecomposition(PrivateConstructor, Args&&... args);
 
  public:
   FlowDecomposition(std::unique_ptr<Surface>, const Vector<T>& vertical);
@@ -50,9 +53,16 @@ class FlowDecomposition {
 
   std::vector<FlowComponent<Surface>> components() const;
 
+  // Return the original surface from which this flow decomposition was created.
   std::shared_ptr<const Surface> surface() const;
 
   Vector<T> vertical() const;
+
+  // Return a triangulation of surface consistent with the decomposition into flow components.
+  std::shared_ptr<const FlatTriangulation<T>> triangulation() const;
+
+  // Return the half edge in triangulation() corresponding to this flow connection.
+  HalfEdge halfEdge(const FlowConnection<Surface>&) const;
 
   boost::logic::tribool hasCylinder() const;
   boost::logic::tribool completelyPeriodic() const;
@@ -68,7 +78,7 @@ class FlowDecomposition {
 
  private:
   using Implementation = ImplementationOf<FlowDecomposition>;
-  Moveable<Implementation> impl;
+  Copyable<Implementation> impl;
   friend Implementation;
 };
 

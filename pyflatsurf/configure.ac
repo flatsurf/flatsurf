@@ -43,7 +43,6 @@ AS_IF([test "x$with_sage" != "xno" && test "x$have_python" = "xyes"],
       [
        with_sage=yes
        AS_IF([$PYTHON -c 'import sage'], , AC_MSG_ERROR([SageMath for make check not found; run --without-sage to disable SageMath tests in make check]))
-       AS_IF([$PYTHON -c 'import flatsurf'], , AC_MSG_ERROR([sage-flatsurf for make check not found; run --without-sage to disable SageMath tests in make check]))
        ], [])
 AM_CONDITIONAL([HAVE_SAGE], [test "x$with_sage" = "xyes"])
 

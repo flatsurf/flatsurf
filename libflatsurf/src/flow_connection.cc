@@ -21,6 +21,7 @@
 
 #include <intervalxt/label.hpp>
 
+#include "../flatsurf/ccw.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/flow_connection.hpp"
 #include "../flatsurf/vertical.hpp"
@@ -71,6 +72,20 @@ bool FlowConnection<Surface>::antiparallel() const {
 }
 
 template <typename Surface>
+bool FlowConnection<Surface>::bottom() const {
+  if (vertical()) return false;
+  auto vertical = component().vertical();
+  return vertical.vertical().ccw(saddleConnection()) == CCW::CLOCKWISE;
+}
+
+template <typename Surface>
+bool FlowConnection<Surface>::top() const {
+  if (vertical()) return false;
+  auto vertical = component().vertical();
+  return vertical.vertical().ccw(saddleConnection()) == CCW::COUNTERCLOCKWISE;
+}
+
+template <typename Surface>
 FlowConnection<Surface> FlowConnection<Surface>::operator-() const {
   for (auto& component_ : impl->state->components) {
     auto component = ImplementationOf<FlowComponent<Surface>>::make(impl->state, &component_);
@@ -82,6 +97,33 @@ FlowConnection<Surface> FlowConnection<Surface>::operator-() const {
   }
 
   UNREACHABLE("Negative of " << *this << " not present in FlowDecomposition.");
+}
+
+template <typename Surface>
+FlowConnection<Surface> FlowConnection<Surface>::previousInPerimeter() const {
+  const auto perimeter = impl->component.perimeter();
+  for (auto it = begin(perimeter); it != end(perimeter); it++) {
+    if (*it == *this) {
+      if (it == begin(perimeter))
+        it = end(perimeter);
+      return *--it;
+    }
+  }
+  UNREACHABLE("connection must appear in its own perimeter")
+}
+
+template <typename Surface>
+FlowConnection<Surface> FlowConnection<Surface>::nextInPerimeter() const {
+  const auto perimeter = impl->component.perimeter();
+  for (auto it = begin(perimeter); it != end(perimeter); it++) {
+    if (*it == *this) {
+      it++;
+      if (it == end(perimeter))
+        it = begin(perimeter);
+      return *it;
+    }
+  }
+  UNREACHABLE("connection must appear in its own perimeter")
 }
 
 template <typename Surface>

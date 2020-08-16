@@ -121,6 +121,9 @@ template <typename Surface>
 class FlowConnection;
 
 template <typename Surface>
+class FlowTriangulation;
+
+template <typename Surface>
 class MaybeVerticalFlowConnection;
 
 template <typename Surface>

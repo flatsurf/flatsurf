@@ -65,7 +65,7 @@ class HalfEdgeMap {
     os << "{";
     for (size_t i = 0; i < self.values.size(); i++)
       os << (i ? ", " : "") << HalfEdge::fromIndex(i) << ": " << self.values[i];
-    return os;
+    return os << "}";
   }
 
  private:

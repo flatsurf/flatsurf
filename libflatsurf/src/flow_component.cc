@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@
 #include "impl/flat_triangulation_collapsed.impl.hpp"
 #include "impl/flow_component.impl.hpp"
 #include "impl/flow_connection.impl.hpp"
+#include "impl/flow_triangulation.impl.hpp"
 #include "impl/saddle_connection.impl.hpp"
 
 #include "util/assert.ipp"
@@ -260,11 +261,6 @@ template <typename Surface>
 boost::logic::tribool FlowComponent<Surface>::keane() const { return impl->component->dynamicalComponent.keane(); }
 
 template <typename Surface>
-Surface FlowComponent<Surface>::triangulation() const {
-  throw std::logic_error("not implemented: triangulation()");
-}
-
-template <typename Surface>
 Vertical<Surface> FlowComponent<Surface>::vertical() const {
   const auto& collapsedSurface = impl->state->contourDecomposition.collapsed();
   return Vertical<Surface>(collapsedSurface->uncollapsed(), collapsedSurface->vertical().vertical());
@@ -329,6 +325,11 @@ bool FlowComponent<Surface>::operator==(const FlowComponent<Surface>& rhs) const
 template <typename Surface>
 const IntervalExchangeTransformation<FlatTriangulationCollapsed<typename Surface::Coordinate>>& FlowComponent<Surface>::intervalExchangeTransformation() const {
   return *impl->component->iet;
+}
+
+template <typename Surface>
+FlowTriangulation<Surface> FlowComponent<Surface>::triangulation() const {
+  return ImplementationOf<FlowTriangulation<Surface>>::make(*this);
 }
 
 template <typename Surface>

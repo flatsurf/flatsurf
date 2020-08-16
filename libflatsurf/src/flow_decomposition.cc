@@ -20,6 +20,7 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include <boost/algorithm/string/join.hpp>
@@ -42,7 +43,9 @@
 #include "../flatsurf/flat_triangulation_collapsed.hpp"
 #include "../flatsurf/flow_connection.hpp"
 #include "../flatsurf/flow_decomposition.hpp"
+#include "../flatsurf/flow_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/half_edge_map.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertical.hpp"
@@ -63,8 +66,13 @@ using intervalxt::DynamicalDecomposition;
 namespace flatsurf {
 
 template <typename Surface>
+template <typename... Args>
+FlowDecomposition<Surface>::FlowDecomposition(PrivateConstructor, Args&&... args) :
+  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
+
+template <typename Surface>
 FlowDecomposition<Surface>::FlowDecomposition(std::unique_ptr<Surface> surface, const Vector<T>& vertical) :
-  impl(spimpl::make_unique_impl<Implementation>(std::move(surface), vertical)) {
+  impl(spimpl::make_impl<Implementation>(std::move(surface), vertical)) {
   ASSERTIONS(([&]() {
     auto paths = components() | rx::transform([](const auto& component) { return Path(component.perimeter() | rx::transform([](const auto& connection) { return connection.saddleConnection(); }) | rx::to_vector()); }) | rx::to_vector();
     ImplementationOf<ContourDecomposition<Surface>>::check(paths, Vertical(this->surface(), vertical));
@@ -91,6 +99,25 @@ std::vector<FlowComponent<Surface>> FlowDecomposition<Surface>::components() con
     components.push_back(ImplementationOf<FlowComponent<Surface>>::make(impl->state, &component));
   }
   return components;
+}
+
+template <typename Surface>
+std::shared_ptr<const FlatTriangulation<typename Surface::Coordinate>> FlowDecomposition<Surface>::triangulation() const {
+  std::unordered_map<HalfEdge, Vector<T>> vectors;
+  const auto triangulations = components() | rx::transform([](const auto& component) { return component.triangulation(); }) | rx::to_vector();
+  const auto faces = triangulations | rx::transform([&](const auto& triangulation) {
+    const auto embedding = triangulation.embedding();
+    for (auto localHalfEdge : triangulation.triangulation()->halfEdges())
+      vectors[embedding[localHalfEdge]] = triangulation.triangulation()->fromEdge(localHalfEdge);
+    return triangulation.triangulation()->faces() | rx::transform([&](const auto& face) {
+      return std::tuple{embedding[std::get<0>(face)], embedding[std::get<1>(face)], embedding[std::get<2>(face)]};
+    }) | rx::to_vector();
+  }) | rx::to_vector() |
+                     rx::flatten<1>() | rx::to_vector();
+
+  return std::make_shared<FlatTriangulation<T>>(FlatTriangulationCombinatorial(faces), [&](const HalfEdge he) {
+    return vectors.at(he);
+  });
 }
 
 template <typename Surface>
@@ -145,6 +172,54 @@ ImplementationOf<FlowDecomposition<Surface>>::ImplementationOf(std::unique_ptr<S
   for (auto& component : state->components)
     ImplementationOf<IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>>::registerDecomposition(*component.iet, state);
 }
+
+template <typename Surface>
+ImplementationOf<FlowDecomposition<Surface>>::ImplementationOf(std::shared_ptr<FlowDecompositionState<Surface>> state) :
+  state(std::move(state)) {}
+
+template <typename Surface>
+Edge ImplementationOf<FlowDecomposition<Surface>>::firstInnerEdge(const FlowComponent<Surface>& component) {
+  size_t perimeterHalfEdges = 0;
+  for (const auto& other : component.decomposition().components())
+    perimeterHalfEdges += other.perimeter().size();
+  ASSERT(perimeterHalfEdges % 2 == 0, "edges on the perimeter must come in pairs");
+
+  size_t innerHalfEdges = 0;
+  for (const auto& other : component.decomposition().components()) {
+    if (other == component) break;
+    ASSERT(other.perimeter().size() >= 4, "component has no area");
+    innerHalfEdges += 2 * (other.perimeter().size() - 3);
+  }
+
+  return Edge(static_cast<int>((perimeterHalfEdges + innerHalfEdges) / 2 + 1));
+}
+
+template <typename Surface>
+HalfEdge ImplementationOf<FlowDecomposition<Surface>>::halfEdge(const FlowConnection<Surface>& connection) {
+  std::unordered_map<FlowConnection<Surface>, HalfEdge> toHalfEdge;
+  for (const auto component : connection.component().decomposition().components()) {
+    for (const auto other : component.perimeter()) {
+      if (toHalfEdge.find(other) == toHalfEdge.end()) {
+        toHalfEdge[other] = HalfEdge(static_cast<int>(toHalfEdge.size() / 2 + 1));
+        toHalfEdge[-other] = -toHalfEdge.at(other);
+      }
+      if (other == connection || other == -connection)
+        return toHalfEdge.at(connection);
+    }
+  }
+  UNREACHABLE("connection does not show up in this decomposition");
+}
+
+template <typename Surface>
+FlowDecomposition<Surface> ImplementationOf<FlowDecomposition<Surface>>::make(std::shared_ptr<FlowDecompositionState<Surface>> state) {
+  return FlowDecomposition<Surface>(PrivateConstructor{}, std::move(state));
+}
+
+template <typename Surface>
+FlowDecomposition<Surface> FlowComponent<Surface>::decomposition() { return ImplementationOf<FlowDecomposition<Surface>>::make(impl->state); }
+
+template <typename Surface>
+const FlowDecomposition<Surface> FlowComponent<Surface>::decomposition() const { return ImplementationOf<FlowDecomposition<Surface>>::make(impl->state); }
 
 template <typename Surface>
 ostream& operator<<(ostream& os, const FlowDecomposition<Surface>& self) {

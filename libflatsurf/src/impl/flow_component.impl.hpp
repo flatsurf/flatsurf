@@ -17,8 +17,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_COMPONENT_IMPL_HPP
-#define LIBFLATSURF_COMPONENT_IMPL_HPP
+#ifndef LIBFLATSURF_FLOW_COMPONENT_IMPL_HPP
+#define LIBFLATSURF_FLOW_COMPONENT_IMPL_HPP
 
 #include <memory>
 

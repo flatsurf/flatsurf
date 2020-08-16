@@ -23,10 +23,13 @@
 #include <unordered_set>
 #include <vector>
 
+#include <fmt/format.h>
+
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
+#include "../flatsurf/fmt.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_map.hpp"
 #include "../flatsurf/half_edge_set_iterator.hpp"
@@ -106,6 +109,55 @@ FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(FlatTriangulation
   *this = std::move(rhs);
 }
 
+FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(const std::vector<std::tuple<HalfEdge, HalfEdge, HalfEdge>>& faces) :
+  impl([&]() {
+    std::unordered_map<HalfEdge, HalfEdge> initial, final;
+    std::unordered_map<HalfEdge, HalfEdge> vertexPermutation;
+    HalfEdgeSet nonboundary;
+
+    const auto record = [&](HalfEdge a, HalfEdge b) {
+      nonboundary.insert(a);
+      ASSERT(vertexPermutation.find(a) == vertexPermutation.end(), "half edge must not be in two faces but " << a << " shows up more than once");
+      vertexPermutation[a] = b;
+
+      if (initial.find(a) == initial.end())
+        initial[a] = a;
+      if (final.find(b) == final.end())
+        final[b] = b;
+
+      final[initial[a]] = final[b];
+      initial[final[b]] = initial[a];
+    };
+
+    for (const auto& [a, b, c] : faces) {
+      record(a, -c);
+      record(b, -a);
+      record(c, -b);
+    }
+
+    const auto boundary = nonboundary | rx::filter([&](const auto halfEdge) {
+      return !nonboundary.contains(-halfEdge);
+    }) | rx::transform([](const auto halfEdge) {
+      return -halfEdge;
+    }) | rx::to_vector();
+
+    for (const auto halfEdge : boundary) {
+      ASSERT(vertexPermutation.find(halfEdge) == vertexPermutation.end(), "boundary edge must not be in any face");
+      ASSERT(final.at(halfEdge) == halfEdge, "boundary half edge must be final when walking around ccw a vertex");
+      ASSERT(initial.at(halfEdge) != halfEdge, "boundary half edge must not be initial when walking ccw around a vertex");
+      vertexPermutation[halfEdge] = initial.at(halfEdge);
+      ASSERT(final.at(vertexPermutation[halfEdge]) == halfEdge, "half edges around a vertex must form a loop but if we go from " << halfEdge << " to " << vertexPermutation[halfEdge] << " we eventually only get to " << final.at(vertexPermutation[halfEdge]) << " from there");
+    }
+
+    return spimpl::make_unique_impl<Implementation>(Permutation<HalfEdge>(vertexPermutation), boundary);
+  }()) {
+  ASSERT(
+      faces | rx::all_of([&](const auto face) {
+        return impl->faces(std::get<0>(face)) == std::get<1>(face) && impl->faces(std::get<1>(face)) == std::get<2>(face) && impl->faces(std::get<2>(face)) == std::get<0>(face);
+      }),
+      "triangulation changed faces, expected " << fmt::format("({})", fmt::join(faces | rx::transform([](const auto face) { return fmt::format("({}, {}, {})", std::get<0>(face), std::get<1>(face), std::get<2>(face)); }) | rx::to_vector(), ", ")) << " but got " << this->impl->faces);
+}
+
 FlatTriangulationCombinatorial& FlatTriangulationCombinatorial::operator=(FlatTriangulationCombinatorial&& rhs) noexcept {
   impl = std::move(rhs.impl);
   impl->change.emit(Implementation::MessageAfterMove{this});
@@ -153,8 +205,13 @@ std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::
   return ret;
 }
 
-std::vector<std::vector<HalfEdge>> FlatTriangulationCombinatorial::faces() const {
-  return impl->faces.cycles();
+std::vector<std::tuple<HalfEdge, HalfEdge, HalfEdge>> FlatTriangulationCombinatorial::faces() const {
+  return impl->faces.cycles() | rx::filter([](const auto& face) {
+    // Boundary half edges have trivial faces.
+    return face.size() == 3;
+  }) | rx::transform([](const auto& face) {
+    return std::tuple{face[0], face[1], face[2]};
+  }) | rx::to_vector();
 }
 
 std::unique_ptr<FlatTriangulationCombinatorial> FlatTriangulationCombinatorial::slot(HalfEdge e) const {

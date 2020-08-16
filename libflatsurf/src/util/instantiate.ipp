@@ -63,6 +63,11 @@
   template std::ostream& operator<<(std::ostream&, const LIBFLATSURF_REM(T) &); \
   }
 
+#define LIBFLATSURF_INSTANTIATE_STATIC(T) \
+  namespace flatsurf {                    \
+  template class LIBFLATSURF_REM(T);      \
+  }
+
 #define LIBFLATSURF_INSTANTIATE_HASH(T)     \
   namespace std {                           \
   using namespace flatsurf;                 \

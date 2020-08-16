@@ -43,20 +43,6 @@ class FlowConnection : Serializable<FlowConnection<Surface>>,
 
   FlowConnection<Surface> operator-() const;
 
-  // If this is a vertical connection, return the MaybeVerticalFlowConnection
-  // from which this connection was created.
-  MaybeVerticalFlowConnection<Surface> source() const;
-
-  // If this is not a vertical connection, return the
-  // MaybeVerticalFlowConnection that is counterclockwise next to this
-  // connection.
-  MaybeVerticalFlowConnection<Surface> nextAtSingularity() const;
-
-  // If this is not a vertical connection, return the
-  // MaybeVerticalFlowConnection that is clockwise next to this
-  // connection.
-  MaybeVerticalFlowConnection<Surface> previousAtSingularity();
-
   FlowConnection<Surface> nextInPerimeter() const;
 
   FlowConnection<Surface> previousInPerimeter() const;
@@ -68,6 +54,10 @@ class FlowConnection : Serializable<FlowConnection<Surface>>,
   bool parallel() const;
 
   bool antiparallel() const;
+
+  bool top() const;
+
+  bool bottom() const;
 
   // Return whether this edge is a (vertical) boundary between two distinct FlowComponents.
   bool boundary() const;

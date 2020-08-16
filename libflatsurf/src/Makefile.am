@@ -1,6 +1,7 @@
 lib_LTLIBRARIES = libflatsurf.la
 
 libflatsurf_la_SOURCES =                                            \
+	approximation.cc                                            \
 	bound.cc                                                    \
 	ccw.cc                                                      \
 	chain.cc                                                    \
@@ -26,6 +27,7 @@ libflatsurf_la_SOURCES =                                            \
 	flow_connection.cc                                          \
 	flow_decomposition.cc                                       \
 	flow_decomposition_state.cc                                 \
+	flow_triangulation.cc                                       \
 	half_edge.cc                                                \
 	indexed_set.cc                                              \
 	indexed_set_iterator.cc                                     \
@@ -34,6 +36,7 @@ libflatsurf_la_SOURCES =                                            \
 	path.cc                                                     \
 	path_iterator.cc                                            \
 	permutation.cc                                              \
+	quadratic_polynomial.cc                                     \
 	saddle_connection.cc                                        \
 	saddle_connections.cc                                       \
 	saddle_connections_iterator.cc                              \
@@ -66,6 +69,7 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/flow_component.hpp                              \
 	../flatsurf/flow_connection.hpp                             \
 	../flatsurf/flow_decomposition.hpp                          \
+	../flatsurf/flow_triangulation.hpp                          \
 	../flatsurf/fmt.hpp                                         \
 	../flatsurf/forward.hpp                                     \
 	../flatsurf/half_edge.hpp                                   \
@@ -96,6 +100,7 @@ nobase_pkginclude_HEADERS +=                                        \
 	../flatsurf/external/spimpl/spimpl.h
 
 noinst_HEADERS =                                                    \
+	impl/approximation.hpp                                      \
 	impl/chain.impl.hpp                                         \
 	impl/chain_iterator.impl.hpp                                \
 	impl/chain_vector.hpp                                       \
@@ -116,6 +121,7 @@ noinst_HEADERS =                                                    \
 	impl/flow_connection.impl.hpp                               \
 	impl/flow_decomposition.impl.hpp                            \
 	impl/flow_decomposition_state.hpp                           \
+	impl/flow_triangulation.impl.hpp                            \
 	impl/forward.hpp                                            \
 	impl/half_edge_set.impl.hpp                                 \
 	impl/half_edge_set_iterator.impl.hpp                        \
@@ -126,6 +132,7 @@ noinst_HEADERS =                                                    \
 	impl/lengths.hpp                                            \
 	impl/path.impl.hpp                                          \
 	impl/path_iterator.impl.hpp                                 \
+	impl/quadratic_polynomial.hpp                               \
 	impl/saddle_connection.impl.hpp                             \
 	impl/saddle_connections.impl.hpp                            \
 	impl/saddle_connections_iterator.impl.hpp                   \

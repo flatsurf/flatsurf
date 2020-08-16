@@ -248,16 +248,6 @@ class ImplementationOf<Vector<T>> : public Cartesian<T> {
   Arb operator*(const Vector& rhs) const {
     return (this->x * rhs.impl->x + this->y * rhs.impl->y)(ARB_PRECISION_FAST);
   }
-
-  template <bool Enable = IsEAntic<T> || IsMPQ<T>, If<Enable> = true>
-  operator flatsurf::Vector<exactreal::Arb>() const noexcept {
-    return flatsurf::Vector<exactreal::Arb>(Arb(this->x, ARB_PRECISION_FAST), Arb(this->y, ARB_PRECISION_FAST));
-  }
-
-  template <bool Enable = IsExactReal<T>, If<Enable> = true, typename = void>
-  operator flatsurf::Vector<exactreal::Arb>() const noexcept {
-    return flatsurf::Vector<exactreal::Arb>(this->x.arb(ARB_PRECISION_FAST), this->y.arb(ARB_PRECISION_FAST));
-  }
 };
 
 template <typename T>

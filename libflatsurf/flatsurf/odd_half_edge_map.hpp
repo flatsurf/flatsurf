@@ -55,6 +55,10 @@ class OddHalfEdgeMap {
     values[-he] = -value;
   }
 
+  size_t size() const { return values.size(); }
+
+  void pop() { values.pop(); }
+
   friend std::ostream& operator<<(std::ostream& os, const OddHalfEdgeMap& self) {
     bool first = true;
     for (size_t i = 0; i < self.values.size(); i++) {

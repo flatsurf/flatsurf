@@ -24,7 +24,7 @@
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/vertical.hpp"
 
-#include "surfaces.hpp"
+#include "../test/surfaces.hpp"
 
 using benchmark::DoNotOptimize;
 using benchmark::State;

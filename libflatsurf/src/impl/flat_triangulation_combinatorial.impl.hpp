@@ -36,7 +36,7 @@ namespace flatsurf {
 template <>
 class ImplementationOf<FlatTriangulationCombinatorial> {
  public:
-  ImplementationOf(const Permutation<HalfEdge>&, const std::vector<HalfEdge>&);
+  ImplementationOf(const Permutation<HalfEdge>&, const std::vector<HalfEdge>& boundaries);
   ~ImplementationOf();
 
   struct MessageAfterFlip {

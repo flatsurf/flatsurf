@@ -104,10 +104,10 @@ bool FlatTriangulationCollapsed<T>::inSector(HalfEdge sector, const Vertical<Fla
 }
 
 template <typename T>
-mpz_class relativeCost(const Vector<T>& divident, const Vector<T>& divisor) {
+mpz_class relativeCost(const Vector<T>& dividend, const Vector<T>& divisor) {
   const auto abs = [](const auto& x) { return x < 0 ? -x : x; };
 
-  return gmpxxll::mpz_class(::intervalxt::sample::Arithmetic<T>::floorDivision(divident * divident, abs(divident * divisor)));
+  return gmpxxll::mpz_class(::intervalxt::sample::Arithmetic<T>::floorDivision(dividend * dividend, abs(dividend * divisor)));
 }
 
 template <typename T>
