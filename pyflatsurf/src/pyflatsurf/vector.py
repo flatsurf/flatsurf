@@ -23,6 +23,7 @@ Vector wrapper and sage conversion for ``flatsurf.Vector``.
 #*********************************************************************
 
 import cppyy
+import gmpxxyy
 
 from pyflatsurf import flatsurf
 from gmpxxyy import mpz, mpq
@@ -90,23 +91,23 @@ class Vector(SageVector):
     def __init__(self, parent, vector, y = None):
         SageVector.__init__(self, parent)
 
+        R = parent.base_ring()
+
         if y is not None:
             vector = (vector, y)
 
-        R = parent.base_ring()
-
         if isinstance(vector, parent.Vector):
             self.vector = vector
-        elif isinstance(vector[0], parent.coordinate) and isinstance(vector[1], parent.coordinate):
-            self.vector = parent.Vector(*vector)
-        elif R is ZZ or R is QQ:
-            self.vector = parent.Vector(parent.coordinate(str(vector[0])), parent.coordinate(str(vector[1])))
-        elif isinstance(R, real_embedded_number_field.RealEmbeddedNumberField):
-            self.vector = parent.Vector(R(vector[0]).renf_elem, R(vector[1]).renf_elem)
-        elif isinstance(R, ExactReals):
-            self.vector = parent.Vector(vector[0]._backend, vector[1]._backend)
         else:
-            raise NotImplementedError("unsupported cofficient type")
+            vector = list(vector)
+
+            if len(vector) != 2:
+                raise ValueError("vector must have exactly two coordinate entries")
+
+            elif isinstance(vector[0], parent.coordinate) and isinstance(vector[1], parent.coordinate):
+                self.vector = parent.Vector(*vector)
+            else:
+                self.vector = parent.Vector(parent._to_coordinate(vector[0]), parent._to_coordinate(vector[1]))
 
     def _repr_(self):
         return repr(self.vector)
@@ -247,62 +248,6 @@ class Vector(SageVector):
         """
         return bool(self.vector)
 
-    def decomposition(self, base):
-        r"""
-        Write this vector as a shortest sum `v = \sum a_i v_i` where the `v_i`
-        are vectors with entries in ``base`` and the `a_i` are coefficients from our base ring.
-
-        EXAMPLES::
-
-            sage: from pyflatsurf.vector import Vectors
-            sage: V = Vectors(ZZ)
-            sage: v = V(13, 37)
-            sage: v.decomposition(ZZ)
-            [(1, (13, 37))]
-            sage: v = V(0, 0)
-            sage: v.decomposition(ZZ)
-            []
-
-        ::
-
-            sage: from pyexactreal import ExactReals
-            sage: R = ExactReals()
-            sage: V = Vectors(R)
-            sage: v = V(R.random_element(), R.random_element())
-            sage: v.decomposition(QQ)
-            [(ℝ(0.178808…), (1, 0)), (ℝ(0.478968…), (0, 1))]
-
-        ::
-
-            sage: from pyflatsurf.vector import Vectors
-            sage: from pyexactreal import ExactReals
-            sage: from pyeantic import RealEmbeddedNumberField
-            sage: K = NumberField(x^3 - 2, 'a', embedding=AA(2)**(1/3))
-            sage: R = ExactReals(K)
-            sage: V = Vectors(R)
-            sage: v = V(K.random_element() * R.random_element(), R.random_element())
-            sage: v.decomposition(K)
-            [(ℝ(0.621222…), (0, 1)), (ℝ(0.782515…), (-1/2*a^2 - 4, 0))]
-
-        """
-        if not self: return []
-        if base is self.parent().base_ring():
-            return [(base.one(), self)]
-        if base is self.parent()._algebraic_ring():
-            if isinstance(self.parent().base_ring(), ExactReals):
-                from functools import reduce
-                module = type(self.vector.x().module()).span(self.vector.x().module(), self.vector.y().module())
-
-                vector = [entry.promote(module) for entry in [self.vector.x(), self.vector.y()]]
-                vector = [entry.coefficients() for entry in vector]
-
-                vector = [[base(Vectors(base).base_ring()(c)) for c in coefficients] for coefficients in vector]
-
-                V = base**2
-                return [(self.parent().base_ring()(module.gen(i)), V(coefficients)) for (i, coefficients) in enumerate(zip(*vector)) if any(coefficients)]
-
-        raise NotImplementedError("cannot decompose vector in %s over %s"%(self.parent(), base))
-
 
 class Vectors(UniqueRepresentation, Parent):
     r"""
@@ -393,6 +338,65 @@ class Vectors(UniqueRepresentation, Parent):
 
         return algebraic_ring
 
+    def decomposition(self, vector):
+        r"""
+        Write ``vector`` as a shortest sum `v = \sum a_i v_i` where the
+        `v_i` are vectors with entries in ``base`` and the `a_i` are
+        coefficients from our base ring.
+
+        EXAMPLES::
+
+            sage: from pyflatsurf.vector import Vectors
+            sage: V = Vectors(ZZ)
+            sage: V.decomposition([13, 37])
+            [(1, (13, 37))]
+            sage: V.decomposition([0, 0])
+            []
+
+        ::
+
+            sage: from pyexactreal import ExactReals
+            sage: R = ExactReals()
+            sage: V = Vectors(R)
+            sage: V.decomposition([R.random_element(), R.random_element()])
+            [(ℝ(0.178808…), (1, 0)), (ℝ(0.478968…), (0, 1))]
+
+        ::
+
+            sage: from pyflatsurf.vector import Vectors
+            sage: from pyexactreal import ExactReals
+            sage: from pyeantic import RealEmbeddedNumberField
+            sage: K = NumberField(x^3 - 2, 'a', embedding=AA(2)**(1/3))
+            sage: R = ExactReals(K)
+            sage: V = Vectors(R)
+            sage: V.decomposition([K.random_element() * R.random_element(), R.random_element(), R.random_element()])
+            [(ℝ(0.621222…), (0, 1, 0)),
+             (ℝ(0.673083…), (0, 0, 1)),
+             (ℝ(0.782515…), (-1/2*a^2 - 4, 0, 0))]
+
+        """
+        vector = tuple(self._to_coordinate(x) for x in vector)
+
+        if not any(vector): return []
+
+        base = self._algebraic_ring()
+
+        if base is self.base_ring():
+            return [(base.one(), tuple(map(base, vector)))]
+
+        if isinstance(self.base_ring(), ExactReals):
+           from functools import reduce
+           span = type(vector[0].module()).span
+           module = reduce(lambda x,y: span(x, y.module()), vector, vector[0].module())
+
+           vector = [entry.promote(module).coefficients() for entry in vector]
+           vector = [[base(Vectors(base).base_ring()(c)) for c in coefficients] for coefficients in vector]
+
+           V = base**len(vector)
+           return [(self.base_ring()(module.gen(i)), tuple(V(coefficients))) for (i, coefficients) in enumerate(zip(*vector)) if any(coefficients)]
+
+        raise NotImplementedError("cannot decompose vector in %s over %s"%(self, base))
+
     def _to_coordinate(self, x):
         r"""
         Convert ``x`` to something that the flatsurf backend for this vector type understands.
@@ -463,7 +467,4 @@ class ConversionVectorSpace(Morphism):
         x = v.vector.x()
         y = v.vector.y()
         R = self.domain().base_ring()
-        if R is ZZ or R is QQ:
-            x = str(x)
-            y = str(y)
         return self.codomain()((R(x), R(y)))
