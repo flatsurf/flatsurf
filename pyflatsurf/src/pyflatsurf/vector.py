@@ -122,7 +122,7 @@ class Vector(SageVector):
             sage: v = V(13, 37)
             sage: v.monomial_coefficients()
             {0: 13, 1: 37}
-            
+
         """
         coefficients = {}
         x = self.parent().base_ring()(self.vector.x())
@@ -132,6 +132,20 @@ class Vector(SageVector):
         if y:
             coefficients[1] = y
         return coefficients
+
+    def __iter__(self):
+        r"""
+        EXAMPLES::
+
+            sage: from pyflatsurf.vector import Vectors
+            sage: V = Vectors(ZZ)
+            sage: v = V(13, 37)
+            sage: list(v)
+            [13, 37]
+
+        """
+        yield self.parent().base_ring()(self.vector.x())
+        yield self.parent().base_ring()(self.vector.y())
 
     def _add_(self, other):
         r"""
@@ -286,7 +300,7 @@ class Vector(SageVector):
 
                 V = base**2
                 return [(self.parent().base_ring()(module.gen(i)), V(coefficients)) for (i, coefficients) in enumerate(zip(*vector)) if any(coefficients)]
-        
+
         raise NotImplementedError("cannot decompose vector in %s over %s"%(self.parent(), base))
 
 
