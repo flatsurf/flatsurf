@@ -87,7 +87,6 @@ bool FlowConnection<Surface>::top() const {
 
 template <typename Surface>
 FlowConnection<Surface> FlowConnection<Surface>::operator-() const {
-  // TODO: Benchmark this
   for (auto& component_ : impl->state->components) {
     auto component = ImplementationOf<FlowComponent<Surface>>::make(impl->state, &component_);
     for (const auto& connection : component.perimeter())
@@ -102,7 +101,6 @@ FlowConnection<Surface> FlowConnection<Surface>::operator-() const {
 
 template <typename Surface>
 FlowConnection<Surface> FlowConnection<Surface>::previousInPerimeter() const {
-  // TODO: Can this be sped up in intervalxt? Anyway, we should add it to the benchmarks.
   const auto perimeter = impl->component.perimeter();
   for (auto it = begin(perimeter); it != end(perimeter); it++) {
     if (*it == *this) {
@@ -116,7 +114,6 @@ FlowConnection<Surface> FlowConnection<Surface>::previousInPerimeter() const {
 
 template <typename Surface>
 FlowConnection<Surface> FlowConnection<Surface>::nextInPerimeter() const {
-  // TODO: Can this be sped up in intervalxt? Anyway, we should add it to the benchmarks.
   const auto perimeter = impl->component.perimeter();
   for (auto it = begin(perimeter); it != end(perimeter); it++) {
     if (*it == *this) {
