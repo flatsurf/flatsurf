@@ -263,10 +263,8 @@ void Lengths<Surface>::registerDecomposition(std::shared_ptr<FlowDecompositionSt
 template <typename Surface>
 std::vector<mpq_class> Lengths<Surface>::coefficients(Label label) const {
   auto coefficients = intervalxt::sample::Arithmetic<T>::coefficients(length(label));
-  if (coefficients.size() == 0 || coefficients.size() == 1) {
-    while (coefficients.size() < degree)
-      coefficients.emplace_back();
-  }
+  while (coefficients.size() < degree)
+    coefficients.emplace_back();
   return coefficients;
 }
 
