@@ -236,8 +236,8 @@ void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iteratio
         return x < 0 ? -x : x;
       };
 
-      const auto relativeCost = [&](const Vector<T>& divident, const Vector<T>& divisor) -> mpz_class {
-        return gmpxxll::mpz_class(::intervalxt::sample::Arithmetic<T>::floorDivision(divident * divident, abs(divident * divisor)));
+      const auto relativeCost = [&](const Vector<T>& dividend, const Vector<T>& divisor) -> mpz_class {
+        return gmpxxll::mpz_class(::intervalxt::sample::Arithmetic<T>::floorDivision(dividend * dividend, abs(dividend * divisor)));
       };
 
       if (!cost.pay(relativeCost(static_cast<const Vector<T>&>(*minuendConnection), minuendConnection->surface().shortest(*minuendConnection)) + 1)) return;
