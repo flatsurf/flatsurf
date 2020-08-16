@@ -21,9 +21,6 @@
 #include <memory>
 #include <unordered_set>
 
-// TODO: Deleteme
-#include <boost/lexical_cast.hpp>
-
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/vertical.hpp"
 #include "../flatsurf/edge.hpp"
