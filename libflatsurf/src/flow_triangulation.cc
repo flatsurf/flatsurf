@@ -70,7 +70,7 @@ HalfEdgeMap<HalfEdge> FlowTriangulation<Surface>::embedding() const {
 
   auto embedding = HalfEdgeMap<HalfEdge>(*triangulation, [&](const HalfEdge source) {
     if (triangulation->boundary(source)) {
-      // TODO: HalfEdgeMap should skip the boundary
+      // We cannot map the boundary edges anywhere so we just map them to some random sentinel.
       return HalfEdge(404);
     } else if (impl->toConnection.find(source) != impl->toConnection.end()) {
       return ImplementationOf<FlowDecomposition<Surface>>::halfEdge(impl->toConnection.at(source));
