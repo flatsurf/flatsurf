@@ -363,10 +363,14 @@ class Vectors(UniqueRepresentation, Parent):
 
         ::
 
-            sage: from pyflatsurf.vector import Vectors
-            sage: from pyexactreal import ExactReals
             sage: from pyeantic import RealEmbeddedNumberField
             sage: K = NumberField(x^3 - 2, 'a', embedding=AA(2)**(1/3))
+            sage: V = Vectors(K)
+            sage: V.decomposition([0, 1])
+            [(1, (0, 1))]
+
+        ::
+
             sage: R = ExactReals(K)
             sage: V = Vectors(R)
             sage: V.decomposition([K.random_element() * R.random_element(), R.random_element(), R.random_element()])
@@ -417,14 +421,14 @@ class Vectors(UniqueRepresentation, Parent):
             return x
         if isinstance(x, cppyy.gbl.mpq_class):
             return x
-        if x in ZZ:
-            return cppyy.gbl.mpz_class(str(x))
-        if x in QQ:
-            return cppyy.gbl.mpq_class(str(x))
         if isinstance(self.base_ring(), real_embedded_number_field.RealEmbeddedNumberField):
             return self.base_ring()(x).renf_elem
         if isinstance(self.base_ring(), ExactReals):
             return self.base_ring()(x)._backend
+        if x in ZZ:
+            return cppyy.gbl.mpz_class(str(x))
+        if x in QQ:
+            return cppyy.gbl.mpq_class(str(x))
 
         raise NotImplementedError("Cannot convert %s to something the flatsurf backend understands yet, i.e., cannot convert a %s into a %s"%(x, type(x), type(self.coordinate)))
 
