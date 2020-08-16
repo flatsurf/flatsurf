@@ -14,13 +14,11 @@ This repository contains three related projects:
 
 * **libflatsurf** a C++ library
 * **pyflatsurf** a Python wrapper for **libflatsurf**
-* **flatsurf-polygonn** a legacy binary that builds upon **libflatsurf**
 
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
 | [![Nightly Build](https://img.shields.io/badge/recipe-libflatsurf-green.svg)](https://anaconda.org/flatsurf/libflatsurf) | [![Conda Downloads](https://img.shields.io/conda/dn/flatsurf/libflatsurf.svg)](https://anaconda.org/flatsurf/libflatsurf) | [![Conda Version](https://img.shields.io/conda/vn/flatsurf/libflatsurf.svg)](https://anaconda.org/flatsurf/libflatsurf) | [![Conda Platforms](https://img.shields.io/conda/pn/flatsurf/libflatsurf.svg)](https://anaconda.org/flatsurf/libflatsurf) |
 | [![Nightly Build](https://img.shields.io/badge/recipe-pyflatsurf-green.svg)](https://anaconda.org/flatsurf/pyflatsurf) | [![Conda Downloads](https://img.shields.io/conda/dn/flatsurf/pyflatsurf.svg)](https://anaconda.org/flatsurf/pyflatsurf) | [![Conda Version](https://img.shields.io/conda/vn/flatsurf/pyflatsurf.svg)](https://anaconda.org/flatsurf/pyflatsurf) | [![Conda Platforms](https://img.shields.io/conda/pn/flatsurf/pyflatsurf.svg)](https://anaconda.org/flatsurf/pyflatsurf) |
-| [![Nightly Build](https://img.shields.io/badge/recipe-flatsurf-green.svg)](https://anaconda.org/flatsurf/flatsurf) | [![Conda Downloads](https://img.shields.io/conda/dn/flatsurf/flatsurf.svg)](https://anaconda.org/flatsurf/flatsurf) | [![Conda Version](https://img.shields.io/conda/vn/flatsurf/flatsurf.svg)](https://anaconda.org/flatsurf/flatsurf) | [![Conda Platforms](https://img.shields.io/conda/pn/flatsurf/flatsurf.svg)](https://anaconda.org/flatsurf/flatsurf) |
 
 ## Install with Conda
 
@@ -28,7 +26,7 @@ You can install these packages with conda. Download and install [Miniconda](http
 
 ```
 conda config --add channels conda-forge
-conda create -n flatsurf -c flatsurf flatsurf-polygon pyflatsurf
+conda create -n flatsurf -c flatsurf libflatsurf pyflatsurf
 conda activate flatsurf
 ```
 
@@ -46,13 +44,11 @@ You can try out the projects in this repository in a very limited environment on
 * **libflatsurf** [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/flatsurf/master?filepath=binder%2FSample.libflatsurf.ipynb)
 * **pyflatsurf** [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/flatsurf/master?filepath=binder%2FSample.pyflatsurf.ipynb)
 * **pyflatsurf** with SageMath [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/flatsurf/master?filepath=binder%2FSample.pyflatsurf.sage.ipynb)
-* **flatsurf-polygon** [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/flatsurf/master?filepath=binder%2FSample.flatsurf-polygon.ipynb)
 
 ## Build from the Source Code Repository
 
 We are following a standard autoconf setup, i.e., you can create the library
-`libflatsurf/src`, the Python wrapper `pyflatsurf/src`, and the binary
-`flatsurf-polygon/src/flatsurf-polygon` with the following:
+`libflatsurf/src`, and the Python wrapper `pyflatsurf/src` with the following:
 
 ```
 git clone --recurse-submodules https://github.com/flatsurf/flatsurf.git
@@ -133,7 +129,7 @@ conda build "${RECIPE_ROOT}" -m "${CI_SUPPORT}/${CONFIG}.yaml" --clobber-file "$
 
 You can then try out the package that you just built with:
 ```
-conda create -n flatsurf-test --use-local libflatsurf pyflatsurf flatsurf-polygon
+conda create -n flatsurf-test --use-local libflatsurf pyflatsurf
 conda activate flatsurf-test
 ```
 
