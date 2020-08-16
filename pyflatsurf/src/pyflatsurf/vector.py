@@ -23,6 +23,7 @@ Vector wrapper and sage conversion for ``flatsurf.Vector``.
 #*********************************************************************
 
 import cppyy
+import gmpxxyy
 
 from pyflatsurf import flatsurf
 from gmpxxyy import mpz, mpq
@@ -99,14 +100,8 @@ class Vector(SageVector):
             self.vector = vector
         elif isinstance(vector[0], parent.coordinate) and isinstance(vector[1], parent.coordinate):
             self.vector = parent.Vector(*vector)
-        elif R is ZZ or R is QQ:
-            self.vector = parent.Vector(parent.coordinate(str(vector[0])), parent.coordinate(str(vector[1])))
-        elif isinstance(R, real_embedded_number_field.RealEmbeddedNumberField):
-            self.vector = parent.Vector(R(vector[0]).renf_elem, R(vector[1]).renf_elem)
-        elif isinstance(R, ExactReals):
-            self.vector = parent.Vector(vector[0]._backend, vector[1]._backend)
         else:
-            raise NotImplementedError("unsupported cofficient type")
+            self.vector = parent.Vector(parent._to_coordinate(vector[0]), parent._to_coordinate(vector[1]))
 
     def _repr_(self):
         return repr(self.vector)
@@ -463,7 +458,4 @@ class ConversionVectorSpace(Morphism):
         x = v.vector.x()
         y = v.vector.y()
         R = self.domain().base_ring()
-        if R is ZZ or R is QQ:
-            x = str(x)
-            y = str(y)
         return self.codomain()((R(x), R(y)))

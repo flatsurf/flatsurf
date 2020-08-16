@@ -62,6 +62,7 @@ requirements:
 {%- if pyflatsurf_requirements %}
     - python {{ _python }}
     - setuptools
+    - gmpxxyy
     - pyexactreal
     - cppyythonizations
 {%- endif %}
