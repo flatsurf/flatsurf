@@ -20,8 +20,8 @@
 #include <memory>
 #include <ostream>
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 #include <boost/algorithm/string/join.hpp>
 #include <boost/lexical_cast.hpp>
@@ -110,9 +110,10 @@ std::shared_ptr<const FlatTriangulation<typename Surface::Coordinate>> FlowDecom
     for (auto localHalfEdge : triangulation.triangulation()->halfEdges())
       vectors[embedding[localHalfEdge]] = triangulation.triangulation()->fromEdge(localHalfEdge);
     return triangulation.triangulation()->faces() | rx::transform([&](const auto& face) {
-      return std::tuple{ embedding[std::get<0>(face)], embedding[std::get<1>(face)], embedding[std::get<2>(face)] };
+      return std::tuple{embedding[std::get<0>(face)], embedding[std::get<1>(face)], embedding[std::get<2>(face)]};
     }) | rx::to_vector();
-  }) | rx::to_vector() | rx::flatten<1>() | rx::to_vector();
+  }) | rx::to_vector() |
+                     rx::flatten<1>() | rx::to_vector();
 
   return std::make_shared<FlatTriangulation<T>>(FlatTriangulationCombinatorial(faces), [&](const HalfEdge he) {
     return vectors.at(he);
@@ -182,7 +183,7 @@ Edge ImplementationOf<FlowDecomposition<Surface>>::firstInnerEdge(const FlowComp
   for (const auto& other : component.decomposition().components())
     perimeterHalfEdges += other.perimeter().size();
   ASSERT(perimeterHalfEdges % 2 == 0, "edges on the perimeter must come in pairs");
-  
+
   size_t innerHalfEdges = 0;
   for (const auto& other : component.decomposition().components()) {
     if (other == component) break;

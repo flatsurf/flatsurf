@@ -21,10 +21,10 @@
 
 #include <intervalxt/label.hpp>
 
+#include "../flatsurf/ccw.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/flow_connection.hpp"
 #include "../flatsurf/vertical.hpp"
-#include "../flatsurf/ccw.hpp"
 
 #include "impl/flow_component.impl.hpp"
 #include "impl/flow_connection.impl.hpp"

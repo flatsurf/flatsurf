@@ -56,7 +56,7 @@ class FlowConnection : Serializable<FlowConnection<Surface>>,
   bool antiparallel() const;
 
   bool top() const;
-  
+
   bool bottom() const;
 
   // Return whether this edge is a (vertical) boundary between two distinct FlowComponents.

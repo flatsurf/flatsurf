@@ -20,8 +20,8 @@
 #ifndef LIBFLATSURF_FLOW_TRIANGULATION_IMPL_HPP
 #define LIBFLATSURF_FLOW_TRIANGULATION_IMPL_HPP
 
-#include <unordered_map>
 #include <memory>
+#include <unordered_map>
 
 #include "../../flatsurf/flow_connection.hpp"
 #include "../../flatsurf/flow_triangulation.hpp"

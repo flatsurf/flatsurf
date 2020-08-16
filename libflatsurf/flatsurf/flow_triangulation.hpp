@@ -65,4 +65,3 @@ class FlowTriangulation {
 }  // namespace flatsurf
 
 #endif
-

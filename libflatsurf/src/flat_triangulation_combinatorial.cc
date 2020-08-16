@@ -152,11 +152,10 @@ FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(const std::vector
     return spimpl::make_unique_impl<Implementation>(Permutation<HalfEdge>(vertexPermutation), boundary);
   }()) {
   ASSERT(
-    faces | rx::all_of([&](const auto face) {
-      return impl->faces(std::get<0>(face)) == std::get<1>(face)
-      && impl->faces(std::get<1>(face)) == std::get<2>(face)
-      && impl->faces(std::get<2>(face)) == std::get<0>(face);
-    }), "triangulation changed faces, expected " << fmt::format("({})", fmt::join(faces | rx::transform([](const auto face) { return fmt::format("({}, {}, {})", std::get<0>(face), std::get<1>(face), std::get<2>(face)); }) | rx::to_vector(), ", ")) << " but got " << this->impl->faces);
+      faces | rx::all_of([&](const auto face) {
+        return impl->faces(std::get<0>(face)) == std::get<1>(face) && impl->faces(std::get<1>(face)) == std::get<2>(face) && impl->faces(std::get<2>(face)) == std::get<0>(face);
+      }),
+      "triangulation changed faces, expected " << fmt::format("({})", fmt::join(faces | rx::transform([](const auto face) { return fmt::format("({}, {}, {})", std::get<0>(face), std::get<1>(face), std::get<2>(face)); }) | rx::to_vector(), ", ")) << " but got " << this->impl->faces);
 }
 
 FlatTriangulationCombinatorial& FlatTriangulationCombinatorial::operator=(FlatTriangulationCombinatorial&& rhs) noexcept {

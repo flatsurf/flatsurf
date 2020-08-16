@@ -17,24 +17,24 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <stack>
 #include <memory>
+#include <stack>
 #include <unordered_set>
 
 #include "../flatsurf/ccw.hpp"
-#include "../flatsurf/vertical.hpp"
 #include "../flatsurf/edge.hpp"
-#include "../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
+#include "../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../flatsurf/flow_component.hpp"
 #include "../flatsurf/flow_connection.hpp"
 #include "../flatsurf/flow_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_map.hpp"
 #include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/vertical.hpp"
 
-#include "impl/flow_triangulation.impl.hpp"
 #include "impl/flow_decomposition.impl.hpp"
+#include "impl/flow_triangulation.impl.hpp"
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
@@ -75,7 +75,7 @@ HalfEdgeMap<HalfEdge> FlowTriangulation<Surface>::embedding() const {
     } else if (impl->toConnection.find(source) != impl->toConnection.end()) {
       return ImplementationOf<FlowDecomposition<Surface>>::halfEdge(impl->toConnection.at(source));
     } else {
-      return (source == source.edge().positive()) ?  HalfEdge(source.id() + shift) : HalfEdge(source.id() - shift);
+      return (source == source.edge().positive()) ? HalfEdge(source.id() + shift) : HalfEdge(source.id() - shift);
     }
   });
 
@@ -86,7 +86,8 @@ template <typename Surface>
 FlowComponent<Surface> FlowTriangulation<Surface>::component() const { return impl->component; }
 
 template <typename Surface>
-ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowComponent<Surface>& component) : component(component) {
+ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowComponent<Surface>& component) :
+  component(component) {
   std::unordered_map<HalfEdge, Vector<T>> vectors;
   std::vector<std::tuple<HalfEdge, HalfEdge, HalfEdge>> faces;
 
@@ -99,7 +100,8 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
       edges.insert(f);
       edges.insert(g);
       return edges.size() == 3;
-    }(), "(" << e << " " << f << " " << g << ") can not form a face");
+    }(),
+        "(" << e << " " << f << " " << g << ") can not form a face");
 
     ASSERT(vectors.find(f) != vectors.end() && vectors.find(g) != vectors.end(), "at least two of (" << e << " " << f << " " << g << ") must be known when inserting a new face");
 
@@ -132,9 +134,12 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
   // make the polygon non-monotone. Instead, we are a bit more careful how we
   // order vertices that appear on a vertical to make our ordering actually
   // correspond to a strictly-monotone polygon.
-  
+
   struct Vertex {
-    Vertex(const T& x, bool bottom, HalfEdge halfEdge) : x(x), bottom(bottom), halfEdge(halfEdge) {
+    Vertex(const T& x, bool bottom, HalfEdge halfEdge) :
+      x(x),
+      bottom(bottom),
+      halfEdge(halfEdge) {
       CHECK_ARGUMENT(x >= 0, "all vertices must be to the right of the bottom-left vertex");
     }
 
@@ -150,14 +155,14 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
 
     bool operator<(const Vertex& rhs) const { return x < rhs.x; }
   };
-  
+
   // We collect the vertices on the contour accompanied by a value that
   // corresponds to their horizontal coordinate.
   std::vector<Vertex> chain;
 
   {
     chain.emplace_back(T(), true, HalfEdge(404));
-    
+
     T x = T();
 
     for (const auto& connection : component.perimeter()) {
@@ -180,7 +185,6 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
     std::stable_sort(begin(chain), end(chain));
   }
 
-
   {
     std::deque<Vertex> S;
 
@@ -189,7 +193,7 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
     S.push_back(*u++);
     S.push_back(*u++);
 
-    for(; u != end(chain) - 1; u++) {
+    for (; u != end(chain) - 1; u++) {
       ASSERT(S.size() >= 2, "The pending triangulation funnel cannot consists of a single vertex.");
       if (S.back().bottom != u->bottom) {
         while (S.size() > 1) {
@@ -206,7 +210,7 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
           }
 
           // Create a face in the triangulation by adding a cross edge.
-          u->halfEdge = - (u->bottom ? face(v.halfEdge, u->halfEdge) : face(u->halfEdge, v.halfEdge));
+          u->halfEdge = -(u->bottom ? face(v.halfEdge, u->halfEdge) : face(u->halfEdge, v.halfEdge));
         }
         S.front().halfEdge = HalfEdge(404);
         S.push_back(*u);
@@ -233,7 +237,7 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
           // Create a face clipping this convex ear of the contour.
           S.pop_back();
           u->halfEdge = -(u->bottom ? face(v.halfEdge, u->halfEdge) : face(u->halfEdge, v.halfEdge));
-        } while(S.size() > 1);
+        } while (S.size() > 1);
 
         S.push_back(*u);
       }
@@ -251,16 +255,14 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
         if (triangulation->boundary(halfEdge))
           boundary.insert(halfEdge);
 
-      return boundary;
-    }() == [&]() {
+      return boundary; }() == [&]() {
       std::unordered_set<HalfEdge> boundary;
 
       for (auto connection : component.perimeter())
         if (connection.component() != (-connection).component())
           boundary.insert(-toHalfEdge[connection]);
 
-      return boundary;
-    }(), "boundaries of flow component " << component << " and its triangulation " << *triangulation << " are inconsistent.");
+      return boundary; }(), "boundaries of flow component " << component << " and its triangulation " << *triangulation << " are inconsistent.");
 }
 
 template <typename Surface>
@@ -272,7 +274,7 @@ template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const FlowTriangulation<Surface>& self) {
   return os << *self.triangulation();
 }
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

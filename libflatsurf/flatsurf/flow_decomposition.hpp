@@ -26,8 +26,8 @@
 
 #include <boost/logic/tribool.hpp>
 
-#include "flow_component.hpp"
 #include "copyable.hpp"
+#include "flow_component.hpp"
 
 namespace flatsurf {
 

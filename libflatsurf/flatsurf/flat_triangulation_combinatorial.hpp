@@ -38,7 +38,7 @@ class FlatTriangulationCombinatorial : Serializable<FlatTriangulationCombinatori
   FlatTriangulationCombinatorial(const std::vector<std::vector<int>> &vertices, const std::vector<int> &boundaries = std::vector<int>());
   FlatTriangulationCombinatorial(const Permutation<HalfEdge> &vertices);
   FlatTriangulationCombinatorial(FlatTriangulationCombinatorial &&);
-  FlatTriangulationCombinatorial(const std::vector<std::tuple<HalfEdge, HalfEdge, HalfEdge>>& faces);
+  FlatTriangulationCombinatorial(const std::vector<std::tuple<HalfEdge, HalfEdge, HalfEdge>> &faces);
 
   // Create an independent clone of this triangulation that is built from the
   // same data. There is no copy-constructor since it is too likely that it
