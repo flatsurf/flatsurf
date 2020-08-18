@@ -7,8 +7,7 @@
 
 ## Current Release Info
 
-We build and release this package with every push to the master branch. These releases are considered unstable and highly
-experimental. There are no stable releases yet.
+We build and release this package with every push to the master branch.
 
 This repository contains three related projects:
 
@@ -17,8 +16,8 @@ This repository contains three related projects:
 
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
-| [![Nightly Build](https://img.shields.io/badge/recipe-libflatsurf-green.svg)](https://anaconda.org/flatsurf/libflatsurf) | [![Conda Downloads](https://img.shields.io/conda/dn/flatsurf/libflatsurf.svg)](https://anaconda.org/flatsurf/libflatsurf) | [![Conda Version](https://img.shields.io/conda/vn/flatsurf/libflatsurf.svg)](https://anaconda.org/flatsurf/libflatsurf) | [![Conda Platforms](https://img.shields.io/conda/pn/flatsurf/libflatsurf.svg)](https://anaconda.org/flatsurf/libflatsurf) |
-| [![Nightly Build](https://img.shields.io/badge/recipe-pyflatsurf-green.svg)](https://anaconda.org/flatsurf/pyflatsurf) | [![Conda Downloads](https://img.shields.io/conda/dn/flatsurf/pyflatsurf.svg)](https://anaconda.org/flatsurf/pyflatsurf) | [![Conda Version](https://img.shields.io/conda/vn/flatsurf/pyflatsurf.svg)](https://anaconda.org/flatsurf/pyflatsurf) | [![Conda Platforms](https://img.shields.io/conda/pn/flatsurf/pyflatsurf.svg)](https://anaconda.org/flatsurf/pyflatsurf) |
+| [![Build](https://img.shields.io/badge/recipe-libflatsurf-green.svg)](https://anaconda.org/flatsurf/libflatsurf) | [![Conda Downloads](https://img.shields.io/conda/dn/flatsurf/libflatsurf.svg)](https://anaconda.org/flatsurf/libflatsurf) | [![Conda Version](https://img.shields.io/conda/vn/flatsurf/libflatsurf.svg)](https://anaconda.org/flatsurf/libflatsurf) | [![Conda Platforms](https://img.shields.io/conda/pn/flatsurf/libflatsurf.svg)](https://anaconda.org/flatsurf/libflatsurf) |
+| [![Build](https://img.shields.io/badge/recipe-pyflatsurf-green.svg)](https://anaconda.org/flatsurf/pyflatsurf) | [![Conda Downloads](https://img.shields.io/conda/dn/flatsurf/pyflatsurf.svg)](https://anaconda.org/flatsurf/pyflatsurf) | [![Conda Version](https://img.shields.io/conda/vn/flatsurf/pyflatsurf.svg)](https://anaconda.org/flatsurf/pyflatsurf) | [![Conda Platforms](https://img.shields.io/conda/pn/flatsurf/pyflatsurf.svg)](https://anaconda.org/flatsurf/pyflatsurf) |
 
 ## Install with Conda
 
@@ -92,7 +91,7 @@ then run
 ```
 conda config --add channels conda-forge
 conda config --add channels flatsurf # if you want to pull in the latest version of dependencies
-conda create -n flatsurf-build cxx-compiler libtool automake boost-cpp libexactreal pyexactreal libintervalxt pyintervalxt benchmark ccache pytest sage cppyy eigen fmt cppyythonizations sage-flatsurf
+conda create -n flatsurf-build libtool automake coreutils arb boost-cpp libintervalxt libexactreal e-antic gmp fmt=6 python setuptools gmpxxyy pyexactreal cppyythonizations cppyy # and to run tests: pytest sagelib pip ipywidgets sympy benchmark valgrind asv
 conda activate flatsurf-build
 export CPPFLAGS="-isystem $CONDA_PREFIX/include"
 export CFLAGS="$CPPFLAGS"
