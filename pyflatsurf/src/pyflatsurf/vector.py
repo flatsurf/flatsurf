@@ -433,7 +433,18 @@ class Vectors(UniqueRepresentation, Parent):
         raise NotImplementedError("Cannot convert %s to something the flatsurf backend understands yet, i.e., cannot convert a %s into a %s"%(x, type(x), type(self.coordinate)))
 
     def _repr_(self):
-        return repr(self._isomorphic_vector_space)
+        r"""
+        Return a printable representation of this vector space.
+
+        EXAMPLES::
+
+            sage: from pyflatsurf.vector import Vectors
+            sage: V = Vectors(QQ)
+            sage: V
+            Flatsurf Vectors over Rational Field
+
+        """
+        return "Flatsurf Vectors over %r"%(self.base_ring(),)
 
     def an_element(self):
         return self((1,0))
