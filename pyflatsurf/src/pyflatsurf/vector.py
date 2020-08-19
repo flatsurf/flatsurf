@@ -30,11 +30,9 @@ from gmpxxyy import mpz, mpq
 from pyeantic import eantic, real_embedded_number_field
 from pyexactreal.exact_reals import ExactReals
 
-from sage.all import ZZ, QQ, FreeModule, FreeModules, Morphism, Hom, SetsWithPartialMaps, NumberFields
+from sage.all import ZZ, QQ, FreeModule, FreeModules, Morphism, Hom, SetsWithPartialMaps, NumberFields, Parent, UniqueRepresentation
 from sage.rings.number_field.number_field_base import NumberField as SageNumberField
 from sage.structure.element import Vector as SageVector
-from sage.structure.parent import Parent
-from sage.structure.unique_representation import UniqueRepresentation
 
 class Vector(SageVector):
     r"""
@@ -231,6 +229,39 @@ class Vector(SageVector):
         return self.parent()(scalar * self.vector.x(), scalar * self.vector.y())
 
     _lmul_ = _rmul_
+
+    def _acted_upon_(self, c, self_on_left):
+        r"""
+        Act upon this vector with ``c``.
+
+        This method is used to implement multiplication with scalars that
+        cannot be handled by the coercion framework directly.
+
+        EXAMPLES:
+
+        The real embedded number field at the base of this vector space coerces
+        into the corresponding SageMath number field. However, the converse
+        coercion does not exist so multiplication of such SageMath number field
+        elements with vectors here would not work otherwise::
+
+            sage: from pyflatsurf.vector import Vectors
+            sage: from pyeantic import RealEmbeddedNumberField
+            sage: K = NumberField(x**2 - 2, 'a', embedding=sqrt(AA(2)))
+            sage: R = RealEmbeddedNumberField(K)
+            sage: R.has_coerce_map_from(K)
+            False
+            sage: V = Vectors(K)
+            sage: v = V.an_element()
+            sage: K.gen() * v in V
+            True
+
+        """
+        isomorphic_base_ring = self.parent()._isomorphic_vector_space.base_ring()
+        if isomorphic_base_ring is not self.base_ring():
+            if c in isomorphic_base_ring:
+                return self.base_ring()(c) * self
+
+        return None
 
     def __bool__(self):
         r"""
