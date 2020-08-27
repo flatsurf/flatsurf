@@ -53,7 +53,7 @@ requirements:
     - boost-cpp
     - libintervalxt >=1.0.0
     - libexactreal >=1.0.0
-    - e-antic >=1.0a master_1110
+    - e-antic
     - gmp
     - fmt
 {%- endif %}
