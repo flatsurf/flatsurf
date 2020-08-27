@@ -40,6 +40,9 @@ AX_CXX_COMPILE_STDCXX(17)
 AC_CHECK_HEADERS([boost/type_traits.hpp], , AC_MSG_ERROR([boost headers not found]))
 
 AC_CHECK_HEADERS([fmt/format.h], , AC_MSG_ERROR([fmt headers not found]))
+AX_CXX_CHECK_LIB([fmt], [fmt::v6::getpagesize()], , [
+  AX_CXX_CHECK_LIB([fmt], [fmt::v7::getpagesize()], , [AC_MSG_ERROR([fmt library not found])], [-lfmt])
+], [-lfmt])
 
 # GMPXX does not contain anything that we can check for with AX_CXX_CHECK_LIB
 # so we just check for something from the standard library, i.e., that -lgmpxx
