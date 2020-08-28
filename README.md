@@ -4,6 +4,7 @@
 ![ppc64le disabled](https://img.shields.io/badge/ppc64le-disabled-lightgrey.svg)
 [![codecov](https://codecov.io/gh/flatsurf/flatsurf/branch/master/graph/badge.svg)](https://codecov.io/gh/flatsurf/flatsurf)
 [![asv](http://img.shields.io/badge/benchmarked%20by-asv-blue.svg?style=flat)](https://flatsurf.github.io/flatsurf-asv/)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fflatsurf%2Fflatsurf.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fflatsurf%2Fflatsurf?ref=badge_shield)
 
 ## Current Release Info
 
@@ -145,3 +146,7 @@ benchmarks run as long as they would usually.
 
 * [@saraedum](https://github.com/saraedum)
 * [@videlec](https://github.com/videlec)
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fflatsurf%2Fflatsurf.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fflatsurf%2Fflatsurf?ref=badge_large)
