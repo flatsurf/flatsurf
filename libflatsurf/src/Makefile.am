@@ -168,8 +168,6 @@ libflatsurf_la_LDFLAGS += -lexactreal
 libflatsurf_la_LDFLAGS += -leanticxx -leantic
 # we build IETs with intervalxt
 libflatsurf_la_LDFLAGS += -lintervalxt
-# we use libfmt for string formatting
-libflatsurf_la_LDFLAGS += -lfmt
 
 $(builddir)/../flatsurf/local.hpp: $(srcdir)/../flatsurf/local.hpp.in Makefile
 	mkdir -p $(builddir)/../flatsurf

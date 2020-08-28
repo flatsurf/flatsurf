@@ -51,9 +51,9 @@ requirements:
 {%- if libflatsurf_requirements %}
     - arb
     - boost-cpp
-    - libintervalxt >=1.0.0
-    - libexactreal >=1.0.0
-    - e-antic >=1.0a master_1110
+    - libintervalxt >=1.0.2
+    - libexactreal >=1.1.0
+    - e-antic
     - gmp
     - fmt
 {%- endif %}
@@ -61,7 +61,7 @@ requirements:
     - python {{ _python }}
     - setuptools
     - gmpxxyy
-    - pyexactreal >=1.0.0
+    - pyexactreal >=1.0.2
     - cppyythonizations
 {%- endif %}
 {%- if component == "pyflatsurf" %}
@@ -90,7 +90,7 @@ requirements:
 {%- if component == "pyflatsurf" %}
     - python {{ _python }}
     - cppyy
-    - pyexactreal >=1.0.0
+    - pyexactreal >=1.0.2
     - boost-cpp
     - cppyythonizations
 {%- endif %}
