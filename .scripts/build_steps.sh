@@ -19,7 +19,11 @@ conda-build:
 
 CONDARC
 
-conda install --yes --quiet conda-forge-ci-setup=3 conda-build pip patch -c conda-forge
+conda install --yes --quiet -c conda-forge mamba
+
+mamba install --yes --quiet conda-forge-ci-setup=3 conda-build pip patch -c conda-forge
+
+mamba install --yes --quiet -c conda-forge/label/boa_dev boa
 
 
 patch -p1 -d "`python -c 'import conda_build.variants, os.path;print(os.path.dirname(os.path.dirname(conda_build.variants.__file__)))'`" < ${CI_SUPPORT}/conda_build.3979.patch
@@ -32,7 +36,10 @@ source run_conda_forge_build_setup
 # make the build number clobber
 make_build_number "${FEEDSTOCK_ROOT}" "${RECIPE_ROOT}" "${CONFIG_FILE}"
 
-conda build "${RECIPE_ROOT}" -m "${CI_SUPPORT}/${CONFIG}.yaml" \
+mkdir -p /home/conda/feedstock_root/build_artifacts/noarch
+echo '{}' > /home/conda/feedstock_root/build_artifacts/noarch/repodata.json
+
+conda mambabuild "${RECIPE_ROOT}" -m "${CI_SUPPORT}/${CONFIG}.yaml" \
     --suppress-variables \
     --clobber-file "${CI_SUPPORT}/clobber_${CONFIG}.yaml"
 
