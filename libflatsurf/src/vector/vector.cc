@@ -180,7 +180,7 @@ class ImplementationOf<Vector<T>> : public Cartesian<T> {
           return CCW::COLLINEAR;
         }
       }
-      return {};
+      return std::nullopt;
     } else {
       int cmp = arf_cmp(arb_midref(a.arb_t()), arb_midref(b.arb_t()));
       assert(cmp != 0);
@@ -210,7 +210,7 @@ class ImplementationOf<Vector<T>> : public Cartesian<T> {
         }
       }
     }
-    return {};
+    return std::nullopt;
   }
 
   template <bool Enable = IsArb<T>, If<Enable> = true>

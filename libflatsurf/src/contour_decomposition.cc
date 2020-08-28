@@ -136,6 +136,7 @@ void ImplementationOf<ContourDecomposition<Surface>>::check(const std::vector<Pa
             case RIGHT:
               return 3;
           }
+          break;
         case BOTTOM:
           switch (classify(next)) {
             case TOP:
@@ -147,6 +148,7 @@ void ImplementationOf<ContourDecomposition<Surface>>::check(const std::vector<Pa
             case RIGHT:
               return 1;
           }
+          break;
         case LEFT:
           switch (classify(next)) {
             case TOP:
@@ -158,6 +160,7 @@ void ImplementationOf<ContourDecomposition<Surface>>::check(const std::vector<Pa
             case RIGHT:
               return 4;
           }
+          break;
         case RIGHT:
           switch (classify(next)) {
             case TOP:
@@ -169,6 +172,7 @@ void ImplementationOf<ContourDecomposition<Surface>>::check(const std::vector<Pa
             case RIGHT:
               return 2;
           }
+          break;
       }
       throw std::logic_error("impossible classification");
     };
