@@ -4,6 +4,19 @@ intervalxt Change Log
 
 .. current developments
 
+v1.0.3
+====================
+
+**Added:**
+
+* a DOI badge to the README for citations
+
+**Fixed:**
+
+* some compiler warnings with very recent GCCs
+
+
+
 v1.0.2
 ====================
 
