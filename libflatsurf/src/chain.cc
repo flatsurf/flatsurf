@@ -224,7 +224,7 @@ ImplementationOf<Chain<Surface>>::~ImplementationOf() {
 
 template <typename Surface>
 std::optional<const mpz_class*> ImplementationOf<Chain<Surface>>::operator[](const size_t index) const {
-  if (fmpz_is_zero(&coefficients[index])) return {};
+  if (fmpz_is_zero(&coefficients[index])) return std::nullopt;
 
   __mpz_struct* promoted = _fmpz_promote_val(&coefficients[index]);
   // This is hack that gmpxx.h is using as well. An mpz_class and a mpz_t are

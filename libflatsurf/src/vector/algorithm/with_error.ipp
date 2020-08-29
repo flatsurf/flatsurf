@@ -71,7 +71,7 @@ std::optional<bool> VectorWithError<Vector>::operator!=(const Vector& rhs) const
   } else if constexpr (is_cartesian_v<Implementation>) {
     const auto eq = self == rhs;
     if (eq) return !*eq;
-    return {};
+    return std::nullopt;
   } else {
     static_assert(false_type_v<Implementation>, "Implementation is missing operator!=.");
   }

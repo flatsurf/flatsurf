@@ -46,8 +46,8 @@ std::optional<exactreal::Arb> QuadraticPolynomial<T>::root(const long prec) cons
       if ((*this)(T(1)) == 0) return exactreal::Arb(1);
       return root(2 * prec);
     }
-    if (*lt0) return {};
-    if (*gt1) return {};
+    if (*lt0) return std::nullopt;
+    if (*gt1) return std::nullopt;
 
     return solution;
   };
@@ -61,7 +61,7 @@ std::optional<exactreal::Arb> QuadraticPolynomial<T>::root(const long prec) cons
 
   if (a == 0) {
     if (b == 0)
-      return {};
+      return std::nullopt;
 
     if (c == -b)
       return exactreal::Arb(1);
@@ -72,7 +72,7 @@ std::optional<exactreal::Arb> QuadraticPolynomial<T>::root(const long prec) cons
 
   const T discriminant = b * b - 4 * a * c;
   if (discriminant < 0) {
-    return {};
+    return std::nullopt;
   } else if (discriminant == 0) {
     return validate((-b_ / (2 * a_))(prec));
   } else {
@@ -92,7 +92,7 @@ std::optional<exactreal::Arb> QuadraticPolynomial<T>::root(const long prec) cons
     else if (t1)
       return t1;
     else
-      return {};
+      return std::nullopt;
   }
 }
 

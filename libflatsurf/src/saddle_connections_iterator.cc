@@ -428,7 +428,7 @@ std::optional<HalfEdge> SaddleConnectionsIterator<Surface>::incrementWithCrossin
 
   while (true) {
     if (impl->sector == impl->end) {
-      return {};
+      return std::nullopt;
     } else
       switch (impl->state.back()) {
         case Implementation::State::START_FROM_INSIDE_TO_INSIDE:
@@ -440,7 +440,7 @@ std::optional<HalfEdge> SaddleConnectionsIterator<Surface>::incrementWithCrossin
           return ret;
         }
         case Implementation::State::SADDLE_CONNECTION_FOUND:
-          return {};
+          return std::nullopt;
         default:
           impl->increment();
       }
