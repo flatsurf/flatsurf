@@ -1,7 +1,4 @@
 [![Linux](https://dev.azure.com/flatsurf/conda/_apis/build/status/flatsurf.flatsurf?branchName=master&jobName=linux&configuration=linux%20build_linux_)](https://dev.azure.com/flatsurf/conda/_build/latest?definitionId=&branchName=master)
-![OSX disabled](https://img.shields.io/badge/OSX-disabled-lightgrey.svg)
-![Windows disabled](https://img.shields.io/badge/Windows-disabled-lightgrey.svg)
-![ppc64le disabled](https://img.shields.io/badge/ppc64le-disabled-lightgrey.svg)
 [![codecov](https://codecov.io/gh/flatsurf/flatsurf/branch/master/graph/badge.svg)](https://codecov.io/gh/flatsurf/flatsurf)
 [![asv](http://img.shields.io/badge/benchmarked%20by-asv-blue.svg?style=flat)](https://flatsurf.github.io/flatsurf-asv/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4006152.svg)](https://doi.org/10.5281/zenodo.4006152)
