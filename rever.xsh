@@ -20,7 +20,7 @@
 import sys
 
 try:
-  input("Are you sure you are on the master branch which is identical to origin/master and the only pending changes are a version bump in the configure.ac of the library and a reset of the build_number in the recipe? [ENTER]")
+  input("Are you sure you are on the master branch which is identical to origin/master and the only pending changes are a version bump in the configure.ac of the library? [ENTER]")
 except KeyboardInterrupt:
   sys.exit(1)
 
@@ -44,6 +44,7 @@ $VERSION_BUMP_PATTERNS = [
     ('libflatsurf/configure.ac', r'AC_INIT', r'AC_INIT([libflatsurf], [$VERSION], [julian.rueth@fsfe.org])'),
     ('pyflatsurf/configure.ac', r'AC_INIT', r'AC_INIT([pyflatsurf], [$VERSION], [julian.rueth@fsfe.org])'),
     ('recipe/meta.yaml', r"\{% set version =", r"{% set version = '$VERSION' %}"),
+    ('recipe/meta.yaml', r"\{% set build_number =", r"{% set build_number = '0' %}"),
 ]
 
 print("Make sure you bump the version_info in libflatsurf/configure.ac manually!")
