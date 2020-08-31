@@ -20,10 +20,8 @@
 #ifndef LIBFLATSURF_TRACKED_IMPL_HPP
 #define LIBFLATSURF_TRACKED_IMPL_HPP
 
-#include "../external/slimsig/include/slimsig/slimsig.h"
-
 #include "../../flatsurf/tracked.hpp"
-
+#include "../external/slimsig/include/slimsig/slimsig.h"
 #include "flat_triangulation_combinatorial.impl.hpp"
 
 namespace flatsurf {

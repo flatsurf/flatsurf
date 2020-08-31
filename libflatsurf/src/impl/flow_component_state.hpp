@@ -20,12 +20,10 @@
 #ifndef LIBFLATSURF_FLOW_COMPONENT_STATE_HPP
 #define LIBFLATSURF_FLOW_COMPONENT_STATE_HPP
 
+#include <intervalxt/component.hpp>
 #include <iosfwd>
-
 #include <list>
 #include <memory>
-
-#include <intervalxt/component.hpp>
 
 #include "../../flatsurf/contour_component.hpp"
 #include "../../flatsurf/interval_exchange_transformation.hpp"

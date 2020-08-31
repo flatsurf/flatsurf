@@ -17,21 +17,17 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <vector>
+#include <fmt/format.h>
 
 #include <exact-real/arb.hpp>
-
-#include <fmt/format.h>
+#include <vector>
 
 #include "../flatsurf/chain.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vector.hpp"
-
 #include "external/rx-ranges/include/rx/ranges.hpp"
-
 #include "impl/saddle_connections_iterator.impl.hpp"
-
 #include "util/assert.ipp"
 
 namespace flatsurf {

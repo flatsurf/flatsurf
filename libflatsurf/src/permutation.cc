@@ -17,12 +17,13 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "../flatsurf/permutation.hpp"
+
 #include <boost/range/numeric.hpp>
 #include <cassert>
 #include <ostream>
 #include <unordered_set>
 
-#include "../flatsurf/permutation.hpp"
 #include "util/assert.ipp"
 
 using boost::accumulate;

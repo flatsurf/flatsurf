@@ -20,21 +20,18 @@
 #ifndef LIBFLATSURF_VECTOR_ALGORITHM_EXACT_IPP
 #define LIBFLATSURF_VECTOR_ALGORITHM_EXACT_IPP
 
-#include <optional>
-
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
-#include "../../external/gmpxxll/gmpxxll/mpz_class.hpp"
+#include <optional>
 
 #include "../../../flatsurf/bound.hpp"
 #include "../../../flatsurf/ccw.hpp"
 #include "../../../flatsurf/fmt.hpp"
 #include "../../../flatsurf/orientation.hpp"
-
+#include "../../external/gmpxxll/gmpxxll/mpz_class.hpp"
 #include "../storage/cartesian.ipp"
 #include "../storage/forward.ipp"
-
 #include "./base.ipp"
 #include "./exact.extension.ipp"
 #include "./extension.ipp"

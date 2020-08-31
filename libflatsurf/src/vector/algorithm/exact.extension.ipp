@@ -20,13 +20,12 @@
 #ifndef LIBFLATSURF_VECTOR_ALGORITHM_EXACT_EXTENSION_IPP
 #define LIBFLATSURF_VECTOR_ALGORITHM_EXACT_EXTENSION_IPP
 
+#include <boost/type_traits/is_detected.hpp>
+#include <boost/type_traits/is_detected_exact.hpp>
 #include <intervalxt/forward.hpp>
 #include <optional>
 
 #include "../../../flatsurf/detail/vector_base.hpp"
-
-#include <boost/type_traits/is_detected.hpp>
-#include <boost/type_traits/is_detected_exact.hpp>
 
 // Vector::Implementation classes can implement the following
 // extension points to provide specialized implementations for the operations supported by VectorExact.

@@ -20,14 +20,14 @@
 #ifndef LIBFLATSURF_UTIL_INSTANTIATE_IPP
 #define LIBFLATSURF_UTIL_INSTANTIATE_IPP
 
+#include <e-antic/renfxx.h>
+#include <gmpxx.h>
+
 #include <boost/preprocessor/seq/fold_left.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/seq/for_each_product.hpp>
 #include <boost/preprocessor/seq/seq.hpp>
 #include <boost/preprocessor/seq/transform.hpp>
-
-#include <e-antic/renfxx.h>
-#include <gmpxx.h>
 #include <exact-real/element.hpp>
 #include <exact-real/integer_ring.hpp>
 #include <exact-real/number_field.hpp>

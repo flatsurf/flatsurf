@@ -21,7 +21,6 @@
 #define LIBFLATSURF_TRACKING_MAP_IMPL_HPP
 
 #include "../../flatsurf/tracking_map.hpp"
-
 #include "./tracking_storage.hpp"
 
 namespace flatsurf {

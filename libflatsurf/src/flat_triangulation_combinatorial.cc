@@ -17,29 +17,27 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "../flatsurf/flat_triangulation_combinatorial.hpp"
+
+#include <fmt/format.h>
+
 #include <cstdint>
 #include <ostream>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-#include <fmt/format.h>
-
-#include "external/rx-ranges/include/rx/ranges.hpp"
-
 #include "../flatsurf/edge.hpp"
-#include "../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_map.hpp"
 #include "../flatsurf/half_edge_set_iterator.hpp"
 #include "../flatsurf/permutation.hpp"
 #include "../flatsurf/vertex.hpp"
-
+#include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/flat_triangulation_combinatorial.impl.hpp"
 #include "impl/tracking.impl.hpp"
 #include "impl/vertex.impl.hpp"
-
 #include "util/assert.ipp"
 
 namespace flatsurf {

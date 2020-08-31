@@ -17,10 +17,11 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "../flatsurf/delaunay_triangulation.hpp"
+
 #include <ostream>
 #include <vector>
 
-#include "../flatsurf/delaunay_triangulation.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/vector.hpp"
@@ -71,6 +72,7 @@ bool DelaunayTriangulation<T>::test(const FlatTriangulation<T>& triangulation, c
 
 // Instantiations of templates so implementations are generated for the linker
 #include <e-antic/renfxx.h>
+
 #include <exact-real/element.hpp>
 #include <exact-real/integer_ring.hpp>
 #include <exact-real/number_field.hpp>

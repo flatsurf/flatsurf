@@ -17,20 +17,19 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <ostream>
-#include <string>
+#include "../flatsurf/vertex.hpp"
 
 #include <fmt/format.h>
+
+#include <ostream>
+#include <string>
 
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/half_edge_set_iterator.hpp"
-#include "../flatsurf/vertex.hpp"
-
 #include "impl/vertex.impl.hpp"
-
 #include "util/assert.ipp"
 
 using std::ostream;

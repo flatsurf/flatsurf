@@ -22,7 +22,6 @@
 
 #include "../../flatsurf/contour_connection.hpp"
 #include "../../flatsurf/half_edge.hpp"
-
 #include "forward.hpp"
 
 namespace flatsurf {

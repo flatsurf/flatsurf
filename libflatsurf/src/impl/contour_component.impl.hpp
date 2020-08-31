@@ -25,7 +25,6 @@
 #include <vector>
 
 #include "../../flatsurf/contour_component.hpp"
-
 #include "contour_decomposition.impl.hpp"
 #include "contour_decomposition_state.hpp"
 #include "forward.hpp"

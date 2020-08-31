@@ -20,13 +20,11 @@
 #ifndef LIBFLATSURF_VECTOR_ALGORITHM_BASE_IPP
 #define LIBFLATSURF_VECTOR_ALGORITHM_BASE_IPP
 
+#include <exact-real/arb.hpp>
 #include <iosfwd>
 
 #include "../../../flatsurf/detail/vector_base.hpp"
 #include "../../../flatsurf/vector.hpp"
-
-#include <exact-real/arb.hpp>
-
 #include "../../impl/approximation.hpp"
 #include "../../util/false.ipp"
 #include "../storage/cartesian.ipp"

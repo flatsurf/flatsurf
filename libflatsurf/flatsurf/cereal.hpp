@@ -2,7 +2,7 @@
  *  This file is part of flatsurf.
  *
  *        Copyright (C) 2019 Vincent Delecroix
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #ifndef LIBFLATSURF_CEREAL_HPP
 #define LIBFLATSURF_CEREAL_HPP
 
+#include <e-antic/renfxx_cereal.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
@@ -28,6 +29,7 @@
 #include <cereal/types/unordered_map.hpp>
 #include <cereal/types/utility.hpp>
 #include <cereal/types/vector.hpp>
+#include <exact-real/cereal.hpp>
 
 #include "bound.hpp"
 #include "chain.hpp"
@@ -44,6 +46,46 @@
 
 namespace flatsurf {
 
+namespace {
+
+template <typename T>
+struct ReplacementSerialization {
+  static auto serializable(const T& value) {
+    if constexpr (std::is_same_v<T, mpz_class>) {
+      return value.get_str();
+    } else if constexpr (std::is_same_v<T, mpq_class>) {
+      return value.get_str();
+    } else {
+      return value;
+    }
+  }
+
+  template <typename S>
+  static auto deserializable(const S& value) {
+    if constexpr (std::is_same_v<T, mpz_class>) {
+      return mpz_class(value);
+    } else if constexpr (std::is_same_v<T, mpq_class>) {
+      return mpq_class(value);
+    } else {
+      return value;
+    }
+  }
+
+  template <typename Archive>
+  static void save(Archive& archive, const std::string key, const T& value) {
+    archive(cereal::make_nvp(key, serializable(value)));
+  }
+
+  template <typename Archive>
+  static void load(Archive& archive, const std::string key, T& value) {
+    decltype(serializable(std::declval<T>())) s;
+    archive(cereal::make_nvp(key, s));
+    value = deserializable(s);
+  }
+};
+
+}  // namespace
+
 template <typename Archive>
 int HalfEdge::save_minimal(Archive&) const {
   return id();
@@ -52,6 +94,26 @@ int HalfEdge::save_minimal(Archive&) const {
 template <typename Archive>
 void HalfEdge::load_minimal(Archive&, const int& value) {
   *this = HalfEdge(value);
+}
+
+template <typename Archive>
+int Edge::save_minimal(Archive&) const {
+  return positive().id();
+}
+
+template <typename Archive>
+void Edge::load_minimal(Archive&, const int& value) {
+  *this = Edge(HalfEdge(value));
+}
+
+template <typename Archive>
+void Bound::save(Archive& archive) const {
+  ReplacementSerialization<mpz_class>::save(archive, "square", square);
+}
+
+template <typename Archive>
+void Bound::load(Archive& archive) {
+  ReplacementSerialization<mpz_class>::load(archive, "square", square);
 }
 
 template <typename Archive, typename T>
@@ -69,16 +131,16 @@ void load(Archive& archive, Permutation<T>& self) {
 template <typename T>
 template <typename Archive>
 void Vector<T>::save(Archive& archive) const {
-  archive(cereal::make_nvp("x", x()));
-  archive(cereal::make_nvp("y", y()));
+  ReplacementSerialization<T>::save(archive, "x", x());
+  ReplacementSerialization<T>::save(archive, "y", y());
 }
 
 template <typename T>
 template <typename Archive>
 void Vector<T>::load(Archive& archive) {
   T x, y;
-  archive(cereal::make_nvp("x", x));
-  archive(cereal::make_nvp("y", y));
+  ReplacementSerialization<T>::load(archive, "x", x);
+  ReplacementSerialization<T>::load(archive, "y", y);
   *this = Vector<T>(x, y);
 }
 
@@ -140,7 +202,7 @@ struct Serialization<FlatTriangulation<T>> {
     std::unordered_map<HalfEdge, Vector<T>> map;
     archive(cereal::make_nvp("vectors", map));
 
-    self = FlatTriangulation<long long>(std::move(std::move(combinatorial)), [&](HalfEdge e) { return map.at(e); });
+    self = FlatTriangulation<T>(std::move(std::move(combinatorial)), [&](HalfEdge e) { return map.at(e); });
   }
 };
 
@@ -148,10 +210,11 @@ template <typename Surface>
 struct Serialization<Chain<Surface>> {
   template <typename Archive>
   void save(Archive& archive, const Chain<Surface>& self) {
+    archive(cereal::make_nvp("surface", self.surface().shared_from_this()));
+
     std::vector<std::string> coefficients;
     for (auto edge : self.surface().edges())
       coefficients.push_back(fmt::format("{}", self[edge]));
-    archive(cereal::make_nvp("surface", self.surface().shared_from_this()));
     archive(cereal::make_nvp("coefficients", coefficients));
   }
 
@@ -159,9 +222,10 @@ struct Serialization<Chain<Surface>> {
   void load(Archive& archive, Chain<Surface>& self) {
     std::shared_ptr<const Surface> surface;
     archive(cereal::make_nvp("surface", surface));
-    self = Chain(surface);
     std::vector<std::string> coefficients;
     archive(cereal::make_nvp("coefficients", coefficients));
+
+    self = Chain(surface);
     for (size_t i = 0; i < coefficients.size(); i++)
       self += ((Chain<Surface>(surface) += surface->edges()[i].positive()) *= mpz_class(coefficients[i]));
   }
@@ -205,6 +269,24 @@ struct Serialization<Vertex> {
     std::vector<HalfEdge> outgoing;
     archive(cereal::make_nvp("outgoing", outgoing));
     self = Vertex(PrivateConstructor{}, HalfEdgeSet(outgoing));
+  }
+};
+
+template <typename Surface>
+struct Serialization<Vertical<Surface>> {
+  template <typename Archive>
+  void save(Archive& archive, const Vertical<Surface>& self) {
+    archive(cereal::make_nvp("surface", self.surface()));
+    archive(cereal::make_nvp("vector", self.vertical()));
+  }
+
+  template <typename Archive>
+  void load(Archive& archive, Vertical<Surface>& self) {
+    std::shared_ptr<const Surface> surface;
+    Vector<typename Surface::Coordinate> vertical;
+    archive(cereal::make_nvp("surface", surface));
+    archive(cereal::make_nvp("vector", vertical));
+    self = Vertical(surface, vertical);
   }
 };
 

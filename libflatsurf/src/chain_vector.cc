@@ -17,11 +17,11 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "impl/chain_vector.hpp"
+
 #include <optional>
 
 #include "impl/chain.impl.hpp"
-#include "impl/chain_vector.hpp"
-
 #include "util/assert.ipp"
 
 namespace flatsurf {
@@ -262,9 +262,8 @@ std::ostream& operator<<(std::ostream& os, const ChainVector<Surface, T>& self) 
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
-#include "util/instantiate.ipp"
-
 #include "../flatsurf/vector.hpp"
+#include "util/instantiate.ipp"
 
 #define LIBFLATSURF_INSTANTIATE_THIS(SURFACE)                                                          \
   LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION((ChainVector<SURFACE, typename SURFACE::Coordinate>)) \

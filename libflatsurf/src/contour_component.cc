@@ -17,12 +17,10 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <intervalxt/interval_exchange_transformation.hpp>
-
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
-#include "external/rx-ranges/include/rx/ranges.hpp"
+#include <intervalxt/interval_exchange_transformation.hpp>
 
 #include "../flatsurf/contour_connection.hpp"
 #include "../flatsurf/flat_triangulation_collapsed.hpp"
@@ -31,12 +29,11 @@
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vertical.hpp"
-
+#include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/contour_component.impl.hpp"
 #include "impl/contour_component_state.hpp"
 #include "impl/contour_connection.impl.hpp"
 #include "impl/contour_decomposition_state.hpp"
-
 #include "util/assert.ipp"
 
 using std::ostream;

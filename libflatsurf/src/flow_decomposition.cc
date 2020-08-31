@@ -17,46 +17,42 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <memory>
-#include <ostream>
-#include <string>
-#include <unordered_map>
-#include <vector>
-
-#include <boost/algorithm/string/join.hpp>
-#include <boost/lexical_cast.hpp>
+#include "../flatsurf/flow_decomposition.hpp"
 
 #include <gmpxx.h>
 
+#include <boost/algorithm/string/join.hpp>
+#include <boost/lexical_cast.hpp>
 #include <intervalxt/dynamical_decomposition.hpp>
 #include <intervalxt/sample/arithmetic.hpp>
 #include <intervalxt/sample/e-antic-arithmetic.hpp>
 #include <intervalxt/sample/exact-real-arithmetic.hpp>
 #include <intervalxt/sample/long-long-int-arithmetic.hpp>
 #include <intervalxt/sample/rational-arithmetic.hpp>
-
-#include "external/rx-ranges/include/rx/ranges.hpp"
+#include <memory>
+#include <ostream>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 #include "../flatsurf/contour_component.hpp"
 #include "../flatsurf/contour_decomposition.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/flat_triangulation_collapsed.hpp"
 #include "../flatsurf/flow_connection.hpp"
-#include "../flatsurf/flow_decomposition.hpp"
 #include "../flatsurf/flow_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_map.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertical.hpp"
-
+#include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/contour_decomposition.impl.hpp"
 #include "impl/flow_component.impl.hpp"
 #include "impl/flow_component_state.hpp"
 #include "impl/flow_decomposition.impl.hpp"
 #include "impl/flow_decomposition_state.hpp"
 #include "impl/interval_exchange_transformation.impl.hpp"
-
 #include "util/assert.ipp"
 
 using std::ostream;

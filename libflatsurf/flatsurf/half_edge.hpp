@@ -20,11 +20,11 @@
 #ifndef LIBFLATSURF_HALF_EDGE_HPP
 #define LIBFLATSURF_HALF_EDGE_HPP
 
+#include <stddef.h>
+
+#include <boost/operators.hpp>
 #include <functional>
 #include <iosfwd>
-
-#include <stddef.h>
-#include <boost/operators.hpp>
 
 #include "forward.hpp"
 

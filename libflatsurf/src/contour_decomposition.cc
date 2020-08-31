@@ -17,14 +17,12 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <memory>
-#include <ostream>
-#include <vector>
-
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
-#include "external/rx-ranges/include/rx/ranges.hpp"
+#include <memory>
+#include <ostream>
+#include <vector>
 
 #include "../flatsurf/contour_component.hpp"
 #include "../flatsurf/fmt.hpp"
@@ -34,9 +32,8 @@
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vertex.hpp"
 #include "../flatsurf/vertical.hpp"
-
+#include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/contour_decomposition.impl.hpp"
-
 #include "util/assert.ipp"
 
 namespace flatsurf {

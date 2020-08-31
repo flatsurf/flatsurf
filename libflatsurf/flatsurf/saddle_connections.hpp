@@ -20,12 +20,10 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTIONS_HPP
 #define LIBFLATSURF_SADDLE_CONNECTIONS_HPP
 
+#include <boost/iterator/iterator_facade.hpp>
 #include <memory>
 
-#include <boost/iterator/iterator_facade.hpp>
-
 #include "external/spimpl/spimpl.h"
-
 #include "half_edge.hpp"
 #include "vertex.hpp"
 
@@ -63,13 +61,13 @@ class SaddleConnections {
 };
 
 template <typename Surface>
-SaddleConnections(const std::shared_ptr<Surface> &, Bound)->SaddleConnections<Surface>;
+SaddleConnections(const std::shared_ptr<Surface> &, Bound) -> SaddleConnections<Surface>;
 
 template <typename Surface>
-SaddleConnections(const std::shared_ptr<Surface> &, Bound, const Vertex &)->SaddleConnections<Surface>;
+SaddleConnections(const std::shared_ptr<Surface> &, Bound, const Vertex &) -> SaddleConnections<Surface>;
 
 template <typename Surface>
-SaddleConnections(const std::shared_ptr<Surface> &, Bound, const HalfEdge &)->SaddleConnections<Surface>;
+SaddleConnections(const std::shared_ptr<Surface> &, Bound, const HalfEdge &) -> SaddleConnections<Surface>;
 
 }  // namespace flatsurf
 

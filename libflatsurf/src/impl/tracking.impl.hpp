@@ -21,7 +21,6 @@
 #define LIBFLATSURF_TRACKING_IMPL_HPP
 
 #include "../external/slimsig/include/slimsig/slimsig.h"
-
 #include "flat_triangulation_combinatorial.impl.hpp"
 
 namespace flatsurf {

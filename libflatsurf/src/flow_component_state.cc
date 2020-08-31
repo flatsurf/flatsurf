@@ -17,9 +17,9 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <ostream>
-
 #include "impl/flow_component_state.hpp"
+
+#include <ostream>
 
 namespace flatsurf {
 

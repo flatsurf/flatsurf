@@ -17,20 +17,18 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <ostream>
+#include "../flatsurf/flow_connection.hpp"
 
 #include <intervalxt/label.hpp>
+#include <ostream>
 
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
-#include "../flatsurf/flow_connection.hpp"
 #include "../flatsurf/vertical.hpp"
-
 #include "impl/flow_component.impl.hpp"
 #include "impl/flow_connection.impl.hpp"
 #include "impl/flow_decomposition_state.hpp"
 #include "impl/saddle_connection.impl.hpp"
-
 #include "util/assert.ipp"
 
 using std::ostream;

@@ -23,7 +23,6 @@
 #include <memory>
 
 #include "../../flatsurf/flow_component.hpp"
-
 #include "flow_component_state.hpp"
 #include "flow_decomposition_state.hpp"
 

@@ -20,10 +20,9 @@
 #ifndef LIBFLATSURF_EDGE_HPP
 #define LIBFLATSURF_EDGE_HPP
 
+#include <boost/operators.hpp>
 #include <iosfwd>
 #include <vector>
-
-#include <boost/operators.hpp>
 
 #include "half_edge.hpp"
 
@@ -41,19 +40,26 @@ class Edge : boost::equality_comparable<Edge> {
 
   size_t index() const;
 
-  bool operator==(const Edge&) const;
+  bool operator==(const Edge &) const;
 
-  friend std::ostream& operator<<(std::ostream&, const Edge&);
+  friend std::ostream &operator<<(std::ostream &, const Edge &);
 
  private:
   HalfEdge id;
+
+  friend cereal::access;
+
+  template <typename Archive>
+  int save_minimal(Archive &) const;
+  template <typename Archive>
+  void load_minimal(Archive &, const int &);
 };
 }  // namespace flatsurf
 
 namespace std {
 template <>
 struct hash<flatsurf::Edge> {
-  size_t operator()(const flatsurf::Edge&) const noexcept;
+  size_t operator()(const flatsurf::Edge &) const noexcept;
 };
 }  // namespace std
 

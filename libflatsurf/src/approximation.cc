@@ -17,11 +17,12 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "impl/approximation.hpp"
+
 #include <exact-real/integer_ring.hpp>
 #include <exact-real/number_field.hpp>
 #include <exact-real/rational_field.hpp>
 
-#include "impl/approximation.hpp"
 #include "util/false.ipp"
 
 namespace flatsurf {

@@ -24,10 +24,8 @@
 #include <optional>
 
 #include "../../../flatsurf/bound.hpp"
-
 #include "../storage/cartesian.ipp"
 #include "../storage/forward.ipp"
-
 #include "./base.ipp"
 #include "./extension.ipp"
 #include "./with_error.extension.ipp"

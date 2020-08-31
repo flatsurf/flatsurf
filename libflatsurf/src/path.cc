@@ -17,26 +17,24 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "../flatsurf/path.hpp"
+
+#include <fmt/format.h>
+
 #include <algorithm>
 #include <ostream>
 #include <unordered_set>
 
-#include <fmt/format.h>
-
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/chain.hpp"
 #include "../flatsurf/fmt.hpp"
-#include "../flatsurf/path.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertex.hpp"
-
+#include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/path.impl.hpp"
 #include "impl/path_iterator.impl.hpp"
-
-#include "external/rx-ranges/include/rx/ranges.hpp"
-
 #include "util/assert.ipp"
 
 namespace flatsurf {

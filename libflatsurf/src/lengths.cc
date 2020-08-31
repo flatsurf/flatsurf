@@ -17,7 +17,7 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <ostream>
+#include "impl/lengths.hpp"
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -29,20 +29,17 @@
 #include <intervalxt/sample/exact-real-arithmetic.hpp>
 #include <intervalxt/sample/lengths.hpp>
 #include <intervalxt/sample/rational-arithmetic.hpp>
+#include <ostream>
 
 #include "../flatsurf/chain.hpp"
 #include "../flatsurf/interval_exchange_transformation.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertical.hpp"
-
 #include "external/gmpxxll/gmpxxll/mpz_class.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
-
 #include "impl/flow_component.impl.hpp"
 #include "impl/flow_connection.impl.hpp"
-#include "impl/lengths.hpp"
 #include "impl/saddle_connection.impl.hpp"
-
 #include "util/assert.ipp"
 #include "util/false.ipp"
 

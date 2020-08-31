@@ -18,10 +18,9 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "external/catch2/single_include/catch2/catch.hpp"
-
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+
 #include <exact-real/element.hpp>
 #include <exact-real/number_field.hpp>
 
@@ -32,7 +31,7 @@
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
 #include "../flatsurf/vector.hpp"
-
+#include "external/catch2/single_include/catch2/catch.hpp"
 #include "surfaces.hpp"
 
 namespace flatsurf::test {

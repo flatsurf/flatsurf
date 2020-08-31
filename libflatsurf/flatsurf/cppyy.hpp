@@ -20,11 +20,11 @@
 #ifndef LIBFLATSURF_CPPYY_HPP
 #define LIBFLATSURF_CPPYY_HPP
 
+#include <e-antic/renfxx_fwd.h>
+
 #include <iosfwd>
 #include <memory>
 #include <stdexcept>
-
-#include <e-antic/renfxx_fwd.h>
 
 #include "bound.hpp"
 #include "chain.hpp"

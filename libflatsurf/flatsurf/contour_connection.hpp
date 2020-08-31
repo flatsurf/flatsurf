@@ -20,12 +20,10 @@
 #ifndef LIBFLATSURF_CONTOUR_CONNECTION_HPP
 #define LIBFLATSURF_CONTOUR_CONNECTION_HPP
 
+#include <boost/operators.hpp>
 #include <list>
 
-#include <boost/operators.hpp>
-
 #include "external/spimpl/spimpl.h"
-
 #include "forward.hpp"
 
 namespace flatsurf {

@@ -18,19 +18,17 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <unordered_set>
-
-#include "external/catch2/single_include/catch2/catch.hpp"
-
 #include <e-antic/renfxx_fwd.h>
+
 #include <exact-real/element.hpp>
 #include <exact-real/number_field.hpp>
+#include <unordered_set>
 
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/vertex.hpp"
-
+#include "external/catch2/single_include/catch2/catch.hpp"
 #include "generators/combinatorial_surface_generator.hpp"
 
 namespace flatsurf::test {

@@ -20,13 +20,12 @@
 #ifndef LIBFLATSURF_FLOW_COMPONENT_HPP
 #define LIBFLATSURF_FLOW_COMPONENT_HPP
 
+#include <boost/logic/tribool_fwd.hpp>
+#include <boost/operators.hpp>
 #include <functional>
 #include <list>
 #include <variant>
 #include <vector>
-
-#include <boost/logic/tribool_fwd.hpp>
-#include <boost/operators.hpp>
 
 #include "copyable.hpp"
 #include "forward.hpp"

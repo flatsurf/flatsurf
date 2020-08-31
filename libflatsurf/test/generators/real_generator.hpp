@@ -21,6 +21,7 @@
 #define LIBFLATSURF_TEST_GENERATORS_REAL_GENERATOR_HPP
 
 #include <e-antic/renfxx.h>
+
 #include <exact-real/element.hpp>
 #include <exact-real/integer_ring.hpp>
 #include <exact-real/number_field.hpp>

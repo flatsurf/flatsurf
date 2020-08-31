@@ -17,7 +17,10 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "../flatsurf/saddle_connections.hpp"
+
 #include <fmt/format.h>
+
 #include <exact-real/arb.hpp>
 #include <stack>
 
@@ -28,15 +31,11 @@
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/saddle_connection.hpp"
-#include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
 #include "../flatsurf/vector.hpp"
-
 #include "external/rx-ranges/include/rx/ranges.hpp"
-
 #include "impl/saddle_connections.impl.hpp"
 #include "impl/saddle_connections_iterator.impl.hpp"
-
 #include "util/assert.ipp"
 
 namespace flatsurf {

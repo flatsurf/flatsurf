@@ -86,7 +86,7 @@ class ChainVector {
 };
 
 template <typename Surface, typename T>
-ChainVector(const ImplementationOf<Chain<Surface>>*, const ChainVector<Surface, T>&)->ChainVector<Surface, T>;
+ChainVector(const ImplementationOf<Chain<Surface>>*, const ChainVector<Surface, T>&) -> ChainVector<Surface, T>;
 
 }  // namespace flatsurf
 

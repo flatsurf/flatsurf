@@ -21,19 +21,18 @@
 #ifndef LIBFLATSURF_TEST_SURFACES_HPP
 #define LIBFLATSURF_TEST_SURFACES_HPP
 
-#include <memory>
-#include <vector>
-
 #include <e-antic/renfxx.h>
+
 #include <exact-real/element.hpp>
 #include <exact-real/integer_ring.hpp>
 #include <exact-real/module.hpp>
 #include <exact-real/number_field.hpp>
 #include <exact-real/real_number.hpp>
+#include <memory>
+#include <vector>
 
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/vector.hpp"
-
 #include "generators/real_generator.hpp"
 
 using namespace flatsurf;

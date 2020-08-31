@@ -20,15 +20,14 @@
 #ifndef LIBFLATSURF_FLAT_TRIANGULATION_HPP
 #define LIBFLATSURF_FLAT_TRIANGULATION_HPP
 
+#include <gmpxx.h>
+
 #include <boost/operators.hpp>
+#include <exact-real/forward.hpp>
 #include <functional>
 #include <iosfwd>
 #include <memory>
 #include <vector>
-
-#include <gmpxx.h>
-
-#include <exact-real/forward.hpp>
 
 #include "flat_triangulation_combinatorial.hpp"
 #include "moveable.hpp"
@@ -116,7 +115,7 @@ class FlatTriangulation : public FlatTriangulationCombinatorial,
 };
 
 template <typename Vector>
-FlatTriangulation(const std::vector<std::vector<int>> &, const std::vector<Vector> &)->FlatTriangulation<typename Vector::Coordinate>;
+FlatTriangulation(const std::vector<std::vector<int>> &, const std::vector<Vector> &) -> FlatTriangulation<typename Vector::Coordinate>;
 }  // namespace flatsurf
 
 #endif

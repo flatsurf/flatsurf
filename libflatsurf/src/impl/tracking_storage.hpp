@@ -20,13 +20,12 @@
 #ifndef LIBFLATSURF_TRACKING_STORAGE_HPP
 #define LIBFLATSURF_TRACKING_STORAGE_HPP
 
+#include <boost/operators.hpp>
+#include <boost/type_traits/is_detected_exact.hpp>
 #include <functional>
 #include <type_traits>
 #include <unordered_map>
 #include <vector>
-
-#include <boost/operators.hpp>
-#include <boost/type_traits/is_detected_exact.hpp>
 
 #include "../../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../../flatsurf/tracking.hpp"

@@ -17,16 +17,16 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <ostream>
+#include "impl/collapsed_half_edge.hpp"
 
 #include <fmt/format.h>
+
+#include <ostream>
 
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/path_iterator.hpp"
-
-#include "impl/collapsed_half_edge.hpp"
 
 namespace flatsurf {
 

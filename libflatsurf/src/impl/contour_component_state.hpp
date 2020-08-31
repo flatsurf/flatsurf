@@ -25,7 +25,6 @@
 #include <unordered_set>
 
 #include "../../flatsurf/half_edge.hpp"
-
 #include "forward.hpp"
 
 namespace flatsurf {

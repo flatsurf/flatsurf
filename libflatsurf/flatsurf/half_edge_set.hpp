@@ -20,13 +20,11 @@
 #ifndef LIBFLATSURF_HALF_EDGE_SET_HPP
 #define LIBFLATSURF_HALF_EDGE_SET_HPP
 
+#include <boost/operators.hpp>
 #include <iosfwd>
 #include <vector>
 
-#include <boost/operators.hpp>
-
 #include "external/spimpl/spimpl.h"
-
 #include "forward.hpp"
 #include "half_edge_set_iterator.hpp"
 

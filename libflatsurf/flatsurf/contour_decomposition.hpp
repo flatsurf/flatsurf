@@ -24,7 +24,6 @@
 #include <vector>
 
 #include "external/spimpl/spimpl.h"
-
 #include "forward.hpp"
 
 namespace flatsurf {

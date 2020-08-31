@@ -17,27 +17,24 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <memory>
-#include <ostream>
-#include <unordered_set>
+#include "../flatsurf/flow_component.hpp"
 
 #include <fmt/format.h>
 
 #include <boost/logic/tribool.hpp>
-
 #include <intervalxt/component.hpp>
 #include <intervalxt/decomposition_step.hpp>
 #include <intervalxt/fmt.hpp>
 #include <intervalxt/label.hpp>
-
-#include "external/rx-ranges/include/rx/ranges.hpp"
+#include <memory>
+#include <ostream>
+#include <unordered_set>
 
 #include "../flatsurf/ccw.hpp"
-#include "../flatsurf/flow_component.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/vertical.hpp"
-
+#include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/collapsed_half_edge.hpp"
 #include "impl/contour_component.impl.hpp"
 #include "impl/contour_decomposition_state.hpp"
@@ -46,7 +43,6 @@
 #include "impl/flow_connection.impl.hpp"
 #include "impl/flow_triangulation.impl.hpp"
 #include "impl/saddle_connection.impl.hpp"
-
 #include "util/assert.ipp"
 
 namespace flatsurf {

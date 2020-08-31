@@ -19,9 +19,10 @@
  *********************************************************************/
 
 #include <benchmark/benchmark.h>
-#include <memory>
 
 #include <exact-real/integer_ring.hpp>
+#include <memory>
+
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
@@ -29,7 +30,6 @@
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
 #include "../flatsurf/vector.hpp"
-
 #include "../test/surfaces.hpp"
 
 using benchmark::DoNotOptimize;

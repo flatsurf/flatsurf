@@ -17,11 +17,11 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "../flatsurf/edge.hpp"
+
 #include <ostream>
 
-#include "../flatsurf/edge.hpp"
 #include "../flatsurf/half_edge.hpp"
-
 #include "util/assert.ipp"
 
 namespace flatsurf {

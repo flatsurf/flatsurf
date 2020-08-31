@@ -21,8 +21,10 @@
 #define LIBFLATSURF_DETAIL_VECTOR_EXACT_HPP
 
 #include <gmpxx.h>
+
 #include <boost/core/empty_value.hpp>
 #include <intervalxt/forward.hpp>
+#include <vector>
 
 #include "vector_base.hpp"
 
@@ -41,7 +43,7 @@ class VectorExact : public VectorBase<Vector>,
   bool insideCircumcircle(std::initializer_list<Vector>) const noexcept;
 
   // Return the scalar product with the argument
-  T operator*(const Vector &)const noexcept;
+  T operator*(const Vector &) const noexcept;
 
   bool operator>(const Bound) const noexcept;
   bool operator<(const Bound) const noexcept;

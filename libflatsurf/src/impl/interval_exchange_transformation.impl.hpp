@@ -20,10 +20,9 @@
 #ifndef LIBFLATSURF_INTERVAL_EXCHANGE_TRANSFORMATION_IMPL_HPP
 #define LIBFLATSURF_INTERVAL_EXCHANGE_TRANSFORMATION_IMPL_HPP
 
+#include <intervalxt/interval_exchange_transformation.hpp>
 #include <map>
 #include <vector>
-
-#include <intervalxt/interval_exchange_transformation.hpp>
 
 #include "../../flatsurf/interval_exchange_transformation.hpp"
 #include "lengths.hpp"

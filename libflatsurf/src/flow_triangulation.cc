@@ -17,6 +17,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "../flatsurf/flow_triangulation.hpp"
+
 #include <memory>
 #include <stack>
 #include <unordered_set>
@@ -27,17 +29,13 @@
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../flatsurf/flow_component.hpp"
 #include "../flatsurf/flow_connection.hpp"
-#include "../flatsurf/flow_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_map.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vertical.hpp"
-
+#include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/flow_decomposition.impl.hpp"
 #include "impl/flow_triangulation.impl.hpp"
-
-#include "external/rx-ranges/include/rx/ranges.hpp"
-
 #include "util/assert.ipp"
 
 namespace flatsurf {

@@ -20,9 +20,7 @@
 #include "../flatsurf/tracked.hpp"
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
-
 #include "impl/tracked.impl.hpp"
-
 #include "util/assert.ipp"
 
 namespace flatsurf {
@@ -232,15 +230,13 @@ void ImplementationOf<Tracked<T>>::connect() {
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
-#include "util/instantiate.ipp"
-
 #include "../flatsurf/edge_set.hpp"
 #include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/odd_half_edge_map.hpp"
 #include "../flatsurf/vector.hpp"
-
 #include "impl/collapsed_half_edge.hpp"
 #include "impl/flat_triangulation_collapsed.impl.hpp"
+#include "util/instantiate.ipp"
 
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<HalfEdge>))
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<HalfEdgeSet>))

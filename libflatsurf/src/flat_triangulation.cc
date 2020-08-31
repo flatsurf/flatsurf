@@ -17,22 +17,24 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <exact-real/arb.hpp>
-#include <intervalxt/sample/arithmetic.hpp>
-#include <map>
-#include <ostream>
-#include <vector>
+#include "../flatsurf/flat_triangulation.hpp"
 
+#include <exact-real/arb.hpp>
 #include <exact-real/integer_ring.hpp>
 #include <exact-real/number_field.hpp>
 #include <exact-real/rational_field.hpp>
 #include <exact-real/yap/arb.hpp>
+#include <functional>
+#include <intervalxt/sample/arithmetic.hpp>
+#include <iosfwd>
+#include <map>
+#include <ostream>
+#include <vector>
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/edge_set.hpp"
-#include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/odd_half_edge_map.hpp"
 #include "../flatsurf/orientation.hpp"
@@ -40,14 +42,10 @@
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertical.hpp"
-
-#include <functional>
-#include <iosfwd>
-#include "util/assert.ipp"
-
 #include "impl/approximation.hpp"
 #include "impl/flat_triangulation.impl.hpp"
 #include "impl/quadratic_polynomial.hpp"
+#include "util/assert.ipp"
 
 using std::map;
 using std::ostream;

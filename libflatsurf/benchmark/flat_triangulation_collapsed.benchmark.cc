@@ -19,12 +19,12 @@
  *********************************************************************/
 
 #include <benchmark/benchmark.h>
+
 #include <memory>
 
 #include "../flatsurf/flat_triangulation_collapsed.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/vertical.hpp"
-
 #include "../test/surfaces.hpp"
 
 using benchmark::DoNotOptimize;

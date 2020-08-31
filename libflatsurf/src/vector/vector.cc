@@ -17,6 +17,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "../../flatsurf/vector.hpp"
+
 #include <boost/lexical_cast.hpp>
 #include <exact-real/arb.hpp>
 #include <exact-real/arf.hpp>
@@ -26,13 +28,9 @@
 #include <exact-real/rational_field.hpp>
 #include <exact-real/yap/arb.hpp>
 
-#include "../../flatsurf/vector.hpp"
-
+#include "../external/gmpxxll/gmpxxll/mpz_class.hpp"
 #include "../util/assert.ipp"
 #include "../util/hash.ipp"
-
-#include "../external/gmpxxll/gmpxxll/mpz_class.hpp"
-
 #include "algorithm/exact.ipp"
 #include "algorithm/with_error.ipp"
 #include "storage/cartesian.ipp"

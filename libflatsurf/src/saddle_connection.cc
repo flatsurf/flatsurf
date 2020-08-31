@@ -17,24 +17,22 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <climits>
-#include <ostream>
+#include "../flatsurf/saddle_connection.hpp"
 
 #include <boost/lexical_cast.hpp>
+#include <climits>
+#include <ostream>
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge_map.hpp"
 #include "../flatsurf/orientation.hpp"
-#include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertical.hpp"
-
 #include "impl/saddle_connection.impl.hpp"
-
 #include "util/assert.ipp"
 #include "util/hash.ipp"
 

@@ -21,11 +21,12 @@
 #ifndef LIBFLATSURF_TEST_CEREAL_HELPERS_HPP
 #define LIBFLATSURF_TEST_CEREAL_HELPERS_HPP
 
+#include <exact-real/arb.hpp>
 #include <memory>
 
+#include "../flatsurf/edge.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/vertex.hpp"
-
 #include "./surfaces.hpp"
 
 namespace flatsurf::test {
@@ -44,13 +45,34 @@ struct factory<Vertex> {
 };
 
 template <typename Surface>
+struct factory<Chain<Surface>> {
+  using T = typename Surface::Coordinate;
+
+  static std::shared_ptr<Chain<Surface>> make() {
+    auto square = makeSquare<Vector<T>>();
+    return std::make_shared<Chain<Surface>>(square);
+  }
+};
+
+template <typename Surface>
 struct factory<SaddleConnection<Surface>> {
   using T = typename Surface::Coordinate;
 
   static std::shared_ptr<SaddleConnection<Surface>> make() {
     auto square = makeSquare<Vector<T>>();
     const HalfEdge e(1);
-    return std::make_shared<SaddleConnection<Surface>>(SaddleConnection(square, e));
+    return std::make_shared<SaddleConnection<Surface>>(square, e);
+  }
+};
+
+template <typename Surface>
+struct factory<Vertical<Surface>> {
+  using T = typename Surface::Coordinate;
+
+  static std::shared_ptr<Vertical<Surface>> make() {
+    auto square = makeSquare<Vector<T>>();
+    auto vertical = square->fromEdge(HalfEdge(1));
+    return std::make_shared<Vertical<Surface>>(square, vertical);
   }
 };
 
@@ -77,6 +99,32 @@ struct comparer {
 template <typename T>
 struct comparer<std::shared_ptr<T>> {
   static bool eq(const std::shared_ptr<T>& x, const std::shared_ptr<T>& y) { return *x == *y; }
+};
+
+template <>
+struct comparer<exactreal::Arb> {
+  static bool eq(const exactreal::Arb& x, const exactreal::Arb& y) {
+    return x.equal(y);
+  }
+};
+
+template <>
+struct comparer<flatsurf::Vector<exactreal::Arb>> {
+  static bool eq(const flatsurf::Vector<exactreal::Arb>& x, const flatsurf::Vector<exactreal::Arb>& y) {
+    std::stringstream a, b;
+    a << x;
+    b << y;
+    return a.str() == b.str();
+  }
+};
+
+template <typename Surface>
+struct comparer<flatsurf::Vertical<Surface>> {
+  static bool eq(const flatsurf::Vertical<Surface>& x, const flatsurf::Vertical<Surface>& y) {
+    // Vertical::operator== requires the surfaces to be identical to consider
+    // two vertical equal.
+    return *x.surface() == *y.surface() && x.vertical() == y.vertical();
+  }
 };
 
 }  // namespace flatsurf::test

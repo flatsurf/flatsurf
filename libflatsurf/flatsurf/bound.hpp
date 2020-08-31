@@ -20,10 +20,10 @@
 #ifndef LIBFLATSURF_BOUND_HPP
 #define LIBFLATSURF_BOUND_HPP
 
-#include <iosfwd>
-
 #include <gmpxx.h>
+
 #include <boost/operators.hpp>
+#include <iosfwd>
 
 #include "forward.hpp"
 
@@ -31,6 +31,7 @@ namespace flatsurf {
 
 class Bound : boost::equality_comparable<Bound> {
  public:
+  Bound();
   Bound(const mpz_class& x, const mpz_class& y);
 
   template <typename T>
@@ -50,6 +51,13 @@ class Bound : boost::equality_comparable<Bound> {
 
  private:
   mpz_class square;
+
+  friend cereal::access;
+
+  template <typename Archive>
+  void save(Archive&) const;
+  template <typename Archive>
+  void load(Archive&);
 };
 
 }  // namespace flatsurf

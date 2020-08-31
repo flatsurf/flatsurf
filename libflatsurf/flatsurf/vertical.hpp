@@ -20,21 +20,20 @@
 #ifndef LIBFLATSURF_VERTICAL_HPP
 #define LIBFLATSURF_VERTICAL_HPP
 
+#include <boost/operators.hpp>
 #include <iosfwd>
 #include <memory>
 #include <type_traits>
 #include <unordered_set>
 #include <vector>
 
-#include <boost/operators.hpp>
-
 #include "external/spimpl/spimpl.h"
-
-#include "forward.hpp"
+#include "serializable.hpp"
 
 namespace flatsurf {
 template <typename Surface>
-class Vertical : boost::equality_comparable<Vertical<Surface>> {
+class Vertical : Serializable<Vertical<Surface>>,
+                 boost::equality_comparable<Vertical<Surface>> {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
   using T = typename Surface::Coordinate;
@@ -84,13 +83,13 @@ class Vertical : boost::equality_comparable<Vertical<Surface>> {
 };
 
 template <typename Surface, typename... Args>
-Vertical(std::shared_ptr<const Surface>, Args &&...)->Vertical<Surface>;
+Vertical(std::shared_ptr<const Surface>, Args &&...) -> Vertical<Surface>;
 
 template <typename Surface, typename... Args>
-Vertical(std::shared_ptr<Surface>, Args &&...)->Vertical<Surface>;
+Vertical(std::shared_ptr<Surface>, Args &&...) -> Vertical<Surface>;
 
 template <typename Surface>
-Vertical(std::shared_ptr<const Surface>, const Vector<typename Surface::Coordinate> &)->Vertical<Surface>;
+Vertical(std::shared_ptr<const Surface>, const Vector<typename Surface::Coordinate> &) -> Vertical<Surface>;
 }  // namespace flatsurf
 
 #endif

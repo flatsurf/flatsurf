@@ -21,7 +21,6 @@
 #define LIBFLATSURF_MOVEABLE_HPP
 
 #include "external/spimpl/spimpl.h"
-
 #include "forward.hpp"
 
 namespace flatsurf {

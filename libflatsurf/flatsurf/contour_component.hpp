@@ -20,14 +20,12 @@
 #ifndef LIBFLATSURF_CONTOUR_COMPONENT_HPP
 #define LIBFLATSURF_CONTOUR_COMPONENT_HPP
 
+#include <boost/operators.hpp>
 #include <list>
 #include <memory>
 #include <vector>
 
-#include <boost/operators.hpp>
-
 #include "external/spimpl/spimpl.h"
-
 #include "interval_exchange_transformation.hpp"
 
 namespace flatsurf {

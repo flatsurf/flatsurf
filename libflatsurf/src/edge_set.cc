@@ -17,18 +17,17 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <ostream>
+#include "../flatsurf/edge_set.hpp"
 
 #include <fmt/format.h>
 
+#include <ostream>
+
 #include "../flatsurf/edge.hpp"
-#include "../flatsurf/edge_set.hpp"
 #include "../flatsurf/edge_set_iterator.hpp"
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../flatsurf/fmt.hpp"
-
 #include "impl/edge_set.impl.hpp"
-
 #include "util/assert.ipp"
 
 namespace flatsurf {
