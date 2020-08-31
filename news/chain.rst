@@ -1,3 +1,0 @@
-**Fixed:**
-
-* Chain::operator==

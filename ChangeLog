@@ -4,6 +4,19 @@ intervalxt Change Log
 
 .. current developments
 
+v1.1.0
+====================
+
+**Added:**
+
+* Serialization for most basic types, i.e., everything but the FlowDecomposition types
+
+**Fixed:**
+
+* Chain::operator==
+
+
+
 v1.0.3
 ====================
 
