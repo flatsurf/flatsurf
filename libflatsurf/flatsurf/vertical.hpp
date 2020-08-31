@@ -30,11 +30,12 @@
 
 #include "external/spimpl/spimpl.h"
 
-#include "forward.hpp"
+#include "serializable.hpp"
 
 namespace flatsurf {
 template <typename Surface>
-class Vertical : boost::equality_comparable<Vertical<Surface>> {
+class Vertical : Serializable<Vertical<Surface>>,
+  boost::equality_comparable<Vertical<Surface>> {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
   using T = typename Surface::Coordinate;

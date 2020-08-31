@@ -134,4 +134,10 @@ def test_deform_hexagon():
     hexagon_ = surfaces.random_hexagon()
     hexagon + [hexagon_.fromEdge(e.positive()) for e in hexagon.edges()]
 
+def test_serialization():
+    hexagon = surfaces.random_hexagon()
+
+    from pickle import loads, dumps
+    assert loads(dumps(hexagon)) == hexagon
+
 if __name__ == '__main__': sys.exit(pytest.main(sys.argv))

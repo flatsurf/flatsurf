@@ -47,6 +47,13 @@ class Edge : boost::equality_comparable<Edge> {
 
  private:
   HalfEdge id;
+
+  friend cereal::access;
+
+  template <typename Archive>
+  int save_minimal(Archive &) const;
+  template <typename Archive>
+  void load_minimal(Archive &, const int &);
 };
 }  // namespace flatsurf
 

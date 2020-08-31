@@ -23,6 +23,8 @@
 
 namespace flatsurf {
 
+Bound::Bound() : square() {}
+
 Bound::Bound(const mpz_class& x, const mpz_class& y) :
   square(x * x + y * y) {}
 
