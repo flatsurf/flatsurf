@@ -17,16 +17,15 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "impl/contour_decomposition_state.hpp"
+
 #include <memory>
 #include <ostream>
 
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/vertical.hpp"
-
-#include "util/assert.ipp"
-
 #include "impl/contour_component.impl.hpp"
-#include "impl/contour_decomposition_state.hpp"
+#include "util/assert.ipp"
 
 namespace flatsurf {
 

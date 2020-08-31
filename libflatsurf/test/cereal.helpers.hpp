@@ -21,14 +21,12 @@
 #ifndef LIBFLATSURF_TEST_CEREAL_HELPERS_HPP
 #define LIBFLATSURF_TEST_CEREAL_HELPERS_HPP
 
+#include <exact-real/arb.hpp>
 #include <memory>
 
-#include <exact-real/arb.hpp>
-
+#include "../flatsurf/edge.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/vertex.hpp"
-#include "../flatsurf/edge.hpp"
-
 #include "./surfaces.hpp"
 
 namespace flatsurf::test {

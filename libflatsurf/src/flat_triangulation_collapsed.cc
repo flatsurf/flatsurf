@@ -17,26 +17,24 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "../flatsurf/flat_triangulation_collapsed.hpp"
+
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <gmpxx.h>
+
+#include <intervalxt/sample/e-antic-arithmetic.hpp>
+#include <intervalxt/sample/exact-real-arithmetic.hpp>
+#include <intervalxt/sample/rational-arithmetic.hpp>
 #include <ostream>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-#include <fmt/format.h>
-#include <fmt/ostream.h>
-#include <gmpxx.h>
-#include <intervalxt/sample/e-antic-arithmetic.hpp>
-#include <intervalxt/sample/exact-real-arithmetic.hpp>
-#include <intervalxt/sample/rational-arithmetic.hpp>
-
-#include "external/gmpxxll/gmpxxll/mpz_class.hpp"
-#include "external/rx-ranges/include/rx/ranges.hpp"
-
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
-#include "../flatsurf/flat_triangulation_collapsed.hpp"
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_map.hpp"
@@ -47,12 +45,12 @@
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertex.hpp"
 #include "../flatsurf/vertical.hpp"
-
+#include "external/gmpxxll/gmpxxll/mpz_class.hpp"
+#include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/collapsed_half_edge.hpp"
 #include "impl/flat_triangulation.impl.hpp"
 #include "impl/flat_triangulation_collapsed.impl.hpp"
 #include "impl/saddle_connection.impl.hpp"
-
 #include "util/assert.ipp"
 #include "util/union_find.ipp"
 

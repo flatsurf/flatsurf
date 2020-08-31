@@ -18,11 +18,10 @@
  *********************************************************************/
 
 #include "../flatsurf/path_iterator.hpp"
-#include "../flatsurf/saddle_connection.hpp"
 
+#include "../flatsurf/saddle_connection.hpp"
 #include "impl/path.impl.hpp"
 #include "impl/path_iterator.impl.hpp"
-
 #include "util/assert.ipp"
 
 namespace flatsurf {

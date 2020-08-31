@@ -17,13 +17,12 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "impl/indexed_set_iterator.hpp"
+
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/half_edge_set_iterator.hpp"
-
 #include "impl/indexed_set.hpp"
-#include "impl/indexed_set_iterator.hpp"
-
 #include "util/assert.ipp"
 
 namespace flatsurf {
@@ -71,8 +70,7 @@ std::ostream& operator<<(std::ostream& os, const IndexedSetIterator<T>&) {
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
-#include "util/instantiate.ipp"
-
 #include "../flatsurf/edge.hpp"
+#include "util/instantiate.ipp"
 
 LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION), IndexedSetIterator, (HalfEdge)(Edge))

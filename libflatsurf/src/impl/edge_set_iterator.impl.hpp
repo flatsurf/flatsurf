@@ -24,7 +24,6 @@
 
 #include "../../flatsurf/half_edge.hpp"
 #include "../../flatsurf/half_edge_set_iterator.hpp"
-
 #include "indexed_set.hpp"
 #include "indexed_set_iterator.hpp"
 

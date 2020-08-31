@@ -17,10 +17,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "external/catch2/single_include/catch2/catch.hpp"
-
 #include "../src/impl/approximation.hpp"
-
+#include "external/catch2/single_include/catch2/catch.hpp"
 #include "generators/real_generator.hpp"
 
 namespace flatsurf::test {

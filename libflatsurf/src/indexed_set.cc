@@ -17,19 +17,18 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <ostream>
+#include "impl/indexed_set.hpp"
 
 #include <fmt/format.h>
+
+#include <ostream>
 
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/half_edge_set_iterator.hpp"
-
-#include "impl/indexed_set.hpp"
 #include "impl/indexed_set_iterator.hpp"
-
 #include "util/assert.ipp"
 
 namespace flatsurf {
@@ -109,8 +108,7 @@ std::ostream& operator<<(std::ostream& os, const IndexedSet<T>& self) {
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
-#include "util/instantiate.ipp"
-
 #include "../flatsurf/edge.hpp"
+#include "util/instantiate.ipp"
 
 LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION), IndexedSet, (HalfEdge)(Edge))

@@ -20,13 +20,11 @@
 #ifndef LIBFLATSURF_VERTEX_HPP
 #define LIBFLATSURF_VERTEX_HPP
 
+#include <boost/operators.hpp>
 #include <unordered_set>
 
-#include <boost/operators.hpp>
-
-#include "external/spimpl/spimpl.h"
-
 #include "copyable.hpp"
+#include "external/spimpl/spimpl.h"
 #include "forward.hpp"
 #include "serializable.hpp"
 

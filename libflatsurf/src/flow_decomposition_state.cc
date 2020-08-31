@@ -17,9 +17,7 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <memory>
-#include <ostream>
-#include <unordered_map>
+#include "impl/flow_decomposition_state.hpp"
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -27,8 +25,9 @@
 #include <intervalxt/dynamical_decomposition.hpp>
 #include <intervalxt/interval_exchange_transformation.hpp>
 #include <intervalxt/label.hpp>
-
-#include "external/rx-ranges/include/rx/ranges.hpp"
+#include <memory>
+#include <ostream>
+#include <unordered_map>
 
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/contour_component.hpp"
@@ -41,11 +40,9 @@
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
-
+#include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/flow_component_state.hpp"
-#include "impl/flow_decomposition_state.hpp"
 #include "impl/interval_exchange_transformation.impl.hpp"
-
 #include "util/assert.ipp"
 #include "util/instantiate.ipp"
 

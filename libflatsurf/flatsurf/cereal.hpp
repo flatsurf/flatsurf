@@ -21,6 +21,7 @@
 #ifndef LIBFLATSURF_CEREAL_HPP
 #define LIBFLATSURF_CEREAL_HPP
 
+#include <e-antic/renfxx_cereal.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
@@ -28,8 +29,6 @@
 #include <cereal/types/unordered_map.hpp>
 #include <cereal/types/utility.hpp>
 #include <cereal/types/vector.hpp>
-
-#include <e-antic/renfxx_cereal.h>
 #include <exact-real/cereal.hpp>
 
 #include "bound.hpp"
@@ -85,7 +84,7 @@ struct ReplacementSerialization {
   }
 };
 
-}
+}  // namespace
 
 template <typename Archive>
 int HalfEdge::save_minimal(Archive&) const {

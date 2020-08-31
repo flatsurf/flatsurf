@@ -18,12 +18,11 @@
  *********************************************************************/
 
 #include "../flatsurf/half_edge_set_iterator.hpp"
+
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_set.hpp"
-
 #include "impl/half_edge_set.impl.hpp"
 #include "impl/half_edge_set_iterator.impl.hpp"
-
 #include "util/assert.ipp"
 
 namespace flatsurf {

@@ -20,12 +20,11 @@
 #define LIBFLATSURF_VECTOR_HPP
 
 #include <exact-real/forward.hpp>
-#include "external/spimpl/spimpl.h"
-
-#include "forward.hpp"
 
 #include "detail/vector_exact.hpp"
 #include "detail/vector_with_error.hpp"
+#include "external/spimpl/spimpl.h"
+#include "forward.hpp"
 
 namespace flatsurf {
 // A vector in ℝ² whose coordinates are of type T.

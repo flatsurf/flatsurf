@@ -20,14 +20,12 @@
 #ifndef LIBFLATSURF_EDGE_SET_HPP
 #define LIBFLATSURF_EDGE_SET_HPP
 
+#include <boost/operators.hpp>
 #include <iosfwd>
 #include <vector>
 
-#include <boost/operators.hpp>
-
-#include "external/spimpl/spimpl.h"
-
 #include "edge_set_iterator.hpp"
+#include "external/spimpl/spimpl.h"
 #include "forward.hpp"
 
 namespace flatsurf {

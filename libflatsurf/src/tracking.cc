@@ -133,7 +133,6 @@ std::ostream& operator<<(std::ostream&, const Tracking<T>&) {
 
 // Instantiations of templates so implementations are generated for the linker
 #include "impl/collapsed_half_edge.hpp"
-
 #include "util/instantiate.ipp"
 
 #define LIBFLATSURF_INSTANTIATE_THIS(T)                                                                                             \

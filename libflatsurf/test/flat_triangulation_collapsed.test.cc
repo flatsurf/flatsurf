@@ -18,13 +18,11 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "external/catch2/single_include/catch2/catch.hpp"
-
-#include <numeric>
-
 #include <e-antic/renfxx_fwd.h>
+
 #include <exact-real/element.hpp>
 #include <exact-real/number_field.hpp>
+#include <numeric>
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/edge.hpp"
@@ -33,7 +31,7 @@
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
-
+#include "external/catch2/single_include/catch2/catch.hpp"
 #include "generators/saddle_connections_generator.hpp"
 #include "surfaces.hpp"
 

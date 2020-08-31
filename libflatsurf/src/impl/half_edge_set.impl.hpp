@@ -24,7 +24,6 @@
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
 
 #include "../../flatsurf/half_edge_set.hpp"
-
 #include "indexed_set.hpp"
 
 namespace flatsurf {

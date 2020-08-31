@@ -22,9 +22,8 @@
 
 #include <functional>
 
-#include "flat_triangulation_combinatorial.hpp"
-
 #include "external/spimpl/spimpl.h"
+#include "flat_triangulation_combinatorial.hpp"
 #include "forward.hpp"
 
 namespace flatsurf {

@@ -20,16 +20,14 @@
 #ifndef LIBFLATSURF_FLOW_DECOMPOSITION_STATE_HPP
 #define LIBFLATSURF_FLOW_DECOMPOSITION_STATE_HPP
 
+#include <intervalxt/connection.hpp>
 #include <iosfwd>
 #include <list>
 #include <memory>
 
-#include <intervalxt/connection.hpp>
-
 #include "../../flatsurf/contour_decomposition.hpp"
 #include "../../flatsurf/saddle_connection.hpp"
 #include "../../flatsurf/vector.hpp"
-
 #include "flow_component_state.hpp"
 
 namespace flatsurf {

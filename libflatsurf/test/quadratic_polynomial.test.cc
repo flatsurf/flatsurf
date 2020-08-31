@@ -18,10 +18,9 @@
  *********************************************************************/
 
 #include <exact-real/arb.hpp>
-#include "external/catch2/single_include/catch2/catch.hpp"
 
 #include "../src/impl/quadratic_polynomial.hpp"
-
+#include "external/catch2/single_include/catch2/catch.hpp"
 #include "generators/real_generator.hpp"
 
 namespace flatsurf::test {

@@ -25,7 +25,6 @@
 #include <memory>
 
 #include "../../flatsurf/contour_component.hpp"
-
 #include "contour_component_state.hpp"
 
 namespace flatsurf {

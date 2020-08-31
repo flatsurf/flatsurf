@@ -19,10 +19,10 @@
  *********************************************************************/
 
 #include <benchmark/benchmark.h>
+
 #include <memory>
 
 #include "../flatsurf/half_edge.hpp"
-
 #include "../test/surfaces.hpp"
 
 using benchmark::DoNotOptimize;

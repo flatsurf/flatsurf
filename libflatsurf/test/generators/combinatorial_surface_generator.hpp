@@ -21,15 +21,13 @@
 #ifndef LIBFLATSURF_TEST_GENERATORS_COMBINATORIAL_SURFACE_GENERATORS_HPP
 #define LIBFLATSURF_TEST_GENERATORS_COMBINATORIAL_SURFACE_GENERATORS_HPP
 
-#include <memory>
-
 #include <e-antic/renf_elem.h>
 #include <gmpxx.h>
 
-#include "../external/catch2/single_include/catch2/catch.hpp"
+#include <memory>
 
 #include "../../flatsurf/forward.hpp"
-
+#include "../external/catch2/single_include/catch2/catch.hpp"
 #include "../surfaces.hpp"
 
 namespace flatsurf::test {

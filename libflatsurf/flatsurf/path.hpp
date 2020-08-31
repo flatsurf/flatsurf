@@ -20,10 +20,9 @@
 #ifndef LIBFLATSURF_PATH_HPP
 #define LIBFLATSURF_PATH_HPP
 
+#include <boost/operators.hpp>
 #include <list>
 #include <vector>
-
-#include <boost/operators.hpp>
 
 #include "copyable.hpp"
 #include "serializable.hpp"
@@ -82,7 +81,7 @@ class Path : public Serializable<Path<Surface>>,
 };
 
 template <typename Surface>
-Path(const std::vector<SaddleConnection<Surface>>&)->Path<Surface>;
+Path(const std::vector<SaddleConnection<Surface>>&) -> Path<Surface>;
 
 }  // namespace flatsurf
 #endif

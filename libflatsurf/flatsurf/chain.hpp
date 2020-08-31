@@ -20,12 +20,12 @@
 #ifndef LIBFLATSURF_CHAIN_HPP
 #define LIBFLATSURF_CHAIN_HPP
 
-#include <iosfwd>
-#include <memory>
-
 #include <gmpxx.h>
+
 #include <boost/operators.hpp>
 #include <exact-real/arb.hpp>
+#include <iosfwd>
+#include <memory>
 
 #include "chain_iterator.hpp"
 #include "copyable.hpp"
@@ -90,10 +90,10 @@ class Chain : public Serializable<Chain<Surface>>,
 };
 
 template <typename Surface, typename... Args>
-Chain(std::shared_ptr<const Surface>, Args&&... args)->Chain<Surface>;
+Chain(std::shared_ptr<const Surface>, Args&&... args) -> Chain<Surface>;
 
 template <typename Surface, typename... Args>
-Chain(std::shared_ptr<Surface>, Args&&... args)->Chain<Surface>;
+Chain(std::shared_ptr<Surface>, Args&&... args) -> Chain<Surface>;
 
 }  // namespace flatsurf
 

@@ -1,3 +1,3 @@
 **Added:**
 
-* Serialization for all types except the ones that show up in FlowDecomposition
+* Serialization for most basic types, i.e., everything but the FlowDecomposition types

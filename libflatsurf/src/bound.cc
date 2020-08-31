@@ -17,13 +17,14 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <ostream>
-
 #include "../flatsurf/bound.hpp"
+
+#include <ostream>
 
 namespace flatsurf {
 
-Bound::Bound() : square() {}
+Bound::Bound() :
+  square() {}
 
 Bound::Bound(const mpz_class& x, const mpz_class& y) :
   square(x * x + y * y) {}

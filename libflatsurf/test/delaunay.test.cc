@@ -18,14 +18,12 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "external/catch2/single_include/catch2/catch.hpp"
-
 #include <exact-real/element.hpp>
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/delaunay_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
-
+#include "external/catch2/single_include/catch2/catch.hpp"
 #include "generators/half_edge_generator.hpp"
 #include "surfaces.hpp"
 

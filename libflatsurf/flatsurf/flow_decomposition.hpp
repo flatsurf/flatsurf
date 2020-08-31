@@ -20,11 +20,10 @@
 #ifndef LIBFLATSURF_FLOW_DECOMPOSITION_HPP
 #define LIBFLATSURF_FLOW_DECOMPOSITION_HPP
 
+#include <boost/logic/tribool.hpp>
 #include <functional>
 #include <iosfwd>
 #include <vector>
-
-#include <boost/logic/tribool.hpp>
 
 #include "copyable.hpp"
 #include "flow_component.hpp"

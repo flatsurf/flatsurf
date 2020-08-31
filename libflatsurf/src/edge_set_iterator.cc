@@ -18,12 +18,11 @@
  *********************************************************************/
 
 #include "../flatsurf/edge_set_iterator.hpp"
+
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/edge_set.hpp"
-
 #include "impl/edge_set.impl.hpp"
 #include "impl/edge_set_iterator.impl.hpp"
-
 #include "util/assert.ipp"
 
 namespace flatsurf {

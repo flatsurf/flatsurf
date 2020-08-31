@@ -20,13 +20,13 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTION_HPP
 #define LIBFLATSURF_SADDLE_CONNECTION_HPP
 
+#include <gmpxx.h>
+
 #include <boost/operators.hpp>
 #include <iosfwd>
 #include <memory>
 #include <optional>
 #include <vector>
-
-#include <gmpxx.h>
 
 #include "bound.hpp"
 #include "copyable.hpp"
@@ -112,10 +112,10 @@ template <typename Surface, typename _ = Vector<typename Surface::Coordinate>>
 std::ostream &operator<<(std::ostream &, const SaddleConnection<Surface> &);
 
 template <typename Surface, typename... T>
-SaddleConnection(std::shared_ptr<const Surface>, T &&...)->SaddleConnection<Surface>;
+SaddleConnection(std::shared_ptr<const Surface>, T &&...) -> SaddleConnection<Surface>;
 
 template <typename Surface, typename... T>
-SaddleConnection(std::shared_ptr<Surface>, T &&...)->SaddleConnection<Surface>;
+SaddleConnection(std::shared_ptr<Surface>, T &&...) -> SaddleConnection<Surface>;
 
 }  // namespace flatsurf
 

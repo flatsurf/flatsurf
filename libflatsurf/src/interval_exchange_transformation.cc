@@ -17,31 +17,26 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <fmt/format.h>
+
+#include <boost/type_erasure/any_cast.hpp>
 #include <intervalxt/forward.hpp>
+#include <intervalxt/interval_exchange_transformation.hpp>
+#include <intervalxt/label.hpp>
 #include <memory>
 #include <ostream>
 #include <unordered_set>
 #include <vector>
 
-#include <fmt/format.h>
-
-#include <boost/type_erasure/any_cast.hpp>
-
-#include <intervalxt/interval_exchange_transformation.hpp>
-#include <intervalxt/label.hpp>
-
-#include "external/rx-ranges/include/rx/ranges.hpp"
-
 #include "../flatsurf/edge_set.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/tracked.hpp"
 #include "../flatsurf/vertex.hpp"
-
+#include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/contour_component.impl.hpp"
 #include "impl/flat_triangulation_collapsed.impl.hpp"
 #include "impl/interval_exchange_transformation.impl.hpp"
 #include "impl/vertical.impl.hpp"
-
 #include "util/assert.ipp"
 
 using rx::to_vector;

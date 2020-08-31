@@ -20,9 +20,8 @@
 #ifndef LIBFLATSURF_VECTOR_WITH_ERROR_HPP
 #define LIBFLATSURF_VECTOR_WITH_ERROR_HPP
 
-#include <optional>
-
 #include <exact-real/forward.hpp>
+#include <optional>
 
 #include "vector_base.hpp"
 
@@ -50,7 +49,7 @@ class VectorWithError : public VectorBase<Vector> {
   explicit operator std::optional<bool>() const noexcept;
 
   // Return the scalar product with the argument.
-  exactreal::Arb operator*(const Vector &)const noexcept;
+  exactreal::Arb operator*(const Vector &) const noexcept;
 };
 }  // namespace flatsurf::detail
 

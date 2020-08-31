@@ -21,6 +21,7 @@
 #define LIBFLATSURF_DETAIL_VECTOR_BASE_HPP
 
 #include <gmpxx.h>
+
 #include <boost/operators.hpp>
 #include <complex>
 #include <exact-real/forward.hpp>

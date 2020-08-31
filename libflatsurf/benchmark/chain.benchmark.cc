@@ -19,11 +19,11 @@
  *********************************************************************/
 
 #include <benchmark/benchmark.h>
-#include <memory>
 
 #include <exact-real/integer_ring.hpp>
-#include "../flatsurf/chain.hpp"
+#include <memory>
 
+#include "../flatsurf/chain.hpp"
 #include "../test/surfaces.hpp"
 
 using benchmark::DoNotOptimize;

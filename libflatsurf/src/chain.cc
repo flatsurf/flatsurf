@@ -17,6 +17,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "../flatsurf/chain.hpp"
+
 #include <flint/fmpz.h>
 #include <flint/fmpz_vec.h>
 #include <fmt/format.h>
@@ -25,14 +27,10 @@
 #include <gmpxx.h>
 
 #include "../flatsurf/bound.hpp"
-#include "../flatsurf/chain.hpp"
 #include "../flatsurf/fmt.hpp"
-
 #include "external/rx-ranges/include/rx/ranges.hpp"
-
 #include "impl/chain.impl.hpp"
 #include "impl/chain_iterator.impl.hpp"
-
 #include "util/assert.ipp"
 #include "util/hash.ipp"
 

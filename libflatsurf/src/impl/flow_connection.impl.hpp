@@ -20,14 +20,12 @@
 #ifndef LIBFLATSURF_FLOW_CONNECTION_IMPL_HPP
 #define LIBFLATSURF_FLOW_CONNECTION_IMPL_HPP
 
-#include <memory>
-
 #include <intervalxt/connection.hpp>
 #include <intervalxt/half_edge.hpp>
+#include <memory>
 
 #include "../../flatsurf/flow_component.hpp"
 #include "../../flatsurf/flow_connection.hpp"
-
 #include "flow_component_state.hpp"
 #include "flow_decomposition_state.hpp"
 

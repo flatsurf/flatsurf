@@ -20,12 +20,10 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTIONS_ITERATOR_HPP
 #define LIBFLATSURF_SADDLE_CONNECTIONS_ITERATOR_HPP
 
+#include <boost/iterator/iterator_facade.hpp>
 #include <optional>
 
-#include <boost/iterator/iterator_facade.hpp>
-
 #include "external/spimpl/spimpl.h"
-
 #include "forward.hpp"
 
 namespace flatsurf {

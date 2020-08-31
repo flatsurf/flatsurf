@@ -20,13 +20,12 @@
 #ifndef LIBFLATSURF_PATH_ITERATOR_HPP
 #define LIBFLATSURF_PATH_ITERATOR_HPP
 
+#include <gmpxx.h>
+
 #include <boost/iterator/iterator_categories.hpp>
 #include <boost/iterator/iterator_facade.hpp>
 
-#include <gmpxx.h>
-
 #include "external/spimpl/spimpl.h"
-
 #include "forward.hpp"
 
 namespace flatsurf {

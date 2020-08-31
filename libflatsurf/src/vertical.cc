@@ -17,11 +17,12 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <memory>
-#include <unordered_set>
+#include "../flatsurf/vertical.hpp"
 
 #include <intervalxt/interval_exchange_transformation.hpp>
 #include <intervalxt/label.hpp>
+#include <memory>
+#include <unordered_set>
 
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/flat_triangulation_collapsed.hpp"
@@ -29,10 +30,7 @@
 #include "../flatsurf/interval_exchange_transformation.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vector.hpp"
-#include "../flatsurf/vertical.hpp"
-
 #include "impl/vertical.impl.hpp"
-
 #include "util/assert.ipp"
 
 using std::ostream;

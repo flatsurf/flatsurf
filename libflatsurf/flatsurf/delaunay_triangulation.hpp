@@ -20,6 +20,8 @@
 #ifndef LIBFLATSURF_DELAUNAY_TRIANGULATION_HPP
 #define LIBFLATSURF_DELAUNAY_TRIANGULATION_HPP
 
+#include <type_traits>
+
 #include "forward.hpp"
 
 namespace flatsurf {

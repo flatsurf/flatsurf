@@ -21,18 +21,17 @@
 #define LIBFLATSURF_IMPL_LENGTHS_HPP
 
 #include <gmpxx.h>
+
 #include <deque>
+#include <intervalxt/label.hpp>
+#include <intervalxt/lengths.hpp>
 #include <iosfwd>
 #include <memory>
 #include <vector>
 
-#include <intervalxt/label.hpp>
-#include <intervalxt/lengths.hpp>
-
 #include "../../flatsurf/edge.hpp"
 #include "../../flatsurf/edge_map.hpp"
 #include "../../flatsurf/saddle_connection.hpp"
-
 #include "flow_decomposition_state.hpp"
 
 namespace flatsurf {

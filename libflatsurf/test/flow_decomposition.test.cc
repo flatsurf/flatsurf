@@ -18,10 +18,9 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "external/catch2/single_include/catch2/catch.hpp"
-
 #include <e-antic/renfxx.h>
 #include <gmpxx.h>
+
 #include <exact-real/element.hpp>
 #include <exact-real/integer_ring.hpp>
 #include <exact-real/number_field.hpp>
@@ -32,9 +31,8 @@
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
-
 #include "../src/external/rx-ranges/include/rx/ranges.hpp"
-
+#include "external/catch2/single_include/catch2/catch.hpp"
 #include "generators/surface_generator.hpp"
 #include "generators/vertical_generator.hpp"
 #include "surfaces.hpp"

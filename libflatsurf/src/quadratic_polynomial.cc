@@ -17,11 +17,11 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "impl/quadratic_polynomial.hpp"
+
 #include <exact-real/yap/arb.hpp>
 
 #include "impl/approximation.hpp"
-#include "impl/quadratic_polynomial.hpp"
-
 #include "util/assert.ipp"
 
 namespace flatsurf {

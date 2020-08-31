@@ -24,9 +24,8 @@
 #include <vector>
 
 #include "external/spimpl/spimpl.h"
-#include "intervalxt/forward.hpp"
-
 #include "forward.hpp"
+#include "intervalxt/forward.hpp"
 
 namespace flatsurf {
 
@@ -69,10 +68,10 @@ class IntervalExchangeTransformation {
 };
 
 template <typename Surface, typename... Args>
-IntervalExchangeTransformation(std::shared_ptr<const Surface>, Args&&...)->IntervalExchangeTransformation<Surface>;
+IntervalExchangeTransformation(std::shared_ptr<const Surface>, Args&&...) -> IntervalExchangeTransformation<Surface>;
 
 template <typename Surface, typename... Args>
-IntervalExchangeTransformation(std::shared_ptr<Surface>, Args&&...)->IntervalExchangeTransformation<Surface>;
+IntervalExchangeTransformation(std::shared_ptr<Surface>, Args&&...) -> IntervalExchangeTransformation<Surface>;
 
 }  // namespace flatsurf
 

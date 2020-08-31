@@ -21,14 +21,11 @@
 #include <boost/lexical_cast.hpp>
 #include <memory>
 
-#include "external/catch2/single_include/catch2/catch.hpp"
-
-#include "external/cereal/include/cereal/archives/json.hpp"
-
 #include "../flatsurf/cereal.hpp"
 #include "../flatsurf/vertical.hpp"
-
 #include "cereal.helpers.hpp"
+#include "external/catch2/single_include/catch2/catch.hpp"
+#include "external/cereal/include/cereal/archives/json.hpp"
 #include "generators/saddle_connections_generator.hpp"
 #include "surfaces.hpp"
 
@@ -126,7 +123,7 @@ TEST_CASE("Serialization of a Bound", "[cereal]") {
 
 TEST_CASE("Serialization of a Permutation", "[cereal]") {
   Permutation<HalfEdge> p({{HalfEdge(1), HalfEdge(2), HalfEdge(-1)}, {HalfEdge(-2)}});
-  
+
   testRoundtrip(p);
 }
 

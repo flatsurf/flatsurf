@@ -17,15 +17,14 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "../flatsurf/chain_iterator.hpp"
+
 #include <flint/fmpz.h>
 
 #include "../flatsurf/chain.hpp"
-#include "../flatsurf/chain_iterator.hpp"
 #include "../flatsurf/edge.hpp"
-
 #include "impl/chain.impl.hpp"
 #include "impl/chain_iterator.impl.hpp"
-
 #include "util/assert.ipp"
 
 namespace flatsurf {

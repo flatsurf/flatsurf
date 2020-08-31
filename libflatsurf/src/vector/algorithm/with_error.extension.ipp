@@ -20,13 +20,11 @@
 #ifndef LIBFLATSURF_VECTOR_ALGORITHM_WITH_ERROR_EXTENSION_IPP
 #define LIBFLATSURF_VECTOR_ALGORITHM_WITH_ERROR_EXTENSION_IPP
 
-#include <optional>
-
 #include <boost/type_traits/is_detected.hpp>
 #include <boost/type_traits/is_detected_exact.hpp>
+#include <optional>
 
 #include "../../../flatsurf/detail/vector_base.hpp"
-
 #include "exact.extension.ipp"
 
 // Vector::Implementation classes can implement the following

@@ -18,16 +18,14 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "external/catch2/single_include/catch2/catch.hpp"
-
-#include <memory>
-#include <numeric>
-
 #include <e-antic/renfxx_fwd.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+
 #include <exact-real/element.hpp>
 #include <exact-real/number_field.hpp>
+#include <memory>
+#include <numeric>
 
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
@@ -35,7 +33,7 @@
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
-
+#include "external/catch2/single_include/catch2/catch.hpp"
 #include "surfaces.hpp"
 
 namespace flatsurf::test {
