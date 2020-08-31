@@ -158,7 +158,13 @@ Chain<Surface>& Chain<Surface>::operator-=(Chain&& rhs) {
 
 template <typename Surface>
 bool Chain<Surface>::operator==(const Chain& rhs) const {
-  return surface() == rhs.surface() && _fmpz_vec_equal(impl->coefficients, rhs.impl->coefficients, surface().size());
+  if (surface() != rhs.surface())
+    return false;
+  // We cannot use _fmpz_vec_equal since our coefficients are not normalized,
+  // i.e., fmpz_equal assumes that no fmpz_t is an mpz_t if it still fits into
+  // a single limb. However, we promote our entries in the operator[] so we
+  // break that rule.
+  return !(*this - rhs);
 }
 
 template <typename Surface>
@@ -211,10 +217,10 @@ ImplementationOf<Chain<Surface>>::ImplementationOf(std::shared_ptr<const Surface
 template <typename Surface>
 ImplementationOf<Chain<Surface>>::ImplementationOf(const ImplementationOf& rhs) :
   surface(rhs.surface),
-  coefficients(_fmpz_vec_init(this->surface->size())),
+  coefficients(_fmpz_vec_init(surface->size())),
   vector(this, rhs.vector),
   approximateVector(this, rhs.approximateVector) {
-  _fmpz_vec_add(coefficients, coefficients, rhs.coefficients, this->surface->size());
+  _fmpz_vec_set(coefficients, rhs.coefficients, surface->size());
 }
 
 template <typename Surface>
