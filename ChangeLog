@@ -4,6 +4,16 @@ intervalxt Change Log
 
 .. current developments
 
+v1.1.1
+====================
+
+**Fixed:**
+
+* compilation with some versions of gcc (missing include)
+* a performance problem in `makeUniqueLargeEdges` which showed up at times in unfoldings of polygons with exact-real coefficients
+
+
+
 v1.1.0
 ====================
 
