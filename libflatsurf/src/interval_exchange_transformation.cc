@@ -82,46 +82,51 @@ void IntervalExchangeTransformation<Surface>::makeUniqueLargeEdges(Surface& surf
   Vertical<Surface> vertical(surface.shared_from_this(), vertical_);
 
   while (true) {
-    bool stalled = true;
-    for (auto source : surface.halfEdges()) {
-      if (sources->contains(source))
-        continue;
-      if (!vertical.large(source))
-        continue;
-      if (vertical.perpendicular(surface.fromEdge(source)) < 0)
-        continue;
+    auto larges = surface.halfEdges() | rx::filter([&](const HalfEdge source) {
+      if (sources->contains(source)) return false;
+      if (!vertical.large(source)) return false;
+      if (vertical.perpendicular(surface.fromEdge(source)) < 0) return false;
+      return true;
+    }) | rx::to_vector();
 
-      auto component = makeUniqueLargeEdge(surface, vertical_, source);
+    std::sort(begin(larges), end(larges), [&](const HalfEdge a, const HalfEdge b) {
+      auto alength = vertical.horizontal() * surface.fromEdge(a);
+      auto blength = vertical.horizontal() * surface.fromEdge(b);
 
-      if (splitContours) {
-        bool trivial, trivialStart, trivialEnd;
-        {
-          // Some attached data might not be able to handle the following
-          // collapspe.  Therefore, we need to scope iet, so attached data is
-          // definitely gone when the collapse below happens.
-          auto fromContour = IntervalExchangeTransformation(surface.shared_from_this(), vertical_, source);
-          auto& iet = fromContour.intervalExchangeTransformation();
-          trivial = iet.top().size() == 1;
-          trivialStart = *iet.top().begin() == *iet.bottom().begin();
-          trivialEnd = *iet.top().rbegin() == *iet.bottom().rbegin();
-        }
+      if (alength < 0) alength = -alength;
+      if (blength < 0) blength = -blength;
 
-        if (!trivial && (trivialStart || trivialEnd)) {
-          // Since the first half edge of the top and bottom contour have the
-          // same length, flipping the source eventually splits the surface.
-          surface.flip(source);
-          stalled = false;
-          break;
-        }
+      return alength < blength;
+    });
+
+    if (larges.size() == 0) break;
+
+    HalfEdge source = larges.back();
+
+    auto component = makeUniqueLargeEdge(surface, vertical_, source);
+
+    if (splitContours) {
+      bool trivial, trivialStart, trivialEnd;
+      {
+        // Some attached data might not be able to handle the following
+        // collapspe.  Therefore, we need to scope iet, so attached data is
+        // definitely gone when the collapse below happens.
+        auto fromContour = IntervalExchangeTransformation(surface.shared_from_this(), vertical_, source);
+        auto& iet = fromContour.intervalExchangeTransformation();
+        trivial = iet.top().size() == 1;
+        trivialStart = *iet.top().begin() == *iet.bottom().begin();
+        trivialEnd = *iet.top().rbegin() == *iet.bottom().rbegin();
       }
 
-      sources->insert(source);
-      stalled = false;
-      break;
+      if (!trivial && (trivialStart || trivialEnd)) {
+        // Since the first half edge of the top and bottom contour have the
+        // same length, flipping the source eventually splits the surface.
+        surface.flip(source);
+        continue;
+      }
     }
-    if (stalled) {
-      return;
-    }
+
+    sources->insert(source);
   }
 }
 
@@ -141,7 +146,8 @@ std::unordered_set<HalfEdge> IntervalExchangeTransformation<Surface>::makeUnique
   if (vertical.perpendicular(surface.fromEdge(unique)) < 0)
     unique = -static_cast<HalfEdge>(unique);
 
-  // Eliminate other large edges
+  // Collect the half edges connected to `unique`, the unique large edge in
+  // its component. Whenever a flip is performed, the process restarts.
   while (true) {
     std::unordered_set<HalfEdge> component;
     if (ImplementationOf<Vertical<Surface>>::visit(vertical, unique, component, [&](HalfEdge e) {

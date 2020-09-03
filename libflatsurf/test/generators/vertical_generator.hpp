@@ -22,6 +22,7 @@
 #define LIBFLATSURF_TEST_GENERATORS_VERTICAL_GENERATORS_HPP
 
 #include <memory>
+#include <set>
 
 #include "../../flatsurf/bound.hpp"
 #include "../../flatsurf/saddle_connection.hpp"
@@ -38,7 +39,7 @@ namespace flatsurf::test {
 // starting at a different half edge.
 template <typename T>
 class VerticalGenerator : public Catch::Generators::IGenerator<Vector<T>> {
-  std::unordered_set<Vector<T>> verticals;
+  std::set<Vector<T>, typename Vector<T>::CompareSlope> verticals;
   SaddleConnections<FlatTriangulation<T>> connections;
   typename SaddleConnections<FlatTriangulation<T>>::Iterator upcoming;
   Vector<T> current;

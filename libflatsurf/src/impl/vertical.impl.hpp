@@ -35,6 +35,12 @@ class ImplementationOf<Vertical<Surface>> {
  public:
   ImplementationOf(std::shared_ptr<const Surface>, const Vector<T>&);
 
+  // Starting at the half edge `start`, walk the surface and collect all its
+  // half edges in `component`. We walk the surface by crossing any half
+  // edges that are not vertical. For each half edge, `visitor` is called
+  // which when returning false, aborts the process. (i.e., `visitor` found
+  // a problem in the surface, such as a large edge that needs to be flipped
+  // first.)
   static bool visit(const Vertical& self, HalfEdge start, std::unordered_set<HalfEdge>& component, std::function<bool(HalfEdge)> visitor);
 
   std::shared_ptr<const Surface> surface;

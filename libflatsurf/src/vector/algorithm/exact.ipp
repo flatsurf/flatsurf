@@ -256,6 +256,16 @@ T VectorExact<Vector, T>::operator*(const Vector& rhs) const noexcept {
   }
 }
 
+template <typename Vector, typename T>
+bool VectorExact<Vector, T>::CompareSlope::operator()(const Vector& lhs, const Vector& rhs) const {
+  const T a = lhs.y() * rhs.x();
+  const T b = rhs.y() * lhs.x();
+  if ((lhs.x() < 0) == (rhs.x() < 0))
+    return a < b;
+  else
+    return a > b;
+}
+
 }  // namespace flatsurf
 
 #endif
