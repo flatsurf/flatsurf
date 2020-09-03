@@ -55,6 +55,10 @@ class VectorExact : public VectorBase<Vector>,
 
   // Return twice the area of the polygon described by the (counter-clockwise) perimeter.
   static T area(const std::vector<Vector> &perimeter);
+
+  struct CompareSlope {
+    bool operator()(const Vector &lhs, const Vector &rhs) const;
+  };
 };
 }  // namespace flatsurf::detail
 
