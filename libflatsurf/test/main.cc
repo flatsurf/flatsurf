@@ -20,5 +20,8 @@
 
 // Shared entry point of all test binaries
 
+// Set this for easier copy & pate of string outputs
+// #define CATCH_CONFIG_CONSOLE_WIDTH 4086
+
 #define CATCH_CONFIG_MAIN
 #include "external/catch2/single_include/catch2/catch.hpp"
