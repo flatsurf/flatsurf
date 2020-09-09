@@ -285,12 +285,23 @@ bool VectorExact<Vector, T>::inSector(const Vector& begin, const Vector& end) co
 
 template <typename Vector, typename T>
 bool VectorExact<Vector, T>::CompareSlope::operator()(const Vector& lhs, const Vector& rhs) const {
-  const T a = lhs.y() * rhs.x();
-  const T b = rhs.y() * lhs.x();
-  if ((lhs.x() < 0) == (rhs.x() < 0))
-    return a < b;
-  else
-    return a > b;
+  ASSERT(lhs.x() || lhs.y(), "zero vector has no slope");
+  ASSERT(rhs.x() || rhs.y(), "zero vector has no slope");
+
+  const int lhs_infinite = lhs.x() ? 0 : (lhs.y() < 0 ? -1 : 1);
+  const int rhs_infinite = rhs.x() ? 0 : (rhs.y() < 0 ? -1 : 1);
+
+  if (lhs_infinite || rhs_infinite)
+    return lhs_infinite < rhs_infinite;
+  else {
+    const T a = lhs.y() * rhs.x();
+    const T b = rhs.y() * lhs.x();
+
+    if ((lhs.x() < 0) == (rhs.x() < 0))
+      return a < b;
+    else
+      return a > b;
+  }
 }
 
 }  // namespace flatsurf

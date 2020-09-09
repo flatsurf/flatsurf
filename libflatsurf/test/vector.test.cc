@@ -44,8 +44,24 @@ TEMPLATE_TEST_CASE("Vector Slopes", "[vector]", (long long), (mpz_class), (mpq_c
   SECTION("Slopes Compare Correctly") {
     const typename V::CompareSlope lt;
 
-    REQUIRE(lt(V(0, 1), V(1, 0)));
-    REQUIRE(!lt(V(0, 1), V(0, 2)));
+    std::vector<V> vectors = { V(0, -1), V(0, -2), V(1, -1), V(-1, 1), V(1, 0), V(-1, 0), V(1, 1), V(-1, -1), V(0, 1), V(0, 2) };
+    for (size_t i = 0; i < vectors.size(); i++) {
+      for (size_t j = 0; j < vectors.size(); j++) {
+        const auto x = vectors[i];
+        const auto y = vectors[j];
+        CAPTURE(x);
+        CAPTURE(y);
+
+        if (i/2 < j/2)
+          REQUIRE(lt(x, y));
+        if (i <= j)
+          REQUIRE(!lt(y, x));
+        if (i/2 == j/2) {
+          REQUIRE(!lt(x, y));
+          REQUIRE(!lt(y, x));
+        }
+      }
+    }
   }
 
   SECTION("Duplicate Slopes are Detected") {
@@ -55,7 +71,7 @@ TEMPLATE_TEST_CASE("Vector Slopes", "[vector]", (long long), (mpz_class), (mpq_c
     for (auto connection : SaddleConnections(square, Bound(1, 0)))
       slopes.insert(connection.vector());
     
-    REQUIRE(slopes.size() == 6);
+    REQUIRE(slopes.size() == 3);
   }
 }
 
