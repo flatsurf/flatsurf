@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,6 +18,9 @@
  *********************************************************************/
 
 #include "../flatsurf/bound.hpp"
+#include "../flatsurf/vector.hpp"
+
+#include "external/gmpxxll/gmpxxll/mpz_class.hpp"
 
 #include <ostream>
 
@@ -25,6 +28,10 @@ namespace flatsurf {
 
 Bound::Bound() :
   square() {}
+
+Bound::Bound(int x) : Bound(mpz_class(x)) {}
+
+Bound::Bound(const mpz_class& x) : square(x*x) {}
 
 Bound::Bound(const mpz_class& x, const mpz_class& y) :
   square(x * x + y * y) {}
@@ -37,8 +44,59 @@ bool Bound::operator==(const Bound& rhs) const noexcept {
   return square == rhs.square;
 }
 
+bool Bound::operator<(const Bound& rhs) const noexcept {
+  return square < rhs.square;
+}
+
+Bound& Bound::operator*=(const mpz_class& c) {
+  square *= (c * c);
+  return *this;
+}
+
+template <typename T>
+Bound Bound::lower(const Vector<T>& v) {
+  Bound ret;
+  auto square = v*v;
+  if constexpr (std::is_integral_v<T>)
+    ret.square = gmpxxll::mpz_class(square);
+  else if constexpr (std::is_same_v<T, mpq_class>)
+    ret.square = square.get_num() / square.get_den();
+  else if constexpr (std::is_same_v<T, mpz_class>)
+    ret.square = square;
+  else
+    ret.square = square.floor();
+  return ret;
+}
+
+template <typename T>
+Bound Bound::upper(const Vector<T>& v) {
+  Bound ret;
+  auto square = v*v;
+  if constexpr (std::is_integral_v<T>)
+    ret.square = gmpxxll::mpz_class(square);
+  else if constexpr (std::is_same_v<T, mpq_class>) {
+    ret.square = square.get_num() / square.get_den();
+    if (square.get_num() % square.get_den() != 0)
+      ret.square++;
+  } else if constexpr (std::is_same_v<T, mpz_class>)
+    ret.square = square;
+  else
+    ret.square = square.ceil();
+  return ret;
+}
+
 std::ostream& operator<<(std::ostream& os, const Bound& self) {
   return os << "√(" << self.squared() << ")";
 }
 
 }  // namespace flatsurf
+
+#include "util/instantiate.ipp"
+
+#define LIBFLATSURF_INSTANTIATE_BOUND(T)            \
+  namespace flatsurf {                              \
+  template Bound Bound::lower<T>(const Vector<T>&); \
+  template Bound Bound::upper<T>(const Vector<T>&); \
+  }
+
+LIBFLATSURF_INSTANTIATE_MANY((LIBFLATSURF_INSTANTIATE_BOUND), LIBFLATSURF_REAL_TYPES)
