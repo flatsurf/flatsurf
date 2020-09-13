@@ -81,6 +81,53 @@ TEST_CASE("Parabolic", "[surface]") {
 
     REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(false));
   }
+
+  SECTION("(2,3,5) triangle in (0, 1)") {
+    using T = renf_elem_class;
+    using R2 = Vector<T>;
+    auto surface = make235<R2>();
+    CAPTURE(*surface);
+
+    const auto direction = Vector<T>(0, 1);
+    auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), direction);
+    CAPTURE(flowDecomposition);
+
+    REQUIRE(flowDecomposition.decompose());
+
+    REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(false));
+  }
+
+  SECTION("(2,3,5) triangle in (c^2 -5,c)") {
+    using T = renf_elem_class;
+    using R2 = Vector<T>;
+    auto surface = make235<R2>();
+    CAPTURE(*surface);
+
+    auto c = P->gen();
+    const auto direction = Vector<T>(c*c - 5, c);
+    auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), direction);
+    CAPTURE(flowDecomposition);
+
+    REQUIRE(flowDecomposition.decompose());
+
+    REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(false));
+  }
+
+  SECTION("(2,3,5) triangle in (-5, -c^3 + 2c") {
+    using T = renf_elem_class;
+    using R2 = Vector<T>;
+    auto surface = make235<R2>();
+    CAPTURE(*surface);
+
+    auto c = P->gen();
+    const auto direction = Vector<T>(-5, -c*c*c + 2*c);
+    auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), direction);
+    CAPTURE(flowDecomposition);
+
+    REQUIRE(flowDecomposition.decompose());
+
+    REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(false));
+  }
 }
 
 }  // namespace flatsurf::test
