@@ -152,8 +152,9 @@ boost::logic::tribool FlowDecomposition<Surface>::parabolic() const {
     } else {
       std::vector<mpq_class> u = intervalxt::sample::Arithmetic<T>::coefficients(a0 * hnorm2);
       std::vector<mpq_class> v = intervalxt::sample::Arithmetic<T>::coefficients(a * hnorm20);
+      assert(u.size() == v.size());
       size_t i0 = 0;
-      while (i0 < u.size() && u[i0] == 0)
+      while (i0 < u.size() && u[i0] == 0 && v[i0] == 0)
         i0++;
       for (size_t i = i0 + 1; i < u.size(); i++) {
         if (u[i0] * v[i] != u[i] * v[i0]) {
