@@ -268,9 +268,9 @@ bool VectorExact<Vector, T>::inSector(const Vector& begin, const Vector& end) co
     case CCW::COLLINEAR:
       switch (begin.orientation(end)) {
         case ORIENTATION::SAME:
-          return ccw(begin) == CCW::COLLINEAR;
+          return ccw(begin) == CCW::COLLINEAR && orientation(begin) == ORIENTATION::SAME;
         case ORIENTATION::OPPOSITE:
-          return begin.ccw(self) != CCW::COUNTERCLOCKWISE;
+          return begin.ccw(self) == CCW::COUNTERCLOCKWISE;
         default:
           UNREACHABLE("non-zero collinear vectors cannot be orthogonal");
       }

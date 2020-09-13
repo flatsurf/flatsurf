@@ -57,7 +57,13 @@ template <typename Surface>
 class SaddleConnections;
 
 template <typename Surface>
+class SaddleConnectionsByLength;
+
+template <typename Surface>
 class SaddleConnectionsIterator;
+
+template <typename Surface>
+class SaddleConnectionsByLengthIterator;
 
 template <typename Surface>
 class ContourConnection;
