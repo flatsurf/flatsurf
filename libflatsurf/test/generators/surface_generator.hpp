@@ -49,6 +49,7 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::shared_ptr<Fl
     _125,
     _1221,
     _1234,
+    _235,
     HEXAGON,
     OCTAGON,
     HEPTAGON_L,
@@ -111,6 +112,11 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::shared_ptr<Fl
       case Surface::_1234:
         if constexpr (hasFractions<T> && hasNumberFieldElements<T>)
           return make1234<R2>();
+        else
+          return nullptr;
+      case Surface::_235:
+        if constexpr (hasFractions<T> && hasNumberFieldElements<T>)
+          return make235<R2>();
         else
           return nullptr;
       case Surface::HEXAGON:

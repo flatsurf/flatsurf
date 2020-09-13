@@ -234,6 +234,20 @@ inline auto make125() {
   return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*make125Combinatorial()), vectors);
 }
 
+inline auto make235Combinatorial() {
+  auto vertices = vector<vector<int>>{{1, -3, -9, -18, -23, -28, 25, 19, 10, 4}, {-1, -5, -12, -22, -25, 29, 24, 17, 9, -8, -14, 11, -10, -20, -26, 27, 23, 15, 7, 2}, {-2, -6, 8, 3}, {-4, -11, 13, 5}, {6, -7, -16, -24, -30, 26, 21, 12, -13, 14}, {-15, 18, -17, 16}, {-19, 22, -21, 20}, {-27, 30, -29, 28}};
+  return std::make_shared<FlatTriangulationCombinatorial>(vertices);
+}
+
+template <typename R2>
+auto make235() {
+  vector<R2> vectors;
+  auto a = P->gen();
+  const auto frac = ::flatsurf::test::frac<renf_elem_class, int>;
+  vectors = vector{R2(1, 0), R2((frac(1, 4) * a * a - frac(5, 4) ), (frac(1, 4) * a )), R2((-frac(1, 4) * a * a + frac(1, 4) ), (-frac(1, 4) * a )), R2((frac(1, 4) * a * a - frac(1, 4) ), (-frac(1, 4) * a )), R2((-frac(1, 4) * a * a + frac(5, 4) ), (frac(1, 4) * a )), R2((-frac(1, 4) * a * a + frac(1, 4) ), (-frac(1, 4) * a )), R2((frac(1, 2) * a * a - frac(3, 2) ), (frac(1, 2) * a )), R2((frac(1, 4) * a * a - frac(5, 4) ), (frac(1, 4) * a )), R2((-frac(1, 2) * a * a + frac(3, 2) ), (-frac(1, 2) * a )), R2((frac(1, 2) * a * a - frac(3, 2) ), (-frac(1, 2) * a )), R2((-frac(1, 4) * a * a + frac(5, 4) ), (frac(1, 4) * a )), R2((-frac(1, 2) * a * a + frac(3, 2) ), (frac(1, 2) * a )), R2((frac(1, 4) * a * a - frac(1, 4) ), (-frac(1, 4) * a )), R2(-1, 0), R2((frac(1, 2) * a * a - frac(5, 4) ), (-frac(1, 4) * a * a * a + 1* a )), R2((-frac(1, 4) ), (frac(1, 4) * a * a * a - frac(1, 2) * a )), R2((-frac(1, 2) * a * a + frac(5, 4) ), (frac(1, 4) * a * a * a - 1* a )), R2((frac(1, 4) ), (-frac(1, 4) * a * a * a + frac(1, 2) * a )), R2((-frac(1, 4) ), (-frac(1, 4) * a * a * a + frac(1, 2) * a )), R2((frac(1, 2) * a * a - frac(5, 4) ), (frac(1, 4) * a * a * a - 1* a )), R2((frac(1, 4) ), (frac(1, 4) * a * a * a - frac(1, 2) * a )), R2((-frac(1, 2) * a * a + frac(5, 4) ), (-frac(1, 4) * a * a * a + 1* a )), R2((frac(1, 2) * a * a - 1 ), (-frac(1, 2) * a * a * a + frac(3, 2) * a )), R2((-frac(1, 2) * a * a + 1 ), (frac(1, 2) * a * a * a - frac(3, 2) * a )), R2((-frac(1, 2) * a * a + 1 ), (-frac(1, 2) * a * a * a + frac(3, 2) * a )), R2((frac(1, 2) * a * a - 1 ), (frac(1, 2) * a * a * a - frac(3, 2) * a )), R2(0, (-frac(1, 2) * a * a * a + frac(3, 2) * a )), R2((frac(1, 2) * a * a - 1 ), 0), R2(0, (frac(1, 2) * a * a * a - frac(3, 2) * a )), R2((-frac(1, 2) * a * a + 1 ), 0)};
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*make235Combinatorial()), vectors);
+}
+
 inline auto make1221Combinatorial() {
   auto vertices = vector<vector<int>>({{-12, 4, -6, -1, -8, 6, -5, 3, -10, 5, -4, 2}, {-11, 7, 1, 8, -7, 9, -3, 10, -9, 11, -2, 12}});
   return std::make_shared<FlatTriangulationCombinatorial>(vertices);
