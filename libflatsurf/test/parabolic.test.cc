@@ -49,6 +49,7 @@ TEST_CASE("Parabolic", "[surface]") {
 
     REQUIRE(flowDecomposition.decompose());
 
+    REQUIRE(flowDecomposition.completelyPeriodic() == boost::logic::tribool(true));
     REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(true));
   }
 
@@ -64,6 +65,7 @@ TEST_CASE("Parabolic", "[surface]") {
 
     REQUIRE(flowDecomposition.decompose());
 
+    REQUIRE(flowDecomposition.completelyPeriodic() == boost::logic::tribool(true));
     REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(false));
   }
 
@@ -79,7 +81,24 @@ TEST_CASE("Parabolic", "[surface]") {
 
     REQUIRE(flowDecomposition.decompose());
 
+    REQUIRE(flowDecomposition.completelyPeriodic() == boost::logic::tribool(true));
     REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(false));
+  }
+
+  SECTION("(2,3,5) triangle in (1, 0)") {
+    using T = renf_elem_class;
+    using R2 = Vector<T>;
+    auto surface = make235<R2>();
+    CAPTURE(*surface);
+
+    const auto direction = Vector<T>(0, 1);
+    auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), direction);
+    CAPTURE(flowDecomposition);
+
+    REQUIRE(flowDecomposition.decompose());
+
+    REQUIRE(flowDecomposition.completelyPeriodic() == boost::logic::tribool(true));
+    REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(true));
   }
 
   SECTION("(2,3,5) triangle in (0, 1)") {
@@ -94,10 +113,28 @@ TEST_CASE("Parabolic", "[surface]") {
 
     REQUIRE(flowDecomposition.decompose());
 
+    REQUIRE(flowDecomposition.completelyPeriodic() == boost::logic::tribool(true));
     REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(false));
   }
 
-  SECTION("(2,3,5) triangle in (c^2 -5,c)") {
+  SECTION("(2,3,5) triangle in (2c^2 - 1, -c^3 + 4c)") {
+    using T = renf_elem_class;
+    using R2 = Vector<T>;
+    auto surface = make235<R2>();
+    CAPTURE(*surface);
+
+    auto c = P->gen();
+    const auto direction = Vector(2*c*c - 1, -c*c*c + 4*c);
+    auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), direction);
+    CAPTURE(flowDecomposition);
+
+    REQUIRE(flowDecomposition.decompose());
+
+    REQUIRE(flowDecomposition.completelyPeriodic() == boost::logic::tribool(true));
+    REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(true));
+  }
+
+  SECTION("(2,3,5) triangle in (c^2 - 5, c)") {
     using T = renf_elem_class;
     using R2 = Vector<T>;
     auto surface = make235<R2>();
@@ -110,10 +147,11 @@ TEST_CASE("Parabolic", "[surface]") {
 
     REQUIRE(flowDecomposition.decompose());
 
+    REQUIRE(flowDecomposition.completelyPeriodic() == boost::logic::tribool(true));
     REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(false));
   }
 
-  SECTION("(2,3,5) triangle in (-5, -c^3 + 2c") {
+  SECTION("(2,3,5) triangle in (-5, -c^3 + 2c)") {
     using T = renf_elem_class;
     using R2 = Vector<T>;
     auto surface = make235<R2>();
@@ -126,6 +164,7 @@ TEST_CASE("Parabolic", "[surface]") {
 
     REQUIRE(flowDecomposition.decompose());
 
+    REQUIRE(flowDecomposition.completelyPeriodic() == boost::logic::tribool(true));
     REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(false));
   }
 }

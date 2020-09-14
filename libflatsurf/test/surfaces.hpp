@@ -47,7 +47,7 @@ static auto L = renf_class::make("x^2 - x - 1", "x", "1.618 +/- .1");
 static auto M = renf_class::make("x^3 - x^2 - 2*x +1", "x", "1.802 +/- .1");
 static auto N = renf_class::make("x^2 - 2", "x", "1.414 +/- .1");
 static auto O = renf_class::make("x^4 - 2", "x", "1.189 +/- .1");
-static auto P = renf_class::make("x^4 - 5*x^2 + 5", "x", "1.17557050 +/- .1");
+static auto P = renf_class::make("x^4 - 5*x^2 + 5", "x", "1.902 +/- .1");
 
 inline auto makeSquareCombinatorial() {
   auto vertices = vector<vector<int>>{{1, 3, 2, -1, -3, -2}};
