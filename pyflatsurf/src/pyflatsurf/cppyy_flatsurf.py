@@ -25,13 +25,13 @@ import cppyy
 from cppyy.gbl import std
 
 from pyexactreal import exactreal
-from pyexactreal.cppyy_exactreal import pretty_print
 
 from .pythonization import enable_iterable, enable_vector_print, enable_hash, enable_flow_decomposition_print
 
 from cppyythonizations.pickling.cereal import enable_cereal
 from cppyythonizations.util import filtered, add_method, wrap_method
 from cppyythonizations.operators.arithmetic import enable_arithmetic
+from cppyythonizations.printing import enable_pretty_printing
 
 # Importing cysignals after cppyy gives us proper stack traces on segfaults
 # whereas cppyy otherwise only reports "segmentation violation" (which is
@@ -43,12 +43,12 @@ if os.environ.get('PYFLATSURF_CYSIGNALS', True):
     except ModuleNotFoundError:
         pass
 
+
 cppyy.py.add_pythonization(enable_iterable, "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("Vector<.*>"))(enable_arithmetic), "flatsurf")
-cppyy.py.add_pythonization(pretty_print, "flatsurf")
-cppyy.py.add_pythonization(enable_hash, "flatsurf")
-cppyy.py.add_pythonization(enable_vector_print, "flatsurf")
+cppyy.py.add_pythonization(enable_pretty_printing, "flatsurf")
 cppyy.py.add_pythonization(lambda proxy, name: enable_cereal(proxy, name, ["flatsurf/cereal.hpp"]), "flatsurf")
+
 
 cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(add_method("saddle_connections")(lambda self, *args: cppyy.gbl.flatsurf.SaddleConnections[type(self)](self, *args))), "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(add_method("insertAt")(lambda self, *args: cppyy.gbl.flatsurf.insertAtFlatTriangulation(self, *args))), "flatsurf")
@@ -60,11 +60,14 @@ cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_met
 cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_method("cylinders")(lambda self: [component for component in self.components() if component.cylinder()])), "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_method("minimalComponents")(lambda self: [component for component in self.components() if component.withoutPeriodicTrajectory()])), "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_method("undeterminedComponents")(lambda self: [component for component in self.components() if not (component.cylinder() == True) and not (component.withoutPeriodicTrajectory() == True)])), "flatsurf")
-cppyy.py.add_pythonization(enable_flow_decomposition_print, "flatsurf")
+cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_method("__str__")(lambda self: "FlowDecomposition with %d cylinders, %d minimal components and %d undetermined components" % (len(self.cylinders()), len(self.minimalComponents()), len(self.undeterminedComponents())))), "flatsurf")
+
 
 for path in os.environ.get('PYFLATSURF_INCLUDE','').split(':'):
     if path: cppyy.add_include_path(path)
 
+
 cppyy.include("flatsurf/cppyy.hpp")
+
 
 from cppyy.gbl import flatsurf

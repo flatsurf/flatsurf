@@ -46,36 +46,3 @@ def enable_iterable(proxy, name):
                 return cppyy.gbl.std.distance(self.begin(), self.end())
 
             proxy.__len__ = len
-
-def enable_pretty_print(proxy, name):
-    proxy.__repr__ = proxy.__str__
-
-# see https://bitbucket.org/wlav/cppyy/issues/170/std-hash-is-not-picked-up-by-__hash__
-def enable_hash(proxy, name):
-    proxy.__hash__ = lambda self: cppyy.gbl.std.hash[proxy]()(self)
-
-# Work around https://bitbucket.org/wlav/cppyy/issues/112/operator-for-a-base-class-is-not-found
-def enable_vector_print(proxy, name):
-    if name.startswith("Vector<"):
-        proxy.__str__ = lambda self: "(" + str(self.x()) + ", " + str(self.y()) + ")"
-        proxy.__repr__ = proxy.__str__
-
-def flowDecompositionRepr(self):
-        ncyl = 0
-        nmin = 0
-        nund = 0
-        for comp in self.components():
-            if comp.cylinder() == True:
-                assert comp.withoutPeriodicTrajectory() == False
-                ncyl += 1
-            elif comp.cylinder() == False:
-                assert comp.withoutPeriodicTrajectory() == True
-                nmin += 1
-            else:
-                nund += 1
-        return "FlowDecomposition with %d cylinders, %d minimal components and %d undetermined components" % (ncyl, nmin, nund)
-
-def enable_flow_decomposition_print(proxy, name):
-    if name.startswith("FlowDecomposition<"):
-        proxy.__str__ = flowDecompositionRepr
-        proxy.__repr__ = proxy.__str__
