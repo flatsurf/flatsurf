@@ -26,7 +26,7 @@ from cppyy.gbl import std
 
 from pyexactreal import exactreal
 
-from .pythonization import enable_iterable, enable_vector_print, enable_hash, enable_flow_decomposition_print
+from .pythonization import enable_iterable, enable_vector_print, enable_hash
 
 from cppyythonizations.pickling.cereal import enable_cereal
 from cppyythonizations.util import filtered, add_method, wrap_method
