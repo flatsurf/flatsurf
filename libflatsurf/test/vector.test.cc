@@ -90,7 +90,7 @@ TEMPLATE_TEST_CASE("Vector Sector Containment", "[vector][inSector]", (long long
 
   SECTION("A Vector is Not Contained in the Sector Ending at Itself") {
     V v(1, 0);
-    REQUIRE(v.inSector(-v, v));
+    REQUIRE(!v.inSector(-v, v));
   }
 }
 

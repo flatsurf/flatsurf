@@ -270,7 +270,14 @@ bool VectorExact<Vector, T>::inSector(const Vector& begin, const Vector& end) co
         case ORIENTATION::SAME:
           return ccw(begin) == CCW::COLLINEAR && orientation(begin) == ORIENTATION::SAME;
         case ORIENTATION::OPPOSITE:
-          return begin.ccw(self) == CCW::COUNTERCLOCKWISE;
+          switch (begin.ccw(self)) {
+            case CCW::COUNTERCLOCKWISE:
+              return true;
+            case CCW::CLOCKWISE:
+              return false;
+            case CCW::COLLINEAR:
+              return begin.orientation(self) == ORIENTATION::SAME;
+          }
         default:
           UNREACHABLE("non-zero collinear vectors cannot be orthogonal");
       }
