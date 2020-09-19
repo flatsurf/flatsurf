@@ -18,20 +18,19 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <set>
-
 #include <e-antic/renfxx.h>
 
 #include <exact-real/element.hpp>
 #include <exact-real/module.hpp>
 #include <exact-real/number_field.hpp>
 #include <exact-real/real_number.hpp>
+#include <set>
 
-#include "../flatsurf/vector.hpp"
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
+#include "../flatsurf/vector.hpp"
 #include "external/catch2/single_include/catch2/catch.hpp"
 #include "surfaces.hpp"
 
@@ -44,7 +43,7 @@ TEMPLATE_TEST_CASE("Vector Slopes", "[vector]", (long long), (mpz_class), (mpq_c
   SECTION("Slopes Compare Correctly") {
     const typename V::CompareSlope lt;
 
-    std::vector<V> vectors = { V(0, -1), V(0, -2), V(1, -1), V(-1, 1), V(1, 0), V(-1, 0), V(1, 1), V(-1, -1), V(0, 1), V(0, 2) };
+    std::vector<V> vectors = {V(0, -1), V(0, -2), V(1, -1), V(-1, 1), V(1, 0), V(-1, 0), V(1, 1), V(-1, -1), V(0, 1), V(0, 2)};
     for (size_t i = 0; i < vectors.size(); i++) {
       for (size_t j = 0; j < vectors.size(); j++) {
         const auto x = vectors[i];
@@ -52,11 +51,11 @@ TEMPLATE_TEST_CASE("Vector Slopes", "[vector]", (long long), (mpz_class), (mpq_c
         CAPTURE(x);
         CAPTURE(y);
 
-        if (i/2 < j/2)
+        if (i / 2 < j / 2)
           REQUIRE(lt(x, y));
         if (i <= j)
           REQUIRE(!lt(y, x));
-        if (i/2 == j/2) {
+        if (i / 2 == j / 2) {
           REQUIRE(!lt(x, y));
           REQUIRE(!lt(y, x));
         }
@@ -70,7 +69,7 @@ TEMPLATE_TEST_CASE("Vector Slopes", "[vector]", (long long), (mpz_class), (mpq_c
     std::set<V, typename V::CompareSlope> slopes;
     for (auto connection : SaddleConnections(square, Bound(1, 0)))
       slopes.insert(connection.vector());
-    
+
     REQUIRE(slopes.size() == 3);
   }
 }
@@ -95,4 +94,4 @@ TEMPLATE_TEST_CASE("Vector Sector Containment", "[vector][inSector]", (long long
   }
 }
 
-}
+}  // namespace flatsurf::test

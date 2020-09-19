@@ -23,7 +23,6 @@
 #include <boost/iterator/iterator_facade.hpp>
 
 #include "external/spimpl/spimpl.h"
-
 #include "forward.hpp"
 
 namespace flatsurf {

@@ -19,15 +19,12 @@
 
 #include <iterator>
 
-#include "../flatsurf/vector.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
-
-#include "util/assert.ipp"
-
+#include "../flatsurf/vector.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
-
 #include "impl/saddle_connections_by_length.impl.hpp"
 #include "impl/saddle_connections_by_length_iterator.impl.hpp"
+#include "util/assert.ipp"
 
 namespace flatsurf {
 
@@ -47,10 +44,7 @@ const SaddleConnection<Surface>& SaddleConnectionsByLengthIterator<Surface>::der
 
 template <typename Surface>
 bool SaddleConnectionsByLengthIterator<Surface>::equal(const SaddleConnectionsByLengthIterator& rhs) const {
-  return impl->upperBoundInclusive == rhs.impl->upperBoundInclusive
-    && &impl->connections == &rhs.impl->connections
-    && impl->lowerBoundExclusive == rhs.impl->lowerBoundExclusive
-    && impl->connectionsWithinBounds.size() == rhs.impl->connectionsWithinBounds.size();
+  return impl->upperBoundInclusive == rhs.impl->upperBoundInclusive && &impl->connections == &rhs.impl->connections && impl->lowerBoundExclusive == rhs.impl->lowerBoundExclusive && impl->connectionsWithinBounds.size() == rhs.impl->connectionsWithinBounds.size();
 }
 
 template <typename Surface>
@@ -75,8 +69,8 @@ void ImplementationOf<SaddleConnectionsByLengthIterator<Surface>>::increment() {
       upperBoundInclusive = Bound::upper(connections.surface().shortest());
     } else {
       // Then double the bound we are considering each time.
-     lowerBoundExclusive = upperBoundInclusive;
-     upperBoundInclusive = lowerBoundExclusive * 2;
+      lowerBoundExclusive = upperBoundInclusive;
+      upperBoundInclusive = lowerBoundExclusive * 2;
     }
     if (connections.bound() && lowerBoundExclusive >= *connections.bound()) {
       // We are at the end of the search. Set this to be identical to the end() iterator.

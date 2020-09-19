@@ -22,8 +22,8 @@
 
 #include <deque>
 #include <stack>
-#include <vector>
 #include <variant>
+#include <vector>
 
 #include "../../flatsurf/bound.hpp"
 #include "../../flatsurf/ccw.hpp"
@@ -140,7 +140,6 @@ template <typename Surface>
 template <typename... Args>
 SaddleConnectionsIterator<Surface>::SaddleConnectionsIterator(PrivateConstructor, Args&&... args) :
   impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
-
 
 }  // namespace flatsurf
 

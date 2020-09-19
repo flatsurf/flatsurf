@@ -18,20 +18,22 @@
  *********************************************************************/
 
 #include "../flatsurf/bound.hpp"
-#include "../flatsurf/vector.hpp"
-
-#include "external/gmpxxll/gmpxxll/mpz_class.hpp"
 
 #include <ostream>
+
+#include "../flatsurf/vector.hpp"
+#include "external/gmpxxll/gmpxxll/mpz_class.hpp"
 
 namespace flatsurf {
 
 Bound::Bound() :
   square() {}
 
-Bound::Bound(int x) : Bound(mpz_class(x)) {}
+Bound::Bound(int x) :
+  Bound(mpz_class(x)) {}
 
-Bound::Bound(const mpz_class& x) : square(x*x) {}
+Bound::Bound(const mpz_class& x) :
+  square(x * x) {}
 
 Bound::Bound(const mpz_class& x, const mpz_class& y) :
   square(x * x + y * y) {}
@@ -56,7 +58,7 @@ Bound& Bound::operator*=(const mpz_class& c) {
 template <typename T>
 Bound Bound::lower(const Vector<T>& v) {
   Bound ret;
-  auto square = v*v;
+  auto square = v * v;
   if constexpr (std::is_integral_v<T>)
     ret.square = gmpxxll::mpz_class(square);
   else if constexpr (std::is_same_v<T, mpq_class>)
@@ -71,7 +73,7 @@ Bound Bound::lower(const Vector<T>& v) {
 template <typename T>
 Bound Bound::upper(const Vector<T>& v) {
   Bound ret;
-  auto square = v*v;
+  auto square = v * v;
   if constexpr (std::is_integral_v<T>)
     ret.square = gmpxxll::mpz_class(square);
   else if constexpr (std::is_same_v<T, mpq_class>) {

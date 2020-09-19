@@ -23,7 +23,6 @@
 #include <memory>
 
 #include "external/spimpl/spimpl.h"
-
 #include "half_edge.hpp"
 #include "vertex.hpp"
 
@@ -58,7 +57,7 @@ class SaddleConnections {
   SaddleConnections(const std::shared_ptr<const Surface> &, Bound searchRadius, const HalfEdge sectorBegin);
 
   // Return only the saddle connections whose length is at most the given bound.
-  SaddleConnections<Surface> bound(Bound) const; 
+  SaddleConnections<Surface> bound(Bound) const;
 
   // Return the configured bound of these saddle connections, if any.
   std::optional<Bound> bound() const;
@@ -66,28 +65,28 @@ class SaddleConnections {
   // Return only the saddle connections starting at the source of sectorBegin
   // that lie in the sector between sectorBegin (inclusive) and the following
   // half edge (exclusive) in counter-clockwise order.
-  SaddleConnections<Surface> sector(HalfEdge sectorBegin) const; 
+  SaddleConnections<Surface> sector(HalfEdge sectorBegin) const;
 
   // Return only the saddle connections starting at source of sectorBegin that
   // lie in sector between sectorBegin (inclusive) and sectorEnd (exclusive.)
-  SaddleConnections<Surface> sector(const SaddleConnection<Surface>& sectorBegin, const SaddleConnection<Surface>& sectorEnd) const;
+  SaddleConnections<Surface> sector(const SaddleConnection<Surface> &sectorBegin, const SaddleConnection<Surface> &sectorEnd) const;
 
   // Return only the saddle connections whose directions lies in sector between
   // sectorBegin (inclusive) and sectorEnd (exclusive.)
-  SaddleConnections<Surface> sector(const Vector<T>& sectorBegin, const Vector<T>& sectorEnd) const;
+  SaddleConnections<Surface> sector(const Vector<T> &sectorBegin, const Vector<T> &sectorEnd) const;
 
   // Return only the saddle connections starting at source.
-  SaddleConnections<Surface> source(const Vertex& source) const;
+  SaddleConnections<Surface> source(const Vertex &source) const;
 
   // Return the saddle connections around each source vertex sorted by
   // increasing angles (counterclockwise.) Note that this just returns this
   // object unchanged.
-  SaddleConnection<Surface>& byAngle() const;
+  SaddleConnection<Surface> &byAngle() const;
 
   // Return the saddle connections sorted by increasing length.
   ByLength byLength() const;
 
-  const Surface& surface() const;
+  const Surface &surface() const;
 
   // Return an iterator through the saddle connections. The iteration is
   // counterclockwise around each vertex.
@@ -106,8 +105,8 @@ class SaddleConnections {
   friend SaddleConnectionsByLength<Surface>;
 };
 
-template <typename Surface, typename ...T>
-SaddleConnections(const std::shared_ptr<Surface> &, T&&...) -> SaddleConnections<Surface>;
+template <typename Surface, typename... T>
+SaddleConnections(const std::shared_ptr<Surface> &, T &&...) -> SaddleConnections<Surface>;
 
 }  // namespace flatsurf
 

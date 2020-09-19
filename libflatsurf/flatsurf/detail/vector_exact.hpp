@@ -53,7 +53,7 @@ class VectorExact : public VectorBase<Vector>,
   // Return whether this vector is contained in the sector described by
   // inclusive and exclusive in counter-clockwise order. If inclusive and
   // exclusive are collinear, the sector consists of that single ray.
-  bool inSector(const Vector& inclusive, const Vector& exclusive) const;
+  bool inSector(const Vector &inclusive, const Vector &exclusive) const;
 
   Coordinate x() const noexcept;
   Coordinate y() const noexcept;

@@ -22,9 +22,9 @@
 
 #include <optional>
 
-#include "../../flatsurf/vector.hpp"
 #include "../../flatsurf/bound.hpp"
 #include "../../flatsurf/saddle_connections.hpp"
+#include "../../flatsurf/vector.hpp"
 
 namespace flatsurf {
 
@@ -36,8 +36,10 @@ class ImplementationOf<SaddleConnections<Surface>> {
   class ByLength;
 
   struct Sector {
-    Sector(HalfEdge source) : source(source), sector(std::nullopt) {}
-    Sector(HalfEdge source, const Vector<T>& sectorBegin, const Vector<T>& sectorEnd) : source(source), sector(std::pair{sectorBegin, sectorEnd}) {}
+    Sector(HalfEdge source) :
+      source(source), sector(std::nullopt) {}
+    Sector(HalfEdge source, const Vector<T>& sectorBegin, const Vector<T>& sectorEnd) :
+      source(source), sector(std::pair{sectorBegin, sectorEnd}) {}
 
     HalfEdge source;
     std::optional<std::pair<Vector<T>, Vector<T>>> sector;

@@ -26,20 +26,19 @@
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/ccw.hpp"
-#include "../flatsurf/orientation.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/orientation.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_by_length.hpp"
-#include "../flatsurf/saddle_connections_iterator.hpp"
 #include "../flatsurf/saddle_connections_by_length_iterator.hpp"
+#include "../flatsurf/saddle_connections_iterator.hpp"
 #include "../flatsurf/vector.hpp"
 #include "external/catch2/single_include/catch2/catch.hpp"
-#include "surfaces.hpp"
-
-#include "generators/surface_generator.hpp"
 #include "generators/saddle_connections_generator.hpp"
+#include "generators/surface_generator.hpp"
+#include "surfaces.hpp"
 
 namespace flatsurf::test {
 
@@ -217,7 +216,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Surface", "[saddle_connections]", (l
       if (sectorBegin.vector().ccw(sectorEnd.vector()) != CCW::COLLINEAR || sectorBegin.vector().orientation(sectorEnd.vector()) != ORIENTATION::SAME) {
         const auto connections = surface->connections().bound(bound);
         const auto count = std::distance(begin(connections), end(connections));
-      
+
         THEN("All connections can be found in either sector given by the vectors of the connections") {
           CAPTURE(sectorBegin.vector());
           CAPTURE(sectorEnd.vector());

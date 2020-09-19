@@ -18,7 +18,6 @@
  *********************************************************************/
 
 #include "../flatsurf/bound.hpp"
-
 #include "external/catch2/single_include/catch2/catch.hpp"
 
 namespace flatsurf::test {
@@ -39,4 +38,4 @@ TEST_CASE("Bound Arithmetic", "[bound]") {
   }
 }
 
-}
+}  // namespace flatsurf::test

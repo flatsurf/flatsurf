@@ -17,12 +17,12 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <fmt/format.h>
+
+#include <exact-real/arb.hpp>
+#include <optional>
 #include <variant>
 #include <vector>
-#include <optional>
-
-#include <fmt/format.h>
-#include <exact-real/arb.hpp>
 
 #include "../flatsurf/chain.hpp"
 #include "../flatsurf/fmt.hpp"
@@ -102,7 +102,8 @@ CCW ImplementationOf<SaddleConnectionsIterator<Surface>>::ccw(const Boundary& lh
       if (ccw) return *ccw;
     }
     return ccw(lhs, static_cast<const Vector<T>&>(rhs));
-  }, lhs);
+  },
+      lhs);
 }
 
 template <typename Surface>
@@ -114,7 +115,8 @@ template <typename Surface>
 CCW ImplementationOf<SaddleConnectionsIterator<Surface>>::ccw(const Boundary& lhs, const Boundary& rhs) {
   return std::visit([&](const auto& b) {
     return ccw(lhs, b);
-  }, rhs);
+  },
+      rhs);
 }
 
 template <typename Surface>
@@ -545,7 +547,7 @@ std::ostream& operator<<(std::ostream& os, const SaddleConnectionsIterator<Surfa
           throw std::logic_error("unknown State");
       }
     }) | rx::to_vector(),
-                                                                                                                                                                                                                                                                                                             ", "));
+                                                                                                                                                                                                 ", "));
   }
 }
 

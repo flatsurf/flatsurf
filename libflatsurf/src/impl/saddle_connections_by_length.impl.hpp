@@ -20,18 +20,18 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTIONS_BY_LENGTH_IMPL_HPP
 #define LIBFLATSURF_SADDLE_CONNECTIONS_BY_LENGTH_IMPL_HPP
 
-#include "saddle_connections.impl.hpp"
 #include "../../flatsurf/saddle_connections_by_length.hpp"
+#include "saddle_connections.impl.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-class ImplementationOf<SaddleConnectionsByLength<Surface>> :
-  public ImplementationOf<SaddleConnections<Surface>> {
+class ImplementationOf<SaddleConnectionsByLength<Surface>> : public ImplementationOf<SaddleConnections<Surface>> {
   using T = typename Surface::Coordinate;
 
  public:
-  ImplementationOf(const ImplementationOf<SaddleConnections<Surface>>& connections) : ImplementationOf<SaddleConnections<Surface>>(connections) {}
+  ImplementationOf(const ImplementationOf<SaddleConnections<Surface>>& connections) :
+    ImplementationOf<SaddleConnections<Surface>>(connections) {}
 };
 
 // TODO: Use this pattern everywhere: Put the PrivateConstructor{} constructor into the impl file.
@@ -39,7 +39,6 @@ template <typename Surface>
 template <typename... Args>
 SaddleConnectionsByLength<Surface>::SaddleConnectionsByLength(PrivateConstructor, Args&&... args) :
   impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
-
 
 }  // namespace flatsurf
 

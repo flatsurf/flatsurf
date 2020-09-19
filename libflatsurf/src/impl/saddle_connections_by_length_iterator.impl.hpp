@@ -22,9 +22,9 @@
 
 #include <deque>
 
-#include "../../flatsurf/saddle_connections_by_length_iterator.hpp"
 #include "../../flatsurf/bound.hpp"
 #include "../../flatsurf/saddle_connection.hpp"
+#include "../../flatsurf/saddle_connections_by_length_iterator.hpp"
 
 namespace flatsurf {
 

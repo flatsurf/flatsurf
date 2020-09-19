@@ -20,11 +20,10 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTIONS_BY_LENGTH_HPP
 #define LIBFLATSURF_SADDLE_CONNECTIONS_BY_LENGTH_HPP
 
-#include <optional>
 #include <memory>
+#include <optional>
 
 #include "external/spimpl/spimpl.h"
-
 #include "forward.hpp"
 
 namespace flatsurf {
@@ -35,7 +34,7 @@ class SaddleConnectionsByLength {
   using T = typename Surface::Coordinate;
 
   template <typename... Args>
-  SaddleConnectionsByLength(PrivateConstructor, Args &&... args);
+  SaddleConnectionsByLength(PrivateConstructor, Args&&... args);
 
  public:
   using Iterator = SaddleConnectionsByLengthIterator<Surface>;
@@ -43,7 +42,7 @@ class SaddleConnectionsByLength {
   SaddleConnectionsByLength(const SaddleConnections<Surface>&);
 
   // Return only the saddle connections whose length is at most the given bound.
-  SaddleConnectionsByLength bound(Bound) const; 
+  SaddleConnectionsByLength bound(Bound) const;
 
   // Return the configured bound of these saddle connections, if any.
   std::optional<Bound> bound() const;
@@ -51,7 +50,7 @@ class SaddleConnectionsByLength {
   // Return only the saddle connections starting at the source of sectorBegin
   // that lie in the sector between sectorBegin (inclusive) and the following
   // half edge (exclusive) in counter-clockwise order.
-  SaddleConnectionsByLength sector(HalfEdge sectorBegin) const; 
+  SaddleConnectionsByLength sector(HalfEdge sectorBegin) const;
 
   // Return only the saddle connections starting at source of sectorBegin that
   // lie in sector between sectorBegin (inclusive) and sectorEnd (exclusive.)
@@ -81,7 +80,7 @@ class SaddleConnectionsByLength {
   Iterator end() const;
 
   template <typename Surf>
-  friend std::ostream &operator<<(std::ostream &, const SaddleConnectionsByLength &);
+  friend std::ostream& operator<<(std::ostream&, const SaddleConnectionsByLength&);
 
  private:
   using Implementation = ImplementationOf<SaddleConnectionsByLength>;
@@ -89,10 +88,9 @@ class SaddleConnectionsByLength {
   spimpl::impl_ptr<Implementation> impl;
 };
 
-template <typename Surface, typename ...T>
-SaddleConnectionsByLength(const std::shared_ptr<Surface> &, T&&...) -> SaddleConnectionsByLength<Surface>;
+template <typename Surface, typename... T>
+SaddleConnectionsByLength(const std::shared_ptr<Surface>&, T&&...) -> SaddleConnectionsByLength<Surface>;
 
 }  // namespace flatsurf
 
 #endif
-
