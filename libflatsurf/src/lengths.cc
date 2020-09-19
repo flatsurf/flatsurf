@@ -19,30 +19,28 @@
 
 #include "impl/lengths.hpp"
 
-#include <ostream>
-
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
 #include <exact-real/element.hpp>
 #include <exact-real/integer_ring.hpp>
-#include <exact-real/rational_field.hpp>
-#include <exact-real/number_field.hpp>
 #include <exact-real/module.hpp>
-
+#include <exact-real/number_field.hpp>
+#include <exact-real/rational_field.hpp>
 #include <intervalxt/interval_exchange_transformation.hpp>
 #include <intervalxt/length.hpp>
-#include <intervalxt/sample/lengths.hpp>
-#include <intervalxt/sample/integer_floor_division.hpp>
-#include <intervalxt/sample/integer_coefficients.hpp>
-#include <intervalxt/sample/mpz_floor_division.hpp>
-#include <intervalxt/sample/mpz_coefficients.hpp>
-#include <intervalxt/sample/mpq_floor_division.hpp>
-#include <intervalxt/sample/mpq_coefficients.hpp>
-#include <intervalxt/sample/renf_elem_floor_division.hpp>
-#include <intervalxt/sample/renf_elem_coefficients.hpp>
-#include <intervalxt/sample/element_floor_division.hpp>
 #include <intervalxt/sample/element_coefficients.hpp>
+#include <intervalxt/sample/element_floor_division.hpp>
+#include <intervalxt/sample/integer_coefficients.hpp>
+#include <intervalxt/sample/integer_floor_division.hpp>
+#include <intervalxt/sample/lengths.hpp>
+#include <intervalxt/sample/mpq_coefficients.hpp>
+#include <intervalxt/sample/mpq_floor_division.hpp>
+#include <intervalxt/sample/mpz_coefficients.hpp>
+#include <intervalxt/sample/mpz_floor_division.hpp>
+#include <intervalxt/sample/renf_elem_coefficients.hpp>
+#include <intervalxt/sample/renf_elem_floor_division.hpp>
+#include <ostream>
 
 #include "../flatsurf/chain.hpp"
 #include "../flatsurf/interval_exchange_transformation.hpp"

@@ -23,11 +23,11 @@
 #include <fmt/ostream.h>
 #include <gmpxx.h>
 
-#include <intervalxt/sample/integer_floor_division.hpp>
-#include <intervalxt/sample/mpz_floor_division.hpp>
-#include <intervalxt/sample/mpq_floor_division.hpp>
-#include <intervalxt/sample/renf_elem_floor_division.hpp>
 #include <intervalxt/sample/element_floor_division.hpp>
+#include <intervalxt/sample/integer_floor_division.hpp>
+#include <intervalxt/sample/mpq_floor_division.hpp>
+#include <intervalxt/sample/mpz_floor_division.hpp>
+#include <intervalxt/sample/renf_elem_floor_division.hpp>
 #include <ostream>
 #include <unordered_map>
 #include <unordered_set>

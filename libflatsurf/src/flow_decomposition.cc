@@ -19,29 +19,26 @@
 
 #include "../flatsurf/flow_decomposition.hpp"
 
+#include <gmpxx.h>
+
+#include <boost/algorithm/string/join.hpp>
+#include <boost/lexical_cast.hpp>
+#include <exact-real/element.hpp>
+#include <exact-real/integer_ring.hpp>
+#include <exact-real/module.hpp>
+#include <exact-real/number_field.hpp>
+#include <exact-real/rational_field.hpp>
+#include <intervalxt/dynamical_decomposition.hpp>
+#include <intervalxt/sample/element_coefficients.hpp>
+#include <intervalxt/sample/integer_coefficients.hpp>
+#include <intervalxt/sample/mpq_coefficients.hpp>
+#include <intervalxt/sample/mpz_coefficients.hpp>
+#include <intervalxt/sample/renf_elem_coefficients.hpp>
 #include <memory>
 #include <ostream>
 #include <string>
 #include <unordered_map>
 #include <vector>
-
-#include <gmpxx.h>
-
-#include <exact-real/element.hpp>
-#include <exact-real/integer_ring.hpp>
-#include <exact-real/rational_field.hpp>
-#include <exact-real/number_field.hpp>
-#include <exact-real/module.hpp>
-
-#include <boost/algorithm/string/join.hpp>
-#include <boost/lexical_cast.hpp>
-
-#include <intervalxt/dynamical_decomposition.hpp>
-#include <intervalxt/sample/integer_coefficients.hpp>
-#include <intervalxt/sample/mpz_coefficients.hpp>
-#include <intervalxt/sample/mpq_coefficients.hpp>
-#include <intervalxt/sample/renf_elem_coefficients.hpp>
-#include <intervalxt/sample/element_coefficients.hpp>
 
 #include "../flatsurf/contour_component.hpp"
 #include "../flatsurf/contour_decomposition.hpp"
