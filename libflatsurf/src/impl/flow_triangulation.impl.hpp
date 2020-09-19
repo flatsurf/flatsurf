@@ -46,6 +46,11 @@ class ImplementationOf<FlowTriangulation<Surface>> {
   std::unordered_map<HalfEdge, FlowConnection<Surface>> toConnection;
 };
 
+template <typename Surface>
+template <typename... Args>
+FlowTriangulation<Surface>::FlowTriangulation(PrivateConstructor, Args&&... args) :
+  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
+
 }  // namespace flatsurf
 
 #endif

@@ -37,6 +37,11 @@ class ImplementationOf<HalfEdgeSetIterator> : public IndexedSetIterator<HalfEdge
   ImplementationOf(IndexedSetIterator<HalfEdge>&&);
 };
 
+template <typename... Args>
+HalfEdgeSetIterator::HalfEdgeSetIterator(PrivateConstructor, Args&&... args) :
+  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {
+}
+
 }  // namespace flatsurf
 
 #endif

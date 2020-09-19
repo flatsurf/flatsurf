@@ -30,11 +30,6 @@
 namespace flatsurf {
 
 template <typename Surface>
-template <typename... Args>
-ChainIterator<Surface>::ChainIterator(PrivateConstructor, Args&&... args) :
-  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
-
-template <typename Surface>
 void ChainIterator<Surface>::increment() {
   const size_t pos = impl->current.first.index();
   _fmpz_demote_val(&impl->parent->impl->coefficients[pos]);

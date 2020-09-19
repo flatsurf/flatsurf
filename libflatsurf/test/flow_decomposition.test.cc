@@ -64,13 +64,17 @@ TEST_CASE("Flow Decompositions Over Number Fields", "[flow_decomposition]") {
   }
 }
 
-TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (renf_elem_class)) {
+TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
-  const auto surface = GENERATE(makeSurface<T>());
+  const auto [name, surface_] = GENERATE(makeSurface<T>());
 
-  GIVEN("The surface " << *surface) {
-    const auto vertical = GENERATE_COPY(verticals<T>(surface));
+  const auto surface = *surface_;
+
+  GIVEN("The surface " << *name << ", i.e., " << *surface) {
+    // The limit 3 here is extremely low. Unfortunately, these tests take a
+    // long time already (45 seconds in late 2020.)
+    const auto vertical = GENERATE_COPY(verticals<T>(surface, 6));
 
     AND_GIVEN("A direction of a Saddle Connection " << vertical) {
       THEN("The flow decomposition in that direction can be computed") {

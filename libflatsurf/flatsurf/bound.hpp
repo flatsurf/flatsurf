@@ -29,9 +29,11 @@
 
 namespace flatsurf {
 
-class Bound : boost::equality_comparable<Bound> {
+class Bound : boost::totally_ordered<Bound>, boost::multipliable<Bound, mpz_class> {
  public:
   Bound();
+  Bound(const mpz_class& x);
+  Bound(int x);
   Bound(const mpz_class& x, const mpz_class& y);
 
   template <typename T>
@@ -43,6 +45,9 @@ class Bound : boost::equality_comparable<Bound> {
   const mpz_class& squared() const noexcept;
 
   bool operator==(const Bound&) const noexcept;
+  bool operator<(const Bound&) const noexcept;
+
+  Bound& operator*=(const mpz_class&);
 
   // Return the floor division by this bound.
   mpz_class operator/(const Bound&) const;

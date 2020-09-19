@@ -27,11 +27,6 @@
 
 namespace flatsurf {
 
-template <typename... Args>
-HalfEdgeSetIterator::HalfEdgeSetIterator(PrivateConstructor, Args&&... args) :
-  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {
-}
-
 void HalfEdgeSetIterator::increment() {
   return impl->increment();
 }
