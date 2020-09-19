@@ -168,9 +168,13 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Hexagon", "[saddle_connections]", (r
 TEMPLATE_TEST_CASE("Saddle Connections on a Surface", "[saddle_connections]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
-  const auto surface = GENERATE(makeSurface<T>());
+  const auto [name, surface_] = GENERATE(makeSurface<T>());
 
-  GIVEN("The surface " << *surface) {
+  const auto surface = *surface_;
+
+  GIVEN("The surface " << *name << ", i.e., " << *surface) {
+    // Unfortunately, these tests take a long time (one minute in late 2020) so
+    // we can only run this for a small number of saddle connections.
     const auto connection = GENERATE_REF(saddleConnections(surface, 3));
     const auto bound = Bound::upper(connection.vector());
 

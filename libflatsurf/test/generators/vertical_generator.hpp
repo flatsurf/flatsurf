@@ -96,7 +96,7 @@ class VerticalGenerator : public Catch::Generators::IGenerator<Vector<T>> {
 template <typename T>
 Catch::Generators::GeneratorWrapper<Vector<T>> verticals(std::shared_ptr<FlatTriangulation<T>> surface, int count = -1, int skip = -1) {
   if (count == -1)
-    count = std::min(4, static_cast<int>(surface->size()) / 3);
+    count = static_cast<int>(surface->size());
   if (skip == -1)
     skip = static_cast<int>(surface->size()) * 3 / count;
 
