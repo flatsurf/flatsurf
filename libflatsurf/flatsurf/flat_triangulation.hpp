@@ -68,6 +68,9 @@ class FlatTriangulation : public FlatTriangulationCombinatorial,
   // half edges there.
   std::unique_ptr<FlatTriangulation<T>> slot(const HalfEdge e) const;
 
+  // Return the saddle connections of this translations surface.
+  SaddleConnections<FlatTriangulation<T>> connections() const;
+
   // Create an independent clone of this triangulation with the vector
   // v(h) associated to a half edge replaced by v(h) + shift[h].
   std::unique_ptr<FlatTriangulation<T>> operator+(const OddHalfEdgeMap<Vector<T>> &shift) const;

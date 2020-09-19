@@ -509,6 +509,11 @@ bool FlatTriangulation<T>::inSector(const HalfEdge sector, const Vertical<FlatTr
 }
 
 template <typename T>
+SaddleConnections<FlatTriangulation<T>> FlatTriangulation<T>::connections() const {
+  return SaddleConnections(this->shared_from_this());
+}
+
+template <typename T>
 bool FlatTriangulation<T>::operator==(const FlatTriangulation<T> &rhs) const noexcept {
   if (this == &rhs)
     return true;

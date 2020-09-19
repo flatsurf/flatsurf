@@ -23,6 +23,7 @@
 #include <deque>
 #include <stack>
 #include <vector>
+#include <variant>
 
 #include "../../flatsurf/bound.hpp"
 #include "../../flatsurf/ccw.hpp"
@@ -34,6 +35,7 @@ namespace flatsurf {
 template <typename Surface>
 class ImplementationOf<SaddleConnectionsIterator<Surface>> {
   using T = typename Surface::Coordinate;
+  using Sector = typename ImplementationOf<SaddleConnections<Surface>>::Sector;
 
  public:
   enum class Classification {
@@ -64,26 +66,29 @@ class ImplementationOf<SaddleConnectionsIterator<Surface>> {
     GOTO_PREVIOUS_EDGE,
   };
 
-  ImplementationOf(const std::shared_ptr<const Surface>& surface, const Bound searchRadius, const std::vector<HalfEdge>::const_iterator begin, const std::vector<HalfEdge>::const_iterator end);
+  using Boundary = std::variant<Chain<Surface>, Vector<T>>;
+
+  static CCW ccw(const Boundary& lhs, const Chain<Surface>& rhs);
+  static CCW ccw(const Boundary& lhs, const Boundary& rhs);
+  static CCW ccw(const Boundary& lhs, const Vector<T>& rhs);
+
+  ImplementationOf(const ImplementationOf<SaddleConnections<Surface>>&, const typename std::vector<Sector>::const_iterator begin, const typename std::vector<Sector>::const_iterator end);
 
   void prepareSearch();
 
-  static CCW ccw(const Chain<Surface>& lhs, const Chain<Surface>& rhs);
-
-  std::shared_ptr<const Surface> surface;
-  const Bound searchRadius;
+  const ImplementationOf<SaddleConnections<Surface>>& connections;
 
   // The half edge nextEdge, to which we are currently changing, points into
   // sectors. Advanced when we are done searching an entire such sector for all
-  // saddle connections. (Note: We need to store sectors as a smart pointer so
-  // when this class is copied, this iterator does not only point into the
-  // sectors of the original.)
-  std::vector<HalfEdge>::const_iterator sector;
+  // saddle connections.
+  typename std::vector<Sector>::const_iterator sector;
 
-  std::vector<HalfEdge>::const_iterator end;
+  typename std::vector<Sector>::const_iterator end;
 
-  // The rays that enclose the search sector, in counterclockwise order.
-  Chain<Surface> boundary[2];
+  // The rays that enclose the search sector, in counterclockwise order. When
+  // chains, they are both exclusive. When vectors, the first one is inclusive,
+  // the second one exclusive.
+  Boundary boundary[2];
   // The half-edge that we are about to cross, seen from the search origin,
   // i.e., oriented so that it starts on the side of boundary[0]
   HalfEdge nextEdge;
@@ -111,7 +116,7 @@ class ImplementationOf<SaddleConnectionsIterator<Surface>> {
 
   // Storage space for temporary values of boundary, when we descend
   // recursively into a subsector.
-  std::stack<Chain<Surface>> tmp;
+  std::stack<Boundary> tmp;
 
   // The current connection so we can return it in dereference by reference.
   mutable SaddleConnection<Surface> connection;
@@ -130,6 +135,12 @@ class ImplementationOf<SaddleConnectionsIterator<Surface>> {
 
   void pushStart(bool fromOutside, bool toOutside);
 };
+
+template <typename Surface>
+template <typename... Args>
+SaddleConnectionsIterator<Surface>::SaddleConnectionsIterator(PrivateConstructor, Args&&... args) :
+  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
+
 
 }  // namespace flatsurf
 
