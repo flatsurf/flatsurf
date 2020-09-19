@@ -129,15 +129,11 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::tuple<std::st
         } else value = nullptr;
         return;
       case Surface::_1234:
-        value = nullptr;
-        return;
-        /*
         if constexpr (hasFractions<T> && hasNumberFieldElements<T>) {
           name = "(1, 2, 3, 4)";
           value = make1234<R2>();
         } else value = nullptr;
         return;
-        */
       case Surface::HEXAGON:
         if constexpr (hasFractions<T> && hasNumberFieldElements<T>) {
           name = "Equilateral Hexagon";
