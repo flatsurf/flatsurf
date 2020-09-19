@@ -67,11 +67,6 @@ using intervalxt::DynamicalDecomposition;
 namespace flatsurf {
 
 template <typename Surface>
-template <typename... Args>
-FlowDecomposition<Surface>::FlowDecomposition(PrivateConstructor, Args&&... args) :
-  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
-
-template <typename Surface>
 FlowDecomposition<Surface>::FlowDecomposition(std::unique_ptr<Surface> surface, const Vector<T>& vertical) :
   impl(spimpl::make_impl<Implementation>(std::move(surface), vertical)) {
   ASSERTIONS(([&]() {

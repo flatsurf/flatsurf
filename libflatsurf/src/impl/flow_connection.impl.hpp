@@ -47,6 +47,13 @@ class ImplementationOf<FlowConnection<Surface>> {
   SaddleConnection<FlatTriangulation<T>> saddleConnection;
 };
 
+template <typename Surface>
+template <typename... Args>
+FlowConnection<Surface>::FlowConnection(PrivateConstructor, Args&&... args)
+  // we assume that the caller is aware that impl has to be initialized explicitly.
+  :
+  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
+
 }  // namespace flatsurf
 
 #endif

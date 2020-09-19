@@ -27,11 +27,6 @@
 
 namespace flatsurf {
 
-template <typename... Args>
-EdgeSetIterator::EdgeSetIterator(PrivateConstructor, Args&&... args) :
-  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {
-}
-
 void EdgeSetIterator::increment() {
   return impl->increment();
 }

@@ -44,6 +44,12 @@ class ImplementationOf<ChainIterator<Surface>> {
   friend ChainIterator<Surface>;
 };
 
+template <typename Surface>
+template <typename... Args>
+ChainIterator<Surface>::ChainIterator(PrivateConstructor, Args&&... args) :
+  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
+
+
 }  // namespace flatsurf
 
 #endif

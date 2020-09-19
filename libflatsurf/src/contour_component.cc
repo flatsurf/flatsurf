@@ -42,11 +42,6 @@ using std::vector;
 namespace flatsurf {
 
 template <typename Surface>
-template <typename... Args>
-ContourComponent<Surface>::ContourComponent(PrivateConstructor, Args&&... args) :
-  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
-
-template <typename Surface>
 IntervalExchangeTransformation<FlatTriangulationCollapsed<typename Surface::Coordinate>> ContourComponent<Surface>::intervalExchangeTransformation() const {
   return IntervalExchangeTransformation(impl->state->surface, impl->state->surface->vertical().vertical(), impl->large());
 }

@@ -34,7 +34,6 @@ class ImplementationOf<SaddleConnectionsByLength<Surface>> : public Implementati
     ImplementationOf<SaddleConnections<Surface>>(connections) {}
 };
 
-// TODO: Use this pattern everywhere: Put the PrivateConstructor{} constructor into the impl file.
 template <typename Surface>
 template <typename... Args>
 SaddleConnectionsByLength<Surface>::SaddleConnectionsByLength(PrivateConstructor, Args&&... args) :
