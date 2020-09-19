@@ -64,7 +64,7 @@ TEST_CASE("Flow Decompositions Over Number Fields", "[flow_decomposition]") {
   }
 }
 
-TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (renf_elem_class)) {
+TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
   const auto [name, surface_] = GENERATE(makeSurface<T>());

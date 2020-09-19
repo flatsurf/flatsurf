@@ -139,7 +139,7 @@ void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iteratio
   ASSERT(iterations > 0, "must subtract at least once");
   ASSERT(length(minuend) > 0, "lengths must be positive");
 
-  const T expected = [&]() {
+  const auto expected = [&]() -> T {
     if constexpr (std::is_same_v<T, long long>)
       return length(minuend) - iterations.get_ui() * length();
     else
@@ -237,7 +237,7 @@ void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iteratio
       // might want to consolidate these when we touch this code again.
       static Amortized cost;
 
-      const auto abs = [](const auto& x) {
+      const auto abs = [](const auto& x) -> std::decay_t<decltype(x)> {
         return x < 0 ? -x : x;
       };
 
