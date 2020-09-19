@@ -31,7 +31,6 @@
 #include "../../flatsurf/saddle_connections_by_length_iterator.hpp"
 #include "../../flatsurf/saddle_connections_iterator.hpp"
 #include "../../flatsurf/vector.hpp"
-
 #include "../external/catch2/single_include/catch2/catch.hpp"
 
 namespace flatsurf::test {

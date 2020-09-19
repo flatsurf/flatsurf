@@ -90,73 +90,85 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::tuple<std::st
         if constexpr (hasFractions<T>) {
           name = "Cathedral";
           value = makeCathedral<R2>();
-        } else value = nullptr;
+        } else
+          value = nullptr;
         return;
       case Surface::CATHEDRAL_QUARTIC:
         if constexpr (hasFractions<T> && hasNumberFieldElements<T>) {
           name = "Cathedral Quartic";
           value = makeCathedralQuartic<R2>();
-        } else value = nullptr;
+        } else
+          value = nullptr;
         return;
       case Surface::CATHEDRAL_VEECH:
         if constexpr (hasFractions<T> && hasNumberFieldElements<T>) {
           name = "Cathedral Veech";
           value = makeCathedralVeech<R2>();
-        } else value = nullptr;
+        } else
+          value = nullptr;
         return;
       case Surface::MCMULLEN_GENUS2:
         if constexpr (hasNumberFieldElements<T>) {
           name = "McMullen Genus 2";
           value = makeMcMullenGenus2<R2>();
-        } else value = nullptr;
+        } else
+          value = nullptr;
         return;
       case Surface::_123:
         if constexpr (hasNumberFieldElements<T>) {
           name = "(1, 2, 3)";
           value = make123<R2>();
-        } else value = nullptr;
+        } else
+          value = nullptr;
         return;
       case Surface::_125:
         if constexpr (hasFractions<T> && hasNumberFieldElements<T>) {
           name = "(1, 2, 5)";
           value = make125<R2>();
-        } else value = nullptr;
+        } else
+          value = nullptr;
         return;
       case Surface::_1221:
         if constexpr (hasFractions<T> && hasNumberFieldElements<T>) {
           name = "(1, 2, 2, 1)";
           value = make1221<R2>();
-        } else value = nullptr;
+        } else
+          value = nullptr;
         return;
       case Surface::_1234:
         if constexpr (hasFractions<T> && hasNumberFieldElements<T>) {
           name = "(1, 2, 3, 4)";
           value = make1234<R2>();
-        } else value = nullptr;
+        } else
+          value = nullptr;
         return;
       case Surface::HEXAGON:
         if constexpr (hasFractions<T> && hasNumberFieldElements<T>) {
           name = "Equilateral Hexagon";
           value = makeHexagon<R2>();
-        } else value = nullptr;
+        } else
+          value = nullptr;
         return;
       case Surface::OCTAGON:
         if constexpr (hasFractions<T> && hasNumberFieldElements<T>) {
           name = "Equilateral Octagon";
           value = makeOctagon<R2>();
-        } else value = nullptr;
+        } else
+          value = nullptr;
         return;
       case Surface::HEPTAGON_L:
         if constexpr (hasFractions<T> && hasNumberFieldElements<T>) {
           name = "Heptagon L";
           value = makeHeptagonL<R2>();
-        } else value = nullptr;
+        } else
+          value = nullptr;
         return;
       case Surface::GOLDEN_L:
         if constexpr (hasNumberFieldElements<T>) {
           name = "Golden L";
           value = makeGoldenL<R2>();
-        } else value = nullptr;
+        } else
+          value = nullptr;
         return;
       default:
         throw std::logic_error("unknown Surface type");
@@ -167,8 +179,8 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::tuple<std::st
   SurfaceGenerator() :
     current(Surface::SQUARE),
     gettable({&name, &value}) {
-      make(current);
-    }
+    make(current);
+  }
 
   const std::tuple<std::string*, std::shared_ptr<FlatTriangulation<T>>*>& get() const override {
     return gettable;

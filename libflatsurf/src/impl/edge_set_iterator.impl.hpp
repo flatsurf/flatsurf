@@ -22,9 +22,9 @@
 
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
 
+#include "../../flatsurf/edge_set_iterator.hpp"
 #include "../../flatsurf/half_edge.hpp"
 #include "../../flatsurf/half_edge_set_iterator.hpp"
-#include "../../flatsurf/edge_set_iterator.hpp"
 #include "indexed_set.hpp"
 #include "indexed_set_iterator.hpp"
 
