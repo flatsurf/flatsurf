@@ -24,10 +24,12 @@
 #include <memory>
 
 #include "../../flatsurf/bound.hpp"
+#include "../../flatsurf/saddle_connection.hpp"
 #include "../../flatsurf/saddle_connections.hpp"
 #include "../../flatsurf/saddle_connections_by_length.hpp"
 #include "../../flatsurf/saddle_connections_by_length_iterator.hpp"
 #include "../../flatsurf/saddle_connections_iterator.hpp"
+
 #include "../external/catch2/single_include/catch2/catch.hpp"
 
 namespace flatsurf::test {
@@ -72,14 +74,14 @@ Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>> sadd
 }
 
 // Generates a sample of count saddle connections on this surface.
-// If count is not given, as many saddle connections are created as there are edges in the surface.
-// Note that skip some connections before returning the next one so we get a
-// good sample of very short saddle connections, coming from actual edges of
-// the surface and longer connections.
+// If count is not given, roughly as many saddle connections are created as
+// there are edges in the surface.  Note that we skip some connections before
+// returning the next one so we get a good sample of very short saddle
+// connections, coming from actual edges of the surface and longer connections.
 template <typename T>
 Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>> saddleConnections(std::shared_ptr<FlatTriangulation<T>> surface, int count = -1, int skip = -1) {
   if (count == -1)
-    count = static_cast<int>(surface->size());
+    count = std::min(4, static_cast<int>(surface->size()) / 3);
   if (skip == -1)
     skip = static_cast<int>(surface->size()) * 3 / count;
 

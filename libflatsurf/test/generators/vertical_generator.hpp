@@ -27,8 +27,11 @@
 #include "../../flatsurf/bound.hpp"
 #include "../../flatsurf/saddle_connection.hpp"
 #include "../../flatsurf/saddle_connections.hpp"
+#include "../../flatsurf/saddle_connections_by_length.hpp"
+#include "../../flatsurf/saddle_connections_by_length_iterator.hpp"
 #include "../../flatsurf/saddle_connections_iterator.hpp"
 #include "../../flatsurf/vector.hpp"
+
 #include "../external/catch2/single_include/catch2/catch.hpp"
 
 namespace flatsurf::test {
@@ -37,18 +40,22 @@ namespace flatsurf::test {
 // This differs from the saddle connections generator in that it skips over
 // negatives of previous directions and also does not report the same direction
 // starting at a different half edge.
-template <typename T>
+template <typename T, typename C>
 class VerticalGenerator : public Catch::Generators::IGenerator<Vector<T>> {
   std::set<Vector<T>, typename Vector<T>::CompareSlope> verticals;
-  SaddleConnections<FlatTriangulation<T>> connections;
-  typename SaddleConnections<FlatTriangulation<T>>::Iterator upcoming;
+  C connections;
+  typename C::Iterator upcoming;
   Vector<T> current;
+  int count;
+  const int skip;
 
  public:
-  VerticalGenerator(std::shared_ptr<FlatTriangulation<T>> surface, Bound bound = Bound(3, 0)) :
+  VerticalGenerator(const C& connections, int count = -1, int skip = 0) :
     verticals{},
-    connections(surface, bound),
-    upcoming(begin(connections)) {
+    connections(connections),
+    upcoming(begin(this->connections)),
+    count(count),
+    skip(skip) {
     next();
   }
 
@@ -59,21 +66,41 @@ class VerticalGenerator : public Catch::Generators::IGenerator<Vector<T>> {
   bool next() override {
     current = *upcoming;
 
-    do {
-      ++upcoming;
-      if (upcoming == end(connections))
-        return false;
-    } while (verticals.find(*upcoming) != end(verticals) || verticals.find(-*upcoming) != end(verticals));
+    for (int i = 0; i < skip && upcoming != end(connections); i++) {
+      do {
+        ++upcoming;
+        if (upcoming == end(connections))
+          return false;
+      } while (verticals.find(*upcoming) != end(verticals) || verticals.find(-*upcoming) != end(verticals));
+    }
+
+    if (count == 0)
+      return false;
+
+    if (upcoming == end(connections))
+      return false;
 
     verticals.insert(*upcoming);
+
+    count--;
 
     return true;
   }
 };
 
+// Generate a sample of count vertical directions on this surface.  If count is
+// not given, roughly as many are created as there are edges in the surface.
+// Note that we skip some verticals before returning the next one so we get a
+// good sample of verticals coming from very short saddle connections, coming
+// from actual edges of the surface and longer connections.
 template <typename T>
-Catch::Generators::GeneratorWrapper<Vector<T>> verticals(std::shared_ptr<FlatTriangulation<T>> surface) {
-  return Catch::Generators::GeneratorWrapper<Vector<T>>(std::unique_ptr<Catch::Generators::IGenerator<Vector<T>>>(new VerticalGenerator<T>(surface)));
+Catch::Generators::GeneratorWrapper<Vector<T>> verticals(std::shared_ptr<FlatTriangulation<T>> surface, int count = -1, int skip = -1) {
+  if (count == -1)
+    count = std::min(4, static_cast<int>(surface->size()) / 3);
+  if (skip == -1)
+    skip = static_cast<int>(surface->size()) * 3 / count;
+
+  return Catch::Generators::GeneratorWrapper<Vector<T>>(std::unique_ptr<Catch::Generators::IGenerator<Vector<T>>>(new VerticalGenerator<T, SaddleConnectionsByLength<FlatTriangulation<T>>>(surface->connections().byLength(), count, skip)));
 }
 
 }  // namespace flatsurf::test
