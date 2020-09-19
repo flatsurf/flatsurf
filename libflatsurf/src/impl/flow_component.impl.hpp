@@ -43,6 +43,11 @@ class ImplementationOf<FlowComponent<Surface>> {
   FlowComponentState<Surface>* const component;
 };
 
+template <typename Surface>
+template <typename... Args>
+FlowComponent<Surface>::FlowComponent(PrivateConstructor, Args&&... args) :
+  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
+
 }  // namespace flatsurf
 
 #endif

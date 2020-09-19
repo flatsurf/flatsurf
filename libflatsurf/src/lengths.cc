@@ -22,13 +22,24 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
+#include <exact-real/element.hpp>
+#include <exact-real/integer_ring.hpp>
+#include <exact-real/module.hpp>
+#include <exact-real/number_field.hpp>
+#include <exact-real/rational_field.hpp>
 #include <intervalxt/interval_exchange_transformation.hpp>
 #include <intervalxt/length.hpp>
-#include <intervalxt/sample/arithmetic.hpp>
-#include <intervalxt/sample/e-antic-arithmetic.hpp>
-#include <intervalxt/sample/exact-real-arithmetic.hpp>
+#include <intervalxt/sample/element_coefficients.hpp>
+#include <intervalxt/sample/element_floor_division.hpp>
+#include <intervalxt/sample/integer_coefficients.hpp>
+#include <intervalxt/sample/integer_floor_division.hpp>
 #include <intervalxt/sample/lengths.hpp>
-#include <intervalxt/sample/rational-arithmetic.hpp>
+#include <intervalxt/sample/mpq_coefficients.hpp>
+#include <intervalxt/sample/mpq_floor_division.hpp>
+#include <intervalxt/sample/mpz_coefficients.hpp>
+#include <intervalxt/sample/mpz_floor_division.hpp>
+#include <intervalxt/sample/renf_elem_coefficients.hpp>
+#include <intervalxt/sample/renf_elem_floor_division.hpp>
 #include <ostream>
 
 #include "../flatsurf/chain.hpp"
@@ -55,12 +66,9 @@ Lengths<Surface>::Lengths(std::shared_ptr<const Vertical<FlatTriangulation<T>>> 
   vertical(vertical),
   lengths(std::move(lengths)),
   stack(),
-  sum(),
-  degree(0) {
+  sum() {
   this->lengths.apply([&](const auto& edge, const auto& connection) {
     CHECK_ARGUMENT(!connection || vertical->perpendicular(*connection) > 0, "nontrivial length must be positive but " << edge << " is " << *connection);
-    if (connection)
-      degree = std::max(degree, coefficients(toLabel(edge)).size());
   });
 }
 
@@ -114,7 +122,7 @@ Label Lengths<Surface>::subtractRepeated(Label minuend) {
 
   auto ret = stack.back();
   if (stableCombinatorics) {
-    const auto quotient = ::intervalxt::sample::Arithmetic<T>::floorDivision(length(minuend), length());
+    const auto quotient = ::intervalxt::sample::FloorDivision<T>()(length(minuend), length());
     mpz_class iterations = gmpxxll::mpz_class(quotient);
     if (quotient * length() == length(minuend))
       iterations -= 1;
@@ -131,7 +139,7 @@ void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iteratio
   ASSERT(iterations > 0, "must subtract at least once");
   ASSERT(length(minuend) > 0, "lengths must be positive");
 
-  const T expected = [&]() {
+  const auto expected = [&]() -> T {
     if constexpr (std::is_same_v<T, long long>)
       return length(minuend) - iterations.get_ui() * length();
     else
@@ -229,12 +237,12 @@ void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iteratio
       // might want to consolidate these when we touch this code again.
       static Amortized cost;
 
-      const auto abs = [](const auto& x) {
+      const auto abs = [](const auto& x) -> std::decay_t<decltype(x)> {
         return x < 0 ? -x : x;
       };
 
       const auto relativeCost = [&](const Vector<T>& dividend, const Vector<T>& divisor) -> mpz_class {
-        return gmpxxll::mpz_class(::intervalxt::sample::Arithmetic<T>::floorDivision(dividend * dividend, abs(dividend * divisor)));
+        return gmpxxll::mpz_class(::intervalxt::sample::FloorDivision<T>()(dividend * dividend, abs(dividend * divisor)));
       };
 
       if (!cost.pay(relativeCost(static_cast<const Vector<T>&>(*minuendConnection), minuendConnection->surface().shortest(*minuendConnection)) + 1)) return;
@@ -258,11 +266,8 @@ void Lengths<Surface>::registerDecomposition(std::shared_ptr<FlowDecompositionSt
 }
 
 template <typename Surface>
-std::vector<mpq_class> Lengths<Surface>::coefficients(Label label) const {
-  auto coefficients = intervalxt::sample::Arithmetic<T>::coefficients(length(label));
-  while (coefficients.size() < degree)
-    coefficients.emplace_back();
-  return coefficients;
+std::vector<std::vector<mpq_class>> Lengths<Surface>::coefficients(const std::vector<Label>& labels) const {
+  return intervalxt::sample::Coefficients<T>()(labels | rx::transform([&](const Label& label) { return length(label); }) | rx::to_vector());
 }
 
 template <typename Surface>

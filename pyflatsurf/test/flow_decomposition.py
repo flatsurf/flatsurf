@@ -32,12 +32,14 @@ def test_hexagon_eantic():
 
     for connection in surface.saddle_connections(flatsurf.Bound(16, 0), flatsurf.HalfEdge(1)):
         decomposition = flatsurf.makeFlowDecomposition(surface, connection.vector())
-        flatsurf.decomposeFlowDecomposition(decomposition, -1)
+        assert repr(decomposition).startswith("FlowDecomposition")
+        assert str(decomposition).startswith("FlowDecomposition")
+        decomposition.decompose(-1)
         n_cylinders = 0
-        n_without_periodic_components = 0
+        n_without_periodic_trajectory = 0
         for component in decomposition.components():
             n_cylinders += bool(component.cylinder() == True)
-            n_without_periodic_components += bool(component.withoutPeriodicTrajectory() == True)
+            n_without_periodic_trajectory += bool(component.withoutPeriodicTrajectory() == True)
 
             if component.cylinder():
                 # 3 ways to compute area
@@ -60,10 +62,18 @@ def test_hexagon_eantic():
                 assert area1 == 2 * area2
                 assert area3 == area2 * (vx*vx + vy*vy)
 
-        t = (n_cylinders, n_without_periodic_components)
+        assert all(component.cylinder() for component in decomposition.cylinders())
+        assert len(decomposition.cylinders()) == n_cylinders
+
+        assert all(component.withoutPeriodicTrajectory() for component in decomposition.minimalComponents())
+        assert len(decomposition.minimalComponents()) == n_without_periodic_trajectory
+
+        assert len(decomposition.undeterminedComponents()) == 0
+
+        t = (n_cylinders, n_without_periodic_trajectory)
         decompositions[t] += 1
 
-        if n_without_periodic_components == 0:
+        if n_without_periodic_trajectory == 0:
             assert decomposition.parabolic()
 
     assert decompositions == {(1, 0): 7, (2, 0): 3}
@@ -74,8 +84,10 @@ def test_D33():
     for connection in S.saddle_connections(flatsurf.Bound(4, 0)):
         v = connection.vector()
         decomposition = flatsurf.makeFlowDecomposition(S, v)
-        flatsurf.decomposeFlowDecomposition(decomposition, -1)
-        n_cylinders, n_without_periodic_components, n_indeterminate = 0, 0, 0
+        assert repr(decomposition).startswith("FlowDecomposition")
+        assert str(decomposition).startswith("FlowDecomposition")
+        decomposition.decompose(-1)
+        n_cylinders, n_without_periodic_trajectory, n_indeterminate = 0, 0, 0
         for dec in decomposition.components():
             if dec.cylinder() == True:
                 n_cylinders += 1
@@ -83,18 +95,36 @@ def test_D33():
                 assert h.x() or h.y()
                 assert h.x() * v.y() == h.y() * v.x()
             elif dec.cylinder() == False:
-                n_without_periodic_components += 1
+                n_without_periodic_trajectory += 1
             else:
                 n_indeterminate = 0
         assert n_indeterminate == 0
-        decompositions[(n_cylinders, n_without_periodic_components)] += 1
+        decompositions[(n_cylinders, n_without_periodic_trajectory)] += 1
 
-        if not n_without_periodic_components:
+        if not n_without_periodic_trajectory:
             if n_cylinders == 2:
                 assert decomposition.parabolic() == True
             elif n_cylinders == 3:
                 assert decomposition.parabolic() == False
 
+        assert all(component.cylinder() for component in decomposition.cylinders())
+        assert len(decomposition.cylinders()) == n_cylinders
+
+        assert all(component.withoutPeriodicTrajectory() for component in decomposition.minimalComponents())
+        assert len(decomposition.minimalComponents()) == n_without_periodic_trajectory
+
+        assert len(decomposition.undeterminedComponents()) == 0
+
     assert decompositions == {(0, 2): 8, (2, 0): 20, (3, 0): 12}
+
+def test_undetermined():
+    S = surfaces.D33()
+    decompositions = {(2, 0): 0, (3, 0): 0, (0, 2): 0}
+
+    R2 = flatsurf.Vector['eantic::renf_elem_class']
+    decomposition = flatsurf.makeFlowDecomposition(S, R2(135, 17))
+    assert len(decomposition.undeterminedComponents()) == 1
+    decomposition.decompose(-1)
+    assert len(decomposition.undeterminedComponents()) == 0
 
 if __name__ == '__main__': sys.exit(pytest.main(sys.argv))

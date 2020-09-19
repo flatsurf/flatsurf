@@ -20,19 +20,39 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTIONS_IMPL_HPP
 #define LIBFLATSURF_SADDLE_CONNECTIONS_IMPL_HPP
 
+#include <optional>
+
 #include "../../flatsurf/bound.hpp"
 #include "../../flatsurf/saddle_connections.hpp"
+#include "../../flatsurf/vector.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
 class ImplementationOf<SaddleConnections<Surface>> {
+  using T = typename Surface::Coordinate;
+
  public:
-  ImplementationOf(std::shared_ptr<const Surface>, Bound, const std::vector<HalfEdge>&);
+  class ByLength;
+
+  struct Sector {
+    Sector(HalfEdge source) :
+      source(source), sector(std::nullopt) {}
+    Sector(HalfEdge source, const Vector<T>& sectorBegin, const Vector<T>& sectorEnd) :
+      source(source), sector(std::pair{sectorBegin, sectorEnd}) {}
+
+    HalfEdge source;
+    std::optional<std::pair<Vector<T>, Vector<T>>> sector;
+
+    std::vector<Sector> refine(const Surface&, const Vector<T>& sectorBegin, const Vector<T>& sectorEnd) const;
+    bool contains(const SaddleConnection<Surface>&) const;
+  };
+
+  ImplementationOf(std::shared_ptr<const Surface>);
 
   std::shared_ptr<const Surface> surface;
-  Bound bound;
-  std::vector<HalfEdge> sectors;
+  std::vector<Sector> sectors;
+  std::optional<Bound> searchRadius;
 };
 
 }  // namespace flatsurf

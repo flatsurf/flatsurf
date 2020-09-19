@@ -60,6 +60,11 @@ class ImplementationOf<ContourConnection<Surface>> {
   } contour;
 };
 
+template <typename Surface>
+template <typename... Args>
+ContourConnection<Surface>::ContourConnection(PrivateConstructor, Args&&... args) :
+  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
+
 }  // namespace flatsurf
 
 #endif

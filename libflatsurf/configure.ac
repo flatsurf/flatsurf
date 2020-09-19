@@ -49,6 +49,8 @@ AX_CXX_CHECK_LIB([fmt], [fmt::v6::getpagesize()], , [
 # goes through
 AX_CXX_CHECK_LIB([gmpxx], [std::runtime_error::what () const], [have_gmpxx=yes], AC_MSG_ERROR([GMP library for C++ not found]), [-lgmp -lmpfr -lflint])
 
+AC_CHECK_HEADERS([gmpxxll/mpz_class.hpp], [ ], [AC_MSG_ERROR([gmpxxll headers not found])])
+
 dnl We use Arb for ball arithmetic in our geometry
 AC_CHECK_LIB([arb], [arb_init], [have_arb=yes], AC_MSG_ERROR([arb library not found]), [-lgmp -lmpfr -lflint])
 AC_CHECK_HEADERS([arb.h], , AC_MSG_ERROR([arb headers not found]))

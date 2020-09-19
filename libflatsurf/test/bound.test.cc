@@ -17,37 +17,25 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "../flatsurf/edge_set_iterator.hpp"
+#include "../flatsurf/bound.hpp"
+#include "external/catch2/single_include/catch2/catch.hpp"
 
-#include "../flatsurf/edge.hpp"
-#include "../flatsurf/edge_set.hpp"
-#include "impl/edge_set.impl.hpp"
-#include "impl/edge_set_iterator.impl.hpp"
-#include "util/assert.ipp"
+namespace flatsurf::test {
 
-namespace flatsurf {
+TEST_CASE("Bound Arithmetic", "[bound]") {
+  REQUIRE(Bound() < Bound(1));
 
-void EdgeSetIterator::increment() {
-  return impl->increment();
+  SECTION("Multiplication works as expected") {
+    REQUIRE(Bound(1) < 2 * Bound(1));
+    REQUIRE(Bound(2) == 2 * Bound(1));
+  }
+
+  SECTION("Bounds in Two Variables Compare Like Vector Lengths") {
+    REQUIRE(Bound(1, 0) <= Bound(1));
+    REQUIRE(Bound(1, 1) <= Bound(2));
+    REQUIRE(Bound(2, 2) > Bound(2));
+    REQUIRE(Bound(3, 4) == Bound(5));
+  }
 }
 
-bool EdgeSetIterator::equal(const EdgeSetIterator& rhs) const {
-  return impl->equal(*rhs.impl);
-}
-
-const Edge& EdgeSetIterator::dereference() const {
-  return impl->dereference();
-}
-
-EdgeSetIterator EdgeSet::begin() const {
-  return EdgeSetIterator{PrivateConstructor{}, impl->begin()};
-}
-
-EdgeSetIterator EdgeSet::end() const {
-  return EdgeSetIterator{PrivateConstructor{}, impl->end()};
-}
-
-ImplementationOf<EdgeSetIterator>::ImplementationOf(IndexedSetIterator<Edge>&& self) :
-  IndexedSetIterator(std::move(self)) {}
-
-}  // namespace flatsurf
+}  // namespace flatsurf::test

@@ -101,9 +101,10 @@ TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimet
 TEMPLATE_TEST_CASE("Connections and IET from Contour Decomposition", "[contour_decomposition][iet]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
-  const auto surface = GENERATE(makeSurface<T>());
+  const auto [name, surface_] = GENERATE(makeSurface<T>());
+  const auto surface = *surface_;
 
-  GIVEN("The surface " << *surface) {
+  GIVEN("The surface " << *name << ", i.e., " << *surface) {
     const auto saddleConnection = GENERATE_COPY(verticals<T>(surface));
 
     AND_GIVEN("A direction of a Saddle Connection " << saddleConnection) {

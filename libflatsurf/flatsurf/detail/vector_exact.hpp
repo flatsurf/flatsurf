@@ -50,12 +50,19 @@ class VectorExact : public VectorBase<Vector>,
   bool operator==(const Vector &) const noexcept;
   explicit operator bool() const noexcept;
 
+  // Return whether this vector is contained in the sector described by
+  // inclusive and exclusive in counter-clockwise order. If inclusive and
+  // exclusive are collinear, the sector consists of that single ray.
+  bool inSector(const Vector &inclusive, const Vector &exclusive) const;
+
   Coordinate x() const noexcept;
   Coordinate y() const noexcept;
 
   // Return twice the area of the polygon described by the (counter-clockwise) perimeter.
   static T area(const std::vector<Vector> &perimeter);
 
+  // Provides an operator< for slopes of vectors which orders vectors (x, y) by
+  // their quotient y/x (sending y/0 to ±∞.)
   struct CompareSlope {
     bool operator()(const Vector &lhs, const Vector &rhs) const;
   };

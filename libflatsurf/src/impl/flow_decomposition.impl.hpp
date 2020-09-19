@@ -42,6 +42,11 @@ class ImplementationOf<FlowDecomposition<Surface>> {
   std::shared_ptr<FlowDecompositionState<Surface>> state;
 };
 
+template <typename Surface>
+template <typename... Args>
+FlowDecomposition<Surface>::FlowDecomposition(PrivateConstructor, Args&&... args) :
+  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
+
 }  // namespace flatsurf
 
 #endif
