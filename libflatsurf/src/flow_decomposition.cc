@@ -19,21 +19,29 @@
 
 #include "../flatsurf/flow_decomposition.hpp"
 
-#include <gmpxx.h>
-
-#include <boost/algorithm/string/join.hpp>
-#include <boost/lexical_cast.hpp>
-#include <intervalxt/dynamical_decomposition.hpp>
-#include <intervalxt/sample/arithmetic.hpp>
-#include <intervalxt/sample/e-antic-arithmetic.hpp>
-#include <intervalxt/sample/exact-real-arithmetic.hpp>
-#include <intervalxt/sample/long-long-int-arithmetic.hpp>
-#include <intervalxt/sample/rational-arithmetic.hpp>
 #include <memory>
 #include <ostream>
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+#include <gmpxx.h>
+
+#include <exact-real/element.hpp>
+#include <exact-real/integer_ring.hpp>
+#include <exact-real/rational_field.hpp>
+#include <exact-real/number_field.hpp>
+#include <exact-real/module.hpp>
+
+#include <boost/algorithm/string/join.hpp>
+#include <boost/lexical_cast.hpp>
+
+#include <intervalxt/dynamical_decomposition.hpp>
+#include <intervalxt/sample/integer_coefficients.hpp>
+#include <intervalxt/sample/mpz_coefficients.hpp>
+#include <intervalxt/sample/mpq_coefficients.hpp>
+#include <intervalxt/sample/renf_elem_coefficients.hpp>
+#include <intervalxt/sample/element_coefficients.hpp>
 
 #include "../flatsurf/contour_component.hpp"
 #include "../flatsurf/contour_decomposition.hpp"
@@ -150,8 +158,7 @@ boost::logic::tribool FlowDecomposition<Surface>::parabolic() const {
       hnorm20 = hnorm2;
       a0 = a;
     } else {
-      std::vector<mpq_class> u = intervalxt::sample::Arithmetic<T>::coefficients(a0 * hnorm2);
-      std::vector<mpq_class> v = intervalxt::sample::Arithmetic<T>::coefficients(a * hnorm20);
+      auto [u, v] = intervalxt::sample::Coefficients<>()(static_cast<T>(a0 * hnorm2), static_cast<T>(a * hnorm20));
       for (size_t i = 1; i < u.size(); i++) {
         if (u[0] * v[i] != u[i] * v[0]) {
           return false;

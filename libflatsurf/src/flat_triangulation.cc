@@ -25,7 +25,6 @@
 #include <exact-real/rational_field.hpp>
 #include <exact-real/yap/arb.hpp>
 #include <functional>
-#include <intervalxt/sample/arithmetic.hpp>
 #include <iosfwd>
 #include <map>
 #include <ostream>

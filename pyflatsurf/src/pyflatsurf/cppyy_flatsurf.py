@@ -26,12 +26,12 @@ from cppyy.gbl import std
 
 from pyexactreal import exactreal
 
-from .pythonization import enable_iterable, enable_vector_print, enable_hash
+from .pythonization import enable_iterable
 
 from cppyythonizations.pickling.cereal import enable_cereal
 from cppyythonizations.util import filtered, add_method, wrap_method
 from cppyythonizations.operators.arithmetic import enable_arithmetic
-from cppyythonizations.printing import enable_pretty_printing
+from cppyythonizations.printing import enable_pretty_printing, enable_list_printing
 
 # Importing cysignals after cppyy gives us proper stack traces on segfaults
 # whereas cppyy otherwise only reports "segmentation violation" (which is
@@ -43,12 +43,12 @@ if os.environ.get('PYFLATSURF_CYSIGNALS', True):
     except ModuleNotFoundError:
         pass
 
-
 cppyy.py.add_pythonization(enable_iterable, "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("Vector<.*>"))(enable_arithmetic), "flatsurf")
+cppyy.py.add_pythonization(filtered(re.compile("Vector<.*>"))(add_method("__str__")(lambda self: "(" + str(self.x()) + ", " + str(self.y()) + ")")), "flatsurf")
 cppyy.py.add_pythonization(enable_pretty_printing, "flatsurf")
 cppyy.py.add_pythonization(lambda proxy, name: enable_cereal(proxy, name, ["flatsurf/cereal.hpp"]), "flatsurf")
-
+cppyy.py.add_pythonization(filtered(re.compile("vector<flatsurf::.*>"))(enable_list_printing), "std")
 
 cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(add_method("saddle_connections")(lambda self, *args: cppyy.gbl.flatsurf.SaddleConnections[type(self)](self, *args))), "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(add_method("insertAt")(lambda self, *args: cppyy.gbl.flatsurf.insertAtFlatTriangulation(self, *args))), "flatsurf")
