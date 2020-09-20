@@ -37,6 +37,8 @@ template <typename Surface>
 typename SaddleConnectionsByLength<Surface>::Iterator SaddleConnectionsByLength<Surface>::begin() const {
   auto ret = SaddleConnectionsByLengthIterator<Surface>(PrivateConstructor{}, *this);
   ret.impl->increment();
+  if (ret.impl->connectionsWithinBounds.size())
+    ret.impl->currents.push_front(ret.impl->connectionsWithinBounds.front());
   return ret;
 }
 

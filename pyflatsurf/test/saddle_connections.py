@@ -4,7 +4,7 @@
 ######################################################################
 # This file is part of flatsurf.
 #
-#       Copyright (C) 2019 Julian Rüth
+#       Copyright (C) 2019-2020 Julian Rüth
 #
 # flatsurf is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -70,5 +70,15 @@ def test_hexagon_exactreal():
     connections = surface.saddle_connections(flatsurf.Bound(16, 0), flatsurf.HalfEdge(1))
     # This is very slow at the moment, see https://github.com/flatsurf/exact-real/issues/37
     # assert len([1 for c in connections]) >= 10
+
+def test_printing():
+    for coefficients in ['long long', 'mpz_class', 'mpq_class', 'eantic::renf_elem_class', 'exactreal::Element<exactreal::IntegerRing>', 'exactreal::Element<exactreal::RationalField>', 'exactreal::Element<exactreal::NumberField>']:
+        surface = surfaces.square(flatsurf.Vector[coefficients])
+        assert str(surface) == "FlatTriangulationCombinatorial(vertices = (1, 3, 2, -1, -3, -2), faces = (1, 2, -3)(-1, -2, 3)) with vectors 1: (1, 0), 2: (0, 1), 3: (1, 1)"
+        connections = surface.saddle_connections()
+        assert str(connections) == "SaddleConnections()"
+        connections = connections.byLength()
+        assert str(connections) == "SaddleConnectionsByLength()"
+        assert str(next(iter(connections))) == "(0, -1) from -2 to 2"
 
 if __name__ == '__main__': sys.exit(pytest.main(sys.argv))

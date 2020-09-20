@@ -92,7 +92,7 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
 
   // Strangely, when we do not put the _ here and try to print a
   // FlatTriangulation<eantic::renf_elem_class> through cppyy, it would compile
-  // code that looks sane but fail because the overload resolution picked this
+  // code that looks sane but fails because the overload resolution picked this
   // overload (which seems to be completely unrelated.) This fails because
   // renf_elem_class, does not have a ::Vector which SaddleConnection class
   // requires. This is clearly a bug in cppyy, but we have not been able to

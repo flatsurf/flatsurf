@@ -21,6 +21,7 @@
 #define LIBFLATSURF_SADDLE_CONNECTIONS_BY_LENGTH_ITERATOR_IMPL_HPP
 
 #include <deque>
+#include <list>
 
 #include "../../flatsurf/bound.hpp"
 #include "../../flatsurf/saddle_connection.hpp"
@@ -47,6 +48,9 @@ class ImplementationOf<SaddleConnectionsByLengthIterator<Surface>> {
   Bound lowerBoundExclusive;
   Bound upperBoundInclusive;
   std::deque<SaddleConnection<Surface>> connectionsWithinBounds;
+
+  // This is a hack to work around https://bitbucket.org/wlav/cppyy/issues/271/next-implementation-does-not-respect.
+  mutable std::list<SaddleConnection<Surface>> currents;
 };
 
 template <typename Surface>
