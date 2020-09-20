@@ -92,14 +92,15 @@ TEST_CASE("Parabolic", "[surface]") {
     CAPTURE(*surface);
     CAPTURE(surface->area());
 
-    const auto direction = Vector<T>(0, 1);
+    const auto direction = Vector<T>(1, 0);
     auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), direction);
     CAPTURE(flowDecomposition);
 
     REQUIRE(flowDecomposition.decompose());
 
     REQUIRE(flowDecomposition.completelyPeriodic() == boost::logic::tribool(true));
-    REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(false));
+    REQUIRE(flowDecomposition.components().size() == 4);
+    REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(true));
   }
 
   SECTION("(2,3,5) triangle in (0, 1)") {
@@ -115,6 +116,7 @@ TEST_CASE("Parabolic", "[surface]") {
     REQUIRE(flowDecomposition.decompose());
 
     REQUIRE(flowDecomposition.completelyPeriodic() == boost::logic::tribool(true));
+    REQUIRE(flowDecomposition.components().size() == 6);
     REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(false));
   }
 
@@ -132,6 +134,7 @@ TEST_CASE("Parabolic", "[surface]") {
     REQUIRE(flowDecomposition.decompose());
 
     REQUIRE(flowDecomposition.completelyPeriodic() == boost::logic::tribool(true));
+    REQUIRE(flowDecomposition.components().size() == 4);
     REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(true));
   }
 
@@ -149,6 +152,7 @@ TEST_CASE("Parabolic", "[surface]") {
     REQUIRE(flowDecomposition.decompose());
 
     REQUIRE(flowDecomposition.completelyPeriodic() == boost::logic::tribool(true));
+    REQUIRE(flowDecomposition.components().size() == 6);
     REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(false));
   }
 
@@ -166,6 +170,7 @@ TEST_CASE("Parabolic", "[surface]") {
     REQUIRE(flowDecomposition.decompose());
 
     REQUIRE(flowDecomposition.completelyPeriodic() == boost::logic::tribool(true));
+    REQUIRE(flowDecomposition.components().size() == 6);
     REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(false));
   }
 }
