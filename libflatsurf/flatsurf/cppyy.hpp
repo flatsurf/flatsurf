@@ -41,6 +41,8 @@
 #include "permutation.hpp"
 #include "saddle_connection.hpp"
 #include "saddle_connections.hpp"
+#include "saddle_connections_by_length.hpp"
+#include "saddle_connections_by_length_iterator.hpp"
 #include "saddle_connections_iterator.hpp"
 #include "vector.hpp"
 #include "vertex.hpp"
@@ -104,17 +106,9 @@ std::ostream &operator<<(std::ostream &, const SaddleConnection<Surface> &);
 template <typename Surface>
 std::ostream &operator<<(std::ostream &, const SaddleConnections<Surface> &);
 template <typename Surface>
+std::ostream &operator<<(std::ostream &, const SaddleConnectionsByLength<Surface> &);
+template <typename Surface>
 std::ostream &operator<<(std::ostream &, const FlowComponent<Surface> &);
-
-// Work around https://bitbucket.org/wlav/cppyy/issues/96/cannot-make-wrapper-for-a-function
-extern template std::ostream &operator<<(std::ostream &, const Permutation<HalfEdge> &);
-extern template std::ostream &operator<<(std::ostream &, const FlatTriangulation<long long> &);
-extern template std::ostream &operator<<(std::ostream &, const FlatTriangulation<eantic::renf_elem_class> &);
-extern template std::ostream &operator<<(std::ostream &, const SaddleConnection<FlatTriangulation<long long>> &);
-extern template std::ostream &operator<<(std::ostream &, const SaddleConnection<FlatTriangulation<eantic::renf_elem_class>> &);
-extern template std::ostream &operator<<(std::ostream &, const SaddleConnections<FlatTriangulation<long long>> &);
-extern template std::ostream &operator<<(std::ostream &, const SaddleConnections<FlatTriangulation<eantic::renf_elem_class>> &);
-extern template std::ostream &operator<<(std::ostream &, const FlowComponent<FlatTriangulation<eantic::renf_elem_class>> &);
 std::ostream &operator<<(std::ostream &, const Vertex &);
 
 }  // namespace flatsurf

@@ -34,12 +34,16 @@ void SaddleConnectionsByLengthIterator<Surface>::increment() {
   impl->connectionsWithinBounds.pop_front();
   if (impl->connectionsWithinBounds.empty())
     impl->increment();
+  if (!impl->connectionsWithinBounds.empty())
+    impl->currents.push_front(impl->connectionsWithinBounds.front());
+  if (impl->currents.size() > 3)
+    impl->currents.pop_back();
 }
 
 template <typename Surface>
 const SaddleConnection<Surface>& SaddleConnectionsByLengthIterator<Surface>::dereference() const {
   ASSERT(!impl->connectionsWithinBounds.empty(), "Cannot dereference iterator at end.");
-  return impl->connectionsWithinBounds.front();
+  return impl->currents.front();
 }
 
 template <typename Surface>
