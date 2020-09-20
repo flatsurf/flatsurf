@@ -125,7 +125,7 @@ TEST_CASE("Parabolic", "[surface]") {
     CAPTURE(*surface);
 
     auto c = Q->gen();
-    const auto direction = Vector(2*c*c - 1, -c*c*c + 4*c);
+    const auto direction = Vector(2 * c * c - 1, -c * c * c + 4 * c);
     auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), direction);
     CAPTURE(flowDecomposition);
 
@@ -142,7 +142,7 @@ TEST_CASE("Parabolic", "[surface]") {
     CAPTURE(*surface);
 
     auto c = Q->gen();
-    const auto direction = Vector<T>(c*c - 5, c);
+    const auto direction = Vector<T>(c * c - 5, c);
     auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), direction);
     CAPTURE(flowDecomposition);
 
@@ -159,7 +159,7 @@ TEST_CASE("Parabolic", "[surface]") {
     CAPTURE(*surface);
 
     auto c = Q->gen();
-    const auto direction = Vector<T>(-5, -c*c*c + 2*c);
+    const auto direction = Vector<T>(-5, -c * c * c + 2 * c);
     auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), direction);
     CAPTURE(flowDecomposition);
 
