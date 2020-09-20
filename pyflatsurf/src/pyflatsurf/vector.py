@@ -379,11 +379,11 @@ class Vectors(UniqueRepresentation, Parent):
 
         return algebraic_ring
 
-    def decomposition(self, vector):
+    def decomposition(self, vector, base=None):
         r"""
         Write ``vector`` as a shortest sum `v = \sum a_i v_i` where the
-        `v_i` are vectors with entries in ``base`` and the `a_i` are
-        coefficients from our base ring.
+        `a_i` are coefficients from our ``base_ring()`` and the `v_i` are
+        vectors with entries in ``base``.
 
         EXAMPLES::
 
@@ -424,10 +424,14 @@ class Vectors(UniqueRepresentation, Parent):
 
         if not any(vector): return []
 
-        base = self._algebraic_ring()
+        if base is None:
+            base = self._algebraic_ring()
 
         if base is self.base_ring():
-            return [(base.one(), tuple(map(base, vector)))]
+            return [(self.base_ring().one(), tuple(map(base, vector)))]
+
+        if hasattr(self.base_ring(), "number_field") and self.base_ring().number_field is base:
+            return [(self.base_ring().one(), tuple(base(self.base_ring()(x)) for x in vector))]
 
         if isinstance(self.base_ring(), ExactReals):
            from functools import reduce
