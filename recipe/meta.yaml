@@ -1,4 +1,4 @@
-{% set version = '1.1.1' %}
+{% set version = '1.1.2' %}
 {% set build_number = '0' %}
 {% set component = component or 'flatsurf' %}
 {% set action = action or 'release' %}
@@ -51,10 +51,11 @@ requirements:
 {%- if libflatsurf_requirements %}
     - arb
     - boost-cpp
-    - libintervalxt >=1.0.2
-    - libexactreal >=1.1.0
-    - e-antic
+    - libintervalxt >=2.0.2
+    - libexactreal >=1.3.1
+    - e-antic >=1.0a1
     - gmp
+    - gmpxxll
     - fmt
 {%- endif %}
 {%- if pyflatsurf_requirements %}

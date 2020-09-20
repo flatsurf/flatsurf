@@ -25,7 +25,6 @@
 #include <exact-real/rational_field.hpp>
 #include <exact-real/yap/arb.hpp>
 #include <functional>
-#include <intervalxt/sample/arithmetic.hpp>
 #include <iosfwd>
 #include <map>
 #include <ostream>
@@ -507,6 +506,11 @@ bool FlatTriangulation<T>::inSector(const HalfEdge sector, const Vector<T> &vect
 template <typename T>
 bool FlatTriangulation<T>::inSector(const HalfEdge sector, const Vertical<FlatTriangulation<T>> &vector) const {
   return inSector(sector, vector.vertical());
+}
+
+template <typename T>
+SaddleConnections<FlatTriangulation<T>> FlatTriangulation<T>::connections() const {
+  return SaddleConnections(this->shared_from_this());
 }
 
 template <typename T>

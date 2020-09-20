@@ -20,6 +20,8 @@
 #include <fmt/format.h>
 
 #include <exact-real/arb.hpp>
+#include <optional>
+#include <variant>
 #include <vector>
 
 #include "../flatsurf/chain.hpp"
@@ -27,6 +29,7 @@
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vector.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
+#include "impl/saddle_connections.impl.hpp"
 #include "impl/saddle_connections_iterator.impl.hpp"
 #include "util/assert.ipp"
 
@@ -35,14 +38,13 @@ namespace flatsurf {
 using std::vector;
 
 template <typename Surface>
-ImplementationOf<SaddleConnectionsIterator<Surface>>::ImplementationOf(const std::shared_ptr<const Surface>& surface, const Bound searchRadius, const vector<HalfEdge>::const_iterator begin, const vector<HalfEdge>::const_iterator end) :
-  surface(std::move(surface)),
-  searchRadius(searchRadius),
+ImplementationOf<SaddleConnectionsIterator<Surface>>::ImplementationOf(const ImplementationOf<SaddleConnections<Surface>>& connections, const typename vector<Sector>::const_iterator begin, const typename vector<Sector>::const_iterator end) :
+  connections(connections),
   sector(begin),
   end(end),
-  boundary{Chain(this->surface), Chain(this->surface)},
-  nextEdgeEnd(this->surface),
-  connection(SaddleConnection(this->surface, surface->halfEdges()[0])) {
+  boundary{Vector<T>(), Vector<T>()},
+  nextEdgeEnd(connections.surface),
+  connection(SaddleConnection(connections.surface, connections.surface->halfEdges()[0])) {
   prepareSearch();
 }
 
@@ -52,45 +54,76 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::prepareSearch() {
   assert(tmp.size() == 0);
   assert(moves.size() == 0);
 
+  if (!connections.searchRadius)
+    throw std::logic_error("search radius must be finite when iterating connections by angle");
+
   if (sector == end) {
     return;
   }
 
-  const HalfEdge e = *sector;
+  const HalfEdge e = sector->source;
 
-  if (surface->boundary(e)) {
+  if (connections.surface->boundary(e)) {
     sector++;
     prepareSearch();
     return;
   }
 
-  boundary[0] = (Chain(surface) + e);
-  nextEdge = surface->nextInFace(e);
-  boundary[1] = boundary[0] + nextEdge;
-  nextEdgeEnd = (Chain<Surface>(surface) += e) += nextEdge;
+  boundary[0] = Chain(connections.surface) + e;
+  if (sector->sector)
+    boundary[0] = sector->sector->first;
+
+  nextEdge = connections.surface->nextInFace(e);
+  boundary[1] = Chain(connections.surface) + e + nextEdge;
+  if (sector->sector)
+    boundary[1] = sector->sector->second;
+
+  nextEdgeEnd = (Chain<Surface>(connections.surface) += e) += nextEdge;
   state.push_back(State::END);
   state.push_back(State::START_FROM_INSIDE_TO_INSIDE);
 
-  // Report sector as a saddle connection unless it is already outside of
-  // the search radius.
-  if (boundary[0] > searchRadius) {
+  // Report the half edge "e" as a saddle connection unless it is already
+  // outside the search scope.
+  const auto initial = SaddleConnection(connections.surface, e);
+  if (std::holds_alternative<Vector<T>>(boundary[0]) && sector->contains(initial))
+    boundary[0] = Chain(connections.surface) + e;
+  if (initial > *connections.searchRadius || !sector->contains(initial)) {
     while (!increment())
       ;
   }
 }
 
 template <typename Surface>
-CCW ImplementationOf<SaddleConnectionsIterator<Surface>>::ccw(const Chain<Surface>& lhs, const Chain<Surface>& rhs) {
-  auto ccw = static_cast<const Vector<exactreal::Arb>&>(lhs).ccw(static_cast<const Vector<exactreal::Arb>&>(rhs));
-  if (ccw) return *ccw;
-  return static_cast<const Vector<T>&>(lhs).ccw(static_cast<const Vector<T>&>(rhs));
+CCW ImplementationOf<SaddleConnectionsIterator<Surface>>::ccw(const Boundary& lhs, const Chain<Surface>& rhs) {
+  return std::visit([&](const auto& l) {
+    using B = std::decay_t<decltype(l)>;
+    if constexpr (std::is_same_v<B, Chain<Surface>>) {
+      auto ccw = static_cast<const Vector<exactreal::Arb>&>(l).ccw(static_cast<const Vector<exactreal::Arb>&>(rhs));
+      if (ccw) return *ccw;
+    }
+    return ccw(lhs, static_cast<const Vector<T>&>(rhs));
+  },
+      lhs);
+}
+
+template <typename Surface>
+CCW ImplementationOf<SaddleConnectionsIterator<Surface>>::ccw(const Boundary& lhs, const Vector<T>& rhs) {
+  return std::visit([&](const auto& b) { return static_cast<const Vector<T>&>(b).ccw(rhs); }, lhs);
+}
+
+template <typename Surface>
+CCW ImplementationOf<SaddleConnectionsIterator<Surface>>::ccw(const Boundary& lhs, const Boundary& rhs) {
+  return std::visit([&](const auto& b) {
+    return ccw(lhs, b);
+  },
+      rhs);
 }
 
 template <typename Surface>
 bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
   assert(state.size());
   assert(sector != end);
-  assert(ccw(boundary[0], boundary[1]) == CCW::COUNTERCLOCKWISE);
+  assert(ccw(boundary[0], boundary[1]) != CCW::CLOCKWISE);
 
   applyMoves();
 
@@ -118,7 +151,7 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
 
       switch (classifyHalfEdgeEnd()) {
         case Classification::OUTSIDE_SEARCH_SECTOR_CLOCKWISE: {
-          const bool nothingBeyondThisVertex = !(nextEdgeEnd < searchRadius);
+          const bool nothingBeyondThisVertex = !(nextEdgeEnd < *connections.searchRadius);
 
           // This vertex is outside of the search sector on the
           // clockwise side, we skip the clockwise sector in the recursive
@@ -132,7 +165,7 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
           return false;
         }
         case Classification::OUTSIDE_SEARCH_SECTOR_COUNTERCLOCKWISE: {
-          const bool nothingBeyondThisVertex = !(nextEdgeEnd < searchRadius);
+          const bool nothingBeyondThisVertex = !(nextEdgeEnd < *connections.searchRadius);
 
           // Similarly, we skip the counterclockwise sector (but only after
           // we visited the clockwise one.)
@@ -143,7 +176,7 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
           return false;
         }
         case Classification::SADDLE_CONNECTION: {
-          const bool beyondRadius = nextEdgeEnd > searchRadius;
+          const bool beyondRadius = nextEdgeEnd > *connections.searchRadius;
 
           // Prepare the recursive descent into the two half edges attached
           // to this vertex.
@@ -153,8 +186,17 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
           pushStart(s == State::START_FROM_OUTSIDE_TO_INSIDE, beyondRadius);
 
           // Shrink the search sector for the clockwise descent.
-          tmp.push(std::move(boundary[1]));
-          boundary[1] = nextEdgeEnd;
+          if (std::holds_alternative<Chain<Surface>>(boundary[1]) || std::get<Vector<T>>(boundary[1]).ccw(nextEdgeEnd) != CCW::COUNTERCLOCKWISE) {
+            tmp.push(std::move(boundary[1]));
+            boundary[1] = nextEdgeEnd;
+          } else {
+            tmp.push(boundary[1]);
+          }
+          // Exclude sectorBegin from future search if this saddle connections
+          // hits it exactly so we hide all future vertices that lie on this
+          // line.
+          if (std::holds_alternative<Vector<T>>(boundary[0]) && std::get<Vector<T>>(boundary[0]).ccw(nextEdgeEnd) == CCW::COLLINEAR)
+            boundary[0] = nextEdgeEnd;
 
           if (beyondRadius) {
             return false;
@@ -173,9 +215,14 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
       // we prepare the recursive descend into the counterclockwise sector.
       boundary[1] = std::move(tmp.top());
       tmp.pop();
-      tmp.push(std::move(boundary[0]));
       applyMoves();
-      boundary[0] = nextEdgeEnd;
+      // Shrink the search sector for the counter-clockwise descent
+      if (std::holds_alternative<Chain<Surface>>(boundary[0]) || std::get<Vector<T>>(boundary[0]).ccw(nextEdgeEnd) != CCW::CLOCKWISE) {
+        tmp.push(std::move(boundary[0]));
+        boundary[0] = nextEdgeEnd;
+      } else {
+        tmp.push(boundary[0]);
+      }
       moves.push_back(Move::GOTO_NEXT_EDGE);
       return false;
     case State::SADDLE_CONNECTION_FOUND_SEARCHING_SECOND:
@@ -205,7 +252,7 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::onBoundary() {
   // This code path could be optimized away by adding a bool template
   // parameter hasBoundary to increment().
   applyMoves();
-  return surface->boundary(nextEdge);
+  return connections.surface->boundary(nextEdge);
 }
 
 template <typename Surface>
@@ -279,7 +326,7 @@ template <typename Surface>
 void ImplementationOf<SaddleConnectionsIterator<Surface>>::apply(const Move m) {
   switch (m) {
     case Move::GOTO_NEXT_EDGE:
-      nextEdge = surface->nextInFace(nextEdge);
+      nextEdge = connections.surface->nextInFace(nextEdge);
       nextEdgeEnd += nextEdge;
       break;
     case Move::GOTO_OTHER_FACE:
@@ -288,7 +335,7 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::apply(const Move m) {
       break;
     case Move::GOTO_PREVIOUS_EDGE:
       nextEdgeEnd -= nextEdge;
-      nextEdge = surface->nextAtVertex(nextEdge);
+      nextEdge = connections.surface->nextAtVertex(nextEdge);
       nextEdge = -nextEdge;
       break;
   }
@@ -319,7 +366,7 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::applyMoves() {
           case Move::GOTO_PREVIOUS_EDGE:
             continue;
           case Move::GOTO_OTHER_FACE:
-            nextEdge = surface->nextInFace(nextEdge);
+            nextEdge = connections.surface->nextInFace(nextEdge);
             nextEdge = -nextEdge;
             continue;
         }
@@ -347,7 +394,7 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::applyMoves() {
             [[fallthrough]];
           case Move::GOTO_PREVIOUS_EDGE:
             nextEdge = -nextEdge;
-            nextEdge = surface->nextAtVertex(nextEdge);
+            nextEdge = connections.surface->nextAtVertex(nextEdge);
             nextEdge = -nextEdge;
             continue;
           case Move::GOTO_OTHER_FACE:
@@ -364,8 +411,12 @@ typename ImplementationOf<SaddleConnectionsIterator<Surface>>::Classification Im
   applyMoves();
   switch (ccw(boundary[0], nextEdgeEnd)) {
     case CCW::CLOCKWISE:
-    case CCW::COLLINEAR:
       return Classification::OUTSIDE_SEARCH_SECTOR_CLOCKWISE;
+    case CCW::COLLINEAR:
+      if (std::holds_alternative<Chain<Surface>>(boundary[0]))
+        return Classification::OUTSIDE_SEARCH_SECTOR_CLOCKWISE;
+      else
+        return Classification::SADDLE_CONNECTION;
     case CCW::COUNTERCLOCKWISE:
       switch (ccw(boundary[1], nextEdgeEnd)) {
         case CCW::CLOCKWISE:
@@ -397,7 +448,7 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::pushStart(bool fromOu
 
 template <typename Surface>
 bool SaddleConnectionsIterator<Surface>::equal(const SaddleConnectionsIterator<Surface>& other) const {
-  if (impl->surface == other.impl->surface && impl->searchRadius == other.impl->searchRadius && impl->sector == other.impl->sector && impl->end == other.impl->end) {
+  if (impl->connections.surface == other.impl->connections.surface && *impl->connections.searchRadius == *other.impl->connections.searchRadius && impl->sector == other.impl->sector && impl->end == other.impl->end) {
     if (impl->sector == impl->end)
       return true;
 
@@ -450,16 +501,16 @@ const SaddleConnection<Surface>& SaddleConnectionsIterator<Surface>::dereference
   switch (impl->state.back()) {
     case Implementation::State::START_FROM_INSIDE_TO_INSIDE:
       // This makes the first reported connection work: It is not nextEdgeEnd but the sector boundary.
-      impl->connection = SaddleConnection(impl->surface, *impl->sector);
+      impl->connection = SaddleConnection(impl->connections.surface, impl->sector->source);
       break;
     case Implementation::State::SADDLE_CONNECTION_FOUND:
-      impl->connection = SaddleConnection<Surface>(impl->surface, *impl->sector, impl->surface->previousAtVertex(-impl->nextEdge), impl->nextEdgeEnd);
+      impl->connection = SaddleConnection<Surface>(impl->connections.surface, impl->sector->source, impl->connections.surface->previousAtVertex(-impl->nextEdge), impl->nextEdgeEnd);
       break;
     default:
       ASSERT(false, "iterator cannot hold in this state");
   }
 
-  ASSERT(impl->connection <= impl->searchRadius, "Iterator stopped at connection " << impl->connection << " which is beyond the search radius " << impl->searchRadius);
+  ASSERT(impl->connection <= *impl->connections.searchRadius, "Iterator stopped at connection " << impl->connection << " which is beyond the search radius " << *impl->connections.searchRadius);
 
   return impl->connection;
 }
@@ -472,7 +523,7 @@ std::ostream& operator<<(std::ostream& os, const SaddleConnectionsIterator<Surfa
   if (self.impl->sector == self.impl->end) {
     return os << "Iterator(END)";
   } else {
-    return os << fmt::format("Iterator(sector={}, boundary=({}, {}), nextEdge={}, nextEdgeEnd={}, stack=[{}])", *self.impl->sector, static_cast<Vector<T>>(self.impl->boundary[0]), static_cast<Vector<T>>(self.impl->boundary[1]), self.impl->nextEdge, static_cast<Vector<T>>(self.impl->nextEdgeEnd), fmt::join(self.impl->state | rx::transform([](const auto& state) {
+    return os << fmt::format("Iterator(sector={}, nextEdge={}, nextEdgeEnd={}, stack=[{}])", self.impl->sector->source, self.impl->nextEdge, static_cast<Vector<T>>(self.impl->nextEdgeEnd), fmt::join(self.impl->state | rx::transform([](const auto& state) {
       switch (state) {
         case Implementation::State::START_FROM_INSIDE_TO_INSIDE:
           return "START_FROM_INSIDE_TO_INSIDE";
@@ -496,7 +547,7 @@ std::ostream& operator<<(std::ostream& os, const SaddleConnectionsIterator<Surfa
           throw std::logic_error("unknown State");
       }
     }) | rx::to_vector(),
-                                                                                                                                                                                                                                                                                                             ", "));
+                                                                                                                                                                                                 ", "));
   }
 }
 

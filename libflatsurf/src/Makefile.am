@@ -39,7 +39,9 @@ libflatsurf_la_SOURCES =                                            \
 	quadratic_polynomial.cc                                     \
 	saddle_connection.cc                                        \
 	saddle_connections.cc                                       \
+	saddle_connections_by_length.cc                             \
 	saddle_connections_iterator.cc                              \
+	saddle_connections_by_length_iterator.cc                    \
 	tracked.cc                                                  \
 	vector/vector.cc                                            \
 	vertex.cc                                                   \
@@ -86,7 +88,9 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/permutation.hpp                                 \
 	../flatsurf/saddle_connection.hpp                           \
 	../flatsurf/saddle_connections.hpp                          \
+	../flatsurf/saddle_connections_by_length.hpp                \
 	../flatsurf/saddle_connections_iterator.hpp                 \
+	../flatsurf/saddle_connections_by_length_iterator.hpp       \
 	../flatsurf/serializable.hpp                                \
 	../flatsurf/tracked.hpp                                     \
 	../flatsurf/vector.hpp                                      \
@@ -135,7 +139,9 @@ noinst_HEADERS =                                                    \
 	impl/quadratic_polynomial.hpp                               \
 	impl/saddle_connection.impl.hpp                             \
 	impl/saddle_connections.impl.hpp                            \
+	impl/saddle_connections_by_length.impl.hpp                  \
 	impl/saddle_connections_iterator.impl.hpp                   \
+	impl/saddle_connections_by_length_iterator.impl.hpp         \
 	impl/tracked.impl.hpp                                       \
 	impl/tracking_half_edge.impl.hpp                            \
 	impl/tracking.impl.hpp                                      \

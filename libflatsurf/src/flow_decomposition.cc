@@ -23,12 +23,17 @@
 
 #include <boost/algorithm/string/join.hpp>
 #include <boost/lexical_cast.hpp>
+#include <exact-real/element.hpp>
+#include <exact-real/integer_ring.hpp>
+#include <exact-real/module.hpp>
+#include <exact-real/number_field.hpp>
+#include <exact-real/rational_field.hpp>
 #include <intervalxt/dynamical_decomposition.hpp>
-#include <intervalxt/sample/arithmetic.hpp>
-#include <intervalxt/sample/e-antic-arithmetic.hpp>
-#include <intervalxt/sample/exact-real-arithmetic.hpp>
-#include <intervalxt/sample/long-long-int-arithmetic.hpp>
-#include <intervalxt/sample/rational-arithmetic.hpp>
+#include <intervalxt/sample/element_coefficients.hpp>
+#include <intervalxt/sample/integer_coefficients.hpp>
+#include <intervalxt/sample/mpq_coefficients.hpp>
+#include <intervalxt/sample/mpz_coefficients.hpp>
+#include <intervalxt/sample/renf_elem_coefficients.hpp>
 #include <memory>
 #include <ostream>
 #include <string>
@@ -60,11 +65,6 @@ using std::ostream;
 using intervalxt::DynamicalDecomposition;
 
 namespace flatsurf {
-
-template <typename Surface>
-template <typename... Args>
-FlowDecomposition<Surface>::FlowDecomposition(PrivateConstructor, Args&&... args) :
-  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
 
 template <typename Surface>
 FlowDecomposition<Surface>::FlowDecomposition(std::unique_ptr<Surface> surface, const Vector<T>& vertical) :
@@ -150,9 +150,7 @@ boost::logic::tribool FlowDecomposition<Surface>::parabolic() const {
       hnorm20 = hnorm2;
       a0 = a;
     } else {
-      std::vector<mpq_class> u = intervalxt::sample::Arithmetic<T>::coefficients(a0 * hnorm2);
-      std::vector<mpq_class> v = intervalxt::sample::Arithmetic<T>::coefficients(a * hnorm20);
-      assert(u.size() == v.size());
+      auto [u, v] = intervalxt::sample::Coefficients<>()(static_cast<T>(a0 * hnorm2), static_cast<T>(a * hnorm20));
       size_t i0 = 0;
       while (i0 < u.size() && u[i0] == 0 && v[i0] == 0)
         i0++;

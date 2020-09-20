@@ -347,33 +347,43 @@ class Vectors(UniqueRepresentation, Parent):
 
     def _algebraic_ring(self):
         r"""
-        Return the algebraic ring which underlies our base ring; typically this
-        is the base ring itself but for non-algebraic rings such as
-        ``ExactReals``, this gives the coefficient ring.
+        Return the Sage algebraic ring which underlies our base ring; typically
+        this is (an isomorphic ring to) the base ring itself but for
+        non-algebraic rings such as ``ExactReals``, this gives the coefficient
+        ring.
 
         EXAMPLES::
 
             sage: from pyflatsurf.vector import Vectors
             sage: from pyexactreal import ExactReals
+
+            sage: Vectors(QQ)._algebraic_ring()
+            Rational Field
             sage: R = ExactReals()
-            sage: V = Vectors(R)
-            sage: V._algebraic_ring()
+            sage: Vectors(R)._algebraic_ring()
             Rational Field
 
+            sage: K = NumberField(x^3 - 2, 'a', embedding=AA(2)**(1/3))
+            sage: Vectors(K)._algebraic_ring()
+            Number Field in a with defining polynomial x^3 - 2 with a = 1.259921049894873?
+            sage: R = ExactReals(K)
+            sage: Vectors(R)._algebraic_ring()
+            Number Field in a with defining polynomial x^3 - 2 with a = 1.259921049894873?
         """
         algebraic_ring = self.base_ring()
 
         if isinstance(algebraic_ring, ExactReals):
             algebraic_ring = algebraic_ring.base_ring()
-            if algebraic_ring not in [ZZ, QQ]: algebraic_ring = algebraic_ring.number_field
+        if algebraic_ring not in [ZZ, QQ]:
+            algebraic_ring = algebraic_ring.number_field
 
         return algebraic_ring
 
-    def decomposition(self, vector):
+    def decomposition(self, vector, base=None):
         r"""
         Write ``vector`` as a shortest sum `v = \sum a_i v_i` where the
-        `v_i` are vectors with entries in ``base`` and the `a_i` are
-        coefficients from our base ring.
+        `a_i` are coefficients from our ``base_ring()`` and the `v_i` are
+        vectors with entries in ``base``.
 
         EXAMPLES::
 
@@ -414,10 +424,14 @@ class Vectors(UniqueRepresentation, Parent):
 
         if not any(vector): return []
 
-        base = self._algebraic_ring()
+        if base is None:
+            base = self._algebraic_ring()
 
         if base is self.base_ring():
-            return [(base.one(), tuple(map(base, vector)))]
+            return [(self.base_ring().one(), tuple(map(base, vector)))]
+
+        if hasattr(self.base_ring(), "number_field") and self.base_ring().number_field is base:
+            return [(self.base_ring().one(), tuple(base(self.base_ring()(x)) for x in vector))]
 
         if isinstance(self.base_ring(), ExactReals):
            from functools import reduce

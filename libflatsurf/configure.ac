@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 dnl We need at least autoconf 2.69 for this configure.ac to work.
 AC_PREREQ([2.69])
-AC_INIT([libflatsurf], [1.1.1], [julian.rueth@fsfe.org])
+AC_INIT([libflatsurf], [1.1.2], [julian.rueth@fsfe.org])
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([.])
@@ -12,7 +12,7 @@ dnl Version number of the library c:r:a.
 dnl Set to c+1:0:0 on a non-backwards-compatible change.
 dnl Set to c+1:0:a+1 on a backwards-compatible change.
 dnl Set to c:r+1:a if the interface is unchanged.
-AC_SUBST([libflatsurf_version_info], [1:2:1])
+AC_SUBST([libflatsurf_version_info], [1:3:1])
 
 AC_CANONICAL_HOST
 
@@ -48,6 +48,8 @@ AX_CXX_CHECK_LIB([fmt], [fmt::v6::getpagesize()], , [
 # so we just check for something from the standard library, i.e., that -lgmpxx
 # goes through
 AX_CXX_CHECK_LIB([gmpxx], [std::runtime_error::what () const], [have_gmpxx=yes], AC_MSG_ERROR([GMP library for C++ not found]), [-lgmp -lmpfr -lflint])
+
+AC_CHECK_HEADERS([gmpxxll/mpz_class.hpp], [ ], [AC_MSG_ERROR([gmpxxll headers not found])])
 
 dnl We use Arb for ball arithmetic in our geometry
 AC_CHECK_LIB([arb], [arb_init], [have_arb=yes], AC_MSG_ERROR([arb library not found]), [-lgmp -lmpfr -lflint])

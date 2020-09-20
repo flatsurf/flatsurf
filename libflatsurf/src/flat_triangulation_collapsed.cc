@@ -23,9 +23,11 @@
 #include <fmt/ostream.h>
 #include <gmpxx.h>
 
-#include <intervalxt/sample/e-antic-arithmetic.hpp>
-#include <intervalxt/sample/exact-real-arithmetic.hpp>
-#include <intervalxt/sample/rational-arithmetic.hpp>
+#include <intervalxt/sample/element_floor_division.hpp>
+#include <intervalxt/sample/integer_floor_division.hpp>
+#include <intervalxt/sample/mpq_floor_division.hpp>
+#include <intervalxt/sample/mpz_floor_division.hpp>
+#include <intervalxt/sample/renf_elem_floor_division.hpp>
 #include <ostream>
 #include <unordered_map>
 #include <unordered_set>
@@ -105,7 +107,7 @@ template <typename T>
 mpz_class relativeCost(const Vector<T>& dividend, const Vector<T>& divisor) {
   const auto abs = [](const auto& x) { return x < 0 ? -x : x; };
 
-  return gmpxxll::mpz_class(::intervalxt::sample::Arithmetic<T>::floorDivision(dividend * dividend, abs(dividend * divisor)));
+  return gmpxxll::mpz_class(::intervalxt::sample::FloorDivision<T>()(dividend * dividend, abs(dividend * divisor)));
 }
 
 template <typename T>

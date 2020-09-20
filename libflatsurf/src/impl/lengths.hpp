@@ -48,7 +48,7 @@ class Lengths {
   void subtract(intervalxt::Label);
   intervalxt::Label subtractRepeated(intervalxt::Label);
   void subtractRepeated(intervalxt::Label, const mpz_class&);
-  std::vector<mpq_class> coefficients(intervalxt::Label) const;
+  std::vector<std::vector<mpq_class>> coefficients(const std::vector<intervalxt::Label>&) const;
   int cmp(intervalxt::Label) const;
   int cmp(intervalxt::Label, intervalxt::Label) const;
   T get(intervalxt::Label) const;
@@ -81,8 +81,6 @@ class Lengths {
 
   std::deque<intervalxt::Label> stack;
   T sum;
-
-  size_t degree;
 
   friend IntervalExchangeTransformation<Surface>;
 };

@@ -41,11 +41,6 @@
 namespace flatsurf {
 
 template <typename Surface>
-template <typename... Args>
-FlowTriangulation<Surface>::FlowTriangulation(PrivateConstructor, Args&&... args) :
-  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
-
-template <typename Surface>
 std::shared_ptr<const FlatTriangulation<typename Surface::Coordinate>> FlowTriangulation<Surface>::triangulation() const {
   return impl->triangulation;
 }

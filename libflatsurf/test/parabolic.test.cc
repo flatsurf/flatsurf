@@ -90,6 +90,7 @@ TEST_CASE("Parabolic", "[surface]") {
     using R2 = Vector<T>;
     auto surface = make235<R2>();
     CAPTURE(*surface);
+    CAPTURE(surface->area());
 
     const auto direction = Vector<T>(0, 1);
     auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), direction);
@@ -98,7 +99,7 @@ TEST_CASE("Parabolic", "[surface]") {
     REQUIRE(flowDecomposition.decompose());
 
     REQUIRE(flowDecomposition.completelyPeriodic() == boost::logic::tribool(true));
-    REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(true));
+    REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(false));
   }
 
   SECTION("(2,3,5) triangle in (0, 1)") {
@@ -123,7 +124,7 @@ TEST_CASE("Parabolic", "[surface]") {
     auto surface = make235<R2>();
     CAPTURE(*surface);
 
-    auto c = P->gen();
+    auto c = Q->gen();
     const auto direction = Vector(2*c*c - 1, -c*c*c + 4*c);
     auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), direction);
     CAPTURE(flowDecomposition);
@@ -140,7 +141,7 @@ TEST_CASE("Parabolic", "[surface]") {
     auto surface = make235<R2>();
     CAPTURE(*surface);
 
-    auto c = P->gen();
+    auto c = Q->gen();
     const auto direction = Vector<T>(c*c - 5, c);
     auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), direction);
     CAPTURE(flowDecomposition);
@@ -157,7 +158,7 @@ TEST_CASE("Parabolic", "[surface]") {
     auto surface = make235<R2>();
     CAPTURE(*surface);
 
-    auto c = P->gen();
+    auto c = Q->gen();
     const auto direction = Vector<T>(-5, -c*c*c + 2*c);
     auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), direction);
     CAPTURE(flowDecomposition);
