@@ -4,6 +4,26 @@ intervalxt Change Log
 
 .. current developments
 
+v1.1.2
+====================
+
+**Added:**
+
+* convenience methods `decompose`, `cylinders`, `minimalComponents`, `undeterminedComponents` to `FlowDecomposition` Python object
+
+**Changed:**
+
+* printing of `FlowDecomposition` which now shows how the decomposition decomposes into cylinders, minimal, and undetermined components
+* [gmpxxll](https://github.com/flatsurf/gmpxxll) is now required at build time for the integer interface of intervalxt
+
+**Fixed:**
+
+* `algebraic_ring` consistently returns a SageMath ring
+* Adapted to changes in cppyythonizations 1.0.0
+* `Lengths` for `mpz` and `mpq` which were broken because we returned a reference to a temporary in one place
+
+
+
 v1.1.1
 ====================
 
