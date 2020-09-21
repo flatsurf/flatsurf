@@ -68,8 +68,7 @@ def test_hexagon_exactreal():
     from pyexactreal import exactreal
     surface = surfaces.random_hexagon()
     connections = surface.saddle_connections(flatsurf.Bound(16, 0), flatsurf.HalfEdge(1))
-    # This is very slow at the moment, see https://github.com/flatsurf/exact-real/issues/37
-    # assert len([1 for c in connections]) >= 10
+    assert len([1 for c in connections]) >= 10
 
 def test_printing():
     for coefficients in ['long long', 'mpz_class', 'mpq_class', 'eantic::renf_elem_class', 'exactreal::Element<exactreal::IntegerRing>', 'exactreal::Element<exactreal::RationalField>', 'exactreal::Element<exactreal::NumberField>']:
