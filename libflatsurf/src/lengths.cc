@@ -129,8 +129,9 @@ Label Lengths<Surface>::subtractRepeated(Label minuend) {
     ASSERT(iterations > mpz_class(), "subtractRepeated() should not be called when there is no full subtract possible; but the labels on the stack fit only " << iterations << " times into the minuend label " << render(minuend) << "; the code cannot handle partial subtracts yet.");
     subtractRepeated(minuend, iterations);
   } else {
-    subtract(minuend);
+    subtractRepeated(minuend, 1);
   }
+
   return ret;
 }
 
@@ -174,7 +175,7 @@ void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iteratio
     HalfEdge target = minuendConnection->target();
     Chain walk(minuendConnection->surface().shared_from_this());
 
-    // Walk down on the minuend's left boundary
+    // Walk down on the minuend's (top) left boundary
     {
       // left() is oriented from bottom to top so we need to reverse. This should probably be changed.
       for (const auto& connection : flow(begin(minuendContour)->left() | rx::reverse() | rx::to_vector(), !minuendOnTop)) {
@@ -202,7 +203,7 @@ void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iteratio
     // the chain; source/target are not affected by this. (They might change,
     // but they are still in the same half plane of the same vertex.)
     // Note that this is more complicated when the bottom minuend has
-    // connections on its left.  Therefore we need to caller to do a simple
+    // connections on its left. Therefore we need the caller to do a simple
     // subtract before doing a subtractRepeated.
     walk *= iterations;
 
@@ -230,7 +231,7 @@ void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iteratio
 
     minuendConnection = SaddleConnection<FlatTriangulation<T>>(minuendConnection->surface().shared_from_this(), target, source, -vector);
 
-    ASSERT(minuendConnection->source() == target && minuendConnection->target() == source, "We tried to get SaddleConnection source/target right but SaddleConnection consturctor disagrees.");
+    ASSERT(minuendConnection->source() == target && minuendConnection->target() == source, "We tried to get SaddleConnection source/target right but SaddleConnection constructor disagrees.");
 
     ASSERTIONS([&]() {
       // A very similar bit of code lives in FlatTriangulationCollapsed. We
