@@ -19,6 +19,9 @@
 
 #include "impl/lengths.hpp"
 
+#include <boost/type_erasure/exception.hpp>
+#include <boost/type_erasure/any_cast.hpp>
+
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
@@ -131,6 +134,7 @@ Label Lengths<Surface>::subtractRepeated(Label minuend) {
   } else {
     subtract(minuend);
   }
+
   return ret;
 }
 

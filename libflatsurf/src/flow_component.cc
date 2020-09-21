@@ -60,9 +60,15 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
   };
 
   while (!target(*this)) {
+    std::cout << "while() in FlowComponent::decompose()" << std::endl;
     check();
 
+    std::cout << "step()" <<std::endl;
+    std::cout << *this << std::endl;
+    std::cout << intervalExchangeTransformation() << std::endl;
+    std::cout << impl->component->dynamicalComponent << std::endl;
     auto step = impl->component->dynamicalComponent.decompositionStep(limit);
+    std::cout << "done with step()" << std::endl;
 
     if (step.result == intervalxt::DecompositionStep::Result::LIMIT_REACHED)
       return false;
@@ -274,7 +280,6 @@ typename Surface::Coordinate FlowComponent<Surface>::width() const {
   return sum;
 }
 
-// Holonomy of the circumference of a cylinder
 template <typename Surface>
 Vector<typename Surface::Coordinate> FlowComponent<Surface>::circumferenceHolonomy() const {
   if (not this->cylinder())

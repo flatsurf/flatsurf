@@ -37,6 +37,9 @@
 namespace flatsurf {
 
 template <typename Surface>
+class AssertedLengths;
+
+template <typename Surface>
 class Lengths {
   using T = typename Surface::Coordinate;
 
@@ -83,6 +86,7 @@ class Lengths {
   T sum;
 
   friend IntervalExchangeTransformation<Surface>;
+  friend AssertedLengths<Surface>;
 };
 
 }  // namespace flatsurf

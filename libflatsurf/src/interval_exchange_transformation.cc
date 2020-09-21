@@ -33,6 +33,7 @@
 #include "../flatsurf/tracked.hpp"
 #include "../flatsurf/vertex.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
+#include "impl/asserted_lengths.hpp"
 #include "impl/contour_component.impl.hpp"
 #include "impl/flat_triangulation_collapsed.impl.hpp"
 #include "impl/interval_exchange_transformation.impl.hpp"
@@ -179,6 +180,12 @@ const SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>& Interva
 }
 
 template <typename Surface>
+intervalxt::IntervalExchangeTransformation IntervalExchangeTransformation<Surface>::clone() const {
+  auto forgottenLengths = std::make_shared<intervalxt::Lengths>(impl->lengths->forget());
+  return intervalxt::IntervalExchangeTransformation(forgottenLengths, impl->iet.top(), impl->iet.bottom());
+}
+
+template <typename Surface>
 ImplementationOf<IntervalExchangeTransformation<Surface>>::ImplementationOf(std::shared_ptr<const Surface> surface, const Vector<T>& vertical, const vector<HalfEdge>& top, const vector<HalfEdge>& bottom) :
   surface(surface) {
   using SaddleConnection = flatsurf::SaddleConnection<FlatTriangulation<T>>;
@@ -198,14 +205,14 @@ ImplementationOf<IntervalExchangeTransformation<Surface>>::ImplementationOf(std:
       nonzerolengths[e] = surface->fromEdge(e);
   }
 
-  const auto erasedLengths = std::make_shared<intervalxt::Lengths>(Lengths<Surface>(std::make_shared<Vertical<FlatTriangulation<T>>>(uncollapsed, vertical), std::move(nonzerolengths)));
+  const auto erasedLengths = std::make_shared<intervalxt::Lengths>(AssertedLengths<Surface>(std::make_shared<Vertical<FlatTriangulation<T>>>(uncollapsed, vertical), std::move(nonzerolengths)));
 
   iet = intervalxt::IntervalExchangeTransformation(
       erasedLengths,
       top | transform([&](Edge e) { return intervalxt::Label(e.index()); }) | to_vector(),
       bottom | transform([&](Edge e) { return intervalxt::Label(e.index()); }) | to_vector());
 
-  lengths = boost::type_erasure::any_cast<Lengths<Surface>*>(erasedLengths.get());
+  lengths = &boost::type_erasure::any_cast<AssertedLengths<Surface>*>(erasedLengths.get())->lengths;
 
   ASSERT(lengths != nullptr, "Setting lengths from erasedLengths should produce the original length type again");
 

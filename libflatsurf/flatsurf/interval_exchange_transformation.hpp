@@ -57,6 +57,8 @@ class IntervalExchangeTransformation {
   intervalxt::IntervalExchangeTransformation& intervalExchangeTransformation() noexcept;
   const intervalxt::IntervalExchangeTransformation& intervalExchangeTransformation() const noexcept;
 
+  intervalxt::IntervalExchangeTransformation clone() const;
+
   // The Edge in the (collapsed) surface from which this label was created originally.
   Edge edge(const Label&) const;
 

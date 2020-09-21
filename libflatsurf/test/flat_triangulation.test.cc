@@ -95,8 +95,8 @@ TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[flat_triangulation][ins
     auto surface = GENERATE(values({std::shared_ptr(makeSquare<R2>()->scale(3)), std::shared_ptr(makeL<R2>()->scale(3))}));
 
     GIVEN("The surface " << *surface) {
-      auto x = GENERATE(range(1, 32));
-      auto y = GENERATE(range(1, 32));
+      auto x = GENERATE(range(1, 16));
+      auto y = GENERATE(range(1, 16));
 
       if (x > y) {
         bool crossesSingularity = false;
