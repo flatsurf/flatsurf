@@ -274,7 +274,6 @@ typename Surface::Coordinate FlowComponent<Surface>::width() const {
   return sum;
 }
 
-// Holonomy of the circumference of a cylinder
 template <typename Surface>
 Vector<typename Surface::Coordinate> FlowComponent<Surface>::circumferenceHolonomy() const {
   if (not this->cylinder())

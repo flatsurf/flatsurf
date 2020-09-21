@@ -35,8 +35,15 @@ template <typename Surface>
 class ImplementationOf<FlowConnection<Surface>> {
   using T = typename Surface::Coordinate;
 
+  enum class Kind {
+    PARALLEL = -2,
+    BOTTOM = -1,
+    TOP = 1,
+    ANTIPARALLEL = 2,
+  };
+
  public:
-  ImplementationOf(std::shared_ptr<FlowDecompositionState<Surface>>, const FlowComponent<Surface>&, const SaddleConnection<FlatTriangulation<T>>&);
+  ImplementationOf(std::shared_ptr<FlowDecompositionState<Surface>>, const FlowComponent<Surface>&, const SaddleConnection<FlatTriangulation<T>>&, Kind kind);
 
   static FlowConnection<Surface> make(std::shared_ptr<FlowDecompositionState<Surface>>, const FlowComponent<Surface>&, const intervalxt::Connection&);
   static FlowConnection<Surface> make(std::shared_ptr<FlowDecompositionState<Surface>>, const FlowComponent<Surface>&, const intervalxt::HalfEdge&);
@@ -45,6 +52,11 @@ class ImplementationOf<FlowConnection<Surface>> {
   std::shared_ptr<FlowDecompositionState<Surface>> state;
   FlowComponent<Surface> component;
   SaddleConnection<FlatTriangulation<T>> saddleConnection;
+  Kind kind;
+
+  mutable std::optional<FlowConnection<Surface>> negative;
+
+  friend class FlowConnection<Surface>;
 };
 
 template <typename Surface>

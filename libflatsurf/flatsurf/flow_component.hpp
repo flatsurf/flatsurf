@@ -74,6 +74,8 @@ class FlowComponent : boost::equality_comparable<FlowComponent<Surface>> {
 
   T width() const;
   T area() const;
+  // Return the holonomy of the circumference of this cylinder, i.e., the
+  // vector that corresponds the period of this cylinder.
   Vector<T> circumferenceHolonomy() const;
 
   Vertical<Surface> vertical() const;

@@ -52,42 +52,51 @@ bool FlowConnection<Surface>::vertical() const {
 
 template <typename Surface>
 bool FlowConnection<Surface>::parallel() const {
-  auto vertical = component().vertical();
-  return !vertical.perpendicular(saddleConnection()) && vertical.parallel(saddleConnection()) > 0;
+  return impl->kind == Implementation::Kind::PARALLEL;
 }
 
 template <typename Surface>
 bool FlowConnection<Surface>::antiparallel() const {
-  auto vertical = component().vertical();
-  return !vertical.perpendicular(saddleConnection()) && vertical.parallel(saddleConnection()) < 0;
+  return impl->kind == Implementation::Kind::ANTIPARALLEL;
 }
 
 template <typename Surface>
 bool FlowConnection<Surface>::bottom() const {
-  if (vertical()) return false;
-  auto vertical = component().vertical();
-  return vertical.vertical().ccw(saddleConnection()) == CCW::CLOCKWISE;
+  return impl->kind == Implementation::Kind::BOTTOM;
 }
 
 template <typename Surface>
 bool FlowConnection<Surface>::top() const {
-  if (vertical()) return false;
-  auto vertical = component().vertical();
-  return vertical.vertical().ccw(saddleConnection()) == CCW::COUNTERCLOCKWISE;
+  return impl->kind == Implementation::Kind::TOP;
 }
 
 template <typename Surface>
 FlowConnection<Surface> FlowConnection<Surface>::operator-() const {
-  for (auto& component_ : impl->state->components) {
-    auto component = ImplementationOf<FlowComponent<Surface>>::make(impl->state, &component_);
+  const auto search = -saddleConnection();
+
+  const auto find = [&](const auto& component) {
     for (const auto& connection : component.perimeter())
-      if (connection.saddleConnection() == -saddleConnection()) {
+      if (connection.saddleConnection() == search) {
         ASSERT(vertical() || this->component() == component, "Non-vertical connections can not be attached to distinct components.");
-        return connection;
+        return std::optional<FlowConnection>(connection);
+      }
+    return std::optional<FlowConnection>();
+  };
+
+  if (!impl->negative) {
+    if (!vertical())
+      impl->negative = find(impl->component);
+    else
+      for (auto& component_ : impl->state->components) {
+        if (impl->negative) break;
+        const auto component = ImplementationOf<FlowComponent<Surface>>::make(impl->state, &component_);
+        impl->negative = find(component);
       }
   }
 
-  UNREACHABLE("Negative of " << *this << " not present in FlowDecomposition.");
+  ASSERT(impl->negative->impl->kind == static_cast<typename Implementation::Kind>(-static_cast<int>(impl->kind)), "Negative of connection is of unexpected type.");
+
+  return impl->negative.value();
 }
 
 template <typename Surface>
@@ -123,19 +132,21 @@ FlowComponent<Surface> FlowConnection<Surface>::component() const {
 }
 
 template <typename Surface>
-ImplementationOf<FlowConnection<Surface>>::ImplementationOf(std::shared_ptr<FlowDecompositionState<Surface>> state, const FlowComponent<Surface>& component, const SaddleConnection<FlatTriangulation<T>>& saddleConnection) :
+ImplementationOf<FlowConnection<Surface>>::ImplementationOf(std::shared_ptr<FlowDecompositionState<Surface>> state, const FlowComponent<Surface>& component, const SaddleConnection<FlatTriangulation<T>>& saddleConnection, Kind kind) :
   state(state),
   component(component),
-  saddleConnection(saddleConnection) {
-}
+  saddleConnection(saddleConnection),
+  kind(kind) {}
 
 template <typename Surface>
 FlowConnection<Surface> ImplementationOf<FlowConnection<Surface>>::make(std::shared_ptr<FlowDecompositionState<Surface>> state, const FlowComponent<Surface>& component, const intervalxt::Connection& connection) {
   ASSERT(state->injectedConnections.find(connection) != end(state->injectedConnections) || state->detectedConnections.find(connection) != end(state->detectedConnections), "Connection " << connection << " not known to " << *state);
 
+  const Kind kind = connection.parallel() ? Kind::PARALLEL : Kind::ANTIPARALLEL;
+
   FlowConnection<Surface> ret = (state->injectedConnections.find(connection) != state->injectedConnections.end())
-                                    ? FlowConnection<Surface>(PrivateConstructor{}, state, component, state->injectedConnections.at(connection))
-                                    : FlowConnection<Surface>(PrivateConstructor{}, state, component, state->detectedConnections.at(connection));
+                                    ? FlowConnection<Surface>(PrivateConstructor{}, state, component, state->injectedConnections.at(connection), kind)
+                                    : FlowConnection<Surface>(PrivateConstructor{}, state, component, state->detectedConnections.at(connection), kind);
 
   ASSERT(ret.vertical(), "FlowConnection created from vertical Connection must be vertical but " << ret << " created from " << connection << " is not.");
   ASSERT(connection.parallel() == ret.parallel(), "FlowConnection must have same parallelity as Connection but " << ret << " and " << connection << " do not coincide");
@@ -148,7 +159,7 @@ FlowConnection<Surface> ImplementationOf<FlowConnection<Surface>>::make(std::sha
   auto connection = component.intervalExchangeTransformation()[static_cast<intervalxt::Label>(edge)];
   if (edge.top()) connection = -connection;
 
-  FlowConnection<Surface> ret(PrivateConstructor{}, state, component, connection);
+  FlowConnection<Surface> ret(PrivateConstructor{}, state, component, connection, edge.top() ? Kind::TOP : Kind::BOTTOM);
 
   ASSERT(!ret.vertical(), "FlowConnection created from HalfEdge must not be vertical but " << ret << " created from " << edge << " is vertical.");
 
