@@ -2,7 +2,7 @@
  *  This file is part of flatsurf.
  *
  *        Copyright (C) 2019 Vincent Delecroix
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,7 +33,9 @@
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
+#include "../src/external/rx-ranges/include/rx/ranges.hpp"
 #include "external/catch2/single_include/catch2/catch.hpp"
+#include "generators/surface_generator.hpp"
 #include "surfaces.hpp"
 
 namespace flatsurf::test {
@@ -151,6 +153,38 @@ TEMPLATE_TEST_CASE("Deform a Flat Triangulation", "[flat_triangulation][deformat
     shift.set(HalfEdge(7), R2(0, 1));
 
     REQUIRE(*surface->operator+(shift) != *surface);
+  }
+}
+
+TEMPLATE_TEST_CASE("Eliminate Marked Points", "[flat_triangulation][eliminate_marked_points]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+
+  const auto [name, surface] = GENERATE(makeSurface<T>());
+  GIVEN("The Surface " << *name) {
+    const auto simplified = (*surface)->eliminateMarkedPoints();
+
+    CAPTURE(*simplified);
+
+    const auto unmarkedPoints = [](const auto& surface) {
+      return surface.vertices() | rx::filter([&](const auto& vertex) { return surface.angle(vertex) != 1; }) | rx::count();
+    };
+
+    const auto markedPoints = [](const auto& surface) {
+      return surface.vertices() | rx::filter([&](const auto& vertex) { return surface.angle(vertex) == 1; }) | rx::count();
+    };
+
+    if (unmarkedPoints(**surface)) {
+      THEN("All Marked Points Can Be Removed") {
+        REQUIRE(markedPoints(*simplified) == 0);
+      }
+    } else {
+      THEN("All But A Single Marked Point Can Be Removed") {
+        REQUIRE(markedPoints(*simplified) == 1);
+        REQUIRE(unmarkedPoints(*simplified) == 0);
+      }
+    }
+
+    REQUIRE((*surface)->area() == simplified->area());
   }
 }
 

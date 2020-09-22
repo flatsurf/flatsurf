@@ -63,8 +63,8 @@ class FlatTriangulationCombinatorial : Serializable<FlatTriangulationCombinatori
   HalfEdge nextInFace(HalfEdge e) const;
   HalfEdge previousInFace(HalfEdge e) const;
 
-  // Eliminate e from this triangulation by identifying the two edges of each
-  // of its faces, respectively.
+  // Eliminate e from this triangulation by identifying the two other edges of
+  // each of its faces, respectively.
   // Return a pair consisting of the half edges describing the collapsed faces;
   // first, the representative of previousAtVertex(e), second the representative
   // of nextAtVertex(e). Or, in other words, this returns the two surviving
