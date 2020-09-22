@@ -118,17 +118,18 @@ ChainVector<Surface, T>& ChainVector<Surface, T>::operator=(Vector<T>&& value) {
 
 template <typename Surface, typename T>
 ChainVector<Surface, T>& ChainVector<Surface, T>::operator+=(HalfEdge halfEdge) {
+  (void)halfEdge;
   if (value) {
     const double storeAsPendingCost = pendingMovesCost + Cost<T>::copy() + Cost<T>::add();
     if (storeAsPendingCost > recomputeCost()) {
-      value = {};
+      value = std::nullopt;
       pendingMovesCost = 0;
       pendingMoves.clear();
     } else {
       if constexpr (std::is_same_v<T, exactreal::Arb>) {
-        pendingMoves.emplace_back(MOVE::ADD, chain.surface->fromEdgeApproximate(halfEdge));
+        pendingMoves.emplace_back(MOVE::ADD, chain.surface->fromHalfEdgeApproximate(halfEdge));
       } else {
-        pendingMoves.emplace_back(MOVE::ADD, chain.surface->fromEdge(halfEdge));
+        pendingMoves.emplace_back(MOVE::ADD, chain.surface->fromHalfEdge(halfEdge));
       }
       pendingMovesCost += Cost<T>::add();
     }
@@ -175,7 +176,7 @@ ChainVector<Surface, T>& ChainVector<Surface, T>::record(MOVE move, V&& rhs) {
         const double storeAsPendingCost = rhs.pendingMovesCost + pendingMovesCost + (std::is_rvalue_reference_v<V> ? Cost<T>::move() : Cost<T>::copy()) + Cost<T>::add();
 
         if (storeAsPendingCost > recomputeCost()) {
-          value = {};
+          value = std::nullopt;
           pendingMovesCost = 0;
           pendingMoves.clear();
         } else {
@@ -190,7 +191,7 @@ ChainVector<Surface, T>& ChainVector<Surface, T>::record(MOVE move, V&& rhs) {
         }
       }
     } else {
-      value = {};
+      value = std::nullopt;
       pendingMovesCost = 0;
       pendingMoves.clear();
     }
@@ -242,7 +243,7 @@ ChainVector<Surface, T>::operator const Vector<T>&() const {
       for (const Edge edge : chain.surface->edges()) {
         const auto coefficient = chain[edge.index()];
         if (coefficient)
-          exact += **coefficient * static_cast<const Vector<T>&>(chain.surface->fromEdge(edge.positive()));
+          exact += **coefficient * static_cast<const Vector<T>&>(chain.surface->fromHalfEdge(edge.positive()));
       }
 
       value.emplace(std::move(exact));

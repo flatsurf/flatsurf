@@ -2,7 +2,7 @@
  *  This file is part of flatsurf.
  *
  *        Copyright (C) 2019 Vincent Delecroix
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ TEST_CASE("Flat Triangulation Comparisons", "[flat_triangulation_combinatorial][
   const auto surface = GENERATE(makeSurfaceCombinatorial());
 
   GIVEN("The Surface " << *surface) {
-    REQUIRE(*surface == *surface->clone());
+    REQUIRE(*surface == surface->clone());
     REQUIRE(*surface != *makeSquareWithBoundaryCombinatorial());
   }
 }
@@ -94,16 +94,16 @@ TEST_CASE("Flat Triangulation Insertions", "[flat_triangulation_combinatorial][i
 
     WHEN("We Insert a Vertex Next to " << e) {
       auto inserted = surface->insertAt(e);
-      CAPTURE(*inserted);
+      CAPTURE(inserted);
 
       THEN("The Combinatorics Have Changed in the Expected Way") {
-        REQUIRE(*surface != *inserted);
-        REQUIRE(surface->vertices().size() + 1 == inserted->vertices().size());
-        REQUIRE(surface->halfEdges().size() + 6 == inserted->halfEdges().size());
+        REQUIRE(*surface != inserted);
+        REQUIRE(surface->vertices().size() + 1 == inserted.vertices().size());
+        REQUIRE(surface->halfEdges().size() + 6 == inserted.halfEdges().size());
 
-        auto a = -inserted->nextAtVertex(e);
+        auto a = -inserted.nextAtVertex(e);
         REQUIRE(a != -surface->nextAtVertex(e));
-        REQUIRE(inserted->nextAtVertex(inserted->nextAtVertex(inserted->nextAtVertex(a))) == a);
+        REQUIRE(inserted.nextAtVertex(inserted.nextAtVertex(inserted.nextAtVertex(a))) == a);
       }
     }
   }

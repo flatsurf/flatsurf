@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,23 +27,35 @@
 #include "../../flatsurf/tracked.hpp"
 #include "../../flatsurf/vector.hpp"
 
+#include "flat_triangulation_combinatorial.impl.hpp"
+
 namespace flatsurf {
 
 template <typename T>
-class ImplementationOf<FlatTriangulation<T>> {
+class ImplementationOf<FlatTriangulation<T>> :
+ protected ImplementationOf<ManagedMovable<FlatTriangulation<T>>>,
+ public ImplementationOf<FlatTriangulationCombinatorial> {
  public:
-  ImplementationOf(const FlatTriangulationCombinatorial&, const std::function<Vector<T>(HalfEdge)>&);
+  ImplementationOf(FlatTriangulationCombinatorial&&, const std::function<Vector<T>(HalfEdge)>&);
 
   static void updateAfterFlip(OddHalfEdgeMap<Vector<T>>&, const FlatTriangulationCombinatorial&, HalfEdge);
   static void updateApproximationAfterFlip(OddHalfEdgeMap<Vector<exactreal::Arb>>&, const FlatTriangulationCombinatorial&, HalfEdge);
 
-  static void check(const FlatTriangulation<T>&);
+  void check();
 
   static T area(const Vector<T>& a, const Vector<T>& b, const Vector<T>& c);
+
+  void flip(HalfEdge) override;
 
   const Tracked<OddHalfEdgeMap<Vector<T>>> vectors;
   // A cache of approximations for improved performance
   const Tracked<OddHalfEdgeMap<Vector<exactreal::Arb>>> approximations;
+
+ protected:
+  using ImplementationOf<ManagedMovable<FlatTriangulation<T>>>::from_this;
+  using ImplementationOf<ManagedMovable<FlatTriangulation<T>>>::self;
+
+  friend ImplementationOf<ManagedMovable<FlatTriangulation<T>>>;
 };
 
 }  // namespace flatsurf

@@ -36,7 +36,7 @@ void SaddleConnectionUnaryMinus(State& state) {
   using Surface = FlatTriangulation<typename R2::Coordinate>;
   auto L = makeL<R2>();
 
-  const auto connection = SaddleConnection<Surface>::inSector(L, HalfEdge(1), R2(1337, 1));
+  const auto connection = SaddleConnection<Surface>::inSector(*L, HalfEdge(1), R2(1337, 1));
 
   for (auto _ : state) {
     DoNotOptimize(-connection);

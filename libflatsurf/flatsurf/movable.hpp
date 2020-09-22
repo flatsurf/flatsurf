@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,19 +17,17 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_MOVEABLE_HPP
-#define LIBFLATSURF_MOVEABLE_HPP
+#ifndef LIBFLATSURF_MOVABLE_HPP
+#define LIBFLATSURF_MOVABLE_HPP
 
 #include "external/spimpl/spimpl.h"
 #include "forward.hpp"
 
 namespace flatsurf {
 
-// Note that this cannot be turned into a base class Moveable<T> sanely since
-// its impl field would not be visible when T is a template, i.e., we would
-// have to use this all over the place in the member implementations.
+// A pointer-to-implementation (pimpl) for types that are not copyable but movable.
 template <typename T>
-using Moveable = spimpl::unique_impl_ptr<T>;
+using Movable = spimpl::unique_impl_ptr<ImplementationOf<T>>;
 
 }  // namespace flatsurf
 

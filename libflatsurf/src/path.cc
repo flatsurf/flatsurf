@@ -41,77 +41,77 @@ namespace flatsurf {
 
 template <typename Surface>
 Path<Surface>::Path() :
-  impl(spimpl::make_impl<Implementation>()) {}
+  self(spimpl::make_impl<ImplementationOf<Path>>()) {}
 
 template <typename Surface>
 Path<Surface>::Path(const std::vector<Segment>& path) :
-  impl(spimpl::make_impl<Implementation>(path)) {}
+  self(spimpl::make_impl<ImplementationOf<Path>>(path)) {}
 
 template <typename Surface>
 Path<Surface>::operator const std::vector<Segment>&() const {
-  return impl->path;
+  return self->path;
 }
 
 template <typename Surface>
 bool Path<Surface>::operator==(const Path& rhs) const {
-  return impl->path == rhs.impl->path;
+  return self->path == rhs.self->path;
 }
 
 template <typename Surface>
 bool Path<Surface>::closed() const {
   if (empty()) return true;
-  return Implementation::connected(*std::rbegin(impl->path), *std::begin(impl->path));
+  return ImplementationOf<Path>::connected(*std::rbegin(self->path), *std::begin(self->path));
 }
 
 template <typename Surface>
 bool Path<Surface>::simple() const {
   using std::begin, std::end;
-  std::unordered_set<Segment> segments(begin(impl->path), end(impl->path));
-  return segments.size() == impl->path.size();
+  std::unordered_set<Segment> segments(begin(self->path), end(self->path));
+  return segments.size() == self->path.size();
 }
 
 template <typename Surface>
 Path<Surface> Path<Surface>::reversed() const {
-  return impl->path | rx::transform([&](const auto& connection) { return -connection; }) | rx::reverse() | rx::to_vector();
+  return self->path | rx::transform([&](const auto& connection) { return -connection; }) | rx::reverse() | rx::to_vector();
 }
 
 template <typename Surface>
 bool Path<Surface>::empty() const {
-  return impl->path.empty();
+  return self->path.empty();
 }
 
 template <typename Surface>
 size_t Path<Surface>::size() const {
-  return impl->path.size();
+  return self->path.size();
 }
 
 template <typename Surface>
 void Path<Surface>::push_front(const Segment& segment) {
-  ASSERT(empty() || Implementation::connected(segment, *begin()), "Path must be connected but " << segment << " does not precede " << *begin() << " either because they are connected to different vertices or because the turn from " << -segment << " to " << *begin() << " is not turning clockwise in the range (0, 2π]");
-  impl->path.insert(std::begin(impl->path), segment);
+  ASSERT(empty() || ImplementationOf<Path>::connected(segment, *begin()), "Path must be connected but " << segment << " does not precede " << *begin() << " either because they are connected to different vertices or because the turn from " << -segment << " to " << *begin() << " is not turning clockwise in the range (0, 2π]");
+  self->path.insert(std::begin(self->path), segment);
 }
 
 template <typename Surface>
 void Path<Surface>::push_back(const Segment& segment) {
-  ASSERT(empty() || Implementation::connected(*impl->path.rbegin(), segment), "Path must be connected but " << *impl->path.rbegin() << " does not precede " << segment << " either because they are connected to different vertices or because the turn from " << -*impl->path.rbegin() << " to " << segment << " is not turning clockwise in the range (0, 2π]");
-  impl->path.push_back(segment);
+  ASSERT(empty() || ImplementationOf<Path>::connected(*self->path.rbegin(), segment), "Path must be connected but " << *self->path.rbegin() << " does not precede " << segment << " either because they are connected to different vertices or because the turn from " << -*self->path.rbegin() << " to " << segment << " is not turning clockwise in the range (0, 2π]");
+  self->path.push_back(segment);
 }
 
 template <typename Surface>
 void Path<Surface>::splice(const PathIterator<Surface>& pos, Path& other) {
   ASSERT_ARGUMENT(this != &other, "Cannot splice path into itself");
 
-  const auto at = pos == end() ? std::end(impl->path) : pos.impl->position;
-  impl->path.insert(at, std::begin(other.impl->path), std::end(other.impl->path));
+  const auto at = pos == end() ? std::end(self->path) : pos.self->position;
+  self->path.insert(at, std::begin(other.self->path), std::end(other.self->path));
 
   ASSERTIONS([&]() {
-    for (auto segment = std::begin(impl->path); segment != std::end(impl->path); segment++) {
-      ASSERT(segment + 1 == std::end(impl->path) || Implementation::connected(*segment, *(segment + 1)), "Path must be connected but " << *segment << " does not precede " << *(segment + 1) << " either because they are connected to different vertices or because the turn from " << -*segment << " to " << *(segment + 1) << " is not turning clockwise in the range (0, 2π]");
+    for (auto segment = std::begin(self->path); segment != std::end(self->path); segment++) {
+      ASSERT(segment + 1 == std::end(self->path) || ImplementationOf<Path>::connected(*segment, *(segment + 1)), "Path must be connected but " << *segment << " does not precede " << *(segment + 1) << " either because they are connected to different vertices or because the turn from " << -*segment << " to " << *(segment + 1) << " is not turning clockwise in the range (0, 2π]");
     }
     return true;
   });
 
-  other.impl->path.clear();
+  other.self->path.clear();
 }
 
 template <typename Surface>
@@ -127,23 +127,18 @@ typename Surface::Coordinate Path<Surface>::area() const {
 }
 
 template <typename Surface>
-template <typename... Args>
-PathIterator<Surface>::PathIterator(PrivateConstructor, Args&&... args) :
-  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
-
-template <typename Surface>
 PathIterator<Surface> Path<Surface>::begin() const {
-  return PathIterator<Surface>(PrivateConstructor{}, this, std::begin(impl->path));
+  return PathIterator<Surface>(PrivateConstructor{}, this, std::begin(self->path));
 }
 
 template <typename Surface>
 PathIterator<Surface> Path<Surface>::end() const {
-  return PathIterator<Surface>(PrivateConstructor{}, this, std::end(impl->path));
+  return PathIterator<Surface>(PrivateConstructor{}, this, std::end(self->path));
 }
 
 template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const Path<Surface>& path) {
-  return os << fmt::format("[{}]", fmt::join(path.impl->path, " → "));
+  return os << fmt::format("[{}]", fmt::join(path.self->path, " → "));
 }
 
 template <typename Surface>
@@ -189,7 +184,7 @@ bool ImplementationOf<Path<Surface>>::connected(const Segment& a, const Segment&
     // We keep track how far sector is turned from from.vector() in multiples of π.
     int turn = 0;
     for (auto sector = surface.previousAtVertex(from.source()); turn != 2; sector = surface.previousAtVertex(sector)) {
-      const auto chain = Chain(surface.shared_from_this(), sector);
+      const auto chain = Chain(surface, sector);
       if (turn == 0) {
         if (ccw(from, chain) != CCW::CLOCKWISE) {
           turn = 1;

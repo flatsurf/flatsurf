@@ -37,21 +37,21 @@ template <typename R2>
 void FlatTriangulationCollapsedFlipUncollapsed(State& state) {
   using T = typename R2::Coordinate;
 
-  auto collapsedL = FlatTriangulationCollapsed<T>::make(makeL<R2>()->clone(), Vector<T>(1000000007, 1));
+  auto collapsedL = FlatTriangulationCollapsed<T>(makeL<R2>()->clone(), Vector<T>(1000000007, 1));
 
-  assert(collapsedL->size() == 9);
+  assert(collapsedL.size() == 9);
 
-  auto vertical = collapsedL->vertical();
+  auto vertical = collapsedL.vertical();
 
   for (auto _ : state) {
-    for (auto e : collapsedL->halfEdges())
+    for (auto e : collapsedL.halfEdges())
       if (vertical.large(e)) {
-        collapsedL->flip(e);
+        collapsedL.flip(e);
         break;
       }
   }
 
-  assert(collapsedL->size() == 9);
+  assert(collapsedL.size() == 9);
 }
 BENCHMARK_TEMPLATE(FlatTriangulationCollapsedFlipUncollapsed, Vector<long long>);
 BENCHMARK_TEMPLATE(FlatTriangulationCollapsedFlipUncollapsed, Vector<mpq_class>);
@@ -65,30 +65,30 @@ void FlatTriangulationCollapsedFlipCollapsed(State& state) {
 
     using T = typename R2::Coordinate;
 
-    auto collapsedL = FlatTriangulationCollapsed<T>::make(makeL<R2>()->clone(), Vector<T>(1024, 1));
+    auto collapsedL = FlatTriangulationCollapsed<T>(makeL<R2>()->clone(), Vector<T>(1024, 1));
 
-    auto vertical = collapsedL->vertical();
+    auto vertical = collapsedL.vertical();
 
-    assert(collapsedL->size() == 9);
+    assert(collapsedL.size() == 9);
 
-    while (collapsedL->size() == 9) {
+    while (collapsedL.size() == 9) {
       for (auto e : {HalfEdge(7), HalfEdge(8)}) {
         if (vertical.large(e)) {
-          collapsedL->flip(e);
+          collapsedL.flip(e);
           break;
         }
       }
     }
 
-    assert(collapsedL->size() == 6);
+    assert(collapsedL.size() == 6);
 
     state.ResumeTiming();
     while (state.KeepRunning()) {
-      if (collapsedL->size() != 6) break;
-      for (auto e : collapsedL->halfEdges()) {
-        if (collapsedL->nextInFace(collapsedL->nextInFace(collapsedL->nextInFace(e))) != e) continue;
+      if (collapsedL.size() != 6) break;
+      for (auto e : collapsedL.halfEdges()) {
+        if (collapsedL.nextInFace(collapsedL.nextInFace(collapsedL.nextInFace(e))) != e) continue;
         if (vertical.large(e)) {
-          collapsedL->flip(e);
+          collapsedL.flip(e);
           break;
         }
       }

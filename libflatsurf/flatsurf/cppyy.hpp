@@ -35,6 +35,7 @@
 #include "flow_component.hpp"
 #include "flow_connection.hpp"
 #include "flow_decomposition.hpp"
+#include "forward.hpp"
 #include "half_edge.hpp"
 #include "interval_exchange_transformation.hpp"
 #include "odd_half_edge_map.hpp"
@@ -49,24 +50,15 @@
 #include "vertical.hpp"
 
 namespace flatsurf {
+// TODO: Test that it actually has trouble.
 // cppyy sometimes has trouble with rvalues, let's help it to create a FlatTriangulation
 template <typename T>
-std::shared_ptr<FlatTriangulation<T>> makeFlatTriangulation(const std::vector<std::vector<int>> &vertices, const std::vector<Vector<T>> &vectors) {
-  return std::make_shared<FlatTriangulation<T>>(FlatTriangulationCombinatorial(vertices), vectors);
+FlatTriangulation<T> makeFlatTriangulation(const std::vector<std::vector<int>> &vertices, const std::vector<Vector<T>> &vectors) {
+  return FlatTriangulation<T>(FlatTriangulationCombinatorial(vertices), vectors);
 }
 
-// cppyy gets the lifetime of the surfaces wrong when methods return a unique_ptr<Surface>
-// See https://github.com/flatsurf/flatsurf/issues/148 for the upstream issue.
-template <typename T>
-std::shared_ptr<FlatTriangulation<T>> insertAtFlatTriangulation(const FlatTriangulation<T> &surface, HalfEdge &e, const Vector<T> &v) {
-  return surface.insertAt(e, v);
-}
-
-template <typename T>
-std::shared_ptr<FlatTriangulation<T>> slotFlatTriangulation(const FlatTriangulation<T> &surface, HalfEdge e) {
-  return surface.slot(e);
-}
-
+// TODO: Test that it actually has trouble.
+// cppyy sometimes has trouble with rvalues, let's help it to create a FlowDecomposition
 template <typename T>
 FlowDecomposition<FlatTriangulation<T>> makeFlowDecomposition(const FlatTriangulation<T> &surface, const Vector<T> &v) {
   return FlowDecomposition<FlatTriangulation<T>>(surface.clone(), v);
@@ -79,18 +71,8 @@ bool decomposeFlowDecomposition(FlowDecomposition<T> &decomposition, int limit =
   return decomposition.decompose(FlowDecomposition<T>::defaultTarget, limit);
 }
 
-// cppyy can not call methods that take a std::function yet so we need more pythonic flavours of such methods
-template <typename T>
-auto makeOddHalfEdgeMap(const FlatTriangulationCombinatorial &surface, const std::vector<T> &values) {
-  if (values.size() != surface.edges().size())
-    throw std::invalid_argument("number of entries does not match number of edges");
-
-  return OddHalfEdgeMap<T>(surface, [&](const HalfEdge &e) { return e == Edge(e).positive() ? values.at(Edge(e).index()) : -values.at(Edge(e).index()); });
-}
-
 // The following block of forward declarations is a bit odd. It only exists to
 // work around bugs in cppyy.
-
 // See https://bitbucket.org/wlav/cppyy/issues/95/lookup-of-friend-operator
 
 std::ostream &operator<<(std::ostream &, const HalfEdge &);

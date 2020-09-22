@@ -46,7 +46,7 @@ TEMPLATE_TEST_CASE("Delaunay Triangulation", "[delaunay]", (long long), (mpq_cla
         CAPTURE(*square);
         for (auto edge : square->halfEdges()) {
           REQUIRE(DelaunayTriangulation<T>::test(*square, edge));
-          REQUIRE(square->fromEdge(edge) < bound);
+          REQUIRE(square->fromHalfEdge(edge) < bound);
         }
       }
     }

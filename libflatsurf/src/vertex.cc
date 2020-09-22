@@ -37,19 +37,14 @@ using std::string;
 
 namespace flatsurf {
 
-template <typename... Args>
-Vertex::Vertex(PrivateConstructor, Args&&... args) :
-  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {
-}
-
 bool Vertex::operator==(const Vertex& rhs) const {
-  ASSERT(Implementation::comparable(impl->sources, rhs.impl->sources), "Cannot compare unrelated vertices; maybe the surface has changed since these vertices were created?");
+  ASSERT(ImplementationOf<Vertex>::comparable(self->sources, rhs.self->sources), "Cannot compare unrelated vertices; maybe the surface has changed since these vertices were created?");
 
-  return *begin(impl->sources) == *begin(rhs.impl->sources);
+  return *begin(self->sources) == *begin(rhs.self->sources);
 }
 
 const Vertex& Vertex::source(const HalfEdge& e, const FlatTriangulationCombinatorial& surface) {
-  return *std::find_if(begin(surface.vertices()), end(surface.vertices()), [&](const auto& v) { return v.impl->sources.contains(e); });
+  return *std::find_if(begin(surface.vertices()), end(surface.vertices()), [&](const auto& v) { return v.self->sources.contains(e); });
 }
 
 const Vertex& Vertex::target(const HalfEdge& e, const FlatTriangulationCombinatorial& surface) {
@@ -57,7 +52,7 @@ const Vertex& Vertex::target(const HalfEdge& e, const FlatTriangulationCombinato
 }
 
 HalfEdgeSet Vertex::outgoing() const {
-  return impl->sources;
+  return self->sources;
 }
 
 HalfEdgeSet Vertex::incoming() const {
@@ -68,7 +63,7 @@ HalfEdgeSet Vertex::incoming() const {
 }
 
 ostream& operator<<(ostream& os, const Vertex& self) {
-  return os << fmt::format("{}", self.impl->sources);
+  return os << fmt::format("{}", self.self->sources);
 }
 
 bool ImplementationOf<Vertex>::comparable(const HalfEdgeSet& a, const HalfEdgeSet& b) {
@@ -76,7 +71,7 @@ bool ImplementationOf<Vertex>::comparable(const HalfEdgeSet& a, const HalfEdgeSe
 }
 
 void ImplementationOf<Vertex>::afterFlip(Vertex& v, const FlatTriangulationCombinatorial& parent, HalfEdge flipped) {
-  auto& sources = v.impl->sources;
+  auto& sources = v.self->sources;
 
   HalfEdge b = parent.previousAtVertex(-flipped);
   HalfEdge d = parent.previousAtVertex(flipped);
@@ -92,7 +87,7 @@ ImplementationOf<Vertex>::ImplementationOf(const HalfEdgeSet& sources) :
   sources(sources) {}
 
 const HalfEdgeSet& ImplementationOf<Vertex>::outgoing(const Vertex& v) {
-  return v.impl->sources;
+  return v.self->sources;
 }
 
 Vertex ImplementationOf<Vertex>::make(const std::vector<HalfEdge> sources) {
@@ -102,7 +97,7 @@ Vertex ImplementationOf<Vertex>::make(const std::vector<HalfEdge> sources) {
 }  // namespace flatsurf
 
 size_t std::hash<flatsurf::Vertex>::operator()(const flatsurf::Vertex& v) const noexcept {
-  return std::hash<flatsurf::HalfEdge>()(*begin(v.impl->sources));
+  return std::hash<flatsurf::HalfEdge>()(*begin(flatsurf::ImplementationOf<flatsurf::Vertex>::outgoing(v)));
 }
 
 // Instantiate constructor for cereal

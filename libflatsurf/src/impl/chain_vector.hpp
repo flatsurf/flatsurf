@@ -66,7 +66,7 @@ class ChainVector {
  private:
   const ImplementationOf<Chain<Surface>>& chain;
 
-  mutable std::optional<Vector<T>> value = {};
+  mutable std::optional<Vector<T>> value = std::nullopt;
 
   enum class MOVE {
     ADD,

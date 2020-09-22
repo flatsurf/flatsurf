@@ -45,8 +45,8 @@ class Chain : public Serializable<Chain<Surface>>,
   using T = typename Surface::Coordinate;
 
  public:
-  explicit Chain(std::shared_ptr<const Surface>);
-  Chain(std::shared_ptr<const Surface>, HalfEdge);
+  explicit Chain(const Surface&);
+  Chain(const Surface&, HalfEdge);
 
   operator const Vector<T>&() const;
   operator const Vector<exactreal::Arb>&() const;
@@ -63,8 +63,10 @@ class Chain : public Serializable<Chain<Surface>>,
   const mpz_class& operator[](const Edge&) const;
   mpz_class operator[](const HalfEdge&) const;
 
-  ChainIterator<Surface> begin() const;
-  ChainIterator<Surface> end() const;
+  using iterator = ChainIterator<Surface>;
+
+  iterator begin() const;
+  iterator end() const;
 
   bool operator==(const Chain& rhs) const;
 
@@ -81,19 +83,15 @@ class Chain : public Serializable<Chain<Surface>>,
   friend std::ostream& operator<<(std::ostream&, const Chain<S>&);
 
  private:
-  using Implementation = ImplementationOf<Chain>;
-  Copyable<Implementation> impl;
-  friend Implementation;
-  friend ChainIterator<Surface>;
-  friend ImplementationOf<ChainIterator<Surface>>;
-  friend std::hash<Chain<Surface>>;
+  Copyable<Chain> self;
+
+  friend ImplementationOf<Chain>;
+  friend iterator;
+  friend ImplementationOf<iterator>;
 };
 
-template <typename Surface, typename... Args>
-Chain(std::shared_ptr<const Surface>, Args&&... args) -> Chain<Surface>;
-
-template <typename Surface, typename... Args>
-Chain(std::shared_ptr<Surface>, Args&&... args) -> Chain<Surface>;
+template <typename Surface, typename... T>
+Chain(const Surface&, T &&...) -> Chain<Surface>;
 
 }  // namespace flatsurf
 

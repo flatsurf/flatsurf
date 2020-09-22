@@ -30,12 +30,14 @@
 #include <vector>
 
 #include "flat_triangulation_combinatorial.hpp"
-#include "moveable.hpp"
+#include "forward.hpp"
+#include "managed_movable.hpp"
 #include "serializable.hpp"
 
 namespace flatsurf {
+
 template <class T>
-class FlatTriangulation : public FlatTriangulationCombinatorial,
+class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulation<T>>,
                           Serializable<FlatTriangulation<T>>,
                           boost::equality_comparable<FlatTriangulation<T>> {
   static_assert(std::is_same_v<T, std::decay_t<T>>, "type must not have modifiers such as const");
@@ -44,47 +46,43 @@ class FlatTriangulation : public FlatTriangulationCombinatorial,
   using Coordinate = T;
 
   FlatTriangulation() noexcept;
-  FlatTriangulation(FlatTriangulationCombinatorial &&, const std::vector<Vector<T>> &vectors);
-  FlatTriangulation(FlatTriangulationCombinatorial &&, const std::function<Vector<T>(HalfEdge)> &vectors);
-  FlatTriangulation(FlatTriangulation<T> &&rhs) noexcept;
+  FlatTriangulation(FlatTriangulationCombinatorial&&, const std::vector<Vector<T>> &vectors);
+  FlatTriangulation(FlatTriangulationCombinatorial&&, const std::function<Vector<T>(HalfEdge)> &vectors);
 
   // Create an independent clone of this triangulation that is built from the
   // same data. There is no copy-constructor since it is too likely that this
   // is would not update the associated HalfEdgeMaps in the way that the caller
   // expects.
-  std::unique_ptr<FlatTriangulation<T>> clone() const;
+  FlatTriangulation<T> clone() const;
 
   // Create an independent clone of this triangulation with an added vertex
   // next to e at v from e's source. If the vector does not fit into the face
   // next to e, the necessary edge flips are performed to accomodate it.
-  std::unique_ptr<FlatTriangulation<T>> insertAt(HalfEdge &e, const Vector<T> &v) const;
+  FlatTriangulation<T> insertAt(HalfEdge &e, const Vector<T> &v) const;
 
   // Create an independent clone of this triangulation with all vectors scaled
   // by c.
-  std::unique_ptr<FlatTriangulation<T>> scale(const mpz_class &c) const;
+  FlatTriangulation<T> scale(const mpz_class &c) const;
 
   // Create an independent clone of this triangulation with an edded boundary
   // at the half edge e by removing the identification of the two corresponding
   // half edges there.
-  std::unique_ptr<FlatTriangulation<T>> slot(const HalfEdge e) const;
+  FlatTriangulation<T> slit(const HalfEdge e) const;
 
   // Return the saddle connections of this translations surface.
   SaddleConnections<FlatTriangulation<T>> connections() const;
 
   // Create an independent clone of this triangulation with the vector
   // v(h) associated to a half edge replaced by v(h) + shift[h].
-  std::unique_ptr<FlatTriangulation<T>> operator+(const OddHalfEdgeMap<Vector<T>> &shift) const;
+  FlatTriangulation<T> operator+(const OddHalfEdgeMap<Vector<T>> &shift) const;
 
   // Return a simplified flat triangulation with marked points, i.e., verticas
   // with a total angle of 2π, eliminated.
-  std::unique_ptr<FlatTriangulation<T>> eliminateMarkedPoints() const;
+  FlatTriangulation<T> eliminateMarkedPoints() const;
 
   Vector<T> shortest() const;
   // Return the shortest vector relative to this direction which is not orthogonal to it.
   Vector<T> shortest(const Vector<T> &) const;
-
-  // Flip this half edge whose attached triangles form a strictly convex quadrilateral.
-  void flip(HalfEdge);
 
   // Return whether the two triangles attached to this half edge form a (strictly) convex quadrilateral.
   bool convex(HalfEdge, bool strict = false) const;
@@ -101,13 +99,10 @@ class FlatTriangulation : public FlatTriangulationCombinatorial,
   bool inSector(HalfEdge, const Vector<T> &) const;
   bool inSector(HalfEdge, const Vertical<FlatTriangulation<T>> &) const;
 
-  const Vector<T> &fromEdge(HalfEdge) const;
-  const ::flatsurf::Vector<exactreal::Arb> &fromEdgeApproximate(HalfEdge) const;
-
-  std::shared_ptr<const FlatTriangulation<T>> shared_from_this() const;
-  std::shared_ptr<FlatTriangulation<T>> shared_from_this();
-
-  FlatTriangulation<T> &operator=(FlatTriangulation<T> &&) noexcept;
+  // TODO: Rename to fromHalfEdge
+  const Vector<T> &fromHalfEdge(HalfEdge) const;
+  // TODO: Rename to fromHalfEdge
+  const ::flatsurf::Vector<exactreal::Arb> &fromHalfEdgeApproximate(HalfEdge) const;
 
   bool operator==(const FlatTriangulation<T> &) const noexcept;
 
@@ -115,10 +110,10 @@ class FlatTriangulation : public FlatTriangulationCombinatorial,
   friend std::ostream &operator<<(std::ostream &, const FlatTriangulation<W> &);
 
  private:
-  using Implementation = ImplementationOf<FlatTriangulation>;
-  Moveable<Implementation> impl;
+  using FlatTriangulationCombinatorics<FlatTriangulation<T>>::self;
 
-  friend Implementation;
+  friend ImplementationOf<FlatTriangulation<T>>;
+  friend ImplementationOf<ManagedMovable<FlatTriangulation<T>>>;
 };
 
 template <typename Vector>

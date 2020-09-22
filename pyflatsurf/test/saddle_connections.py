@@ -29,7 +29,7 @@ import surfaces
 
 def test_square_longlong():
     surface = surfaces.square(flatsurf.Vector['long long'])
-    connections = surface.saddle_connections(flatsurf.Bound(16, 0), flatsurf.HalfEdge(1))
+    connections = surface.connections().bound(16).sector(flatsurf.HalfEdge(1))
     # https://bitbucket.org/wlav/cppyy/issues/103/std-distance-returns-random-output
     # assert len(connections) == 60
     # This does not work, the iterator that backs connections returns
@@ -40,7 +40,7 @@ def test_square_longlong():
 
 def test_L_mpq():
     surface = surfaces.L(flatsurf.Vector['mpq_class'])
-    connections = surface.saddle_connections(flatsurf.Bound(16, 0), flatsurf.HalfEdge(1))
+    connections = surface.connections().bound(16).sector(flatsurf.HalfEdge(1))
     assert len([1 for c in connections]) == 60
 
 def test_L_with_slit_mpq():
@@ -54,27 +54,27 @@ def test_L_with_slit_mpq():
     surface = surface.insertAt(e, slit)
     assert e != flatsurf.HalfEdge(1), "HalfEdge& not updated correctly in " + repr(surface)
     e = surface.nextAtVertex(e)
-    surface = surface.slot(e)
+    surface = surface.slit(e)
 
-    connections = surface.saddle_connections(flatsurf.Bound(16, 0), flatsurf.HalfEdge(1))
+    connections = surface.connections().bound(16).sector(flatsurf.HalfEdge(1))
     assert len([1 for c in connections]) == 15
 
 def test_hexagon_eantic():
     surface = surfaces.hexagon()
-    connections = surface.saddle_connections(flatsurf.Bound(16, 0), flatsurf.HalfEdge(1))
+    connections = surface.connections().bound(16).sector(flatsurf.HalfEdge(1))
     assert len([1 for c in connections]) == 10
 
 def test_hexagon_exactreal():
     from pyexactreal import exactreal
     surface = surfaces.random_hexagon()
-    connections = surface.saddle_connections(flatsurf.Bound(16, 0), flatsurf.HalfEdge(1))
+    connections = surface.connections().bound(16).sector(flatsurf.HalfEdge(1))
     assert len([1 for c in connections]) >= 10
 
 def test_printing():
     for coefficients in ['long long', 'mpz_class', 'mpq_class', 'eantic::renf_elem_class', 'exactreal::Element<exactreal::IntegerRing>', 'exactreal::Element<exactreal::RationalField>', 'exactreal::Element<exactreal::NumberField>']:
         surface = surfaces.square(flatsurf.Vector[coefficients])
         assert str(surface) == "FlatTriangulationCombinatorial(vertices = (1, 3, 2, -1, -3, -2), faces = (1, 2, -3)(-1, -2, 3)) with vectors 1: (1, 0), 2: (0, 1), 3: (1, 1)"
-        connections = surface.saddle_connections()
+        connections = surface.connections()
         assert str(connections) == "SaddleConnections()"
         connections = connections.byLength()
         assert str(connections) == "SaddleConnectionsByLength()"

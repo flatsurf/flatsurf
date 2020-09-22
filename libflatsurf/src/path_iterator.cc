@@ -28,32 +28,32 @@ namespace flatsurf {
 
 template <typename Surface>
 void PathIterator<Surface>::increment() {
-  ASSERT(!impl->parent->empty(), "cannot increment iterator into empty path");
-  ASSERT(!impl->end, "cannot increment end() iterator")
-  impl->position++;
-  if (impl->position == end(impl->parent->impl->path)) {
-    impl->position = begin(impl->parent->impl->path);
-    impl->turn++;
+  ASSERT(!self->parent->empty(), "cannot increment iterator into empty path");
+  ASSERT(!self->end, "cannot increment end() iterator")
+  self->position++;
+  if (self->position == end(self->parent->self->path)) {
+    self->position = begin(self->parent->self->path);
+    self->turn++;
   }
 }
 
 template <typename Surface>
 const SaddleConnection<Surface>& PathIterator<Surface>::dereference() const {
-  ASSERT(!impl->parent->empty(), "cannot dereference iterator into empty path");
-  ASSERT(!impl->end, "cannot dereference end() iterator");
-  ASSERT(impl->position != end(impl->parent->impl->path), "iterator in impossible end state");
-  return *impl->position;
+  ASSERT(!self->parent->empty(), "cannot dereference iterator into empty path");
+  ASSERT(!self->end, "cannot dereference end() iterator");
+  ASSERT(self->position != end(self->parent->self->path), "iterator in impossible end state");
+  return *self->position;
 }
 
 template <typename Surface>
 bool PathIterator<Surface>::equal(const PathIterator& other) const {
-  if (impl->end) {
-    return other.impl->end || other.impl->turn;
+  if (self->end) {
+    return other.self->end || other.self->turn;
   }
-  if (other.impl->end) {
-    return impl->turn;
+  if (other.self->end) {
+    return self->turn;
   }
-  return impl->position == other.impl->position;
+  return self->position == other.self->position;
 }
 
 template <typename Surface>
@@ -65,9 +65,9 @@ template <typename Surface>
 ImplementationOf<PathIterator<Surface>>::ImplementationOf(const Path<Surface>* parent, const Position& position) :
   parent(parent),
   position(position) {
-  if (position == std::end(parent->impl->path)) {
+  if (position == std::end(parent->self->path)) {
     this->end = true;
-    this->position = begin(parent->impl->path);
+    this->position = begin(parent->self->path);
   }
 }
 }  // namespace flatsurf

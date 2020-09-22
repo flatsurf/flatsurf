@@ -62,13 +62,13 @@ using intervalxt::Length;
 using rx::none_of;
 
 template <typename Surface>
-Lengths<Surface>::Lengths(std::shared_ptr<const Vertical<FlatTriangulation<T>>> vertical, EdgeMap<std::optional<SaddleConnection<FlatTriangulation<T>>>>&& lengths) :
+Lengths<Surface>::Lengths(const Vertical<FlatTriangulation<T>>& vertical, EdgeMap<std::optional<SaddleConnection<FlatTriangulation<T>>>>&& lengths) :
   vertical(vertical),
   lengths(std::move(lengths)),
   stack(),
   sum() {
   this->lengths.apply([&](const auto& edge, const auto& connection) {
-    CHECK_ARGUMENT(!connection || vertical->perpendicular(*connection) > 0, "nontrivial length must be positive but " << edge << " is " << *connection);
+    CHECK_ARGUMENT(!connection || vertical.perpendicular(*connection) > 0, "nontrivial length must be positive but " << edge << " is " << *connection);
   });
 }
 
@@ -173,7 +173,7 @@ void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iteratio
     minuendConnection = -*minuendConnection;
 
     HalfEdge target = minuendConnection->target();
-    Chain walk(minuendConnection->surface().shared_from_this());
+    Chain walk(minuendConnection->surface());
 
     // Walk down on the minuend's (top) left boundary
     {
@@ -213,23 +213,23 @@ void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iteratio
     // the updated SaddleConnection.
     // This should probably be moved into SaddleConnection at some point.
 
-    ASSERT(vertical->perpendicular(vector) < 0, "Length must be positive.");
+    ASSERT(vertical.perpendicular(vector) < 0, "Length must be positive.");
 
     // We know that minuendConnection (which we reversed in the beginning) is
     // pointing left and that the new -minuendConnection must point left into
     // the same half plane.
     auto source = minuendConnection->source();
-    while (vertical->perpendicular(minuendConnection->surface().fromEdge(source)) < 0)
+    while (vertical.perpendicular(minuendConnection->surface().fromHalfEdge(source)) < 0)
       source = minuendConnection->surface().previousAtVertex(source);
     while (!minuendConnection->surface().inSector(source, vector))
       source = minuendConnection->surface().nextAtVertex(source);
 
-    while (vertical->perpendicular(minuendConnection->surface().fromEdge(target)) <= 0)
+    while (vertical.perpendicular(minuendConnection->surface().fromHalfEdge(target)) <= 0)
       target = minuendConnection->surface().previousAtVertex(target);
     while (!minuendConnection->surface().inSector(target, -vector))
       target = minuendConnection->surface().nextAtVertex(target);
 
-    minuendConnection = SaddleConnection<FlatTriangulation<T>>(minuendConnection->surface().shared_from_this(), target, source, -vector);
+    minuendConnection = SaddleConnection<FlatTriangulation<T>>(minuendConnection->surface(), target, source, -vector);
 
     ASSERT(minuendConnection->source() == target && minuendConnection->target() == source, "We tried to get SaddleConnection source/target right but SaddleConnection constructor disagrees.");
 
@@ -248,7 +248,7 @@ void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iteratio
 
       if (!cost.pay(relativeCost(static_cast<const Vector<T>&>(*minuendConnection), minuendConnection->surface().shortest(*minuendConnection)) + 1)) return;
 
-      const auto reconstruction = SaddleConnection<FlatTriangulation<T>>::inSector(minuendConnection->surface().shared_from_this(), minuendConnection->source(), *minuendConnection);
+      const auto reconstruction = SaddleConnection<FlatTriangulation<T>>::inSector(minuendConnection->surface(), minuendConnection->source(), *minuendConnection);
       ASSERT(*minuendConnection == reconstruction,
           "Connection after subtract does not actually exist in surface. We claimed it's " << *minuendConnection << " but it is more likely " << reconstruction);
     });
@@ -326,7 +326,7 @@ typename Surface::Coordinate Lengths<Surface>::length() const {
 
 template <typename Surface>
 typename Surface::Coordinate Lengths<Surface>::length(intervalxt::Label label) const {
-  auto length = vertical->perpendicular(*lengths[fromLabel(label)]);
+  auto length = vertical.perpendicular(*lengths[fromLabel(label)]);
   ASSERT(length > 0, "length must be positive");
   return length;
 }

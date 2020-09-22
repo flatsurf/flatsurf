@@ -49,7 +49,7 @@
 namespace flatsurf {
 
 template <typename Surface>
-FlowDecompositionState<Surface>::FlowDecompositionState(std::unique_ptr<Surface> surface, const Vector<T>& direction) :
+FlowDecompositionState<Surface>::FlowDecompositionState(Surface&& surface, const Vector<T>& direction) :
   contourDecomposition(std::move(surface), direction) {
   for (auto& contour : contourDecomposition.components()) {
     auto iet = std::make_shared<IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>>(contour.intervalExchangeTransformation());

@@ -37,6 +37,11 @@ class ImplementationOf<PathIterator<Surface>> {
   bool end = false;
 };
 
+template <typename Surface>
+template <typename... Args>
+PathIterator<Surface>::PathIterator(PrivateConstructor, Args&&... args) :
+  self(spimpl::make_impl<ImplementationOf<PathIterator>>(std::forward<Args>(args)...)) {}
+
 }  // namespace flatsurf
 
 #endif

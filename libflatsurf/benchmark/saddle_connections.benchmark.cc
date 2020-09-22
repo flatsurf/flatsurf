@@ -38,6 +38,8 @@ using eantic::renf_class;
 
 namespace flatsurf::benchmark {
 using namespace flatsurf::test;
+using std::begin;
+using std::end;
 
 const int LIMIT = 1 << 8;
 
@@ -46,8 +48,8 @@ void SaddleConnectionsSquare(State& state) {
   auto square = makeSquare<R2>();
   auto bound = Bound(state.range(0), 0);
   for (auto _ : state) {
-    auto connections = SaddleConnections(square, bound);
-    DoNotOptimize(std::distance(connections.begin(), connections.end()));
+    auto connections = SaddleConnections<FlatTriangulation<typename R2::Coordinate>>(*square).bound(bound);
+    DoNotOptimize(std::distance(begin(connections), end(connections)));
   }
 }
 BENCHMARK_TEMPLATE(SaddleConnectionsSquare, Vector<long long>)->Range(1, LIMIT);
@@ -61,8 +63,8 @@ void SaddleConnectionsL(State& state) {
   auto bound = Bound(state.range(0), 0);
 
   for (auto _ : state) {
-    auto connections = SaddleConnections(L, bound);
-    DoNotOptimize(std::distance(connections.begin(), connections.end()));
+    auto connections = SaddleConnections<FlatTriangulation<typename R2::Coordinate>>(*L).bound(bound);
+    DoNotOptimize(std::distance(begin(connections), end(connections)));
   }
 }
 BENCHMARK_TEMPLATE(SaddleConnectionsL, Vector<long long>)->Range(1, LIMIT);
@@ -78,11 +80,11 @@ void SaddleConnectionsLWithSlot(State& state) {
 
   HalfEdge e(2);
 
-  auto LWithSlot = std::shared_ptr<const FlatTriangulation<typename R2::Coordinate>>(L->insertAt(e, vector)->slot(e));
+  auto LWithSlot = L->insertAt(e, vector).slit(e);
 
   for (auto _ : state) {
-    auto connections = SaddleConnections(LWithSlot, bound, Vertex::source(e, *LWithSlot));
-    DoNotOptimize(std::distance(connections.begin(), connections.end()));
+    auto connections = SaddleConnections<FlatTriangulation<typename R2::Coordinate>>(LWithSlot).bound(bound).source(Vertex::source(e, LWithSlot));
+    DoNotOptimize(std::distance(begin(connections), end(connections)));
   }
 }
 BENCHMARK_TEMPLATE(SaddleConnectionsLWithSlot, Vector<mpq_class>)->Range(1, LIMIT);

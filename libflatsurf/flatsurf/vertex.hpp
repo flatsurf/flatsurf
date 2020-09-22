@@ -24,8 +24,6 @@
 #include <unordered_set>
 
 #include "copyable.hpp"
-#include "external/spimpl/spimpl.h"
-#include "forward.hpp"
 #include "serializable.hpp"
 
 namespace flatsurf {
@@ -47,12 +45,10 @@ class Vertex : Serializable<Vertex>,
   friend std::ostream &operator<<(std::ostream &, const Vertex &);
 
  private:
-  using Implementation = ImplementationOf<Vertex>;
-  Copyable<Implementation> impl;
-  friend Implementation;
-  friend std::hash<Vertex>;
+  Copyable<Vertex> self;
+
+  friend ImplementationOf<Vertex>;
   friend Serialization<Vertex>;
-  friend FlatTriangulationCombinatorial;
 };
 }  // namespace flatsurf
 

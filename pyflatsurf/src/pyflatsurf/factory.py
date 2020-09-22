@@ -2,7 +2,7 @@
 #*********************************************************************
 #  This file is part of flatsurf.
 #
-#        Copyright (C) 2019 Julian Rüth
+#        Copyright (C) 2019-2020 Julian Rüth
 #
 #  Flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ def make_FlatTriangulation(vertices, vectors):
     vertices = cppyy.gbl.std.vector[cppyy.gbl.std.vector[int]]([cppyy.gbl.std.vector[int](l) for l in vertices])
     R2 = type(vectors[0])
     vectors = cppyy.gbl.std.vector[R2](vectors)
-    return cppyy.gbl.flatsurf.makeFlatTriangulation(vertices, vectors);
+    return cppyy.gbl.flatsurf.makeFlatTriangulation(vertices, vectors)
 
 def make_surface(surface_or_vertices, vectors = None):
     from collections.abc import Iterable

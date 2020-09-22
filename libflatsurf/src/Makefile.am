@@ -22,6 +22,7 @@ libflatsurf_la_SOURCES =                                            \
 	flat_triangulation.cc                                       \
 	flat_triangulation_collapsed.cc                             \
 	flat_triangulation_combinatorial.cc                         \
+	flat_triangulation_combinatorics.cc                         \
 	flow_component.cc                                           \
 	flow_component_state.cc                                     \
 	flow_connection.cc                                          \
@@ -37,6 +38,7 @@ libflatsurf_la_SOURCES =                                            \
 	path_iterator.cc                                            \
 	permutation.cc                                              \
 	quadratic_polynomial.cc                                     \
+	read_only.cc                                                \
 	saddle_connection.cc                                        \
 	saddle_connections.cc                                       \
 	saddle_connections_by_length.cc                             \
@@ -45,7 +47,8 @@ libflatsurf_la_SOURCES =                                            \
 	tracked.cc                                                  \
 	vector/vector.cc                                            \
 	vertex.cc                                                   \
-	vertical.cc
+	vertical.cc                                                 \
+	weak_read_only.cc
 
 nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/bound.hpp                                       \
@@ -80,7 +83,7 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/half_edge_set_iterator.hpp                      \
 	../flatsurf/interval_exchange_transformation.hpp            \
 	../flatsurf/local.hpp                                       \
-	../flatsurf/moveable.hpp                                    \
+	../flatsurf/movable.hpp                                    \
 	../flatsurf/odd_half_edge_map.hpp                           \
 	../flatsurf/orientation.hpp                                 \
 	../flatsurf/path.hpp                                        \
@@ -137,16 +140,13 @@ noinst_HEADERS =                                                    \
 	impl/path.impl.hpp                                          \
 	impl/path_iterator.impl.hpp                                 \
 	impl/quadratic_polynomial.hpp                               \
+	impl/read_only.hpp                                          \
 	impl/saddle_connection.impl.hpp                             \
 	impl/saddle_connections.impl.hpp                            \
 	impl/saddle_connections_by_length.impl.hpp                  \
 	impl/saddle_connections_iterator.impl.hpp                   \
 	impl/saddle_connections_by_length_iterator.impl.hpp         \
 	impl/tracked.impl.hpp                                       \
-	impl/tracking_half_edge.impl.hpp                            \
-	impl/tracking.impl.hpp                                      \
-	impl/tracking_map.impl.hpp                                  \
-	impl/tracking_storage.hpp                                   \
 	impl/vertex.impl.hpp                                        \
 	impl/vertical.impl.hpp                                      \
 	util/assert.ipp                                             \

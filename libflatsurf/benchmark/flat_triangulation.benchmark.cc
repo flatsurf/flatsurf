@@ -36,7 +36,7 @@ template <typename R2>
 void FlatTriangulationFlip(State& state) {
   auto L = makeL<R2>();
 
-  auto vertical = Vertical(L, R2(1000000007, 1));
+  auto vertical = Vertical(*L, R2(1000000007, 1));
 
   for (auto _ : state) {
     for (auto e : L->halfEdges())

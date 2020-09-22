@@ -58,9 +58,9 @@ bool DelaunayTriangulation<T>::test(const FlatTriangulation<T>& triangulation, c
   // is positive.) Using the notation there, the face attached to this half
   // edge is the triangle (a, b, c), and the face attached to the reversed half
   // edge is (a, c, d). We use a coordinate system where d=(0,0).
-  auto ca = triangulation.fromEdge(edge);
-  auto cb = triangulation.fromEdge(triangulation.nextAtVertex(edge));
-  auto dc = triangulation.fromEdge(-triangulation.nextInFace(-edge));
+  auto ca = triangulation.fromHalfEdge(edge);
+  auto cb = triangulation.fromHalfEdge(triangulation.nextAtVertex(edge));
+  auto dc = triangulation.fromHalfEdge(-triangulation.nextInFace(-edge));
 
   auto a = dc + ca;
   auto b = dc + cb;

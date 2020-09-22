@@ -30,7 +30,7 @@ def test_hexagon_eantic():
     surface = surfaces.hexagon()
     decompositions = {(1, 0): 0, (2, 0): 0}
 
-    for connection in surface.saddle_connections(flatsurf.Bound(16, 0), flatsurf.HalfEdge(1)):
+    for connection in surface.connections().bound(16).sector(flatsurf.HalfEdge(1)):
         decomposition = flatsurf.makeFlowDecomposition(surface, connection.vector())
         assert repr(decomposition).startswith("FlowDecomposition")
         assert str(decomposition).startswith("FlowDecomposition")
@@ -81,7 +81,7 @@ def test_hexagon_eantic():
 def test_D33():
     S = surfaces.D33()
     decompositions = {(2, 0): 0, (3, 0): 0, (0, 2): 0}
-    for connection in S.saddle_connections(flatsurf.Bound(4, 0)):
+    for connection in S.connections().bound(4):
         v = connection.vector()
         decomposition = flatsurf.makeFlowDecomposition(S, v)
         assert repr(decomposition).startswith("FlowDecomposition")

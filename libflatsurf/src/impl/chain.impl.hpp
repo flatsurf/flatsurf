@@ -20,16 +20,19 @@
 #ifndef LIBFLATSURF_CHAIN_IMPL_HPP
 #define LIBFLATSURF_CHAIN_IMPL_HPP
 
+#include <optional>
+
 #include <gmpxx.h>
 
 #include <exact-real/arb.hpp>
-#include <memory>
-#include <optional>
 
 #include "../../flatsurf/chain.hpp"
 #include "../../flatsurf/edge_map.hpp"
 #include "../../flatsurf/vector.hpp"
+
 #include "chain_vector.hpp"
+#include "read_only.hpp"
+#include "flat_triangulation.impl.hpp"
 
 namespace flatsurf {
 
@@ -40,8 +43,8 @@ class ImplementationOf<Chain<Surface>> {
  public:
   ImplementationOf(const ImplementationOf&);
   ImplementationOf(ImplementationOf&&);
-  ImplementationOf(std::shared_ptr<const Surface>);
-  ImplementationOf(std::shared_ptr<const Surface>, HalfEdge);
+  ImplementationOf(const Surface&);
+  ImplementationOf(const Surface&, HalfEdge);
 
   ~ImplementationOf();
 
@@ -51,9 +54,11 @@ class ImplementationOf<Chain<Surface>> {
   operator const Vector<T>&() const;
   operator const Vector<exactreal::Arb>&() const;
 
+  static size_t hash(const Chain<Surface>&);
+
   std::optional<const mpz_class*> operator[](size_t) const;
 
-  std::shared_ptr<const Surface> surface;
+  ReadOnly<Surface> surface;
 
   fmpz* coefficients;
 

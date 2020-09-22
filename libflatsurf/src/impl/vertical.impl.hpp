@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,9 +21,12 @@
 #define LIBFLATSURF_VERTICAL_IMPL_HPP
 
 #include <functional>
-#include <memory>
 
 #include "../../flatsurf/vertical.hpp"
+
+#include "flat_triangulation.impl.hpp"
+#include "flat_triangulation_collapsed.impl.hpp"
+#include "read_only.hpp"
 
 namespace flatsurf {
 
@@ -33,7 +36,7 @@ class ImplementationOf<Vertical<Surface>> {
   using T = typename Surface::Coordinate;
 
  public:
-  ImplementationOf(std::shared_ptr<const Surface>, const Vector<T>&);
+  ImplementationOf(const Surface&, const Vector<T>&);
 
   // Starting at the half edge `start`, walk the surface and collect all its
   // half edges in `component`. We walk the surface by crossing any half
@@ -43,7 +46,7 @@ class ImplementationOf<Vertical<Surface>> {
   // first.)
   static bool visit(const Vertical& self, HalfEdge start, std::unordered_set<HalfEdge>& component, std::function<bool(HalfEdge)> visitor);
 
-  std::shared_ptr<const Surface> surface;
+  ReadOnly<Surface> surface;
   Vector<T> vertical;
   Vector<T> horizontal;
 };

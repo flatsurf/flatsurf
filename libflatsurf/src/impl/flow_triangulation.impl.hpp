@@ -49,7 +49,7 @@ class ImplementationOf<FlowTriangulation<Surface>> {
 template <typename Surface>
 template <typename... Args>
 FlowTriangulation<Surface>::FlowTriangulation(PrivateConstructor, Args&&... args) :
-  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
+  self(spimpl::make_impl<ImplementationOf<FlowTriangulation>>(std::forward<Args>(args)...)) {}
 
 }  // namespace flatsurf
 

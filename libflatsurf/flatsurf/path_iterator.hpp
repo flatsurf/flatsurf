@@ -25,8 +25,7 @@
 #include <boost/iterator/iterator_categories.hpp>
 #include <boost/iterator/iterator_facade.hpp>
 
-#include "external/spimpl/spimpl.h"
-#include "forward.hpp"
+#include "copyable.hpp"
 
 namespace flatsurf {
 
@@ -46,10 +45,10 @@ class PathIterator : public boost::iterator_facade<PathIterator<Surface>, const 
   friend std::ostream& operator<<(std::ostream&, const PathIterator<S>&);
 
  private:
-  using Implementation = ImplementationOf<PathIterator>;
-  spimpl::impl_ptr<Implementation> impl;
-  friend Implementation;
+  Copyable<PathIterator> self;
+
   friend Path<Surface>;
+  friend ImplementationOf<PathIterator>;
 };
 
 }  // namespace flatsurf

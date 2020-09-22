@@ -23,9 +23,9 @@
 #include <unordered_set>
 #include <vector>
 
-#include "external/spimpl/spimpl.h"
-#include "forward.hpp"
 #include "intervalxt/forward.hpp"
+
+#include "movable.hpp"
 
 namespace flatsurf {
 
@@ -37,9 +37,9 @@ class IntervalExchangeTransformation {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
  public:
-  IntervalExchangeTransformation(std::shared_ptr<const Surface>, const Vector<T>& vertical, const std::vector<HalfEdge>& top, const std::vector<HalfEdge>& bottom);
+  IntervalExchangeTransformation(const Surface&, const Vector<T>& vertical, const std::vector<HalfEdge>& top, const std::vector<HalfEdge>& bottom);
 
-  IntervalExchangeTransformation(std::shared_ptr<const Surface>, const Vector<T>& vertical, const HalfEdge);
+  IntervalExchangeTransformation(const Surface&, const Vector<T>& vertical, const HalfEdge);
 
   // Modify the surface such that each component has a unique large edge
   // and the components are such that their contours do not begin with the same
@@ -66,17 +66,10 @@ class IntervalExchangeTransformation {
   friend std::ostream& operator<<(std::ostream&, const IntervalExchangeTransformation<S>&);
 
  private:
-  using Implementation = ImplementationOf<IntervalExchangeTransformation>;
-  spimpl::unique_impl_ptr<Implementation> impl;
+  Movable<IntervalExchangeTransformation> self;
 
-  friend Implementation;
+  friend ImplementationOf<IntervalExchangeTransformation>;
 };
-
-template <typename Surface, typename... Args>
-IntervalExchangeTransformation(std::shared_ptr<const Surface>, Args&&...) -> IntervalExchangeTransformation<Surface>;
-
-template <typename Surface, typename... Args>
-IntervalExchangeTransformation(std::shared_ptr<Surface>, Args&&...) -> IntervalExchangeTransformation<Surface>;
 
 }  // namespace flatsurf
 

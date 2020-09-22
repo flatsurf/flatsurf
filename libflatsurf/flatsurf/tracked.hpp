@@ -22,9 +22,8 @@
 
 #include <functional>
 
-#include "external/spimpl/spimpl.h"
 #include "flat_triangulation_combinatorial.hpp"
-#include "forward.hpp"
+#include "movable.hpp"
 
 namespace flatsurf {
 
@@ -47,18 +46,17 @@ class Tracked {
 
   Tracked(const Tracked&);
   Tracked(Tracked&&);
-  Tracked(const FlatTriangulationCombinatorial*, T value, const FlipHandler& updateAfterFlip = defaultFlip, const CollapseHandler& updateBeforeCollapse = defaultCollapse, const SwapHandler& updateBeforeSwap = defaultSwap, const EraseHandler& updateBeforeErase = defaultErase, const DestructionHandler& updateBeforeDestruction = forgetParent);
+  Tracked(const FlatTriangulationCombinatorial&, T value, const FlipHandler& updateAfterFlip = defaultFlip, const CollapseHandler& updateBeforeCollapse = defaultCollapse, const SwapHandler& updateBeforeSwap = defaultSwap, const EraseHandler& updateBeforeErase = defaultErase, const DestructionHandler& updateBeforeDestruction = forgetParent);
 
   operator T&();
   operator const T&() const;
   const T* operator->() const;
   T* operator->();
 
-  const FlatTriangulationCombinatorial& parent() const;
+  Tracked& operator=(const Tracked&);
+  Tracked& operator=(Tracked&&);
 
   Tracked& operator=(T&&);
-  Tracked& operator=(const Tracked&);
-  Tracked& operator=(const Tracked&&);
 
   ~Tracked();
 
@@ -72,9 +70,9 @@ class Tracked {
   static void forgetParent(T&, const FlatTriangulationCombinatorial&);
 
  private:
-  using Implementation = ImplementationOf<Tracked<T>>;
-  spimpl::unique_impl_ptr<Implementation> impl;
-  friend Implementation;
+  Movable<Tracked> self;
+
+  friend ImplementationOf<Tracked>;
 };
 
 }  // namespace flatsurf

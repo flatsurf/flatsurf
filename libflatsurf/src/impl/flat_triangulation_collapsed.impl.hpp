@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,6 +31,10 @@
 #include "../../flatsurf/saddle_connection.hpp"
 #include "../../flatsurf/tracked.hpp"
 #include "../../flatsurf/vector.hpp"
+#include "../../flatsurf/flat_triangulation.hpp"
+
+#include "flat_triangulation_combinatorial.impl.hpp"
+#include "read_only.hpp"
 
 namespace flatsurf {
 
@@ -38,39 +42,48 @@ template <typename T>
 class CollapsedHalfEdge;
 
 template <typename T>
-class ImplementationOf<FlatTriangulationCollapsed<T>> {
+class ImplementationOf<FlatTriangulationCollapsed<T>> :
+  protected ImplementationOf<ManagedMovable<FlatTriangulationCollapsed<T>>>,
+  public ImplementationOf<FlatTriangulationCombinatorial> {
   using SaddleConnection = flatsurf::SaddleConnection<FlatTriangulation<T>>;
   using CollapsedHalfEdge = flatsurf::CollapsedHalfEdge<T>;
 
   friend CollapsedHalfEdge;
 
  public:
-  ImplementationOf(const FlatTriangulationCombinatorial&, std::unique_ptr<FlatTriangulation<T>>, const Vector<T>&);
+  ImplementationOf(const FlatTriangulation<T>&, const Vector<T>&);
 
-  // Explicitly compute the area of this triangulation.
-  static T area(const FlatTriangulationCollapsed<T>&);
-  // Check that the face of this half edge is actually closed.
-  static bool faceClosed(const FlatTriangulationCollapsed<T>&, HalfEdge);
+  virtual void flip(HalfEdge) override;
+  virtual std::pair<HalfEdge, HalfEdge> collapse(HalfEdge) override;
 
-  static void updateAfterFlip(HalfEdgeMap<SaddleConnection>&, const FlatTriangulationCombinatorial&, HalfEdge);
-  static void updateBeforeCollapse(HalfEdgeMap<SaddleConnection>&, const FlatTriangulationCombinatorial&, Edge);
-
-  template <typename M>
-  static void handleCollapse(M&, const FlatTriangulationCollapsed<T>&, Edge, const std::function<void(const FlatTriangulationCollapsed<T>&, HalfEdge)>&);
-  template <typename M>
-  static void handleFlip(M&, const FlatTriangulationCollapsed<T>&, HalfEdge, const std::function<void(const FlatTriangulationCollapsed<T>&, HalfEdge, HalfEdge, HalfEdge, HalfEdge)>&);
-
-  std::shared_ptr<const FlatTriangulation<T>> original;
+  ReadOnly<FlatTriangulation<T>> original;
 
   Vector<T> vertical;
-
+  
   // Tracks collapsed vertical connections.
   Tracked<HalfEdgeMap<CollapsedHalfEdge>> collapsedHalfEdges;
+
   // The vectors associated to half edges. Unlike in a FlatTriangulation,
   // vectors[-halfEdge] == -vectors[halfEdge] does not necessarily hold. These
   // vectors are only valid in the half edge's face. Use collapsedHalfEdges to
   // cross to the other face.
   Tracked<HalfEdgeMap<SaddleConnection>> vectors;
+
+  // Explicitly compute the area of this triangulation.
+  T area();
+
+  // Check that the face of this half edge is actually closed.
+  bool faceClosed(HalfEdge);
+
+  static void updateAfterFlip(HalfEdgeMap<SaddleConnection>&, const FlatTriangulationCombinatorial&, HalfEdge);
+  static void updateBeforeCollapse(HalfEdgeMap<SaddleConnection>&, const FlatTriangulationCombinatorial&, Edge);
+
+ protected:
+  using ImplementationOf<ManagedMovable<FlatTriangulationCollapsed<T>>>::from_this;
+  using ImplementationOf<ManagedMovable<FlatTriangulationCollapsed<T>>>::self;
+
+  friend ReadOnly<FlatTriangulationCollapsed<T>>;
+  friend ImplementationOf<ManagedMovable<FlatTriangulationCollapsed<T>>>;
 };
 
 }  // namespace flatsurf

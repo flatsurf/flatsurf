@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,8 +23,7 @@
 
 #include "detail/vector_exact.hpp"
 #include "detail/vector_with_error.hpp"
-#include "external/spimpl/spimpl.h"
-#include "forward.hpp"
+#include "copyable.hpp"
 
 namespace flatsurf {
 // A vector in ℝ² whose coordinates are of type T.
@@ -58,9 +57,8 @@ class Vector : public std::conditional_t<std::is_same_v<T, exactreal::Arb>, deta
   template <typename Archive>
   void load(Archive& archive);
 
-  using Implementation = ImplementationOf<Vector<T>>;
-  spimpl::impl_ptr<Implementation> impl;
-  friend Implementation;
+  Copyable<Vector<T>> self;
+  friend ImplementationOf<Vector<T>>;
 };
 }  // namespace flatsurf
 

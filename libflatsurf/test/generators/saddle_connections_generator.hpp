@@ -33,10 +33,13 @@
 
 namespace flatsurf::test {
 
+using std::begin;
+using std::end;
+
 template <typename T, typename C>
 class SaddleConnectionsGenerator : public Catch::Generators::IGenerator<SaddleConnection<FlatTriangulation<T>>> {
   C connections;
-  typename C::Iterator current;
+  typename C::iterator current;
   int count;
   const int skip;
 

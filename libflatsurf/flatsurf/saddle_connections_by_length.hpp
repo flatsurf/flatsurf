@@ -23,7 +23,7 @@
 #include <memory>
 #include <optional>
 
-#include "external/spimpl/spimpl.h"
+#include "copyable.hpp"
 #include "forward.hpp"
 
 namespace flatsurf {
@@ -37,8 +37,6 @@ class SaddleConnectionsByLength {
   SaddleConnectionsByLength(PrivateConstructor, Args&&... args);
 
  public:
-  using Iterator = SaddleConnectionsByLengthIterator<Surface>;
-
   SaddleConnectionsByLength(const SaddleConnections<Surface>&);
 
   // Return only the saddle connections whose length is at most the given bound.
@@ -73,19 +71,23 @@ class SaddleConnectionsByLength {
 
   const Surface& surface() const;
 
+  using iterator = SaddleConnectionsByLengthIterator<Surface>;
+
   // Return an iterator through the saddle connections. The iteration is by
   // increasing length.
-  Iterator begin() const;
+  iterator begin() const;
   // End position of the iterator through the saddle connections.
-  Iterator end() const;
+  iterator end() const;
 
   template <typename Surf>
   friend std::ostream& operator<<(std::ostream&, const SaddleConnectionsByLength&);
 
  private:
-  using Implementation = ImplementationOf<SaddleConnectionsByLength>;
-  friend Implementation;
-  spimpl::impl_ptr<Implementation> impl;
+  Copyable<SaddleConnectionsByLength> self;
+
+  friend ImplementationOf<SaddleConnectionsByLength>;
+  friend iterator;
+  friend ImplementationOf<iterator>;
 };
 
 template <typename Surface, typename... T>

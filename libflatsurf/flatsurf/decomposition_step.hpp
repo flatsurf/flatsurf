@@ -40,8 +40,8 @@ class DecompositionStep {
   };
 
   Result result;
-  std::optional<FlowConnection<Surface>> connection = {};
-  std::optional<FlowComponent<Surface>> additionalComponent = {};
+  std::optional<FlowConnection<Surface>> connection = std::nullopt;
+  std::optional<FlowComponent<Surface>> additionalComponent = std::nullopt;
 };
 }  // namespace flatsurf
 

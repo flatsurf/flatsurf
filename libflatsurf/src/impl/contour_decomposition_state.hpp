@@ -35,11 +35,11 @@ class ContourDecompositionState : public std::enable_shared_from_this<ContourDec
   using ComponentState = ContourComponentState<Surface>;
 
  public:
-  ContourDecompositionState(std::unique_ptr<Surface> surface, const Vector<T>& vert);
+  ContourDecompositionState(Surface surface, const Vector<T>& vert);
 
   ContourComponent<Surface> make(ComponentState* component);
 
-  std::shared_ptr<FlatTriangulationCollapsed<T>> surface;
+  FlatTriangulationCollapsed<T> surface;
   std::list<ComponentState> components;
 
   template <typename S>

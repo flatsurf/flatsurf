@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,8 +25,8 @@
 #include <memory>
 #include <vector>
 
-#include "external/spimpl/spimpl.h"
 #include "interval_exchange_transformation.hpp"
+#include "copyable.hpp"
 
 namespace flatsurf {
 
@@ -77,10 +77,9 @@ class ContourComponent : boost::equality_comparable<ContourComponent<Surface>> {
   friend std::ostream &operator<<(std::ostream &, const ContourComponent<S> &);
 
  private:
-  using Implementation = ImplementationOf<ContourComponent>;
-  spimpl::impl_ptr<Implementation> impl;
+  Copyable<ContourComponent> self;
 
-  friend Implementation;
+  friend ImplementationOf<ContourComponent>;
 };
 
 }  // namespace flatsurf

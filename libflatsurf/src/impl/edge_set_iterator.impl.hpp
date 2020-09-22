@@ -40,7 +40,7 @@ class ImplementationOf<EdgeSetIterator> : public IndexedSetIterator<Edge> {
 
 template <typename... Args>
 EdgeSetIterator::EdgeSetIterator(PrivateConstructor, Args&&... args) :
-  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {
+  self(spimpl::make_impl<ImplementationOf<EdgeSetIterator>>(std::forward<Args>(args)...)) {
 }
 
 }  // namespace flatsurf

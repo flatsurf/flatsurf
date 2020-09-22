@@ -35,11 +35,11 @@ def test_addition():
     L = surfaces.L(vector)
 
     # A stretched L
-    shift = [vector(0, L.fromEdge(e.positive()).y()) for e in L.edges()]
+    shift = [vector(0, L.fromHalfEdge(e.positive()).y()) for e in L.edges()]
     L += shift
 
     for halfEdge in L.halfEdges():
-        assert L.fromEdge(halfEdge).y() != 1
+        assert L.fromHalfEdge(halfEdge).y() != 1
 
 
 def test_deformation_square(capsys):
@@ -122,17 +122,17 @@ def test_deformation_L():
     L = surfaces.L(vector)
     
     # Deform the L by doubling each vector
-    L + [L.fromEdge(e.positive()) for e in L.edges()]
+    L + [L.fromHalfEdge(e.positive()) for e in L.edges()]
 
 def test_deform_hexagon():
     hexagon = surfaces.random_hexagon()
 
     # Deform the hexagon by doubling each vector
-    hexagon + [hexagon.fromEdge(e.positive()) for e in hexagon.edges()]
+    hexagon + [hexagon.fromHalfEdge(e.positive()) for e in hexagon.edges()]
 
     # Deform the hexagon by adding another random hexagon
     hexagon_ = surfaces.random_hexagon()
-    hexagon + [hexagon_.fromEdge(e.positive()) for e in hexagon.edges()]
+    hexagon + [hexagon_.fromHalfEdge(e.positive()) for e in hexagon.edges()]
 
 def test_serialization():
     hexagon = surfaces.random_hexagon()

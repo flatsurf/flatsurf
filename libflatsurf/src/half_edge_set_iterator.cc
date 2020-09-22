@@ -28,23 +28,23 @@
 namespace flatsurf {
 
 void HalfEdgeSetIterator::increment() {
-  return impl->increment();
+  return self->increment();
 }
 
 bool HalfEdgeSetIterator::equal(const HalfEdgeSetIterator& rhs) const {
-  return impl->equal(*rhs.impl);
+  return self->equal(*rhs.self);
 }
 
 const HalfEdge& HalfEdgeSetIterator::dereference() const {
-  return impl->dereference();
+  return self->dereference();
 }
 
 HalfEdgeSetIterator HalfEdgeSet::begin() const {
-  return HalfEdgeSetIterator{PrivateConstructor{}, impl->begin()};
+  return HalfEdgeSetIterator{PrivateConstructor{}, self->begin()};
 }
 
 HalfEdgeSetIterator HalfEdgeSet::end() const {
-  return HalfEdgeSetIterator{PrivateConstructor{}, impl->end()};
+  return HalfEdgeSetIterator{PrivateConstructor{}, self->end()};
 }
 
 ImplementationOf<HalfEdgeSetIterator>::ImplementationOf(IndexedSetIterator<HalfEdge>&& self) :

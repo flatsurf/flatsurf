@@ -33,40 +33,40 @@
 namespace flatsurf {
 
 HalfEdgeSet::HalfEdgeSet() :
-  impl(spimpl::make_impl<Implementation>()) {}
+  self(spimpl::make_impl<ImplementationOf<HalfEdgeSet>>()) {}
 
 HalfEdgeSet::HalfEdgeSet(const std::vector<HalfEdge>& items) :
-  impl(spimpl::make_impl<Implementation>(items)) {}
+  self(spimpl::make_impl<ImplementationOf<HalfEdgeSet>>(items)) {}
 
 bool HalfEdgeSet::contains(HalfEdge e) const {
   ASSERT(e != HalfEdge(), "cannot check containment of invalid HalfEdge(0)");
-  return impl->contains(e);
+  return self->contains(e);
 }
 
 void HalfEdgeSet::insert(HalfEdge e) {
   ASSERT(e != HalfEdge(), "cannot insert invalid HalfEdge(0)");
-  impl->insert(e);
+  self->insert(e);
 }
 
 bool HalfEdgeSet::operator==(const HalfEdgeSet& rhs) const {
-  return *impl == *rhs.impl;
+  return *self == *rhs.self;
 }
 
 bool HalfEdgeSet::disjoint(const HalfEdgeSet& rhs) const {
-  return impl->disjoint(*rhs.impl);
+  return self->disjoint(*rhs.self);
 }
 
 bool HalfEdgeSet::empty() const {
-  return impl->empty();
+  return self->empty();
 }
 
 size_t HalfEdgeSet::size() const {
-  return impl->size();
+  return self->size();
 }
 
 void HalfEdgeSet::erase(HalfEdge e) {
   ASSERT(e != HalfEdge(), "cannot remove invalid HalfEdge(0)");
-  return impl->erase(e);
+  return self->erase(e);
 }
 
 HalfEdgeSetIterator begin(const HalfEdgeSet& self) { return self.begin(); }

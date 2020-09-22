@@ -39,29 +39,29 @@ template <typename Surface>
 ContourComponentState<Surface>::ContourComponentState(const ContourDecompositionState<Surface>& state, const std::unordered_set<HalfEdge>& halfEdges) :
   halfEdges(halfEdges),
   large([&]() {
-    auto vertical = state.surface->vertical();
+    auto vertical = state.surface.vertical();
     HalfEdge large = *std::find_if(begin(halfEdges), end(halfEdges), [&](HalfEdge e) {
       return vertical.large(e);
     });
 
-    if (vertical.perpendicular(state.surface->fromEdge(large)) < 0)
+    if (vertical.perpendicular(state.surface.fromHalfEdge(large)) < 0)
       large = -large;
 
-    ASSERT(vertical.perpendicular(state.surface->fromEdge(large)) > 0, "A large edge and it's negative cannot both be right-to-left");
+    ASSERT(vertical.perpendicular(state.surface.fromHalfEdge(large)) > 0, "A large edge and it's negative cannot both be right-to-left");
 
     return large;
   }()),
   topEdges([&]() {
     std::vector<HalfEdge> topEdges;
 
-    ImplementationOf<ContourComponent<FlatTriangulationCollapsed<T>>>::makeContour(back_inserter(topEdges), large, *state.surface, state.surface->vertical());
+    ImplementationOf<ContourComponent<FlatTriangulationCollapsed<T>>>::makeContour(back_inserter(topEdges), large, state.surface, state.surface.vertical());
 
     return topEdges | rx::transform([](const auto& he) { return -he; }) | rx::reverse() | rx::to_vector();
   }()),
   bottomEdges([&]() {
     std::vector<HalfEdge> bottomEdges;
 
-    ImplementationOf<ContourComponent<FlatTriangulationCollapsed<T>>>::makeContour(back_inserter(bottomEdges), -large, *state.surface, -state.surface->vertical());
+    ImplementationOf<ContourComponent<FlatTriangulationCollapsed<T>>>::makeContour(back_inserter(bottomEdges), -large, state.surface, -state.surface.vertical());
 
     return bottomEdges | rx::transform([&](const auto e) { return -e; }) | rx::reverse() | rx::to_vector();
   }()) {

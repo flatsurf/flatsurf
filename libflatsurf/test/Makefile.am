@@ -1,4 +1,4 @@
-check_PROGRAMS = quadratic_polynomial.test approximation.test half_edge.test chain.test vector_longlong.test contour_decomposition.test delaunay.test saddle_connections.test vector_exactreal.test cereal.test permutation.test flat_triangulation_combinatorial.test flat_triangulation.test flow_decomposition.test flat_triangulation_collapsed.test vertex.test edge.test parabolic.test bound.test vector.test
+check_PROGRAMS = cereal.test quadratic_polynomial.test approximation.test half_edge.test chain.test vector_longlong.test contour_decomposition.test delaunay.test saddle_connections.test vector_exactreal.test permutation.test flat_triangulation_combinatorial.test flat_triangulation.test flow_decomposition.test flat_triangulation_collapsed.test vertex.test edge.test parabolic.test bound.test vector.test
 
 TESTS = $(check_PROGRAMS)
 

@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,8 +32,11 @@
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vertex.hpp"
 #include "../flatsurf/vertical.hpp"
+
 #include "external/rx-ranges/include/rx/ranges.hpp"
+
 #include "impl/contour_decomposition.impl.hpp"
+
 #include "util/assert.ipp"
 
 namespace flatsurf {
@@ -42,28 +45,28 @@ using std::ostream;
 using std::vector;
 
 template <typename Surface>
-ContourDecomposition<Surface>::ContourDecomposition(std::unique_ptr<Surface> surface, const Vector<T>& vertical) :
-  impl(spimpl::make_unique_impl<Implementation>(std::move(surface), vertical)) {
+ContourDecomposition<Surface>::ContourDecomposition(Surface surface, const Vector<T>& vertical) :
+  self(spimpl::make_unique_impl<ImplementationOf<ContourDecomposition>>(std::move(surface), vertical)) {
   ASSERTIONS([&]() {
-    Implementation::check(components() | rx::transform([&](const auto& component) { return component.perimeter(); }) | rx::to_vector(), Vertical(impl->state->surface->uncollapsed(), vertical));
+    ImplementationOf<ContourDecomposition>::check(components() | rx::transform([&](const auto& component) { return component.perimeter(); }) | rx::to_vector(), Vertical(self->state->surface.uncollapsed(), vertical));
   });
 }
 
 template <typename Surface>
 std::vector<ContourComponent<Surface>> ContourDecomposition<Surface>::components() const {
   vector<ContourComponent<Surface>> components;
-  for (auto& component : impl->state->components)
-    components.push_back(impl->state->make(&component));
+  for (auto& component : self->state->components)
+    components.push_back(self->state->make(&component));
   return components;
 }
 
 template <typename Surface>
-std::shared_ptr<const FlatTriangulationCollapsed<typename Surface::Coordinate>> ContourDecomposition<Surface>::collapsed() const {
-  return impl->state->surface;
+const FlatTriangulationCollapsed<typename Surface::Coordinate>& ContourDecomposition<Surface>::collapsed() const {
+  return self->state->surface;
 }
 
 template <typename Surface>
-ImplementationOf<ContourDecomposition<Surface>>::ImplementationOf(std::unique_ptr<Surface> surface, const Vector<T>& vertical) :
+ImplementationOf<ContourDecomposition<Surface>>::ImplementationOf(Surface surface, const Vector<T>& vertical) :
   state(new DecompositionState(std::move(surface), vertical)) {}
 
 template <typename Surface>
@@ -175,19 +178,19 @@ void ImplementationOf<ContourDecomposition<Surface>>::check(const std::vector<Pa
     };
 
     for (auto& component : decomposition) {
-      auto connection = begin(component);
-      auto nextConnection = begin(component);
+      auto connection = component.begin();
+      auto nextConnection = component.begin();
       ++nextConnection;
 
       do {
-        totalAngle[Vertex::source(nextConnection->source(), *surface)] += angle(*connection, *nextConnection);
+        totalAngle[Vertex::source(nextConnection->source(), surface)] += angle(*connection, *nextConnection);
 
         ++connection;
         ++nextConnection;
-      } while (connection != begin(component));
+      } while (connection != component.begin());
     }
 
-    for (const auto vertex : surface->vertices()) {
+    for (const auto vertex : surface.vertices()) {
       CHECK(totalAngle[vertex] != 0, "All marked vertices must still be present in decomposition but " << vertex << " was not found anywhere on the perimeters " << fmt::format("[{}]", fmt::join(decomposition, ", ")));
       const auto formatAngle = [](const int angle) {
         if (angle % 2)
@@ -195,14 +198,14 @@ void ImplementationOf<ContourDecomposition<Surface>>::check(const std::vector<Pa
         else
           return fmt::format("{}π", angle / 2);
       };
-      CHECK(totalAngle[vertex] == 4 * surface->angle(vertex), "Total angle at each vertex must not change in decomposition but " << vertex << " has angle " << formatAngle(totalAngle[vertex]) << " in decomposition [" << fmt::format("[{}]", fmt::join(decomposition, ", ")) << "] with vertical " << vertical << " but had angle " << formatAngle(surface->angle(vertex) * 4) << " in surface originally.");
+      CHECK(totalAngle[vertex] == 4 * surface.angle(vertex), "Total angle at each vertex must not change in decomposition but " << vertex << " has angle " << formatAngle(totalAngle[vertex]) << " in decomposition [" << fmt::format("[{}]", fmt::join(decomposition, ", ")) << "] with vertical " << vertical << " but had angle " << formatAngle(surface.angle(vertex) * 4) << " in surface originally.");
     }
   }
 
   // Total Area has not Changed
   {
     const auto area = decomposition | rx::transform([](const auto& component) { return component.area(); }) | rx::sum();
-    CHECK(area == surface->area(), "Total area of components does not match area of original surface, " << area << " != " << surface->area());
+    CHECK(area == surface.area(), "Total area of components does not match area of original surface, " << area << " != " << surface.area());
   }
 
   // Components do not overlap

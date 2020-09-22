@@ -25,8 +25,7 @@
 #include <vector>
 
 #include "edge_set_iterator.hpp"
-#include "external/spimpl/spimpl.h"
-#include "forward.hpp"
+#include "copyable.hpp"
 
 namespace flatsurf {
 
@@ -42,8 +41,10 @@ class EdgeSet : boost::equality_comparable<EdgeSet> {
   void insert(Edge);
   void erase(Edge);
 
-  EdgeSetIterator begin() const;
-  EdgeSetIterator end() const;
+  using iterator = EdgeSetIterator;
+
+  iterator begin() const;
+  iterator end() const;
 
   bool empty() const;
   size_t size() const;
@@ -55,11 +56,11 @@ class EdgeSet : boost::equality_comparable<EdgeSet> {
   friend std::ostream& operator<<(std::ostream&, const EdgeSet&);
 
  private:
-  using Implementation = ImplementationOf<EdgeSet>;
-  spimpl::impl_ptr<Implementation> impl;
-  friend Implementation;
-  friend EdgeSetIterator;
-  friend ImplementationOf<EdgeSetIterator>;
+  Copyable<EdgeSet> self;
+
+  friend ImplementationOf<EdgeSet>;
+  friend iterator;
+  friend ImplementationOf<iterator>;
 };
 
 EdgeSetIterator begin(const EdgeSet&);

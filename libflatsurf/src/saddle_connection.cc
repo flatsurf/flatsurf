@@ -29,7 +29,9 @@
 #include "../flatsurf/half_edge_map.hpp"
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/saddle_connections.hpp"
+#include "../flatsurf/saddle_connections_by_length.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
+#include "../flatsurf/saddle_connections_by_length_iterator.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertical.hpp"
 #include "impl/saddle_connection.impl.hpp"
@@ -40,26 +42,29 @@ using std::ostream;
 
 namespace flatsurf {
 
+using std::begin;
+using std::end;
+
 template <typename Surface>
-SaddleConnection<Surface>::SaddleConnection(std::shared_ptr<const Surface> surface, HalfEdge e) :
-  impl(spimpl::make_impl<Implementation>(surface, e, -e, Chain(surface, e))) {
+SaddleConnection<Surface>::SaddleConnection(const Surface& surface, HalfEdge e) :
+  self(spimpl::make_impl<ImplementationOf<SaddleConnection>>(surface, e, -e, Chain(surface, e))) {
 }
 
 template <typename Surface>
-SaddleConnection<Surface>::SaddleConnection(std::shared_ptr<const Surface> surface, HalfEdge source, HalfEdge target, const Chain<Surface>& chain) :
-  impl(spimpl::make_impl<Implementation>(surface, source, target, chain)) {
-  ASSERT_ARGUMENT(impl->chain, "saddle connection cannot be trivial");
+SaddleConnection<Surface>::SaddleConnection(const Surface& surface, HalfEdge source, HalfEdge target, const Chain<Surface>& chain) :
+  self(spimpl::make_impl<ImplementationOf<SaddleConnection>>(surface, source, target, chain)) {
+  ASSERT_ARGUMENT(self->chain, "saddle connection cannot be trivial");
 }
 
 template <typename Surface>
-SaddleConnection<Surface>::SaddleConnection(std::shared_ptr<const Surface> surface, HalfEdge source, HalfEdge target, Chain<Surface>&& chain) :
-  impl(spimpl::make_impl<Implementation>(surface, source, target, std::move(chain))) {
-  ASSERT_ARGUMENT(impl->chain, "saddle connection cannot be trivial");
+SaddleConnection<Surface>::SaddleConnection(const Surface& surface, HalfEdge source, HalfEdge target, Chain<Surface>&& chain) :
+  self(spimpl::make_impl<ImplementationOf<SaddleConnection>>(surface, source, target, std::move(chain))) {
+  ASSERT_ARGUMENT(self->chain, "saddle connection cannot be trivial");
 }
 
 template <typename Surface>
 bool SaddleConnection<Surface>::operator==(const SaddleConnection<Surface>& rhs) const {
-  bool ret = *impl->surface == *rhs.impl->surface && vector() == rhs.vector() && impl->source == rhs.impl->source;
+  bool ret = *self->surface == *rhs.self->surface && vector() == rhs.vector() && self->source == rhs.self->source;
 
   ASSERT((!ret || target() == rhs.target()), "saddle connection data is inconsistent, " << *this << " == " << rhs << " but their targets do not match since " << target() << " != " << rhs.target());
   return ret;
@@ -67,68 +72,67 @@ bool SaddleConnection<Surface>::operator==(const SaddleConnection<Surface>& rhs)
 
 template <typename Surface>
 HalfEdge SaddleConnection<Surface>::source() const {
-  return impl->source;
+  return self->source;
 }
 
 template <typename Surface>
 HalfEdge SaddleConnection<Surface>::target() const {
-  return impl->target;
+  return self->target;
 }
 
 template <typename Surface>
 const Surface& SaddleConnection<Surface>::surface() const {
-  return *impl->surface;
+  return self->surface;
 }
 
 template <typename Surface>
 SaddleConnection<Surface> SaddleConnection<Surface>::operator-() const noexcept {
-  return SaddleConnection(impl->surface, impl->target, impl->source, -impl->chain);
+  return SaddleConnection(self->surface, self->target, self->source, -self->chain);
 }
 
 template <typename Surface>
-SaddleConnection<Surface> SaddleConnection<Surface>::inSector(std::shared_ptr<const Surface> surface, HalfEdge source, const Vector<T>& vector) {
-  CHECK_ARGUMENT(surface->inSector(source, vector), "Cannot search for " << vector << " next to " << source << " in " << *surface << "; that direction is not in the search sector");
+SaddleConnection<Surface> SaddleConnection<Surface>::inSector(const Surface& surface, HalfEdge source, const Vector<T>& vector) {
+  CHECK_ARGUMENT(surface.inSector(source, vector), "Cannot search for " << vector << " next to " << source << " in " << surface << "; that direction is not in the search sector");
 
-  // It would be good to use a finite bound instead, see https://github.com/flatsurf/flatsurf/issues/153
-  return reconstruct(
-      surface, source, [&](const auto& it) { return it->vector() == vector; }, [&](const auto& it) { return -it->vector().ccw(vector); });
+  const auto construction = SaddleConnections<Surface>(surface)
+    .bound(Bound::upper(vector))
+    .sector(source)
+    .sector(vector, vector);
+
+  const auto ret = begin(construction);
+
+  CHECK_ARGUMENT(ret != end(construction), "No connection with vector " << vector << " in sector starting at " << source << " in " << surface);
+
+  return *ret;
 }
 
 template <typename Surface>
-SaddleConnection<Surface> SaddleConnection<Surface>::reconstruct(std::shared_ptr<const Surface> surface, HalfEdge source, std::function<bool(const SaddleConnectionsIterator<Surface>&)> until, std::function<CCW(const SaddleConnectionsIterator<Surface>&)> skip, Bound bound) {
-  auto reconstruction = SaddleConnections<Surface>(surface, bound, source);
-  auto it = reconstruction.begin();
-  for (; !until(it); ++it) it.skipSector(skip(it));
-  return *it;
-}
-
-template <typename Surface>
-SaddleConnection<Surface> SaddleConnection<Surface>::inHalfPlane(std::shared_ptr<const Surface> surface, HalfEdge side, const Vertical<Surface>& vertical, const Vector<T>& vector) {
-  CCW allowed = vertical.vertical().ccw(surface->fromEdge(side));
+SaddleConnection<Surface> SaddleConnection<Surface>::inHalfPlane(const Surface& surface, HalfEdge side, const Vertical<Surface>& vertical, const Vector<T>& vector) {
+  CCW allowed = vertical.vertical().ccw(surface.fromHalfEdge(side));
   HalfEdge sector;
-  for (sector = side; vertical.vertical().ccw(surface->fromEdge(sector)) == allowed; sector = surface->previousAtVertex(sector))
+  for (sector = side; vertical.vertical().ccw(surface.fromHalfEdge(sector)) == allowed; sector = surface.previousAtVertex(sector))
     ;
   do {
-    if (surface->inSector(sector, vector)) {
+    if (surface.inSector(sector, vector)) {
       return SaddleConnection::inSector(surface, sector, vector);
     }
-    sector = surface->nextAtVertex(sector);
-  } while (vertical.vertical().ccw(surface->fromEdge(sector)) == allowed);
+    sector = surface.nextAtVertex(sector);
+  } while (vertical.vertical().ccw(surface.fromHalfEdge(sector)) == allowed);
 
   CHECK_ARGUMENT(false, "vector " << vector << " not on the same side of " << vertical << " as HalfEdge " << side);
 }
 
 template <typename Surface>
-SaddleConnection<Surface> SaddleConnection<Surface>::inPlane(std::shared_ptr<const Surface> surface, HalfEdge plane, const Vector<T>& vector) {
-  CHECK_ARGUMENT(vector.ccw(surface->fromEdge(plane)) != CCW::COLLINEAR || vector.orientation(surface->fromEdge(plane)) != ORIENTATION::OPPOSITE, "vector must not be opposite to the HalfEdge defining the plane");
+SaddleConnection<Surface> SaddleConnection<Surface>::inPlane(const Surface& surface, HalfEdge plane, const Vector<T>& vector) {
+  CHECK_ARGUMENT(vector.ccw(surface.fromHalfEdge(plane)) != CCW::COLLINEAR || vector.orientation(surface.fromHalfEdge(plane)) != ORIENTATION::OPPOSITE, "vector must not be opposite to the HalfEdge defining the plane");
 
-  if (surface->fromEdge(plane).ccw(vector) == CCW::CLOCKWISE) {
-    while (surface->fromEdge(plane).ccw(vector) == CCW::CLOCKWISE)
-      plane = surface->previousAtVertex(plane);
-  } else if (surface->fromEdge(plane).ccw(vector) == CCW::COUNTERCLOCKWISE) {
-    while (surface->fromEdge(plane).ccw(vector) != CCW::CLOCKWISE)
-      plane = surface->nextAtVertex(plane);
-    plane = surface->previousAtVertex(plane);
+  if (surface.fromHalfEdge(plane).ccw(vector) == CCW::CLOCKWISE) {
+    while (surface.fromHalfEdge(plane).ccw(vector) == CCW::CLOCKWISE)
+      plane = surface.previousAtVertex(plane);
+  } else if (surface.fromHalfEdge(plane).ccw(vector) == CCW::COUNTERCLOCKWISE) {
+    while (surface.fromHalfEdge(plane).ccw(vector) != CCW::CLOCKWISE)
+      plane = surface.nextAtVertex(plane);
+    plane = surface.previousAtVertex(plane);
   }
 
   return SaddleConnection::inSector(surface, plane, vector);
@@ -141,22 +145,22 @@ SaddleConnection<Surface> SaddleConnection<Surface>::clockwise(const SaddleConne
   if (clockwiseFrom.vector().ccw(vector) != CCW::CLOCKWISE)
     sector = surface.previousAtVertex(sector);
   while (!surface.inSector(sector, vector)) sector = surface.previousAtVertex(sector);
-  return SaddleConnection::inSector(surface.shared_from_this(), sector, vector);
+  return SaddleConnection::inSector(surface, sector, vector);
 }
 
 template <typename Surface>
-SaddleConnection<Surface> SaddleConnection<Surface>::alongVertical(std::shared_ptr<const Surface> surface, const Vertical<Surface>& direction, HalfEdge plane) {
-  CCW ccw = surface->fromEdge(plane).ccw(direction.vertical());
+SaddleConnection<Surface> SaddleConnection<Surface>::alongVertical(const Surface& surface, const Vertical<Surface>& direction, HalfEdge plane) {
+  CCW ccw = surface.fromHalfEdge(plane).ccw(direction.vertical());
 
   if (ccw == CCW::COLLINEAR || ccw == CCW::COUNTERCLOCKWISE) {
-    while (!surface->inSector(plane, direction)) {
-      plane = surface->nextAtVertex(plane);
+    while (!surface.inSector(plane, direction)) {
+      plane = surface.nextAtVertex(plane);
     }
     return inSector(surface, plane, direction);
   } else {
     while (true) {
-      plane = surface->previousAtVertex(plane);
-      ccw = surface->fromEdge(plane).ccw(direction.vertical());
+      plane = surface.previousAtVertex(plane);
+      ccw = surface.fromHalfEdge(plane).ccw(direction.vertical());
       if (ccw != CCW::CLOCKWISE) {
         return inSector(surface, plane, direction);
       }
@@ -165,11 +169,17 @@ SaddleConnection<Surface> SaddleConnection<Surface>::alongVertical(std::shared_p
 }
 
 template <typename Surface>
-SaddleConnection<Surface> SaddleConnection<Surface>::inSector(std::shared_ptr<const Surface> surface, HalfEdge source, const Vertical<Surface>& direction) {
-  CHECK_ARGUMENT(surface->inSector(source, direction.vertical()), "Cannot search in direction " << direction << " next to " << source << " in " << *surface << "; that direction is not in the search sector");
+SaddleConnection<Surface> SaddleConnection<Surface>::inSector(const Surface& surface, HalfEdge source, const Vertical<Surface>& direction) {
+  CHECK_ARGUMENT(surface.inSector(source, direction.vertical()), "Cannot search in direction " << direction << " next to " << source << " in " << surface << "; that direction is not in the search sector");
 
-  return reconstruct(
-      surface, source, [&](const auto& it) { return !direction.perpendicular(it->vector()); }, [&](const auto& it) { return -it->vector().ccw(direction.vertical()); });
+  const auto construction = SaddleConnections<Surface>(surface)
+    .byLength()
+    .sector(source)
+    .sector(direction.vertical(), direction.vertical());
+
+  const auto ret = begin(construction);
+
+  return *ret;
 }
 
 template <typename Surface>
@@ -180,11 +190,11 @@ std::vector<HalfEdge> SaddleConnection<Surface>::crossings() const {
   // crossed. This is expensive (but cheap in terms of the output size.) This
   // information seems to be essential to properly plot a saddle connection.
   // It would be good to use a finite bound instead, see https://github.com/flatsurf/flatsurf/issues/153
-  auto reconstruction = SaddleConnections<Surface>(impl->surface, Bound(INT_MAX, 0), source());
+  auto reconstruction = SaddleConnections<Surface>(self->surface).bound(INT_MAX).sector(source());
   auto it = reconstruction.begin();
   while (*it != *this) {
     const auto ccw = it->vector().ccw(vector());
-    ASSERT(ccw != CCW::COLLINEAR, "There cannot be another saddle connection in exactly the same direction as this one but in " << impl->surface << " at " << source() << " we found " << it->vector() << " which has the same direction as " << vector());
+    ASSERT(ccw != CCW::COLLINEAR, "There cannot be another saddle connection in exactly the same direction as this one but in " << self->surface << " at " << source() << " we found " << it->vector() << " which has the same direction as " << vector());
     it.skipSector(-ccw);
     while (true) {
       auto crossing = it.incrementWithCrossings();
@@ -196,18 +206,18 @@ std::vector<HalfEdge> SaddleConnection<Surface>::crossings() const {
     }
   }
 
-  ASSERT(it->target() == target(), "We reconstructed the saddle connection in " << impl->surface << " starting from " << source() << " with vector " << vector() << " but it does not end at " << target() << " as claimed but at " << it->target());
+  ASSERT(it->target() == target(), "We reconstructed the saddle connection in " << self->surface << " starting from " << source() << " with vector " << vector() << " but it does not end at " << target() << " as claimed but at " << it->target());
 
   return ret;
 }
 
 template <typename Surface>
-SaddleConnection<Surface> SaddleConnection<Surface>::counterclockwise(std::shared_ptr<const Surface> surface, HalfEdge source, HalfEdge target, const Chain<Surface>& chain) {
+SaddleConnection<Surface> SaddleConnection<Surface>::counterclockwise(const Surface& surface, HalfEdge source, HalfEdge target, const Chain<Surface>& chain) {
   const auto normalize = [&](HalfEdge& sector, const Vector<T>& vector) {
-    while (surface->fromEdge(sector).ccw(vector) == CCW::COUNTERCLOCKWISE)
-      sector = surface->nextAtVertex(sector);
-    while (surface->fromEdge(sector).ccw(vector) == CCW::CLOCKWISE)
-      sector = surface->previousAtVertex(sector);
+    while (surface.fromHalfEdge(sector).ccw(vector) == CCW::COUNTERCLOCKWISE)
+      sector = surface.nextAtVertex(sector);
+    while (surface.fromHalfEdge(sector).ccw(vector) == CCW::CLOCKWISE)
+      sector = surface.previousAtVertex(sector);
   };
 
   const auto& vector = static_cast<const Vector<T>&>(chain);
@@ -229,7 +239,7 @@ SaddleConnection<Surface>::operator const Vector<typename Surface::Coordinate>&(
 
 template <typename Surface>
 const Chain<Surface>& SaddleConnection<Surface>::chain() const {
-  return impl->chain;
+  return self->chain;
 }
 
 template <typename Surface>
@@ -253,15 +263,15 @@ ostream& operator<<(ostream& os, const SaddleConnection<Surface>& self) {
 }
 
 template <typename Surface>
-ImplementationOf<SaddleConnection<Surface>>::ImplementationOf(std::shared_ptr<const Surface> surface, HalfEdge source, HalfEdge target, const Chain<Surface>& chain) :
-  surface(std::move(surface)),
+ImplementationOf<SaddleConnection<Surface>>::ImplementationOf(const Surface& surface, HalfEdge source, HalfEdge target, const Chain<Surface>& chain) :
+  surface(surface),
   source(source),
   target(target),
   chain(chain) {}
 
 template <typename Surface>
-ImplementationOf<SaddleConnection<Surface>>::ImplementationOf(std::shared_ptr<const Surface> surface, HalfEdge source, HalfEdge target, Chain<Surface>&& chain) :
-  surface(std::move(surface)),
+ImplementationOf<SaddleConnection<Surface>>::ImplementationOf(const Surface& surface, HalfEdge source, HalfEdge target, Chain<Surface>&& chain) :
+  surface(surface),
   source(source),
   target(target),
   chain(std::move(chain)) {}

@@ -28,23 +28,23 @@
 namespace flatsurf {
 
 void EdgeSetIterator::increment() {
-  return impl->increment();
+  return self->increment();
 }
 
 bool EdgeSetIterator::equal(const EdgeSetIterator& rhs) const {
-  return impl->equal(*rhs.impl);
+  return self->equal(*rhs.self);
 }
 
 const Edge& EdgeSetIterator::dereference() const {
-  return impl->dereference();
+  return self->dereference();
 }
 
 EdgeSetIterator EdgeSet::begin() const {
-  return EdgeSetIterator{PrivateConstructor{}, impl->begin()};
+  return EdgeSetIterator{PrivateConstructor{}, self->begin()};
 }
 
 EdgeSetIterator EdgeSet::end() const {
-  return EdgeSetIterator{PrivateConstructor{}, impl->end()};
+  return EdgeSetIterator{PrivateConstructor{}, self->end()};
 }
 
 ImplementationOf<EdgeSetIterator>::ImplementationOf(IndexedSetIterator<Edge>&& self) :

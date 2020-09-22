@@ -26,29 +26,28 @@
 #include <vector>
 
 #include "flat_triangulation_combinatorial.hpp"
-#include "moveable.hpp"
+#include "forward.hpp"
+#include "managed_movable.hpp"
 #include "serializable.hpp"
 
 namespace flatsurf {
 
 template <class T>
-class FlatTriangulationCollapsed : public FlatTriangulationCombinatorial,
-                                   public Serializable<FlatTriangulationCollapsed<T>>,
+class FlatTriangulationCollapsed : public FlatTriangulationCombinatorics<FlatTriangulationCollapsed<T>>,
+                                   Serializable<FlatTriangulationCollapsed<T>>,
                                    boost::equality_comparable<FlatTriangulationCollapsed<T>> {
   static_assert(std::is_same_v<T, std::decay_t<T>>, "type must not have modifiers such as const");
-
-  // FlatTriangulationCollapsed cannot be created directly. Use make() to create a shared pointers holding a surface.
-  FlatTriangulationCollapsed(std::unique_ptr<FlatTriangulation<T>>, const flatsurf::Vector<T> &vertical);
 
  public:
   using Coordinate = T;
   using SaddleConnection = ::flatsurf::SaddleConnection<FlatTriangulation<T>>;
 
-  static std::shared_ptr<FlatTriangulationCollapsed<T>> make(std::unique_ptr<FlatTriangulation<T>>, const Vector<T> &vertical);
+  FlatTriangulationCollapsed();
+  FlatTriangulationCollapsed(const FlatTriangulation<T>&, const Vector<T> &vertical);
 
   Vertical<FlatTriangulationCollapsed<T>> vertical() const;
 
-  std::shared_ptr<const FlatTriangulation<T>> uncollapsed() const;
+  const FlatTriangulation<T>& uncollapsed() const;
 
   // Create an independent clone of this triangulation that is built from the
   // same data. There is no copy-constructor since it is too likely that this
@@ -56,18 +55,13 @@ class FlatTriangulationCollapsed : public FlatTriangulationCombinatorial,
   // expects.
   std::unique_ptr<FlatTriangulationCollapsed<T>> clone() const;
 
-  virtual std::pair<HalfEdge, HalfEdge> collapse(HalfEdge) override;
-
-  virtual void flip(HalfEdge) override;
-
-  T area() const noexcept;
+  T area() const;
 
   // Note that only the horizontal part of this vector is meaningful. Rather,
   // the vertical part of the vectors are only consistent inside their faces.
-  const SaddleConnection &fromEdge(HalfEdge) const;
+  const SaddleConnection &fromHalfEdge(HalfEdge) const;
 
   bool inSector(HalfEdge, const Vector<T> &) const;
-  bool inSector(HalfEdge, const Vertical<FlatTriangulationCollapsed<T>> &) const;
 
   // Return the saddle connections to go from this half edge's source to its negative's target.
   Path<FlatTriangulation<T>> cross(HalfEdge) const;
@@ -75,20 +69,19 @@ class FlatTriangulationCollapsed : public FlatTriangulationCombinatorial,
   // Return the collapsed saddle connections to turn from one half edge clockwise to the other.
   Path<FlatTriangulation<T>> turn(HalfEdge, HalfEdge) const;
 
-  FlatTriangulationCollapsed<T> &operator=(FlatTriangulationCollapsed<T> &&) noexcept;
-
-  std::shared_ptr<const FlatTriangulationCollapsed<T>> shared_from_this() const;
-  std::shared_ptr<FlatTriangulationCollapsed<T>> shared_from_this();
-
-  bool operator==(const FlatTriangulationCollapsed<T> &) const noexcept;
+  // Return whether two collapsed surfaces are equivalent, i.e., they were
+  // constructed from equal surfaces that have been collapsed with respect to a
+  // parallel vertical direction.
+  bool operator==(const FlatTriangulationCollapsed<T> &) const;
 
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const FlatTriangulationCollapsed<S> &);
 
  private:
-  using Implementation = ImplementationOf<FlatTriangulationCollapsed>;
-  Moveable<Implementation> impl;
-  friend Implementation;
+  using FlatTriangulationCombinatorics<FlatTriangulationCollapsed<T>>::self;
+
+  friend ImplementationOf<FlatTriangulationCollapsed<T>>;
+  friend ImplementationOf<ManagedMovable<FlatTriangulationCollapsed<T>>>;
 };
 
 }  // namespace flatsurf

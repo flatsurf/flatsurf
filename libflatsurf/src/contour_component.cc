@@ -29,11 +29,14 @@
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vertical.hpp"
+
 #include "external/rx-ranges/include/rx/ranges.hpp"
+
 #include "impl/contour_component.impl.hpp"
 #include "impl/contour_component_state.hpp"
 #include "impl/contour_connection.impl.hpp"
 #include "impl/contour_decomposition_state.hpp"
+
 #include "util/assert.ipp"
 
 using std::ostream;
@@ -41,15 +44,18 @@ using std::vector;
 
 namespace flatsurf {
 
+using std::begin;
+using std::end;
+
 template <typename Surface>
 IntervalExchangeTransformation<FlatTriangulationCollapsed<typename Surface::Coordinate>> ContourComponent<Surface>::intervalExchangeTransformation() const {
-  return IntervalExchangeTransformation(impl->state->surface, impl->state->surface->vertical().vertical(), impl->large());
+  return IntervalExchangeTransformation(self->state->surface, self->state->surface.vertical().vertical(), self->large());
 }
 
 template <typename Surface>
 std::vector<ContourConnection<Surface>> ContourComponent<Surface>::topContour() const {
-  return impl->component->topEdges | rx::transform([&](const HalfEdge e) {
-    return ImplementationOf<ContourConnection<Surface>>::makeTop(impl->state, impl->component, e);
+  return self->component->topEdges | rx::transform([&](const HalfEdge e) {
+    return ImplementationOf<ContourConnection<Surface>>::makeTop(self->state, self->component, e);
   }) | rx::to_vector();
 }
 
@@ -60,8 +66,8 @@ Path<FlatTriangulation<typename Surface::Coordinate>> ContourComponent<Surface>:
 
 template <typename Surface>
 std::vector<ContourConnection<Surface>> ContourComponent<Surface>::bottomContour() const {
-  return impl->component->bottomEdges | rx::transform([&](const HalfEdge e) {
-    return ImplementationOf<ContourConnection<Surface>>::makeBottom(impl->state, impl->component, e);
+  return self->component->bottomEdges | rx::transform([&](const HalfEdge e) {
+    return ImplementationOf<ContourConnection<Surface>>::makeBottom(self->state, self->component, e);
   }) | rx::to_vector();
 }
 
@@ -151,7 +157,7 @@ void ImplementationOf<ContourComponent<Surface>>::makeContour(std::back_insert_i
     const HalfEdge source, const Surface& parent,
     const Vertical<Surface>& vertical) {
   ASSERT_ARGUMENT(!vertical.parallel(source), "vertical edges must have been collapsed before a contour can be built");
-  ASSERT_ARGUMENT(vertical.perpendicular(parent.fromEdge(source)) > 0, "contour must procede in positive direction");
+  ASSERT_ARGUMENT(vertical.perpendicular(parent.fromHalfEdge(source)) > 0, "contour must procede in positive direction");
   switch (vertical.classifyFace(source)) {
     case Vertical<Surface>::TRIANGLE::BACKWARD:
       // In a backward triangle, we recurse into both edges on the top.
@@ -173,13 +179,13 @@ void ImplementationOf<ContourComponent<Surface>>::makeContour(std::back_insert_i
 
 template <typename Surface>
 bool ContourComponent<Surface>::operator==(const ContourComponent<Surface>& rhs) const {
-  if (impl->component == rhs.impl->component)
+  if (self->component == rhs.self->component)
     return true;
 
-  if (impl->state == rhs.impl->state)
+  if (self->state == rhs.self->state)
     return false;
 
-  return impl->state->surface == rhs.impl->state->surface && impl->component->halfEdges == rhs.impl->component->halfEdges;
+  return self->state->surface == rhs.self->state->surface && self->component->halfEdges == rhs.self->component->halfEdges;
 }
 
 template <typename Surface>

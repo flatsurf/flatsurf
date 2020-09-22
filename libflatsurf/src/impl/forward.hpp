@@ -20,6 +20,8 @@
 #ifndef LIBFLATSURF_IMPL_FORWARD_HPP
 #define LIBFLATSURF_IMPL_FORWARD_HPP
 
+#include "../../flatsurf/forward.hpp"
+
 namespace flatsurf {
 
 template <typename Surface>
@@ -33,6 +35,12 @@ class IndexedSet;
 
 template <typename T>
 class IndexedSetIterator;
+
+template <typename T>
+class ReadOnly;
+
+template <typename T>
+class WeakReadOnly;
 
 }  // namespace flatsurf
 

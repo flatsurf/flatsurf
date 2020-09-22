@@ -36,6 +36,7 @@
 #include "edge.hpp"
 #include "flat_triangulation.hpp"
 #include "flat_triangulation_combinatorial.hpp"
+#include "forward.hpp"
 #include "half_edge.hpp"
 #include "half_edge_set.hpp"
 #include "permutation.hpp"
@@ -157,28 +158,69 @@ struct Serialization {
   }
 };
 
+template <typename T>
+struct Serialization<ManagedMovable<T>> {
+  template <typename Archive>
+  static void save(Archive& archive, const T& self, std::function<void(Archive&, const T&)> save) {
+    uint32_t id = archive.registerSharedPointer(self.self.state.get());
+    archive(cereal::make_nvp("shared", id));
+
+    if ( id & static_cast<unsigned int>(cereal::detail::msb_32bit) ){
+      // This is the first time cereal sees this T, so we actually store it.
+      // Future copies only need the id to resolve to the same surface.
+      save(archive, self);
+    }
+  }
+
+  template <typename Archive>
+  static void load(Archive& archive, T& self, std::function<void(Archive&, T&)> load) {
+    uint32_t id;
+    archive(cereal::make_nvp("shared", id));
+
+    if ( id & static_cast<unsigned int>(cereal::detail::msb_32bit) ) {
+      // This is the original copy of the object. We need to deserialize it and
+      // record its value for future callers.
+      load(archive, self);
+      archive.registerSharedPointer(id, self.self.state);
+    } else {
+      self.self.state = std::static_pointer_cast<ImplementationOf<T>>(archive.getSharedPointer(id));
+    }
+  }
+};
+
+// Note that the serialization of a FlatTriangulationCombinatorial does not
+// take into account that this might actually be a FlatTriangulation(Collapsed)
+// that has been cast to a FlatTriangulationCombinatorial internally. We
+// currently do not yet reproduce the virtual inheritance between the
+// ImplementationOf<> of the different surface types. If you have trouble with
+// this, it might help to make sure that non-combinatorial instances are
+// serialized and deserialized first.
 template <>
 struct Serialization<FlatTriangulationCombinatorial> {
   template <typename Archive>
   void save(Archive& archive, const FlatTriangulationCombinatorial& self) {
-    std::vector<std::pair<HalfEdge, HalfEdge>> vertices;
-    for (auto& e : self.halfEdges()) {
-      vertices.push_back(std::pair(e, self.nextAtVertex(e)));
-    }
-    archive(cereal::make_nvp("vertices", Permutation<HalfEdge>(vertices)));
+    Serialization<ManagedMovable<FlatTriangulationCombinatorial>>::save<Archive>(archive, self, [](Archive& archive, const FlatTriangulationCombinatorial& self) {
+      std::vector<std::pair<HalfEdge, HalfEdge>> vertices;
+      for (auto& e : self.halfEdges()) {
+        vertices.push_back(std::pair(e, self.nextAtVertex(e)));
+      }
+      archive(cereal::make_nvp("vertices", Permutation<HalfEdge>(vertices)));
 
-    std::vector<std::pair<HalfEdge, HalfEdge>> faces;
-    for (auto& e : self.halfEdges()) {
-      faces.push_back(std::pair(e, self.nextInFace(e)));
-    }
-    archive(cereal::make_nvp("faces", Permutation<HalfEdge>(vertices)));
+      std::vector<std::pair<HalfEdge, HalfEdge>> faces;
+      for (auto& e : self.halfEdges()) {
+        faces.push_back(std::pair(e, self.nextInFace(e)));
+      }
+      archive(cereal::make_nvp("faces", Permutation<HalfEdge>(vertices)));
+    });
   }
 
   template <typename Archive>
   void load(Archive& archive, FlatTriangulationCombinatorial& self) {
-    Permutation<HalfEdge> vertices;
-    archive(cereal::make_nvp("vertices", vertices));
-    self = FlatTriangulationCombinatorial(vertices);
+    Serialization<ManagedMovable<FlatTriangulationCombinatorial>>::load<Archive>(archive, self, [](Archive& archive, FlatTriangulationCombinatorial& self) {
+      Permutation<HalfEdge> vertices;
+      archive(cereal::make_nvp("vertices", vertices));
+      self = FlatTriangulationCombinatorial(vertices);
+    });
   }
 };
 
@@ -190,7 +232,7 @@ struct Serialization<FlatTriangulation<T>> {
 
     std::unordered_map<HalfEdge, Vector<T>> vectors;
     for (auto& edge : self.halfEdges())
-      vectors[edge] = self.fromEdge(edge);
+      vectors[edge] = self.fromHalfEdge(edge);
 
     archive(cereal::make_nvp("vectors", vectors));
   }
@@ -210,7 +252,7 @@ template <typename Surface>
 struct Serialization<Chain<Surface>> {
   template <typename Archive>
   void save(Archive& archive, const Chain<Surface>& self) {
-    archive(cereal::make_nvp("surface", self.surface().shared_from_this()));
+    archive(cereal::make_nvp("surface", self.surface()));
 
     std::vector<std::string> coefficients;
     for (auto edge : self.surface().edges())
@@ -220,14 +262,14 @@ struct Serialization<Chain<Surface>> {
 
   template <typename Archive>
   void load(Archive& archive, Chain<Surface>& self) {
-    std::shared_ptr<const Surface> surface;
+    Surface surface;
     archive(cereal::make_nvp("surface", surface));
     std::vector<std::string> coefficients;
     archive(cereal::make_nvp("coefficients", coefficients));
 
     self = Chain(surface);
     for (size_t i = 0; i < coefficients.size(); i++)
-      self += ((Chain<Surface>(surface) += surface->edges()[i].positive()) *= mpz_class(coefficients[i]));
+      self += ((Chain<Surface>(surface) += surface.edges()[i].positive()) *= mpz_class(coefficients[i]));
   }
 };
 
@@ -235,7 +277,7 @@ template <typename Surface>
 struct Serialization<SaddleConnection<Surface>> {
   template <typename Archive>
   void save(Archive& archive, const SaddleConnection<Surface>& self) {
-    archive(cereal::make_nvp("surface", std::static_pointer_cast<const Surface>(self.surface().shared_from_this())));
+    archive(cereal::make_nvp("surface", self.surface()));
     archive(cereal::make_nvp("source", self.source()));
     archive(cereal::make_nvp("target", self.target()));
     archive(cereal::make_nvp("chain", static_cast<Chain<Surface>>(self)));
@@ -244,7 +286,7 @@ struct Serialization<SaddleConnection<Surface>> {
 
   template <typename Archive>
   void load(Archive& archive, SaddleConnection<Surface>& self) {
-    std::shared_ptr<Surface> surface;
+    Surface surface;
     archive(cereal::make_nvp("surface", surface));
     HalfEdge source, target;
     archive(cereal::make_nvp("source", source));
@@ -282,7 +324,7 @@ struct Serialization<Vertical<Surface>> {
 
   template <typename Archive>
   void load(Archive& archive, Vertical<Surface>& self) {
-    std::shared_ptr<const Surface> surface;
+    Surface surface;
     Vector<typename Surface::Coordinate> vertical;
     archive(cereal::make_nvp("surface", surface));
     archive(cereal::make_nvp("vector", vertical));

@@ -21,7 +21,6 @@
 #define LIBFLATSURF_FLOW_TRIANGULATION_HPP
 
 #include "copyable.hpp"
-#include "forward.hpp"
 
 namespace flatsurf {
 
@@ -56,10 +55,9 @@ class FlowTriangulation {
   friend std::ostream& operator<<(std::ostream&, const FlowTriangulation<S>&);
 
  private:
-  using Implementation = ImplementationOf<FlowTriangulation>;
-  Copyable<Implementation> impl;
+  Copyable<FlowTriangulation> self;
 
-  friend Implementation;
+  friend ImplementationOf<FlowTriangulation>;
 };
 
 }  // namespace flatsurf

@@ -28,7 +28,6 @@
 #include <vector>
 
 #include "copyable.hpp"
-#include "forward.hpp"
 #include "vector.hpp"
 
 namespace flatsurf {
@@ -86,10 +85,9 @@ class FlowComponent : boost::equality_comparable<FlowComponent<Surface>> {
   friend std::ostream& operator<<(std::ostream&, const FlowComponent<S>&);
 
  private:
-  using Implementation = ImplementationOf<FlowComponent>;
-  Copyable<Implementation> impl;
+  Copyable<FlowComponent> self;
 
-  friend Implementation;
+  friend ImplementationOf<FlowComponent>;
 };
 
 }  // namespace flatsurf

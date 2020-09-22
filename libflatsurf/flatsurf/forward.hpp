@@ -34,10 +34,15 @@ enum class CCW;
 
 enum class ORIENTATION;
 
+struct ProtectedConstructor {};
+
 struct PrivateConstructor {};
 
 template <typename T>
 class Vector;
+
+template <typename Surface>
+class FlatTriangulationCombinatorics;
 
 class FlatTriangulationCombinatorial;
 
@@ -101,6 +106,9 @@ class Bound;
 
 template <typename Surface>
 class IntervalExchangeTransformation;
+
+template <typename T>
+class ManagedMovable;
 
 template <typename Surface>
 class ContourDecomposition;

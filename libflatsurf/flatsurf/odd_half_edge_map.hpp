@@ -43,6 +43,14 @@ class OddHalfEdgeMap {
   OddHalfEdgeMap(const FlatTriangulationCombinatorial& surface) :
     values(surface) {}
 
+  OddHalfEdgeMap(const FlatTriangulationCombinatorial& surface, const std::vector<T>& values) :
+    values(surface, [&](const HalfEdge &e) {
+      return e == Edge(e).positive() ? values.at(Edge(e).index()) : -values.at(Edge(e).index());
+    }) {
+    if (values.size() != surface.edges().size())
+      throw std::invalid_argument("number of entries does not match number of edges");
+  }
+
   OddHalfEdgeMap(const FlatTriangulationCombinatorial& surface, std::function<T(HalfEdge)> values) :
     values(surface, values) {}
 

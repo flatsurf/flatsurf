@@ -23,8 +23,7 @@
 #include <boost/iterator/iterator_facade.hpp>
 #include <optional>
 
-#include "external/spimpl/spimpl.h"
-#include "forward.hpp"
+#include "copyable.hpp"
 
 namespace flatsurf {
 
@@ -54,11 +53,10 @@ class SaddleConnectionsIterator : public boost::iterator_facade<SaddleConnection
   friend std::ostream &operator<<(std::ostream &, const SaddleConnectionsIterator<S> &);
 
  private:
-  using Implementation = ImplementationOf<SaddleConnectionsIterator>;
-  friend Implementation;
-  spimpl::impl_ptr<Implementation> impl;
+  Copyable<SaddleConnectionsIterator> self;
 
   friend SaddleConnections<Surface>;
+  friend ImplementationOf<SaddleConnectionsIterator>;
 };
 
 }  // namespace flatsurf

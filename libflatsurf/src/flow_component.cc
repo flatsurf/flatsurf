@@ -54,7 +54,7 @@ template <typename Surface>
 bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Surface>&)> target, int limit) {
   const auto check = [&]() {
     ASSERTIONS(([&]() {
-      auto paths = impl->state->components | rx::transform([&](const auto& component) { return Path(ImplementationOf<FlowComponent<Surface>>::make(impl->state, &const_cast<FlowComponentState<Surface>&>(component)).perimeter() | rx::transform([](const auto& connection) { return connection.saddleConnection(); }) | rx::to_vector()); }) | rx::to_vector();
+      auto paths = self->state->components | rx::transform([&](const auto& component) { return Path(ImplementationOf<FlowComponent<Surface>>::make(self->state, &const_cast<FlowComponentState<Surface>&>(component)).perimeter() | rx::transform([](const auto& connection) { return connection.saddleConnection(); }) | rx::to_vector()); }) | rx::to_vector();
       ImplementationOf<ContourDecomposition<Surface>>::check(paths, vertical());
     }));
   };
@@ -62,7 +62,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
   while (!target(*this)) {
     check();
 
-    auto step = impl->component->dynamicalComponent.decompositionStep(limit);
+    auto step = self->component->dynamicalComponent.decompositionStep(limit);
 
     if (step.result == intervalxt::DecompositionStep::Result::LIMIT_REACHED)
       return false;
@@ -74,12 +74,12 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
       // constructing the vector that describes it and finding where it starts
       // and ends in the original surface.
 
-      const auto surface = vertical().surface();
+      const ReadOnly<Surface> surface = vertical().surface();
 
       // Reconstruct the vector of our new SaddleConnection.
       Chain<FlatTriangulation<T>> vector(surface);
       for (const auto& connection : *step.equivalent) {
-        auto flowConnection = ImplementationOf<FlowConnection<Surface>>::make(impl->state, *this, connection);
+        auto flowConnection = ImplementationOf<FlowConnection<Surface>>::make(self->state, *this, connection);
         if (!flowConnection.vertical()) {
           // Since the default for ::make() is to assume that things were made
           // for walking the contour counterclockwise, a HalfEdge on the top is
@@ -101,7 +101,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
       // The first SaddleConnection of step.equivalent. The new
       // SaddleConnection must start clockwise from that one.
       auto clockwiseFrom = [&]() {
-        const auto precedingFlowConnection = ImplementationOf<FlowConnection<Surface>>::make(impl->state, *this, *begin(*step.equivalent));
+        const auto precedingFlowConnection = ImplementationOf<FlowConnection<Surface>>::make(self->state, *this, *begin(*step.equivalent));
         // Similarly, to the above, we need to turn a connection coming from a HalfEdge around.
         return precedingFlowConnection.vertical() ? precedingFlowConnection.saddleConnection() : -precedingFlowConnection.saddleConnection();
       }();
@@ -110,7 +110,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
       // The negative of the new SaddleConnection must start counterclockwise
       // from that one.
       auto counterclockwiseTo = [&]() {
-        const auto finalFlowConnection = ImplementationOf<FlowConnection<Surface>>::make(impl->state, *this, *rbegin(*step.equivalent));
+        const auto finalFlowConnection = ImplementationOf<FlowConnection<Surface>>::make(self->state, *this, *rbegin(*step.equivalent));
         // Similarly, to the above, we need to turn a connection coming from a HalfEdge around.
         return finalFlowConnection.vertical() ? -finalFlowConnection.saddleConnection() : finalFlowConnection.saddleConnection();
       }();
@@ -153,7 +153,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
         auto ret = clockwiseFrom.source();
 
         while (true) {
-          switch (classify(vertical(), surface->fromEdge(ret))) {
+          switch (classify(vertical(), surface->fromHalfEdge(ret))) {
             case NORTH:
             case NORTH_EAST:
             case EAST:
@@ -178,7 +178,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
         auto ret = counterclockwiseTo.source();
 
         while (true) {
-          switch (classify(vertical(), surface->fromEdge(ret))) {
+          switch (classify(vertical(), surface->fromHalfEdge(ret))) {
             case NORTH_WEST:
             case WEST:
             case SOUTH_WEST:
@@ -191,7 +191,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
         }
 
         while (true) {
-          switch (classify(vertical(), surface->fromEdge(ret))) {
+          switch (classify(vertical(), surface->fromHalfEdge(ret))) {
             case SOUTH_EAST:
             case EAST:
             case NORTH_EAST:
@@ -219,17 +219,17 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
 
       ASSERT(clockwiseFrom.vector().ccw(connection) == CCW::CLOCKWISE || (clockwiseFrom.vector().ccw(connection) == CCW::COLLINEAR && clockwiseFrom.vector().orientation(connection) == ORIENTATION::OPPOSITE), "Detected SaddleConnection must be reachable clockwise from the existing contour but " << connection << " is not clockwise from " << clockwiseFrom);
 
-      impl->state->detectedConnections.emplace(*step.connection, connection);
-      impl->state->detectedConnections.emplace(-*step.connection, -connection);
+      self->state->detectedConnections.emplace(*step.connection, connection);
+      self->state->detectedConnections.emplace(-*step.connection, -connection);
     }
     if (step.additionalComponent) {
-      impl->state->components.push_back({
-          impl->component->contourComponent,
-          impl->component->iet,
+      self->state->components.push_back({
+          self->component->contourComponent,
+          self->component->iet,
           *step.additionalComponent,
       });
 
-      auto additionalComponent = Implementation::make(impl->state, &*impl->state->components.rbegin());
+      auto additionalComponent = ImplementationOf<FlowComponent>::make(self->state, &*self->state->components.rbegin());
 
       check();
 
@@ -243,18 +243,18 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
 }
 
 template <typename Surface>
-boost::logic::tribool FlowComponent<Surface>::cylinder() const { return impl->component->dynamicalComponent.cylinder(); }
+boost::logic::tribool FlowComponent<Surface>::cylinder() const { return self->component->dynamicalComponent.cylinder(); }
 
 template <typename Surface>
-boost::logic::tribool FlowComponent<Surface>::withoutPeriodicTrajectory() const { return impl->component->dynamicalComponent.withoutPeriodicTrajectory(); }
+boost::logic::tribool FlowComponent<Surface>::withoutPeriodicTrajectory() const { return self->component->dynamicalComponent.withoutPeriodicTrajectory(); }
 
 template <typename Surface>
-boost::logic::tribool FlowComponent<Surface>::keane() const { return impl->component->dynamicalComponent.keane(); }
+boost::logic::tribool FlowComponent<Surface>::keane() const { return self->component->dynamicalComponent.keane(); }
 
 template <typename Surface>
 Vertical<Surface> FlowComponent<Surface>::vertical() const {
-  const auto& collapsedSurface = impl->state->contourDecomposition.collapsed();
-  return Vertical<Surface>(collapsedSurface->uncollapsed(), collapsedSurface->vertical().vertical());
+  const auto& collapsedSurface = self->state->contourDecomposition.collapsed();
+  return Vertical<Surface>(collapsedSurface.uncollapsed(), collapsedSurface.vertical().vertical());
 }
 
 template <typename Surface>
@@ -295,8 +295,8 @@ template <typename Surface>
 typename FlowComponent<Surface>::Perimeter FlowComponent<Surface>::perimeter() const {
   Perimeter perimeter;
 
-  for (const auto& side : impl->component->dynamicalComponent.perimeter())
-    perimeter.push_back(ImplementationOf<FlowConnection<Surface>>::make(impl->state, *this, side));
+  for (const auto& side : self->component->dynamicalComponent.perimeter())
+    perimeter.push_back(ImplementationOf<FlowConnection<Surface>>::make(self->state, *this, side));
 
   ASSERTIONS([&]() {
     Path<FlatTriangulation<T>> path = perimeter | rx::transform([&](const auto connection) { return connection.saddleConnection(); }) | rx::to_vector();
@@ -309,12 +309,12 @@ typename FlowComponent<Surface>::Perimeter FlowComponent<Surface>::perimeter() c
 
 template <typename Surface>
 bool FlowComponent<Surface>::operator==(const FlowComponent<Surface>& rhs) const {
-  return impl->component == rhs.impl->component;
+  return self->component == rhs.self->component;
 }
 
 template <typename Surface>
 const IntervalExchangeTransformation<FlatTriangulationCollapsed<typename Surface::Coordinate>>& FlowComponent<Surface>::intervalExchangeTransformation() const {
-  return *impl->component->iet;
+  return *self->component->iet;
 }
 
 template <typename Surface>

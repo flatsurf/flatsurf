@@ -26,6 +26,9 @@
 #include "../../flatsurf/saddle_connections.hpp"
 #include "../../flatsurf/vector.hpp"
 
+#include "read_only.hpp"
+#include "flat_triangulation.impl.hpp"
+
 namespace flatsurf {
 
 template <typename Surface>
@@ -48,9 +51,9 @@ class ImplementationOf<SaddleConnections<Surface>> {
     bool contains(const SaddleConnection<Surface>&) const;
   };
 
-  ImplementationOf(std::shared_ptr<const Surface>);
+  ImplementationOf(const Surface&);
 
-  std::shared_ptr<const Surface> surface;
+  ReadOnly<Surface> surface;
   std::vector<Sector> sectors;
   std::optional<Bound> searchRadius;
 };

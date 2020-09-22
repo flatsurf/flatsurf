@@ -34,7 +34,7 @@ class ImplementationOf<ContourDecomposition<Surface>> {
   using DecompositionState = ContourDecompositionState<Surface>;
 
  public:
-  ImplementationOf(std::unique_ptr<Surface>, const Vector<T>&);
+  ImplementationOf(Surface, const Vector<T>&);
 
   // Verify that the lists of saddle connectionss in decomposition describe a
   // valid decomposition of the surface they are defined on.

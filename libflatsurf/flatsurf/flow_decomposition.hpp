@@ -25,7 +25,7 @@
 #include <iosfwd>
 #include <vector>
 
-#include "copyable.hpp"
+#include "movable.hpp"
 #include "flow_component.hpp"
 
 namespace flatsurf {
@@ -40,7 +40,7 @@ class FlowDecomposition {
   FlowDecomposition(PrivateConstructor, Args&&... args);
 
  public:
-  FlowDecomposition(std::unique_ptr<Surface>, const Vector<T>& vertical);
+  FlowDecomposition(Surface&&, const Vector<T>& vertical);
 
   static bool defaultTarget(const FlowComponent<Surface>& c) {
     return (c.cylinder() || c.withoutPeriodicTrajectory()) ? true : false;
@@ -53,12 +53,12 @@ class FlowDecomposition {
   std::vector<FlowComponent<Surface>> components() const;
 
   // Return the original surface from which this flow decomposition was created.
-  std::shared_ptr<const Surface> surface() const;
+  const Surface& surface() const;
 
   Vector<T> vertical() const;
 
   // Return a triangulation of surface consistent with the decomposition into flow components.
-  std::shared_ptr<const FlatTriangulation<T>> triangulation() const;
+  FlatTriangulation<T> triangulation() const;
 
   // Return the half edge in triangulation() corresponding to this flow connection.
   HalfEdge halfEdge(const FlowConnection<Surface>&) const;
@@ -76,10 +76,13 @@ class FlowDecomposition {
   friend std::ostream& operator<<(std::ostream&, const FlowDecomposition<S>&);
 
  private:
-  using Implementation = ImplementationOf<FlowDecomposition>;
-  Copyable<Implementation> impl;
-  friend Implementation;
+  Movable<FlowDecomposition> self;
+
+  friend ImplementationOf<FlowDecomposition>;
 };
+
+template <typename Surface, typename ...Args>
+FlowDecomposition(Surface&&, Args&& ...args) -> FlowDecomposition<Surface>;
 
 }  // namespace flatsurf
 

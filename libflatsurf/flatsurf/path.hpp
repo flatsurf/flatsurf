@@ -65,19 +65,20 @@ class Path : public Serializable<Path<Surface>>,
 
   bool empty() const;
 
-  PathIterator<Surface> begin() const;
-  PathIterator<Surface> end() const;
+  using iterator = PathIterator<Surface>;
+
+  iterator begin() const;
+  iterator end() const;
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const Path<S>&);
 
  private:
-  using Implementation = ImplementationOf<Path>;
-  Copyable<Implementation> impl;
+  Copyable<Path> self;
 
-  friend Implementation;
-  friend PathIterator<Surface>;
-  friend ImplementationOf<PathIterator<Surface>>;
+  friend ImplementationOf<Path>;
+  friend iterator;
+  friend ImplementationOf<iterator>;
 };
 
 template <typename Surface>

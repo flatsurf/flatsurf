@@ -2,7 +2,7 @@
  *  This file is part of flatsurf.
  *
  *        Copyright (C) 2019 Vincent Delecroix
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -95,7 +95,7 @@ TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (long long), (m
         AND_THEN("Each of its components can be triangulated") {
           const auto triangulations = flowDecomposition.components() | rx::transform([](const auto& component) { return component.triangulation(); }) | rx::to_vector();
           REQUIRE((triangulations | rx::transform([](const auto& component) { return component.triangulation()->area(); }) | rx::sum()) == surface->area());
-          REQUIRE(flowDecomposition.triangulation()->area() == surface->area());
+          REQUIRE(flowDecomposition.triangulation().area() == surface->area());
         }
       }
     }

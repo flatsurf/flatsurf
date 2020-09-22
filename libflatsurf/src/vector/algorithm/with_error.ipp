@@ -37,18 +37,18 @@ using std::optional;
 
 template <typename Vector>
 std::optional<bool> VectorWithError<Vector>::operator==(const Vector& rhs) const noexcept {
-  using Implementation = typename Vector::Implementation;
+  using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
   if constexpr (has_optional_eq<Implementation>) {
-    return *self.impl == *rhs.impl;
+    return *self.self == *rhs.self;
   } else if constexpr (is_forward_v<Implementation>) {
-    return self.impl->vector == rhs.impl->vector;
+    return self.self->vector == rhs.self->vector;
   } else if constexpr (is_cartesian_v<Implementation>) {
-    auto maybe_x = self.impl->x == rhs.impl->x;
+    auto maybe_x = self.self->x == rhs.self->x;
     if (!maybe_x || !*maybe_x)
       return maybe_x;
-    auto maybe_y = self.impl->x == rhs.impl->y;
+    auto maybe_y = self.self->x == rhs.self->y;
     if (!maybe_y || !*maybe_y)
       return maybe_y;
     return true;
@@ -59,13 +59,13 @@ std::optional<bool> VectorWithError<Vector>::operator==(const Vector& rhs) const
 
 template <typename Vector>
 std::optional<bool> VectorWithError<Vector>::operator!=(const Vector& rhs) const noexcept {
-  using Implementation = typename Vector::Implementation;
+  using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
   if constexpr (has_optional_ne<Implementation>) {
-    return *self.impl != *rhs.impl;
+    return *self.self != *rhs.self;
   } else if constexpr (is_forward_v<Implementation>) {
-    return self.impl->vector != rhs.impl->vector;
+    return self.self->vector != rhs.self->vector;
   } else if constexpr (is_cartesian_v<Implementation>) {
     const auto eq = self == rhs;
     if (eq) return !*eq;
@@ -77,10 +77,10 @@ std::optional<bool> VectorWithError<Vector>::operator!=(const Vector& rhs) const
 
 template <typename Vector>
 std::optional<CCW> VectorWithError<Vector>::ccw(const Vector& rhs) const noexcept {
-  using Implementation = typename Vector::Implementation;
+  using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
   if constexpr (has_optional_ccw<Implementation>) {
-    return self.impl->ccw(rhs);
+    return self.self->ccw(rhs);
   } else {
     static_assert(false_type_v<Implementation>, "Implementation is missing ccw().");
   }
@@ -88,10 +88,10 @@ std::optional<CCW> VectorWithError<Vector>::ccw(const Vector& rhs) const noexcep
 
 template <typename Vector>
 std::optional<ORIENTATION> VectorWithError<Vector>::orientation(const Vector& rhs) const noexcept {
-  using Implementation = typename Vector::Implementation;
+  using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
   if constexpr (has_optional_orientation<Implementation>) {
-    return self.impl->orientation(rhs);
+    return self.self->orientation(rhs);
   } else {
     static_assert(false_type_v<Implementation>, "Implementation is missing orientation().");
   }
@@ -99,18 +99,18 @@ std::optional<ORIENTATION> VectorWithError<Vector>::orientation(const Vector& rh
 
 template <typename Vector>
 VectorWithError<Vector>::operator std::optional<bool>() const noexcept {
-  using Implementation = typename Vector::Implementation;
+  using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
   if constexpr (has_optional_bool<Implementation>) {
-    return static_cast<std::optional<bool>>(*self.impl);
+    return static_cast<std::optional<bool>>(*self.self);
   } else if constexpr (is_forward_v<Implementation>) {
-    return static_cast<std::optional<bool>>(self.impl->vector);
+    return static_cast<std::optional<bool>>(self.self->vector);
   } else if constexpr (is_cartesian_v<Implementation>) {
-    auto maybe_x = static_cast<std::optional<bool>>(self.impl->x);
+    auto maybe_x = static_cast<std::optional<bool>>(self.self->x);
     if (!maybe_x || !*maybe_x)
       return maybe_x;
-    auto maybe_y = static_cast<std::optional<bool>>(self.impl->x);
+    auto maybe_y = static_cast<std::optional<bool>>(self.self->x);
     if (!maybe_y || !*maybe_y)
       return maybe_y;
     return true;
@@ -121,15 +121,15 @@ VectorWithError<Vector>::operator std::optional<bool>() const noexcept {
 
 template <typename Vector>
 optional<bool> VectorWithError<Vector>::operator<(Bound bound) const noexcept {
-  using Implementation = typename Vector::Implementation;
+  using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
   if constexpr (has_optional_lt_bound<Implementation>) {
-    return *self.impl < bound;
+    return *self.self < bound;
   } else if constexpr (is_forward_v<Implementation>) {
-    return self.impl->vector < bound;
+    return self.self->vector < bound;
   } else if constexpr (is_cartesian_v<Implementation>) {
-    return std::make_pair(self.impl->x, self.impl->y) < bound;
+    return std::make_pair(self.self->x, self.self->y) < bound;
   } else {
     static_assert(false_type_v<Implementation>, "Implementation is missing operator<(Bound).");
   }
@@ -137,15 +137,15 @@ optional<bool> VectorWithError<Vector>::operator<(Bound bound) const noexcept {
 
 template <typename Vector>
 optional<bool> VectorWithError<Vector>::operator>(Bound bound) const noexcept {
-  using Implementation = typename Vector::Implementation;
+  using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
   if constexpr (has_optional_gt_bound<Implementation>) {
-    return *self.impl > bound;
+    return *self.self > bound;
   } else if constexpr (is_forward_v<Implementation>) {
-    return self.impl->vector > bound;
+    return self.self->vector > bound;
   } else if constexpr (is_cartesian_v<Implementation>) {
-    return std::make_pair(self.impl->x, self.impl->y) > bound;
+    return std::make_pair(self.self->x, self.self->y) > bound;
   } else {
     static_assert(false_type_v<Implementation>, "Implementation is missing operator>(Bound).");
   }
@@ -153,15 +153,15 @@ optional<bool> VectorWithError<Vector>::operator>(Bound bound) const noexcept {
 
 template <typename Vector>
 exactreal::Arb VectorWithError<Vector>::operator*(const Vector& rhs) const noexcept {
-  using Implementation = typename Vector::Implementation;
+  using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
   if constexpr (has_arb_scalar_product<Implementation>) {
-    return *self.impl * rhs;
+    return *self.self * rhs;
   } else if constexpr (is_forward_v<Implementation>) {
-    return self.impl->vector * rhs.impl->vector;
+    return self.self->vector * rhs.self->vector;
   } else if constexpr (is_cartesian_v<Implementation>) {
-    return self.impl->x * rhs.impl->x + self.impl->y * rhs.impl->y;
+    return self.self->x * rhs.self->x + self.self->y * rhs.self->y;
   } else {
     static_assert(false_type_v<Implementation>, "Implementation is missing scalar product operator*.");
   }

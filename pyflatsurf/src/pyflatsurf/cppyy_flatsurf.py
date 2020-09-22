@@ -50,10 +50,8 @@ cppyy.py.add_pythonization(enable_pretty_printing, "flatsurf")
 cppyy.py.add_pythonization(lambda proxy, name: enable_cereal(proxy, name, ["flatsurf/cereal.hpp"]), "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("vector<flatsurf::.*>"))(enable_list_printing), "std")
 
-cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(add_method("saddle_connections")(lambda self, *args: cppyy.gbl.flatsurf.SaddleConnections[type(self)](self, *args))), "flatsurf")
-cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(add_method("insertAt")(lambda self, *args: cppyy.gbl.flatsurf.insertAtFlatTriangulation(self, *args))), "flatsurf")
-cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(add_method("slot")(lambda self, *args: cppyy.gbl.flatsurf.slotFlatTriangulation(self, *args))), "flatsurf")
-cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(wrap_method("__add__")(lambda self, cpp, rhs: cpp(cppyy.gbl.flatsurf.makeOddHalfEdgeMap[cppyy.gbl.flatsurf.Vector[type(self).Coordinate]](self, rhs)))), "flatsurf")
+
+cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(wrap_method("__add__")(lambda self, cpp, rhs: cpp(cppyy.gbl.flatsurf.OddHalfEdgeMap[cppyy.gbl.flatsurf.Vector[type(self).Coordinate]](self.combinatorial(), rhs)))), "flatsurf")
 
 
 cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_method("decompose")(lambda self, *args: cppyy.gbl.flatsurf.decomposeFlowDecomposition(self, *args))), "flatsurf")

@@ -25,7 +25,11 @@
 #include <vector>
 
 #include "../../flatsurf/interval_exchange_transformation.hpp"
+
+#include "read_only.hpp"
 #include "lengths.hpp"
+#include "flat_triangulation.impl.hpp"
+#include "flat_triangulation_collapsed.impl.hpp"
 
 namespace flatsurf {
 
@@ -34,13 +38,13 @@ class ImplementationOf<IntervalExchangeTransformation<Surface>> {
   using T = typename Surface::Coordinate;
 
  public:
-  ImplementationOf(std::shared_ptr<const Surface> surface, const Vector<T>& vertical, const std::vector<HalfEdge>& top, const std::vector<HalfEdge>& bottom);
+  ImplementationOf(const Surface& surface, const Vector<T>& vertical, const std::vector<HalfEdge>& top, const std::vector<HalfEdge>& bottom);
 
   // This is a hack, see https://github.com/flatsurf/flatsurf/issues/152.
   // Maybe the entire flatsurf::IntervalExchangeTransformation is a bit unfortunate actually.
   static void registerDecomposition(const IntervalExchangeTransformation<Surface>&, std::shared_ptr<FlowDecompositionState<FlatTriangulation<T>>>);
 
-  std::shared_ptr<const Surface> surface;
+  ReadOnly<Surface> surface;
   intervalxt::IntervalExchangeTransformation iet;
   // A (correctly casted) pointer to the actual lengths stored inside iet.
   Lengths<Surface>* lengths;

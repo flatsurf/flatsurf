@@ -77,8 +77,8 @@ TEMPLATE_TEST_CASE("Serialization of a Vector", "[cereal]", (long long), (mpz_cl
   auto square = makeSquare<R2>();
 
   for (auto halfEdge : square->halfEdges()) {
-    testRoundtrip(square->fromEdge(halfEdge));
-    testRoundtrip(square->fromEdgeApproximate(HalfEdge(1)));
+    testRoundtrip(square->fromHalfEdge(halfEdge));
+    testRoundtrip(square->fromHalfEdgeApproximate(HalfEdge(1)));
   }
 }
 
@@ -99,14 +99,14 @@ TEMPLATE_TEST_CASE("Serialization of a Vertical", "[cereal]", (long long), (mpz_
   using R2 = Vector<TestType>;
   auto square = makeSquare<R2>();
 
-  testRoundtrip(Vertical(square, square->fromEdge(HalfEdge(1))));
+  testRoundtrip(Vertical(*square, square->fromHalfEdge(HalfEdge(1))));
 }
 
 TEMPLATE_TEST_CASE("Serialization of a Chain", "[cereal]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using R2 = Vector<TestType>;
   auto square = makeSquare<R2>();
 
-  testRoundtrip(Chain(square, HalfEdge(1)));
+  testRoundtrip(Chain(*square, HalfEdge(1)));
 }
 
 TEMPLATE_TEST_CASE("Serialization of a SaddleConnection", "[cereal]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
