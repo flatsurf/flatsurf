@@ -130,7 +130,7 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddH
         continue;
 
       // Determine whether our vertex moves onto the half edge opposite to it,
-      // i.e., the one following e in this triangle.
+      // i.e., the one following he in this triangle.
       const auto vertex_hits_interior = [&]() {
         for (long prec = exactreal::ARB_PRECISION_FAST;; prec *= 2) {
           const auto t = det.root(prec);
@@ -181,7 +181,7 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddH
   if (flip) {
     // We want to flip the half edge that we found needs to be flipped first.
     // However, just flipping that edge right now might lead to infinite loops
-    // where the same edge gets flipped again and again without making any
+    // where the same edges get flipped again and again without making any
     // progress. So instead we get a bit closer to the critical time and
     // perform the flip just then.
     // Note that this also solves the problem that the flip might not actually
@@ -221,7 +221,7 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddH
     Tracked<EdgeSet> collapsing_(&*combinatorial, collapsing,
         Tracked<EdgeSet>::defaultFlip,
         [](EdgeSet &self, const FlatTriangulationCombinatorial &, Edge e) {
-          ASSERT(self.contains(e), "will only collapse edges that have been found to collapse at t=1");
+          ASSERT(self.contains(e), "can only collapse edges that have been found to collapse at t=1");
         });
 
     while (!collapsing_->empty())
@@ -231,6 +231,43 @@ std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddH
         std::move(*combinatorial),
         [&](const HalfEdge he) { return vectors->get(he); });
   }
+}
+
+template <typename T>
+std::unique_ptr<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() const {
+  std::optional<HalfEdge> collapse;
+
+  for (const auto &vertex : vertices()) {
+    if (angle(vertex) == 1) {
+      for (const auto &outgoing : atVertex(vertex)) {
+        const auto neighbour = Vertex::target(outgoing, *this);
+        if (neighbour != vertex) {
+          if (collapse && (fromEdge(*collapse) * fromEdge(*collapse)) < fromEdge(outgoing) * fromEdge(outgoing))
+            continue;
+          collapse = outgoing;
+        }
+      }
+    }
+  }
+
+  if (!collapse)
+    return clone();
+
+  const auto marked = Vertex::source(*collapse, *this);
+
+  auto simplified = *this + OddHalfEdgeMap<Vector<T>>(*this, [&](const HalfEdge he) {
+    if (Vertex::source(he, *this) == marked && Vertex::target(he, *this) == marked)
+      return Vector<T>();
+    if (Vertex::source(he, *this) == marked)
+      return -fromEdge(*collapse);
+    if (Vertex::target(he, *this) == marked)
+      return fromEdge(*collapse);
+
+    return Vector<T>();
+  });
+
+  ASSERT(simplified->vertices().size() < vertices().size(), "the numbers of vertices is reduced in each step but " << *this << " was simplified to " << *simplified);
+  return simplified->eliminateMarkedPoints();
 }
 
 template <typename T>
@@ -541,6 +578,8 @@ int FlatTriangulation<T>::angle(const Vertex &vertex) const {
 
     current = next;
   } while (current != first);
+
+  ASSERT(angle >= 1, "Total angle at vertex cannot be less than 2π");
 
   return angle;
 }

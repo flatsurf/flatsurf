@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -74,6 +74,10 @@ class FlatTriangulation : public FlatTriangulationCombinatorial,
   // Create an independent clone of this triangulation with the vector
   // v(h) associated to a half edge replaced by v(h) + shift[h].
   std::unique_ptr<FlatTriangulation<T>> operator+(const OddHalfEdgeMap<Vector<T>> &shift) const;
+
+  // Return a simplified flat triangulation with marked points, i.e., verticas
+  // with a total angle of 2π, eliminated.
+  std::unique_ptr<FlatTriangulation<T>> eliminateMarkedPoints() const;
 
   Vector<T> shortest() const;
   // Return the shortest vector relative to this direction which is not orthogonal to it.
