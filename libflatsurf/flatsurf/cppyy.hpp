@@ -96,8 +96,6 @@ auto makeOddHalfEdgeMap(const FlatTriangulationCombinatorial &surface, const std
 std::ostream &operator<<(std::ostream &, const HalfEdge &);
 template <typename T>
 std::ostream &operator<<(std::ostream &, const Permutation<T> &);
-template <typename K, typename V>
-std::ostream &operator<<(std::ostream &, const TrackingMap<K, V> &);
 template <typename T>
 std::ostream &operator<<(std::ostream &, const FlatTriangulation<T> &);
 // See saddle_connection.hpp for the _ parameter.

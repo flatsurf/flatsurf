@@ -78,12 +78,6 @@ class Edge;
 class Vertex;
 
 template <typename T>
-class Tracking;
-
-template <typename K, typename V>
-class TrackingMap;
-
-template <typename T>
 class EdgeMap;
 
 template <typename T>
