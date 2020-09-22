@@ -4,6 +4,19 @@ intervalxt Change Log
 
 .. current developments
 
+v1.2.0
+====================
+
+**Added:**
+
+* `FlatTriangulation::removeMarkedPoints` which will hopefully speed up GL2R Orbit Closure computations
+
+**Fixed:**
+
+* several `FlowConnection` methods are much faster now. This speeds up `FlowComponent::triangulation` substantially.
+
+
+
 v1.1.3
 ====================
 
