@@ -71,6 +71,14 @@ bool decomposeFlowDecomposition(FlowDecomposition<T> &decomposition, int limit =
   return decomposition.decompose(FlowDecomposition<T>::defaultTarget, limit);
 }
 
+// Work around https://bitbucket.org/wlav/cppyy/issues/273/segfault-in-cpycppyy-anonymous-namespace
+template <typename T>
+auto makeOddHalfEdgeMap(const FlatTriangulationCombinatorial& surface, const std::vector<T>& values) {
+  return OddHalfEdgeMap<T>(surface, [&](const HalfEdge &e) {
+    return e == Edge(e).positive() ? values.at(Edge(e).index()) : -values.at(Edge(e).index());
+  });
+}
+
 // The following block of forward declarations is a bit odd. It only exists to
 // work around bugs in cppyy.
 // See https://bitbucket.org/wlav/cppyy/issues/95/lookup-of-friend-operator
