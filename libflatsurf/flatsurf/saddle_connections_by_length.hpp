@@ -81,8 +81,8 @@ class SaddleConnectionsByLength {
   // End position of the iterator through the saddle connections.
   iterator end() const;
 
-  template <typename Surf>
-  friend std::ostream& operator<<(std::ostream&, const SaddleConnectionsByLength&);
+  template <typename S>
+  friend std::ostream& operator<<(std::ostream&, const SaddleConnectionsByLength<S>&);
 
  private:
   Copyable<SaddleConnectionsByLength> self;
