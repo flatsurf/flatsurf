@@ -20,34 +20,36 @@
 #ifndef LIBFLATSURF_CONTOUR_COMPONENT_HPP
 #define LIBFLATSURF_CONTOUR_COMPONENT_HPP
 
-#include <boost/operators.hpp>
-#include <list>
-#include <memory>
 #include <vector>
 
-#include "interval_exchange_transformation.hpp"
+#include <boost/operators.hpp>
+
 #include "copyable.hpp"
 
 namespace flatsurf {
 
+// A component of a Contour Decomposition, i.e., a connected component whose
+// graph of faces when only considering faces adjacent that share a
+// non-vertical edge.
 // Note that this object is immutable, all its members are const.
 template <class Surface>
 class ContourComponent : boost::equality_comparable<ContourComponent<Surface>> {
  private:
+  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
+
   // Components can not be created directly (other than by copying & moving
   // them.) They are byproducts of a ContourDecomposition.
   template <typename... Args>
   ContourComponent(PrivateConstructor, Args &&...);
 
-  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
-
  public:
   using T = typename Surface::Coordinate;
   using Contour = std::vector<ContourConnection<Surface>>;
 
+  // Return an interval exchange transformation corresponding to this component.
   IntervalExchangeTransformation<FlatTriangulationCollapsed<T>> intervalExchangeTransformation() const;
 
-  // The connections going along the top of this component from right to left.
+  // The connections walking the top of this component from right to left.
   Path<FlatTriangulation<T>> top() const;
 
   // The contour connections at the top of this component, from right to left.

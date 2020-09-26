@@ -33,6 +33,7 @@
 
 namespace flatsurf {
 
+// A chain on a flat triangulation, i.e., a formal sum of edges.
 template <typename Surface>
 class Chain : public Serializable<Chain<Surface>>,
               boost::equality_comparable<Chain<Surface>>,
@@ -65,6 +66,8 @@ class Chain : public Serializable<Chain<Surface>>,
 
   using iterator = ChainIterator<Surface>;
 
+  // Return an iterator over the summands of this chain, i.e., the pairs of
+  // coefficient and edges.
   iterator begin() const;
   iterator end() const;
 
@@ -75,8 +78,10 @@ class Chain : public Serializable<Chain<Surface>>,
 
   Chain<Surface> operator-() const;
 
+  // Return whether this is not the trivial chain.
   explicit operator bool() const;
 
+  // Return a reference to the surface where this chain is defined.
   const Surface& surface() const;
 
   template <typename S>

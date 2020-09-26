@@ -24,6 +24,7 @@
 
 #include "../flatsurf/contour_connection.hpp"
 #include "../flatsurf/flat_triangulation_collapsed.hpp"
+#include "../flatsurf/interval_exchange_transformation.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/path_iterator.hpp"

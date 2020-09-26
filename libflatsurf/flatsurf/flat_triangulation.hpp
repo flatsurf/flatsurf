@@ -20,22 +20,22 @@
 #ifndef LIBFLATSURF_FLAT_TRIANGULATION_HPP
 #define LIBFLATSURF_FLAT_TRIANGULATION_HPP
 
-#include <gmpxx.h>
-
-#include <boost/operators.hpp>
-#include <exact-real/forward.hpp>
 #include <functional>
 #include <iosfwd>
-#include <memory>
 #include <vector>
 
+#include <gmpxx.h>
+#include <boost/operators.hpp>
+#include <exact-real/forward.hpp>
+
 #include "flat_triangulation_combinatorial.hpp"
-#include "forward.hpp"
 #include "managed_movable.hpp"
 #include "serializable.hpp"
 
 namespace flatsurf {
 
+// A triangulated translation surface. For most purposes this is the central
+// object of the flatsurf library.
 template <class T>
 class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulation<T>>,
                           Serializable<FlatTriangulation<T>>,
@@ -54,6 +54,14 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
   // is would not update the associated HalfEdgeMaps in the way that the caller
   // expects.
   FlatTriangulation<T> clone() const;
+
+  // Flip edges in this triangulation so that all faces satisfy the l²-Delaunay condition.
+  void delaunay();
+
+  // Return whether this half edge satisfies the l²-Delaunay condition, i.e.,
+  // whether the circumcircles of the face attached to this edge does not
+  // contain the face attached to the reverse half edge.
+  bool delaunay(HalfEdge) const;
 
   // Create an independent clone of this triangulation with an added vertex
   // next to e at v from e's source. If the vector does not fit into the face
@@ -81,6 +89,7 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
   FlatTriangulation<T> eliminateMarkedPoints() const;
 
   Vector<T> shortest() const;
+
   // Return the shortest vector relative to this direction which is not orthogonal to it.
   Vector<T> shortest(const Vector<T> &) const;
 
@@ -99,9 +108,8 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
   bool inSector(HalfEdge, const Vector<T> &) const;
   bool inSector(HalfEdge, const Vertical<FlatTriangulation<T>> &) const;
 
-  // TODO: Rename to fromHalfEdge
   const Vector<T> &fromHalfEdge(HalfEdge) const;
-  // TODO: Rename to fromHalfEdge
+
   const ::flatsurf::Vector<exactreal::Arb> &fromHalfEdgeApproximate(HalfEdge) const;
 
   bool operator==(const FlatTriangulation<T> &) const noexcept;
@@ -118,6 +126,7 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
 
 template <typename Vector>
 FlatTriangulation(const std::vector<std::vector<int>> &, const std::vector<Vector> &) -> FlatTriangulation<typename Vector::Coordinate>;
+
 }  // namespace flatsurf
 
 #endif

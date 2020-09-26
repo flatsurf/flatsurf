@@ -37,19 +37,13 @@ template <typename T>
 struct is_optional<std::optional<T>> : std::true_type {};
 }  // namespace
 
+// A dictionary mapping each half edge of a triangulation to a T such that if e
+// maps to x, then -e maps to -x.
 template <typename T>
 class OddHalfEdgeMap {
  public:
   OddHalfEdgeMap(const FlatTriangulationCombinatorial& surface) :
     values(surface) {}
-
-  OddHalfEdgeMap(const FlatTriangulationCombinatorial& surface, const std::vector<T>& values) :
-    values(surface, [&](const HalfEdge &e) {
-      return e == Edge(e).positive() ? values.at(Edge(e).index()) : -values.at(Edge(e).index());
-    }) {
-    if (values.size() != surface.edges().size())
-      throw std::invalid_argument("number of entries does not match number of edges");
-  }
 
   OddHalfEdgeMap(const FlatTriangulationCombinatorial& surface, std::function<T(HalfEdge)> values) :
     values(surface, values) {}

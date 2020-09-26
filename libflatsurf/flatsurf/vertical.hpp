@@ -20,17 +20,20 @@
 #ifndef LIBFLATSURF_VERTICAL_HPP
 #define LIBFLATSURF_VERTICAL_HPP
 
-#include <boost/operators.hpp>
 #include <iosfwd>
 #include <memory>
 #include <type_traits>
 #include <unordered_set>
 #include <vector>
 
+#include <boost/operators.hpp>
+
 #include "copyable.hpp"
 #include "serializable.hpp"
 
 namespace flatsurf {
+
+// A vertical direction on a translation surface.
 template <typename Surface>
 class Vertical : Serializable<Vertical<Surface>>,
                  boost::equality_comparable<Vertical<Surface>> {
@@ -83,13 +86,8 @@ class Vertical : Serializable<Vertical<Surface>>,
 };
 
 template <typename Surface, typename... Args>
-Vertical(std::shared_ptr<const Surface>, Args &&...) -> Vertical<Surface>;
+Vertical(const Surface&, Args &&...) -> Vertical<Surface>;
 
-template <typename Surface, typename... Args>
-Vertical(std::shared_ptr<Surface>, Args &&...) -> Vertical<Surface>;
-
-template <typename Surface>
-Vertical(std::shared_ptr<const Surface>, const Vector<typename Surface::Coordinate> &) -> Vertical<Surface>;
 }  // namespace flatsurf
 
 #endif

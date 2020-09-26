@@ -21,12 +21,13 @@
 #define LIBFLATSURF_VERTEX_HPP
 
 #include <boost/operators.hpp>
-#include <unordered_set>
 
 #include "copyable.hpp"
 #include "serializable.hpp"
 
 namespace flatsurf {
+
+// A vertex of a triangulation.
 class Vertex : Serializable<Vertex>,
                boost::equality_comparable<Vertex> {
   // Vertex cannot be created directly; use source() and target() instead.
@@ -52,7 +53,6 @@ class Vertex : Serializable<Vertex>,
 };
 }  // namespace flatsurf
 
-// Makes Vertex hashable.
 template <>
 struct std::hash<flatsurf::Vertex> {
   size_t operator()(const flatsurf::Vertex &) const noexcept;

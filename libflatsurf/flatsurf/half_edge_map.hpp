@@ -21,12 +21,15 @@
 #define LIBFLATSURF_HALF_EDGE_MAP_HPP
 
 #include <ostream>
+#include <vector>
+#include <functional>
 
 #include "flat_triangulation_combinatorial.hpp"
 #include "half_edge.hpp"
 
 namespace flatsurf {
 
+// A dictionary mapping each half edge of a triangulation to a T.
 template <typename T>
 class HalfEdgeMap {
  public:

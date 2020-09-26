@@ -27,6 +27,7 @@
 
 namespace flatsurf {
 
+// An iterator for the a set of half edges.
 class HalfEdgeSetIterator : public boost::iterator_facade<HalfEdgeSetIterator, const HalfEdge &, boost::forward_traversal_tag> {
   template <typename... Args>
   HalfEdgeSetIterator(PrivateConstructor, Args &&...);

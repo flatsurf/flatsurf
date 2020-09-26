@@ -19,11 +19,13 @@
 
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 
 #include <fmt/format.h>
 
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../flatsurf/half_edge_set.hpp"
+#include "../flatsurf/half_edge_set_iterator.hpp"
 #include "../flatsurf/fmt.hpp"
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
@@ -381,6 +383,10 @@ std::pair<HalfEdge, HalfEdge> ImplementationOf<FlatTriangulationCombinatorial>::
 
 ImplementationOf<FlatTriangulationCombinatorial>::~ImplementationOf() {
   change.emit(MessageAfterMove{nullptr});
+}
+
+std::ostream& operator<<(std::ostream& os, const FlatTriangulationCombinatorial& self) {
+  return os << static_cast<const FlatTriangulationCombinatorics<FlatTriangulationCombinatorial>&>(self);
 }
 
 std::ostream& operator<<(std::ostream& os, const FlatTriangulationCombinatorial& self) {

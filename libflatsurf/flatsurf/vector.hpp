@@ -26,6 +26,7 @@
 #include "copyable.hpp"
 
 namespace flatsurf {
+
 // A vector in ℝ² whose coordinates are of type T.
 template <typename T>
 class Vector : public std::conditional_t<std::is_same_v<T, exactreal::Arb>, detail::VectorWithError<Vector<T>>, detail::VectorExact<Vector<T>, T>> {

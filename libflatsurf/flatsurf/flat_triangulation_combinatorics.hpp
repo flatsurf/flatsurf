@@ -22,13 +22,13 @@
 
 #include <boost/operators.hpp>
 #include <iosfwd>
-#include <memory>
 #include <vector>
 
 #include "managed_movable.hpp"
 
 namespace flatsurf {
 
+// A base class for all types representing triangulated translation surfaces.
 template <typename Surface>
 class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulationCombinatorial> {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
@@ -103,16 +103,36 @@ class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulat
   // Note that components that only meet in a vertex but not a half edge are therefore distinct.
   std::vector<std::vector<HalfEdge>> components() const;
 
+  // Return a triangulation that only encodes the combinatorial structure of
+  // this surface.
+  // Note that this is no different to the implicit cast operators defined
+  // below. This method exists because it is presently difficult to call cast
+  // operators from Python, i.e., cppyy.
   FlatTriangulationCombinatorial& combinatorial();
+
+  // Return a triangulation that only encodes the combinatorial structure of
+  // this surface.
+  // Note that this is no different to the implicit cast operators defined
+  // below. This method exists because it is presently difficult to call cast
+  // operators from Python, i.e., cppyy.
   const FlatTriangulationCombinatorial& combinatorial() const;
 
-  // Return whether rhs is combinatorial the same triangulation (with the same
-  // numbering of edges.)
-  // This method is not virtual so that non-combinatorial triangulations can
-  // also be compared combinatorically.
+  // Return whether rhs is combinatorially the same triangulation (with the
+  // same numbering of edges.)
   bool operator==(const FlatTriangulationCombinatorial &rhs) const noexcept;
 
+  // Return a triangulation that only encodes the combinatorial structure of
+  // this surface.
+  // Note that this is no different to the implicit cast operators defined
+  // below. This method exists because it is presently difficult to call cast
+  // operators from Python, i.e., cppyy.
   operator const FlatTriangulationCombinatorial&() const;
+
+  // Return a triangulation that only encodes the combinatorial structure of
+  // this surface.
+  // Note that this is no different to the implicit cast operators defined
+  // below. This method exists because it is presently difficult to call cast
+  // operators from Python, i.e., cppyy.
   operator FlatTriangulationCombinatorial&();
 
   template <typename S>

@@ -89,6 +89,7 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   bool operator>(const Bound) const;
   bool operator<(const Bound) const;
 
+  // TODO: Check whether this is still needed with the latest cppyy.
   // Strangely, when we do not put the _ here and try to print a
   // FlatTriangulation<eantic::renf_elem_class> through cppyy, it would compile
   // code that looks sane but fails because the overload resolution picked this

@@ -27,6 +27,11 @@
 
 namespace flatsurf {
 
+// The combinatorial structure of a triangulated translation surface. The
+// combinatorial structure is represented by a number of permutations such as
+// the permutation of half edges at the vertices, i.e., the permutation that
+// encodes how half edges are given sequentially when going around a vertex in
+// counter-clockwise order.
 class FlatTriangulationCombinatorial : public FlatTriangulationCombinatorics<FlatTriangulationCombinatorial>,
   Serializable<FlatTriangulationCombinatorial> {
 
@@ -41,6 +46,8 @@ class FlatTriangulationCombinatorial : public FlatTriangulationCombinatorics<Fla
 
   friend ImplementationOf<FlatTriangulationCombinatorial>;
   friend Serialization<ManagedMovable<FlatTriangulationCombinatorial>>;
+
+  friend std::ostream &operator<<(std::ostream &, const FlatTriangulationCombinatorial &);
 };
 
 }  // namespace flatsurf

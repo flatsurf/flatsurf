@@ -17,7 +17,7 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-// Include this header to get {fmt} support for all types define by this library.
+// Include this header to get {fmt} support for all types defined by this library.
 
 // Note that we would have liked to give {fmt} first class support and deduce
 // ostream<< from this. However, this is not possible with the encapsulation

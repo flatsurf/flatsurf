@@ -20,18 +20,23 @@
 #ifndef LIBFLATSURF_FLAT_TRIANGULATION_COLLAPSED_HPP
 #define LIBFLATSURF_FLAT_TRIANGULATION_COLLAPSED_HPP
 
-#include <boost/operators.hpp>
 #include <iosfwd>
-#include <memory>
-#include <vector>
 
-#include "flat_triangulation_combinatorial.hpp"
-#include "forward.hpp"
+#include <boost/operators.hpp>
+
+#include "flat_triangulation_combinatorics.hpp"
 #include "managed_movable.hpp"
 #include "serializable.hpp"
 
 namespace flatsurf {
 
+// A flat triangulation of a translation surface whose combinatorial structure
+// is obtained by collapsing edges that are parallel to a selected vertical
+// direction.
+// The geometry of such a triangulation is somewhat subtle. Since some edges
+// have been identified, only the horizontal geometry is immediately
+// meaningful, i.e., the projection of the vector associated to a half edge
+// that is perpendicular to the vertical direction.
 template <class T>
 class FlatTriangulationCollapsed : public FlatTriangulationCombinatorics<FlatTriangulationCollapsed<T>>,
                                    Serializable<FlatTriangulationCollapsed<T>>,
@@ -53,7 +58,7 @@ class FlatTriangulationCollapsed : public FlatTriangulationCombinatorics<FlatTri
   // same data. There is no copy-constructor since it is too likely that this
   // would not update the associated HalfEdgeMaps in the way that the caller
   // expects.
-  std::unique_ptr<FlatTriangulationCollapsed<T>> clone() const;
+  FlatTriangulationCollapsed<T> clone() const;
 
   T area() const;
 

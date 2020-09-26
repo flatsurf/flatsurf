@@ -27,6 +27,7 @@
 
 namespace flatsurf {
 
+// Iterates over a set of edges.
 class EdgeSetIterator : public boost::iterator_facade<EdgeSetIterator, const Edge &, boost::forward_traversal_tag> {
   template <typename... Args>
   EdgeSetIterator(PrivateConstructor, Args &&...);

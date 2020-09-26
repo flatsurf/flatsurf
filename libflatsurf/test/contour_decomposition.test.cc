@@ -18,12 +18,13 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <unordered_set>
+
 #include <boost/lexical_cast.hpp>
 #include <exact-real/element.hpp>
 #include <exact-real/integer_ring.hpp>
 #include <exact-real/number_field.hpp>
 #include <intervalxt/interval_exchange_transformation.hpp>
-#include <unordered_set>
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/contour_component.hpp"
@@ -36,7 +37,10 @@
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertical.hpp"
+#include "../flatsurf/interval_exchange_transformation.hpp"
+
 #include "external/catch2/single_include/catch2/catch.hpp"
+
 #include "generators/surface_generator.hpp"
 #include "generators/vertical_generator.hpp"
 

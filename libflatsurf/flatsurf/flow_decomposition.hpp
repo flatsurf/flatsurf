@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,16 +20,19 @@
 #ifndef LIBFLATSURF_FLOW_DECOMPOSITION_HPP
 #define LIBFLATSURF_FLOW_DECOMPOSITION_HPP
 
-#include <boost/logic/tribool.hpp>
 #include <functional>
 #include <iosfwd>
 #include <vector>
 
+#include <boost/logic/tribool.hpp>
+
 #include "movable.hpp"
-#include "flow_component.hpp"
 
 namespace flatsurf {
 
+// Decomposes a surface into Flow Components with respect to a certain vertical
+// direction. Such a decomposition consists of cylinders, minimal components,
+// and undetermined components.
 template <typename Surface>
 class FlowDecomposition {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");

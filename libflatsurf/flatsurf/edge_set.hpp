@@ -20,15 +20,17 @@
 #ifndef LIBFLATSURF_EDGE_SET_HPP
 #define LIBFLATSURF_EDGE_SET_HPP
 
-#include <boost/operators.hpp>
 #include <iosfwd>
 #include <vector>
+
+#include <boost/operators.hpp>
 
 #include "edge_set_iterator.hpp"
 #include "copyable.hpp"
 
 namespace flatsurf {
 
+// A subset of the set of edges of a Triangulation.
 class EdgeSet : boost::equality_comparable<EdgeSet> {
   template <typename... Args>
   EdgeSet(PrivateConstructor, Args&&...);
@@ -62,10 +64,6 @@ class EdgeSet : boost::equality_comparable<EdgeSet> {
   friend iterator;
   friend ImplementationOf<iterator>;
 };
-
-EdgeSetIterator begin(const EdgeSet&);
-
-EdgeSetIterator end(const EdgeSet&);
 
 }  // namespace flatsurf
 

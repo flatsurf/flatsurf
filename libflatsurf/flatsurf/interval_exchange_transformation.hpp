@@ -29,6 +29,14 @@
 
 namespace flatsurf {
 
+// An Interval Exchange Transformation on a connected component of a
+// triangulated translation surface with respect to a vertical direction.
+// Given a triangulated translation surface one can, after performing a finite
+// number of flips find (for each connected component) a pair of top and bottom
+// contours, i.e., connected sequences of half edges which describe the flow
+// through this component. How the half edges are permutated between the bottom
+// and top contour describes an Interval Exchange Transformation which is the
+// one this class represents.
 template <typename Surface>
 class IntervalExchangeTransformation {
   using T = typename Surface::Coordinate;
@@ -39,7 +47,8 @@ class IntervalExchangeTransformation {
  public:
   IntervalExchangeTransformation(const Surface&, const Vector<T>& vertical, const std::vector<HalfEdge>& top, const std::vector<HalfEdge>& bottom);
 
-  IntervalExchangeTransformation(const Surface&, const Vector<T>& vertical, const HalfEdge);
+  // Create the Interval Exchange Transformation starting from the given unique large edge in its connected component.
+  IntervalExchangeTransformation(const Surface&, const Vector<T>& vertical, const HalfEdge large);
 
   // Modify the surface such that each component has a unique large edge
   // and the components are such that their contours do not begin with the same

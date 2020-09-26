@@ -21,7 +21,6 @@
 #include <exact-real/element.hpp>
 
 #include "../flatsurf/bound.hpp"
-#include "../flatsurf/delaunay_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "external/catch2/single_include/catch2/catch.hpp"
 #include "generators/half_edge_generator.hpp"
@@ -42,10 +41,10 @@ TEMPLATE_TEST_CASE("Delaunay Triangulation", "[delaunay]", (long long), (mpq_cla
     WHEN("We Flip Edge " << halfEdge) {
       square->flip(halfEdge);
       THEN("The Delaunay Condition holds after performing Delaunay Triangulation") {
-        DelaunayTriangulation<T>::transform(*square);
+        square->delaunay();
         CAPTURE(*square);
         for (auto edge : square->halfEdges()) {
-          REQUIRE(DelaunayTriangulation<T>::test(*square, edge));
+          REQUIRE(square->delaunay(edge));
           REQUIRE(square->fromHalfEdge(edge) < bound);
         }
       }

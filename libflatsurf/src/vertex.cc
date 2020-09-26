@@ -22,20 +22,21 @@
 #include <fmt/format.h>
 
 #include <ostream>
-#include <string>
 
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/half_edge_set_iterator.hpp"
+
 #include "impl/vertex.impl.hpp"
+
 #include "util/assert.ipp"
 
-using std::ostream;
-using std::string;
-
 namespace flatsurf {
+
+using std::begin;
+using std::end;
 
 bool Vertex::operator==(const Vertex& rhs) const {
   ASSERT(ImplementationOf<Vertex>::comparable(self->sources, rhs.self->sources), "Cannot compare unrelated vertices; maybe the surface has changed since these vertices were created?");
@@ -62,7 +63,7 @@ HalfEdgeSet Vertex::incoming() const {
   return incoming;
 }
 
-ostream& operator<<(ostream& os, const Vertex& self) {
+std::ostream& operator<<(std::ostream& os, const Vertex& self) {
   return os << fmt::format("{}", self.self->sources);
 }
 

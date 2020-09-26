@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,6 +29,8 @@
 
 namespace flatsurf {
 
+// A bound for vectors in ℝ², i.e., a ball in ℝ² whose radius is given by
+// the length of a vector with integer coordinates.
 class Bound : boost::totally_ordered<Bound>, boost::multipliable<Bound, mpz_class> {
  public:
   Bound();

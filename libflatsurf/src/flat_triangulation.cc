@@ -52,11 +52,10 @@
 
 #include "util/assert.ipp"
 
-using std::map;
-using std::ostream;
-using std::vector;
-
 namespace flatsurf {
+
+using std::begin;
+using std::end;
 
 template <typename T>
 FlatTriangulation<T> FlatTriangulation<T>::operator+(const OddHalfEdgeMap<Vector<T>> &shift) const {
@@ -319,10 +318,10 @@ const flatsurf::Vector<exactreal::Arb> &FlatTriangulation<T>::fromHalfEdgeApprox
 
 template <typename T>
 FlatTriangulation<T>::FlatTriangulation() noexcept :
-  FlatTriangulation(FlatTriangulationCombinatorial(), vector<Vector<T>>{}) {}
+  FlatTriangulation(FlatTriangulationCombinatorial(), std::vector<Vector<T>>{}) {}
 
 template <typename T>
-FlatTriangulation<T>::FlatTriangulation(FlatTriangulationCombinatorial&& combinatorial, const vector<Vector<T>> &vectors) :
+FlatTriangulation<T>::FlatTriangulation(FlatTriangulationCombinatorial&& combinatorial, const std::vector<Vector<T>> &vectors) :
   FlatTriangulation(std::move(combinatorial), [&](const HalfEdge he) {
     Edge e = he;
     if (he == e.positive())
@@ -473,6 +472,46 @@ FlatTriangulation<T> FlatTriangulation<T>::insertAt(HalfEdge &nextTo, const Vect
 
     return ret;
   }
+}
+
+template <typename T>
+void FlatTriangulation<T>::delaunay() {
+  bool isDelaunay;
+  do {
+    isDelaunay = true;
+    for (auto edge : this->halfEdges()) {
+      if (!delaunay(edge)) {
+        isDelaunay = false;
+        this->flip(edge);
+      }
+    }
+  } while (!isDelaunay);
+}
+
+template <typename T>
+bool FlatTriangulation<T>::delaunay(const HalfEdge edge) const {
+  // We could eventually use Vector::insideCircumcircle() so vectors can
+  // provide optimized implementations of this. However, at the moment, it
+  // does not seem worth it.
+
+  // We use the condition described in Wikipedia (whether a certain
+  // determinant is positive.) Using the notation there, the face attached to
+  // this half edge is the triangle (a, b, c), and the face attached to the
+  // reversed half edge is (a, c, d). We use a coordinate system where
+  // d=(0,0).
+  auto ca = fromHalfEdge(edge);
+  auto cb = fromHalfEdge(this->nextAtVertex(edge));
+  auto dc = fromHalfEdge(-this->nextInFace(-edge));
+
+  auto a = dc + ca;
+  auto b = dc + cb;
+  auto c = dc;
+
+  auto det = [](const auto& x00, const auto& x01, const auto& x02, const auto& x10, const auto& x11, const auto& x12, const auto& x20, const auto& x21, const auto& x22) -> T {
+    return x00 * (x11 * x22 - x12 * x21) - x10 * (x01 * x22 - x02 * x21) + x20 * (x01 * x12 - x02 * x11);
+  };
+  
+  return det(a.x(), a.y(), a.x() * a.x() + a.y() * a.y(), b.x(), b.y(), b.x() * b.x() + b.y() * b.y(), c.x(), c.y(), c.x() * c.x() + c.y() * c.y()) <= 0;
 }
 
 template <typename T>

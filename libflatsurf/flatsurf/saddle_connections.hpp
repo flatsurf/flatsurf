@@ -20,13 +20,14 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTIONS_HPP
 #define LIBFLATSURF_SADDLE_CONNECTIONS_HPP
 
-#include <memory>
-
 #include "half_edge.hpp"
 #include "vertex.hpp"
 #include "copyable.hpp"
 
 namespace flatsurf {
+
+// The sequence of Saddle Connections on a triangulation translation surface
+// sorted by increasing angle around each vertex.
 template <typename Surface>
 class SaddleConnections {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
@@ -79,8 +80,8 @@ class SaddleConnections {
   // End position of the iterator through the saddle connections.
   iterator end() const;
 
-  template <typename Surf>
-  friend std::ostream &operator<<(std::ostream &, const SaddleConnections<Surf> &);
+  template <typename S>
+  friend std::ostream &operator<<(std::ostream &, const SaddleConnections<S> &);
 
  private:
   Copyable<SaddleConnections> self;

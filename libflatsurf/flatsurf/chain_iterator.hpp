@@ -29,6 +29,8 @@
 
 namespace flatsurf {
 
+// An iterator over a Chain on a surface, i.e., an iterator over the
+// coefficient, edge pairs of the formal sum representing a chain.
 template <typename Surface>
 class ChainIterator : public boost::iterator_facade<ChainIterator<Surface>, const std::pair<Edge, const mpz_class*>&, boost::forward_traversal_tag> {
   template <typename... Args>

@@ -24,7 +24,7 @@
 
 namespace flatsurf {
 
-// An immutable triangulation of a component of a flow decomposition.
+// A triangulation of a Flow Component.
 template <typename Surface>
 class FlowTriangulation {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");

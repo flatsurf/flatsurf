@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,8 @@
 #include "forward.hpp"
 
 namespace flatsurf {
+
+// Represents the result of a decomposition step of a Flow Component.
 template <typename Surface>
 class DecompositionStep {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
@@ -43,6 +45,7 @@ class DecompositionStep {
   std::optional<FlowConnection<Surface>> connection = std::nullopt;
   std::optional<FlowComponent<Surface>> additionalComponent = std::nullopt;
 };
+
 }  // namespace flatsurf
 
 #endif

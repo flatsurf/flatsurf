@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,6 +23,8 @@
 #include "forward.hpp"
 
 namespace flatsurf {
+// The result of deciding whether two vectors in ℝ² are clockwise,
+// counterclockwise, or collinear.
 enum class CCW {
   COUNTERCLOCKWISE = -1,
   COLLINEAR = 0,

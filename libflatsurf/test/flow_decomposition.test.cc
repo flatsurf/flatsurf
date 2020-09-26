@@ -31,10 +31,14 @@
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
+#include "../flatsurf/flow_component.hpp"
+
 #include "../src/external/rx-ranges/include/rx/ranges.hpp"
 #include "external/catch2/single_include/catch2/catch.hpp"
+
 #include "generators/surface_generator.hpp"
 #include "generators/vertical_generator.hpp"
+
 #include "surfaces.hpp"
 
 using eantic::renf_class;

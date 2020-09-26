@@ -20,13 +20,15 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTIONS_BY_LENGTH_HPP
 #define LIBFLATSURF_SADDLE_CONNECTIONS_BY_LENGTH_HPP
 
-#include <memory>
 #include <optional>
 
 #include "copyable.hpp"
 #include "forward.hpp"
 
 namespace flatsurf {
+
+// The sequence of Saddle Connections on a triangulation translation surface,
+// ordered by increasing length.
 template <typename Surface>
 class SaddleConnectionsByLength {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
@@ -91,7 +93,7 @@ class SaddleConnectionsByLength {
 };
 
 template <typename Surface, typename... T>
-SaddleConnectionsByLength(const std::shared_ptr<Surface>&, T&&...) -> SaddleConnectionsByLength<Surface>;
+SaddleConnectionsByLength(const SaddleConnections<Surface>&, T&&...) -> SaddleConnectionsByLength<Surface>;
 
 }  // namespace flatsurf
 

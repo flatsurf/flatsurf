@@ -20,14 +20,15 @@
 #ifndef LIBFLATSURF_EDGE_HPP
 #define LIBFLATSURF_EDGE_HPP
 
-#include <boost/operators.hpp>
 #include <iosfwd>
-#include <vector>
+
+#include <boost/operators.hpp>
 
 #include "half_edge.hpp"
 
 namespace flatsurf {
 
+// An unoriented edge of a Flat Triangulation.
 class Edge : boost::equality_comparable<Edge> {
  public:
   Edge();
@@ -39,6 +40,8 @@ class Edge : boost::equality_comparable<Edge> {
   HalfEdge positive() const;
   HalfEdge negative() const;
 
+  // Return a zero-based index that can be used to index into arrays with
+  // edges from the same triangulation.
   size_t index() const;
 
   bool operator==(const Edge &) const;

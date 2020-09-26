@@ -20,13 +20,15 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTIONS_ITERATOR_HPP
 #define LIBFLATSURF_SADDLE_CONNECTIONS_ITERATOR_HPP
 
-#include <boost/iterator/iterator_facade.hpp>
 #include <optional>
+
+#include <boost/iterator/iterator_facade.hpp>
 
 #include "copyable.hpp"
 
 namespace flatsurf {
 
+// Iterates over the saddle connections on a triangulation translation surface.
 template <typename Surface>
 class SaddleConnectionsIterator : public boost::iterator_facade<SaddleConnectionsIterator<Surface>, const SaddleConnection<Surface>, boost::forward_traversal_tag> {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");

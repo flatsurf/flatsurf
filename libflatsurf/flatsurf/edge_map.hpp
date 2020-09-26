@@ -21,12 +21,14 @@
 #define LIBFLATSURF_EDGE_MAP_HPP
 
 #include <stdexcept>
+#include <vector>
 
 #include "edge.hpp"
 #include "flat_triangulation_combinatorial.hpp"
 
 namespace flatsurf {
 
+// A dictionary mapping each edge of a triangulation to a T.
 template <typename T>
 class EdgeMap {
  public:

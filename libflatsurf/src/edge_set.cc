@@ -24,13 +24,19 @@
 #include <ostream>
 
 #include "../flatsurf/edge.hpp"
+#include "../flatsurf/edge_set.hpp"
 #include "../flatsurf/edge_set_iterator.hpp"
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../flatsurf/fmt.hpp"
+
 #include "impl/edge_set.impl.hpp"
+
 #include "util/assert.ipp"
 
 namespace flatsurf {
+
+using std::begin;
+using std::end;
 
 EdgeSet::EdgeSet() :
   self(spimpl::make_impl<ImplementationOf<EdgeSet>>()) {}
@@ -65,10 +71,6 @@ size_t EdgeSet::size() const {
 void EdgeSet::erase(Edge e) {
   return self->erase(e);
 }
-
-EdgeSetIterator begin(const EdgeSet& self) { return self.begin(); }
-
-EdgeSetIterator end(const EdgeSet& self) { return self.end(); }
 
 std::ostream& operator<<(std::ostream& os, const EdgeSet& self) {
   return os << fmt::format("{{{}}}", fmt::join(begin(self), end(self), ", "));

@@ -21,7 +21,6 @@
 #define LIBFLATSURF_PATH_HPP
 
 #include <boost/operators.hpp>
-#include <list>
 #include <vector>
 
 #include "copyable.hpp"
@@ -46,8 +45,10 @@ class Path : public Serializable<Path<Surface>>,
 
   // Return whether the list is cyclic, i.e., the last element joins up with the first.
   bool closed() const;
+
   // Return whether there are no segments showing up more than once.
   bool simple() const;
+
   // Return whether there are no segments followed by their negatives.
   bool reduced() const;
 

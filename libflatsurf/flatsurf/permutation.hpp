@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,17 +20,19 @@
 #ifndef LIBFLATSURF_PERMUTATION_HPP
 #define LIBFLATSURF_PERMUTATION_HPP
 
-#include <boost/operators.hpp>
 #include <functional>
 #include <iosfwd>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
+#include <boost/operators.hpp>
+
 #include "forward.hpp"
 
 namespace flatsurf {
-// A type-safe permutation of items of type T.
+
+// A type-safe permutation of Ts.
 // There should be no runtime overhead to using a simple T[], at least when
 // compiled with -flto.
 template <typename T>

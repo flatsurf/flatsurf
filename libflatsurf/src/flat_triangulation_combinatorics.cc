@@ -44,6 +44,9 @@
 
 namespace flatsurf {
 
+using std::begin;
+using std::end;
+
 template <typename Surface>
 HalfEdge FlatTriangulationCombinatorics<Surface>::nextInFace(const HalfEdge e) const {
   ASSERT_ARGUMENT(!boundary(e), "boundary half edge has no successor since it is not on any face");

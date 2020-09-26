@@ -20,15 +20,16 @@
 #ifndef LIBFLATSURF_HALF_EDGE_SET_HPP
 #define LIBFLATSURF_HALF_EDGE_SET_HPP
 
-#include <boost/operators.hpp>
 #include <iosfwd>
 #include <vector>
 
-#include "half_edge_set_iterator.hpp"
+#include <boost/operators.hpp>
+
 #include "copyable.hpp"
 
 namespace flatsurf {
 
+// A subset of the set of half edges of a triangulation.
 class HalfEdgeSet : boost::equality_comparable<HalfEdgeSet> {
  public:
   HalfEdgeSet();
@@ -59,10 +60,6 @@ class HalfEdgeSet : boost::equality_comparable<HalfEdgeSet> {
   friend iterator;
   friend ImplementationOf<iterator>;
 };
-
-HalfEdgeSetIterator begin(const HalfEdgeSet&);
-
-HalfEdgeSetIterator end(const HalfEdgeSet&);
 
 }  // namespace flatsurf
 

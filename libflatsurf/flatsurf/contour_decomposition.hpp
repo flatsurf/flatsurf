@@ -20,13 +20,17 @@
 #ifndef LIBFLATSURF_CONTOUR_DECOMPOSITION_HPP
 #define LIBFLATSURF_CONTOUR_DECOMPOSITION_HPP
 
-#include <memory>
 #include <vector>
 
 #include "movable.hpp"
 
 namespace flatsurf {
 
+// The decomposition of a (Collapsed) Flat Triangulation into Contour
+// Components, i.e., components whose graph of faces is connected when only
+// considering faces adjacent which share a non-vertical edge.
+// Note that further edges in each component have been flipped such that there
+// is only a single large edge in each component.
 template <class Surface>
 class ContourDecomposition {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
@@ -38,10 +42,12 @@ class ContourDecomposition {
 
   std::vector<ContourComponent<Surface>> components() const;
 
+  // Return the underlying Collapsed Flat Triangulation where all edges have
+  // been flipped such that each Contour Component has a unique large edge.
+  const FlatTriangulationCollapsed<T>& collapsed() const;
+
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const ContourDecomposition<S> &);
-
-  const FlatTriangulationCollapsed<T>& collapsed() const;
 
  private:
   Movable<ContourDecomposition> self;

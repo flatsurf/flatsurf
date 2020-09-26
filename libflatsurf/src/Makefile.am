@@ -13,7 +13,6 @@ libflatsurf_la_SOURCES =                                            \
 	contour_connection.cc                                       \
 	contour_decomposition.cc                                    \
 	contour_decomposition_state.cc                              \
-	delaunay_triangulation.cc                                   \
 	edge.cc                                                     \
 	edge_set_iterator.cc                                        \
 	edge_set.cc                                                 \
@@ -62,7 +61,6 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/copyable.hpp                                    \
 	../flatsurf/cppyy.hpp                                       \
 	../flatsurf/decomposition_step.hpp                          \
-	../flatsurf/delaunay_triangulation.hpp                      \
 	../flatsurf/edge.hpp                                        \
 	../flatsurf/edge_map.hpp                                    \
 	../flatsurf/edge_set.hpp                                    \
@@ -83,7 +81,7 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/half_edge_set_iterator.hpp                      \
 	../flatsurf/interval_exchange_transformation.hpp            \
 	../flatsurf/local.hpp                                       \
-	../flatsurf/movable.hpp                                    \
+	../flatsurf/movable.hpp                                     \
 	../flatsurf/odd_half_edge_map.hpp                           \
 	../flatsurf/orientation.hpp                                 \
 	../flatsurf/path.hpp                                        \

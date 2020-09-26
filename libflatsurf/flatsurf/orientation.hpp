@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,12 +20,10 @@
 #ifndef LIBFLATSURF_ORIENTATION_HPP
 #define LIBFLATSURF_ORIENTATION_HPP
 
-#include <boost/operators.hpp>
-
-#include "external/spimpl/spimpl.h"
 #include "forward.hpp"
 
 namespace flatsurf {
+// The result of comparing the orientation of two vectors.
 enum class ORIENTATION {
   SAME = 1,
   ORTHOGONAL = 0,

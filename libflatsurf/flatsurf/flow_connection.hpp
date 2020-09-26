@@ -20,12 +20,15 @@
 #ifndef LIBFLATSURF_FLOW_CONNECTION_HPP
 #define LIBFLATSURF_FLOW_CONNECTION_HPP
 
-#include <boost/operators.hpp>
 #include <iosfwd>
+
+#include <boost/operators.hpp>
 
 #include "copyable.hpp"
 
 namespace flatsurf {
+
+// A saddle connection on the perimeter of a Flow Component.
 template <typename Surface>
 class FlowConnection : Serializable<FlowConnection<Surface>>,
                        boost::equality_comparable<FlowConnection<Surface>> {

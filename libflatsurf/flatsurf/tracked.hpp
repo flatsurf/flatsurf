@@ -22,11 +22,11 @@
 
 #include <functional>
 
-#include "flat_triangulation_combinatorial.hpp"
 #include "movable.hpp"
 
 namespace flatsurf {
 
+// Makes a T react to changes in a surface such as flipping of edges.
 template <typename T>
 class Tracked {
   template <typename... Args>

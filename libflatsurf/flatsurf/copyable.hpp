@@ -21,6 +21,7 @@
 #define LIBFLATSURF_COPYABLE_HPP
 
 #include "external/spimpl/spimpl.h"
+
 #include "forward.hpp"
 
 namespace flatsurf {

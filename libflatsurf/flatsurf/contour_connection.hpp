@@ -21,13 +21,12 @@
 #define LIBFLATSURF_CONTOUR_CONNECTION_HPP
 
 #include <boost/operators.hpp>
-#include <list>
 
 #include "copyable.hpp"
 
 namespace flatsurf {
 
-// A non-vertical connection.
+// A non-vertical connection on the perimeter of a Contour Component.
 // Note that this object is immutable, all its members are const.
 template <typename Surface>
 class ContourConnection : boost::equality_comparable<ContourComponent<Surface>> {
@@ -55,6 +54,7 @@ class ContourConnection : boost::equality_comparable<ContourComponent<Surface>> 
   // The vertical connections on the left of this non-vertical connection; from
   // top to bottom.
   Path left() const;
+
   // The vertical connections on the right of this non-vertical connection;
   // from bottom to top.
   Path right() const;

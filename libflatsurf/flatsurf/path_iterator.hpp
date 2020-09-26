@@ -20,8 +20,6 @@
 #ifndef LIBFLATSURF_PATH_ITERATOR_HPP
 #define LIBFLATSURF_PATH_ITERATOR_HPP
 
-#include <gmpxx.h>
-
 #include <boost/iterator/iterator_categories.hpp>
 #include <boost/iterator/iterator_facade.hpp>
 
@@ -29,6 +27,7 @@
 
 namespace flatsurf {
 
+// Iterates over a path in a surface, i.e., over a connected sequence of saddle connections.
 template <typename Surface>
 class PathIterator : public boost::iterator_facade<PathIterator<Surface>, const SaddleConnection<Surface>&, boost::forward_traversal_tag> {
   template <typename... Args>
