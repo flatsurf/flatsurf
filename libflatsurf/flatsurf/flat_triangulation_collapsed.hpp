@@ -20,9 +20,8 @@
 #ifndef LIBFLATSURF_FLAT_TRIANGULATION_COLLAPSED_HPP
 #define LIBFLATSURF_FLAT_TRIANGULATION_COLLAPSED_HPP
 
-#include <iosfwd>
-
 #include <boost/operators.hpp>
+#include <iosfwd>
 
 #include "flat_triangulation_combinatorics.hpp"
 #include "managed_movable.hpp"
@@ -48,11 +47,11 @@ class FlatTriangulationCollapsed : public FlatTriangulationCombinatorics<FlatTri
   using SaddleConnection = ::flatsurf::SaddleConnection<FlatTriangulation<T>>;
 
   FlatTriangulationCollapsed() noexcept;
-  FlatTriangulationCollapsed(const FlatTriangulation<T>&, const Vector<T> &vertical);
+  FlatTriangulationCollapsed(const FlatTriangulation<T> &, const Vector<T> &vertical);
 
   Vertical<FlatTriangulationCollapsed<T>> vertical() const;
 
-  const FlatTriangulation<T>& uncollapsed() const;
+  const FlatTriangulation<T> &uncollapsed() const;
 
   // Create an independent clone of this triangulation that is built from the
   // same data. There is no copy-constructor since it is too likely that this

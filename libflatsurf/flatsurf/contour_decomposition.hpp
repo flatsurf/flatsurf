@@ -44,7 +44,7 @@ class ContourDecomposition {
 
   // Return the underlying Collapsed Flat Triangulation where all edges have
   // been flipped such that each Contour Component has a unique large edge.
-  const FlatTriangulationCollapsed<T>& collapsed() const;
+  const FlatTriangulationCollapsed<T> &collapsed() const;
 
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const ContourDecomposition<S> &);

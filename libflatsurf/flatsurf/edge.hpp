@@ -20,9 +20,8 @@
 #ifndef LIBFLATSURF_EDGE_HPP
 #define LIBFLATSURF_EDGE_HPP
 
-#include <iosfwd>
-
 #include <boost/operators.hpp>
+#include <iosfwd>
 
 #include "half_edge.hpp"
 

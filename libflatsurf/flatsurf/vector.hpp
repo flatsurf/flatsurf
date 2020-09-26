@@ -21,9 +21,9 @@
 
 #include <exact-real/forward.hpp>
 
+#include "copyable.hpp"
 #include "detail/vector_exact.hpp"
 #include "detail/vector_with_error.hpp"
-#include "copyable.hpp"
 
 namespace flatsurf {
 

@@ -24,7 +24,6 @@
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_by_length_iterator.hpp"
-
 #include "impl/saddle_connections_by_length.impl.hpp"
 #include "impl/saddle_connections_by_length_iterator.impl.hpp"
 

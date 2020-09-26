@@ -28,9 +28,7 @@
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/half_edge_set_iterator.hpp"
-
 #include "impl/vertex.impl.hpp"
-
 #include "util/assert.ipp"
 
 namespace flatsurf {

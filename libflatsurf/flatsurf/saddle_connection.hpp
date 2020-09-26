@@ -42,24 +42,24 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   using T = typename Surface::Coordinate;
 
  public:
-  SaddleConnection(const Surface&, HalfEdge e);
+  SaddleConnection(const Surface &, HalfEdge e);
   // The saddle connection described by the given chain that starts in the
   // sector counterclockwise next to source and ends in the sector
   // counterclockwise next to target.
-  SaddleConnection(const Surface&, HalfEdge source, HalfEdge target, const Chain<Surface> &);
-  SaddleConnection(const Surface&, HalfEdge source, HalfEdge target, Chain<Surface> &&);
+  SaddleConnection(const Surface &, HalfEdge source, HalfEdge target, const Chain<Surface> &);
+  SaddleConnection(const Surface &, HalfEdge source, HalfEdge target, Chain<Surface> &&);
 
-  static SaddleConnection<Surface> inSector(const Surface&, HalfEdge source, const Vector<T> &);
-  static SaddleConnection<Surface> inSector(const Surface&, HalfEdge source, const Vertical<Surface> &direction);
-  static SaddleConnection<Surface> inHalfPlane(const Surface&, HalfEdge side, const Vertical<Surface> &, const Vector<T> &);
-  static SaddleConnection<Surface> inPlane(const Surface&, HalfEdge plane, const Vector<T> &);
-  static SaddleConnection<Surface> alongVertical(const Surface&, const Vertical<Surface> &direction, HalfEdge plane);
+  static SaddleConnection<Surface> inSector(const Surface &, HalfEdge source, const Vector<T> &);
+  static SaddleConnection<Surface> inSector(const Surface &, HalfEdge source, const Vertical<Surface> &direction);
+  static SaddleConnection<Surface> inHalfPlane(const Surface &, HalfEdge side, const Vertical<Surface> &, const Vector<T> &);
+  static SaddleConnection<Surface> inPlane(const Surface &, HalfEdge plane, const Vector<T> &);
+  static SaddleConnection<Surface> alongVertical(const Surface &, const Vertical<Surface> &direction, HalfEdge plane);
   static SaddleConnection<Surface> clockwise(const SaddleConnection &from, const Vector<T> &);
   // Return the saddle connection that starts counterclockwise from source
   // (but not necessarily in the sector next to source) and ends
   // counterclockwise from target (but not necessarily in the sector next to
   // source.)
-  static SaddleConnection<Surface> counterclockwise(const Surface&, HalfEdge source, HalfEdge target, const Chain<Surface> &);
+  static SaddleConnection<Surface> counterclockwise(const Surface &, HalfEdge source, HalfEdge target, const Chain<Surface> &);
 
   const Vector<T> &vector() const;
   const Chain<Surface> &chain() const;
@@ -98,7 +98,7 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
 };
 
 template <typename Surface, typename... T>
-SaddleConnection(const Surface&, T &&...) -> SaddleConnection<Surface>;
+SaddleConnection(const Surface &, T &&...) -> SaddleConnection<Surface>;
 
 }  // namespace flatsurf
 

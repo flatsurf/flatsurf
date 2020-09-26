@@ -17,9 +17,9 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "../flatsurf/managed_movable.hpp"
-
 #include "impl/read_only.hpp"
+
+#include "../flatsurf/managed_movable.hpp"
 
 namespace flatsurf {
 
@@ -67,13 +67,12 @@ std::ostream& operator<<(std::ostream& os, const ReadOnly<T>& self) {
   return os << *self;
 }
 
-}
+}  // namespace flatsurf
 
-#include "util/instantiate.ipp"
-
-#include "impl/flat_triangulation_combinatorial.impl.hpp"
 #include "impl/flat_triangulation.impl.hpp"
 #include "impl/flat_triangulation_collapsed.impl.hpp"
+#include "impl/flat_triangulation_combinatorial.impl.hpp"
+#include "util/instantiate.ipp"
 
 // Instantiations of templates so implementations are generated for the linker
 LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION), ReadOnly, (FlatTriangulationCombinatorial))

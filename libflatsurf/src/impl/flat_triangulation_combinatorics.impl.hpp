@@ -26,9 +26,9 @@ namespace flatsurf {
 
 template <typename Surface>
 template <typename... Args>
-FlatTriangulationCombinatorics<Surface>::FlatTriangulationCombinatorics(ProtectedConstructor, Args&&... args)
-  : self(std::forward<Args>(args)...) {}
+FlatTriangulationCombinatorics<Surface>::FlatTriangulationCombinatorics(ProtectedConstructor, Args&&... args) :
+  self(std::forward<Args>(args)...) {}
 
-}
+}  // namespace flatsurf
 
 #endif

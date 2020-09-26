@@ -32,10 +32,10 @@ namespace flatsurf {
 template <typename Surface>
 class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulationCombinatorial> {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
- protected:
 
+ protected:
   template <typename... Args>
-  FlatTriangulationCombinatorics(ProtectedConstructor, Args&&... args);
+  FlatTriangulationCombinatorics(ProtectedConstructor, Args &&... args);
 
  public:
   // Create an independent clone of this triangulation that is built from the
@@ -108,14 +108,14 @@ class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulat
   // Note that this is no different to the implicit cast operators defined
   // below. This method exists because it is presently difficult to call cast
   // operators from Python, i.e., cppyy.
-  FlatTriangulationCombinatorial& combinatorial();
+  FlatTriangulationCombinatorial &combinatorial();
 
   // Return a triangulation that only encodes the combinatorial structure of
   // this surface.
   // Note that this is no different to the implicit cast operators defined
   // below. This method exists because it is presently difficult to call cast
   // operators from Python, i.e., cppyy.
-  const FlatTriangulationCombinatorial& combinatorial() const;
+  const FlatTriangulationCombinatorial &combinatorial() const;
 
   // Return whether rhs is combinatorially the same triangulation (with the
   // same numbering of edges.)
@@ -126,14 +126,14 @@ class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulat
   // Note that this is no different to the implicit cast operators defined
   // below. This method exists because it is presently difficult to call cast
   // operators from Python, i.e., cppyy.
-  operator const FlatTriangulationCombinatorial&() const;
+  operator const FlatTriangulationCombinatorial &() const;
 
   // Return a triangulation that only encodes the combinatorial structure of
   // this surface.
   // Note that this is no different to the implicit cast operators defined
   // below. This method exists because it is presently difficult to call cast
   // operators from Python, i.e., cppyy.
-  operator FlatTriangulationCombinatorial&();
+  operator FlatTriangulationCombinatorial &();
 
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const FlatTriangulationCombinatorics<S> &);
@@ -150,4 +150,3 @@ class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulat
 }  // namespace flatsurf
 
 #endif
-

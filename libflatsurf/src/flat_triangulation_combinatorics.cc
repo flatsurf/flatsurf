@@ -34,12 +34,9 @@
 #include "../flatsurf/half_edge_set_iterator.hpp"
 #include "../flatsurf/permutation.hpp"
 #include "../flatsurf/vertex.hpp"
-
 #include "external/rx-ranges/include/rx/ranges.hpp"
-
 #include "impl/flat_triangulation_combinatorial.impl.hpp"
 #include "impl/vertex.impl.hpp"
-
 #include "util/assert.ipp"
 
 namespace flatsurf {
@@ -94,8 +91,8 @@ const std::vector<Edge>& FlatTriangulationCombinatorics<Surface>::edges() const 
 template <typename Surface>
 FlatTriangulationCombinatorial FlatTriangulationCombinatorics<Surface>::clone() const {
   return ImplementationOf<FlatTriangulationCombinatorial>::make(
-    self->vertices,
-    self->faces.domain() | rx::filter([&](auto& edge) { return this->boundary(edge); }) | rx::to_vector());
+      self->vertices,
+      self->faces.domain() | rx::filter([&](auto& edge) { return this->boundary(edge); }) | rx::to_vector());
 }
 
 template <typename Surface>
@@ -126,8 +123,8 @@ FlatTriangulationCombinatorial FlatTriangulationCombinatorics<Surface>::insertAt
   cycles.push_back({a, b, c});
 
   return ImplementationOf<FlatTriangulationCombinatorial>::make(
-    Permutation<HalfEdge>(cycles),
-    self->faces.domain() | rx::filter([&](auto& edge) { return this->boundary(edge); }) | rx::to_vector());
+      Permutation<HalfEdge>(cycles),
+      self->faces.domain() | rx::filter([&](auto& edge) { return this->boundary(edge); }) | rx::to_vector());
 }
 
 template <typename Surface>
@@ -181,8 +178,8 @@ FlatTriangulationCombinatorial FlatTriangulationCombinatorics<Surface>::slit(Hal
   Permutation<HalfEdge> vertexPermutation(vertices);
 
   return ImplementationOf<FlatTriangulationCombinatorial>::make(
-    Permutation<HalfEdge>(vertices),
-    vertexPermutation.domain() | rx::filter([&](auto& edge) { return edge == e || edge == -ee || (edge != ee && boundary(edge)); }) | rx::to_vector());
+      Permutation<HalfEdge>(vertices),
+      vertexPermutation.domain() | rx::filter([&](auto& edge) { return edge == e || edge == -ee || (edge != ee && boundary(edge)); }) | rx::to_vector());
 }
 
 template <typename Surface>
@@ -244,9 +241,8 @@ std::ostream& operator<<(std::ostream& os, const FlatTriangulationCombinatorics<
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
-#include "util/instantiate.ipp"
-
 #include "impl/flat_triangulation.impl.hpp"
 #include "impl/flat_triangulation_collapsed.impl.hpp"
+#include "util/instantiate.ipp"
 
-LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION), FlatTriangulationCombinatorics, LIBFLATSURF_FLAT_TRIANGULATION_TYPES(FlatTriangulationCombinatorial)LIBFLATSURF_FLAT_TRIANGULATION_COLLAPSED_TYPES)
+LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_WITHOUT_IMPLEMENTATION), FlatTriangulationCombinatorics, LIBFLATSURF_FLAT_TRIANGULATION_TYPES(FlatTriangulationCombinatorial) LIBFLATSURF_FLAT_TRIANGULATION_COLLAPSED_TYPES)

@@ -31,8 +31,6 @@
 #include "../../flatsurf/saddle_connection.hpp"
 #include "../../flatsurf/tracked.hpp"
 #include "../../flatsurf/vector.hpp"
-#include "../../flatsurf/flat_triangulation.hpp"
-
 #include "flat_triangulation_combinatorial.impl.hpp"
 #include "read_only.hpp"
 
@@ -42,9 +40,8 @@ template <typename T>
 class CollapsedHalfEdge;
 
 template <typename T>
-class ImplementationOf<FlatTriangulationCollapsed<T>> :
-  protected ImplementationOf<ManagedMovable<FlatTriangulationCollapsed<T>>>,
-  public ImplementationOf<FlatTriangulationCombinatorial> {
+class ImplementationOf<FlatTriangulationCollapsed<T>> : protected ImplementationOf<ManagedMovable<FlatTriangulationCollapsed<T>>>,
+                                                        public ImplementationOf<FlatTriangulationCombinatorial> {
   using SaddleConnection = flatsurf::SaddleConnection<FlatTriangulation<T>>;
   using CollapsedHalfEdge = flatsurf::CollapsedHalfEdge<T>;
 
@@ -59,7 +56,7 @@ class ImplementationOf<FlatTriangulationCollapsed<T>> :
   ReadOnly<FlatTriangulation<T>> original;
 
   Vector<T> vertical;
-  
+
   // Tracks collapsed vertical connections.
   Tracked<HalfEdgeMap<CollapsedHalfEdge>> collapsedHalfEdges;
 

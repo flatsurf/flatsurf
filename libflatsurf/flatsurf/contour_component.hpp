@@ -20,9 +20,8 @@
 #ifndef LIBFLATSURF_CONTOUR_COMPONENT_HPP
 #define LIBFLATSURF_CONTOUR_COMPONENT_HPP
 
-#include <vector>
-
 #include <boost/operators.hpp>
+#include <vector>
 
 #include "copyable.hpp"
 

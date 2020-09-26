@@ -20,13 +20,13 @@
 #ifndef LIBFLATSURF_FLAT_TRIANGULATION_HPP
 #define LIBFLATSURF_FLAT_TRIANGULATION_HPP
 
+#include <gmpxx.h>
+
+#include <boost/operators.hpp>
+#include <exact-real/forward.hpp>
 #include <functional>
 #include <iosfwd>
 #include <vector>
-
-#include <gmpxx.h>
-#include <boost/operators.hpp>
-#include <exact-real/forward.hpp>
 
 #include "flat_triangulation_combinatorial.hpp"
 #include "managed_movable.hpp"
@@ -46,8 +46,8 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
   using Coordinate = T;
 
   FlatTriangulation() noexcept;
-  FlatTriangulation(FlatTriangulationCombinatorial&&, const std::vector<Vector<T>> &vectors);
-  FlatTriangulation(FlatTriangulationCombinatorial&&, const std::function<Vector<T>(HalfEdge)> &vectors);
+  FlatTriangulation(FlatTriangulationCombinatorial &&, const std::vector<Vector<T>> &vectors);
+  FlatTriangulation(FlatTriangulationCombinatorial &&, const std::function<Vector<T>(HalfEdge)> &vectors);
 
   // Create an independent clone of this triangulation that is built from the
   // same data. There is no copy-constructor since it is too likely that this

@@ -61,8 +61,8 @@ class ImplementationOf<FlowConnection<Surface>> {
 
 template <typename Surface>
 template <typename... Args>
-FlowConnection<Surface>::FlowConnection(PrivateConstructor, Args&&... args)
-  : self(spimpl::make_impl<ImplementationOf<FlowConnection>>(std::forward<Args>(args)...)) {}
+FlowConnection<Surface>::FlowConnection(PrivateConstructor, Args&&... args) :
+  self(spimpl::make_impl<ImplementationOf<FlowConnection>>(std::forward<Args>(args)...)) {}
 
 }  // namespace flatsurf
 

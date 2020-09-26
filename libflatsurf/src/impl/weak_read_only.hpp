@@ -44,7 +44,6 @@ class WeakReadOnly {
   friend std::ostream& operator<<(std::ostream&, const WeakReadOnly<S>&);
 };
 
-}
+}  // namespace flatsurf
 
 #endif
-

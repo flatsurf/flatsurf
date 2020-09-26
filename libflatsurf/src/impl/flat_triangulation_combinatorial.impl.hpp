@@ -21,27 +21,24 @@
 #define LIBFLATSURF_FLAT_TRIANGULATION_COMBINATORIAL_IMPL_HPP
 
 #include <functional>
+#include <memory>
 #include <variant>
 #include <vector>
-#include <memory>
 
 #include "../../flatsurf/edge.hpp"
 #include "../../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../../flatsurf/half_edge.hpp"
 #include "../../flatsurf/permutation.hpp"
-
 #include "../external/slimsig/include/slimsig/slimsig.h"
-
-#include "forward.hpp"
 #include "flat_triangulation_combinatorics.impl.hpp"
+#include "forward.hpp"
 #include "managed_movable.impl.hpp"
 
 namespace flatsurf {
 
 template <>
-class ImplementationOf<FlatTriangulationCombinatorial> :
-  protected ImplementationOf<ManagedMovable<FlatTriangulationCombinatorial>>,
-  public std::enable_shared_from_this<ImplementationOf<FlatTriangulationCombinatorial>> {
+class ImplementationOf<FlatTriangulationCombinatorial> : protected ImplementationOf<ManagedMovable<FlatTriangulationCombinatorial>>,
+                                                         public std::enable_shared_from_this<ImplementationOf<FlatTriangulationCombinatorial>> {
  public:
   ImplementationOf(const Permutation<HalfEdge>&, const std::vector<HalfEdge>& boundaries);
 
@@ -86,11 +83,11 @@ class ImplementationOf<FlatTriangulationCombinatorial> :
   Permutation<HalfEdge> faces;
   std::vector<Vertex> vertexes;
   std::vector<HalfEdge> halfEdges;
-  
+
   mutable slimsig::signal<void(Message)> change;
 
  protected:
-  template <typename ...Args>
+  template <typename... Args>
   static FlatTriangulationCombinatorial make(Args&&... args) { return FlatTriangulationCombinatorial(PrivateConstructor{}, std::forward<Args>(args)...); }
 
   template <typename T>
@@ -101,9 +98,8 @@ class ImplementationOf<FlatTriangulationCombinatorial> :
 };
 
 template <typename... Args>
-FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(PrivateConstructor, Args&&... args)
-  : FlatTriangulationCombinatorics(ProtectedConstructor{}, std::forward<Args>(args)...) {}
-
+FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(PrivateConstructor, Args&&... args) :
+  FlatTriangulationCombinatorics(ProtectedConstructor{}, std::forward<Args>(args)...) {}
 
 }  // namespace flatsurf
 

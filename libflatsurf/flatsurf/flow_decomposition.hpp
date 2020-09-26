@@ -20,11 +20,10 @@
 #ifndef LIBFLATSURF_FLOW_DECOMPOSITION_HPP
 #define LIBFLATSURF_FLOW_DECOMPOSITION_HPP
 
+#include <boost/logic/tribool.hpp>
 #include <functional>
 #include <iosfwd>
 #include <vector>
-
-#include <boost/logic/tribool.hpp>
 
 #include "movable.hpp"
 
@@ -84,8 +83,8 @@ class FlowDecomposition {
   friend ImplementationOf<FlowDecomposition>;
 };
 
-template <typename Surface, typename ...Args>
-FlowDecomposition(Surface&&, Args&& ...args) -> FlowDecomposition<Surface>;
+template <typename Surface, typename... Args>
+FlowDecomposition(Surface&&, Args&&... args) -> FlowDecomposition<Surface>;
 
 }  // namespace flatsurf
 

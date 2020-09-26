@@ -19,11 +19,6 @@
 
 #include "../flatsurf/flat_triangulation_collapsed.hpp"
 
-#include <ostream>
-#include <unordered_map>
-#include <unordered_set>
-#include <vector>
-
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <gmpxx.h>
@@ -33,9 +28,10 @@
 #include <intervalxt/sample/mpq_floor_division.hpp>
 #include <intervalxt/sample/mpz_floor_division.hpp>
 #include <intervalxt/sample/renf_elem_floor_division.hpp>
-
-#include "external/gmpxxll/gmpxxll/mpz_class.hpp"
-#include "external/rx-ranges/include/rx/ranges.hpp"
+#include <ostream>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/ccw.hpp"
@@ -51,15 +47,15 @@
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertex.hpp"
 #include "../flatsurf/vertical.hpp"
-
-#include "util/assert.ipp"
-#include "util/union_find.ipp"
-
+#include "external/gmpxxll/gmpxxll/mpz_class.hpp"
+#include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/collapsed_half_edge.hpp"
 #include "impl/flat_triangulation.impl.hpp"
-#include "impl/flat_triangulation_combinatorial.impl.hpp"
 #include "impl/flat_triangulation_collapsed.impl.hpp"
+#include "impl/flat_triangulation_combinatorial.impl.hpp"
 #include "impl/saddle_connection.impl.hpp"
+#include "util/assert.ipp"
+#include "util/union_find.ipp"
 
 namespace flatsurf {
 
@@ -73,7 +69,6 @@ FlatTriangulationCollapsed<T>::FlatTriangulationCollapsed() noexcept :
 template <typename T>
 FlatTriangulationCollapsed<T>::FlatTriangulationCollapsed(const FlatTriangulation<T>& surface, const Vector<T>& vertical) :
   FlatTriangulationCombinatorics<FlatTriangulationCollapsed>(ProtectedConstructor{}, std::make_shared<ImplementationOf<FlatTriangulationCollapsed>>(surface, vertical)) {
-
   while ([&]() {
     for (auto e : this->halfEdges()) {
       if (this->vertical().parallel(e)) {
@@ -143,14 +138,14 @@ const FlatTriangulation<T>& FlatTriangulationCollapsed<T>::uncollapsed() const {
 
 template <typename T>
 bool FlatTriangulationCollapsed<T>::operator==(const FlatTriangulationCollapsed<T>& rhs) const {
-  return uncollapsed() == rhs.uncollapsed() && vertical().vertical().ccw(rhs.vertical().vertical()) == CCW::COLLINEAR && vertical().vertical().orientation(rhs.vertical().vertical()) == ORIENTATION::SAME; 
+  return uncollapsed() == rhs.uncollapsed() && vertical().vertical().ccw(rhs.vertical().vertical()) == CCW::COLLINEAR && vertical().vertical().orientation(rhs.vertical().vertical()) == ORIENTATION::SAME;
 }
 
 template <typename T>
 ImplementationOf<FlatTriangulationCollapsed<T>>::ImplementationOf(const FlatTriangulation<T>& surface, const Vector<T>& vertical) :
   ImplementationOf<FlatTriangulationCombinatorial>(
-    ImplementationOf<FlatTriangulationCombinatorial>::self(static_cast<const FlatTriangulationCombinatorial&>(surface))->vertices,
-    surface.halfEdges() | rx::filter([&](HalfEdge he) { return surface.boundary(he); }) | rx::to_vector()),
+      ImplementationOf<FlatTriangulationCombinatorial>::self(static_cast<const FlatTriangulationCombinatorial&>(surface))->vertices,
+      surface.halfEdges() | rx::filter([&](HalfEdge he) { return surface.boundary(he); }) | rx::to_vector()),
   original(surface),
   vertical(vertical),
   collapsedHalfEdges([&]() {
@@ -161,14 +156,14 @@ ImplementationOf<FlatTriangulationCollapsed<T>>::ImplementationOf(const FlatTria
     // build a combinatorial triangulation from the data we are building and
     // wrap it in a shared pointer that does *not* free its memory when it goes
     // out of scope.
-    auto self = from_this(std::shared_ptr<ImplementationOf>(this, [](auto*){}));
+    auto self = from_this(std::shared_ptr<ImplementationOf>(this, [](auto*) {}));
     auto ret = Tracked<HalfEdgeMap<CollapsedHalfEdge>>(
-      self,
-      HalfEdgeMap<CollapsedHalfEdge>(
-        surface,
-        [](const auto&) { return CollapsedHalfEdge(); }),
-      CollapsedHalfEdge::updateAfterFlip,
-      CollapsedHalfEdge::updateBeforeCollapse);
+        self,
+        HalfEdgeMap<CollapsedHalfEdge>(
+            surface,
+            [](const auto&) { return CollapsedHalfEdge(); }),
+        CollapsedHalfEdge::updateAfterFlip,
+        CollapsedHalfEdge::updateBeforeCollapse);
     // The shared pointer we used to build the Tracked is not going to remain
     // valid so we assert that noone else is holding on to it because it won't
     // work for other use cases than Tracked<>.
@@ -183,13 +178,13 @@ ImplementationOf<FlatTriangulationCollapsed<T>>::ImplementationOf(const FlatTria
     // build a combinatorial triangulation from the data we are building and
     // wrap it in a shared pointer that does *not* free its memory when it goes
     // out of scope.
-    auto self = from_this(std::shared_ptr<ImplementationOf>(this, [](auto*){}));
+    auto self = from_this(std::shared_ptr<ImplementationOf>(this, [](auto*) {}));
     auto ret = Tracked<HalfEdgeMap<SaddleConnection>>(
-      self,
-      HalfEdgeMap<SaddleConnection>(
-        surface,
-        [&](HalfEdge e) { return SaddleConnection(original, e); }),
-      updateAfterFlip, updateBeforeCollapse);
+        self,
+        HalfEdgeMap<SaddleConnection>(
+            surface,
+            [&](HalfEdge e) { return SaddleConnection(original, e); }),
+        updateAfterFlip, updateBeforeCollapse);
     // The shared pointer we used to build the Tracked is not going to remain
     // valid so we assert that noone else is holding on to it because it won't
     // work for other use cases than Tracked<>.

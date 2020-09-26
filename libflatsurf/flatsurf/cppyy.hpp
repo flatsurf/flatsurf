@@ -41,7 +41,7 @@ FlowDecomposition<FlatTriangulation<T>> makeFlowDecomposition(const FlatTriangul
 
 // Work around https://bitbucket.org/wlav/cppyy/issues/273/segfault-in-cpycppyy-anonymous-namespace
 template <typename T>
-auto makeOddHalfEdgeMap(const FlatTriangulationCombinatorial& surface, const std::vector<T>& values) {
+auto makeOddHalfEdgeMap(const FlatTriangulationCombinatorial &surface, const std::vector<T> &values) {
   return OddHalfEdgeMap<T>(surface, [&](const HalfEdge &e) {
     return e == Edge(e).positive() ? values.at(Edge(e).index()) : -values.at(Edge(e).index());
   });

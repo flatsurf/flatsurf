@@ -18,28 +18,24 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <numeric>
-
 #include <e-antic/renfxx_fwd.h>
-#include <exact-real/element.hpp>
-#include <exact-real/number_field.hpp>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
+#include <exact-real/element.hpp>
+#include <exact-real/number_field.hpp>
+#include <numeric>
+
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/interval_exchange_transformation.hpp"
 #include "../flatsurf/odd_half_edge_map.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
-#include "../flatsurf/interval_exchange_transformation.hpp"
 #include "../flatsurf/vector.hpp"
-
 #include "../src/external/rx-ranges/include/rx/ranges.hpp"
-
 #include "external/catch2/single_include/catch2/catch.hpp"
-
 #include "generators/surface_generator.hpp"
-
 #include "surfaces.hpp"
 
 namespace flatsurf::test {

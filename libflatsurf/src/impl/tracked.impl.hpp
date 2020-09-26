@@ -21,9 +21,7 @@
 #define LIBFLATSURF_TRACKED_IMPL_HPP
 
 #include "../../flatsurf/tracked.hpp"
-
 #include "../external/slimsig/include/slimsig/slimsig.h"
-
 #include "flat_triangulation_combinatorial.impl.hpp"
 #include "weak_read_only.hpp"
 

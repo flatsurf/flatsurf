@@ -20,12 +20,11 @@
 #ifndef LIBFLATSURF_VERTICAL_HPP
 #define LIBFLATSURF_VERTICAL_HPP
 
+#include <boost/operators.hpp>
 #include <iosfwd>
 #include <type_traits>
 #include <unordered_set>
 #include <vector>
-
-#include <boost/operators.hpp>
 
 #include "copyable.hpp"
 #include "serializable.hpp"
@@ -41,7 +40,7 @@ class Vertical : Serializable<Vertical<Surface>>,
   using T = typename Surface::Coordinate;
 
  public:
-  Vertical(const Surface&, const Vector<T> &vertical);
+  Vertical(const Surface &, const Vector<T> &vertical);
 
   enum class TRIANGLE {
     BACKWARD = 1,
@@ -67,7 +66,7 @@ class Vertical : Serializable<Vertical<Surface>>,
   bool parallel(HalfEdge) const;
   bool perpendicular(HalfEdge) const;
 
-  const Surface& surface() const;
+  const Surface &surface() const;
 
   std::vector<std::unordered_set<HalfEdge>> components() const;
 
@@ -85,7 +84,7 @@ class Vertical : Serializable<Vertical<Surface>>,
 };
 
 template <typename Surface, typename... Args>
-Vertical(const Surface&, Args &&...) -> Vertical<Surface>;
+Vertical(const Surface &, Args &&...) -> Vertical<Surface>;
 
 }  // namespace flatsurf
 

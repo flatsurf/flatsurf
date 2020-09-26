@@ -24,7 +24,6 @@
 #include <vector>
 
 #include "intervalxt/forward.hpp"
-
 #include "movable.hpp"
 
 namespace flatsurf {

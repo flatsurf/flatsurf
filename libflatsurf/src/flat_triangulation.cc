@@ -17,6 +17,13 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "../flatsurf/flat_triangulation.hpp"
+
+#include <exact-real/arb.hpp>
+#include <exact-real/integer_ring.hpp>
+#include <exact-real/number_field.hpp>
+#include <exact-real/rational_field.hpp>
+#include <exact-real/yap/arb.hpp>
 #include <functional>
 #include <iosfwd>
 #include <map>
@@ -24,19 +31,10 @@
 #include <type_traits>
 #include <vector>
 
-#include <exact-real/arb.hpp>
-#include <exact-real/integer_ring.hpp>
-#include <exact-real/number_field.hpp>
-#include <exact-real/rational_field.hpp>
-#include <exact-real/yap/arb.hpp>
-
-#include "external/rx-ranges/include/rx/ranges.hpp"
-
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/edge_set.hpp"
-#include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/odd_half_edge_map.hpp"
 #include "../flatsurf/orientation.hpp"
@@ -44,12 +42,11 @@
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertical.hpp"
-
+#include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/approximation.hpp"
 #include "impl/flat_triangulation.impl.hpp"
 #include "impl/flat_triangulation_combinatorial.impl.hpp"
 #include "impl/quadratic_polynomial.hpp"
-
 #include "util/assert.ipp"
 
 namespace flatsurf {
@@ -321,7 +318,7 @@ FlatTriangulation<T>::FlatTriangulation() noexcept :
   FlatTriangulation(FlatTriangulationCombinatorial(), std::vector<Vector<T>>{}) {}
 
 template <typename T>
-FlatTriangulation<T>::FlatTriangulation(FlatTriangulationCombinatorial&& combinatorial, const std::vector<Vector<T>> &vectors) :
+FlatTriangulation<T>::FlatTriangulation(FlatTriangulationCombinatorial &&combinatorial, const std::vector<Vector<T>> &vectors) :
   FlatTriangulation(std::move(combinatorial), [&](const HalfEdge he) {
     Edge e = he;
     if (he == e.positive())
@@ -333,26 +330,26 @@ FlatTriangulation<T>::FlatTriangulation(FlatTriangulationCombinatorial&& combina
 }
 
 template <typename T>
-FlatTriangulation<T>::FlatTriangulation(FlatTriangulationCombinatorial&& combinatorial, const std::function<Vector<T>(HalfEdge)> &vectors) :
+FlatTriangulation<T>::FlatTriangulation(FlatTriangulationCombinatorial &&combinatorial, const std::function<Vector<T>(HalfEdge)> &vectors) :
   FlatTriangulationCombinatorics<FlatTriangulation>(ProtectedConstructor{}, std::make_shared<ImplementationOf<FlatTriangulation<T>>>(std::move(combinatorial), vectors)) {
   self->check();
 }
 
 template <typename T>
 FlatTriangulation<T> FlatTriangulation<T>::clone() const {
-  return FlatTriangulation(static_cast<const FlatTriangulationCombinatorial&>(*this).clone(), [&](HalfEdge e) { return fromHalfEdge(e); });
+  return FlatTriangulation(static_cast<const FlatTriangulationCombinatorial &>(*this).clone(), [&](HalfEdge e) { return fromHalfEdge(e); });
 }
 
 template <typename T>
 FlatTriangulation<T> FlatTriangulation<T>::slit(HalfEdge slit) const {
   return FlatTriangulation(
-    static_cast<const FlatTriangulationCombinatorial&>(*this).slit(slit),
-    [&](HalfEdge e) {
-      HalfEdge newEdge = HalfEdge(static_cast<int>(this->halfEdges().size()) / 2 + 1);
-      if (e == newEdge) return fromHalfEdge(slit);
-      if (e == -newEdge) return -fromHalfEdge(slit);
-      return fromHalfEdge(e);
-  });
+      static_cast<const FlatTriangulationCombinatorial &>(*this).slit(slit),
+      [&](HalfEdge e) {
+        HalfEdge newEdge = HalfEdge(static_cast<int>(this->halfEdges().size()) / 2 + 1);
+        if (e == newEdge) return fromHalfEdge(slit);
+        if (e == -newEdge) return -fromHalfEdge(slit);
+        return fromHalfEdge(e);
+      });
 }
 
 template <typename T>
@@ -435,7 +432,7 @@ FlatTriangulation<T> FlatTriangulation<T>::insertAt(HalfEdge &nextTo, const Vect
     // After the flips we did, v is now completely inside a face.
     assert(surface.fromHalfEdge(nextTo).ccw(slit) == CCW::COUNTERCLOCKWISE);
 
-    auto combinatorial = static_cast<FlatTriangulationCombinatorial&>(surface).insertAt(nextTo);
+    auto combinatorial = static_cast<FlatTriangulationCombinatorial &>(surface).insertAt(nextTo);
 
     return FlatTriangulation(combinatorial.clone(), [&](const HalfEdge e) {
       HalfEdge a = -combinatorial.nextAtVertex(nextTo);
@@ -451,7 +448,7 @@ FlatTriangulation<T> FlatTriangulation<T>::insertAt(HalfEdge &nextTo, const Vect
     // After the flips we did, v is collinear with the half edge e (but shorter.)
 
     // Insert our half edge ee next to e
-    auto combinatorial = static_cast<FlatTriangulationCombinatorial&>(surface).insertAt(nextTo);
+    auto combinatorial = static_cast<FlatTriangulationCombinatorial &>(surface).insertAt(nextTo);
     auto nextAtSlot = combinatorial.nextAtVertex(nextTo);
     // After a flip of slit the original slit can be recovered as nextAtSlot + eee.
     combinatorial.flip(nextTo);
@@ -507,10 +504,10 @@ bool FlatTriangulation<T>::delaunay(const HalfEdge edge) const {
   auto b = dc + cb;
   auto c = dc;
 
-  auto det = [](const auto& x00, const auto& x01, const auto& x02, const auto& x10, const auto& x11, const auto& x12, const auto& x20, const auto& x21, const auto& x22) -> T {
+  auto det = [](const auto &x00, const auto &x01, const auto &x02, const auto &x10, const auto &x11, const auto &x12, const auto &x20, const auto &x21, const auto &x22) -> T {
     return x00 * (x11 * x22 - x12 * x21) - x10 * (x01 * x22 - x02 * x21) + x20 * (x01 * x12 - x02 * x11);
   };
-  
+
   return det(a.x(), a.y(), a.x() * a.x() + a.y() * a.y(), b.x(), b.y(), b.x() * b.x() + b.y() * b.y(), c.x(), c.y(), c.x() * c.x() + c.y() * c.y()) <= 0;
 }
 
@@ -531,7 +528,7 @@ T FlatTriangulation<T>::area() const {
 
 template <typename T>
 FlatTriangulation<T> FlatTriangulation<T>::scale(const mpz_class &scalar) const {
-  return FlatTriangulation(static_cast<const FlatTriangulationCombinatorial&>(*this).clone(), [&](HalfEdge e) {
+  return FlatTriangulation(static_cast<const FlatTriangulationCombinatorial &>(*this).clone(), [&](HalfEdge e) {
     return scalar * fromHalfEdge(e);
   });
 }
@@ -598,8 +595,8 @@ int FlatTriangulation<T>::angle(const Vertex &vertex) const {
 template <typename T>
 ImplementationOf<FlatTriangulation<T>>::ImplementationOf(FlatTriangulationCombinatorial &&combinatorial, const std::function<Vector<T>(HalfEdge)> &vectors) :
   ImplementationOf<FlatTriangulationCombinatorial>(
-    ImplementationOf<FlatTriangulationCombinatorial>::self(combinatorial)->vertices,
-    combinatorial.halfEdges() | rx::filter([&](HalfEdge he) { return combinatorial.boundary(he); }) | rx::to_vector()),
+      ImplementationOf<FlatTriangulationCombinatorial>::self(combinatorial)->vertices,
+      combinatorial.halfEdges() | rx::filter([&](HalfEdge he) { return combinatorial.boundary(he); }) | rx::to_vector()),
   vectors([&]() {
     // We keep track of the vectors attached to the half edges in a Tracked<>
     // object. To construct such an object, we need the surface it is tracking.
@@ -608,17 +605,17 @@ ImplementationOf<FlatTriangulation<T>>::ImplementationOf(FlatTriangulationCombin
     // now build a combinatorial triangulation from the data we are building
     // and wrap it in a shared pointer that does *not* free its memory when it
     // goes out of scope.
-    auto self = from_this(std::shared_ptr<ImplementationOf>(this, [](auto*){}));
+    auto self = from_this(std::shared_ptr<ImplementationOf>(this, [](auto *) {}));
     auto ret = Tracked<OddHalfEdgeMap<Vector<T>>>(
-      self,
-      OddHalfEdgeMap<Vector<T>>(self, vectors),
-      ImplementationOf::updateAfterFlip);
+        self,
+        OddHalfEdgeMap<Vector<T>>(self, vectors),
+        ImplementationOf::updateAfterFlip);
     // The shared pointer we used to build the Tracked is not going to remain
     // valid so we assert that noone else is holding on to it because it won't
     // work for other use cases than Tracked<>.
     ASSERT(self.self.state.use_count() == 1, "Something is holding to an short lived shared pointer to a surface. This shared pointer is not actually valid and should not be used outside of Tracked<>.");
     return ret;
-    }()),
+  }()),
   approximations([&]() {
     // We keep track of the vectors attached to the half edges in a Tracked<>
     // object. To construct such an object, we need the surface it is tracking.
@@ -627,15 +624,15 @@ ImplementationOf<FlatTriangulation<T>>::ImplementationOf(FlatTriangulationCombin
     // now build a combinatorial triangulation from the data we are building
     // and wrap it in a shared pointer that does *not* free its memory when it
     // goes out of scope.
-    auto self = from_this(std::shared_ptr<ImplementationOf>(this, [](auto*){}));
+    auto self = from_this(std::shared_ptr<ImplementationOf>(this, [](auto *) {}));
     auto ret = Tracked<OddHalfEdgeMap<Vector<exactreal::Arb>>>(
-      self,
-      OddHalfEdgeMap<Vector<exactreal::Arb>>(
         self,
-        [&](const HalfEdge e) {
-          return static_cast<flatsurf::Vector<exactreal::Arb>>(this->vectors->get(e));
-        }),
-      ImplementationOf::updateApproximationAfterFlip);
+        OddHalfEdgeMap<Vector<exactreal::Arb>>(
+            self,
+            [&](const HalfEdge e) {
+              return static_cast<flatsurf::Vector<exactreal::Arb>>(this->vectors->get(e));
+            }),
+        ImplementationOf::updateApproximationAfterFlip);
     // The shared pointer we used to build the Tracked is not going to remain
     // valid so we assert that noone else is holding on to it because it won't
     // work for other use cases than Tracked<>.

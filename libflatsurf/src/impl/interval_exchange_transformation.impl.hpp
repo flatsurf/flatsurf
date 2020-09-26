@@ -25,11 +25,10 @@
 #include <vector>
 
 #include "../../flatsurf/interval_exchange_transformation.hpp"
-
-#include "read_only.hpp"
-#include "lengths.hpp"
 #include "flat_triangulation.impl.hpp"
 #include "flat_triangulation_collapsed.impl.hpp"
+#include "lengths.hpp"
+#include "read_only.hpp"
 
 namespace flatsurf {
 
@@ -54,7 +53,7 @@ class ImplementationOf<IntervalExchangeTransformation<Surface>> {
 
 template <typename Surface>
 template <typename... Args>
-IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(PrivateConstructor, Args&&...args) :
+IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(PrivateConstructor, Args&&... args) :
   self(spimpl::make_unique_impl<ImplementationOf<IntervalExchangeTransformation>>(std::forward<Args>(args)...)) {}
 
 }  // namespace flatsurf

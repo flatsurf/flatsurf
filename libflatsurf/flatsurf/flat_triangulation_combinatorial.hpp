@@ -33,10 +33,9 @@ namespace flatsurf {
 // encodes how half edges are given sequentially when going around a vertex in
 // counter-clockwise order.
 class FlatTriangulationCombinatorial : public FlatTriangulationCombinatorics<FlatTriangulationCombinatorial>,
-  Serializable<FlatTriangulationCombinatorial> {
-
+                                       Serializable<FlatTriangulationCombinatorial> {
   template <typename... Args>
-  FlatTriangulationCombinatorial(PrivateConstructor, Args&&... args);
+  FlatTriangulationCombinatorial(PrivateConstructor, Args &&... args);
 
  public:
   FlatTriangulationCombinatorial() noexcept;

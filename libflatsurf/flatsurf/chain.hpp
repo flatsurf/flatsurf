@@ -95,7 +95,7 @@ class Chain : public Serializable<Chain<Surface>>,
 };
 
 template <typename Surface, typename... T>
-Chain(const Surface&, T &&...) -> Chain<Surface>;
+Chain(const Surface&, T&&...) -> Chain<Surface>;
 
 }  // namespace flatsurf
 

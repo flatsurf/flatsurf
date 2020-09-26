@@ -183,7 +183,7 @@ struct Serialization<ManagedMovable<T>> {
     uint32_t id = archive.registerSharedPointer(self.self.state.get());
     archive(cereal::make_nvp("shared", id));
 
-    if ( id & static_cast<unsigned int>(cereal::detail::msb_32bit) ){
+    if (id & static_cast<unsigned int>(cereal::detail::msb_32bit)) {
       // This is the first time cereal sees this T, so we actually store it.
       // Future copies only need the id to resolve to the same surface.
       save(archive, self);
@@ -195,7 +195,7 @@ struct Serialization<ManagedMovable<T>> {
     uint32_t id;
     archive(cereal::make_nvp("shared", id));
 
-    if ( id & static_cast<unsigned int>(cereal::detail::msb_32bit) ) {
+    if (id & static_cast<unsigned int>(cereal::detail::msb_32bit)) {
       // This is the original copy of the object. We need to deserialize it and
       // record its value for future callers.
       load(archive, self);

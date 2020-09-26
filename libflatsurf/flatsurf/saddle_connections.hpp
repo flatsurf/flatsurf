@@ -20,9 +20,9 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTIONS_HPP
 #define LIBFLATSURF_SADDLE_CONNECTIONS_HPP
 
+#include "copyable.hpp"
 #include "half_edge.hpp"
 #include "vertex.hpp"
-#include "copyable.hpp"
 
 namespace flatsurf {
 
@@ -93,7 +93,7 @@ class SaddleConnections {
 };
 
 template <typename Surface>
-SaddleConnections(const Surface&) -> SaddleConnections<Surface>;
+SaddleConnections(const Surface &) -> SaddleConnections<Surface>;
 
 }  // namespace flatsurf
 

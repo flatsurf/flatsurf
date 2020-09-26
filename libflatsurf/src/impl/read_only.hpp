@@ -58,6 +58,6 @@ class ReadOnly {
   friend std::ostream& operator<<(std::ostream&, const ReadOnly<S>&);
 };
 
-}
+}  // namespace flatsurf
 
 #endif

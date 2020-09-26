@@ -24,9 +24,8 @@
 #include "../../flatsurf/flat_triangulation.hpp"
 #include "../../flatsurf/flat_triangulation_collapsed.hpp"
 #include "../../flatsurf/saddle_connection.hpp"
-
-#include "read_only.hpp"
 #include "flat_triangulation.impl.hpp"
+#include "read_only.hpp"
 
 namespace flatsurf {
 

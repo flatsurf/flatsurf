@@ -39,13 +39,15 @@ class ManagedMovable {
   ManagedMovable() = delete;
   ManagedMovable(const ManagedMovable&) = delete;
   ManagedMovable(ManagedMovable&& rhs) = default;
-  ManagedMovable(std::shared_ptr<ImplementationOf<T>> state) : state(std::move(state)) {}
+  ManagedMovable(std::shared_ptr<ImplementationOf<T>> state) :
+    state(std::move(state)) {}
 
   ManagedMovable& operator=(const ManagedMovable&) = delete;
   ManagedMovable& operator=(ManagedMovable&&) = default;
 
-  template <typename ...Args>
-  ManagedMovable(Args&& ...args) : state(std::make_shared<ImplementationOf<T>>(std::forward<Args>(args)...)) {}
+  template <typename... Args>
+  ManagedMovable(Args&&... args) :
+    state(std::make_shared<ImplementationOf<T>>(std::forward<Args>(args)...)) {}
 
   const auto* operator->() const { return &*state; }
   auto* operator->() { return &*state; }
@@ -55,6 +57,6 @@ class ManagedMovable {
   std::shared_ptr<ImplementationOf<T>> state;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

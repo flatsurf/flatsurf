@@ -17,22 +17,20 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <vector>
-#include <unordered_map>
-#include <unordered_set>
+#include "../flatsurf/flat_triangulation_combinatorial.hpp"
 
 #include <fmt/format.h>
 
-#include "../flatsurf/flat_triangulation_combinatorial.hpp"
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
+
+#include "../flatsurf/fmt.hpp"
 #include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/half_edge_set_iterator.hpp"
-#include "../flatsurf/fmt.hpp"
-
 #include "external/rx-ranges/include/rx/ranges.hpp"
-
 #include "impl/flat_triangulation_combinatorial.impl.hpp"
 #include "impl/vertex.impl.hpp"
-
 #include "util/assert.ipp"
 
 namespace flatsurf {
@@ -42,8 +40,8 @@ FlatTriangulationCombinatorial::FlatTriangulationCombinatorial() noexcept :
 
 FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(const std::vector<std::vector<int>>& vertices, const std::vector<int>& boundaries) :
   FlatTriangulationCombinatorial(PrivateConstructor{}, Permutation<HalfEdge>(vertices | rx::transform([](const auto& cycle) {
-        return cycle | rx::transform([](const auto& id) { return HalfEdge(id); }) | rx::to_vector();
-      }) | rx::to_vector()),
+    return cycle | rx::transform([](const auto& id) { return HalfEdge(id); }) | rx::to_vector();
+  }) | rx::to_vector()),
       boundaries | rx::transform([](int e) { return HalfEdge(e); }) | rx::to_vector()) {
   for (auto& cycle : vertices)
     for (auto it = cycle.rbegin(); it != cycle.rend(); it++)

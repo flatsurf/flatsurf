@@ -25,7 +25,6 @@
 #include "../../flatsurf/flow_connection.hpp"
 #include "../../flatsurf/flow_triangulation.hpp"
 #include "../../flatsurf/half_edge.hpp"
-
 #include "read_only.hpp"
 
 namespace flatsurf {

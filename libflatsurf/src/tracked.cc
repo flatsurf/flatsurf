@@ -20,11 +20,9 @@
 #include "../flatsurf/tracked.hpp"
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
-
-#include "impl/tracked.impl.hpp"
 #include "impl/read_only.hpp"
+#include "impl/tracked.impl.hpp"
 #include "impl/weak_read_only.hpp"
-
 #include "util/assert.ipp"
 
 namespace flatsurf {

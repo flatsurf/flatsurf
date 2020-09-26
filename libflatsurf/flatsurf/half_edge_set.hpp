@@ -20,10 +20,9 @@
 #ifndef LIBFLATSURF_HALF_EDGE_SET_HPP
 #define LIBFLATSURF_HALF_EDGE_SET_HPP
 
+#include <boost/operators.hpp>
 #include <iosfwd>
 #include <vector>
-
-#include <boost/operators.hpp>
 
 #include "copyable.hpp"
 

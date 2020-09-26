@@ -20,17 +20,14 @@
 #ifndef LIBFLATSURF_MANAGED_MOVABLE_IMPL_HPP
 #define LIBFLATSURF_MANAGED_MOVABLE_IMPL_HPP
 
+#include <boost/noncopyable.hpp>
 #include <functional>
 #include <memory>
 
-#include <boost/noncopyable.hpp>
-
 #include "../../flatsurf/forward.hpp"
-
+#include "../util/assert.ipp"
 #include "read_only.hpp"
 #include "weak_read_only.hpp"
-
-#include "../util/assert.ipp"
 
 namespace flatsurf {
 
@@ -79,6 +76,6 @@ class ImplementationOf<ManagedMovable<T>> : boost::noncopyable {
   friend WeakReadOnly<T>;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

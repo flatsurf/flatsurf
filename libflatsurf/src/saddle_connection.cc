@@ -30,8 +30,8 @@
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_by_length.hpp"
-#include "../flatsurf/saddle_connections_iterator.hpp"
 #include "../flatsurf/saddle_connections_by_length_iterator.hpp"
+#include "../flatsurf/saddle_connections_iterator.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertical.hpp"
 #include "impl/saddle_connection.impl.hpp"
@@ -93,9 +93,9 @@ SaddleConnection<Surface> SaddleConnection<Surface>::inSector(const Surface& sur
   CHECK_ARGUMENT(surface.inSector(source, vector), "Cannot search for " << vector << " next to " << source << " in " << surface << "; that direction is not in the search sector");
 
   const auto construction = SaddleConnections<Surface>(surface)
-    .bound(Bound::upper(vector))
-    .sector(source)
-    .sector(vector, vector);
+                                .bound(Bound::upper(vector))
+                                .sector(source)
+                                .sector(vector, vector);
 
   const auto ret = begin(construction);
 
@@ -171,9 +171,9 @@ SaddleConnection<Surface> SaddleConnection<Surface>::inSector(const Surface& sur
   CHECK_ARGUMENT(surface.inSector(source, direction.vertical()), "Cannot search in direction " << direction << " next to " << source << " in " << surface << "; that direction is not in the search sector");
 
   const auto construction = SaddleConnections<Surface>(surface)
-    .byLength()
-    .sector(source)
-    .sector(direction.vertical(), direction.vertical());
+                                .byLength()
+                                .sector(source)
+                                .sector(direction.vertical(), direction.vertical());
 
   const auto ret = begin(construction);
 

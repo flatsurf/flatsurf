@@ -20,13 +20,12 @@
 #ifndef LIBFLATSURF_PERMUTATION_HPP
 #define LIBFLATSURF_PERMUTATION_HPP
 
+#include <boost/operators.hpp>
 #include <functional>
 #include <iosfwd>
 #include <unordered_map>
 #include <utility>
 #include <vector>
-
-#include <boost/operators.hpp>
 
 #include "forward.hpp"
 

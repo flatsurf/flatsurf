@@ -26,15 +26,13 @@
 #include "../../flatsurf/half_edge_map.hpp"
 #include "../../flatsurf/tracked.hpp"
 #include "../../flatsurf/vector.hpp"
-
 #include "flat_triangulation_combinatorial.impl.hpp"
 
 namespace flatsurf {
 
 template <typename T>
-class ImplementationOf<FlatTriangulation<T>> :
- protected ImplementationOf<ManagedMovable<FlatTriangulation<T>>>,
- public ImplementationOf<FlatTriangulationCombinatorial> {
+class ImplementationOf<FlatTriangulation<T>> : protected ImplementationOf<ManagedMovable<FlatTriangulation<T>>>,
+                                               public ImplementationOf<FlatTriangulationCombinatorial> {
  public:
   ImplementationOf(FlatTriangulationCombinatorial&&, const std::function<Vector<T>(HalfEdge)>&);
 
