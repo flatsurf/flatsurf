@@ -38,8 +38,6 @@
 #include "util/assert.ipp"
 #include "util/hash.ipp"
 
-using std::ostream;
-
 namespace flatsurf {
 
 using std::begin;
@@ -257,8 +255,8 @@ bool SaddleConnection<Surface>::operator<(const Bound bound) const {
   return vector() < bound;
 }
 
-template <typename Surface, typename _>
-ostream& operator<<(ostream& os, const SaddleConnection<Surface>& self) {
+template <typename Surface>
+std::ostream& operator<<(std::ostream& os, const SaddleConnection<Surface>& self) {
   return os << self.vector() << " from " << self.source() << " to " << self.target();
 }
 

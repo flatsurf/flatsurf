@@ -56,24 +56,6 @@ auto makeOddHalfEdgeMap(const FlatTriangulationCombinatorial& surface, const std
   });
 }
 
-// The following block of forward declarations is a bit odd. It only exists to
-// work around bugs in cppyy.
-// See https://bitbucket.org/wlav/cppyy/issues/95/lookup-of-friend-operator
-// TODO: Check whether this is still needed with the latest cppyy.
-
-std::ostream &operator<<(std::ostream &, const HalfEdge &);
-template <typename T>
-std::ostream &operator<<(std::ostream &, const Permutation<T> &);
-template <typename T>
-std::ostream &operator<<(std::ostream &, const FlatTriangulation<T> &);
-template <typename Surface>
-std::ostream &operator<<(std::ostream &, const SaddleConnections<Surface> &);
-template <typename Surface>
-std::ostream &operator<<(std::ostream &, const SaddleConnectionsByLength<Surface> &);
-template <typename Surface>
-std::ostream &operator<<(std::ostream &, const FlowComponent<Surface> &);
-std::ostream &operator<<(std::ostream &, const Vertex &);
-
 }  // namespace flatsurf
 
 #endif

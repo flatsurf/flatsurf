@@ -71,7 +71,7 @@ requirements:
 {%- if test_requirements %}
     # enable test/pyflatsurf tests in ./configure
     - pytest
-    - cppyy
+    - cppyy >=1.8.3
     - sagelib
     - pip
     - ipywidgets
@@ -90,7 +90,7 @@ requirements:
 {%- endif %}
 {%- if component == "pyflatsurf" %}
     - python {{ _python }}
-    - cppyy
+    - cppyy >=1.8.3
     - pyexactreal >=1.3.2
     - boost-cpp
     - cppyythonizations
