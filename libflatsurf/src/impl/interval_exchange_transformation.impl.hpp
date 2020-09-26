@@ -39,16 +39,23 @@ class ImplementationOf<IntervalExchangeTransformation<Surface>> {
 
  public:
   ImplementationOf(const Surface& surface, const Vector<T>& vertical, const std::vector<HalfEdge>& top, const std::vector<HalfEdge>& bottom);
+  ImplementationOf(IntervalExchangeTransformation<Surface>, const std::shared_ptr<FlowDecompositionState<FlatTriangulation<T>>>& flowDecomposition);
 
-  // This is a hack, see https://github.com/flatsurf/flatsurf/issues/152.
-  // Maybe the entire flatsurf::IntervalExchangeTransformation is a bit unfortunate actually.
-  static void registerDecomposition(const IntervalExchangeTransformation<Surface>&, std::shared_ptr<FlowDecompositionState<FlatTriangulation<T>>>);
+  template <typename... Args>
+  static IntervalExchangeTransformation<Surface> make(Args&&... args) {
+    return IntervalExchangeTransformation<Surface>(PrivateConstructor{}, std::forward<Args>(args)...);
+  }
 
   ReadOnly<Surface> surface;
   intervalxt::IntervalExchangeTransformation iet;
   // A (correctly casted) pointer to the actual lengths stored inside iet.
   Lengths<Surface>* lengths;
 };
+
+template <typename Surface>
+template <typename... Args>
+IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(PrivateConstructor, Args&&...args) :
+  self(spimpl::make_unique_impl<ImplementationOf<IntervalExchangeTransformation>>(std::forward<Args>(args)...)) {}
 
 }  // namespace flatsurf
 

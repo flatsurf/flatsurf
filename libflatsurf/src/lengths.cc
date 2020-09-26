@@ -262,9 +262,12 @@ void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iteratio
 }
 
 template <typename Surface>
-void Lengths<Surface>::registerDecomposition(std::shared_ptr<FlowDecompositionState<FlatTriangulation<T>>> state) {
-  this->state = state;
-}
+Lengths<Surface>::Lengths(const Lengths<Surface>& lengths, std::shared_ptr<FlowDecompositionState<FlatTriangulation<T>>> state) :
+  state(state),
+  vertical(lengths.vertical),
+  lengths(lengths.lengths),
+  stack(lengths.stack),
+  sum(lengths.sum) {}
 
 template <typename Surface>
 std::vector<std::vector<mpq_class>> Lengths<Surface>::coefficients(const std::vector<Label>& labels) const {

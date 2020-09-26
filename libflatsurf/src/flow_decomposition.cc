@@ -166,10 +166,7 @@ boost::logic::tribool FlowDecomposition<Surface>::parabolic() const {
 
 template <typename Surface>
 ImplementationOf<FlowDecomposition<Surface>>::ImplementationOf(Surface&& surface, const Vector<T>& vertical) :
-  state(std::make_shared<FlowDecompositionState<Surface>>(std::move(surface), vertical)) {
-  for (auto& component : state->components)
-    ImplementationOf<IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>>::registerDecomposition(*component.iet, state);
-}
+  state(FlowDecompositionState<Surface>::make(std::move(surface), vertical)) {}
 
 template <typename Surface>
 ImplementationOf<FlowDecomposition<Surface>>::ImplementationOf(std::shared_ptr<FlowDecompositionState<Surface>> state) :

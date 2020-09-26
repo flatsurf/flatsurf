@@ -43,6 +43,7 @@ class Lengths {
 
  public:
   Lengths(const Vertical<FlatTriangulation<T>>&, EdgeMap<std::optional<SaddleConnection<FlatTriangulation<T>>>>&&);
+  Lengths(const Lengths<Surface>&, std::shared_ptr<FlowDecompositionState<FlatTriangulation<T>>> decomposition);
 
   void push(intervalxt::Label);
   void pop();
@@ -57,11 +58,6 @@ class Lengths {
   ::intervalxt::Lengths forget() const;
   ::intervalxt::Lengths only(const std::unordered_set<::intervalxt::Label>&) const;
   bool similar(::intervalxt::Label, ::intervalxt::Label, const ::intervalxt::Lengths&, ::intervalxt::Label, ::intervalxt::Label) const;
-
-  // TODO: Can we do something about this now?
-  // This is a hack, see https://github.com/flatsurf/flatsurf/issues/152.
-  // Maybe the entire flatsurf::IntervalExchangeTransformation is a bit unfortunate actually.
-  void registerDecomposition(std::shared_ptr<FlowDecompositionState<FlatTriangulation<T>>>);
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const Lengths<S>&);

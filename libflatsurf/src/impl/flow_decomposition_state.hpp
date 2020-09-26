@@ -34,8 +34,10 @@ template <typename Surface>
 class FlowDecompositionState : public std::enable_shared_from_this<FlowDecompositionState<Surface>> {
   using T = typename Surface::Coordinate;
 
+  FlowDecompositionState(Surface&& surface, const Vector<T>& vertical);
+
  public:
-  FlowDecompositionState(Surface&& surface, const Vector<T>& vert);
+  static std::shared_ptr<FlowDecompositionState> make(Surface&& surface, const Vector<T>& vertical);
 
   ContourDecomposition<Surface> contourDecomposition;
 

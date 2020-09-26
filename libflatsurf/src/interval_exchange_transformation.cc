@@ -32,11 +32,15 @@
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/tracked.hpp"
 #include "../flatsurf/vertex.hpp"
+
 #include "external/rx-ranges/include/rx/ranges.hpp"
+
 #include "impl/contour_component.impl.hpp"
 #include "impl/flat_triangulation_collapsed.impl.hpp"
+#include "impl/flow_decomposition_state.hpp"
 #include "impl/interval_exchange_transformation.impl.hpp"
 #include "impl/vertical.impl.hpp"
+
 #include "util/assert.ipp"
 
 using rx::to_vector;
@@ -222,8 +226,11 @@ ImplementationOf<IntervalExchangeTransformation<Surface>>::ImplementationOf(cons
 }
 
 template <typename Surface>
-void ImplementationOf<IntervalExchangeTransformation<Surface>>::registerDecomposition(const IntervalExchangeTransformation<Surface>& iet, std::shared_ptr<FlowDecompositionState<FlatTriangulation<T>>> state) {
-  iet.self->lengths->registerDecomposition(state);
+ImplementationOf<IntervalExchangeTransformation<Surface>>::ImplementationOf(IntervalExchangeTransformation<Surface> self, const std::shared_ptr<FlowDecompositionState<FlatTriangulation<T>>>& decomposition) :
+  surface(self.self->surface) {
+  auto erasedLengths = std::make_shared<intervalxt::Lengths>(Lengths<Surface>(*self.self->lengths, decomposition));
+  iet = intervalxt::IntervalExchangeTransformation(erasedLengths, self.self->iet.top(), self.self->iet.bottom());
+  lengths = boost::type_erasure::any_cast<Lengths<Surface>*>(erasedLengths.get());
 }
 
 template <typename Surface>

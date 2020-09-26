@@ -44,6 +44,9 @@ class IntervalExchangeTransformation {
 
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
+  template <typename... Args>
+  IntervalExchangeTransformation(PrivateConstructor, Args&&... args);
+
  public:
   IntervalExchangeTransformation(const Surface&, const Vector<T>& vertical, const std::vector<HalfEdge>& top, const std::vector<HalfEdge>& bottom);
 
