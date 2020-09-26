@@ -66,6 +66,31 @@ SaddleConnections<Surface> SaddleConnectionsByLength<Surface>::byAngle() const {
 }
 
 template <typename Surface>
+SaddleConnectionsByLength<Surface> SaddleConnectionsByLength<Surface>::bound(Bound bound) const {
+  return this->byAngle().bound(bound).byLength();
+}
+
+template <typename Surface>
+SaddleConnectionsByLength<Surface> SaddleConnectionsByLength<Surface>::sector(HalfEdge sectorBegin) const {
+  return this->byAngle().sector(sectorBegin).byLength();
+}
+
+template <typename Surface>
+SaddleConnectionsByLength<Surface> SaddleConnectionsByLength<Surface>::sector(const SaddleConnection<Surface>& sectorBegin, const SaddleConnection<Surface>& sectorEnd) const {
+  return this->byAngle().sector(sectorBegin, sectorEnd).byLength();
+}
+
+template <typename Surface>
+SaddleConnectionsByLength<Surface> SaddleConnectionsByLength<Surface>::sector(const Vector<T>& sectorBegin, const Vector<T>& sectorEnd) const {
+  return this->byAngle().sector(sectorBegin, sectorEnd).byLength();
+}
+
+template <typename Surface>
+SaddleConnectionsByLength<Surface> SaddleConnectionsByLength<Surface>::source(const Vertex& source) const {
+  return this->byAngle().source(source).byLength();
+}
+
+template <typename Surface>
 ImplementationOf<SaddleConnectionsByLength<Surface>>::ImplementationOf(const ImplementationOf<SaddleConnections<Surface>>& connections) :
   ImplementationOf<SaddleConnections<Surface>>(connections) {}
 
