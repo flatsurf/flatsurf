@@ -25,7 +25,6 @@
 #include <intervalxt/dynamical_decomposition.hpp>
 #include <intervalxt/interval_exchange_transformation.hpp>
 #include <intervalxt/label.hpp>
-#include <memory>
 #include <ostream>
 #include <unordered_map>
 

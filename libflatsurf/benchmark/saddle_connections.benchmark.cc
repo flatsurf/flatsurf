@@ -21,7 +21,6 @@
 #include <benchmark/benchmark.h>
 
 #include <exact-real/integer_ring.hpp>
-#include <memory>
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/flat_triangulation.hpp"

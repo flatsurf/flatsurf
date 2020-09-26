@@ -37,7 +37,7 @@ class FlowTriangulation {
   FlowTriangulation(PrivateConstructor, Args&&... args);
 
  public:
-  std::shared_ptr<const FlatTriangulation<T>> triangulation() const;
+  const FlatTriangulation<T>& triangulation() const;
 
   FlowComponent<Surface> component() const;
 

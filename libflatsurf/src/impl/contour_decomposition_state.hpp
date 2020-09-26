@@ -22,7 +22,6 @@
 
 #include <iosfwd>
 #include <list>
-#include <memory>
 
 #include "../../flatsurf/contour_component.hpp"
 #include "contour_component_state.hpp"

@@ -17,7 +17,6 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <memory>
 #include <ostream>
 
 #include "../flatsurf/half_edge.hpp"

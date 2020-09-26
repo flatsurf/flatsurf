@@ -18,7 +18,6 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <memory>
 #include <numeric>
 
 #include <e-antic/renfxx_fwd.h>

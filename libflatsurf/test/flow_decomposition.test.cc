@@ -98,7 +98,7 @@ TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (long long), (m
 
         AND_THEN("Each of its components can be triangulated") {
           const auto triangulations = flowDecomposition.components() | rx::transform([](const auto& component) { return component.triangulation(); }) | rx::to_vector();
-          REQUIRE((triangulations | rx::transform([](const auto& component) { return component.triangulation()->area(); }) | rx::sum()) == surface->area());
+          REQUIRE((triangulations | rx::transform([](const auto& component) { return component.triangulation().area(); }) | rx::sum()) == surface->area());
           REQUIRE(flowDecomposition.triangulation().area() == surface->area());
         }
       }

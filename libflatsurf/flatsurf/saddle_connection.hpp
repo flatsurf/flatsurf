@@ -24,7 +24,6 @@
 
 #include <boost/operators.hpp>
 #include <iosfwd>
-#include <memory>
 #include <optional>
 #include <vector>
 

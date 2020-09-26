@@ -34,7 +34,6 @@
 #include "contour_decomposition.hpp"
 #include "copyable.hpp"
 #include "decomposition_step.hpp"
-#include "delaunay_triangulation.hpp"
 #include "edge.hpp"
 #include "edge_map.hpp"
 #include "edge_set.hpp"

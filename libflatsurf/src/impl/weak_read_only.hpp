@@ -20,8 +20,6 @@
 #ifndef LIBFLATSURF_WEAK_READ_ONLY_HPP
 #define LIBFLATSURF_WEAK_READ_ONLY_HPP
 
-#include <memory>
-
 #include "forward.hpp"
 
 namespace flatsurf {

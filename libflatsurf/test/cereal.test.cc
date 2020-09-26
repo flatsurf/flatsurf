@@ -19,7 +19,6 @@
  *********************************************************************/
 
 #include <boost/lexical_cast.hpp>
-#include <memory>
 
 #include "../flatsurf/cereal.hpp"
 #include "../flatsurf/vertical.hpp"

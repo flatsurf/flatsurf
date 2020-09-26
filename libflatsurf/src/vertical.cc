@@ -21,7 +21,6 @@
 
 #include <intervalxt/interval_exchange_transformation.hpp>
 #include <intervalxt/label.hpp>
-#include <memory>
 #include <unordered_set>
 
 #include "../flatsurf/flat_triangulation.hpp"

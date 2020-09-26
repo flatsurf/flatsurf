@@ -20,7 +20,6 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
-#include <memory>
 #include <ostream>
 #include <vector>
 

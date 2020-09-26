@@ -21,7 +21,6 @@
 #include <benchmark/benchmark.h>
 
 #include <exact-real/integer_ring.hpp>
-#include <memory>
 
 #include "../flatsurf/chain.hpp"
 #include "../test/surfaces.hpp"

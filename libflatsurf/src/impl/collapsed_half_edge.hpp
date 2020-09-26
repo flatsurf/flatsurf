@@ -22,7 +22,6 @@
 
 #include <iosfwd>
 #include <list>
-#include <memory>
 
 #include "../../flatsurf/flat_triangulation.hpp"
 #include "../../flatsurf/path.hpp"

@@ -19,8 +19,6 @@
 
 #include <benchmark/benchmark.h>
 
-#include <memory>
-
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/saddle_connection.hpp"

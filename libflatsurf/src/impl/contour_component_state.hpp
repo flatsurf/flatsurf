@@ -21,7 +21,6 @@
 #define LIBFLATSURF_CONTOUR_COMPONENT_IMPL_COMPONENT_STATE_HPP
 
 #include <list>
-#include <memory>
 #include <unordered_set>
 
 #include "../../flatsurf/half_edge.hpp"

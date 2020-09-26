@@ -103,9 +103,9 @@ FlatTriangulation<typename Surface::Coordinate> FlowDecomposition<Surface>::tria
   const auto triangulations = components() | rx::transform([](const auto& component) { return component.triangulation(); }) | rx::to_vector();
   const auto faces = triangulations | rx::transform([&](const auto& triangulation) {
     const auto embedding = triangulation.embedding();
-    for (auto localHalfEdge : triangulation.triangulation()->halfEdges())
-      vectors[embedding[localHalfEdge]] = triangulation.triangulation()->fromHalfEdge(localHalfEdge);
-    return triangulation.triangulation()->faces() | rx::transform([&](const auto& face) {
+    for (auto localHalfEdge : triangulation.triangulation().halfEdges())
+      vectors[embedding[localHalfEdge]] = triangulation.triangulation().fromHalfEdge(localHalfEdge);
+    return triangulation.triangulation().faces() | rx::transform([&](const auto& face) {
       return std::tuple{embedding[std::get<0>(face)], embedding[std::get<1>(face)], embedding[std::get<2>(face)]};
     }) | rx::to_vector();
   }) | rx::to_vector() |

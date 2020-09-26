@@ -25,7 +25,6 @@
 #include <boost/operators.hpp>
 #include <exact-real/arb.hpp>
 #include <iosfwd>
-#include <memory>
 
 #include "chain_iterator.hpp"
 #include "copyable.hpp"
