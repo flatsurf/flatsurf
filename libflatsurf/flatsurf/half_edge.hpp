@@ -33,7 +33,7 @@ class HalfEdge : boost::equality_comparable<HalfEdge> {
   HalfEdge(PrivateConstructor, size_t idx);
 
  public:
-  HalfEdge();
+  HalfEdge() noexcept;
   HalfEdge(int id);
   HalfEdge(const HalfEdge &edge) = default;
 
@@ -41,16 +41,16 @@ class HalfEdge : boost::equality_comparable<HalfEdge> {
 
   HalfEdge operator-() const;
 
-  HalfEdge &operator=(const HalfEdge &other);
+  HalfEdge &operator=(const HalfEdge &other) noexcept;
 
   bool operator==(const HalfEdge &other) const;
 
   Edge edge() const;
 
   // Return a zero based index for this half edge that can be used to index into an array.
-  size_t index() const noexcept;
+  size_t index() const;
 
-  int id() const noexcept;
+  int id() const;
 
   friend std::ostream &operator<<(std::ostream &, const HalfEdge &);
 
@@ -69,7 +69,7 @@ class HalfEdge : boost::equality_comparable<HalfEdge> {
 namespace std {
 template <>
 struct hash<flatsurf::HalfEdge> {
-  size_t operator()(const flatsurf::HalfEdge &) const noexcept;
+  size_t operator()(const flatsurf::HalfEdge &) const;
 };
 }  // namespace std
 

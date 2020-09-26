@@ -39,7 +39,7 @@ class FlatTriangulationCombinatorial : public FlatTriangulationCombinatorics<Fla
   FlatTriangulationCombinatorial(PrivateConstructor, Args&&... args);
 
  public:
-  FlatTriangulationCombinatorial();
+  FlatTriangulationCombinatorial() noexcept;
   FlatTriangulationCombinatorial(const std::vector<std::vector<int>> &vertices, const std::vector<int> &boundaries = std::vector<int>());
   FlatTriangulationCombinatorial(const Permutation<HalfEdge> &vertices);
   FlatTriangulationCombinatorial(const std::vector<std::tuple<HalfEdge, HalfEdge, HalfEdge>> &faces);

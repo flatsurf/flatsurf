@@ -102,7 +102,7 @@ Chain(const Surface&, T &&...) -> Chain<Surface>;
 namespace std {
 
 template <typename Surface>
-struct hash<::flatsurf::Chain<Surface>> { size_t operator()(const ::flatsurf::Chain<Surface>&) const noexcept; };
+struct hash<::flatsurf::Chain<Surface>> { size_t operator()(const ::flatsurf::Chain<Surface>&) const; };
 
 }  // namespace std
 

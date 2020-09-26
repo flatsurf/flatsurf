@@ -32,7 +32,7 @@ namespace flatsurf {
 // A subset of the set of half edges of a triangulation.
 class HalfEdgeSet : boost::equality_comparable<HalfEdgeSet> {
  public:
-  HalfEdgeSet();
+  HalfEdgeSet() noexcept;
   HalfEdgeSet(const std::vector<HalfEdge>&);
 
   bool contains(HalfEdge) const;

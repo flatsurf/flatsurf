@@ -82,7 +82,7 @@ class FlowConnection : Serializable<FlowConnection<Surface>>,
 namespace std {
 
 template <typename Surface>
-struct hash<::flatsurf::FlowConnection<Surface>> { std::size_t operator()(const ::flatsurf::FlowConnection<Surface>&) const noexcept; };
+struct hash<::flatsurf::FlowConnection<Surface>> { std::size_t operator()(const ::flatsurf::FlowConnection<Surface>&) const; };
 
 }  // namespace std
 

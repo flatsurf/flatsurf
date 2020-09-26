@@ -36,7 +36,7 @@ class EdgeSet : boost::equality_comparable<EdgeSet> {
   EdgeSet(PrivateConstructor, Args&&...);
 
  public:
-  EdgeSet();
+  EdgeSet() noexcept;
   EdgeSet(const std::vector<Edge>&);
 
   bool contains(Edge) const;

@@ -37,7 +37,7 @@
 
 namespace flatsurf {
 
-FlatTriangulationCombinatorial::FlatTriangulationCombinatorial() :
+FlatTriangulationCombinatorial::FlatTriangulationCombinatorial() noexcept :
   FlatTriangulationCombinatorial({}, {}) {}
 
 FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(const std::vector<std::vector<int>>& vertices, const std::vector<int>& boundaries) :

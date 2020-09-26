@@ -44,7 +44,7 @@ namespace flatsurf {
 using std::optional;
 
 template <typename Vector, typename T>
-VectorExact<Vector, T>::operator bool() const noexcept {
+VectorExact<Vector, T>::operator bool() const {
   using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
@@ -63,7 +63,7 @@ VectorExact<Vector, T>::operator bool() const noexcept {
 }
 
 template <typename Vector, typename T>
-bool VectorExact<Vector, T>::operator<(Bound bound) const noexcept {
+bool VectorExact<Vector, T>::operator<(Bound bound) const {
   using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
@@ -82,7 +82,7 @@ bool VectorExact<Vector, T>::operator<(Bound bound) const noexcept {
 }
 
 template <typename Vector, typename T>
-bool VectorExact<Vector, T>::operator>(Bound bound) const noexcept {
+bool VectorExact<Vector, T>::operator>(Bound bound) const {
   using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
@@ -101,7 +101,7 @@ bool VectorExact<Vector, T>::operator>(Bound bound) const noexcept {
 }
 
 template <typename Vector, typename T>
-bool VectorExact<Vector, T>::operator==(const Vector& rhs) const noexcept {
+bool VectorExact<Vector, T>::operator==(const Vector& rhs) const {
   using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
@@ -120,7 +120,7 @@ bool VectorExact<Vector, T>::operator==(const Vector& rhs) const noexcept {
 }
 
 template <typename Vector, typename T>
-CCW VectorExact<Vector, T>::ccw(const Vector& rhs) const noexcept {
+CCW VectorExact<Vector, T>::ccw(const Vector& rhs) const {
   using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
@@ -155,7 +155,7 @@ CCW VectorExact<Vector, T>::ccw(const Vector& rhs) const noexcept {
 }
 
 template <typename Vector, typename T>
-T VectorExact<Vector, T>::x() const noexcept {
+T VectorExact<Vector, T>::x() const {
   using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
@@ -171,7 +171,7 @@ T VectorExact<Vector, T>::x() const noexcept {
 }
 
 template <typename Vector, typename T>
-T VectorExact<Vector, T>::y() const noexcept {
+T VectorExact<Vector, T>::y() const {
   using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
@@ -187,7 +187,7 @@ T VectorExact<Vector, T>::y() const noexcept {
 }
 
 template <typename Vector, typename T>
-ORIENTATION VectorExact<Vector, T>::orientation(const Vector& rhs) const noexcept {
+ORIENTATION VectorExact<Vector, T>::orientation(const Vector& rhs) const {
   using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
@@ -241,7 +241,7 @@ T VectorExact<Vector, T>::area(const std::vector<Vector>& perimeter) {
 }
 
 template <typename Vector, typename T>
-T VectorExact<Vector, T>::operator*(const Vector& rhs) const noexcept {
+T VectorExact<Vector, T>::operator*(const Vector& rhs) const {
   using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 

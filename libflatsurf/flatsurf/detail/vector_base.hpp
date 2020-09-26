@@ -40,7 +40,7 @@ class VectorBase : private boost::additive<Vector>,
  public:
   template <typename V>
   friend std::ostream &operator<<(std::ostream &, const VectorBase<V> &);
-  Vector operator-() const noexcept;
+  Vector operator-() const;
   Vector &operator+=(const Vector &);
   Vector &operator-=(const Vector &);
   Vector &operator*=(const int);
@@ -53,8 +53,8 @@ class VectorBase : private boost::additive<Vector>,
   Vector perpendicular() const;
 
   // See https://github.com/flatsurf/flatsurf/issues/66
-  explicit operator std::complex<double>() const noexcept;
-  explicit operator flatsurf::Vector<exactreal::Arb>() const noexcept;
+  explicit operator std::complex<double>() const;
+  explicit operator flatsurf::Vector<exactreal::Arb>() const;
 };
 
 template <typename V>

@@ -33,15 +33,15 @@ class Vector : public std::conditional_t<std::is_same_v<T, exactreal::Arb>, deta
  public:
   using Coordinate = T;
 
-  Vector();
+  Vector() noexcept;
   Vector(const Coordinate& x, const Coordinate& y);
 
   template <typename X, typename Y>
   Vector(const X& x, const Y& y) :
     Vector(static_cast<Coordinate>(x), static_cast<Coordinate>(y)) {}
 
-  Coordinate x() const noexcept;
-  Coordinate y() const noexcept;
+  Coordinate x() const;
+  Coordinate y() const;
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const Vector<S>&);
@@ -66,7 +66,7 @@ class Vector : public std::conditional_t<std::is_same_v<T, exactreal::Arb>, deta
 namespace std {
 
 template <typename T>
-struct hash<::flatsurf::Vector<T>> { size_t operator()(const ::flatsurf::Vector<T>&) const noexcept; };
+struct hash<::flatsurf::Vector<T>> { size_t operator()(const ::flatsurf::Vector<T>&) const; };
 
 }  // namespace std
 

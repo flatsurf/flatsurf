@@ -51,13 +51,13 @@ ReadOnly<T>::operator const T&() const {
 }
 
 template <typename T>
-ReadOnly<T>& ReadOnly<T>::operator=(const ReadOnly& rhs) {
+ReadOnly<T>& ReadOnly<T>::operator=(const ReadOnly& rhs) noexcept {
   *this = ImplementationOf<ManagedMovable<T>>::from_this(ImplementationOf<ManagedMovable<T>>::self(rhs.value).state);
   return *this;
 }
 
 template <typename T>
-ReadOnly<T>& ReadOnly<T>::operator=(ReadOnly&& rhs) {
+ReadOnly<T>& ReadOnly<T>::operator=(ReadOnly&& rhs) noexcept {
   value = std::move(rhs.value);
   return *this;
 }

@@ -66,8 +66,8 @@ class IntervalExchangeTransformation {
   // half edges.)
   static std::unordered_set<HalfEdge> makeUniqueLargeEdge(Surface&, const Vector<T>& vertical, HalfEdge& source);
 
-  intervalxt::IntervalExchangeTransformation& intervalExchangeTransformation() noexcept;
-  const intervalxt::IntervalExchangeTransformation& intervalExchangeTransformation() const noexcept;
+  intervalxt::IntervalExchangeTransformation& intervalExchangeTransformation();
+  const intervalxt::IntervalExchangeTransformation& intervalExchangeTransformation() const;
 
   // The Edge in the (collapsed) surface from which this label was created originally.
   Edge edge(const Label&) const;

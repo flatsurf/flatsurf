@@ -36,7 +36,7 @@ namespace flatsurf {
 using std::optional;
 
 template <typename Vector>
-std::optional<bool> VectorWithError<Vector>::operator==(const Vector& rhs) const noexcept {
+std::optional<bool> VectorWithError<Vector>::operator==(const Vector& rhs) const {
   using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
@@ -58,7 +58,7 @@ std::optional<bool> VectorWithError<Vector>::operator==(const Vector& rhs) const
 }
 
 template <typename Vector>
-std::optional<bool> VectorWithError<Vector>::operator!=(const Vector& rhs) const noexcept {
+std::optional<bool> VectorWithError<Vector>::operator!=(const Vector& rhs) const {
   using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
@@ -76,7 +76,7 @@ std::optional<bool> VectorWithError<Vector>::operator!=(const Vector& rhs) const
 }
 
 template <typename Vector>
-std::optional<CCW> VectorWithError<Vector>::ccw(const Vector& rhs) const noexcept {
+std::optional<CCW> VectorWithError<Vector>::ccw(const Vector& rhs) const {
   using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
   if constexpr (has_optional_ccw<Implementation>) {
@@ -87,7 +87,7 @@ std::optional<CCW> VectorWithError<Vector>::ccw(const Vector& rhs) const noexcep
 }
 
 template <typename Vector>
-std::optional<ORIENTATION> VectorWithError<Vector>::orientation(const Vector& rhs) const noexcept {
+std::optional<ORIENTATION> VectorWithError<Vector>::orientation(const Vector& rhs) const {
   using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
   if constexpr (has_optional_orientation<Implementation>) {
@@ -98,7 +98,7 @@ std::optional<ORIENTATION> VectorWithError<Vector>::orientation(const Vector& rh
 }
 
 template <typename Vector>
-VectorWithError<Vector>::operator std::optional<bool>() const noexcept {
+VectorWithError<Vector>::operator std::optional<bool>() const {
   using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
@@ -120,7 +120,7 @@ VectorWithError<Vector>::operator std::optional<bool>() const noexcept {
 }
 
 template <typename Vector>
-optional<bool> VectorWithError<Vector>::operator<(Bound bound) const noexcept {
+optional<bool> VectorWithError<Vector>::operator<(Bound bound) const {
   using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
@@ -136,7 +136,7 @@ optional<bool> VectorWithError<Vector>::operator<(Bound bound) const noexcept {
 }
 
 template <typename Vector>
-optional<bool> VectorWithError<Vector>::operator>(Bound bound) const noexcept {
+optional<bool> VectorWithError<Vector>::operator>(Bound bound) const {
   using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
@@ -152,7 +152,7 @@ optional<bool> VectorWithError<Vector>::operator>(Bound bound) const noexcept {
 }
 
 template <typename Vector>
-exactreal::Arb VectorWithError<Vector>::operator*(const Vector& rhs) const noexcept {
+exactreal::Arb VectorWithError<Vector>::operator*(const Vector& rhs) const {
   using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 

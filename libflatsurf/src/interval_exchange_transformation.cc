@@ -135,10 +135,10 @@ void IntervalExchangeTransformation<Surface>::makeUniqueLargeEdges(Surface& surf
 }
 
 template <typename Surface>
-const intervalxt::IntervalExchangeTransformation& IntervalExchangeTransformation<Surface>::intervalExchangeTransformation() const noexcept { return self->iet; }
+const intervalxt::IntervalExchangeTransformation& IntervalExchangeTransformation<Surface>::intervalExchangeTransformation() const { return self->iet; }
 
 template <typename Surface>
-typename intervalxt::IntervalExchangeTransformation& IntervalExchangeTransformation<Surface>::intervalExchangeTransformation() noexcept { return self->iet; }
+typename intervalxt::IntervalExchangeTransformation& IntervalExchangeTransformation<Surface>::intervalExchangeTransformation() { return self->iet; }
 
 template <typename Surface>
 std::unordered_set<HalfEdge> IntervalExchangeTransformation<Surface>::makeUniqueLargeEdge(Surface& surface, const Vector<T>& vertical_, HalfEdge& unique_) {

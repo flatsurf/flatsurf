@@ -67,7 +67,7 @@ using std::begin;
 using std::end;
 
 template <typename T>
-FlatTriangulationCollapsed<T>::FlatTriangulationCollapsed() :
+FlatTriangulationCollapsed<T>::FlatTriangulationCollapsed() noexcept :
   FlatTriangulationCollapsed(FlatTriangulation<T>(), Vector<T>(0, 1)) {}
 
 template <typename T>

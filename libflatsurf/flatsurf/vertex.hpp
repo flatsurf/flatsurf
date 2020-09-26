@@ -55,7 +55,7 @@ class Vertex : Serializable<Vertex>,
 
 template <>
 struct std::hash<flatsurf::Vertex> {
-  size_t operator()(const flatsurf::Vertex &) const noexcept;
+  size_t operator()(const flatsurf::Vertex &) const;
 };
 
 #endif

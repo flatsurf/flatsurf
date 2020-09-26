@@ -71,7 +71,7 @@ class Vertical : Serializable<Vertical<Surface>>,
 
   std::vector<std::unordered_set<HalfEdge>> components() const;
 
-  bool operator==(const Vertical &) const noexcept;
+  bool operator==(const Vertical &) const;
 
   Vertical<Surface> operator-() const;
 

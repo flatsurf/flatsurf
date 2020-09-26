@@ -33,7 +33,7 @@ namespace flatsurf {
 // the length of a vector with integer coordinates.
 class Bound : boost::totally_ordered<Bound>, boost::multipliable<Bound, mpz_class> {
  public:
-  Bound();
+  Bound() noexcept;
   Bound(const mpz_class& x);
   Bound(int x);
   Bound(const mpz_class& x, const mpz_class& y);
@@ -44,10 +44,10 @@ class Bound : boost::totally_ordered<Bound>, boost::multipliable<Bound, mpz_clas
   template <typename T>
   static Bound upper(const Vector<T>&);
 
-  const mpz_class& squared() const noexcept;
+  const mpz_class& squared() const;
 
-  bool operator==(const Bound&) const noexcept;
-  bool operator<(const Bound&) const noexcept;
+  bool operator==(const Bound&) const;
+  bool operator<(const Bound&) const;
 
   Bound& operator*=(const mpz_class&);
 

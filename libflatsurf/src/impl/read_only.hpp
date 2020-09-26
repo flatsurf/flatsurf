@@ -51,8 +51,8 @@ class ReadOnly {
 
   operator const T&() const;
 
-  ReadOnly& operator=(const ReadOnly&);
-  ReadOnly& operator=(ReadOnly&&);
+  ReadOnly& operator=(const ReadOnly&) noexcept;
+  ReadOnly& operator=(ReadOnly&&) noexcept;
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const ReadOnly<S>&);

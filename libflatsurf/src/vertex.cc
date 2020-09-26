@@ -97,7 +97,7 @@ Vertex ImplementationOf<Vertex>::make(const std::vector<HalfEdge> sources) {
 
 }  // namespace flatsurf
 
-size_t std::hash<flatsurf::Vertex>::operator()(const flatsurf::Vertex& v) const noexcept {
+size_t std::hash<flatsurf::Vertex>::operator()(const flatsurf::Vertex& v) const {
   return std::hash<flatsurf::HalfEdge>()(*begin(flatsurf::ImplementationOf<flatsurf::Vertex>::outgoing(v)));
 }
 

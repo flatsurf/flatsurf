@@ -47,7 +47,7 @@ class FlatTriangulationCollapsed : public FlatTriangulationCombinatorics<FlatTri
   using Coordinate = T;
   using SaddleConnection = ::flatsurf::SaddleConnection<FlatTriangulation<T>>;
 
-  FlatTriangulationCollapsed();
+  FlatTriangulationCollapsed() noexcept;
   FlatTriangulationCollapsed(const FlatTriangulation<T>&, const Vector<T> &vertical);
 
   Vertical<FlatTriangulationCollapsed<T>> vertical() const;

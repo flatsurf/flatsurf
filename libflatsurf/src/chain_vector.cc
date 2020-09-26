@@ -101,7 +101,7 @@ ChainVector<Surface, T>::ChainVector(const ImplementationOf<Chain<Surface>>* cha
   ChainVector(chain, static_cast<const Vector<T>&>(value)) {}
 
 template <typename Surface, typename T>
-ChainVector<Surface, T>& ChainVector<Surface, T>::operator=(const Vector<T>& value) {
+ChainVector<Surface, T>& ChainVector<Surface, T>::operator=(const Vector<T>& value) noexcept {
   this->value = value;
   pendingMoves.clear();
   pendingMovesCost = 0;
@@ -109,7 +109,7 @@ ChainVector<Surface, T>& ChainVector<Surface, T>::operator=(const Vector<T>& val
 }
 
 template <typename Surface, typename T>
-ChainVector<Surface, T>& ChainVector<Surface, T>::operator=(Vector<T>&& value) {
+ChainVector<Surface, T>& ChainVector<Surface, T>::operator=(Vector<T>&& value) noexcept {
   this->value = std::move(value);
   pendingMoves.clear();
   pendingMovesCost = 0;

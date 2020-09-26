@@ -62,7 +62,7 @@ Vector& VectorBase<Vector>::operator-=(const Vector& rhs) {
 }
 
 template <typename Vector>
-Vector VectorBase<Vector>::operator-() const noexcept {
+Vector VectorBase<Vector>::operator-() const {
   using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
@@ -78,7 +78,7 @@ Vector VectorBase<Vector>::operator-() const noexcept {
 }
 
 template <typename Vector>
-VectorBase<Vector>::operator flatsurf::Vector<exactreal::Arb>() const noexcept {
+VectorBase<Vector>::operator flatsurf::Vector<exactreal::Arb>() const {
   using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
@@ -97,7 +97,7 @@ VectorBase<Vector>::operator flatsurf::Vector<exactreal::Arb>() const noexcept {
 }
 
 template <typename Vector>
-VectorBase<Vector>::operator std::complex<double>() const noexcept {
+VectorBase<Vector>::operator std::complex<double>() const {
   const Vector& self = static_cast<const Vector&>(*this);
 
   if constexpr (std::is_same_v<Vector, flatsurf::Vector<exactreal::Arb>>) {

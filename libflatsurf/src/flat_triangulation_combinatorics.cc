@@ -196,7 +196,7 @@ bool FlatTriangulationCombinatorics<Surface>::hasBoundary() const {
 }
 
 template <typename Surface>
-size_t FlatTriangulationCombinatorics<Surface>::size() const noexcept {
+size_t FlatTriangulationCombinatorics<Surface>::size() const {
   return self->edges.size();
 }
 
@@ -211,7 +211,7 @@ std::pair<HalfEdge, HalfEdge> FlatTriangulationCombinatorics<Surface>::collapse(
 }
 
 template <typename Surface>
-bool FlatTriangulationCombinatorics<Surface>::operator==(const FlatTriangulationCombinatorial& rhs) const noexcept {
+bool FlatTriangulationCombinatorics<Surface>::operator==(const FlatTriangulationCombinatorial& rhs) const {
   if (self.state == ImplementationOf<FlatTriangulationCombinatorial>::self(rhs).state) return true;
   return this->self->vertices == ImplementationOf<FlatTriangulationCombinatorial>::self(rhs)->vertices;
 }

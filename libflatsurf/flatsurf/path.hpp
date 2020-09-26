@@ -36,7 +36,7 @@ class Path : public Serializable<Path<Surface>>,
   using T = typename Surface::Coordinate;
 
  public:
-  Path();
+  Path() noexcept;
   Path(const std::vector<Segment>&);
 
   operator const std::vector<Segment>&() const;

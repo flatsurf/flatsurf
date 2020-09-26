@@ -40,7 +40,7 @@ class Permutation : boost::equality_comparable<Permutation<T>>, boost::multiplia
   Permutation(const std::vector<T> &);
 
  public:
-  Permutation();
+  Permutation() noexcept;
   explicit Permutation(const std::vector<std::vector<T>> &cycles);
   explicit Permutation(const std::vector<std::pair<T, T>> &permutation);
   explicit Permutation(const std::unordered_map<T, T> &permutation);
@@ -59,16 +59,16 @@ class Permutation : boost::equality_comparable<Permutation<T>>, boost::multiplia
 
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const Permutation<S> &);
-  size_t size() const noexcept;
-  const std::vector<T> &domain() const noexcept;
-  std::vector<std::vector<T>> cycles() const noexcept;
+  size_t size() const;
+  const std::vector<T> &domain() const;
+  std::vector<std::vector<T>> cycles() const;
   // Return the cycle containing this T.
-  std::vector<T> cycle(const T &) const noexcept;
+  std::vector<T> cycle(const T &) const;
   void drop(const std::vector<T> &);
 
-  bool trivial() const noexcept;
+  bool trivial() const;
 
-  bool operator==(const Permutation &) const noexcept;
+  bool operator==(const Permutation &) const;
 
  private:
   std::vector<T> permutation;

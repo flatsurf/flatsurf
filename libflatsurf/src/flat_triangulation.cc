@@ -562,7 +562,7 @@ SaddleConnections<FlatTriangulation<T>> FlatTriangulation<T>::connections() cons
 }
 
 template <typename T>
-bool FlatTriangulation<T>::operator==(const FlatTriangulation<T> &rhs) const noexcept {
+bool FlatTriangulation<T>::operator==(const FlatTriangulation<T> &rhs) const {
   if (this == &rhs)
     return true;
 

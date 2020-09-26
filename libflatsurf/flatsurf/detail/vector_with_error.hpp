@@ -30,26 +30,26 @@ namespace flatsurf::detail {
 template <typename Vector>
 class VectorWithError : public VectorBase<Vector> {
  public:
-  std::optional<CCW> ccw(const Vector &) const noexcept;
-  std::optional<ORIENTATION> orientation(const Vector &) const noexcept;
-  std::optional<bool> insideCircumcircle(std::initializer_list<Vector>) const noexcept;
+  std::optional<CCW> ccw(const Vector &) const;
+  std::optional<ORIENTATION> orientation(const Vector &) const;
+  std::optional<bool> insideCircumcircle(std::initializer_list<Vector>) const;
 
-  std::optional<bool> operator>(const Bound) const noexcept;
-  std::optional<bool> operator>=(const Bound) const noexcept;
-  std::optional<bool> operator<(const Bound) const noexcept;
-  std::optional<bool> operator<=(const Bound) const noexcept;
+  std::optional<bool> operator>(const Bound) const;
+  std::optional<bool> operator>=(const Bound) const;
+  std::optional<bool> operator<(const Bound) const;
+  std::optional<bool> operator<=(const Bound) const;
   // Return true if both vectors are the same exact vector, false if the
   // respective balls do not overlap.
-  std::optional<bool> operator==(const Vector &) const noexcept;
+  std::optional<bool> operator==(const Vector &) const;
   // Return true if the respective balls do not overlap, false if both vectors
   // are the same exact vector.
-  std::optional<bool> operator!=(const Vector &) const noexcept;
+  std::optional<bool> operator!=(const Vector &) const;
   // Return true if the respective ball does not contain the zero vector, false
   // if this is exactly the zero vector.
-  explicit operator std::optional<bool>() const noexcept;
+  explicit operator std::optional<bool>() const;
 
   // Return the scalar product with the argument.
-  exactreal::Arb operator*(const Vector &) const noexcept;
+  exactreal::Arb operator*(const Vector &) const;
 };
 }  // namespace flatsurf::detail
 

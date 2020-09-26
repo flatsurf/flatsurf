@@ -38,7 +38,7 @@ namespace flatsurf {
 using std::begin;
 using std::end;
 
-EdgeSet::EdgeSet() :
+EdgeSet::EdgeSet() noexcept :
   self(spimpl::make_impl<ImplementationOf<EdgeSet>>()) {}
 
 EdgeSet::EdgeSet(const std::vector<Edge>& items) :

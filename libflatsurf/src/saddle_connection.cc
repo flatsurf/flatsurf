@@ -84,7 +84,7 @@ const Surface& SaddleConnection<Surface>::surface() const {
 }
 
 template <typename Surface>
-SaddleConnection<Surface> SaddleConnection<Surface>::operator-() const noexcept {
+SaddleConnection<Surface> SaddleConnection<Surface>::operator-() const {
   return SaddleConnection(self->surface, self->target, self->source, -self->chain);
 }
 
@@ -281,7 +281,7 @@ namespace std {
 using namespace flatsurf;
 
 template <typename Surface>
-size_t hash<SaddleConnection<Surface>>::operator()(const SaddleConnection<Surface>& self) const noexcept {
+size_t hash<SaddleConnection<Surface>>::operator()(const SaddleConnection<Surface>& self) const {
   return hash_combine(self.source(), self.target(), self.chain());
 }
 

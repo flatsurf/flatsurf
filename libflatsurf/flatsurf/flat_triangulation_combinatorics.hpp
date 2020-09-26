@@ -90,7 +90,7 @@ class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulat
   std::vector<HalfEdge> atVertex(const Vertex &) const;
 
   // Return the number of edges in this triangulation.
-  size_t size() const noexcept;
+  size_t size() const;
 
   void flip(HalfEdge);
 
@@ -119,7 +119,7 @@ class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulat
 
   // Return whether rhs is combinatorially the same triangulation (with the
   // same numbering of edges.)
-  bool operator==(const FlatTriangulationCombinatorial &rhs) const noexcept;
+  bool operator==(const FlatTriangulationCombinatorial &rhs) const;
 
   // Return a triangulation that only encodes the combinatorial structure of
   // this surface.

@@ -166,7 +166,7 @@ class ImplementationOf<Vector<T>> : public Cartesian<T> {
   }
 
   template <bool Enable = IsArb<T>, If<Enable> = true>
-  std::optional<CCW> ccw(const flatsurf::Vector<exactreal::Arb>& rhs) const noexcept {
+  std::optional<CCW> ccw(const flatsurf::Vector<exactreal::Arb>& rhs) const {
     const Arb a = (this->x * rhs.self->y)(ARB_PRECISION_FAST);
     const Arb b = (rhs.self->x * this->y)(ARB_PRECISION_FAST);
 
@@ -190,7 +190,7 @@ class ImplementationOf<Vector<T>> : public Cartesian<T> {
   }
 
   template <bool Enable = IsArb<T>, If<Enable> = true>
-  std::optional<ORIENTATION> orientation(const flatsurf::Vector<exactreal::Arb>& rhs) const noexcept {
+  std::optional<ORIENTATION> orientation(const flatsurf::Vector<exactreal::Arb>& rhs) const {
     // Arb also has a built-in dot product. It's probably not doing anything else in 2d.
     const Arb dot = (this->x * rhs.self->x + this->y * rhs.self->y)(ARB_PRECISION_FAST);
 
@@ -212,19 +212,19 @@ class ImplementationOf<Vector<T>> : public Cartesian<T> {
   }
 
   template <bool Enable = IsArb<T>, If<Enable> = true>
-  std::optional<bool> operator<(const Bound bound) const noexcept {
+  std::optional<bool> operator<(const Bound bound) const {
     Arb size = (this->x * this->x + this->y * this->y)(ARB_PRECISION_FAST);
     return size < bound.squared();
   }
 
   template <bool Enable = IsArb<T>, If<Enable> = true>
-  std::optional<bool> operator>(const Bound bound) const noexcept {
+  std::optional<bool> operator>(const Bound bound) const {
     Arb size = (this->x * this->x + this->y * this->y)(ARB_PRECISION_FAST);
     return size > bound.squared();
   }
 
   template <bool Enable = IsArb<T>, If<Enable> = true>
-  operator std::optional<bool>() const noexcept {
+  operator std::optional<bool>() const {
     auto maybe_x = this->x == Arb(0);
     if (!maybe_x || !*maybe_x)
       return maybe_x;
@@ -249,7 +249,7 @@ class ImplementationOf<Vector<T>> : public Cartesian<T> {
 };
 
 template <typename T>
-Vector<T>::Vector() :
+Vector<T>::Vector() noexcept :
   self(spimpl::make_impl<ImplementationOf<Vector>>(T(), T())) {}
 
 template <typename T>
@@ -257,10 +257,10 @@ Vector<T>::Vector(const T& x, const T& y) :
   self(spimpl::make_impl<ImplementationOf<Vector>>(x, y)) {}
 
 template <typename T>
-T Vector<T>::x() const noexcept { return self->x; }
+T Vector<T>::x() const { return self->x; }
 
 template <typename T>
-T Vector<T>::y() const noexcept { return self->y; }
+T Vector<T>::y() const { return self->y; }
 
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const Vector<T>& self) {
@@ -286,7 +286,7 @@ namespace std {
 using namespace flatsurf;
 
 template <typename T>
-size_t hash<Vector<T>>::operator()(const Vector<T>& self) const noexcept {
+size_t hash<Vector<T>>::operator()(const Vector<T>& self) const {
   using Implementation = ImplementationOf<Vector<T>>;
   const Vector<T>& s = static_cast<const Vector<T>&>(self);
 

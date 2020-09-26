@@ -274,7 +274,7 @@ namespace std {
 using namespace flatsurf;
 
 template <typename Surface>
-size_t hash<Chain<Surface>>::operator()(const Chain<Surface>& self) const noexcept {
+size_t hash<Chain<Surface>>::operator()(const Chain<Surface>& self) const {
   return ImplementationOf<Chain<Surface>>::hash(self);
 }
 

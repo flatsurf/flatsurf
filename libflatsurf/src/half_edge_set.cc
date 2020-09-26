@@ -32,7 +32,7 @@
 
 namespace flatsurf {
 
-HalfEdgeSet::HalfEdgeSet() :
+HalfEdgeSet::HalfEdgeSet() noexcept :
   self(spimpl::make_impl<ImplementationOf<HalfEdgeSet>>()) {}
 
 HalfEdgeSet::HalfEdgeSet(const std::vector<HalfEdge>& items) :

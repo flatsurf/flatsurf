@@ -189,7 +189,7 @@ namespace std {
 using namespace flatsurf;
 
 template <typename Surface>
-size_t hash<FlowConnection<Surface>>::operator()(const FlowConnection<Surface>& self) const noexcept {
+size_t hash<FlowConnection<Surface>>::operator()(const FlowConnection<Surface>& self) const {
   return std::hash<SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>>()(self.saddleConnection());
 }
 

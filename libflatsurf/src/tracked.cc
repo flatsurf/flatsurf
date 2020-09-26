@@ -49,11 +49,11 @@ Tracked<T>::Tracked(const FlatTriangulationCombinatorial& parent, T value, const
 }
 
 template <typename T>
-Tracked<T>::Tracked(const Tracked& rhs) :
+Tracked<T>::Tracked(const Tracked& rhs) noexcept :
   self(spimpl::make_unique_impl<ImplementationOf<Tracked>>(rhs.self->parent.get(), T(rhs.self->value), rhs.self->updateAfterFlip, rhs.self->updateBeforeCollapse, rhs.self->updateBeforeSwap, rhs.self->updateBeforeErase, rhs.self->updateBeforeDestruction)) {}
 
 template <typename T>
-Tracked<T>::Tracked(Tracked&& rhs) :
+Tracked<T>::Tracked(Tracked&& rhs) noexcept :
   self(std::move(rhs.self)) {}
 
 template <typename T>
@@ -168,13 +168,13 @@ T* Tracked<T>::operator->() {
 }
 
 template <typename T>
-Tracked<T>& Tracked<T>::operator=(const Tracked& rhs) {
+Tracked<T>& Tracked<T>::operator=(const Tracked& rhs) noexcept {
   *this = std::move(Tracked(rhs));
   return *this;
 }
 
 template <typename T>
-Tracked<T>& Tracked<T>::operator=(Tracked&& rhs) {
+Tracked<T>& Tracked<T>::operator=(Tracked&& rhs) noexcept {
   self = std::move(rhs.self);
   return *this;
 }

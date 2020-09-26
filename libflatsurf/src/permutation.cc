@@ -58,7 +58,7 @@ void check(const Permutation<T> &permutation) {
 }  // namespace
 
 template <typename T>
-Permutation<T>::Permutation() :
+Permutation<T>::Permutation() noexcept :
   Permutation(vector<pair<T, T>>()) {}
 
 template <typename T>
@@ -129,17 +129,17 @@ const T &Permutation<T>::preimage(const T &t) const {
 }
 
 template <typename T>
-size_t Permutation<T>::size() const noexcept {
+size_t Permutation<T>::size() const {
   return permutation.size();
 }
 
 template <typename T>
-const vector<T> &Permutation<T>::domain() const noexcept {
+const vector<T> &Permutation<T>::domain() const {
   return permutation;
 }
 
 template <typename T>
-vector<vector<T>> Permutation<T>::cycles() const noexcept {
+vector<vector<T>> Permutation<T>::cycles() const {
   std::unordered_set<T> seen;
   vector<vector<T>> cycles;
   for (const auto &t : domain()) {
@@ -188,7 +188,7 @@ Permutation<T> &Permutation<T>::operator*=(const Permutation<T> &rhs) {
 }
 
 template <typename T>
-bool Permutation<T>::trivial() const noexcept {
+bool Permutation<T>::trivial() const {
   for (auto &v : domain())
     if ((*this)(v) != v)
       return false;
@@ -196,7 +196,7 @@ bool Permutation<T>::trivial() const noexcept {
 }
 
 template <typename T>
-std::vector<T> Permutation<T>::cycle(const T &first) const noexcept {
+std::vector<T> Permutation<T>::cycle(const T &first) const {
   std::vector<T> cycle{first};
 
   do {
@@ -243,7 +243,7 @@ Permutation<T> &operator*=(Permutation<T> &self, const vector<T> &cycle) {
 }
 
 template <typename T>
-bool Permutation<T>::operator==(const Permutation &rhs) const noexcept {
+bool Permutation<T>::operator==(const Permutation &rhs) const {
   return permutation == rhs.permutation;
 }
 

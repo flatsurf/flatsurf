@@ -44,8 +44,8 @@ class Tracked {
   // A callback of this type is invoked when the parent surface is destructed.
   using DestructionHandler = std::function<void(T&, const FlatTriangulationCombinatorial&)>;
 
-  Tracked(const Tracked&);
-  Tracked(Tracked&&);
+  Tracked(const Tracked&) noexcept;
+  Tracked(Tracked&&) noexcept;
   Tracked(const FlatTriangulationCombinatorial&, T value, const FlipHandler& updateAfterFlip = defaultFlip, const CollapseHandler& updateBeforeCollapse = defaultCollapse, const SwapHandler& updateBeforeSwap = defaultSwap, const EraseHandler& updateBeforeErase = defaultErase, const DestructionHandler& updateBeforeDestruction = forgetParent);
 
   operator T&();
@@ -53,8 +53,8 @@ class Tracked {
   const T* operator->() const;
   T* operator->();
 
-  Tracked& operator=(const Tracked&);
-  Tracked& operator=(Tracked&&);
+  Tracked& operator=(const Tracked&) noexcept;
+  Tracked& operator=(Tracked&&) noexcept;
 
   Tracked& operator=(T&&);
 

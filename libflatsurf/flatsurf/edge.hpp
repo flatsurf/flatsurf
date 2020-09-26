@@ -31,7 +31,7 @@ namespace flatsurf {
 // An unoriented edge of a Flat Triangulation.
 class Edge : boost::equality_comparable<Edge> {
  public:
-  Edge();
+  Edge() noexcept;
   Edge(int);
   Edge(HalfEdge);
 
@@ -63,7 +63,7 @@ class Edge : boost::equality_comparable<Edge> {
 namespace std {
 template <>
 struct hash<flatsurf::Edge> {
-  size_t operator()(const flatsurf::Edge &) const noexcept;
+  size_t operator()(const flatsurf::Edge &) const;
 };
 
 }  // namespace std

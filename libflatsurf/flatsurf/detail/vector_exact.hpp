@@ -38,25 +38,25 @@ class VectorExact : public VectorBase<Vector>,
  public:
   using Coordinate = T;
 
-  CCW ccw(const Vector &) const noexcept;
-  ORIENTATION orientation(const Vector &) const noexcept;
-  bool insideCircumcircle(std::initializer_list<Vector>) const noexcept;
+  CCW ccw(const Vector &) const;
+  ORIENTATION orientation(const Vector &) const;
+  bool insideCircumcircle(std::initializer_list<Vector>) const;
 
   // Return the scalar product with the argument
-  T operator*(const Vector &) const noexcept;
+  T operator*(const Vector &) const;
 
-  bool operator>(const Bound) const noexcept;
-  bool operator<(const Bound) const noexcept;
-  bool operator==(const Vector &) const noexcept;
-  explicit operator bool() const noexcept;
+  bool operator>(const Bound) const;
+  bool operator<(const Bound) const;
+  bool operator==(const Vector &) const;
+  explicit operator bool() const;
 
   // Return whether this vector is contained in the sector described by
   // inclusive and exclusive in counter-clockwise order. If inclusive and
   // exclusive are collinear, the sector consists of that single ray.
   bool inSector(const Vector &inclusive, const Vector &exclusive) const;
 
-  Coordinate x() const noexcept;
-  Coordinate y() const noexcept;
+  Coordinate x() const;
+  Coordinate y() const;
 
   // Return twice the area of the polygon described by the (counter-clockwise) perimeter.
   static T area(const std::vector<Vector> &perimeter);

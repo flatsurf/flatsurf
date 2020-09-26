@@ -40,7 +40,7 @@
 namespace flatsurf {
 
 template <typename Surface>
-Path<Surface>::Path() :
+Path<Surface>::Path() noexcept :
   self(spimpl::make_impl<ImplementationOf<Path>>()) {}
 
 template <typename Surface>

@@ -81,7 +81,7 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
 
   std::optional<int> angle(const SaddleConnection<Surface> &) const;
 
-  SaddleConnection<Surface> operator-() const noexcept;
+  SaddleConnection<Surface> operator-() const;
 
   bool operator==(const SaddleConnection<Surface> &) const;
 
@@ -105,7 +105,7 @@ SaddleConnection(const Surface&, T &&...) -> SaddleConnection<Surface>;
 namespace std {
 
 template <typename Surface>
-struct hash<::flatsurf::SaddleConnection<Surface>> { size_t operator()(const ::flatsurf::SaddleConnection<Surface> &) const noexcept; };
+struct hash<::flatsurf::SaddleConnection<Surface>> { size_t operator()(const ::flatsurf::SaddleConnection<Surface> &) const; };
 
 }  // namespace std
 

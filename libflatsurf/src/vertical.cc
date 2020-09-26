@@ -140,7 +140,7 @@ const Surface& Vertical<Surface>::surface() const {
 }
 
 template <typename Surface>
-bool Vertical<Surface>::operator==(const Vertical& rhs) const noexcept {
+bool Vertical<Surface>::operator==(const Vertical& rhs) const {
   return surface() == rhs.surface() && self->vertical == rhs.self->vertical;
 }
 

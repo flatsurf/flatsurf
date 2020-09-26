@@ -112,7 +112,7 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
 
   const ::flatsurf::Vector<exactreal::Arb> &fromHalfEdgeApproximate(HalfEdge) const;
 
-  bool operator==(const FlatTriangulation<T> &) const noexcept;
+  bool operator==(const FlatTriangulation<T> &) const;
 
   template <typename W>
   friend std::ostream &operator<<(std::ostream &, const FlatTriangulation<W> &);
