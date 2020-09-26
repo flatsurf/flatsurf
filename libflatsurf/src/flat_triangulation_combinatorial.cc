@@ -389,8 +389,4 @@ std::ostream& operator<<(std::ostream& os, const FlatTriangulationCombinatorial&
   return os << static_cast<const FlatTriangulationCombinatorics<FlatTriangulationCombinatorial>&>(self);
 }
 
-std::ostream& operator<<(std::ostream& os, const FlatTriangulationCombinatorial& self) {
-  return os << static_cast<const FlatTriangulationCombinatorics<FlatTriangulationCombinatorial>&>(self);
-}
-
 }  // namespace flatsurf
