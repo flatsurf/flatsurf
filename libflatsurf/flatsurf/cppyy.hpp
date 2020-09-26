@@ -25,35 +25,32 @@
 #include "flatsurf.hpp"
 
 namespace flatsurf {
-// TODO: Test that it actually has trouble.
 // cppyy sometimes has trouble with rvalues, let's help it to create a FlatTriangulation
+// See https://bitbucket.org/wlav/cppyy/issues/275/result-of-cppyygblstdmove-is-not-an-rvalue.
 template <typename T>
 FlatTriangulation<T> makeFlatTriangulation(const std::vector<std::vector<int>> &vertices, const std::vector<Vector<T>> &vectors) {
   return FlatTriangulation<T>(FlatTriangulationCombinatorial(vertices), vectors);
 }
 
-// TODO: Test that it actually has trouble.
 // cppyy sometimes has trouble with rvalues, let's help it to create a FlowDecomposition
+// See https://bitbucket.org/wlav/cppyy/issues/275/result-of-cppyygblstdmove-is-not-an-rvalue.
 template <typename T>
 FlowDecomposition<FlatTriangulation<T>> makeFlowDecomposition(const FlatTriangulation<T> &surface, const Vector<T> &v) {
   return FlowDecomposition<FlatTriangulation<T>>(surface.clone(), v);
 }
 
-// TODO: Test that this is actually a problem.
-// cppyy has trouble with std::function arguments in headers
-// See https://github.com/flatsurf/flatsurf/issues/149 for the upstream issue.
-template <typename T>
-bool decomposeFlowDecomposition(FlowDecomposition<T> &decomposition, int limit = -1) {
-  return decomposition.decompose(FlowDecomposition<T>::defaultTarget, limit);
-}
-
-// TODO: Test that this is actually a problem.
 // Work around https://bitbucket.org/wlav/cppyy/issues/273/segfault-in-cpycppyy-anonymous-namespace
 template <typename T>
 auto makeOddHalfEdgeMap(const FlatTriangulationCombinatorial& surface, const std::vector<T>& values) {
   return OddHalfEdgeMap<T>(surface, [&](const HalfEdge &e) {
     return e == Edge(e).positive() ? values.at(Edge(e).index()) : -values.at(Edge(e).index());
   });
+}
+
+// Work around https://bitbucket.org/wlav/cppyy/issues/273/segfault-in-cpycppyy-anonymous-namespace
+template <typename T>
+bool decomposeFlowDecomposition(FlowDecomposition<T> &decomposition, int limit = -1) {
+  return decomposition.decompose(FlowDecomposition<T>::defaultTarget, limit);
 }
 
 }  // namespace flatsurf

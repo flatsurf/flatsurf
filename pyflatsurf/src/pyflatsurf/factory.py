@@ -25,6 +25,11 @@ def make_FlatTriangulation(vertices, vectors):
     vertices = cppyy.gbl.std.vector[cppyy.gbl.std.vector[int]]([cppyy.gbl.std.vector[int](l) for l in vertices])
     R2 = type(vectors[0])
     vectors = cppyy.gbl.std.vector[R2](vectors)
+
+    # The following does not work due to https://bitbucket.org/wlav/cppyy/issues/275/result-of-cppyygblstdmove-is-not-an-rvalue
+    # combinatorial = cppyy.gbl.flatsurf.FlatTriangulationCombinatorial(vertices)
+    # return cppyy.gbl.flatsurf.FlatTriangulation[R2.Coordinate](cppyy.gbl.std.move(combinatorial), vectors)
+
     return cppyy.gbl.flatsurf.makeFlatTriangulation(vertices, vectors)
 
 def make_surface(surface_or_vertices, vectors = None):

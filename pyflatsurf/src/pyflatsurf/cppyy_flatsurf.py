@@ -51,9 +51,11 @@ cppyy.py.add_pythonization(lambda proxy, name: enable_cereal(proxy, name, ["flat
 cppyy.py.add_pythonization(filtered(re.compile("vector<flatsurf::.*>"))(enable_list_printing), "std")
 
 
+# We cannot create an OddHalfEdgeMap directly due to https://bitbucket.org/wlav/cppyy/issues/273/segfault-in-cpycppyy-anonymous-namespace
 cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(wrap_method("__add__")(lambda self, cpp, rhs: cpp(cppyy.gbl.flatsurf.makeOddHalfEdgeMap[cppyy.gbl.flatsurf.Vector[type(self).Coordinate]](self.combinatorial(), rhs)))), "flatsurf")
 
 
+# We cannot call decompose() directly due to https://bitbucket.org/wlav/cppyy/issues/273/segfault-in-cpycppyy-anonymous-namespace
 cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_method("decompose")(lambda self, *args: cppyy.gbl.flatsurf.decomposeFlowDecomposition(self, *args))), "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_method("cylinders")(lambda self: [component for component in self.components() if component.cylinder()])), "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_method("minimalComponents")(lambda self: [component for component in self.components() if component.withoutPeriodicTrajectory()])), "flatsurf")
