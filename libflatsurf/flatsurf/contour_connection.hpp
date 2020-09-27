@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,14 +21,12 @@
 #define LIBFLATSURF_CONTOUR_CONNECTION_HPP
 
 #include <boost/operators.hpp>
-#include <list>
 
-#include "external/spimpl/spimpl.h"
-#include "forward.hpp"
+#include "copyable.hpp"
 
 namespace flatsurf {
 
-// A non-vertical connection.
+// A non-vertical connection on the perimeter of a Contour Component.
 // Note that this object is immutable, all its members are const.
 template <typename Surface>
 class ContourConnection : boost::equality_comparable<ContourComponent<Surface>> {
@@ -56,6 +54,7 @@ class ContourConnection : boost::equality_comparable<ContourComponent<Surface>> 
   // The vertical connections on the left of this non-vertical connection; from
   // top to bottom.
   Path left() const;
+
   // The vertical connections on the right of this non-vertical connection;
   // from bottom to top.
   Path right() const;
@@ -76,10 +75,9 @@ class ContourConnection : boost::equality_comparable<ContourComponent<Surface>> 
   friend std::ostream &operator<<(std::ostream &, const ContourConnection<S> &);
 
  private:
-  using Implementation = ImplementationOf<ContourConnection>;
-  spimpl::impl_ptr<Implementation> impl;
+  Copyable<ContourConnection> self;
 
-  friend Implementation;
+  friend ImplementationOf<ContourConnection>;
 };
 }  // namespace flatsurf
 

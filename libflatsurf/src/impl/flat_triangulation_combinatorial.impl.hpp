@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #define LIBFLATSURF_FLAT_TRIANGULATION_COMBINATORIAL_IMPL_HPP
 
 #include <functional>
+#include <memory>
 #include <variant>
 #include <vector>
 
@@ -29,14 +30,20 @@
 #include "../../flatsurf/half_edge.hpp"
 #include "../../flatsurf/permutation.hpp"
 #include "../external/slimsig/include/slimsig/slimsig.h"
+#include "flat_triangulation_combinatorics.impl.hpp"
+#include "forward.hpp"
+#include "managed_movable.impl.hpp"
 
 namespace flatsurf {
 
 template <>
-class ImplementationOf<FlatTriangulationCombinatorial> {
+class ImplementationOf<FlatTriangulationCombinatorial> : protected ImplementationOf<ManagedMovable<FlatTriangulationCombinatorial>>,
+                                                         public std::enable_shared_from_this<ImplementationOf<FlatTriangulationCombinatorial>> {
  public:
   ImplementationOf(const Permutation<HalfEdge>&, const std::vector<HalfEdge>& boundaries);
-  ~ImplementationOf();
+
+  // Destruct this surface and notify all the Tracked<> instances of the destruction.
+  virtual ~ImplementationOf();
 
   struct MessageAfterFlip {
     HalfEdge e;
@@ -51,7 +58,7 @@ class ImplementationOf<FlatTriangulationCombinatorial> {
     std::vector<Edge> erase;
   };
   struct MessageAfterMove {
-    FlatTriangulationCombinatorial* target;
+    ImplementationOf<FlatTriangulationCombinatorial>* target;
   };
 
   using Message = std::variant<MessageAfterFlip, MessageBeforeCollapse, MessageBeforeSwap, MessageBeforeErase, MessageAfterMove>;
@@ -59,13 +66,17 @@ class ImplementationOf<FlatTriangulationCombinatorial> {
   void resetVertexes();
   void resetVertices();
   void resetEdges();
+
   void swap(HalfEdge a, HalfEdge b);
 
   // Sanity check this triangulation
-  void check();
+  void check() const;
+
+  virtual void flip(HalfEdge);
+  virtual std::pair<HalfEdge, HalfEdge> collapse(HalfEdge);
 
   // Connect to change event.
-  static slimsig::signal<void(Message)>::connection connect(const FlatTriangulationCombinatorial&, std::function<void(Message)>);
+  static slimsig::signal<void(Message)>::connection connect(const ImplementationOf<FlatTriangulationCombinatorial>*, std::function<void(Message)>);
 
   std::vector<Edge> edges;
   Permutation<HalfEdge> vertices;
@@ -73,8 +84,22 @@ class ImplementationOf<FlatTriangulationCombinatorial> {
   std::vector<Vertex> vertexes;
   std::vector<HalfEdge> halfEdges;
 
-  slimsig::signal<void(Message)> change;
+  mutable slimsig::signal<void(Message)> change;
+
+ protected:
+  template <typename... Args>
+  static FlatTriangulationCombinatorial make(Args&&... args) { return FlatTriangulationCombinatorial(PrivateConstructor{}, std::forward<Args>(args)...); }
+
+  template <typename T>
+  friend class Tracked;
+  template <typename Surface>
+  friend class FlatTriangulationCombinatorics;
+  friend class ImplementationOf<ManagedMovable<FlatTriangulationCombinatorial>>;
 };
+
+template <typename... Args>
+FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(PrivateConstructor, Args&&... args) :
+  FlatTriangulationCombinatorics(ProtectedConstructor{}, std::forward<Args>(args)...) {}
 
 }  // namespace flatsurf
 

@@ -35,6 +35,9 @@
 
 namespace flatsurf::test {
 
+using std::begin;
+using std::end;
+
 // Generates verticals coming from saddle connections up to a certain length.
 // This differs from the saddle connections generator in that it skips over
 // negatives of previous directions and also does not report the same direction
@@ -43,7 +46,7 @@ template <typename T, typename C>
 class VerticalGenerator : public Catch::Generators::IGenerator<Vector<T>> {
   std::set<Vector<T>, typename Vector<T>::CompareSlope> verticals;
   C connections;
-  typename C::Iterator upcoming;
+  typename C::iterator upcoming;
   Vector<T> current;
   int count;
   const int skip;

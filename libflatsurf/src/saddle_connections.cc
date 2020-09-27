@@ -46,41 +46,23 @@
 namespace flatsurf {
 
 template <typename Surface>
-SaddleConnections<Surface>::SaddleConnections(const std::shared_ptr<const Surface>& surface) :
-  impl(spimpl::make_impl<Implementation>(surface)) {}
-
-template <typename Surface>
-SaddleConnections<Surface>::SaddleConnections(const std::shared_ptr<const Surface>& surface, const Bound searchRadius) :
-  SaddleConnections(surface) {
-  *this = bound(searchRadius);
-}
-
-template <typename Surface>
-SaddleConnections<Surface>::SaddleConnections(const std::shared_ptr<const Surface>& surface, const Bound searchRadius, const Vertex source) :
-  SaddleConnections(surface) {
-  *this = bound(searchRadius).source(source);
-}
-
-template <typename Surface>
-SaddleConnections<Surface>::SaddleConnections(const std::shared_ptr<const Surface>& surface, const Bound searchRadius, HalfEdge sectorBegin) :
-  SaddleConnections(surface) {
-  *this = bound(searchRadius).sector(sectorBegin);
-}
+SaddleConnections<Surface>::SaddleConnections(const Surface& surface) :
+  self(spimpl::make_impl<ImplementationOf<SaddleConnections>>(surface)) {}
 
 template <typename Surface>
 SaddleConnections<Surface> SaddleConnections<Surface>::bound(const Bound searchRadius) const {
-  SaddleConnections<Surface> ret(impl->surface);
-  ret.impl = impl;
-  ret.impl->searchRadius = ret.impl->searchRadius ? std::min(*ret.impl->searchRadius, searchRadius) : searchRadius;
+  SaddleConnections<Surface> ret(self->surface);
+  ret.self = self;
+  ret.self->searchRadius = ret.self->searchRadius ? std::min(*ret.self->searchRadius, searchRadius) : searchRadius;
   return ret;
 }
 
 template <typename Surface>
 SaddleConnections<Surface> SaddleConnections<Surface>::source(const Vertex& source) const {
-  SaddleConnections<Surface> ret(impl->surface);
-  ret.impl = impl;
-  ret.impl->sectors = ret.impl->sectors | rx::filter([&](const auto& sector) {
-    return Vertex::source(sector.source, *impl->surface) == source;
+  SaddleConnections<Surface> ret(self->surface);
+  ret.self = self;
+  ret.self->sectors = ret.self->sectors | rx::filter([&](const auto& sector) {
+    return Vertex::source(sector.source, *self->surface) == source;
   }) | rx::to_vector();
   return ret;
 }
@@ -89,7 +71,7 @@ template <typename Surface>
 SaddleConnections<Surface> SaddleConnections<Surface>::sector(const HalfEdge source) const {
   auto ret = *this;
 
-  ret.impl->sectors = ret.impl->sectors | rx::filter([&](const auto& sector) {
+  ret.self->sectors = ret.self->sectors | rx::filter([&](const auto& sector) {
     return sector.source == source;
   }) | rx::to_vector();
   return ret;
@@ -99,12 +81,12 @@ template <typename Surface>
 SaddleConnections<Surface> SaddleConnections<Surface>::sector(const Vector<T>& sectorBegin, const Vector<T>& sectorEnd) const {
   auto ret = *this;
 
-  std::vector<typename Implementation::Sector> sectors;
-  for (const auto& sector : ret.impl->sectors)
+  std::vector<typename ImplementationOf<SaddleConnections>::Sector> sectors;
+  for (const auto& sector : ret.self->sectors)
     for (const auto refined : sector.refine(surface(), sectorBegin, sectorEnd))
       sectors.push_back(refined);
 
-  ret.impl->sectors = sectors;
+  ret.self->sectors = sectors;
 
   return ret;
 }
@@ -115,8 +97,8 @@ SaddleConnections<Surface> SaddleConnections<Surface>::sector(const SaddleConnec
                  .source(Vertex::source(sectorBegin.source(), surface()))
                  .source(Vertex::source(sectorEnd.source(), surface()));
 
-  std::vector<typename Implementation::Sector> sectors;
-  for (const auto& sector : ret.impl->sectors) {
+  std::vector<typename ImplementationOf<SaddleConnections>::Sector> sectors;
+  for (const auto& sector : ret.self->sectors) {
     if (sectorBegin.source() == sectorEnd.source()) {
       if (sector.source == sectorBegin.source())
         for (const auto& refined : sector.refine(surface(), sectorBegin, sectorEnd))
@@ -127,16 +109,16 @@ SaddleConnections<Surface> SaddleConnections<Surface>::sector(const SaddleConnec
       }
     } else {
       if (sector.source == sectorBegin.source()) {
-        for (const auto& refined : sector.refine(surface(), sectorBegin, surface().fromEdge(surface().nextAtVertex(sector.source))))
+        for (const auto& refined : sector.refine(surface(), sectorBegin, surface().fromHalfEdge(surface().nextAtVertex(sector.source))))
           sectors.push_back(refined);
       } else if (sector.source == sectorEnd.source()) {
-        if (surface().fromEdge(sector.source).ccw(sectorEnd) == CCW::COLLINEAR)
+        if (surface().fromHalfEdge(sector.source).ccw(sectorEnd) == CCW::COLLINEAR)
           // We must not call refine in this case as that method considers the
           // boundaries inclusive if they coincide. However, the end boundary
           // is exclusive here.
           ;
         else
-          for (const auto& refined : sector.refine(surface(), surface().fromEdge(sector.source), sectorEnd))
+          for (const auto& refined : sector.refine(surface(), surface().fromHalfEdge(sector.source), sectorEnd))
             sectors.push_back(refined);
       } else {
         for (HalfEdge walk = sector.source; walk != sectorBegin.source(); walk = surface().nextAtVertex(walk)) {
@@ -149,18 +131,18 @@ SaddleConnections<Surface> SaddleConnections<Surface>::sector(const SaddleConnec
     }
   }
 
-  ret.impl->sectors = sectors;
+  ret.self->sectors = sectors;
   return ret;
 }
 
 template <typename Surface>
-typename SaddleConnections<Surface>::Iterator SaddleConnections<Surface>::begin() const {
-  return SaddleConnectionsIterator<Surface>(PrivateConstructor{}, *impl, cbegin(impl->sectors), cend(impl->sectors));
+typename SaddleConnections<Surface>::iterator SaddleConnections<Surface>::begin() const {
+  return SaddleConnectionsIterator<Surface>(PrivateConstructor{}, *self, cbegin(self->sectors), cend(self->sectors));
 }
 
 template <typename Surface>
-typename SaddleConnections<Surface>::Iterator SaddleConnections<Surface>::end() const {
-  return SaddleConnectionsIterator<Surface>(PrivateConstructor{}, *impl, cend(impl->sectors), cend(impl->sectors));
+typename SaddleConnections<Surface>::iterator SaddleConnections<Surface>::end() const {
+  return SaddleConnectionsIterator<Surface>(PrivateConstructor{}, *self, cend(self->sectors), cend(self->sectors));
 }
 
 template <typename Surface>
@@ -170,20 +152,20 @@ SaddleConnectionsByLength<Surface> SaddleConnections<Surface>::byLength() const 
 
 template <typename Surface>
 const Surface& SaddleConnections<Surface>::surface() const {
-  return *impl->surface;
+  return self->surface;
 }
 
 template <typename Surface>
-ImplementationOf<SaddleConnections<Surface>>::ImplementationOf(std::shared_ptr<const Surface> surface) :
+ImplementationOf<SaddleConnections<Surface>>::ImplementationOf(const Surface& surface) :
   surface(surface),
-  sectors(surface->halfEdges() | rx::transform([](const auto he) { return Sector(he); }) | rx::to_vector()) {}
+  sectors(surface.halfEdges() | rx::transform([](const auto he) { return Sector(he); }) | rx::to_vector()) {}
 
 template <typename Surface>
 std::vector<typename ImplementationOf<SaddleConnections<Surface>>::Sector> ImplementationOf<SaddleConnections<Surface>>::Sector::refine(const Surface& surface, const Vector<T>& sectorBegin, const Vector<T>& sectorEnd) const {
-  auto sector = this->sector ? *this->sector : std::pair{surface.fromEdge(source), surface.fromEdge(surface.nextAtVertex(source))};
+  auto sector = this->sector ? *this->sector : std::pair{surface.fromHalfEdge(source), surface.fromHalfEdge(surface.nextAtVertex(source))};
 
-  ASSERT(sector.first.ccw(surface.fromEdge(source)) != CCW::CLOCKWISE, "sector boundaries before refinement must not be outside of search sector");
-  ASSERT(sector.second.ccw(surface.fromEdge(source)) != CCW::COUNTERCLOCKWISE, "sector boundaries before refinement must not be outside of search sector");
+  ASSERT(sector.first.ccw(surface.fromHalfEdge(source)) != CCW::CLOCKWISE, "sector boundaries before refinement must not be outside of search sector");
+  ASSERT(sector.second.ccw(surface.fromHalfEdge(source)) != CCW::COUNTERCLOCKWISE, "sector boundaries before refinement must not be outside of search sector");
 
   const auto inSector = [](const auto& v, const auto& begin, const auto& end) {
     return v.inSector(begin, end);

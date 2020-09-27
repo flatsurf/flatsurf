@@ -22,7 +22,6 @@
 
 #include <iosfwd>
 #include <list>
-#include <memory>
 
 #include "../../flatsurf/flat_triangulation.hpp"
 #include "../../flatsurf/path.hpp"
@@ -55,7 +54,7 @@ class CollapsedHalfEdge {
 namespace std {
 
 template <typename T>
-struct hash<::flatsurf::CollapsedHalfEdge<T>> { std::size_t operator()(const ::flatsurf::CollapsedHalfEdge<T>&) const noexcept; };
+struct hash<::flatsurf::CollapsedHalfEdge<T>> { std::size_t operator()(const ::flatsurf::CollapsedHalfEdge<T>&) const; };
 
 }  // namespace std
 

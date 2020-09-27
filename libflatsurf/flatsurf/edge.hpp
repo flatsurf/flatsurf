@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,14 +22,15 @@
 
 #include <boost/operators.hpp>
 #include <iosfwd>
-#include <vector>
 
 #include "half_edge.hpp"
 
 namespace flatsurf {
+
+// An unoriented edge of a Flat Triangulation.
 class Edge : boost::equality_comparable<Edge> {
  public:
-  Edge();
+  Edge() noexcept;
   Edge(int);
   Edge(HalfEdge);
 
@@ -38,6 +39,8 @@ class Edge : boost::equality_comparable<Edge> {
   HalfEdge positive() const;
   HalfEdge negative() const;
 
+  // Return a zero-based index that can be used to index into arrays with
+  // edges from the same triangulation.
   size_t index() const;
 
   bool operator==(const Edge &) const;
@@ -59,8 +62,9 @@ class Edge : boost::equality_comparable<Edge> {
 namespace std {
 template <>
 struct hash<flatsurf::Edge> {
-  size_t operator()(const flatsurf::Edge &) const noexcept;
+  size_t operator()(const flatsurf::Edge &) const;
 };
+
 }  // namespace std
 
 #endif

@@ -30,107 +30,86 @@
 #include "local.hpp"
 
 namespace flatsurf {
+
+class Bound;
+
 enum class CCW;
-
-enum class ORIENTATION;
-
-struct PrivateConstructor {};
-
-template <typename T>
-class Vector;
-
-class FlatTriangulationCombinatorial;
-
-template <typename T>
-class FlatTriangulation;
-
-template <typename T>
-class FlatTriangulationCollapsed;
-
-template <typename Surface>
-class Vertical;
 
 template <typename Surface>
 class Chain;
 
 template <typename Surface>
-class SaddleConnections;
-
-template <typename Surface>
-class SaddleConnectionsByLength;
-
-template <typename Surface>
-class SaddleConnectionsIterator;
-
-template <typename Surface>
-class SaddleConnectionsByLengthIterator;
+class ContourComponent;
 
 template <typename Surface>
 class ContourConnection;
 
 template <typename Surface>
-class SaddleConnection;
+class ContourDecomposition;
 
-class HalfEdge;
+template <typename Surface>
+class DecompositionStep;
+
+template <typename Surface>
+class Deformation;
 
 class Edge;
-
-class Vertex;
-
-template <typename T>
-class Tracking;
-
-template <typename K, typename V>
-class TrackingMap;
 
 template <typename T>
 class EdgeMap;
 
-template <typename T>
-class HalfEdgeMap;
-
-template <typename T>
-class OddHalfEdgeMap;
-
 class EdgeSet;
 
 class EdgeSetIterator;
+
+template <typename T>
+class FlatTriangulation;
+
+class FlatTriangulationCombinatorial;
+
+template <typename Surface>
+class FlatTriangulationCombinatorics;
+
+template <typename T>
+class FlatTriangulationCollapsed;
+
+template <typename Surface>
+class FlowComponent;
+
+template <typename Surface>
+class FlowConnection;
+
+template <typename Surface>
+class FlowDecomposition;
+
+template <typename Surface>
+class FlowTriangulation;
+
+class HalfEdge;
+
+template <typename T>
+class HalfEdgeMap;
 
 class HalfEdgeSet;
 
 class HalfEdgeSetIterator;
 
 template <typename T>
-class Permutation;
-
-class Bound;
+class ImplementationOf;
 
 template <typename Surface>
 class IntervalExchangeTransformation;
 
-template <typename Surface>
-class ContourDecomposition;
-
-template <typename Surface>
-class ContourComponent;
-
-template <typename Surface>
-class FlowDecomposition;
-
-template <typename Surface>
-class FlowComponent;
-
-template <typename Surface>
-class DecompositionStep;
-
-template <typename Surface>
-class FlowConnection;
-
-template <typename Surface>
-class FlowTriangulation;
+template <typename T>
+class ManagedMovable;
 
 template <typename Surface>
 class MaybeVerticalFlowConnection;
+
+template <typename T>
+class OddHalfEdgeMap;
+
+enum class ORIENTATION;
 
 template <typename Surface>
 class Path;
@@ -139,13 +118,40 @@ template <typename Surface>
 class PathIterator;
 
 template <typename T>
+class Permutation;
+
+struct PrivateConstructor {};
+
+struct ProtectedConstructor {};
+
+template <typename Surface>
+class SaddleConnection;
+
+template <typename Surface>
+class SaddleConnections;
+
+template <typename Surface>
+class SaddleConnectionsByLength;
+
+template <typename Surface>
+class SaddleConnectionsByLengthIterator;
+
+template <typename Surface>
+class SaddleConnectionsIterator;
+
+template <typename T>
 class Serializable;
 
 template <typename T>
 struct Serialization;
 
 template <typename T>
-class ImplementationOf;
+class Vector;
+
+class Vertex;
+
+template <typename Surface>
+class Vertical;
 
 }  // namespace flatsurf
 

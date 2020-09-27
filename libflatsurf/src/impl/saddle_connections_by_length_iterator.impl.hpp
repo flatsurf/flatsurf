@@ -56,7 +56,7 @@ class ImplementationOf<SaddleConnectionsByLengthIterator<Surface>> {
 template <typename Surface>
 template <typename... Args>
 SaddleConnectionsByLengthIterator<Surface>::SaddleConnectionsByLengthIterator(PrivateConstructor, Args&&... args) :
-  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
+  self(spimpl::make_impl<ImplementationOf<SaddleConnectionsByLengthIterator>>(std::forward<Args>(args)...)) {}
 
 }  // namespace flatsurf
 

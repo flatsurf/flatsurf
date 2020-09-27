@@ -17,7 +17,7 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-// Include this header to get {fmt} support for all types define by this library.
+// Include this header to get {fmt} support for all types defined by this library.
 
 // Note that we would have liked to give {fmt} first class support and deduce
 // ostream<< from this. However, this is not possible with the encapsulation
@@ -65,7 +65,11 @@ struct fmt::formatter<::flatsurf::Vertical<Surface>> : ::flatsurf::GenericFormat
 template <typename Surface>
 struct fmt::formatter<::flatsurf::Chain<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::Chain<Surface>> {};
 template <typename Surface>
+struct fmt::formatter<::flatsurf::Deformation<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::Deformation<Surface>> {};
+template <typename Surface>
 struct fmt::formatter<::flatsurf::SaddleConnections<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::SaddleConnections<Surface>> {};
+template <typename Surface>
+struct fmt::formatter<::flatsurf::SaddleConnectionsByLength<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::SaddleConnectionsByLength<Surface>> {};
 template <typename Surface>
 struct fmt::formatter<::flatsurf::ContourConnection<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::ContourConnection<Surface>> {};
 template <typename Surface>
@@ -76,10 +80,6 @@ template <>
 struct fmt::formatter<::flatsurf::Edge> : ::flatsurf::GenericFormatter<::flatsurf::Edge> {};
 template <>
 struct fmt::formatter<::flatsurf::Vertex> : ::flatsurf::GenericFormatter<::flatsurf::Vertex> {};
-template <typename T>
-struct fmt::formatter<::flatsurf::Tracking<T>> : ::flatsurf::GenericFormatter<::flatsurf::Tracking<T>> {};
-template <typename K, typename V>
-struct fmt::formatter<::flatsurf::TrackingMap<K, V>> : ::flatsurf::GenericFormatter<::flatsurf::TrackingMap<K, V>> {};
 template <>
 struct fmt::formatter<::flatsurf::HalfEdgeSet> : ::flatsurf::GenericFormatter<::flatsurf::HalfEdgeSet> {};
 template <>

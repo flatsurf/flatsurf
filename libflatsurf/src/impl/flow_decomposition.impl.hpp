@@ -20,8 +20,6 @@
 #ifndef LIBFLATSURF_FLOW_DECOMPOSITION_IMPL_HPP
 #define LIBFLATSURF_FLOW_DECOMPOSITION_IMPL_HPP
 
-#include <memory>
-
 #include "../../flatsurf/flow_decomposition.hpp"
 #include "flow_decomposition_state.hpp"
 
@@ -31,7 +29,7 @@ class ImplementationOf<FlowDecomposition<Surface>> {
   using T = typename Surface::Coordinate;
 
  public:
-  ImplementationOf(std::unique_ptr<Surface> surface, const Vector<T>& vertical);
+  ImplementationOf(Surface&& surface, const Vector<T>& vertical);
   ImplementationOf(std::shared_ptr<FlowDecompositionState<Surface>>);
 
   static FlowDecomposition<Surface> make(std::shared_ptr<FlowDecompositionState<Surface>>);
@@ -45,7 +43,7 @@ class ImplementationOf<FlowDecomposition<Surface>> {
 template <typename Surface>
 template <typename... Args>
 FlowDecomposition<Surface>::FlowDecomposition(PrivateConstructor, Args&&... args) :
-  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
+  self(spimpl::make_unique_impl<ImplementationOf<FlowDecomposition>>(std::forward<Args>(args)...)) {}
 
 }  // namespace flatsurf
 

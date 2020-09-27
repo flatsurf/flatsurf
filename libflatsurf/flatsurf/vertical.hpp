@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,15 +22,16 @@
 
 #include <boost/operators.hpp>
 #include <iosfwd>
-#include <memory>
 #include <type_traits>
 #include <unordered_set>
 #include <vector>
 
-#include "external/spimpl/spimpl.h"
+#include "copyable.hpp"
 #include "serializable.hpp"
 
 namespace flatsurf {
+
+// A vertical direction on a translation surface.
 template <typename Surface>
 class Vertical : Serializable<Vertical<Surface>>,
                  boost::equality_comparable<Vertical<Surface>> {
@@ -39,7 +40,7 @@ class Vertical : Serializable<Vertical<Surface>>,
   using T = typename Surface::Coordinate;
 
  public:
-  Vertical(std::shared_ptr<const Surface>, const Vector<T> &vertical);
+  Vertical(const Surface &, const Vector<T> &vertical);
 
   enum class TRIANGLE {
     BACKWARD = 1,
@@ -65,11 +66,11 @@ class Vertical : Serializable<Vertical<Surface>>,
   bool parallel(HalfEdge) const;
   bool perpendicular(HalfEdge) const;
 
-  std::shared_ptr<const Surface> surface() const;
+  const Surface &surface() const;
 
   std::vector<std::unordered_set<HalfEdge>> components() const;
 
-  bool operator==(const Vertical &) const noexcept;
+  bool operator==(const Vertical &) const;
 
   Vertical<Surface> operator-() const;
 
@@ -77,19 +78,14 @@ class Vertical : Serializable<Vertical<Surface>>,
   friend std::ostream &operator<<(std::ostream &, const Vertical<S> &);
 
  private:
-  using Implementation = ImplementationOf<Vertical>;
-  spimpl::impl_ptr<Implementation> impl;
-  friend Implementation;
+  Copyable<Vertical> self;
+
+  friend ImplementationOf<Vertical>;
 };
 
 template <typename Surface, typename... Args>
-Vertical(std::shared_ptr<const Surface>, Args &&...) -> Vertical<Surface>;
+Vertical(const Surface &, Args &&...) -> Vertical<Surface>;
 
-template <typename Surface, typename... Args>
-Vertical(std::shared_ptr<Surface>, Args &&...) -> Vertical<Surface>;
-
-template <typename Surface>
-Vertical(std::shared_ptr<const Surface>, const Vector<typename Surface::Coordinate> &) -> Vertical<Surface>;
 }  // namespace flatsurf
 
 #endif

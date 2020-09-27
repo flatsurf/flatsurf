@@ -19,7 +19,6 @@
 
 #include "../flatsurf/flow_triangulation.hpp"
 
-#include <memory>
 #include <stack>
 #include <unordered_set>
 
@@ -41,32 +40,32 @@
 namespace flatsurf {
 
 template <typename Surface>
-std::shared_ptr<const FlatTriangulation<typename Surface::Coordinate>> FlowTriangulation<Surface>::triangulation() const {
-  return impl->triangulation;
+const FlatTriangulation<typename Surface::Coordinate>& FlowTriangulation<Surface>::triangulation() const {
+  return self->triangulation;
 }
 
 template <typename Surface>
 HalfEdge FlowTriangulation<Surface>::halfEdge(const FlowConnection<Surface>& connection) const {
-  return impl->toHalfEdge.at(connection);
+  return self->toHalfEdge.at(connection);
 }
 
 template <typename Surface>
 HalfEdgeMap<HalfEdge> FlowTriangulation<Surface>::embedding() const {
-  const auto triangulation = this->triangulation();
-  const auto innerEdges = triangulation->edges() | rx::filter([&](const auto& edge) {
-    return impl->toConnection.find(edge.positive()) == impl->toConnection.end() && impl->toConnection.find(edge.negative()) == impl->toConnection.end();
+  const auto& triangulation = this->triangulation();
+  const auto innerEdges = triangulation.edges() | rx::filter([&](const auto& edge) {
+    return self->toConnection.find(edge.positive()) == self->toConnection.end() && self->toConnection.find(edge.negative()) == self->toConnection.end();
   }) | rx::to_vector();
   const auto localFirstInnerEdge = *std::min_element(begin(innerEdges), end(innerEdges), [](const auto a, const auto b) { return a.index() < b.index(); });
   Edge globalFirstInnerEdge = ImplementationOf<FlowDecomposition<Surface>>::firstInnerEdge(component());
   int shift = static_cast<int>(globalFirstInnerEdge.index()) - static_cast<int>(localFirstInnerEdge.index());
   ASSERT(shift >= 0, "global triangulation cannot have fewer inner edges than local triangulation");
 
-  auto embedding = HalfEdgeMap<HalfEdge>(*triangulation, [&](const HalfEdge source) {
-    if (triangulation->boundary(source)) {
+  auto embedding = HalfEdgeMap<HalfEdge>(triangulation, [&](const HalfEdge source) {
+    if (triangulation.boundary(source)) {
       // We cannot map the boundary edges anywhere so we just map them to some random sentinel.
       return HalfEdge(404);
-    } else if (impl->toConnection.find(source) != impl->toConnection.end()) {
-      return ImplementationOf<FlowDecomposition<Surface>>::halfEdge(impl->toConnection.at(source));
+    } else if (self->toConnection.find(source) != self->toConnection.end()) {
+      return ImplementationOf<FlowDecomposition<Surface>>::halfEdge(self->toConnection.at(source));
     } else {
       return (source == source.edge().positive()) ? HalfEdge(source.id() + shift) : HalfEdge(source.id() - shift);
     }
@@ -76,7 +75,7 @@ HalfEdgeMap<HalfEdge> FlowTriangulation<Surface>::embedding() const {
 }
 
 template <typename Surface>
-FlowComponent<Surface> FlowTriangulation<Surface>::component() const { return impl->component; }
+FlowComponent<Surface> FlowTriangulation<Surface>::component() const { return self->component; }
 
 template <typename Surface>
 ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowComponent<Surface>& component) :
@@ -237,7 +236,7 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
     }
   }
 
-  triangulation = std::make_shared<FlatTriangulation<T>>(FlatTriangulationCombinatorial(faces), [&](const HalfEdge he) {
+  triangulation = FlatTriangulation<T>(FlatTriangulationCombinatorial(faces), [&](const HalfEdge he) {
     return vectors[he];
   });
 
@@ -255,7 +254,7 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
         if (connection.component() != (-connection).component())
           boundary.insert(-toHalfEdge[connection]);
 
-      return boundary; }(), "boundaries of flow component " << component << " and its triangulation " << *triangulation << " are inconsistent.");
+      return boundary; }(), "boundaries of flow component " << component << " and its triangulation " << triangulation << " are inconsistent.");
 }
 
 template <typename Surface>
@@ -265,7 +264,7 @@ FlowTriangulation<Surface> ImplementationOf<FlowTriangulation<Surface>>::make(co
 
 template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const FlowTriangulation<Surface>& self) {
-  return os << *self.triangulation();
+  return os << self.triangulation();
 }
 }  // namespace flatsurf
 

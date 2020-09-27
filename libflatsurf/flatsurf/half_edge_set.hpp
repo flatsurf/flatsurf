@@ -24,23 +24,24 @@
 #include <iosfwd>
 #include <vector>
 
-#include "external/spimpl/spimpl.h"
-#include "forward.hpp"
-#include "half_edge_set_iterator.hpp"
+#include "copyable.hpp"
 
 namespace flatsurf {
 
+// A subset of the set of half edges of a triangulation.
 class HalfEdgeSet : boost::equality_comparable<HalfEdgeSet> {
  public:
-  HalfEdgeSet();
+  HalfEdgeSet() noexcept;
   HalfEdgeSet(const std::vector<HalfEdge>&);
 
   bool contains(HalfEdge) const;
   void insert(HalfEdge);
   void erase(HalfEdge);
 
-  HalfEdgeSetIterator begin() const;
-  HalfEdgeSetIterator end() const;
+  using iterator = HalfEdgeSetIterator;
+
+  iterator begin() const;
+  iterator end() const;
 
   bool empty() const;
   size_t size() const;
@@ -52,16 +53,12 @@ class HalfEdgeSet : boost::equality_comparable<HalfEdgeSet> {
   friend std::ostream& operator<<(std::ostream&, const HalfEdgeSet&);
 
  private:
-  using Implementation = ImplementationOf<HalfEdgeSet>;
-  spimpl::impl_ptr<Implementation> impl;
-  friend Implementation;
-  friend HalfEdgeSetIterator;
-  friend ImplementationOf<HalfEdgeSetIterator>;
+  Copyable<HalfEdgeSet> self;
+
+  friend ImplementationOf<HalfEdgeSet>;
+  friend iterator;
+  friend ImplementationOf<iterator>;
 };
-
-HalfEdgeSetIterator begin(const HalfEdgeSet&);
-
-HalfEdgeSetIterator end(const HalfEdgeSet&);
 
 }  // namespace flatsurf
 

@@ -44,95 +44,95 @@ namespace flatsurf {
 using std::optional;
 
 template <typename Vector, typename T>
-VectorExact<Vector, T>::operator bool() const noexcept {
-  using Implementation = typename Vector::Implementation;
+VectorExact<Vector, T>::operator bool() const {
+  using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
   if constexpr (has_bool<Implementation>) {
-    return static_cast<bool>(*self.impl);
+    return static_cast<bool>(*self.self);
   } else if constexpr (is_forward_v<Implementation>) {
-    return static_cast<bool>(self.impl->vector);
+    return static_cast<bool>(self.self->vector);
   } else if constexpr (has_approximation_v<Implementation>) {
-    auto maybe = static_cast<optional<bool>>(self.impl->approximation());
+    auto maybe = static_cast<optional<bool>>(self.self->approximation());
     if (maybe)
       return *maybe;
-    return static_cast<bool>(static_cast<const typename Implementation::Exact>(*self.impl));
+    return static_cast<bool>(static_cast<const typename Implementation::Exact>(*self.self));
   } else {
     return self.x() || self.y();
   }
 }
 
 template <typename Vector, typename T>
-bool VectorExact<Vector, T>::operator<(Bound bound) const noexcept {
-  using Implementation = typename Vector::Implementation;
+bool VectorExact<Vector, T>::operator<(Bound bound) const {
+  using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
   if constexpr (has_lt_bound<Implementation>) {
-    return *self.impl < bound;
+    return *self.self < bound;
   } else if constexpr (is_forward_v<Implementation>) {
-    return self.impl->vector < bound;
+    return self.self->vector < bound;
   } else if constexpr (has_approximation_v<Implementation>) {
-    auto maybe = static_cast<optional<bool>>(self.impl->approximation() < bound);
+    auto maybe = static_cast<optional<bool>>(self.self->approximation() < bound);
     if (maybe)
       return *maybe;
-    return static_cast<const typename Implementation::Exact>(*self.impl) < bound;
+    return static_cast<const typename Implementation::Exact>(*self.self) < bound;
   } else {
     return self.x() * self.x() + self.y() * self.y() < ::gmpxxll::mpz_class(bound.squared());
   }
 }
 
 template <typename Vector, typename T>
-bool VectorExact<Vector, T>::operator>(Bound bound) const noexcept {
-  using Implementation = typename Vector::Implementation;
+bool VectorExact<Vector, T>::operator>(Bound bound) const {
+  using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
   if constexpr (has_gt_bound<Implementation>) {
-    return *self.impl > bound;
+    return *self.self > bound;
   } else if constexpr (is_forward_v<Implementation>) {
-    return self.impl->vector > bound;
+    return self.self->vector > bound;
   } else if constexpr (has_approximation_v<Implementation>) {
-    auto maybe = static_cast<optional<bool>>(self.impl->approximation() > bound);
+    auto maybe = static_cast<optional<bool>>(self.self->approximation() > bound);
     if (maybe)
       return *maybe;
-    return static_cast<const typename Implementation::Exact>(*self.impl) > bound;
+    return static_cast<const typename Implementation::Exact>(*self.self) > bound;
   } else {
     return self.x() * self.x() + self.y() * self.y() > ::gmpxxll::mpz_class(bound.squared());
   }
 }
 
 template <typename Vector, typename T>
-bool VectorExact<Vector, T>::operator==(const Vector& rhs) const noexcept {
-  using Implementation = typename Vector::Implementation;
+bool VectorExact<Vector, T>::operator==(const Vector& rhs) const {
+  using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
   if constexpr (has_eq<Implementation>) {
-    return *self.impl == *rhs.impl;
+    return *self.self == *rhs.self;
   } else if constexpr (is_forward_v<Implementation>) {
-    return self.impl->vector == rhs.impl->vector;
+    return self.self->vector == rhs.self->vector;
   } else if constexpr (has_approximation_v<Implementation>) {
-    auto maybe = static_cast<optional<bool>>(self.impl->approximation() == rhs.impl->approximation());
+    auto maybe = static_cast<optional<bool>>(self.self->approximation() == rhs.self->approximation());
     if (maybe)
       return *maybe;
-    return static_cast<const typename Implementation::Exact>(*self.impl) == static_cast<const typename Implementation::Exact>(*rhs.impl);
+    return static_cast<const typename Implementation::Exact>(*self.self) == static_cast<const typename Implementation::Exact>(*rhs.self);
   } else {
     return self.x() == rhs.x() && self.y() == rhs.y();
   }
 }
 
 template <typename Vector, typename T>
-CCW VectorExact<Vector, T>::ccw(const Vector& rhs) const noexcept {
-  using Implementation = typename Vector::Implementation;
+CCW VectorExact<Vector, T>::ccw(const Vector& rhs) const {
+  using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
   if constexpr (has_ccw<Implementation>) {
-    return self.impl->ccw(*rhs.impl);
+    return self.self->ccw(*rhs.self);
   } else if constexpr (is_forward_v<Implementation>) {
-    return self.impl->vector.ccw(rhs.impl->vector);
+    return self.self->vector.ccw(rhs.self->vector);
   } else if constexpr (has_approximation_v<Implementation>) {
-    auto maybe = self.impl->approximation().ccw(rhs.impl->approximation());
+    auto maybe = self.self->approximation().ccw(rhs.self->approximation());
     if (maybe)
       return *maybe;
-    return static_cast<const typename Implementation::Exact>(*self.impl).ccw(static_cast<const typename Implementation::Exact>(*rhs.impl));
+    return static_cast<const typename Implementation::Exact>(*self.self).ccw(static_cast<const typename Implementation::Exact>(*rhs.self));
   } else {
     // An alternative algorithm (somewhere in the git history) might be much
     // faster: Try to decide with the approximations. If they are not clear,
@@ -155,51 +155,51 @@ CCW VectorExact<Vector, T>::ccw(const Vector& rhs) const noexcept {
 }
 
 template <typename Vector, typename T>
-T VectorExact<Vector, T>::x() const noexcept {
-  using Implementation = typename Vector::Implementation;
+T VectorExact<Vector, T>::x() const {
+  using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
   if constexpr (has_x<Implementation>) {
-    return self.impl->x();
+    return self.self->x();
   } else if constexpr (is_forward_v<Implementation>) {
-    return self.impl->vector.x();
+    return self.self->vector.x();
   } else if constexpr (is_cartesian_v<Implementation>) {
-    return self.impl->x;
+    return self.self->x;
   } else {
     static_assert(false_type_v<Implementation>, "Implementation is missing x().");
   }
 }
 
 template <typename Vector, typename T>
-T VectorExact<Vector, T>::y() const noexcept {
-  using Implementation = typename Vector::Implementation;
+T VectorExact<Vector, T>::y() const {
+  using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
   if constexpr (has_y<Implementation>) {
-    return self.impl->y();
+    return self.self->y();
   } else if constexpr (is_forward_v<Implementation>) {
-    return self.impl->vector.y();
+    return self.self->vector.y();
   } else if constexpr (is_cartesian_v<Implementation>) {
-    return self.impl->y;
+    return self.self->y;
   } else {
     static_assert(false_type_v<Implementation>, "Implementation is missing y().");
   }
 }
 
 template <typename Vector, typename T>
-ORIENTATION VectorExact<Vector, T>::orientation(const Vector& rhs) const noexcept {
-  using Implementation = typename Vector::Implementation;
+ORIENTATION VectorExact<Vector, T>::orientation(const Vector& rhs) const {
+  using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
   if constexpr (has_orientation<Implementation>) {
-    return self.impl->orientation(*rhs.impl);
+    return self.self->orientation(*rhs.self);
   } else if constexpr (is_forward_v<Implementation>) {
-    return self.impl->vector.orientation(rhs.impl->vector);
+    return self.self->vector.orientation(rhs.self->vector);
   } else if constexpr (has_approximation_v<Implementation>) {
-    auto maybe = self.impl->approximation().orientation(rhs.impl->approximation());
+    auto maybe = self.self->approximation().orientation(rhs.self->approximation());
     if (maybe)
       return *maybe;
-    return static_cast<const typename Implementation::Exact>(*self.impl).orientation(static_cast<const typename Implementation::Exact>(*rhs.impl));
+    return static_cast<const typename Implementation::Exact>(*self.self).orientation(static_cast<const typename Implementation::Exact>(*rhs.self));
   } else {
     // An alternative algorithm (somewhere in the git history) might be much
     // faster: Try to decide with the approximations. If they are not clear,
@@ -241,16 +241,16 @@ T VectorExact<Vector, T>::area(const std::vector<Vector>& perimeter) {
 }
 
 template <typename Vector, typename T>
-T VectorExact<Vector, T>::operator*(const Vector& rhs) const noexcept {
-  using Implementation = typename Vector::Implementation;
+T VectorExact<Vector, T>::operator*(const Vector& rhs) const {
+  using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
   if constexpr (has_scalar_product<Implementation>) {
-    return self.impl->operator*(rhs);
+    return self.self->operator*(rhs);
   } else if constexpr (is_cartesian_v<Implementation>) {
-    return self.impl->x * rhs.impl->x + self.impl->y * rhs.impl->y;
+    return self.self->x * rhs.self->x + self.self->y * rhs.self->y;
   } else if constexpr (is_forward_v<Implementation>) {
-    return self.impl->vector * rhs.impl->vector;
+    return self.self->vector * rhs.self->vector;
   } else {
     static_assert(false_type_v<Implementation>, "Implementation is missing scalar product operator*().");
   }

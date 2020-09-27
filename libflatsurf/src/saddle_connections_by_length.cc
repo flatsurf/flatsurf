@@ -31,38 +31,67 @@ namespace flatsurf {
 
 template <typename Surface>
 SaddleConnectionsByLength<Surface>::SaddleConnectionsByLength(const SaddleConnections<Surface>& connections) :
-  impl(spimpl::make_impl<Implementation>(*connections.impl)) {}
+  self(spimpl::make_impl<ImplementationOf<SaddleConnectionsByLength>>(*connections.self)) {}
 
 template <typename Surface>
-typename SaddleConnectionsByLength<Surface>::Iterator SaddleConnectionsByLength<Surface>::begin() const {
+typename SaddleConnectionsByLength<Surface>::iterator SaddleConnectionsByLength<Surface>::begin() const {
   auto ret = SaddleConnectionsByLengthIterator<Surface>(PrivateConstructor{}, *this);
-  ret.impl->increment();
-  if (ret.impl->connectionsWithinBounds.size())
-    ret.impl->currents.push_front(ret.impl->connectionsWithinBounds.front());
+  ret.self->increment();
+  if (ret.self->connectionsWithinBounds.size())
+    ret.self->currents.push_front(ret.self->connectionsWithinBounds.front());
   return ret;
 }
 
 template <typename Surface>
-typename SaddleConnectionsByLength<Surface>::Iterator SaddleConnectionsByLength<Surface>::end() const {
+typename SaddleConnectionsByLength<Surface>::iterator SaddleConnectionsByLength<Surface>::end() const {
   return SaddleConnectionsByLengthIterator<Surface>(PrivateConstructor{}, *this);
 }
 
 template <typename Surface>
 const Surface& SaddleConnectionsByLength<Surface>::surface() const {
-  return *impl->surface;
+  return self->surface;
 }
 
 template <typename Surface>
 std::optional<Bound> SaddleConnectionsByLength<Surface>::bound() const {
-  return impl->searchRadius;
+  return self->searchRadius;
 }
 
 template <typename Surface>
 SaddleConnections<Surface> SaddleConnectionsByLength<Surface>::byAngle() const {
-  SaddleConnections<Surface> connections(impl->surface);
-  *connections.impl = *impl;
+  SaddleConnections<Surface> connections(self->surface);
+  *connections.self = *self;
   return connections;
 }
+
+template <typename Surface>
+SaddleConnectionsByLength<Surface> SaddleConnectionsByLength<Surface>::bound(Bound bound) const {
+  return this->byAngle().bound(bound).byLength();
+}
+
+template <typename Surface>
+SaddleConnectionsByLength<Surface> SaddleConnectionsByLength<Surface>::sector(HalfEdge sectorBegin) const {
+  return this->byAngle().sector(sectorBegin).byLength();
+}
+
+template <typename Surface>
+SaddleConnectionsByLength<Surface> SaddleConnectionsByLength<Surface>::sector(const SaddleConnection<Surface>& sectorBegin, const SaddleConnection<Surface>& sectorEnd) const {
+  return this->byAngle().sector(sectorBegin, sectorEnd).byLength();
+}
+
+template <typename Surface>
+SaddleConnectionsByLength<Surface> SaddleConnectionsByLength<Surface>::sector(const Vector<T>& sectorBegin, const Vector<T>& sectorEnd) const {
+  return this->byAngle().sector(sectorBegin, sectorEnd).byLength();
+}
+
+template <typename Surface>
+SaddleConnectionsByLength<Surface> SaddleConnectionsByLength<Surface>::source(const Vertex& source) const {
+  return this->byAngle().source(source).byLength();
+}
+
+template <typename Surface>
+ImplementationOf<SaddleConnectionsByLength<Surface>>::ImplementationOf(const ImplementationOf<SaddleConnections<Surface>>& connections) :
+  ImplementationOf<SaddleConnections<Surface>>(connections) {}
 
 template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const SaddleConnectionsByLength<Surface>&) {

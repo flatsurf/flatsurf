@@ -23,6 +23,7 @@
 #include "../../flatsurf/tracked.hpp"
 #include "../external/slimsig/include/slimsig/slimsig.h"
 #include "flat_triangulation_combinatorial.impl.hpp"
+#include "weak_read_only.hpp"
 
 namespace flatsurf {
 
@@ -37,14 +38,16 @@ class ImplementationOf<Tracked<T>> {
   using EraseHandler = typename Tracked<T>::EraseHandler;
   using DestructionHandler = typename Tracked<T>::DestructionHandler;
 
-  ImplementationOf(const FlatTriangulationCombinatorial* parent, T&& value, const FlipHandler& updateAfterFlip, const CollapseHandler& updateBeforeCollapse, const SwapHandler& updateBeforeSwap, const EraseHandler& updateBeforeErase, const DestructionHandler& updateBeforeDestruction);
+  ImplementationOf(ImplementationOf<FlatTriangulationCombinatorial>* parent, T&& value, const FlipHandler& updateAfterFlip, const CollapseHandler& updateBeforeCollapse, const SwapHandler& updateBeforeSwap, const EraseHandler& updateBeforeErase, const DestructionHandler& updateBeforeDestruction);
+
+  static Tracked<T> make(const ImplementationOf<FlatTriangulationCombinatorial>*, T value, const FlipHandler& updateAfterFlip = Tracked<T>::defaultFlip, const CollapseHandler& updateBeforeCollapse = Tracked<T>::defaultCollapse, const SwapHandler& updateBeforeSwap = Tracked<T>::defaultSwap, const EraseHandler& updateBeforeErase = Tracked<T>::defaultErase, const DestructionHandler& updateBeforeDestruction = Tracked<T>::forgetParent);
 
   ~ImplementationOf();
 
   void connect();
   void disconnect();
 
-  const FlatTriangulationCombinatorial* parent;
+  WeakReadOnly<FlatTriangulationCombinatorial> parent;
   T value;
 
   const FlipHandler updateAfterFlip;

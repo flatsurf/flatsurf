@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 
 #include <intervalxt/interval_exchange_transformation.hpp>
 #include <intervalxt/label.hpp>
-#include <memory>
 #include <unordered_set>
 
 #include "../flatsurf/flat_triangulation.hpp"
@@ -39,18 +38,18 @@ using namespace flatsurf;
 namespace flatsurf {
 
 template <typename Surface>
-Vertical<Surface>::Vertical(std::shared_ptr<const Surface> surface, const Vector<T>& vertical) :
-  impl(spimpl::make_impl<Implementation>(surface, vertical)) {}
+Vertical<Surface>::Vertical(const Surface& surface, const Vector<T>& vertical) :
+  self(spimpl::make_impl<ImplementationOf<Vertical>>(surface, vertical)) {}
 
 template <typename Surface>
 std::vector<std::unordered_set<HalfEdge>> Vertical<Surface>::components() const {
   std::vector<std::unordered_set<HalfEdge>> components;
   std::unordered_set<HalfEdge> done;
-  for (const auto& start : impl->surface->halfEdges()) {
+  for (const auto& start : self->surface->halfEdges()) {
     if (done.find(start) != done.end())
       continue;
     std::unordered_set<HalfEdge> component;
-    if (!Implementation::visit(*this, start, component, [&](HalfEdge) { return true; })) {
+    if (!ImplementationOf<Vertical>::visit(*this, start, component, [&](HalfEdge) { return true; })) {
       assert(false && "visit cannot fail without a predicate");
     }
     assert(component.size() && "visit cannot return an empty component");
@@ -63,34 +62,34 @@ std::vector<std::unordered_set<HalfEdge>> Vertical<Surface>::components() const 
 template <typename Surface>
 bool Vertical<Surface>::large(HalfEdge e) const {
   auto length = [&](const HalfEdge edge) {
-    auto ret = perpendicular(impl->surface->fromEdge(edge));
+    auto ret = perpendicular(self->surface->fromHalfEdge(edge));
     return ret > 0 ? ret : -ret;
   };
-  auto self = length(e);
-  return self >= length(impl->surface->nextInFace(e)) &&
-         self >= length(impl->surface->previousInFace(e)) &&
-         self >= length(impl->surface->nextInFace(-e)) &&
-         self >= length(impl->surface->previousInFace(-e));
+  auto len = length(e);
+  return len >= length(self->surface->nextInFace(e)) &&
+         len >= length(self->surface->previousInFace(e)) &&
+         len >= length(self->surface->nextInFace(-e)) &&
+         len >= length(self->surface->previousInFace(-e));
 }
 
 template <typename Surface>
 typename Surface::Coordinate Vertical<Surface>::perpendicular(const Vector<T>& v) const {
-  return impl->horizontal * v;
+  return self->horizontal * v;
 }
 
 template <typename Surface>
 typename Surface::Coordinate Vertical<Surface>::parallel(const Vector<T>& v) const {
-  return impl->vertical * v;
+  return self->vertical * v;
 }
 
 template <typename Surface>
 bool Vertical<Surface>::perpendicular(HalfEdge e) const {
-  return !static_cast<bool>(parallel(impl->surface->fromEdge(e)));
+  return !static_cast<bool>(parallel(self->surface->fromHalfEdge(e)));
 }
 
 template <typename Surface>
 bool Vertical<Surface>::parallel(HalfEdge e) const {
-  return !static_cast<bool>(perpendicular(impl->surface->fromEdge(e)));
+  return !static_cast<bool>(perpendicular(self->surface->fromHalfEdge(e)));
 }
 
 template <typename Surface>
@@ -99,22 +98,22 @@ typename Vertical<Surface>::TRIANGLE Vertical<Surface>::classifyFace(HalfEdge fa
   // more important optimization would be to cache the values of perpendicular
   // in a HalfEdgeMap.
 
-  auto self = perpendicular(impl->surface->fromEdge(face));
-  auto a = perpendicular(impl->surface->fromEdge(impl->surface->nextInFace(face)));
-  auto b = perpendicular(impl->surface->fromEdge(impl->surface->previousInFace(face)));
+  auto perp = perpendicular(self->surface->fromHalfEdge(face));
+  auto a = perpendicular(self->surface->fromHalfEdge(self->surface->nextInFace(face)));
+  auto b = perpendicular(self->surface->fromHalfEdge(self->surface->previousInFace(face)));
 
-  if (impl->surface->nextInFace(face) == impl->surface->previousInFace(face)) {
-    assert(self + a == 0 && "face is not closed");
+  if (self->surface->nextInFace(face) == self->surface->previousInFace(face)) {
+    assert(perp + a == 0 && "face is not closed");
     return TRIANGLE::COLLAPSED_TO_TWO_FACES;
   }
 
-  assert(self + a + b == 0 && "face is not closed");
+  assert(perp + a + b == 0 && "face is not closed");
 
-  if (self == 0) {
+  if (perp == 0) {
     assert(a != 0 && b != 0 && "face cannot have two vertical edges");
-    return classifyFace(impl->surface->nextInFace(face));
-  } else if (self < 0) {
-    return classifyFace(impl->surface->nextInFace(face));
+    return classifyFace(self->surface->nextInFace(face));
+  } else if (perp < 0) {
+    return classifyFace(self->surface->nextInFace(face));
   } else {
     if (a == 0) {
       return TRIANGLE::RIGHT_VERTICAL;
@@ -132,36 +131,36 @@ typename Vertical<Surface>::TRIANGLE Vertical<Surface>::classifyFace(HalfEdge fa
 
 template <typename Surface>
 Vertical<Surface> Vertical<Surface>::operator-() const {
-  return Vertical(impl->surface, -vertical());
+  return Vertical(self->surface, -vertical());
 }
 
 template <typename Surface>
-std::shared_ptr<const Surface> Vertical<Surface>::surface() const {
-  return impl->surface;
+const Surface& Vertical<Surface>::surface() const {
+  return self->surface;
 }
 
 template <typename Surface>
-bool Vertical<Surface>::operator==(const Vertical& rhs) const noexcept {
-  return surface() == rhs.surface() && impl->vertical == rhs.impl->vertical;
+bool Vertical<Surface>::operator==(const Vertical& rhs) const {
+  return surface() == rhs.surface() && self->vertical == rhs.self->vertical;
 }
 
 template <typename Surface>
 const Vector<typename Surface::Coordinate>& Vertical<Surface>::vertical() const {
-  return impl->vertical;
+  return self->vertical;
 }
 
 template <typename Surface>
 const Vector<typename Surface::Coordinate>& Vertical<Surface>::horizontal() const {
-  return impl->horizontal;
+  return self->horizontal;
 }
 
 template <typename Surface>
 ostream& operator<<(ostream& os, const Vertical<Surface>& self) {
-  return os << self.impl->vertical;
+  return os << self.self->vertical;
 }
 
 template <typename Surface>
-ImplementationOf<Vertical<Surface>>::ImplementationOf(std::shared_ptr<const Surface> surface, const Vector<T>& vertical) :
+ImplementationOf<Vertical<Surface>>::ImplementationOf(const Surface& surface, const Vector<T>& vertical) :
   surface(surface),
   vertical(vertical),
   horizontal(-vertical.perpendicular()) {
@@ -184,8 +183,8 @@ bool ImplementationOf<Vertical<Surface>>::visit(const Vertical& self, HalfEdge s
 
   // Visit all connected half edges.
   return visit(self, -start, component, visitor) &&
-         visit(self, self.impl->surface->nextInFace(start), component, visitor) &&
-         visit(self, self.impl->surface->previousInFace(start), component, visitor);
+         visit(self, self.self->surface->nextInFace(start), component, visitor) &&
+         visit(self, self.self->surface->previousInFace(start), component, visitor);
 }
 
 }  // namespace flatsurf

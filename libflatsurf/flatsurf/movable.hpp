@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,27 +17,18 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_DELAUNAY_TRIANGULATION_HPP
-#define LIBFLATSURF_DELAUNAY_TRIANGULATION_HPP
+#ifndef LIBFLATSURF_MOVABLE_HPP
+#define LIBFLATSURF_MOVABLE_HPP
 
-#include <type_traits>
-
+#include "external/spimpl/spimpl.h"
 #include "forward.hpp"
 
 namespace flatsurf {
+
+// A pointer-to-implementation (pimpl) for types that are not copyable but movable.
 template <typename T>
-class DelaunayTriangulation {
-  static_assert(std::is_same_v<T, std::decay_t<T>>, "type must not have modifiers such as const");
+using Movable = spimpl::unique_impl_ptr<ImplementationOf<T>>;
 
- public:
-  // Flip edges in this triangulation so that all faces satisfy the l²-Delaunay condition.
-  static void transform(FlatTriangulation<T>&);
-
-  // Return whether this half edge satisfies the l²-Delaunay condition, i.e.,
-  // whether the circumcircles of the face attached to this edge does not
-  // contain the face attached to the reverse half edge.
-  static bool test(const FlatTriangulation<T>&, HalfEdge);
-};
 }  // namespace flatsurf
 
 #endif

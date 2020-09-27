@@ -26,7 +26,7 @@
 
 namespace flatsurf {
 
-Bound::Bound() :
+Bound::Bound() noexcept :
   square() {}
 
 Bound::Bound(int x) :
@@ -38,15 +38,15 @@ Bound::Bound(const mpz_class& x) :
 Bound::Bound(const mpz_class& x, const mpz_class& y) :
   square(x * x + y * y) {}
 
-const mpz_class& Bound::squared() const noexcept {
+const mpz_class& Bound::squared() const {
   return square;
 }
 
-bool Bound::operator==(const Bound& rhs) const noexcept {
+bool Bound::operator==(const Bound& rhs) const {
   return square == rhs.square;
 }
 
-bool Bound::operator<(const Bound& rhs) const noexcept {
+bool Bound::operator<(const Bound& rhs) const {
   return square < rhs.square;
 }
 

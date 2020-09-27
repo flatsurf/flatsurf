@@ -21,7 +21,6 @@
 #include <benchmark/benchmark.h>
 
 #include <exact-real/integer_ring.hpp>
-#include <memory>
 
 #include "../flatsurf/chain.hpp"
 #include "../test/surfaces.hpp"
@@ -39,7 +38,7 @@ void CreateChain(State& state) {
   const auto L = makeL<R2>();
 
   for (auto _ : state) {
-    DoNotOptimize(Chain(L));
+    DoNotOptimize(Chain(*L));
   }
 }
 BENCHMARK_TEMPLATE(CreateChain, long long);
@@ -48,7 +47,7 @@ template <class T>
 void CopyConstructChain(State& state) {
   using R2 = Vector<T>;
   const auto L = makeL<R2>();
-  const auto chain = Chain(L);
+  const auto chain = Chain(*L);
 
   for (auto _ : state) {
     DoNotOptimize(Chain(chain));
@@ -60,7 +59,7 @@ template <class T>
 void CopyAssignChain(State& state) {
   using R2 = Vector<T>;
   const auto L = makeL<R2>();
-  const auto chain = Chain(L);
+  const auto chain = Chain(*L);
   auto target = chain;
 
   for (auto _ : state) {
@@ -73,7 +72,7 @@ template <class T>
 void MoveChain(State& state) {
   using R2 = Vector<T>;
   const auto L = makeL<R2>();
-  auto chain = Chain(L);
+  auto chain = Chain(*L);
 
   for (auto _ : state) {
     Chain tmp = std::move(chain);

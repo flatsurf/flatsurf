@@ -26,6 +26,7 @@
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/ccw.hpp"
+#include "../flatsurf/deformation.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/orientation.hpp"
@@ -56,7 +57,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Torus", "[saddle_connections]", (lon
     }
 
     THEN("The Same With SaddleConnections as Sector Boundaries") {
-      const auto connections = square->connections().bound(2).sector(SaddleConnection(square, HalfEdge(1)), SaddleConnection(square, square->nextAtVertex(HalfEdge(1))));
+      const auto connections = square->connections().bound(2).sector(SaddleConnection(*square, HalfEdge(1)), SaddleConnection(*square, square->nextAtVertex(HalfEdge(1))));
       auto search = begin(connections);
 
       REQUIRE(fmt::format("{}", *search) == "(1, 0) from 1 to -1");
@@ -64,7 +65,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Torus", "[saddle_connections]", (lon
     }
 
     THEN("The Same With Vectors as Sector Boundaries") {
-      const auto connections = square->connections().bound(2).sector(square->fromEdge(HalfEdge(1)), square->fromEdge(square->nextAtVertex(HalfEdge(1))));
+      const auto connections = square->connections().bound(2).sector(square->fromHalfEdge(HalfEdge(1)), square->fromHalfEdge(square->nextAtVertex(HalfEdge(1))));
       auto search = begin(connections);
 
       REQUIRE(fmt::format("{}", *search) == "(1, 0) from 1 to -1");
@@ -138,8 +139,8 @@ TEMPLATE_TEST_CASE("Saddle Connections on an L with an Added Slit", "[saddle_con
   auto slit = R2(TestType(3) / 13371337, TestType(2) / 13371337);
   auto source = HalfEdge(1);
 
-  L = L->insertAt(source, slit);
-  L = L->slot(L->nextAtVertex(source));
+  *L = L->insertAt(source, slit).surface();
+  *L = L->slit(L->nextAtVertex(source)).surface();
 
   GIVEN("The L with Slit " << *L) {
     auto bound = GENERATE(2, 16);

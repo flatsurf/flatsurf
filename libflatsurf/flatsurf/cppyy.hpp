@@ -20,96 +20,38 @@
 #ifndef LIBFLATSURF_CPPYY_HPP
 #define LIBFLATSURF_CPPYY_HPP
 
-#include <e-antic/renfxx_fwd.h>
-
 #include <iosfwd>
-#include <memory>
-#include <stdexcept>
 
-#include "bound.hpp"
-#include "chain.hpp"
-#include "chain_iterator.hpp"
-#include "edge.hpp"
-#include "flat_triangulation.hpp"
-#include "flat_triangulation_combinatorial.hpp"
-#include "flow_component.hpp"
-#include "flow_connection.hpp"
-#include "flow_decomposition.hpp"
-#include "half_edge.hpp"
-#include "interval_exchange_transformation.hpp"
-#include "odd_half_edge_map.hpp"
-#include "permutation.hpp"
-#include "saddle_connection.hpp"
-#include "saddle_connections.hpp"
-#include "saddle_connections_by_length.hpp"
-#include "saddle_connections_by_length_iterator.hpp"
-#include "saddle_connections_iterator.hpp"
-#include "vector.hpp"
-#include "vertex.hpp"
-#include "vertical.hpp"
+#include "flatsurf.hpp"
 
 namespace flatsurf {
 // cppyy sometimes has trouble with rvalues, let's help it to create a FlatTriangulation
+// See https://bitbucket.org/wlav/cppyy/issues/275/result-of-cppyygblstdmove-is-not-an-rvalue.
 template <typename T>
-std::shared_ptr<FlatTriangulation<T>> makeFlatTriangulation(const std::vector<std::vector<int>> &vertices, const std::vector<Vector<T>> &vectors) {
-  return std::make_shared<FlatTriangulation<T>>(FlatTriangulationCombinatorial(vertices), vectors);
+FlatTriangulation<T> makeFlatTriangulation(const std::vector<std::vector<int>> &vertices, const std::vector<Vector<T>> &vectors) {
+  return FlatTriangulation<T>(FlatTriangulationCombinatorial(vertices), vectors);
 }
 
-// cppyy gets the lifetime of the surfaces wrong when methods return a unique_ptr<Surface>
-// See https://github.com/flatsurf/flatsurf/issues/148 for the upstream issue.
-template <typename T>
-std::shared_ptr<FlatTriangulation<T>> insertAtFlatTriangulation(const FlatTriangulation<T> &surface, HalfEdge &e, const Vector<T> &v) {
-  return surface.insertAt(e, v);
-}
-
-template <typename T>
-std::shared_ptr<FlatTriangulation<T>> slotFlatTriangulation(const FlatTriangulation<T> &surface, HalfEdge e) {
-  return surface.slot(e);
-}
-
+// cppyy sometimes has trouble with rvalues, let's help it to create a FlowDecomposition
+// See https://bitbucket.org/wlav/cppyy/issues/275/result-of-cppyygblstdmove-is-not-an-rvalue.
 template <typename T>
 FlowDecomposition<FlatTriangulation<T>> makeFlowDecomposition(const FlatTriangulation<T> &surface, const Vector<T> &v) {
   return FlowDecomposition<FlatTriangulation<T>>(surface.clone(), v);
 }
 
-// cppyy has trouble with std::function arguments in headers
-// See https://github.com/flatsurf/flatsurf/issues/149 for the upstream issue.
+// Work around https://bitbucket.org/wlav/cppyy/issues/273/segfault-in-cpycppyy-anonymous-namespace
+template <typename T>
+auto makeOddHalfEdgeMap(const FlatTriangulationCombinatorial &surface, const std::vector<T> &values) {
+  return OddHalfEdgeMap<T>(surface, [&](const HalfEdge &e) {
+    return e == Edge(e).positive() ? values.at(Edge(e).index()) : -values.at(Edge(e).index());
+  });
+}
+
+// Work around https://bitbucket.org/wlav/cppyy/issues/273/segfault-in-cpycppyy-anonymous-namespace
 template <typename T>
 bool decomposeFlowDecomposition(FlowDecomposition<T> &decomposition, int limit = -1) {
   return decomposition.decompose(FlowDecomposition<T>::defaultTarget, limit);
 }
-
-// cppyy can not call methods that take a std::function yet so we need more pythonic flavours of such methods
-template <typename T>
-auto makeOddHalfEdgeMap(const FlatTriangulationCombinatorial &surface, const std::vector<T> &values) {
-  if (values.size() != surface.edges().size())
-    throw std::invalid_argument("number of entries does not match number of edges");
-
-  return OddHalfEdgeMap<T>(surface, [&](const HalfEdge &e) { return e == Edge(e).positive() ? values.at(Edge(e).index()) : -values.at(Edge(e).index()); });
-}
-
-// The following block of forward declarations is a bit odd. It only exists to
-// work around bugs in cppyy.
-
-// See https://bitbucket.org/wlav/cppyy/issues/95/lookup-of-friend-operator
-
-std::ostream &operator<<(std::ostream &, const HalfEdge &);
-template <typename T>
-std::ostream &operator<<(std::ostream &, const Permutation<T> &);
-template <typename K, typename V>
-std::ostream &operator<<(std::ostream &, const TrackingMap<K, V> &);
-template <typename T>
-std::ostream &operator<<(std::ostream &, const FlatTriangulation<T> &);
-// See saddle_connection.hpp for the _ parameter.
-template <typename Surface, typename _>
-std::ostream &operator<<(std::ostream &, const SaddleConnection<Surface> &);
-template <typename Surface>
-std::ostream &operator<<(std::ostream &, const SaddleConnections<Surface> &);
-template <typename Surface>
-std::ostream &operator<<(std::ostream &, const SaddleConnectionsByLength<Surface> &);
-template <typename Surface>
-std::ostream &operator<<(std::ostream &, const FlowComponent<Surface> &);
-std::ostream &operator<<(std::ostream &, const Vertex &);
 
 }  // namespace flatsurf
 

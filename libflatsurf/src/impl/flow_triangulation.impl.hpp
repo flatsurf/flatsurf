@@ -20,12 +20,12 @@
 #ifndef LIBFLATSURF_FLOW_TRIANGULATION_IMPL_HPP
 #define LIBFLATSURF_FLOW_TRIANGULATION_IMPL_HPP
 
-#include <memory>
 #include <unordered_map>
 
 #include "../../flatsurf/flow_connection.hpp"
 #include "../../flatsurf/flow_triangulation.hpp"
 #include "../../flatsurf/half_edge.hpp"
+#include "read_only.hpp"
 
 namespace flatsurf {
 
@@ -38,7 +38,7 @@ class ImplementationOf<FlowTriangulation<Surface>> {
 
   static FlowTriangulation<Surface> make(const FlowComponent<Surface>&);
 
-  std::shared_ptr<const FlatTriangulation<T>> triangulation;
+  ReadOnly<FlatTriangulation<T>> triangulation;
 
   FlowComponent<Surface> component;
 
@@ -49,7 +49,7 @@ class ImplementationOf<FlowTriangulation<Surface>> {
 template <typename Surface>
 template <typename... Args>
 FlowTriangulation<Surface>::FlowTriangulation(PrivateConstructor, Args&&... args) :
-  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
+  self(spimpl::make_impl<ImplementationOf<FlowTriangulation>>(std::forward<Args>(args)...)) {}
 
 }  // namespace flatsurf
 

@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,13 +20,17 @@
 #ifndef LIBFLATSURF_CONTOUR_DECOMPOSITION_HPP
 #define LIBFLATSURF_CONTOUR_DECOMPOSITION_HPP
 
-#include <memory>
 #include <vector>
 
-#include "external/spimpl/spimpl.h"
-#include "forward.hpp"
+#include "movable.hpp"
 
 namespace flatsurf {
+
+// The decomposition of a (Collapsed) Flat Triangulation into Contour
+// Components, i.e., components whose graph of faces is connected when only
+// considering faces adjacent which share a non-vertical edge.
+// Note that further edges in each component have been flipped such that there
+// is only a single large edge in each component.
 template <class Surface>
 class ContourDecomposition {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
@@ -34,21 +38,23 @@ class ContourDecomposition {
   using T = typename Surface::Coordinate;
 
  public:
-  ContourDecomposition(std::unique_ptr<Surface>, const Vector<T> &vertical);
+  ContourDecomposition(Surface, const Vector<T> &vertical);
 
   std::vector<ContourComponent<Surface>> components() const;
+
+  // Return the underlying Collapsed Flat Triangulation where all edges have
+  // been flipped such that each Contour Component has a unique large edge.
+  const FlatTriangulationCollapsed<T> &collapsed() const;
 
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const ContourDecomposition<S> &);
 
-  std::shared_ptr<const FlatTriangulationCollapsed<T>> collapsed() const;
-
  private:
-  using Implementation = ImplementationOf<ContourDecomposition>;
-  spimpl::unique_impl_ptr<Implementation> impl;
+  Movable<ContourDecomposition> self;
 
-  friend Implementation;
+  friend ImplementationOf<ContourDecomposition>;
 };
+
 }  // namespace flatsurf
 
 #endif

@@ -36,8 +36,10 @@
 #include "edge.hpp"
 #include "flat_triangulation.hpp"
 #include "flat_triangulation_combinatorial.hpp"
+#include "forward.hpp"
 #include "half_edge.hpp"
 #include "half_edge_set.hpp"
+#include "half_edge_set_iterator.hpp"
 #include "permutation.hpp"
 #include "saddle_connection.hpp"
 #include "saddle_connections.hpp"
@@ -48,6 +50,10 @@ namespace flatsurf {
 
 namespace {
 
+// Defines serialization for a type T without polluting the global namespace,
+// i.e., other libraries might still decide to serialize this type differently.
+// This is used for types such as mpz_class which do not provide an official
+// serialization with cereal.
 template <typename T>
 struct ReplacementSerialization {
   static auto serializable(const T& value) {
@@ -86,41 +92,49 @@ struct ReplacementSerialization {
 
 }  // namespace
 
+// Serialize a half edge to an archive.
 template <typename Archive>
 int HalfEdge::save_minimal(Archive&) const {
   return id();
 }
 
+// Deserialize a half edge from an archive.
 template <typename Archive>
 void HalfEdge::load_minimal(Archive&, const int& value) {
   *this = HalfEdge(value);
 }
 
+// Serialize an edge to an archive.
 template <typename Archive>
 int Edge::save_minimal(Archive&) const {
   return positive().id();
 }
 
+// Deserialize an edge from an archive.
 template <typename Archive>
 void Edge::load_minimal(Archive&, const int& value) {
   *this = Edge(HalfEdge(value));
 }
 
+// Serialize a bound to an archive.
 template <typename Archive>
 void Bound::save(Archive& archive) const {
   ReplacementSerialization<mpz_class>::save(archive, "square", square);
 }
 
+// Deserialize a bound from an archive.
 template <typename Archive>
 void Bound::load(Archive& archive) {
   ReplacementSerialization<mpz_class>::load(archive, "square", square);
 }
 
+// Serialize a permutation to an archive.
 template <typename Archive, typename T>
 void save(Archive& archive, const Permutation<T>& self) {
   archive(cereal::make_nvp("cycles", self.cycles()));
 }
 
+// Deserialize a permutation from an archive.
 template <typename Archive, typename T>
 void load(Archive& archive, Permutation<T>& self) {
   std::vector<std::vector<T>> cycles;
@@ -128,6 +142,7 @@ void load(Archive& archive, Permutation<T>& self) {
   self = Permutation(cycles);
 }
 
+// Serialize a vector to an archive.
 template <typename T>
 template <typename Archive>
 void Vector<T>::save(Archive& archive) const {
@@ -135,6 +150,7 @@ void Vector<T>::save(Archive& archive) const {
   ReplacementSerialization<T>::save(archive, "y", y());
 }
 
+// Deserialize a vector from an archive.
 template <typename T>
 template <typename Archive>
 void Vector<T>::load(Archive& archive) {
@@ -144,6 +160,8 @@ void Vector<T>::load(Archive& archive) {
   *this = Vector<T>(x, y);
 }
 
+// Helper class for flatsurf types that inherit from Serializable and can be serialized with cereal.
+// Any class marked as Serializable must provide a specialization of a Serialization here.
 template <typename T>
 struct Serialization {
   template <typename Archive>
@@ -157,31 +175,75 @@ struct Serialization {
   }
 };
 
-template <>
-struct Serialization<FlatTriangulationCombinatorial> {
+// Helper class to serialize classes that use the ManagedMovable pimpl implementation.
+template <typename T>
+struct Serialization<ManagedMovable<T>> {
   template <typename Archive>
-  void save(Archive& archive, const FlatTriangulationCombinatorial& self) {
-    std::vector<std::pair<HalfEdge, HalfEdge>> vertices;
-    for (auto& e : self.halfEdges()) {
-      vertices.push_back(std::pair(e, self.nextAtVertex(e)));
-    }
-    archive(cereal::make_nvp("vertices", Permutation<HalfEdge>(vertices)));
+  static void save(Archive& archive, const T& self, std::function<void(Archive&, const T&)> save) {
+    uint32_t id = archive.registerSharedPointer(self.self.state.get());
+    archive(cereal::make_nvp("shared", id));
 
-    std::vector<std::pair<HalfEdge, HalfEdge>> faces;
-    for (auto& e : self.halfEdges()) {
-      faces.push_back(std::pair(e, self.nextInFace(e)));
+    if (id & static_cast<unsigned int>(cereal::detail::msb_32bit)) {
+      // This is the first time cereal sees this T, so we actually store it.
+      // Future copies only need the id to resolve to the same surface.
+      save(archive, self);
     }
-    archive(cereal::make_nvp("faces", Permutation<HalfEdge>(vertices)));
   }
 
   template <typename Archive>
-  void load(Archive& archive, FlatTriangulationCombinatorial& self) {
-    Permutation<HalfEdge> vertices;
-    archive(cereal::make_nvp("vertices", vertices));
-    self = FlatTriangulationCombinatorial(vertices);
+  static void load(Archive& archive, T& self, std::function<void(Archive&, T&)> load) {
+    uint32_t id;
+    archive(cereal::make_nvp("shared", id));
+
+    if (id & static_cast<unsigned int>(cereal::detail::msb_32bit)) {
+      // This is the original copy of the object. We need to deserialize it and
+      // record its value for future callers.
+      load(archive, self);
+      archive.registerSharedPointer(id, self.self.state);
+    } else {
+      self.self.state = std::static_pointer_cast<ImplementationOf<T>>(archive.getSharedPointer(id));
+    }
   }
 };
 
+// Serialization and deserialization for FlatTriangulationCombinatorial.
+// Note that the serialization of a FlatTriangulationCombinatorial does not
+// take into account that this might actually be a FlatTriangulation(Collapsed)
+// that has been cast to a FlatTriangulationCombinatorial internally. We
+// currently do not yet reproduce the virtual inheritance between the
+// ImplementationOf<> of the different surface types. If you have trouble with
+// this, it might help to make sure that non-combinatorial instances are
+// serialized and deserialized first.
+template <>
+struct Serialization<FlatTriangulationCombinatorial> {
+  template <typename Archive>
+  void save(Archive& archive_, const FlatTriangulationCombinatorial& self_) {
+    Serialization<ManagedMovable<FlatTriangulationCombinatorial>>::save<Archive>(archive_, self_, [](Archive& archive, const FlatTriangulationCombinatorial& self) {
+      std::vector<std::pair<HalfEdge, HalfEdge>> vertices;
+      for (auto& e : self.halfEdges()) {
+        vertices.push_back(std::pair(e, self.nextAtVertex(e)));
+      }
+      archive(cereal::make_nvp("vertices", Permutation<HalfEdge>(vertices)));
+
+      std::vector<std::pair<HalfEdge, HalfEdge>> faces;
+      for (auto& e : self.halfEdges()) {
+        faces.push_back(std::pair(e, self.nextInFace(e)));
+      }
+      archive(cereal::make_nvp("faces", Permutation<HalfEdge>(vertices)));
+    });
+  }
+
+  template <typename Archive>
+  void load(Archive& archive_, FlatTriangulationCombinatorial& self_) {
+    Serialization<ManagedMovable<FlatTriangulationCombinatorial>>::load<Archive>(archive_, self_, [](Archive& archive, FlatTriangulationCombinatorial& self) {
+      Permutation<HalfEdge> vertices;
+      archive(cereal::make_nvp("vertices", vertices));
+      self = FlatTriangulationCombinatorial(vertices);
+    });
+  }
+};
+
+// Serialization and deserialization for FlatTriangulation.
 template <typename T>
 struct Serialization<FlatTriangulation<T>> {
   template <typename Archive>
@@ -190,7 +252,7 @@ struct Serialization<FlatTriangulation<T>> {
 
     std::unordered_map<HalfEdge, Vector<T>> vectors;
     for (auto& edge : self.halfEdges())
-      vectors[edge] = self.fromEdge(edge);
+      vectors[edge] = self.fromHalfEdge(edge);
 
     archive(cereal::make_nvp("vectors", vectors));
   }
@@ -206,11 +268,12 @@ struct Serialization<FlatTriangulation<T>> {
   }
 };
 
+// Serialization and deserialization for a Chain.
 template <typename Surface>
 struct Serialization<Chain<Surface>> {
   template <typename Archive>
   void save(Archive& archive, const Chain<Surface>& self) {
-    archive(cereal::make_nvp("surface", self.surface().shared_from_this()));
+    archive(cereal::make_nvp("surface", self.surface()));
 
     std::vector<std::string> coefficients;
     for (auto edge : self.surface().edges())
@@ -220,22 +283,23 @@ struct Serialization<Chain<Surface>> {
 
   template <typename Archive>
   void load(Archive& archive, Chain<Surface>& self) {
-    std::shared_ptr<const Surface> surface;
+    Surface surface;
     archive(cereal::make_nvp("surface", surface));
     std::vector<std::string> coefficients;
     archive(cereal::make_nvp("coefficients", coefficients));
 
     self = Chain(surface);
     for (size_t i = 0; i < coefficients.size(); i++)
-      self += ((Chain<Surface>(surface) += surface->edges()[i].positive()) *= mpz_class(coefficients[i]));
+      self += ((Chain<Surface>(surface) += surface.edges()[i].positive()) *= mpz_class(coefficients[i]));
   }
 };
 
+// Serialization and deserialization for a Saddle Connection in a surface.
 template <typename Surface>
 struct Serialization<SaddleConnection<Surface>> {
   template <typename Archive>
   void save(Archive& archive, const SaddleConnection<Surface>& self) {
-    archive(cereal::make_nvp("surface", std::static_pointer_cast<const Surface>(self.surface().shared_from_this())));
+    archive(cereal::make_nvp("surface", self.surface()));
     archive(cereal::make_nvp("source", self.source()));
     archive(cereal::make_nvp("target", self.target()));
     archive(cereal::make_nvp("chain", static_cast<Chain<Surface>>(self)));
@@ -244,7 +308,7 @@ struct Serialization<SaddleConnection<Surface>> {
 
   template <typename Archive>
   void load(Archive& archive, SaddleConnection<Surface>& self) {
-    std::shared_ptr<Surface> surface;
+    Surface surface;
     archive(cereal::make_nvp("surface", surface));
     HalfEdge source, target;
     archive(cereal::make_nvp("source", source));
@@ -256,10 +320,13 @@ struct Serialization<SaddleConnection<Surface>> {
   }
 };
 
+// Serialization and deserialization for a Vertex.
 template <>
 struct Serialization<Vertex> {
   template <typename Archive>
   void save(Archive& archive, const Vertex& self) {
+    using std::begin, std::end;
+
     auto outgoing = self.outgoing();
     archive(cereal::make_nvp("outgoing", std::vector<HalfEdge>(begin(outgoing), end(outgoing))));
   }
@@ -272,6 +339,7 @@ struct Serialization<Vertex> {
   }
 };
 
+// Serialization and deserialization for a Vertial direction on a surface.
 template <typename Surface>
 struct Serialization<Vertical<Surface>> {
   template <typename Archive>
@@ -282,7 +350,7 @@ struct Serialization<Vertical<Surface>> {
 
   template <typename Archive>
   void load(Archive& archive, Vertical<Surface>& self) {
-    std::shared_ptr<const Surface> surface;
+    Surface surface;
     Vector<typename Surface::Coordinate> vertical;
     archive(cereal::make_nvp("surface", surface));
     archive(cereal::make_nvp("vector", vertical));

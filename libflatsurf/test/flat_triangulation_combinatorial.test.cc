@@ -2,7 +2,7 @@
  *  This file is part of flatsurf.
  *
  *        Copyright (C) 2019 Vincent Delecroix
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ TEST_CASE("Flat Triangulation Comparisons", "[flat_triangulation_combinatorial][
   const auto surface = GENERATE(makeSurfaceCombinatorial());
 
   GIVEN("The Surface " << *surface) {
-    REQUIRE(*surface == *surface->clone());
+    REQUIRE(*surface == surface->clone());
     REQUIRE(*surface != *makeSquareWithBoundaryCombinatorial());
   }
 }
@@ -50,7 +50,7 @@ TEST_CASE("Flat Triangulation Edges", "[flat_triangulation_combinatorial][edges]
 
     REQUIRE(edges.size() == surface->halfEdges().size() / 2);
 
-    // This is assumed by TrackingStorage for efficiency.
+    // This is assumed by some tracking code for efficiency.
     REQUIRE(std::is_sorted(begin(edges), end(edges), [](const auto& lhs, const auto& rhs) { return lhs.index() < rhs.index(); }));
   }
 }
@@ -61,7 +61,7 @@ TEST_CASE("Flat Triangulation Half Edges", "[flat_triangulation_combinatorial][h
   GIVEN("The Surface " << *surface) {
     auto halfEdges = surface->halfEdges();
 
-    // This is assumed by TrackingStorage for efficiency.
+    // This is assumed by some tracking code for efficiency.
     REQUIRE(std::is_sorted(begin(halfEdges), end(halfEdges), [](const auto& lhs, const auto& rhs) { return lhs.index() < rhs.index(); }));
   }
 }
@@ -94,16 +94,16 @@ TEST_CASE("Flat Triangulation Insertions", "[flat_triangulation_combinatorial][i
 
     WHEN("We Insert a Vertex Next to " << e) {
       auto inserted = surface->insertAt(e);
-      CAPTURE(*inserted);
+      CAPTURE(inserted);
 
       THEN("The Combinatorics Have Changed in the Expected Way") {
-        REQUIRE(*surface != *inserted);
-        REQUIRE(surface->vertices().size() + 1 == inserted->vertices().size());
-        REQUIRE(surface->halfEdges().size() + 6 == inserted->halfEdges().size());
+        REQUIRE(*surface != inserted);
+        REQUIRE(surface->vertices().size() + 1 == inserted.vertices().size());
+        REQUIRE(surface->halfEdges().size() + 6 == inserted.halfEdges().size());
 
-        auto a = -inserted->nextAtVertex(e);
+        auto a = -inserted.nextAtVertex(e);
         REQUIRE(a != -surface->nextAtVertex(e));
-        REQUIRE(inserted->nextAtVertex(inserted->nextAtVertex(inserted->nextAtVertex(a))) == a);
+        REQUIRE(inserted.nextAtVertex(inserted.nextAtVertex(inserted.nextAtVertex(a))) == a);
       }
     }
   }

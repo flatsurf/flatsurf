@@ -24,15 +24,13 @@
 #include <boost/operators.hpp>
 #include <functional>
 #include <list>
-#include <variant>
-#include <vector>
 
 #include "copyable.hpp"
-#include "forward.hpp"
-#include "vector.hpp"
 
 namespace flatsurf {
 
+// A component of a Flow Decomposition, i.e., a component corresponding to an
+// (irreducible) part of an Interval Exchange Transformation.
 template <typename Surface>
 class FlowComponent : boost::equality_comparable<FlowComponent<Surface>> {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
@@ -55,6 +53,7 @@ class FlowComponent : boost::equality_comparable<FlowComponent<Surface>> {
   DecompositionStep<Surface> decompositionStep(int limit = -1);
 
   FlowDecomposition<Surface> decomposition();
+
   const FlowDecomposition<Surface> decomposition() const;
 
   // Return whether all resulting components satisfy target, i.e., the limit
@@ -73,7 +72,9 @@ class FlowComponent : boost::equality_comparable<FlowComponent<Surface>> {
   const IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>& intervalExchangeTransformation() const;
 
   T width() const;
+
   T area() const;
+
   // Return the holonomy of the circumference of this cylinder, i.e., the
   // vector that corresponds the period of this cylinder.
   Vector<T> circumferenceHolonomy() const;
@@ -86,10 +87,9 @@ class FlowComponent : boost::equality_comparable<FlowComponent<Surface>> {
   friend std::ostream& operator<<(std::ostream&, const FlowComponent<S>&);
 
  private:
-  using Implementation = ImplementationOf<FlowComponent>;
-  Copyable<Implementation> impl;
+  Copyable<FlowComponent> self;
 
-  friend Implementation;
+  friend ImplementationOf<FlowComponent>;
 };
 
 }  // namespace flatsurf

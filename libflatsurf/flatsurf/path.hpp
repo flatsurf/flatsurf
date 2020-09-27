@@ -21,7 +21,6 @@
 #define LIBFLATSURF_PATH_HPP
 
 #include <boost/operators.hpp>
-#include <list>
 #include <vector>
 
 #include "copyable.hpp"
@@ -37,7 +36,7 @@ class Path : public Serializable<Path<Surface>>,
   using T = typename Surface::Coordinate;
 
  public:
-  Path();
+  Path() noexcept;
   Path(const std::vector<Segment>&);
 
   operator const std::vector<Segment>&() const;
@@ -46,8 +45,10 @@ class Path : public Serializable<Path<Surface>>,
 
   // Return whether the list is cyclic, i.e., the last element joins up with the first.
   bool closed() const;
+
   // Return whether there are no segments showing up more than once.
   bool simple() const;
+
   // Return whether there are no segments followed by their negatives.
   bool reduced() const;
 
@@ -65,19 +66,20 @@ class Path : public Serializable<Path<Surface>>,
 
   bool empty() const;
 
-  PathIterator<Surface> begin() const;
-  PathIterator<Surface> end() const;
+  using iterator = PathIterator<Surface>;
+
+  iterator begin() const;
+  iterator end() const;
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const Path<S>&);
 
  private:
-  using Implementation = ImplementationOf<Path>;
-  Copyable<Implementation> impl;
+  Copyable<Path> self;
 
-  friend Implementation;
-  friend PathIterator<Surface>;
-  friend ImplementationOf<PathIterator<Surface>>;
+  friend ImplementationOf<Path>;
+  friend iterator;
+  friend ImplementationOf<iterator>;
 };
 
 template <typename Surface>

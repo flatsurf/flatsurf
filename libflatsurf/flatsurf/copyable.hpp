@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,11 +25,10 @@
 
 namespace flatsurf {
 
-// Note that this cannot be turned into a base class Copyable<T> sanely since
-// its impl field would not be visible when T is a template, i.e., we would
-// have to use this all over the place in the member implementations.
+// A pointer-to-implementation (pimpl) for types that are copyable and
+// moveable. Such types are copied by copying this underlying pimpl.
 template <typename T>
-using Copyable = spimpl::impl_ptr<T>;
+using Copyable = spimpl::impl_ptr<ImplementationOf<T>>;
 
 }  // namespace flatsurf
 

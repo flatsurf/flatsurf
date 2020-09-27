@@ -25,11 +25,12 @@
 #include <boost/iterator/iterator_categories.hpp>
 #include <boost/iterator/iterator_facade.hpp>
 
-#include "external/spimpl/spimpl.h"
-#include "forward.hpp"
+#include "copyable.hpp"
 
 namespace flatsurf {
 
+// An iterator over a Chain on a surface, i.e., an iterator over the
+// coefficient, edge pairs of the formal sum representing a chain.
 template <typename Surface>
 class ChainIterator : public boost::iterator_facade<ChainIterator<Surface>, const std::pair<Edge, const mpz_class*>&, boost::forward_traversal_tag> {
   template <typename... Args>
@@ -46,10 +47,9 @@ class ChainIterator : public boost::iterator_facade<ChainIterator<Surface>, cons
   friend std::ostream& operator<<(std::ostream&, const ChainIterator<S>&);
 
  private:
-  using Implementation = ImplementationOf<ChainIterator>;
-  spimpl::impl_ptr<Implementation> impl;
-  friend Implementation;
-  friend Chain<Surface>;
+  Copyable<ChainIterator> self;
+
+  friend ImplementationOf<ChainIterator>;
 };
 
 }  // namespace flatsurf

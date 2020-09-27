@@ -67,8 +67,8 @@ using intervalxt::DynamicalDecomposition;
 namespace flatsurf {
 
 template <typename Surface>
-FlowDecomposition<Surface>::FlowDecomposition(std::unique_ptr<Surface> surface, const Vector<T>& vertical) :
-  impl(spimpl::make_impl<Implementation>(std::move(surface), vertical)) {
+FlowDecomposition<Surface>::FlowDecomposition(Surface&& surface, const Vector<T>& vertical) :
+  self(spimpl::make_unique_impl<ImplementationOf<FlowDecomposition>>(std::move(surface), vertical)) {
   ASSERTIONS(([&]() {
     auto paths = components() | rx::transform([](const auto& component) { return Path(component.perimeter() | rx::transform([](const auto& connection) { return connection.saddleConnection(); }) | rx::to_vector()); }) | rx::to_vector();
     ImplementationOf<ContourDecomposition<Surface>>::check(paths, Vertical(this->surface(), vertical));
@@ -76,8 +76,8 @@ FlowDecomposition<Surface>::FlowDecomposition(std::unique_ptr<Surface> surface, 
 }
 
 template <typename Surface>
-std::shared_ptr<const Surface> FlowDecomposition<Surface>::surface() const {
-  return impl->state->contourDecomposition.collapsed()->uncollapsed();
+const Surface& FlowDecomposition<Surface>::surface() const {
+  return self->state->contourDecomposition.collapsed().uncollapsed();
 }
 
 template <typename Surface>
@@ -91,27 +91,27 @@ bool FlowDecomposition<Surface>::decompose(std::function<bool(const FlowComponen
 template <typename Surface>
 std::vector<FlowComponent<Surface>> FlowDecomposition<Surface>::components() const {
   std::vector<FlowComponent<Surface>> components;
-  for (auto& component : impl->state->components) {
-    components.push_back(ImplementationOf<FlowComponent<Surface>>::make(impl->state, &component));
+  for (auto& component : self->state->components) {
+    components.push_back(ImplementationOf<FlowComponent<Surface>>::make(self->state, &component));
   }
   return components;
 }
 
 template <typename Surface>
-std::shared_ptr<const FlatTriangulation<typename Surface::Coordinate>> FlowDecomposition<Surface>::triangulation() const {
+FlatTriangulation<typename Surface::Coordinate> FlowDecomposition<Surface>::triangulation() const {
   std::unordered_map<HalfEdge, Vector<T>> vectors;
   const auto triangulations = components() | rx::transform([](const auto& component) { return component.triangulation(); }) | rx::to_vector();
   const auto faces = triangulations | rx::transform([&](const auto& triangulation) {
     const auto embedding = triangulation.embedding();
-    for (auto localHalfEdge : triangulation.triangulation()->halfEdges())
-      vectors[embedding[localHalfEdge]] = triangulation.triangulation()->fromEdge(localHalfEdge);
-    return triangulation.triangulation()->faces() | rx::transform([&](const auto& face) {
+    for (auto localHalfEdge : triangulation.triangulation().halfEdges())
+      vectors[embedding[localHalfEdge]] = triangulation.triangulation().fromHalfEdge(localHalfEdge);
+    return triangulation.triangulation().faces() | rx::transform([&](const auto& face) {
       return std::tuple{embedding[std::get<0>(face)], embedding[std::get<1>(face)], embedding[std::get<2>(face)]};
     }) | rx::to_vector();
   }) | rx::to_vector() |
                      rx::flatten<1>() | rx::to_vector();
 
-  return std::make_shared<FlatTriangulation<T>>(FlatTriangulationCombinatorial(faces), [&](const HalfEdge he) {
+  return FlatTriangulation<T>(FlatTriangulationCombinatorial(faces), [&](const HalfEdge he) {
     return vectors.at(he);
   });
 }
@@ -165,11 +165,8 @@ boost::logic::tribool FlowDecomposition<Surface>::parabolic() const {
 }
 
 template <typename Surface>
-ImplementationOf<FlowDecomposition<Surface>>::ImplementationOf(std::unique_ptr<Surface> surface, const Vector<T>& vertical) :
-  state(std::make_shared<FlowDecompositionState<Surface>>(std::move(surface), vertical)) {
-  for (auto& component : state->components)
-    ImplementationOf<IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>>::registerDecomposition(*component.iet, state);
-}
+ImplementationOf<FlowDecomposition<Surface>>::ImplementationOf(Surface&& surface, const Vector<T>& vertical) :
+  state(FlowDecompositionState<Surface>::make(std::move(surface), vertical)) {}
 
 template <typename Surface>
 ImplementationOf<FlowDecomposition<Surface>>::ImplementationOf(std::shared_ptr<FlowDecompositionState<Surface>> state) :
@@ -214,10 +211,10 @@ FlowDecomposition<Surface> ImplementationOf<FlowDecomposition<Surface>>::make(st
 }
 
 template <typename Surface>
-FlowDecomposition<Surface> FlowComponent<Surface>::decomposition() { return ImplementationOf<FlowDecomposition<Surface>>::make(impl->state); }
+FlowDecomposition<Surface> FlowComponent<Surface>::decomposition() { return ImplementationOf<FlowDecomposition<Surface>>::make(self->state); }
 
 template <typename Surface>
-const FlowDecomposition<Surface> FlowComponent<Surface>::decomposition() const { return ImplementationOf<FlowDecomposition<Surface>>::make(impl->state); }
+const FlowDecomposition<Surface> FlowComponent<Surface>::decomposition() const { return ImplementationOf<FlowDecomposition<Surface>>::make(self->state); }
 
 template <typename Surface>
 ostream& operator<<(ostream& os, const FlowDecomposition<Surface>& self) {

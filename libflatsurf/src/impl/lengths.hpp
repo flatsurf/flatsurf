@@ -41,7 +41,8 @@ class Lengths {
   using T = typename Surface::Coordinate;
 
  public:
-  Lengths(std::shared_ptr<const Vertical<FlatTriangulation<T>>>, EdgeMap<std::optional<SaddleConnection<FlatTriangulation<T>>>>&&);
+  Lengths(const Vertical<FlatTriangulation<T>>&, EdgeMap<std::optional<SaddleConnection<FlatTriangulation<T>>>>&&);
+  Lengths(const Lengths<Surface>&, std::shared_ptr<FlowDecompositionState<FlatTriangulation<T>>> decomposition);
 
   void push(intervalxt::Label);
   void pop();
@@ -56,10 +57,6 @@ class Lengths {
   ::intervalxt::Lengths forget() const;
   ::intervalxt::Lengths only(const std::unordered_set<::intervalxt::Label>&) const;
   bool similar(::intervalxt::Label, ::intervalxt::Label, const ::intervalxt::Lengths&, ::intervalxt::Label, ::intervalxt::Label) const;
-
-  // This is a hack, see https://github.com/flatsurf/flatsurf/issues/152.
-  // Maybe the entire flatsurf::IntervalExchangeTransformation is a bit unfortunate actually.
-  void registerDecomposition(std::shared_ptr<FlowDecompositionState<FlatTriangulation<T>>>);
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const Lengths<S>&);
@@ -76,7 +73,7 @@ class Lengths {
   FlowComponentState<FlatTriangulation<T>>& component(intervalxt::Label) const;
 
   std::weak_ptr<FlowDecompositionState<FlatTriangulation<T>>> state;
-  std::shared_ptr<const Vertical<FlatTriangulation<T>>> vertical;
+  Vertical<FlatTriangulation<T>> vertical;
   EdgeMap<std::optional<SaddleConnection<FlatTriangulation<T>>>> lengths;
 
   std::deque<intervalxt::Label> stack;

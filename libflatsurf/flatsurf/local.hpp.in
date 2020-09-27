@@ -20,7 +20,7 @@
 /*
  * This file is included by all headers that are shipped with this library.
  * It should contain global customization that can be safely shipped to the
- * client, i.., not the ones in config.h.
+ * client, i.e., not the ones in config.h.
  */
 
 #ifndef LIBFLATSURF_LOCAL_HPP

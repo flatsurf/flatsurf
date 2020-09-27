@@ -20,7 +20,9 @@
 #include "../flatsurf/tracked.hpp"
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
+#include "impl/read_only.hpp"
 #include "impl/tracked.impl.hpp"
+#include "impl/weak_read_only.hpp"
 #include "util/assert.ipp"
 
 namespace flatsurf {
@@ -40,19 +42,21 @@ struct is_odd_half_edge_map<OddHalfEdgeMap<T>> : std::true_type {};
 }  // namespace
 
 template <typename T>
-Tracked<T>::Tracked(const FlatTriangulationCombinatorial* parent, T value, const FlipHandler& updateAfterFlip, const CollapseHandler& updateBeforeCollapse, const SwapHandler& updateBeforeSwap, const EraseHandler& updateBeforeErase, const DestructionHandler& updateBeforeDestruction) :
-  impl(spimpl::make_unique_impl<Implementation>(parent, std::move(value), updateAfterFlip, updateBeforeCollapse, updateBeforeSwap, updateBeforeErase, updateBeforeDestruction)) {
+Tracked<T>::Tracked(const FlatTriangulationCombinatorial& parent, T value, const FlipHandler& updateAfterFlip, const CollapseHandler& updateBeforeCollapse, const SwapHandler& updateBeforeSwap, const EraseHandler& updateBeforeErase, const DestructionHandler& updateBeforeDestruction) :
+  self(spimpl::make_unique_impl<ImplementationOf<Tracked>>(ImplementationOf<FlatTriangulationCombinatorial>::self(parent).state.get(), std::move(value), updateAfterFlip, updateBeforeCollapse, updateBeforeSwap, updateBeforeErase, updateBeforeDestruction)) {
 }
+
+template <typename T>
+Tracked<T>::Tracked(const Tracked& rhs) noexcept :
+  self(spimpl::make_unique_impl<ImplementationOf<Tracked>>(rhs.self->parent.get(), T(rhs.self->value), rhs.self->updateAfterFlip, rhs.self->updateBeforeCollapse, rhs.self->updateBeforeSwap, rhs.self->updateBeforeErase, rhs.self->updateBeforeDestruction)) {}
+
+template <typename T>
+Tracked<T>::Tracked(Tracked&& rhs) noexcept :
+  self(std::move(rhs.self)) {}
 
 template <typename T>
 Tracked<T>::~Tracked() {
   // The implementation destructor takes care of this.
-}
-
-template <typename T>
-const FlatTriangulationCombinatorial& Tracked<T>::parent() const {
-  ASSERT(impl->parent != nullptr, "parent has been destructed already");
-  return *impl->parent;
 }
 
 template <typename T>
@@ -143,27 +147,39 @@ void Tracked<T>::forgetParent(T&, const FlatTriangulationCombinatorial&) {
 
 template <typename T>
 Tracked<T>::operator T&() {
-  return impl->value;
+  return self->value;
 }
 
 template <typename T>
 Tracked<T>::operator const T&() const {
-  return impl->value;
+  return self->value;
 }
 
 template <typename T>
 const T* Tracked<T>::operator->() const {
-  return &impl->value;
+  return &self->value;
 }
 
 template <typename T>
 T* Tracked<T>::operator->() {
-  return &impl->value;
+  return &self->value;
+}
+
+template <typename T>
+Tracked<T>& Tracked<T>::operator=(const Tracked& rhs) noexcept {
+  *this = std::move(Tracked(rhs));
+  return *this;
+}
+
+template <typename T>
+Tracked<T>& Tracked<T>::operator=(Tracked&& rhs) noexcept {
+  self = std::move(rhs.self);
+  return *this;
 }
 
 template <typename T>
 Tracked<T>& Tracked<T>::operator=(T&& value) {
-  impl->value = std::move(value);
+  self->value = std::move(value);
   return *this;
 }
 
@@ -173,7 +189,7 @@ std::ostream& operator<<(std::ostream& os, const Tracked<T>& self) {
 }
 
 template <typename T>
-ImplementationOf<Tracked<T>>::ImplementationOf(const FlatTriangulationCombinatorial* parent, T&& value, const FlipHandler& updateAfterFlip, const CollapseHandler& updateBeforeCollapse, const SwapHandler& updateBeforeSwap, const EraseHandler& updateBeforeErase, const DestructionHandler& updateBeforeDestruction) :
+ImplementationOf<Tracked<T>>::ImplementationOf(ImplementationOf<FlatTriangulationCombinatorial>* parent, T&& value, const FlipHandler& updateAfterFlip, const CollapseHandler& updateBeforeCollapse, const SwapHandler& updateBeforeSwap, const EraseHandler& updateBeforeErase, const DestructionHandler& updateBeforeDestruction) :
   parent(parent),
   value(std::move(value)),
   updateAfterFlip(updateAfterFlip),
@@ -181,7 +197,8 @@ ImplementationOf<Tracked<T>>::ImplementationOf(const FlatTriangulationCombinator
   updateBeforeSwap(updateBeforeSwap),
   updateBeforeErase(updateBeforeErase),
   updateBeforeDestruction(updateBeforeDestruction) {
-  connect();
+  if (parent != nullptr)
+    connect();
 }
 
 template <typename T>
@@ -191,33 +208,38 @@ ImplementationOf<Tracked<T>>::~ImplementationOf() {
 
 template <typename T>
 void ImplementationOf<Tracked<T>>::disconnect() {
-  if (parent != nullptr) {
+  if (!parent.expired()) {
     onChange.disconnect();
-    parent = nullptr;
+    parent.reset();
   }
 }
 
 template <typename T>
 void ImplementationOf<Tracked<T>>::connect() {
-  ASSERT(parent != nullptr, "cannot connect without a parent FlatTriangulationCombinatorial");
+  ASSERT(!parent.expired(), "cannot connect without a parent FlatTriangulationCombinatorial");
 
-  // This callback holds a reference to "this". This reference cannot be
-  // dangling since we explicitly disconnect in ~Implementation.
-  onChange = ImplementationOf<FlatTriangulationCombinatorial>::connect(*parent, [&](const Message& message) {
+  // This callback uses a reference to "this->parent". This reference will not
+  // be dangling since we explicitly disconnect in ~Implementation.
+  onChange = ImplementationOf<FlatTriangulationCombinatorial>::connect(parent.get(), [this](const Message& message) {
     if (auto flipMessage = std::get_if<ImplementationOf<FlatTriangulationCombinatorial>::MessageAfterFlip>(&message)) {
-      updateAfterFlip(value, *parent, flipMessage->e);
+      const auto surface = static_cast<ReadOnly<FlatTriangulationCombinatorial>>(parent);
+      updateAfterFlip(value, surface, flipMessage->e);
     } else if (auto collapseMessage = std::get_if<ImplementationOf<FlatTriangulationCombinatorial>::MessageBeforeCollapse>(&message)) {
-      updateBeforeCollapse(value, *parent, collapseMessage->e);
+      const auto surface = static_cast<ReadOnly<FlatTriangulationCombinatorial>>(parent);
+      updateBeforeCollapse(value, surface, collapseMessage->e);
     } else if (auto swapMessage = std::get_if<ImplementationOf<FlatTriangulationCombinatorial>::MessageBeforeSwap>(&message)) {
-      updateBeforeSwap(value, *parent, swapMessage->a, swapMessage->b);
+      const auto surface = static_cast<ReadOnly<FlatTriangulationCombinatorial>>(parent);
+      updateBeforeSwap(value, surface, swapMessage->a, swapMessage->b);
     } else if (auto eraseMessage = std::get_if<ImplementationOf<FlatTriangulationCombinatorial>::MessageBeforeErase>(&message)) {
-      updateBeforeErase(value, *parent, eraseMessage->erase);
+      const auto surface = static_cast<ReadOnly<FlatTriangulationCombinatorial>>(parent);
+      updateBeforeErase(value, surface, eraseMessage->erase);
     } else if (auto moveMessage = std::get_if<ImplementationOf<FlatTriangulationCombinatorial>::MessageAfterMove>(&message)) {
       if (moveMessage->target == nullptr) {
-        updateBeforeDestruction(value, *this->parent);
+        const auto surface = static_cast<ReadOnly<FlatTriangulationCombinatorial>>(parent);
+        updateBeforeDestruction(value, surface);
       }
       disconnect();
-      if (parent != nullptr) {
+      if (!parent.expired()) {
         this->parent = moveMessage->target;
         connect();
       }

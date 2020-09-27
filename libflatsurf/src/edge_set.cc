@@ -24,6 +24,7 @@
 #include <ostream>
 
 #include "../flatsurf/edge.hpp"
+#include "../flatsurf/edge_set.hpp"
 #include "../flatsurf/edge_set_iterator.hpp"
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../flatsurf/fmt.hpp"
@@ -32,43 +33,42 @@
 
 namespace flatsurf {
 
-EdgeSet::EdgeSet() :
-  impl(spimpl::make_impl<Implementation>()) {}
+using std::begin;
+using std::end;
+
+EdgeSet::EdgeSet() noexcept :
+  self(spimpl::make_impl<ImplementationOf<EdgeSet>>()) {}
 
 EdgeSet::EdgeSet(const std::vector<Edge>& items) :
-  impl(spimpl::make_impl<Implementation>(items)) {}
+  self(spimpl::make_impl<ImplementationOf<EdgeSet>>(items)) {}
 
 bool EdgeSet::contains(Edge e) const {
-  return impl->contains(e);
+  return self->contains(e);
 }
 
 void EdgeSet::insert(Edge e) {
-  impl->insert(e);
+  self->insert(e);
 }
 
 bool EdgeSet::operator==(const EdgeSet& rhs) const {
-  return impl == rhs.impl;
+  return self == rhs.self;
 }
 
 bool EdgeSet::disjoint(const EdgeSet& rhs) const {
-  return impl->disjoint(*rhs.impl);
+  return self->disjoint(*rhs.self);
 }
 
 bool EdgeSet::empty() const {
-  return impl->empty();
+  return self->empty();
 }
 
 size_t EdgeSet::size() const {
-  return impl->size();
+  return self->size();
 }
 
 void EdgeSet::erase(Edge e) {
-  return impl->erase(e);
+  return self->erase(e);
 }
-
-EdgeSetIterator begin(const EdgeSet& self) { return self.begin(); }
-
-EdgeSetIterator end(const EdgeSet& self) { return self.end(); }
 
 std::ostream& operator<<(std::ostream& os, const EdgeSet& self) {
   return os << fmt::format("{{{}}}", fmt::join(begin(self), end(self), ", "));

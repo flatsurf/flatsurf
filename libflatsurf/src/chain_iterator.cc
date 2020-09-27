@@ -31,30 +31,30 @@ namespace flatsurf {
 
 template <typename Surface>
 void ChainIterator<Surface>::increment() {
-  const size_t pos = impl->current.first.index();
-  _fmpz_demote_val(&impl->parent->impl->coefficients[pos]);
-  impl->current = Implementation::make(impl->parent, Implementation::findNext(impl->parent, static_cast<int>(pos)));
+  const size_t pos = self->current.first.index();
+  _fmpz_demote_val(&self->parent->self->coefficients[pos]);
+  self->current = ImplementationOf<ChainIterator>::make(self->parent, ImplementationOf<ChainIterator>::findNext(self->parent, static_cast<int>(pos)));
 }
 
 template <typename Surface>
 const typename ChainIterator<Surface>::value_type& ChainIterator<Surface>::dereference() const {
-  ASSERT(impl->current.second != nullptr, "Cannot dereference iterator that is already at the end of Chain.");
-  return impl->current;
+  ASSERT(self->current.second != nullptr, "Cannot dereference iterator that is already at the end of Chain.");
+  return self->current;
 }
 
 template <typename Surface>
 bool ChainIterator<Surface>::equal(const ChainIterator& rhs) const {
-  return impl->parent == rhs.impl->parent && impl->current.first == rhs.impl->current.first;
+  return self->parent == rhs.self->parent && self->current.first == rhs.self->current.first;
 }
 
 template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const ChainIterator<Surface>& self) {
-  if (self.impl->current.second == nullptr)
+  if (self.self->current.second == nullptr)
     return os << "Chain::end()";
-  else if (self.impl->current.first.index() == 0)
+  else if (self.self->current.first.index() == 0)
     return os << "Chain::begin()";
   else
-    return os << "Chain::begin() + " << self.impl->current.first.index();
+    return os << "Chain::begin() + " << self.self->current.first.index();
 }
 
 template <typename Surface>
@@ -79,7 +79,7 @@ size_t ImplementationOf<ChainIterator<Surface>>::findNext(const Chain<Surface>* 
 
   do {
     pos++;
-  } while (pos < size && fmpz_is_zero(&parent->impl->coefficients[pos]));
+  } while (pos < size && fmpz_is_zero(&parent->self->coefficients[pos]));
 
   return pos;
 }

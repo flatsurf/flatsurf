@@ -20,16 +20,14 @@
 #ifndef LIBFLATSURF_PATH_ITERATOR_HPP
 #define LIBFLATSURF_PATH_ITERATOR_HPP
 
-#include <gmpxx.h>
-
 #include <boost/iterator/iterator_categories.hpp>
 #include <boost/iterator/iterator_facade.hpp>
 
-#include "external/spimpl/spimpl.h"
-#include "forward.hpp"
+#include "copyable.hpp"
 
 namespace flatsurf {
 
+// Iterates over a path in a surface, i.e., over a connected sequence of saddle connections.
 template <typename Surface>
 class PathIterator : public boost::iterator_facade<PathIterator<Surface>, const SaddleConnection<Surface>&, boost::forward_traversal_tag> {
   template <typename... Args>
@@ -46,10 +44,10 @@ class PathIterator : public boost::iterator_facade<PathIterator<Surface>, const 
   friend std::ostream& operator<<(std::ostream&, const PathIterator<S>&);
 
  private:
-  using Implementation = ImplementationOf<PathIterator>;
-  spimpl::impl_ptr<Implementation> impl;
-  friend Implementation;
+  Copyable<PathIterator> self;
+
   friend Path<Surface>;
+  friend ImplementationOf<PathIterator>;
 };
 
 }  // namespace flatsurf

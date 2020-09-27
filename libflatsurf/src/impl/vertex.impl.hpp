@@ -43,6 +43,11 @@ class ImplementationOf<Vertex> {
   HalfEdgeSet sources;
 };
 
+template <typename... Args>
+Vertex::Vertex(PrivateConstructor, Args&&... args) :
+  self(spimpl::make_impl<ImplementationOf<Vertex>>(std::forward<Args>(args)...)) {
+}
+
 }  // namespace flatsurf
 
 #endif

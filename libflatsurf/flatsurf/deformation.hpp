@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,23 +17,38 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_TRACKING_HALF_EDGE_IMPL_HPP
-#define LIBFLATSURF_TRACKING_HALF_EDGE_IMPL_HPP
+#ifndef LIBFLATSURF_DEFORMATION_HPP
+#define LIBFLATSURF_DEFORMATION_HPP
 
-#include "../../flatsurf/half_edge_set.hpp"
-#include "../../flatsurf/tracking_half_edge.hpp"
+#include "movable.hpp"
 
 namespace flatsurf {
 
-class TrackingHalfEdge::ImplementationOf {
+// The result of deforming a Flat Triangulation.
+// Note that currently this is mostly a trivial placeholder interface that we
+// will fill with more methods as the need arises.
+template <typename Surface>
+class Deformation {
+  template <typename... Args>
+  Deformation(PrivateConstructor, Args&&... args);
+
  public:
-  ImplementationOf(const FlatTriangulationCombinatorial*, HalfEdge, bool followFlip);
+  // Create the identical deformation.
+  Deformation(Surface&&);
 
-  static void followFlip(HalfEdgeSet&, HalfEdge);
-  static void noFlip(HalfEdgeSet&, HalfEdge);
-  static void noCollapse(HalfEdgeSet&, Edge);
+  // Return the result of the deformation.
+  Surface surface();
 
-  HalfEdgeSet value;
+  // Return the result of the deformation.
+  const Surface& surface() const;
+
+  template <typename S>
+  friend std::ostream& operator<<(std::ostream&, const Deformation<S>&);
+
+ private:
+  Movable<Deformation> self;
+
+  friend ImplementationOf<Deformation>;
 };
 
 }  // namespace flatsurf

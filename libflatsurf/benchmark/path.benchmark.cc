@@ -19,8 +19,6 @@
 
 #include <benchmark/benchmark.h>
 
-#include <memory>
-
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/saddle_connection.hpp"
@@ -38,7 +36,7 @@ void PathConstructor(State& state) {
   auto L = makeL<R2>();
 
   using Segment = SaddleConnection<Surface>;
-  const auto segments = std::vector{Segment(L, HalfEdge(1)), Segment(L, HalfEdge(-9)), Segment(L, HalfEdge(-2))};
+  const auto segments = std::vector{Segment(*L, HalfEdge(1)), Segment(*L, HalfEdge(-9)), Segment(*L, HalfEdge(-2))};
 
   for (auto _ : state) {
     DoNotOptimize(Path(segments));

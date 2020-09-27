@@ -30,14 +30,13 @@ class ImplementationOf<SaddleConnectionsByLength<Surface>> : public Implementati
   using T = typename Surface::Coordinate;
 
  public:
-  ImplementationOf(const ImplementationOf<SaddleConnections<Surface>>& connections) :
-    ImplementationOf<SaddleConnections<Surface>>(connections) {}
+  ImplementationOf(const ImplementationOf<SaddleConnections<Surface>>& connections);
 };
 
 template <typename Surface>
 template <typename... Args>
 SaddleConnectionsByLength<Surface>::SaddleConnectionsByLength(PrivateConstructor, Args&&... args) :
-  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
+  self(spimpl::make_impl<ImplementationOf<SaddleConnectionsByLength>>(std::forward<Args>(args)...)) {}
 
 }  // namespace flatsurf
 

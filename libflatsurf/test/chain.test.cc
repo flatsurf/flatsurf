@@ -29,9 +29,9 @@ TEMPLATE_TEST_CASE("Chain Arithmetic", "[chain][arithmetic]", (long long), (mpz_
   using R2 = Vector<TestType>;
   auto square = makeSquare<R2>();
 
-  auto zero = Chain(square);
-  auto a = Chain(square) += square->halfEdges()[0];
-  auto b = Chain(square) += square->halfEdges()[1];
+  auto zero = Chain(*square);
+  auto a = Chain(*square) += square->halfEdges()[0];
+  auto b = Chain(*square) += square->halfEdges()[1];
 
   REQUIRE(!zero);
   REQUIRE(a);

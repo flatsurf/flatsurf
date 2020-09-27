@@ -20,13 +20,15 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTIONS_BY_LENGTH_HPP
 #define LIBFLATSURF_SADDLE_CONNECTIONS_BY_LENGTH_HPP
 
-#include <memory>
 #include <optional>
 
-#include "external/spimpl/spimpl.h"
+#include "copyable.hpp"
 #include "forward.hpp"
 
 namespace flatsurf {
+
+// The sequence of Saddle Connections on a triangulation translation surface,
+// ordered by increasing length.
 template <typename Surface>
 class SaddleConnectionsByLength {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
@@ -37,8 +39,6 @@ class SaddleConnectionsByLength {
   SaddleConnectionsByLength(PrivateConstructor, Args&&... args);
 
  public:
-  using Iterator = SaddleConnectionsByLengthIterator<Surface>;
-
   SaddleConnectionsByLength(const SaddleConnections<Surface>&);
 
   // Return only the saddle connections whose length is at most the given bound.
@@ -73,23 +73,27 @@ class SaddleConnectionsByLength {
 
   const Surface& surface() const;
 
+  using iterator = SaddleConnectionsByLengthIterator<Surface>;
+
   // Return an iterator through the saddle connections. The iteration is by
   // increasing length.
-  Iterator begin() const;
+  iterator begin() const;
   // End position of the iterator through the saddle connections.
-  Iterator end() const;
+  iterator end() const;
 
-  template <typename Surf>
-  friend std::ostream& operator<<(std::ostream&, const SaddleConnectionsByLength&);
+  template <typename S>
+  friend std::ostream& operator<<(std::ostream&, const SaddleConnectionsByLength<S>&);
 
  private:
-  using Implementation = ImplementationOf<SaddleConnectionsByLength>;
-  friend Implementation;
-  spimpl::impl_ptr<Implementation> impl;
+  Copyable<SaddleConnectionsByLength> self;
+
+  friend ImplementationOf<SaddleConnectionsByLength>;
+  friend iterator;
+  friend ImplementationOf<iterator>;
 };
 
 template <typename Surface, typename... T>
-SaddleConnectionsByLength(const std::shared_ptr<Surface>&, T&&...) -> SaddleConnectionsByLength<Surface>;
+SaddleConnectionsByLength(const SaddleConnections<Surface>&, T&&...) -> SaddleConnectionsByLength<Surface>;
 
 }  // namespace flatsurf
 

@@ -23,11 +23,11 @@
 #include <boost/iterator/iterator_categories.hpp>
 #include <boost/iterator/iterator_facade.hpp>
 
-#include "external/spimpl/spimpl.h"
-#include "forward.hpp"
+#include "copyable.hpp"
 
 namespace flatsurf {
 
+// An iterator for the a set of half edges.
 class HalfEdgeSetIterator : public boost::iterator_facade<HalfEdgeSetIterator, const HalfEdge &, boost::forward_traversal_tag> {
   template <typename... Args>
   HalfEdgeSetIterator(PrivateConstructor, Args &&...);
@@ -40,9 +40,9 @@ class HalfEdgeSetIterator : public boost::iterator_facade<HalfEdgeSetIterator, c
   bool equal(const HalfEdgeSetIterator &other) const;
 
  private:
-  using Implementation = ImplementationOf<HalfEdgeSetIterator>;
-  spimpl::impl_ptr<Implementation> impl;
-  friend Implementation;
+  Copyable<HalfEdgeSetIterator> self;
+
+  friend ImplementationOf<HalfEdgeSetIterator>;
   friend HalfEdgeSet;
 };
 

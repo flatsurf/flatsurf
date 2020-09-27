@@ -57,7 +57,7 @@ class ImplementationOf<ContourComponent<Surface>> {
 template <typename Surface>
 template <typename... Args>
 ContourComponent<Surface>::ContourComponent(PrivateConstructor, Args&&... args) :
-  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
+  self(spimpl::make_impl<ImplementationOf<ContourComponent>>(std::forward<Args>(args)...)) {}
 
 }  // namespace flatsurf
 

@@ -30,6 +30,7 @@
 #include "../flatsurf/contour_connection.hpp"
 #include "../flatsurf/contour_decomposition.hpp"
 #include "../flatsurf/flat_triangulation_collapsed.hpp"
+#include "../flatsurf/interval_exchange_transformation.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
@@ -79,7 +80,7 @@ TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimet
     auto surface = make125<R2>();
     CAPTURE(*surface);
 
-    auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), {static_cast<R2>(-surface->fromEdge(5)).x() + 3, static_cast<R2>(surface->fromEdge(5)).x()});
+    auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), {static_cast<R2>(-surface->fromHalfEdge(5)).x() + 3, static_cast<R2>(surface->fromHalfEdge(5)).x()});
 
     CAPTURE(decomposition);
     REQUIRE(lexical_cast<std::string>(decomposition) == "[[((-1/2*x-1 ~ -1.7071068), (1/2*x-1 ~ -0.29289322)) from -1 to -11 → ((-3*x+1 ~ -3.2426407), (-x+1 ~ -0.41421356)) from -4 to -20 → ((x-1 ~ 0.41421356), 0) from -20 to 20 → ((x-1 ~ 0.41421356), 0) from 15 to -15 → ((2*x+1 ~ 3.8284271), (x-1 ~ 0.41421356)) from -2 to -4 → ((-x+1 ~ -0.41421356), (-x+1 ~ -0.41421356)) from -15 to 19 → ((1/2*x-2 ~ -1.2928932), (1/2*x-1 ~ -0.29289322)) from 17 to 1 → (1, 0) from 1 to -1 → (1, 0) from 24 to -24 → ((-1/2*x+2 ~ 1.2928932), (-1/2*x+1 ~ 0.29289322)) from 1 to 17 → ((3*x-1 ~ 3.2426407), (x-1 ~ 0.41421356)) from -20 to -4 → ((-2*x-1 ~ -3.8284271), (-x+1 ~ -0.41421356)) from -4 to -2 → ((x-1 ~ 0.41421356), (x-1 ~ 0.41421356)) from 19 to -15 → ((-x+1 ~ -0.41421356), 0) from -15 to 15 → ((-x+1 ~ -0.41421356), 0) from 20 to -20 → ((1/2*x+1 ~ 1.7071068), (-1/2*x+1 ~ 0.29289322)) from -11 to -1 → (-1, 0) from -1 to 1 → (-1, 0) from -24 to 24]]");
@@ -91,7 +92,7 @@ TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimet
     auto surface = make125<R2>();
     CAPTURE(*surface);
 
-    auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), {static_cast<R2>(surface->fromEdge(5)).x() + 1, static_cast<R2>(surface->fromEdge(5)).x()});
+    auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), {static_cast<R2>(surface->fromHalfEdge(5)).x() + 1, static_cast<R2>(surface->fromHalfEdge(5)).x()});
 
     CAPTURE(decomposition);
     REQUIRE(lexical_cast<std::string>(decomposition) == "[[((-1/2*x-2 ~ -2.7071068), (-1/2*x ~ -0.70710678)) from -1 to -2 → ((x+1 ~ 2.4142136), (x-1 ~ 0.41421356)) from -2 to -4 → ((-x+1 ~ -0.41421356), (-x+1 ~ -0.41421356)) from -15 to 19 → ((1/2*x-2 ~ -1.2928932), (1/2*x-1 ~ -0.29289322)) from 17 to 1 → ((-1/2*x ~ -0.70710678), (1/2*x-1 ~ -0.29289322)) from 22 to -22 → ((1/2*x+1 ~ 1.7071068), (-1/2*x+1 ~ 0.29289322)) from -11 to -1 → (1, 0) from 24 to -24 → ((-1/2*x+2 ~ 1.2928932), (-1/2*x+1 ~ 0.29289322)) from 1 to 17 → ((2*x-1 ~ 1.8284271), (x-1 ~ 0.41421356)) from -20 to -4 → ((-x-1 ~ -2.4142136), (-x+1 ~ -0.41421356)) from -4 to -2 → ((x-1 ~ 0.41421356), (x-1 ~ 0.41421356)) from 19 to -15 → ((1/2*x+2 ~ 2.7071068), (1/2*x ~ 0.70710678)) from -2 to -1 → ((-3/2*x-1 ~ -3.1213203), (-1/2*x ~ -0.70710678)) from -1 to 15 → ((3/2*x+1 ~ 3.1213203), (1/2*x ~ 0.70710678)) from 15 to -1 → ((-1/2*x-1 ~ -1.7071068), (1/2*x-1 ~ -0.29289322)) from -1 to -11 → ((-2*x+1 ~ -1.8284271), (-x+1 ~ -0.41421356)) from -4 to -20 → ((1/2*x ~ 0.70710678), (-1/2*x+1 ~ 0.29289322)) from -22 to 22 → (-1, 0) from -24 to 24]]");
@@ -112,7 +113,7 @@ TEMPLATE_TEST_CASE("Connections and IET from Contour Decomposition", "[contour_d
         auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), saddleConnection);
 
         CAPTURE(decomposition);
-        CAPTURE(*decomposition.collapsed());
+        CAPTURE(decomposition.collapsed());
 
         AND_THEN("We can construct the IETs from the components") {
           for (auto component : decomposition.components()) {

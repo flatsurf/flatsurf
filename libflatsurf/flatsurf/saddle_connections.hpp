@@ -20,13 +20,14 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTIONS_HPP
 #define LIBFLATSURF_SADDLE_CONNECTIONS_HPP
 
-#include <memory>
-
-#include "external/spimpl/spimpl.h"
+#include "copyable.hpp"
 #include "half_edge.hpp"
 #include "vertex.hpp"
 
 namespace flatsurf {
+
+// The sequence of Saddle Connections on a triangulation translation surface
+// sorted by increasing angle around each vertex.
 template <typename Surface>
 class SaddleConnections {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
@@ -34,27 +35,10 @@ class SaddleConnections {
   using T = typename Surface::Coordinate;
 
  public:
-  using Iterator = SaddleConnectionsIterator<Surface>;
-
   using ByLength = SaddleConnectionsByLength<Surface>;
   using ByAngle = SaddleConnections;
 
-  SaddleConnections(const std::shared_ptr<const Surface> &);
-
-  [[deprecated("Use surface.connections().bound(searchRadius) instead.")]]
-  // All saddle connections on the surface starting at any vertex with bounded length.
-  SaddleConnections(const std::shared_ptr<const Surface> &, Bound searchRadius);
-
-  [[deprecated("Use surface.connections().bound(searchRadius).source(source) instead.")]]
-  // All saddle connections on the surface starting at source with bounded length.
-  SaddleConnections(const std::shared_ptr<const Surface> &, Bound searchRadius, const Vertex source);
-
-  [[deprecated("Use surface.connections().bound(searchRadius).sector(sectorBegin) instead.")]]
-  // All saddle connections on the surface starting at the source of
-  // sectorBegin that lie in the sector between sectorBegin (inclusive) and the
-  // following half edge (exclusive) in counter-clockwise order, with bounded
-  // length.
-  SaddleConnections(const std::shared_ptr<const Surface> &, Bound searchRadius, const HalfEdge sectorBegin);
+  SaddleConnections(const Surface &);
 
   // Return only the saddle connections whose length is at most the given bound.
   SaddleConnections<Surface> bound(Bound) const;
@@ -88,25 +72,28 @@ class SaddleConnections {
 
   const Surface &surface() const;
 
+  using iterator = SaddleConnectionsIterator<Surface>;
+
   // Return an iterator through the saddle connections. The iteration is
   // counterclockwise around each vertex.
-  Iterator begin() const;
+  iterator begin() const;
   // End position of the iterator through the saddle connections.
-  Iterator end() const;
+  iterator end() const;
 
-  template <typename Surf>
-  friend std::ostream &operator<<(std::ostream &, const SaddleConnections<Surf> &);
+  template <typename S>
+  friend std::ostream &operator<<(std::ostream &, const SaddleConnections<S> &);
 
  private:
-  using Implementation = ImplementationOf<SaddleConnections>;
-  friend Implementation;
-  spimpl::impl_ptr<Implementation> impl;
+  Copyable<SaddleConnections> self;
 
+  friend ImplementationOf<SaddleConnections>;
+  friend iterator;
+  friend ImplementationOf<iterator>;
   friend SaddleConnectionsByLength<Surface>;
 };
 
-template <typename Surface, typename... T>
-SaddleConnections(const std::shared_ptr<Surface> &, T &&...) -> SaddleConnections<Surface>;
+template <typename Surface>
+SaddleConnections(const Surface &) -> SaddleConnections<Surface>;
 
 }  // namespace flatsurf
 

@@ -24,6 +24,7 @@
 #include <exact-real/number_field.hpp>
 #include <unordered_set>
 
+#include "../flatsurf/flow_component.hpp"
 #include "../flatsurf/flow_decomposition.hpp"
 #include "external/catch2/single_include/catch2/catch.hpp"
 #include "generators/surface_generator.hpp"

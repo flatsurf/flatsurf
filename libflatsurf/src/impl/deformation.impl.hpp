@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,21 +17,25 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_TRACKING_MAP_IMPL_HPP
-#define LIBFLATSURF_TRACKING_MAP_IMPL_HPP
+#ifndef LIBFLATSURF_DEFORMATION_IMPL_HPP
+#define LIBFLATSURF_DEFORMATION_IMPL_HPP
 
-#include "../../flatsurf/tracking_map.hpp"
-#include "./tracking_storage.hpp"
+#include "../../flatsurf/deformation.hpp"
 
 namespace flatsurf {
 
-template <typename K, typename V>
-class ImplementationOf<TrackingMap<K, V>> : public TrackingStorage<TrackingMap<K, V>, K, V> {
-  using Base = TrackingStorage<TrackingMap<K, V>, K, V>;
-
+template <typename Surface>
+class ImplementationOf<Deformation<Surface>> {
  public:
-  using Base::Base;
+  ImplementationOf(Surface&& surface);
+
+  Surface surface;
 };
+
+template <typename Surface>
+template <typename... Args>
+Deformation<Surface>::Deformation(PrivateConstructor, Args&&... args) :
+  self(spimpl::make_unique_impl<ImplementationOf<Deformation>>(std::forward<Args>(args)...)) {}
 
 }  // namespace flatsurf
 

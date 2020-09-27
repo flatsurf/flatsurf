@@ -44,7 +44,7 @@ ImplementationOf<SaddleConnectionsIterator<Surface>>::ImplementationOf(const Imp
   end(end),
   boundary{Vector<T>(), Vector<T>()},
   nextEdgeEnd(connections.surface),
-  connection(SaddleConnection(connections.surface, connections.surface->halfEdges()[0])) {
+  connection(SaddleConnection(*connections.surface, connections.surface->halfEdges()[0])) {
   prepareSearch();
 }
 
@@ -69,12 +69,12 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::prepareSearch() {
     return;
   }
 
-  boundary[0] = Chain(connections.surface) + e;
+  boundary[0] = Chain(*connections.surface) + e;
   if (sector->sector)
     boundary[0] = sector->sector->first;
 
   nextEdge = connections.surface->nextInFace(e);
-  boundary[1] = Chain(connections.surface) + e + nextEdge;
+  boundary[1] = Chain(*connections.surface) + e + nextEdge;
   if (sector->sector)
     boundary[1] = sector->sector->second;
 
@@ -84,9 +84,9 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::prepareSearch() {
 
   // Report the half edge "e" as a saddle connection unless it is already
   // outside the search scope.
-  const auto initial = SaddleConnection(connections.surface, e);
+  const auto initial = SaddleConnection(*connections.surface, e);
   if (std::holds_alternative<Vector<T>>(boundary[0]) && sector->contains(initial))
-    boundary[0] = Chain(connections.surface) + e;
+    boundary[0] = Chain(*connections.surface) + e;
   if (initial > *connections.searchRadius || !sector->contains(initial)) {
     while (!increment())
       ;
@@ -448,11 +448,11 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::pushStart(bool fromOu
 
 template <typename Surface>
 bool SaddleConnectionsIterator<Surface>::equal(const SaddleConnectionsIterator<Surface>& other) const {
-  if (impl->connections.surface == other.impl->connections.surface && *impl->connections.searchRadius == *other.impl->connections.searchRadius && impl->sector == other.impl->sector && impl->end == other.impl->end) {
-    if (impl->sector == impl->end)
+  if (*self->connections.surface == *other.self->connections.surface && *self->connections.searchRadius == *other.self->connections.searchRadius && self->sector == other.self->sector && self->end == other.self->end) {
+    if (self->sector == self->end)
       return true;
 
-    return impl->boundary[0] == other.impl->boundary[0] && impl->boundary[1] == other.impl->boundary[1] && impl->nextEdgeEnd == other.impl->nextEdgeEnd && impl->nextEdge == other.impl->nextEdge;
+    return self->boundary[0] == other.self->boundary[0] && self->boundary[1] == other.self->boundary[1] && self->nextEdgeEnd == other.self->nextEdgeEnd && self->nextEdge == other.self->nextEdge;
   }
 
   return false;
@@ -460,70 +460,70 @@ bool SaddleConnectionsIterator<Surface>::equal(const SaddleConnectionsIterator<S
 
 template <typename Surface>
 void SaddleConnectionsIterator<Surface>::increment() {
-  while (!impl->increment())
+  while (!self->increment())
     ;
 }
 
 template <typename Surface>
 void SaddleConnectionsIterator<Surface>::skipSector(CCW ccw) {
-  impl->skipSector(ccw);
+  self->skipSector(ccw);
 }
 
 template <typename Surface>
 std::optional<HalfEdge> SaddleConnectionsIterator<Surface>::incrementWithCrossings() {
-  ASSERT(impl->sector != impl->end, "iterator is at end()");
+  ASSERT(self->sector != self->end, "iterator is at end()");
 
   while (true) {
-    if (impl->sector == impl->end) {
+    if (self->sector == self->end) {
       return std::nullopt;
     } else
-      switch (impl->state.back()) {
-        case Implementation::State::START_FROM_INSIDE_TO_INSIDE:
-        case Implementation::State::START_FROM_INSIDE_TO_OUTSIDE:
-        case Implementation::State::START_FROM_OUTSIDE_TO_INSIDE: {
-          impl->applyMoves();
-          const auto ret = impl->nextEdge;
-          impl->increment();
+      switch (self->state.back()) {
+        case ImplementationOf<SaddleConnectionsIterator>::State::START_FROM_INSIDE_TO_INSIDE:
+        case ImplementationOf<SaddleConnectionsIterator>::State::START_FROM_INSIDE_TO_OUTSIDE:
+        case ImplementationOf<SaddleConnectionsIterator>::State::START_FROM_OUTSIDE_TO_INSIDE: {
+          self->applyMoves();
+          const auto ret = self->nextEdge;
+          self->increment();
           return ret;
         }
-        case Implementation::State::SADDLE_CONNECTION_FOUND:
+        case ImplementationOf<SaddleConnectionsIterator>::State::SADDLE_CONNECTION_FOUND:
           return std::nullopt;
         default:
-          impl->increment();
+          self->increment();
       }
   }
 }
 
 template <typename Surface>
 const SaddleConnection<Surface>& SaddleConnectionsIterator<Surface>::dereference() const {
-  ASSERT(impl->sector != impl->end, "iterator is at end()");
+  ASSERT(self->sector != self->end, "iterator is at end()");
 
-  switch (impl->state.back()) {
-    case Implementation::State::START_FROM_INSIDE_TO_INSIDE:
+  switch (self->state.back()) {
+    case ImplementationOf<SaddleConnectionsIterator>::State::START_FROM_INSIDE_TO_INSIDE:
       // This makes the first reported connection work: It is not nextEdgeEnd but the sector boundary.
-      impl->connection = SaddleConnection(impl->connections.surface, impl->sector->source);
+      self->connection = SaddleConnection(*self->connections.surface, self->sector->source);
       break;
-    case Implementation::State::SADDLE_CONNECTION_FOUND:
-      impl->connection = SaddleConnection<Surface>(impl->connections.surface, impl->sector->source, impl->connections.surface->previousAtVertex(-impl->nextEdge), impl->nextEdgeEnd);
+    case ImplementationOf<SaddleConnectionsIterator>::State::SADDLE_CONNECTION_FOUND:
+      self->connection = SaddleConnection<Surface>(self->connections.surface, self->sector->source, self->connections.surface->previousAtVertex(-self->nextEdge), self->nextEdgeEnd);
       break;
     default:
       ASSERT(false, "iterator cannot hold in this state");
   }
 
-  ASSERT(impl->connection <= *impl->connections.searchRadius, "Iterator stopped at connection " << impl->connection << " which is beyond the search radius " << *impl->connections.searchRadius);
+  ASSERT(self->connection <= *self->connections.searchRadius, "Iterator stopped at connection " << self->connection << " which is beyond the search radius " << *self->connections.searchRadius);
 
-  return impl->connection;
+  return self->connection;
 }
 
 template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const SaddleConnectionsIterator<Surface>& self) {
   using T = typename Surface::Coordinate;
-  using Implementation = typename SaddleConnectionsIterator<Surface>::Implementation;
+  using Implementation = ImplementationOf<SaddleConnectionsIterator<Surface>>;
 
-  if (self.impl->sector == self.impl->end) {
+  if (self.self->sector == self.self->end) {
     return os << "Iterator(END)";
   } else {
-    return os << fmt::format("Iterator(sector={}, nextEdge={}, nextEdgeEnd={}, stack=[{}])", self.impl->sector->source, self.impl->nextEdge, static_cast<Vector<T>>(self.impl->nextEdgeEnd), fmt::join(self.impl->state | rx::transform([](const auto& state) {
+    return os << fmt::format("Iterator(sector={}, nextEdge={}, nextEdgeEnd={}, stack=[{}])", self.self->sector->source, self.self->nextEdge, static_cast<Vector<T>>(self.self->nextEdgeEnd), fmt::join(self.self->state | rx::transform([](const auto& state) {
       switch (state) {
         case Implementation::State::START_FROM_INSIDE_TO_INSIDE:
           return "START_FROM_INSIDE_TO_INSIDE";

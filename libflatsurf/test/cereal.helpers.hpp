@@ -50,7 +50,7 @@ struct factory<Chain<Surface>> {
 
   static std::shared_ptr<Chain<Surface>> make() {
     auto square = makeSquare<Vector<T>>();
-    return std::make_shared<Chain<Surface>>(square);
+    return std::make_shared<Chain<Surface>>(*square);
   }
 };
 
@@ -61,7 +61,7 @@ struct factory<SaddleConnection<Surface>> {
   static std::shared_ptr<SaddleConnection<Surface>> make() {
     auto square = makeSquare<Vector<T>>();
     const HalfEdge e(1);
-    return std::make_shared<SaddleConnection<Surface>>(square, e);
+    return std::make_shared<SaddleConnection<Surface>>(*square, e);
   }
 };
 
@@ -71,8 +71,8 @@ struct factory<Vertical<Surface>> {
 
   static std::shared_ptr<Vertical<Surface>> make() {
     auto square = makeSquare<Vector<T>>();
-    auto vertical = square->fromEdge(HalfEdge(1));
-    return std::make_shared<Vertical<Surface>>(square, vertical);
+    auto vertical = square->fromHalfEdge(HalfEdge(1));
+    return std::make_shared<Vertical<Surface>>(*square, vertical);
   }
 };
 
@@ -123,7 +123,7 @@ struct comparer<flatsurf::Vertical<Surface>> {
   static bool eq(const flatsurf::Vertical<Surface>& x, const flatsurf::Vertical<Surface>& y) {
     // Vertical::operator== requires the surfaces to be identical to consider
     // two vertical equal.
-    return *x.surface() == *y.surface() && x.vertical() == y.vertical();
+    return x.surface() == y.surface() && x.vertical() == y.vertical();
   }
 };
 

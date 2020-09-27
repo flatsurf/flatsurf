@@ -23,7 +23,6 @@
 #include <intervalxt/connection.hpp>
 #include <iosfwd>
 #include <list>
-#include <memory>
 
 #include "../../flatsurf/contour_decomposition.hpp"
 #include "../../flatsurf/saddle_connection.hpp"
@@ -35,8 +34,10 @@ template <typename Surface>
 class FlowDecompositionState : public std::enable_shared_from_this<FlowDecompositionState<Surface>> {
   using T = typename Surface::Coordinate;
 
+  FlowDecompositionState(Surface&& surface, const Vector<T>& vertical);
+
  public:
-  FlowDecompositionState(std::unique_ptr<Surface> surface, const Vector<T>& vert);
+  static std::shared_ptr<FlowDecompositionState> make(Surface&& surface, const Vector<T>& vertical);
 
   ContourDecomposition<Surface> contourDecomposition;
 

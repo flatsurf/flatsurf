@@ -42,10 +42,10 @@ HalfEdge HalfEdge::fromIndex(const size_t index) {
   return HalfEdge(PrivateConstructor{}, index);
 }
 
-HalfEdge::HalfEdge() :
+HalfEdge::HalfEdge() noexcept :
   HalfEdge(PrivateConstructor{}, static_cast<size_t>(-1)) {}
 
-int HalfEdge::id() const noexcept {
+int HalfEdge::id() const {
   ASSERT(idx != static_cast<size_t>(-1), "id must be non-zero");
   return (idx % 2 ? -1 : 1) * static_cast<int>(idx / 2 + 1);
 }
@@ -54,7 +54,7 @@ HalfEdge HalfEdge::operator-() const {
   return HalfEdge::fromIndex(idx ^ static_cast<size_t>(1));
 }
 
-HalfEdge &HalfEdge::operator=(const HalfEdge &rhs) {
+HalfEdge &HalfEdge::operator=(const HalfEdge &rhs) noexcept {
   idx = rhs.idx;
   ASSERT(idx != static_cast<size_t>(-1), "id must be non-zero");
   return *this;
@@ -64,7 +64,7 @@ bool HalfEdge::operator==(const HalfEdge &rhs) const {
   return idx == rhs.idx;
 }
 
-size_t HalfEdge::index() const noexcept {
+size_t HalfEdge::index() const {
   ASSERT(idx != static_cast<size_t>(-1), "id must be non-zero");
   return idx;
 }
@@ -77,6 +77,6 @@ ostream &operator<<(ostream &os, const HalfEdge &self) { return os << self.id();
 
 }  // namespace flatsurf
 
-size_t std::hash<flatsurf::HalfEdge>::operator()(const flatsurf::HalfEdge &e) const noexcept {
+size_t std::hash<flatsurf::HalfEdge>::operator()(const flatsurf::HalfEdge &e) const {
   return static_cast<size_t>(e.index());
 }

@@ -37,12 +37,12 @@ namespace flatsurf {
 
 template <typename Surface>
 SaddleConnection<FlatTriangulation<typename Surface::Coordinate>> FlowConnection<Surface>::saddleConnection() const {
-  return impl->saddleConnection;
+  return self->saddleConnection;
 }
 
 template <typename Surface>
 bool FlowConnection<Surface>::operator==(const FlowConnection<Surface>& rhs) const {
-  return impl->saddleConnection == rhs.impl->saddleConnection;
+  return self->saddleConnection == rhs.self->saddleConnection;
 }
 
 template <typename Surface>
@@ -52,22 +52,22 @@ bool FlowConnection<Surface>::vertical() const {
 
 template <typename Surface>
 bool FlowConnection<Surface>::parallel() const {
-  return impl->kind == Implementation::Kind::PARALLEL;
+  return self->kind == ImplementationOf<FlowConnection>::Kind::PARALLEL;
 }
 
 template <typename Surface>
 bool FlowConnection<Surface>::antiparallel() const {
-  return impl->kind == Implementation::Kind::ANTIPARALLEL;
+  return self->kind == ImplementationOf<FlowConnection>::Kind::ANTIPARALLEL;
 }
 
 template <typename Surface>
 bool FlowConnection<Surface>::bottom() const {
-  return impl->kind == Implementation::Kind::BOTTOM;
+  return self->kind == ImplementationOf<FlowConnection>::Kind::BOTTOM;
 }
 
 template <typename Surface>
 bool FlowConnection<Surface>::top() const {
-  return impl->kind == Implementation::Kind::TOP;
+  return self->kind == ImplementationOf<FlowConnection>::Kind::TOP;
 }
 
 template <typename Surface>
@@ -83,25 +83,25 @@ FlowConnection<Surface> FlowConnection<Surface>::operator-() const {
     return std::optional<FlowConnection>();
   };
 
-  if (!impl->negative) {
+  if (!self->negative) {
     if (!vertical())
-      impl->negative = find(impl->component);
+      self->negative = find(self->component);
     else
-      for (auto& component_ : impl->state->components) {
-        if (impl->negative) break;
-        const auto component = ImplementationOf<FlowComponent<Surface>>::make(impl->state, &component_);
-        impl->negative = find(component);
+      for (auto& component_ : self->state->components) {
+        if (self->negative) break;
+        const auto component = ImplementationOf<FlowComponent<Surface>>::make(self->state, &component_);
+        self->negative = find(component);
       }
   }
 
-  ASSERT(impl->negative->impl->kind == static_cast<typename Implementation::Kind>(-static_cast<int>(impl->kind)), "Negative of connection is of unexpected type.");
+  ASSERT(self->negative->self->kind == static_cast<typename ImplementationOf<FlowConnection>::Kind>(-static_cast<int>(self->kind)), "Negative of connection is of unexpected type.");
 
-  return impl->negative.value();
+  return self->negative.value();
 }
 
 template <typename Surface>
 FlowConnection<Surface> FlowConnection<Surface>::previousInPerimeter() const {
-  const auto perimeter = impl->component.perimeter();
+  const auto perimeter = self->component.perimeter();
   for (auto it = begin(perimeter); it != end(perimeter); it++) {
     if (*it == *this) {
       if (it == begin(perimeter))
@@ -114,7 +114,7 @@ FlowConnection<Surface> FlowConnection<Surface>::previousInPerimeter() const {
 
 template <typename Surface>
 FlowConnection<Surface> FlowConnection<Surface>::nextInPerimeter() const {
-  const auto perimeter = impl->component.perimeter();
+  const auto perimeter = self->component.perimeter();
   for (auto it = begin(perimeter); it != end(perimeter); it++) {
     if (*it == *this) {
       it++;
@@ -128,7 +128,7 @@ FlowConnection<Surface> FlowConnection<Surface>::nextInPerimeter() const {
 
 template <typename Surface>
 FlowComponent<Surface> FlowConnection<Surface>::component() const {
-  return impl->component;
+  return self->component;
 }
 
 template <typename Surface>
@@ -189,7 +189,7 @@ namespace std {
 using namespace flatsurf;
 
 template <typename Surface>
-size_t hash<FlowConnection<Surface>>::operator()(const FlowConnection<Surface>& self) const noexcept {
+size_t hash<FlowConnection<Surface>>::operator()(const FlowConnection<Surface>& self) const {
   return std::hash<SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>>()(self.saddleConnection());
 }
 

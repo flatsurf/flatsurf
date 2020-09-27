@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,11 +25,13 @@
 #include <iosfwd>
 #include <vector>
 
-#include "copyable.hpp"
-#include "flow_component.hpp"
+#include "movable.hpp"
 
 namespace flatsurf {
 
+// Decomposes a surface into Flow Components with respect to a certain vertical
+// direction. Such a decomposition consists of cylinders, minimal components,
+// and undetermined components.
 template <typename Surface>
 class FlowDecomposition {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
@@ -40,7 +42,7 @@ class FlowDecomposition {
   FlowDecomposition(PrivateConstructor, Args&&... args);
 
  public:
-  FlowDecomposition(std::unique_ptr<Surface>, const Vector<T>& vertical);
+  FlowDecomposition(Surface&&, const Vector<T>& vertical);
 
   static bool defaultTarget(const FlowComponent<Surface>& c) {
     return (c.cylinder() || c.withoutPeriodicTrajectory()) ? true : false;
@@ -53,12 +55,12 @@ class FlowDecomposition {
   std::vector<FlowComponent<Surface>> components() const;
 
   // Return the original surface from which this flow decomposition was created.
-  std::shared_ptr<const Surface> surface() const;
+  const Surface& surface() const;
 
   Vector<T> vertical() const;
 
   // Return a triangulation of surface consistent with the decomposition into flow components.
-  std::shared_ptr<const FlatTriangulation<T>> triangulation() const;
+  FlatTriangulation<T> triangulation() const;
 
   // Return the half edge in triangulation() corresponding to this flow connection.
   HalfEdge halfEdge(const FlowConnection<Surface>&) const;
@@ -76,10 +78,13 @@ class FlowDecomposition {
   friend std::ostream& operator<<(std::ostream&, const FlowDecomposition<S>&);
 
  private:
-  using Implementation = ImplementationOf<FlowDecomposition>;
-  Copyable<Implementation> impl;
-  friend Implementation;
+  Movable<FlowDecomposition> self;
+
+  friend ImplementationOf<FlowDecomposition>;
 };
+
+template <typename Surface, typename... Args>
+FlowDecomposition(Surface&&, Args&&... args) -> FlowDecomposition<Surface>;
 
 }  // namespace flatsurf
 

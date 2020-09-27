@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,27 +21,27 @@
 
 #include <exact-real/forward.hpp>
 
+#include "copyable.hpp"
 #include "detail/vector_exact.hpp"
 #include "detail/vector_with_error.hpp"
-#include "external/spimpl/spimpl.h"
-#include "forward.hpp"
 
 namespace flatsurf {
+
 // A vector in ℝ² whose coordinates are of type T.
 template <typename T>
 class Vector : public std::conditional_t<std::is_same_v<T, exactreal::Arb>, detail::VectorWithError<Vector<T>>, detail::VectorExact<Vector<T>, T>> {
  public:
   using Coordinate = T;
 
-  Vector();
+  Vector() noexcept;
   Vector(const Coordinate& x, const Coordinate& y);
 
   template <typename X, typename Y>
   Vector(const X& x, const Y& y) :
     Vector(static_cast<Coordinate>(x), static_cast<Coordinate>(y)) {}
 
-  Coordinate x() const noexcept;
-  Coordinate y() const noexcept;
+  Coordinate x() const;
+  Coordinate y() const;
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const Vector<S>&);
@@ -58,16 +58,15 @@ class Vector : public std::conditional_t<std::is_same_v<T, exactreal::Arb>, deta
   template <typename Archive>
   void load(Archive& archive);
 
-  using Implementation = ImplementationOf<Vector<T>>;
-  spimpl::impl_ptr<Implementation> impl;
-  friend Implementation;
+  Copyable<Vector<T>> self;
+  friend ImplementationOf<Vector<T>>;
 };
 }  // namespace flatsurf
 
 namespace std {
 
 template <typename T>
-struct hash<::flatsurf::Vector<T>> { size_t operator()(const ::flatsurf::Vector<T>&) const noexcept; };
+struct hash<::flatsurf::Vector<T>> { size_t operator()(const ::flatsurf::Vector<T>&) const; };
 
 }  // namespace std
 

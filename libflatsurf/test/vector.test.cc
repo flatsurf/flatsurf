@@ -67,7 +67,7 @@ TEMPLATE_TEST_CASE("Vector Slopes", "[vector]", (long long), (mpz_class), (mpq_c
     auto square = makeSquare<V>();
 
     std::set<V, typename V::CompareSlope> slopes;
-    for (auto connection : SaddleConnections(square, Bound(1, 0)))
+    for (auto connection : SaddleConnections(*square).bound(1))
       slopes.insert(connection.vector());
 
     REQUIRE(slopes.size() == 3);

@@ -37,18 +37,18 @@
 namespace flatsurf {
 
 template <typename Surface>
-Chain<Surface>::Chain(std::shared_ptr<const Surface> surface) :
-  impl(spimpl::make_impl<Implementation>(surface)) {
+Chain<Surface>::Chain(const Surface& surface) :
+  self(spimpl::make_impl<ImplementationOf<Chain>>(surface)) {
 }
 
 template <typename Surface>
-Chain<Surface>::Chain(std::shared_ptr<const Surface> surface, HalfEdge e) :
-  impl(spimpl::make_impl<Implementation>(surface, e)) {
+Chain<Surface>::Chain(const Surface& surface, HalfEdge e) :
+  self(spimpl::make_impl<ImplementationOf<Chain>>(surface, e)) {
 }
 
 template <typename Surface>
 const mpz_class& Chain<Surface>::operator[](const Edge& edge) const {
-  auto ret = (*impl)[edge.index()];
+  auto ret = (*self)[edge.index()];
   static mpz_class zero;
   return ret ? **ret : zero;
 }
@@ -62,17 +62,17 @@ mpz_class Chain<Surface>::operator[](const HalfEdge& halfEdge) const {
 
 template <typename Surface>
 Chain<Surface>::operator const Vector<T>&() const {
-  return *impl;
+  return *self;
 }
 
 template <typename Surface>
 Chain<Surface>::operator const Vector<exactreal::Arb>&() const {
-  return *impl;
+  return *self;
 }
 
 template <typename Surface>
 Chain<Surface>::operator bool() const {
-  return not _fmpz_vec_is_zero(impl->coefficients, impl->surface->size());
+  return not _fmpz_vec_is_zero(self->coefficients, self->surface->size());
 }
 
 template <typename Surface>
@@ -93,7 +93,7 @@ bool Chain<Surface>::operator>(const Bound rhs) const {
 
 template <typename Surface>
 Chain<Surface> Chain<Surface>::operator-() const {
-  Chain<Surface> ret(impl->surface);
+  Chain<Surface> ret(self->surface);
   ret -= *this;
   return ret;
 }
@@ -101,10 +101,10 @@ Chain<Surface> Chain<Surface>::operator-() const {
 template <typename Surface>
 Chain<Surface>& Chain<Surface>::operator+=(HalfEdge halfEdge) {
   Edge edge(halfEdge);
-  fmpz_add_si(impl->coefficients + edge.index(), impl->coefficients + edge.index(), halfEdge == edge.positive() ? 1 : -1);
+  fmpz_add_si(self->coefficients + edge.index(), self->coefficients + edge.index(), halfEdge == edge.positive() ? 1 : -1);
 
-  impl->vector += halfEdge;
-  impl->approximateVector += halfEdge;
+  self->vector += halfEdge;
+  self->approximateVector += halfEdge;
 
   return *this;
 }
@@ -116,40 +116,40 @@ Chain<Surface>& Chain<Surface>::operator-=(HalfEdge halfEdge) {
 
 template <typename Surface>
 Chain<Surface>& Chain<Surface>::operator+=(const Chain& rhs) {
-  _fmpz_vec_add(impl->coefficients, impl->coefficients, rhs.impl->coefficients, surface().size());
+  _fmpz_vec_add(self->coefficients, self->coefficients, rhs.self->coefficients, surface().size());
 
-  impl->vector += rhs.impl->vector;
-  impl->approximateVector += rhs.impl->approximateVector;
+  self->vector += rhs.self->vector;
+  self->approximateVector += rhs.self->approximateVector;
 
   return *this;
 }
 
 template <typename Surface>
 Chain<Surface>& Chain<Surface>::operator-=(const Chain& rhs) {
-  _fmpz_vec_sub(impl->coefficients, impl->coefficients, rhs.impl->coefficients, surface().size());
+  _fmpz_vec_sub(self->coefficients, self->coefficients, rhs.self->coefficients, surface().size());
 
-  impl->vector -= rhs.impl->vector;
-  impl->approximateVector -= rhs.impl->approximateVector;
+  self->vector -= rhs.self->vector;
+  self->approximateVector -= rhs.self->approximateVector;
 
   return *this;
 }
 
 template <typename Surface>
 Chain<Surface>& Chain<Surface>::operator+=(Chain&& rhs) {
-  _fmpz_vec_add(impl->coefficients, impl->coefficients, rhs.impl->coefficients, surface().size());
+  _fmpz_vec_add(self->coefficients, self->coefficients, rhs.self->coefficients, surface().size());
 
-  impl->vector += std::move(rhs.impl->vector);
-  impl->approximateVector += std::move(rhs.impl->approximateVector);
+  self->vector += std::move(rhs.self->vector);
+  self->approximateVector += std::move(rhs.self->approximateVector);
 
   return *this;
 }
 
 template <typename Surface>
 Chain<Surface>& Chain<Surface>::operator-=(Chain&& rhs) {
-  _fmpz_vec_sub(impl->coefficients, impl->coefficients, rhs.impl->coefficients, surface().size());
+  _fmpz_vec_sub(self->coefficients, self->coefficients, rhs.self->coefficients, surface().size());
 
-  impl->vector -= std::move(rhs.impl->vector);
-  impl->approximateVector -= std::move(rhs.impl->approximateVector);
+  self->vector -= std::move(rhs.self->vector);
+  self->approximateVector -= std::move(rhs.self->approximateVector);
 
   return *this;
 }
@@ -169,14 +169,14 @@ template <typename Surface>
 Chain<Surface>& Chain<Surface>::operator*=(const mpz_class& c) {
   fmpz_t cc;
   fmpz_init_set_readonly(cc, c.get_mpz_t());
-  _fmpz_vec_scalar_mul_fmpz(impl->coefficients, impl->coefficients, surface().size(), cc);
+  _fmpz_vec_scalar_mul_fmpz(self->coefficients, self->coefficients, surface().size(), cc);
   fmpz_clear_readonly(cc);
   return *this;
 }
 
 template <typename Surface>
 const Surface& Chain<Surface>::surface() const {
-  return *impl->surface;
+  return self->surface;
 }
 
 template <typename Surface>
@@ -195,19 +195,19 @@ std::ostream& operator<<(std::ostream& os, const Chain<Surface>& chain) {
 }
 
 template <typename Surface>
-ImplementationOf<Chain<Surface>>::ImplementationOf(std::shared_ptr<const Surface> surface) :
-  surface(std::move(surface)),
-  coefficients(_fmpz_vec_init(this->surface->size())),
+ImplementationOf<Chain<Surface>>::ImplementationOf(const Surface& surface) :
+  surface(surface),
+  coefficients(_fmpz_vec_init(surface.size())),
   vector(this),
   approximateVector(this) {
 }
 
 template <typename Surface>
-ImplementationOf<Chain<Surface>>::ImplementationOf(std::shared_ptr<const Surface> surface, HalfEdge halfEdge) :
-  surface(std::move(surface)),
-  coefficients(_fmpz_vec_init(this->surface->size())),
-  vector(this, this->surface->fromEdge(halfEdge)),
-  approximateVector(this, this->surface->fromEdgeApproximate(halfEdge)) {
+ImplementationOf<Chain<Surface>>::ImplementationOf(const Surface& surface, HalfEdge halfEdge) :
+  surface(surface),
+  coefficients(_fmpz_vec_init(surface.size())),
+  vector(this, this->surface->fromHalfEdge(halfEdge)),
+  approximateVector(this, this->surface->fromHalfEdgeApproximate(halfEdge)) {
   Edge edge(halfEdge);
   fmpz_add_si(coefficients + edge.index(), coefficients + edge.index(), halfEdge == edge.positive() ? 1 : -1);
 }
@@ -238,6 +238,26 @@ std::optional<const mpz_class*> ImplementationOf<Chain<Surface>>::operator[](con
 }
 
 template <typename Surface>
+size_t ImplementationOf<Chain<Surface>>::hash(const Chain<Surface>& self) {
+  const auto hash_fmpz = [](fmpz_t x) -> size_t {
+    if (fmpz_fits_si(x)) {
+      return fmpz_get_si(x);
+    } else {
+      __mpz_struct* y = _fmpz_promote_val(x);
+      const size_t lowest_limb = mpz_get_ui(y);
+      _fmpz_demote_val(x);
+      return lowest_limb;
+    }
+  };
+
+  size_t ret = hash_fmpz(&self.self->coefficients[0]);
+  for (size_t i = 1; i < self.surface().size(); i++)
+    ret = hash_combine(ret, hash_fmpz(&self.self->coefficients[i]));
+
+  return ret;
+}
+
+template <typename Surface>
 ImplementationOf<Chain<Surface>>::operator const Vector<T>&() const {
   return vector;
 }
@@ -254,23 +274,8 @@ namespace std {
 using namespace flatsurf;
 
 template <typename Surface>
-size_t hash<Chain<Surface>>::operator()(const Chain<Surface>& self) const noexcept {
-  const auto hash_fmpz = [](fmpz_t x) -> size_t {
-    if (fmpz_fits_si(x)) {
-      return fmpz_get_si(x);
-    } else {
-      __mpz_struct* y = _fmpz_promote_val(x);
-      const size_t lowest_limb = mpz_get_ui(y);
-      _fmpz_demote_val(x);
-      return lowest_limb;
-    }
-  };
-
-  size_t ret = hash_fmpz(&self.impl->coefficients[0]);
-  for (size_t i = 1; i < self.surface().size(); i++)
-    ret = hash_combine(ret, hash_fmpz(&self.impl->coefficients[i]));
-
-  return ret;
+size_t hash<Chain<Surface>>::operator()(const Chain<Surface>& self) const {
+  return ImplementationOf<Chain<Surface>>::hash(self);
 }
 
 }  // namespace std

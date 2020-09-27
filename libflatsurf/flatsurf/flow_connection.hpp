@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,8 @@
 #include "copyable.hpp"
 
 namespace flatsurf {
+
+// A saddle connection on the perimeter of a Flow Component.
 template <typename Surface>
 class FlowConnection : Serializable<FlowConnection<Surface>>,
                        boost::equality_comparable<FlowConnection<Surface>> {
@@ -70,16 +72,16 @@ class FlowConnection : Serializable<FlowConnection<Surface>>,
   friend std::ostream& operator<<(std::ostream&, const FlowConnection<S>&);
 
  private:
-  using Implementation = ImplementationOf<FlowConnection>;
-  Copyable<Implementation> impl;
-  friend Implementation;
+  Copyable<FlowConnection> self;
+
+  friend ImplementationOf<FlowConnection>;
 };
 }  // namespace flatsurf
 
 namespace std {
 
 template <typename Surface>
-struct hash<::flatsurf::FlowConnection<Surface>> { std::size_t operator()(const ::flatsurf::FlowConnection<Surface>&) const noexcept; };
+struct hash<::flatsurf::FlowConnection<Surface>> { std::size_t operator()(const ::flatsurf::FlowConnection<Surface>&) const; };
 
 }  // namespace std
 

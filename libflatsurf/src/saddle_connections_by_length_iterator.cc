@@ -30,25 +30,25 @@ namespace flatsurf {
 
 template <typename Surface>
 void SaddleConnectionsByLengthIterator<Surface>::increment() {
-  ASSERT(!impl->connectionsWithinBounds.empty(), "cannot increment iterator at end");
-  impl->connectionsWithinBounds.pop_front();
-  if (impl->connectionsWithinBounds.empty())
-    impl->increment();
-  if (!impl->connectionsWithinBounds.empty())
-    impl->currents.push_front(impl->connectionsWithinBounds.front());
-  if (impl->currents.size() > 3)
-    impl->currents.pop_back();
+  ASSERT(!self->connectionsWithinBounds.empty(), "cannot increment iterator at end");
+  self->connectionsWithinBounds.pop_front();
+  if (self->connectionsWithinBounds.empty())
+    self->increment();
+  if (!self->connectionsWithinBounds.empty())
+    self->currents.push_front(self->connectionsWithinBounds.front());
+  if (self->currents.size() > 3)
+    self->currents.pop_back();
 }
 
 template <typename Surface>
 const SaddleConnection<Surface>& SaddleConnectionsByLengthIterator<Surface>::dereference() const {
-  ASSERT(!impl->connectionsWithinBounds.empty(), "Cannot dereference iterator at end.");
-  return impl->currents.front();
+  ASSERT(!self->connectionsWithinBounds.empty(), "Cannot dereference iterator at end.");
+  return self->currents.front();
 }
 
 template <typename Surface>
 bool SaddleConnectionsByLengthIterator<Surface>::equal(const SaddleConnectionsByLengthIterator& rhs) const {
-  return impl->upperBoundInclusive == rhs.impl->upperBoundInclusive && &impl->connections == &rhs.impl->connections && impl->lowerBoundExclusive == rhs.impl->lowerBoundExclusive && impl->connectionsWithinBounds.size() == rhs.impl->connectionsWithinBounds.size();
+  return self->upperBoundInclusive == rhs.self->upperBoundInclusive && &self->connections == &rhs.self->connections && self->lowerBoundExclusive == rhs.self->lowerBoundExclusive && self->connectionsWithinBounds.size() == rhs.self->connectionsWithinBounds.size();
 }
 
 template <typename Surface>

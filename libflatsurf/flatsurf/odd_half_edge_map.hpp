@@ -37,6 +37,8 @@ template <typename T>
 struct is_optional<std::optional<T>> : std::true_type {};
 }  // namespace
 
+// A dictionary mapping each half edge of a triangulation to a T such that if e
+// maps to x, then -e maps to -x.
 template <typename T>
 class OddHalfEdgeMap {
  public:

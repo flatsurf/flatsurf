@@ -54,8 +54,8 @@ class ChainVector {
   ChainVector& operator+=(HalfEdge);
   ChainVector& operator-=(HalfEdge);
 
-  ChainVector& operator=(const Vector<T>&);
-  ChainVector& operator=(Vector<T>&&);
+  ChainVector& operator=(const Vector<T>&) noexcept;
+  ChainVector& operator=(Vector<T>&&) noexcept;
 
   ChainVector& operator=(const ChainVector&) = delete;
   ChainVector& operator=(ChainVector&&) = delete;
@@ -66,7 +66,7 @@ class ChainVector {
  private:
   const ImplementationOf<Chain<Surface>>& chain;
 
-  mutable std::optional<Vector<T>> value = {};
+  mutable std::optional<Vector<T>> value = std::nullopt;
 
   enum class MOVE {
     ADD,

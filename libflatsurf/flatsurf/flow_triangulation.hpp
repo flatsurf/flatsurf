@@ -21,11 +21,10 @@
 #define LIBFLATSURF_FLOW_TRIANGULATION_HPP
 
 #include "copyable.hpp"
-#include "forward.hpp"
 
 namespace flatsurf {
 
-// An immutable triangulation of a component of a flow decomposition.
+// A triangulation of a Flow Component.
 template <typename Surface>
 class FlowTriangulation {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
@@ -38,7 +37,7 @@ class FlowTriangulation {
   FlowTriangulation(PrivateConstructor, Args&&... args);
 
  public:
-  std::shared_ptr<const FlatTriangulation<T>> triangulation() const;
+  const FlatTriangulation<T>& triangulation() const;
 
   FlowComponent<Surface> component() const;
 
@@ -56,10 +55,9 @@ class FlowTriangulation {
   friend std::ostream& operator<<(std::ostream&, const FlowTriangulation<S>&);
 
  private:
-  using Implementation = ImplementationOf<FlowTriangulation>;
-  Copyable<Implementation> impl;
+  Copyable<FlowTriangulation> self;
 
-  friend Implementation;
+  friend ImplementationOf<FlowTriangulation>;
 };
 
 }  // namespace flatsurf

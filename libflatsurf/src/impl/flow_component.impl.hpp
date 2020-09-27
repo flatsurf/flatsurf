@@ -46,7 +46,7 @@ class ImplementationOf<FlowComponent<Surface>> {
 template <typename Surface>
 template <typename... Args>
 FlowComponent<Surface>::FlowComponent(PrivateConstructor, Args&&... args) :
-  impl(spimpl::make_impl<Implementation>(std::forward<Args>(args)...)) {}
+  self(spimpl::make_impl<ImplementationOf<FlowComponent>>(std::forward<Args>(args)...)) {}
 
 }  // namespace flatsurf
 

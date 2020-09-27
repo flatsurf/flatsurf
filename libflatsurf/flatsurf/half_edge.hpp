@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,8 +20,6 @@
 #ifndef LIBFLATSURF_HALF_EDGE_HPP
 #define LIBFLATSURF_HALF_EDGE_HPP
 
-#include <stddef.h>
-
 #include <boost/operators.hpp>
 #include <functional>
 #include <iosfwd>
@@ -29,30 +27,32 @@
 #include "forward.hpp"
 
 namespace flatsurf {
-// Similar to Edge this is a wrapper to get type-safe HalfEdges without any
-// runtime overhead (at least when compiling with -flto.)
+
+// A (combinatorial) half edge of a triangulation.
 class HalfEdge : boost::equality_comparable<HalfEdge> {
   HalfEdge(PrivateConstructor, size_t idx);
 
  public:
-  HalfEdge();
+  HalfEdge() noexcept;
   HalfEdge(int id);
   HalfEdge(const HalfEdge &edge) = default;
 
   static HalfEdge fromIndex(size_t index);
 
   HalfEdge operator-() const;
-  HalfEdge &operator=(const HalfEdge &other);
-  bool operator==(const HalfEdge &other) const;
 
-  friend std::ostream &operator<<(std::ostream &, const HalfEdge &);
+  HalfEdge &operator=(const HalfEdge &other) noexcept;
+
+  bool operator==(const HalfEdge &other) const;
 
   Edge edge() const;
 
   // Return a zero based index for this half edge that can be used to index into an array.
-  size_t index() const noexcept;
+  size_t index() const;
 
-  int id() const noexcept;
+  int id() const;
+
+  friend std::ostream &operator<<(std::ostream &, const HalfEdge &);
 
  private:
   size_t idx;
@@ -69,7 +69,7 @@ class HalfEdge : boost::equality_comparable<HalfEdge> {
 namespace std {
 template <>
 struct hash<flatsurf::HalfEdge> {
-  size_t operator()(const flatsurf::HalfEdge &) const noexcept;
+  size_t operator()(const flatsurf::HalfEdge &) const;
 };
 }  // namespace std
 

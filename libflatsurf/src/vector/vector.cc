@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -89,11 +89,11 @@ class ImplementationOf<Vector<T>> : public Cartesian<T> {
     // particular in DEBUG builds for this operation that is called all the
     // time. So we have to call arb_add directly here.
 
-    // this->x += rhs.impl->x(ARB_PRECISION_FAST);
-    arb_add(this->x.arb_t(), this->x.arb_t(), rhs.impl->x.arb_t(), ARB_PRECISION_FAST);
+    // this->x += rhs.self->x(ARB_PRECISION_FAST);
+    arb_add(this->x.arb_t(), this->x.arb_t(), rhs.self->x.arb_t(), ARB_PRECISION_FAST);
 
-    // this->y += rhs.impl->y(ARB_PRECISION_FAST);
-    arb_add(this->y.arb_t(), this->y.arb_t(), rhs.impl->y.arb_t(), ARB_PRECISION_FAST);
+    // this->y += rhs.self->y(ARB_PRECISION_FAST);
+    arb_add(this->y.arb_t(), this->y.arb_t(), rhs.self->y.arb_t(), ARB_PRECISION_FAST);
 
     return *this;
   }
@@ -166,9 +166,9 @@ class ImplementationOf<Vector<T>> : public Cartesian<T> {
   }
 
   template <bool Enable = IsArb<T>, If<Enable> = true>
-  std::optional<CCW> ccw(const flatsurf::Vector<exactreal::Arb>& rhs) const noexcept {
-    const Arb a = (this->x * rhs.impl->y)(ARB_PRECISION_FAST);
-    const Arb b = (rhs.impl->x * this->y)(ARB_PRECISION_FAST);
+  std::optional<CCW> ccw(const flatsurf::Vector<exactreal::Arb>& rhs) const {
+    const Arb a = (this->x * rhs.self->y)(ARB_PRECISION_FAST);
+    const Arb b = (rhs.self->x * this->y)(ARB_PRECISION_FAST);
 
     const bool overlaps = arb_overlaps(a.arb_t(), b.arb_t());
     if (overlaps) {
@@ -190,9 +190,9 @@ class ImplementationOf<Vector<T>> : public Cartesian<T> {
   }
 
   template <bool Enable = IsArb<T>, If<Enable> = true>
-  std::optional<ORIENTATION> orientation(const flatsurf::Vector<exactreal::Arb>& rhs) const noexcept {
+  std::optional<ORIENTATION> orientation(const flatsurf::Vector<exactreal::Arb>& rhs) const {
     // Arb also has a built-in dot product. It's probably not doing anything else in 2d.
-    const Arb dot = (this->x * rhs.impl->x + this->y * rhs.impl->y)(ARB_PRECISION_FAST);
+    const Arb dot = (this->x * rhs.self->x + this->y * rhs.self->y)(ARB_PRECISION_FAST);
 
     auto cmp = dot > 0;
     if (cmp.has_value()) {
@@ -212,19 +212,19 @@ class ImplementationOf<Vector<T>> : public Cartesian<T> {
   }
 
   template <bool Enable = IsArb<T>, If<Enable> = true>
-  std::optional<bool> operator<(const Bound bound) const noexcept {
+  std::optional<bool> operator<(const Bound bound) const {
     Arb size = (this->x * this->x + this->y * this->y)(ARB_PRECISION_FAST);
     return size < bound.squared();
   }
 
   template <bool Enable = IsArb<T>, If<Enable> = true>
-  std::optional<bool> operator>(const Bound bound) const noexcept {
+  std::optional<bool> operator>(const Bound bound) const {
     Arb size = (this->x * this->x + this->y * this->y)(ARB_PRECISION_FAST);
     return size > bound.squared();
   }
 
   template <bool Enable = IsArb<T>, If<Enable> = true>
-  operator std::optional<bool>() const noexcept {
+  operator std::optional<bool>() const {
     auto maybe_x = this->x == Arb(0);
     if (!maybe_x || !*maybe_x)
       return maybe_x;
@@ -238,43 +238,43 @@ class ImplementationOf<Vector<T>> : public Cartesian<T> {
   template <bool Enable = IsArb<T>, If<Enable> = true>
   Vector projection(const Vector& rhs) const {
     Arb dot = *this * rhs;
-    return make((dot * rhs.impl->x)(ARB_PRECISION_FAST),
-        (dot * rhs.impl->y)(ARB_PRECISION_FAST));
+    return make((dot * rhs.self->x)(ARB_PRECISION_FAST),
+        (dot * rhs.self->y)(ARB_PRECISION_FAST));
   }
 
   template <bool Enable = IsArb<T>, If<Enable> = true>
   Arb operator*(const Vector& rhs) const {
-    return (this->x * rhs.impl->x + this->y * rhs.impl->y)(ARB_PRECISION_FAST);
+    return (this->x * rhs.self->x + this->y * rhs.self->y)(ARB_PRECISION_FAST);
   }
 };
 
 template <typename T>
-Vector<T>::Vector() :
-  impl(spimpl::make_impl<Implementation>(T(), T())) {}
+Vector<T>::Vector() noexcept :
+  self(spimpl::make_impl<ImplementationOf<Vector>>(T(), T())) {}
 
 template <typename T>
 Vector<T>::Vector(const T& x, const T& y) :
-  impl(spimpl::make_impl<Implementation>(x, y)) {}
+  self(spimpl::make_impl<ImplementationOf<Vector>>(x, y)) {}
 
 template <typename T>
-T Vector<T>::x() const noexcept { return impl->x; }
+T Vector<T>::x() const { return self->x; }
 
 template <typename T>
-T Vector<T>::y() const noexcept { return impl->y; }
+T Vector<T>::y() const { return self->y; }
 
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const Vector<T>& self) {
-  using Implementation = typename Vector<T>::Implementation;
+  using Implementation = ImplementationOf<Vector<T>>;
   const Vector<T>& s = static_cast<const Vector<T>&>(self);
 
   if constexpr (has_ostream_lshift<Implementation>) {
-    return os << s.impl;
+    return os << s.self;
   } else if constexpr (is_forward_v<Implementation>) {
-    return os << s.impl->vector;
+    return os << s.self->vector;
   } else if constexpr (has_approximation_v<Implementation>) {
-    return os << s.impl->approximation();
+    return os << s.self->approximation();
   } else if constexpr (is_cartesian_v<Implementation>) {
-    return os << "(" << s.impl->x << ", " << s.impl->y << ")";
+    return os << "(" << s.self->x << ", " << s.self->y << ")";
   } else {
     static_assert(false_type_v<Implementation>, "Implementation is missing operator<<.");
   }
@@ -286,14 +286,14 @@ namespace std {
 using namespace flatsurf;
 
 template <typename T>
-size_t hash<Vector<T>>::operator()(const Vector<T>& self) const noexcept {
-  using Implementation = typename Vector<T>::Implementation;
+size_t hash<Vector<T>>::operator()(const Vector<T>& self) const {
+  using Implementation = ImplementationOf<Vector<T>>;
   const Vector<T>& s = static_cast<const Vector<T>&>(self);
 
   if constexpr (has_hash<Implementation>) {
-    return s.impl->hash();
+    return s.self->hash();
   } else if constexpr (is_forward_v<Implementation>) {
-    return std::hash<decltype(s.impl->vector)>{}(s.impl->vector);
+    return std::hash<decltype(s.self->vector)>{}(s.self->vector);
   } else if constexpr (is_cartesian_v<Implementation>) {
     return hash_combine(s.x(), s.y());
   } else {

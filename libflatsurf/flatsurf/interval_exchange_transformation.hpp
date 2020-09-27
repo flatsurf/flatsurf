@@ -23,12 +23,19 @@
 #include <unordered_set>
 #include <vector>
 
-#include "external/spimpl/spimpl.h"
-#include "forward.hpp"
 #include "intervalxt/forward.hpp"
+#include "movable.hpp"
 
 namespace flatsurf {
 
+// An Interval Exchange Transformation on a connected component of a
+// triangulated translation surface with respect to a vertical direction.
+// Given a triangulated translation surface one can, after performing a finite
+// number of flips find (for each connected component) a pair of top and bottom
+// contours, i.e., connected sequences of half edges which describe the flow
+// through this component. How the half edges are permutated between the bottom
+// and top contour describes an Interval Exchange Transformation which is the
+// one this class represents.
 template <typename Surface>
 class IntervalExchangeTransformation {
   using T = typename Surface::Coordinate;
@@ -36,10 +43,14 @@ class IntervalExchangeTransformation {
 
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
- public:
-  IntervalExchangeTransformation(std::shared_ptr<const Surface>, const Vector<T>& vertical, const std::vector<HalfEdge>& top, const std::vector<HalfEdge>& bottom);
+  template <typename... Args>
+  IntervalExchangeTransformation(PrivateConstructor, Args&&... args);
 
-  IntervalExchangeTransformation(std::shared_ptr<const Surface>, const Vector<T>& vertical, const HalfEdge);
+ public:
+  IntervalExchangeTransformation(const Surface&, const Vector<T>& vertical, const std::vector<HalfEdge>& top, const std::vector<HalfEdge>& bottom);
+
+  // Create the Interval Exchange Transformation starting from the given unique large edge in its connected component.
+  IntervalExchangeTransformation(const Surface&, const Vector<T>& vertical, const HalfEdge large);
 
   // Modify the surface such that each component has a unique large edge
   // and the components are such that their contours do not begin with the same
@@ -54,8 +65,8 @@ class IntervalExchangeTransformation {
   // half edges.)
   static std::unordered_set<HalfEdge> makeUniqueLargeEdge(Surface&, const Vector<T>& vertical, HalfEdge& source);
 
-  intervalxt::IntervalExchangeTransformation& intervalExchangeTransformation() noexcept;
-  const intervalxt::IntervalExchangeTransformation& intervalExchangeTransformation() const noexcept;
+  intervalxt::IntervalExchangeTransformation& intervalExchangeTransformation();
+  const intervalxt::IntervalExchangeTransformation& intervalExchangeTransformation() const;
 
   // The Edge in the (collapsed) surface from which this label was created originally.
   Edge edge(const Label&) const;
@@ -66,17 +77,10 @@ class IntervalExchangeTransformation {
   friend std::ostream& operator<<(std::ostream&, const IntervalExchangeTransformation<S>&);
 
  private:
-  using Implementation = ImplementationOf<IntervalExchangeTransformation>;
-  spimpl::unique_impl_ptr<Implementation> impl;
+  Movable<IntervalExchangeTransformation> self;
 
-  friend Implementation;
+  friend ImplementationOf<IntervalExchangeTransformation>;
 };
-
-template <typename Surface, typename... Args>
-IntervalExchangeTransformation(std::shared_ptr<const Surface>, Args&&...) -> IntervalExchangeTransformation<Surface>;
-
-template <typename Surface, typename... Args>
-IntervalExchangeTransformation(std::shared_ptr<Surface>, Args&&...) -> IntervalExchangeTransformation<Surface>;
 
 }  // namespace flatsurf
 

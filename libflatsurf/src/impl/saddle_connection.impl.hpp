@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 #include "../../flatsurf/flat_triangulation.hpp"
 #include "../../flatsurf/flat_triangulation_collapsed.hpp"
 #include "../../flatsurf/saddle_connection.hpp"
+#include "flat_triangulation.impl.hpp"
+#include "read_only.hpp"
 
 namespace flatsurf {
 
@@ -33,10 +35,10 @@ class ImplementationOf<SaddleConnection<Surface>> {
   using T = typename Surface::Coordinate;
 
  public:
-  ImplementationOf(std::shared_ptr<const Surface>, HalfEdge source, HalfEdge target, const Chain<Surface>&);
-  ImplementationOf(std::shared_ptr<const Surface>, HalfEdge source, HalfEdge target, Chain<Surface>&&);
+  ImplementationOf(const Surface&, HalfEdge source, HalfEdge target, const Chain<Surface>&);
+  ImplementationOf(const Surface&, HalfEdge source, HalfEdge target, Chain<Surface>&&);
 
-  std::shared_ptr<const Surface> surface;
+  ReadOnly<Surface> surface;
   HalfEdge source;
   HalfEdge target;
   Chain<Surface> chain;

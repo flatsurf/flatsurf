@@ -26,7 +26,7 @@
 
 namespace flatsurf {
 
-Edge::Edge() :
+Edge::Edge() noexcept :
   id(HalfEdge()) {}
 
 Edge::Edge(int id) :
@@ -58,6 +58,6 @@ std::ostream& operator<<(std::ostream& os, const Edge& e) {
 
 }  // namespace flatsurf
 
-size_t std::hash<flatsurf::Edge>::operator()(const flatsurf::Edge& e) const noexcept {
+size_t std::hash<flatsurf::Edge>::operator()(const flatsurf::Edge& e) const {
   return std::hash<flatsurf::HalfEdge>()(e.positive());
 }

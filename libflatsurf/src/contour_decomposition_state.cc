@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,10 +19,10 @@
 
 #include "impl/contour_decomposition_state.hpp"
 
-#include <memory>
 #include <ostream>
 
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/interval_exchange_transformation.hpp"
 #include "../flatsurf/vertical.hpp"
 #include "impl/contour_component.impl.hpp"
 #include "util/assert.ipp"
@@ -30,20 +30,20 @@
 namespace flatsurf {
 
 template <typename Surface>
-ContourDecompositionState<Surface>::ContourDecompositionState(std::unique_ptr<Surface> surface, const Vector<T>& vert) :
+ContourDecompositionState<Surface>::ContourDecompositionState(Surface surface, const Vector<T>& vert) :
   surface([&]() {
     if constexpr (std::is_same_v<Surface, FlatTriangulationCollapsed<T>>) {
       CHECK_ARGUMENT(surface->vertical().vertical() == vert, "can only decompose with respect to the existing vertical " << surface->vertical().vertical() << " of this surface");
       return surface;
     } else {
-      auto collapsed = FlatTriangulationCollapsed<T>::make(std::move(surface), vert);
-      IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>::makeUniqueLargeEdges(*collapsed, vert);
+      auto collapsed = FlatTriangulationCollapsed<T>(surface, vert);
+      IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>::makeUniqueLargeEdges(collapsed, vert);
       return collapsed;
     }
   }()),
   components([&]() {
     std::list<ComponentState> components;
-    for (auto& component : this->surface->vertical().components()) {
+    for (auto& component : this->surface.vertical().components()) {
       components.push_back(ComponentState(*this, component));
     }
     return components;

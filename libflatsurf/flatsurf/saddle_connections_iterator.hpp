@@ -23,11 +23,11 @@
 #include <boost/iterator/iterator_facade.hpp>
 #include <optional>
 
-#include "external/spimpl/spimpl.h"
-#include "forward.hpp"
+#include "copyable.hpp"
 
 namespace flatsurf {
 
+// Iterates over the saddle connections on a triangulation translation surface.
 template <typename Surface>
 class SaddleConnectionsIterator : public boost::iterator_facade<SaddleConnectionsIterator<Surface>, const SaddleConnection<Surface>, boost::forward_traversal_tag> {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
@@ -54,11 +54,10 @@ class SaddleConnectionsIterator : public boost::iterator_facade<SaddleConnection
   friend std::ostream &operator<<(std::ostream &, const SaddleConnectionsIterator<S> &);
 
  private:
-  using Implementation = ImplementationOf<SaddleConnectionsIterator>;
-  friend Implementation;
-  spimpl::impl_ptr<Implementation> impl;
+  Copyable<SaddleConnectionsIterator> self;
 
   friend SaddleConnections<Surface>;
+  friend ImplementationOf<SaddleConnectionsIterator>;
 };
 
 }  // namespace flatsurf

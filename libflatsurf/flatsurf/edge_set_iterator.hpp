@@ -23,11 +23,11 @@
 #include <boost/iterator/iterator_categories.hpp>
 #include <boost/iterator/iterator_facade.hpp>
 
-#include "external/spimpl/spimpl.h"
-#include "forward.hpp"
+#include "copyable.hpp"
 
 namespace flatsurf {
 
+// Iterates over a set of edges.
 class EdgeSetIterator : public boost::iterator_facade<EdgeSetIterator, const Edge &, boost::forward_traversal_tag> {
   template <typename... Args>
   EdgeSetIterator(PrivateConstructor, Args &&...);
@@ -40,9 +40,9 @@ class EdgeSetIterator : public boost::iterator_facade<EdgeSetIterator, const Edg
   bool equal(const EdgeSetIterator &other) const;
 
  private:
-  using Implementation = ImplementationOf<EdgeSetIterator>;
-  spimpl::impl_ptr<Implementation> impl;
-  friend Implementation;
+  Copyable<EdgeSetIterator> self;
+
+  friend ImplementationOf<EdgeSetIterator>;
   friend EdgeSet;
 };
 
