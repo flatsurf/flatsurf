@@ -50,6 +50,9 @@ class ContourDecomposition;
 template <typename Surface>
 class DecompositionStep;
 
+template <typename Surface>
+class Deformation;
+
 class Edge;
 
 template <typename T>

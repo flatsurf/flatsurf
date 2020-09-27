@@ -66,7 +66,7 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
   // Create an independent clone of this triangulation with an added vertex
   // next to e at v from e's source. If the vector does not fit into the face
   // next to e, the necessary edge flips are performed to accomodate it.
-  FlatTriangulation<T> insertAt(HalfEdge &e, const Vector<T> &v) const;
+  Deformation<FlatTriangulation<T>> insertAt(HalfEdge &e, const Vector<T> &v) const;
 
   // Create an independent clone of this triangulation with all vectors scaled
   // by c.
@@ -75,18 +75,18 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
   // Create an independent clone of this triangulation with an edded boundary
   // at the half edge e by removing the identification of the two corresponding
   // half edges there.
-  FlatTriangulation<T> slit(const HalfEdge e) const;
+  Deformation<FlatTriangulation<T>> slit(const HalfEdge e) const;
 
   // Return the saddle connections of this translations surface.
   SaddleConnections<FlatTriangulation<T>> connections() const;
 
   // Create an independent clone of this triangulation with the vector
   // v(h) associated to a half edge replaced by v(h) + shift[h].
-  FlatTriangulation<T> operator+(const OddHalfEdgeMap<Vector<T>> &shift) const;
+  Deformation<FlatTriangulation<T>> operator+(const OddHalfEdgeMap<Vector<T>> &shift) const;
 
   // Return a simplified flat triangulation with marked points, i.e., verticas
   // with a total angle of 2π, eliminated.
-  FlatTriangulation<T> eliminateMarkedPoints() const;
+  Deformation<FlatTriangulation<T>> eliminateMarkedPoints() const;
 
   Vector<T> shortest() const;
 

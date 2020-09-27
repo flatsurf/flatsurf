@@ -26,6 +26,7 @@
 #include <exact-real/number_field.hpp>
 #include <numeric>
 
+#include "../flatsurf/deformation.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/interval_exchange_transformation.hpp"
@@ -114,7 +115,7 @@ TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[flat_triangulation][ins
           R2 v = R2(x, y);
           HalfEdge e(1);
           WHEN("We Insert a Vertex at " << v << " next to " << e) {
-            auto surf = surface.insertAt(e, v);
+            auto surf = surface.insertAt(e, v).surface();
 
             CAPTURE(surf);
 
@@ -124,7 +125,7 @@ TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[flat_triangulation][ins
             }
 
             AND_WHEN("We Make a Slot There") {
-              surf = surf.slit(surf.nextAtVertex(e));
+              surf = surf.slit(surf.nextAtVertex(e)).surface();
 
               THEN("There is a Boundary at " << e) {
                 REQUIRE(surf.boundary(surf.nextAtVertex(e)));
@@ -144,7 +145,7 @@ TEMPLATE_TEST_CASE("Deform a Flat Triangulation", "[flat_triangulation][deformat
 
   SECTION("Trivially deform an L") {
     auto shift = OddHalfEdgeMap<R2>(*surface);
-    REQUIRE(surface->operator+(shift) == *surface);
+    REQUIRE(surface->operator+(shift).surface() == *surface);
   }
 
   SECTION("Stretch an L") {
@@ -153,7 +154,7 @@ TEMPLATE_TEST_CASE("Deform a Flat Triangulation", "[flat_triangulation][deformat
     shift.set(HalfEdge(8), R2(0, 1));
     shift.set(HalfEdge(7), R2(0, 1));
 
-    REQUIRE(surface->operator+(shift) != *surface);
+    REQUIRE(surface->operator+(shift).surface() != *surface);
   }
 }
 
@@ -162,7 +163,7 @@ TEMPLATE_TEST_CASE("Eliminate Marked Points", "[flat_triangulation][eliminate_ma
 
   const auto [name, surface] = GENERATE(makeSurface<T>());
   GIVEN("The Surface " << *name) {
-    const auto simplified = (*surface)->eliminateMarkedPoints();
+    const auto simplified = (*surface)->eliminateMarkedPoints().surface();
 
     CAPTURE(simplified);
 

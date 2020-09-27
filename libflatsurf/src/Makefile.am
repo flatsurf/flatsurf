@@ -13,6 +13,7 @@ libflatsurf_la_SOURCES =                                            \
 	contour_connection.cc                                       \
 	contour_decomposition.cc                                    \
 	contour_decomposition_state.cc                              \
+	deformation.cc                                              \
 	edge.cc                                                     \
 	edge_set_iterator.cc                                        \
 	edge_set.cc                                                 \
@@ -61,6 +62,7 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/copyable.hpp                                    \
 	../flatsurf/cppyy.hpp                                       \
 	../flatsurf/decomposition_step.hpp                          \
+	../flatsurf/deformation.hpp                                 \
 	../flatsurf/edge.hpp                                        \
 	../flatsurf/edge_map.hpp                                    \
 	../flatsurf/edge_set.hpp                                    \
@@ -117,6 +119,7 @@ noinst_HEADERS =                                                    \
 	impl/contour_connection.impl.hpp                            \
 	impl/contour_decomposition.impl.hpp                         \
 	impl/contour_decomposition_state.hpp                        \
+	impl/deformation.impl.hpp                                   \
 	impl/edge_map.impl.hpp                                      \
 	impl/edge_set.impl.hpp                                      \
 	impl/edge_set_iterator.impl.hpp                             \

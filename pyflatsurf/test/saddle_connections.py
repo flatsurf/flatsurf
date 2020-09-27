@@ -51,10 +51,10 @@ def test_L_with_slit_mpq():
     surface = surfaces.L(R2)
     slit = R2(mpq(5, 3), mpq(4, 3))
     e = flatsurf.HalfEdge(1)
-    surface = surface.insertAt(e, slit)
+    surface = surface.insertAt(e, slit).surface()
     assert e != flatsurf.HalfEdge(1), "HalfEdge& not updated correctly in " + repr(surface)
     e = surface.nextAtVertex(e)
-    surface = surface.slit(e)
+    surface = surface.slit(e).surface()
 
     connections = surface.connections().bound(16).sector(flatsurf.HalfEdge(1))
     assert len([1 for c in connections]) == 15

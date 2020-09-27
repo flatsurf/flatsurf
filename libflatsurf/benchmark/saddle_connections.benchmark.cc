@@ -23,6 +23,7 @@
 #include <exact-real/integer_ring.hpp>
 
 #include "../flatsurf/bound.hpp"
+#include "../flatsurf/deformation.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/saddle_connection.hpp"
@@ -79,7 +80,7 @@ void SaddleConnectionsLWithSlot(State& state) {
 
   HalfEdge e(2);
 
-  auto LWithSlot = L->insertAt(e, vector).slit(e);
+  auto LWithSlot = L->insertAt(e, vector).surface().slit(e).surface();
 
   for (auto _ : state) {
     auto connections = SaddleConnections<FlatTriangulation<typename R2::Coordinate>>(LWithSlot).bound(bound).source(Vertex::source(e, LWithSlot));

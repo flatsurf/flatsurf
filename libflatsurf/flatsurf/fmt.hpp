@@ -65,7 +65,11 @@ struct fmt::formatter<::flatsurf::Vertical<Surface>> : ::flatsurf::GenericFormat
 template <typename Surface>
 struct fmt::formatter<::flatsurf::Chain<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::Chain<Surface>> {};
 template <typename Surface>
+struct fmt::formatter<::flatsurf::Deformation<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::Deformation<Surface>> {};
+template <typename Surface>
 struct fmt::formatter<::flatsurf::SaddleConnections<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::SaddleConnections<Surface>> {};
+template <typename Surface>
+struct fmt::formatter<::flatsurf::SaddleConnectionsByLength<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::SaddleConnectionsByLength<Surface>> {};
 template <typename Surface>
 struct fmt::formatter<::flatsurf::ContourConnection<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::ContourConnection<Surface>> {};
 template <typename Surface>

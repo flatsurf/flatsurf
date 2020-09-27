@@ -36,7 +36,7 @@ def test_addition():
 
     # A stretched L
     shift = [vector(0, L.fromHalfEdge(e.positive()).y()) for e in L.edges()]
-    L += shift
+    L = (L + shift).surface()
 
     for halfEdge in L.halfEdges():
         assert L.fromHalfEdge(halfEdge).y() != 1
@@ -50,7 +50,7 @@ def test_deformation_square(capsys):
 
     # Insert an extra vertex at (2, 1) that is easier to move around without
     # having to change the entire surface.
-    square = square.insertAt(flatsurf.HalfEdge(1), vector(2, 1))
+    square = square.insertAt(flatsurf.HalfEdge(1), vector(2, 1)).surface()
 
     # A forbidden shift, collapsing a half edge during the shift; this is
     # supposed to fail but it should fail silently.
@@ -90,7 +90,7 @@ def test_deformation_square(capsys):
     square + [shift(e) for e in square.edges()]
 
     # Insert a vertex in the other triangle so we can move both simultaneously
-    square = square.insertAt(flatsurf.HalfEdge(3), vector(1, 2))
+    square = square.insertAt(flatsurf.HalfEdge(3), vector(1, 2)).surface()
 
     # Shift both inserted vertices towards the same vertex simultaneously
     shift = lambda e: vector(-1, -2) if e in [Edge(4), Edge(5), Edge(6)] else vector(-2, -1) if e in [Edge(7), Edge(8), Edge(9)] else vector(0, 0)

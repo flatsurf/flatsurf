@@ -33,6 +33,7 @@
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/ccw.hpp"
+#include "../flatsurf/deformation.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/edge_set.hpp"
 #include "../flatsurf/half_edge.hpp"
@@ -55,7 +56,7 @@ using std::begin;
 using std::end;
 
 template <typename T>
-FlatTriangulation<T> FlatTriangulation<T>::operator+(const OddHalfEdgeMap<Vector<T>> &shift) const {
+Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfEdgeMap<Vector<T>> &shift) const {
   // Half edges that collapse at the end of the shift.
   EdgeSet collapsing;
 
@@ -201,7 +202,7 @@ FlatTriangulation<T> FlatTriangulation<T>::operator+(const OddHalfEdgeMap<Vector
       const auto lt = exactreal::Arb(s, exactreal::ARB_PRECISION_FAST) < t;
       if (lt && *lt) {
         const OddHalfEdgeMap<Vector<T>> partial(*this, [&](const HalfEdge he) { return shift.get(he) / s.get_den(); });
-        auto closer = *this + partial;
+        auto closer = (*this + partial).surface();
 
         const Tracked<OddHalfEdgeMap<Vector<T>>> remaining(closer, OddHalfEdgeMap<Vector<T>>(closer, [&](const HalfEdge he) { return shift.get(he) - partial.get(he); }), ImplementationOf<FlatTriangulation>::updateAfterFlip);
 
@@ -236,7 +237,7 @@ FlatTriangulation<T> FlatTriangulation<T>::operator+(const OddHalfEdgeMap<Vector
 }
 
 template <typename T>
-FlatTriangulation<T> FlatTriangulation<T>::eliminateMarkedPoints() const {
+Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() const {
   std::optional<HalfEdge> collapse;
 
   for (const auto &vertex : this->vertices()) {
@@ -257,7 +258,7 @@ FlatTriangulation<T> FlatTriangulation<T>::eliminateMarkedPoints() const {
 
   const auto marked = Vertex::source(*collapse, *this);
 
-  auto simplified = *this + OddHalfEdgeMap<Vector<T>>(*this, [&](const HalfEdge he) {
+  auto simplified = (*this + OddHalfEdgeMap<Vector<T>>(*this, [&](const HalfEdge he) {
     if (Vertex::source(he, *this) == marked && Vertex::target(he, *this) == marked)
       return Vector<T>();
     if (Vertex::source(he, *this) == marked)
@@ -266,7 +267,7 @@ FlatTriangulation<T> FlatTriangulation<T>::eliminateMarkedPoints() const {
       return fromHalfEdge(*collapse);
 
     return Vector<T>();
-  });
+  })).surface();
 
   ASSERT(simplified.vertices().size() < this->vertices().size(), "the numbers of vertices is reduced in each step but " << *this << " was simplified to " << simplified);
   return simplified.eliminateMarkedPoints();
@@ -341,7 +342,7 @@ FlatTriangulation<T> FlatTriangulation<T>::clone() const {
 }
 
 template <typename T>
-FlatTriangulation<T> FlatTriangulation<T>::slit(HalfEdge slit) const {
+Deformation<FlatTriangulation<T>> FlatTriangulation<T>::slit(HalfEdge slit) const {
   return FlatTriangulation(
       static_cast<const FlatTriangulationCombinatorial &>(*this).slit(slit),
       [&](HalfEdge e) {
@@ -353,7 +354,7 @@ FlatTriangulation<T> FlatTriangulation<T>::slit(HalfEdge slit) const {
 }
 
 template <typename T>
-FlatTriangulation<T> FlatTriangulation<T>::insertAt(HalfEdge &nextTo, const Vector<T> &slit) const {
+Deformation<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &nextTo, const Vector<T> &slit) const {
   CHECK_ARGUMENT(inSector(nextTo, slit), "vector must be contained in the sector next to the half edge");
 
   FlatTriangulation<T> surface = clone();
