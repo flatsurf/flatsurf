@@ -9,9 +9,9 @@
 
 * `FlatTriangulation::fromEdge` is now called `fromHalfEdge`.
 
-* `FlatTriangulation::slit` is now called `slot`.
+* `FlatTriangulation::slot` is now called `slit`.
 
-* `FlatTriangulationCombinatorial::slit` is now called `slot`.
+* `FlatTriangulationCombinatorial::slot` is now called `slit`.
 
 * `FlatTriangulation::fromEdgeApproximation` is now called `fromHalfEdgeApproximate`.
 
@@ -19,12 +19,12 @@
 
 * The serialization format (which we do not consider part of the stable API.)
 
-* Moved delaunay triangulation code into `FlatTriangulation` as a pair of
+* Moved Delaunay triangulation code into `FlatTriangulation` as a pair of
   `delaunay()` method.
 
 **Removed:**
 
-* Some workrarounds for bugs in cppyy. These are not necessary with the latest
+* Some workarounds for bugs in cppyy. These are not necessary with the latest
   cppyy 1.8.3 anymore.
 
 **Fixed:**
