@@ -68,6 +68,7 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/flat_triangulation.hpp                          \
 	../flatsurf/flat_triangulation_collapsed.hpp                \
 	../flatsurf/flat_triangulation_combinatorial.hpp            \
+	../flatsurf/flat_triangulation_combinatorics.hpp            \
 	../flatsurf/flatsurf.hpp                                    \
 	../flatsurf/flow_component.hpp                              \
 	../flatsurf/flow_connection.hpp                             \
@@ -81,6 +82,7 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/half_edge_set_iterator.hpp                      \
 	../flatsurf/interval_exchange_transformation.hpp            \
 	../flatsurf/local.hpp                                       \
+	../flatsurf/managed_movable.hpp                             \
 	../flatsurf/movable.hpp                                     \
 	../flatsurf/odd_half_edge_map.hpp                           \
 	../flatsurf/orientation.hpp                                 \
