@@ -122,6 +122,7 @@ noinst_HEADERS =                                                    \
 	impl/edge_set_iterator.impl.hpp                             \
 	impl/flat_triangulation_collapsed.impl.hpp                  \
 	impl/flat_triangulation_combinatorial.impl.hpp              \
+	impl/flat_triangulation_combinatorics.impl.hpp              \
 	impl/flat_triangulation.impl.hpp                            \
 	impl/flow_component.impl.hpp                                \
 	impl/flow_component_state.hpp                               \
@@ -137,6 +138,7 @@ noinst_HEADERS =                                                    \
 	impl/indexed_set_iterator.hpp                               \
 	impl/interval_exchange_transformation.impl.hpp              \
 	impl/lengths.hpp                                            \
+	impl/managed_movable.impl.hpp                               \
 	impl/path.impl.hpp                                          \
 	impl/path_iterator.impl.hpp                                 \
 	impl/quadratic_polynomial.hpp                               \
