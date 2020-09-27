@@ -151,6 +151,7 @@ noinst_HEADERS =                                                    \
 	impl/tracked.impl.hpp                                       \
 	impl/vertex.impl.hpp                                        \
 	impl/vertical.impl.hpp                                      \
+	impl/weak_read_only.hpp                                     \
 	util/assert.ipp                                             \
 	util/false.ipp                                              \
 	util/hash.ipp                                               \
