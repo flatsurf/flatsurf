@@ -4,6 +4,16 @@ intervalxt Change Log
 
 .. current developments
 
+v2.0.1
+====================
+
+**Fixed:**
+
+* Require a `libintervalxt` without known memory leaks
+* Explicitly clean up FLINT during test runs so we can find memory leaks with gperftools strict/draconian settings.
+
+
+
 v2.0.0
 ====================
 
