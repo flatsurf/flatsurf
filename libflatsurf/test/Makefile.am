@@ -1,4 +1,4 @@
-check_PROGRAMS = cereal.test quadratic_polynomial.test approximation.test half_edge.test chain.test vector_longlong.test contour_decomposition.test delaunay.test saddle_connections.test vector_exactreal.test permutation.test flat_triangulation_combinatorial.test flat_triangulation.test flow_decomposition.test flat_triangulation_collapsed.test vertex.test edge.test parabolic.test bound.test vector.test
+check_PROGRAMS = cereal.test quadratic_polynomial.test approximation.test half_edge.test chain.test contour_decomposition.test delaunay.test saddle_connections.test vector_exactreal.test permutation.test flat_triangulation_combinatorial.test flat_triangulation.test flow_decomposition.test flat_triangulation_collapsed.test vertex.test edge.test parabolic.test bound.test vector.test
 
 TESTS = $(check_PROGRAMS)
 
@@ -18,7 +18,6 @@ permutation_test_SOURCES = permutation.test.cc main.cc
 quadratic_polynomial_test_SOURCES = quadratic_polynomial.test.cc main.cc
 saddle_connections_test_SOURCES = saddle_connections.test.cc main.cc surfaces.hpp
 vector_exactreal_test_SOURCES = vector_exactreal.test.cc main.cc
-vector_longlong_test_SOURCES = vector_longlong.test.cc main.cc
 vertex_test_SOURCES = vertex.test.cc main.cc surfaces.hpp
 parabolic_test_SOURCES = parabolic.test.cc main.cc surfaces.hpp
 vector_test_SOURCES = vector.test.cc main.cc

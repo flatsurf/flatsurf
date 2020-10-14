@@ -230,14 +230,16 @@ class ImplementationOf<Vector<T>> : public Cartesian<T> {
 
   template <bool Enable = IsArb<T>, If<Enable> = true>
   operator std::optional<bool>() const {
-    auto maybe_x = this->x == Arb(0);
-    if (!maybe_x || !*maybe_x)
-      return maybe_x;
-    auto maybe_y = this->y == Arb(0);
-    if (!maybe_y || !*maybe_y)
-      return maybe_y;
+    const auto x = this->x != Arb(0);
+    const auto y = this->y != Arb(0);
 
-    return true;
+    if (x && y)
+      return *x || *y;
+    if (x && *x)
+      return true;
+    if (y && *y)
+      return true;
+    return std::nullopt;
   }
 
   template <bool Enable = IsArb<T>, If<Enable> = true>
