@@ -20,9 +20,8 @@
 #include <random>
 
 #include "../flatsurf/ccw.hpp"
-#include "../flatsurf/saddle_connections_sample.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
-
+#include "../flatsurf/saddle_connections_sample.hpp"
 #include "impl/saddle_connections_sample.impl.hpp"
 #include "impl/saddle_connections_sample_iterator.impl.hpp"
 
@@ -99,7 +98,7 @@ ImplementationOf<SaddleConnectionsSampleIterator<Surface>>::ImplementationOf(con
   current(connections.surface(), connections.self->sectors[0].source),
   rand(std::random_device()()) {}
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

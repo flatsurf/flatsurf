@@ -60,4 +60,3 @@ class SaddleConnectionsSampleIterator : public boost::iterator_facade<SaddleConn
 }  // namespace flatsurf
 
 #endif
-

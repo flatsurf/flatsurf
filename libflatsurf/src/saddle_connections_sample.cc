@@ -111,4 +111,3 @@ std::ostream& operator<<(std::ostream& os, const SaddleConnectionsSample<Surface
 #include "util/instantiate.ipp"
 
 LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION)(LIBFLATSURF_INSTANTIATE_HASH), SaddleConnectionsSample, LIBFLATSURF_FLAT_TRIANGULATION_TYPES)
-

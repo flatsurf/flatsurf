@@ -41,4 +41,3 @@ SaddleConnectionsSample<Surface>::SaddleConnectionsSample(PrivateConstructor, Ar
 }  // namespace flatsurf
 
 #endif
-
