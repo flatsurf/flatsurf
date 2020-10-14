@@ -213,12 +213,17 @@ class ImplementationOf<Vector<T>> : public Cartesian<T> {
 
   template <bool Enable = IsArb<T>, If<Enable> = true>
   std::optional<bool> operator<(const Bound bound) const {
+    if (!bound) return false;
     Arb size = (this->x * this->x + this->y * this->y)(ARB_PRECISION_FAST);
     return size < bound.squared();
   }
 
   template <bool Enable = IsArb<T>, If<Enable> = true>
   std::optional<bool> operator>(const Bound bound) const {
+    if (!bound) {
+      auto nonzero = static_cast<std::optional<bool>>(*this);
+      if (nonzero) return *nonzero;
+    }
     Arb size = (this->x * this->x + this->y * this->y)(ARB_PRECISION_FAST);
     return size > bound.squared();
   }
