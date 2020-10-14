@@ -47,10 +47,9 @@ $VERSION_BUMP_PATTERNS = [
     ('recipe/meta.yaml', r"\{% set build_number =", r"{% set build_number = '0' %}"),
 ]
 
-print("Make sure you bump the version_info in libflatsurf/configure.ac manually!")
-
 $CHANGELOG_FILENAME = 'ChangeLog'
 $CHANGELOG_TEMPLATE = 'TEMPLATE.rst'
+$CHANGELOG_CATEGORIES = ('Added', 'Changed', 'Deprecated', 'Removed', 'Fixed', 'Performance')
 $PUSH_TAG_REMOTE = 'git@github.com:flatsurf/flatsurf.git'
 
 $GITHUB_ORG = 'flatsurf'

@@ -11,7 +11,6 @@ original order in lists.
  conda_build/variants.py | 13 +++++--------
  2 files changed, 15 insertions(+), 14 deletions(-)
 
- @contextlib.contextmanager
 diff --git a/conda_build/variants.py b/conda_build/variants.py
 index c3cdae43..e91911d3 100644
 --- a/conda_build/variants.py
