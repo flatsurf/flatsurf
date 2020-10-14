@@ -42,6 +42,10 @@ const mpz_class& Bound::squared() const {
   return square;
 }
 
+Bound::operator bool() const {
+  return static_cast<bool>(square);
+}
+
 bool Bound::operator==(const Bound& rhs) const {
   return square == rhs.square;
 }

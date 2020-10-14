@@ -36,6 +36,11 @@ TEST_CASE("Bound Arithmetic", "[bound]") {
     REQUIRE(Bound(2, 2) > Bound(2));
     REQUIRE(Bound(3, 4) == Bound(5));
   }
+
+  SECTION("Non-zero Checks") {
+    REQUIRE(static_cast<bool>(Bound()) == false);
+    REQUIRE(static_cast<bool>(Bound(1)) == true);
+  }
 }
 
 }  // namespace flatsurf::test

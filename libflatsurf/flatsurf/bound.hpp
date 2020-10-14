@@ -54,6 +54,9 @@ class Bound : boost::totally_ordered<Bound>, boost::multipliable<Bound, mpz_clas
   // Return the floor division by this bound.
   mpz_class operator/(const Bound&) const;
 
+  // Return whether this is not the zero bound.
+  explicit operator bool() const;
+
   friend std::ostream& operator<<(std::ostream&, const Bound&);
 
  private:
