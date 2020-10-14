@@ -47,6 +47,12 @@ class SaddleConnectionsByLength {
   // Return the configured bound of these saddle connections, if any.
   std::optional<Bound> bound() const;
 
+  // Return only the saddle connections whose length exceeds the given bound.
+  SaddleConnectionsByLength lowerBound(Bound) const;
+
+  // Return the configured lower bound, if any.
+  std::optional<Bound> lowerBound() const;
+
   // Return only the saddle connections starting at the source of sectorBegin
   // that lie in the sector between sectorBegin (inclusive) and the following
   // half edge (exclusive) in counter-clockwise order.
@@ -70,6 +76,9 @@ class SaddleConnectionsByLength {
   // Return the saddle connections sorted by increasing length.
   // Note that this just returns this object unchanged.
   SaddleConnectionsByLength& byLength() const;
+
+  // Return the saddle connections randomly sampled.
+  SaddleConnectionsSample<Surface> sample() const;
 
   const Surface& surface() const;
 

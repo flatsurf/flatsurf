@@ -23,6 +23,7 @@
 
 #include <exact-real/element.hpp>
 #include <exact-real/number_field.hpp>
+#include <unordered_set>
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/ccw.hpp"
@@ -35,6 +36,8 @@
 #include "../flatsurf/saddle_connections_by_length.hpp"
 #include "../flatsurf/saddle_connections_by_length_iterator.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
+#include "../flatsurf/saddle_connections_sample.hpp"
+#include "../flatsurf/saddle_connections_sample_iterator.hpp"
 #include "../flatsurf/vector.hpp"
 #include "external/catch2/single_include/catch2/catch.hpp"
 #include "generators/saddle_connections_generator.hpp"
@@ -174,69 +177,88 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Surface", "[saddle_connections]", (l
   const auto surface = *surface_;
 
   GIVEN("The surface " << *name << ", i.e., " << *surface) {
-    // Unfortunately, these tests take a long time (one minute in late 2020) so
-    // we can only run this for a small number of saddle connections.
-    const auto connection = GENERATE_REF(saddleConnections(surface, 3));
-    const auto bound = Bound::upper(connection.vector());
+    SECTION("Connections In Sectors") {
+      // Unfortunately, these tests take a long time (one minute in late 2020) so
+      // we can only run this for a small number of saddle connections.
+      const auto connection = GENERATE_REF(saddleConnections(surface, 3));
+      const auto bound = Bound::upper(connection.vector());
 
-    AND_GIVEN("The saddle connection " << connection) {
-      THEN("There is exactly that saddle connection in the sector bounded by this connection") {
-        const auto connections_ = surface->connections().bound(2 * bound).sector(connection, connection);
-        REQUIRE(std::distance(begin(connections_), end(connections_)) == 1);
+      AND_GIVEN("The saddle connection " << connection) {
+        THEN("There is exactly that saddle connection in the sector bounded by this connection") {
+          const auto connections_ = surface->connections().bound(2 * bound).sector(connection, connection);
+          REQUIRE(std::distance(begin(connections_), end(connections_)) == 1);
+        }
+
+        THEN("There is at least that saddle connection in the sector bounded by this connection's direction") {
+          const auto connections_ = surface->connections().bound(2 * bound).sector(connection.vector(), connection.vector());
+          REQUIRE(std::distance(begin(connections_), end(connections_)) >= 1);
+        }
+
+        THEN("There is at exactly that saddle connection in the sector bounded by this connection's direction and starting from the same half edge") {
+          const auto connections_ = surface->connections().bound(2 * bound).sector(connection.vector(), connection.vector()).sector(connection.source());
+          REQUIRE(std::distance(begin(connections_), end(connections_)) == 1);
+        }
       }
 
-      THEN("There is at least that saddle connection in the sector bounded by this connection's direction") {
-        const auto connections_ = surface->connections().bound(2 * bound).sector(connection.vector(), connection.vector());
-        REQUIRE(std::distance(begin(connections_), end(connections_)) >= 1);
-      }
+      AND_GIVEN("Two connections that define sectors that cover the entire plane") {
+        const auto sectorBegin = connection;
+        const auto sectorEnd = GENERATE_REF(saddleConnections(surface, 3));
 
-      THEN("There is at exactly that saddle connection in the sector bounded by this connection's direction and starting from the same half edge") {
-        const auto connections_ = surface->connections().bound(2 * bound).sector(connection.vector(), connection.vector()).sector(connection.source());
-        REQUIRE(std::distance(begin(connections_), end(connections_)) == 1);
+        if (sectorBegin != sectorEnd && Vertex::source(sectorBegin.source(), *surface) == Vertex::source(sectorEnd.source(), *surface)) {
+          const auto connectionsAtSource = surface->connections().bound(bound).source(Vertex::source(sectorBegin.source(), *surface));
+          const auto countAtSource = std::distance(begin(connectionsAtSource), end(connectionsAtSource));
+
+          THEN("All connections can be found in either sector") {
+            CAPTURE(sectorBegin);
+            CAPTURE(sectorEnd);
+
+            const auto first = surface->connections().bound(bound).sector(sectorBegin, sectorEnd);
+            CAPTURE(std::distance(begin(first), end(first)));
+
+            const auto second = surface->connections().bound(bound).sector(sectorEnd, sectorBegin);
+            CAPTURE(std::distance(begin(second), end(second)));
+
+            REQUIRE(std::distance(begin(first), end(first)) + std::distance(begin(second), end(second)) == countAtSource);
+          }
+        }
+
+        if (sectorBegin.vector().ccw(sectorEnd.vector()) != CCW::COLLINEAR || sectorBegin.vector().orientation(sectorEnd.vector()) != ORIENTATION::SAME) {
+          const auto connections = surface->connections().bound(bound);
+          const auto count = std::distance(begin(connections), end(connections));
+
+          THEN("All connections can be found in either sector given by the vectors of the connections") {
+            CAPTURE(sectorBegin.vector());
+            CAPTURE(sectorEnd.vector());
+
+            const auto first = surface->connections().bound(bound).sector(sectorBegin.vector(), sectorEnd.vector());
+            CAPTURE(std::distance(begin(first), end(first)));
+
+            const auto second = surface->connections().bound(bound).sector(sectorEnd.vector(), sectorBegin.vector());
+            CAPTURE(std::distance(begin(second), end(second)));
+
+            REQUIRE(std::distance(begin(first), end(first)) + std::distance(begin(second), end(second)) == count);
+          }
+        }
       }
     }
 
-    AND_GIVEN("Two connections that define sectors that cover the entire plane") {
-      const auto sectorBegin = connection;
-      const auto sectorEnd = GENERATE_REF(saddleConnections(surface, 3));
+    SECTION("A Random Sample Of Connections does not Contain Duplicates") {
+      const auto bound = GENERATE(Bound(0), Bound(2));
 
-      if (sectorBegin != sectorEnd && Vertex::source(sectorBegin.source(), *surface) == Vertex::source(sectorEnd.source(), *surface)) {
-        const auto connectionsAtSource = surface->connections().bound(bound).source(Vertex::source(sectorBegin.source(), *surface));
-        const auto countAtSource = std::distance(begin(connectionsAtSource), end(connectionsAtSource));
+      std::unordered_set<SaddleConnection<FlatTriangulation<T>>> seen;
 
-        THEN("All connections can be found in either sector") {
-          CAPTURE(sectorBegin);
-          CAPTURE(sectorEnd);
+      const auto connections = surface->connections().sample().lowerBound(bound);
 
-          const auto first = surface->connections().bound(bound).sector(sectorBegin, sectorEnd);
-          CAPTURE(std::distance(begin(first), end(first)));
+      for (auto connection : connections) {
+        CAPTURE(connection);
 
-          const auto second = surface->connections().bound(bound).sector(sectorEnd, sectorBegin);
-          CAPTURE(std::distance(begin(second), end(second)));
+        REQUIRE(seen.find(connection) == seen.end());
 
-          REQUIRE(std::distance(begin(first), end(first)) + std::distance(begin(second), end(second)) == countAtSource);
-        }
-      }
+        seen.insert(connection);
 
-      if (sectorBegin.vector().ccw(sectorEnd.vector()) != CCW::COLLINEAR || sectorBegin.vector().orientation(sectorEnd.vector()) != ORIENTATION::SAME) {
-        const auto connections = surface->connections().bound(bound);
-        const auto count = std::distance(begin(connections), end(connections));
-
-        THEN("All connections can be found in either sector given by the vectors of the connections") {
-          CAPTURE(sectorBegin.vector());
-          CAPTURE(sectorEnd.vector());
-
-          const auto first = surface->connections().bound(bound).sector(sectorBegin.vector(), sectorEnd.vector());
-          CAPTURE(std::distance(begin(first), end(first)));
-
-          const auto second = surface->connections().bound(bound).sector(sectorEnd.vector(), sectorBegin.vector());
-          CAPTURE(std::distance(begin(second), end(second)));
-
-          REQUIRE(std::distance(begin(first), end(first)) + std::distance(begin(second), end(second)) == count);
-        }
+        if (seen.size() > 16) break;
       }
     }
   }
 }
-
 }  // namespace flatsurf::test

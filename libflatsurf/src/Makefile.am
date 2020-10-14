@@ -44,6 +44,8 @@ libflatsurf_la_SOURCES =                                            \
 	saddle_connections_by_length.cc                             \
 	saddle_connections_iterator.cc                              \
 	saddle_connections_by_length_iterator.cc                    \
+	saddle_connections_sample.cc                                \
+	saddle_connections_sample_iterator.cc                       \
 	tracked.cc                                                  \
 	vector/vector.cc                                            \
 	vertex.cc                                                   \
@@ -96,6 +98,8 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/saddle_connections_by_length.hpp                \
 	../flatsurf/saddle_connections_iterator.hpp                 \
 	../flatsurf/saddle_connections_by_length_iterator.hpp       \
+	../flatsurf/saddle_connections_sample.hpp                   \
+	../flatsurf/saddle_connections_sample_iterator.hpp          \
 	../flatsurf/serializable.hpp                                \
 	../flatsurf/tracked.hpp                                     \
 	../flatsurf/vector.hpp                                      \
@@ -151,6 +155,8 @@ noinst_HEADERS =                                                    \
 	impl/saddle_connections_by_length.impl.hpp                  \
 	impl/saddle_connections_iterator.impl.hpp                   \
 	impl/saddle_connections_by_length_iterator.impl.hpp         \
+	impl/saddle_connections_sample.impl.hpp                     \
+	impl/saddle_connections_sample_iterator.impl.hpp            \
 	impl/tracked.impl.hpp                                       \
 	impl/vertex.impl.hpp                                        \
 	impl/vertical.impl.hpp                                      \

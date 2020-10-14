@@ -54,12 +54,8 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::prepareSearch() {
   assert(tmp.size() == 0);
   assert(moves.size() == 0);
 
-  if (!connections.searchRadius)
-    throw std::logic_error("search radius must be finite when iterating connections by angle");
-
-  if (sector == end) {
+  if (sector == end)
     return;
-  }
 
   const HalfEdge e = sector->source;
 
@@ -87,7 +83,7 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::prepareSearch() {
   const auto initial = SaddleConnection(*connections.surface, e);
   if (std::holds_alternative<Vector<T>>(boundary[0]) && sector->contains(initial))
     boundary[0] = Chain(*connections.surface) + e;
-  if (initial > *connections.searchRadius || !sector->contains(initial)) {
+  if ((connections.searchRadius && initial > *connections.searchRadius) || !sector->contains(initial) || initial <= connections.lowerBound) {
     while (!increment())
       ;
   }
@@ -151,7 +147,7 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
 
       switch (classifyHalfEdgeEnd()) {
         case Classification::OUTSIDE_SEARCH_SECTOR_CLOCKWISE: {
-          const bool nothingBeyondThisVertex = !(nextEdgeEnd < *connections.searchRadius);
+          const bool nothingBeyondThisVertex = connections.searchRadius && !(nextEdgeEnd < *connections.searchRadius);
 
           // This vertex is outside of the search sector on the
           // clockwise side, we skip the clockwise sector in the recursive
@@ -165,7 +161,7 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
           return false;
         }
         case Classification::OUTSIDE_SEARCH_SECTOR_COUNTERCLOCKWISE: {
-          const bool nothingBeyondThisVertex = !(nextEdgeEnd < *connections.searchRadius);
+          const bool nothingBeyondThisVertex = connections.searchRadius && !(nextEdgeEnd < *connections.searchRadius);
 
           // Similarly, we skip the counterclockwise sector (but only after
           // we visited the clockwise one.)
@@ -176,7 +172,7 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
           return false;
         }
         case Classification::SADDLE_CONNECTION: {
-          const bool beyondRadius = nextEdgeEnd > *connections.searchRadius;
+          const bool beyondRadius = connections.searchRadius && nextEdgeEnd > *connections.searchRadius;
 
           // Prepare the recursive descent into the two half edges attached
           // to this vertex.
@@ -202,7 +198,7 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
             return false;
           } else {
             state.push_back(State::SADDLE_CONNECTION_FOUND);
-            return true;
+            return nextEdgeEnd > connections.lowerBound;
           }
         }
         default:
@@ -448,7 +444,7 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::pushStart(bool fromOu
 
 template <typename Surface>
 bool SaddleConnectionsIterator<Surface>::equal(const SaddleConnectionsIterator<Surface>& other) const {
-  if (*self->connections.surface == *other.self->connections.surface && *self->connections.searchRadius == *other.self->connections.searchRadius && self->sector == other.self->sector && self->end == other.self->end) {
+  if (*self->connections.surface == *other.self->connections.surface && self->connections.lowerBound == other.self->connections.lowerBound && self->connections.searchRadius == other.self->connections.searchRadius && self->sector == other.self->sector && self->end == other.self->end) {
     if (self->sector == self->end)
       return true;
 
@@ -510,7 +506,8 @@ const SaddleConnection<Surface>& SaddleConnectionsIterator<Surface>::dereference
       ASSERT(false, "iterator cannot hold in this state");
   }
 
-  ASSERT(self->connection <= *self->connections.searchRadius, "Iterator stopped at connection " << self->connection << " which is beyond the search radius " << *self->connections.searchRadius);
+  ASSERT(!self->connections.searchRadius || self->connection <= *self->connections.searchRadius, "Iterator stopped at connection " << self->connection << " which is beyond the search radius " << *self->connections.searchRadius);
+  ASSERT(self->connection > self->connections.lowerBound, "Iterator stopped at connection " << self->connection << " which is within the excluded lower bound " << self->connections.lowerBound);
 
   return self->connection;
 }

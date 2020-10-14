@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_SADDLE_CONNECTIONS_HPP
-#define LIBFLATSURF_SADDLE_CONNECTIONS_HPP
+#ifndef LIBFLATSURF_SADDLE_CONNECTIONS_SAMPLE_HPP
+#define LIBFLATSURF_SADDLE_CONNECTIONS_SAMPLE_HPP
 
 #include "copyable.hpp"
 #include "half_edge.hpp"
@@ -27,62 +27,61 @@
 namespace flatsurf {
 
 // The sequence of Saddle Connections on a triangulation translation surface
-// sorted by increasing angle around each vertex.
+// randomly sampled.
+// The distribution of the randomly selected connections should be considered
+// an implementation detail but is probably nothing that can be relied on for
+// statistical purposes. Roughly, we walk the triangulation randomly and return
+// saddle connections as we see them. This process gives a strong preference to
+// short connections (in particular initially.)
 template <typename Surface>
-class SaddleConnections {
+class SaddleConnectionsSample {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
   using T = typename Surface::Coordinate;
 
+  template <typename... Args>
+  SaddleConnectionsSample(PrivateConstructor, Args&&... args);
+
  public:
-  using ByLength = SaddleConnectionsByLength<Surface>;
-  using ByAngle = SaddleConnections;
-  using Sample = SaddleConnectionsSample<Surface>;
+  SaddleConnectionsSample(const SaddleConnections<Surface> &);
 
-  SaddleConnections(const Surface &);
+  // Return the configured lower bound.
+  std::optional<Bound> lowerBound() const;
 
-  // Return only the saddle connections whose length is at most the given bound.
-  SaddleConnections<Surface> bound(Bound) const;
+  // Return only saddle connections whose length exceeds the lower bound.
+  SaddleConnectionsSample lowerBound(Bound) const;
 
-  // Return the configured bound of these saddle connections, if any.
+  // Return the configured bound.
   std::optional<Bound> bound() const;
 
-  // Return only the saddle connections whose length is at most the given bound.
-  SaddleConnections<Surface> lowerBound(Bound) const;
-
-  // Return the configured bound of these saddle connections, if any.
-  std::optional<Bound> lowerBound() const;
+  // Return only saddle connections whose length does not exceed the bound.
+  SaddleConnectionsSample bound(Bound) const;
 
   // Return only the saddle connections starting at the source of sectorBegin
   // that lie in the sector between sectorBegin (inclusive) and the following
   // half edge (exclusive) in counter-clockwise order.
-  SaddleConnections<Surface> sector(HalfEdge sectorBegin) const;
+  SaddleConnectionsSample sector(HalfEdge sectorBegin) const;
 
   // Return only the saddle connections starting at source of sectorBegin that
   // lie in sector between sectorBegin (inclusive) and sectorEnd (exclusive.)
-  SaddleConnections<Surface> sector(const SaddleConnection<Surface> &sectorBegin, const SaddleConnection<Surface> &sectorEnd) const;
+  SaddleConnectionsSample sector(const SaddleConnection<Surface> &sectorBegin, const SaddleConnection<Surface> &sectorEnd) const;
 
   // Return only the saddle connections whose directions lies in sector between
   // sectorBegin (inclusive) and sectorEnd (exclusive.)
-  SaddleConnections<Surface> sector(const Vector<T> &sectorBegin, const Vector<T> &sectorEnd) const;
+  SaddleConnectionsSample sector(const Vector<T> &sectorBegin, const Vector<T> &sectorEnd) const;
 
   // Return only the saddle connections starting at source.
-  SaddleConnections<Surface> source(const Vertex &source) const;
+  SaddleConnectionsSample source(const Vertex &source) const;
 
-  // Return the saddle connections around each source vertex sorted by
-  // increasing angles (counterclockwise.) Note that this just returns this
-  // object unchanged.
-  SaddleConnection<Surface> &byAngle() const;
+  // Return the saddle connections ordered by increasing angle.
+  SaddleConnections<Surface> byAngle() const;
 
   // Return the saddle connections sorted by increasing length.
-  ByLength byLength() const;
-
-  // Return the saddle connections randomly sampled.
-  Sample sample() const;
+  SaddleConnectionsByLength<Surface> byLength() const;
 
   const Surface &surface() const;
 
-  using iterator = SaddleConnectionsIterator<Surface>;
+  using iterator = SaddleConnectionsSampleIterator<Surface>;
 
   // Return an iterator through the saddle connections. The iteration is
   // counterclockwise around each vertex.
@@ -91,20 +90,18 @@ class SaddleConnections {
   iterator end() const;
 
   template <typename S>
-  friend std::ostream &operator<<(std::ostream &, const SaddleConnections<S> &);
+  friend std::ostream &operator<<(std::ostream &, const SaddleConnectionsSample<S> &);
 
  private:
-  Copyable<SaddleConnections> self;
+  Copyable<SaddleConnectionsSample> self;
 
-  friend ImplementationOf<SaddleConnections>;
+  friend ImplementationOf<SaddleConnectionsSample>;
   friend iterator;
   friend ImplementationOf<iterator>;
-  friend SaddleConnectionsByLength<Surface>;
-  friend SaddleConnectionsSample<Surface>;
 };
 
 template <typename Surface>
-SaddleConnections(const Surface &) -> SaddleConnections<Surface>;
+SaddleConnectionsSample(const Surface &) -> SaddleConnectionsSample<Surface>;
 
 }  // namespace flatsurf
 

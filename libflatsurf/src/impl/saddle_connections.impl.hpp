@@ -55,6 +55,7 @@ class ImplementationOf<SaddleConnections<Surface>> {
   ReadOnly<Surface> surface;
   std::vector<Sector> sectors;
   std::optional<Bound> searchRadius;
+  Bound lowerBound;
 };
 
 }  // namespace flatsurf
