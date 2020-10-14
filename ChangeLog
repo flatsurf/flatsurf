@@ -4,6 +4,29 @@ intervalxt Change Log
 
 .. current developments
 
+v2.1.0
+====================
+
+**Added:**
+
+* operator bool for Bound to check whether a Bound is non-zero
+
+**Performance:**
+
+* improved vector operations with trivial bounds
+* `SaddleConnectionsSample` to iterate through saddle connections randomly
+
+**Changed:**
+
+* `SaddleConnections` can now be iterated indefinitely without giving a bound.
+* `SaddleConnections` and `SaddleConnectionsByLength` now support a `lowerBound`.
+
+**Fixed:**
+
+* fixed operator bool of `Vector<Arb>`
+
+
+
 v2.0.1
 ====================
 
