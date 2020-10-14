@@ -36,6 +36,7 @@
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections_by_length.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
+#include "../flatsurf/saddle_connections_sample.hpp"
 #include "../flatsurf/vector.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/saddle_connections.impl.hpp"
@@ -54,6 +55,26 @@ SaddleConnections<Surface> SaddleConnections<Surface>::bound(const Bound searchR
   SaddleConnections<Surface> ret(self->surface);
   ret.self = self;
   ret.self->searchRadius = ret.self->searchRadius ? std::min(*ret.self->searchRadius, searchRadius) : searchRadius;
+  return ret;
+}
+
+template <typename Surface>
+std::optional<Bound> SaddleConnections<Surface>::lowerBound() const {
+  if (self->lowerBound)
+    return self->lowerBound;
+  return std::nullopt;
+}
+
+template <typename Surface>
+std::optional<Bound> SaddleConnections<Surface>::bound() const {
+  return self->searchRadius;
+}
+
+template <typename Surface>
+SaddleConnections<Surface> SaddleConnections<Surface>::lowerBound(const Bound bound) const {
+  SaddleConnections<Surface> ret(self->surface);
+  ret.self = self;
+  ret.self->lowerBound = std::max(ret.self->lowerBound, bound);
   return ret;
 }
 
@@ -148,6 +169,11 @@ typename SaddleConnections<Surface>::iterator SaddleConnections<Surface>::end() 
 template <typename Surface>
 SaddleConnectionsByLength<Surface> SaddleConnections<Surface>::byLength() const {
   return SaddleConnectionsByLength<Surface>(*this);
+}
+
+template <typename Surface>
+SaddleConnectionsSample<Surface> SaddleConnections<Surface>::sample() const {
+  return SaddleConnectionsSample<Surface>(*this);
 }
 
 template <typename Surface>

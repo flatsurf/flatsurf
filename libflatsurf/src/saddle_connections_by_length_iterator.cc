@@ -28,6 +28,9 @@
 
 namespace flatsurf {
 
+using std::begin;
+using std::end;
+
 template <typename Surface>
 void SaddleConnectionsByLengthIterator<Surface>::increment() {
   ASSERT(!self->connectionsWithinBounds.empty(), "cannot increment iterator at end");
@@ -84,12 +87,13 @@ void ImplementationOf<SaddleConnectionsByLengthIterator<Surface>>::increment() {
     }
 
     // Fill connectionsWithinBounds with all connections between [lowerBoundInclusive, upperBoundExclusive)
-    auto withinBounds = connections.byAngle().bound(upperBoundInclusive) | rx::filter([&](const auto& connection) { return connection > lowerBoundExclusive; }) | rx::to_vector();
+    auto withinBounds = connections.byAngle().bound(upperBoundInclusive).lowerBound(lowerBoundExclusive) | rx::to_vector();
     std::sort(begin(withinBounds), end(withinBounds), [](const auto& lhs, const auto& rhs) {
       const auto a = lhs.vector();
       const auto b = rhs.vector();
       return a * a < b * b;
     });
+
     std::copy(rbegin(withinBounds), rend(withinBounds), std::back_inserter(connectionsWithinBounds));
   }
 }

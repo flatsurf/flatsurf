@@ -139,6 +139,12 @@ class SaddleConnectionsByLengthIterator;
 template <typename Surface>
 class SaddleConnectionsIterator;
 
+template <typename Surface>
+class SaddleConnectionsSample;
+
+template <typename Surface>
+class SaddleConnectionsSampleIterator;
+
 template <typename T>
 class Serializable;
 

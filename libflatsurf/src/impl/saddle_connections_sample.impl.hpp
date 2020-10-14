@@ -17,30 +17,27 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "../flatsurf/bound.hpp"
-#include "external/catch2/single_include/catch2/catch.hpp"
+#ifndef LIBFLATSURF_SADDLE_CONNECTIONS_SAMPLE_IMPL_HPP
+#define LIBFLATSURF_SADDLE_CONNECTIONS_SAMPLE_IMPL_HPP
 
-namespace flatsurf::test {
+#include "../../flatsurf/saddle_connections_sample.hpp"
+#include "saddle_connections.impl.hpp"
 
-TEST_CASE("Bound Arithmetic", "[bound]") {
-  REQUIRE(Bound() < Bound(1));
+namespace flatsurf {
 
-  SECTION("Multiplication works as expected") {
-    REQUIRE(Bound(1) < 2 * Bound(1));
-    REQUIRE(Bound(2) == 2 * Bound(1));
-  }
+template <typename Surface>
+class ImplementationOf<SaddleConnectionsSample<Surface>> : public ImplementationOf<SaddleConnections<Surface>> {
+  using T = typename Surface::Coordinate;
 
-  SECTION("Bounds in Two Variables Compare Like Vector Lengths") {
-    REQUIRE(Bound(1, 0) <= Bound(1));
-    REQUIRE(Bound(1, 1) <= Bound(2));
-    REQUIRE(Bound(2, 2) > Bound(2));
-    REQUIRE(Bound(3, 4) == Bound(5));
-  }
+ public:
+  ImplementationOf(const ImplementationOf<SaddleConnections<Surface>>& connections);
+};
 
-  SECTION("Non-zero Checks") {
-    REQUIRE(static_cast<bool>(Bound()) == false);
-    REQUIRE(static_cast<bool>(Bound(1)) == true);
-  }
-}
+template <typename Surface>
+template <typename... Args>
+SaddleConnectionsSample<Surface>::SaddleConnectionsSample(PrivateConstructor, Args&&... args) :
+  self(spimpl::make_impl<ImplementationOf<SaddleConnectionsSample>>(std::forward<Args>(args)...)) {}
 
-}  // namespace flatsurf::test
+}  // namespace flatsurf
+
+#endif

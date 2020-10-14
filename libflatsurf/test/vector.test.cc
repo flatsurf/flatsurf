@@ -20,6 +20,7 @@
 
 #include <e-antic/renfxx.h>
 
+#include <exact-real/arb.hpp>
 #include <exact-real/element.hpp>
 #include <exact-real/module.hpp>
 #include <exact-real/number_field.hpp>
@@ -27,6 +28,7 @@
 #include <set>
 
 #include "../flatsurf/bound.hpp"
+#include "../flatsurf/ccw.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
@@ -67,7 +69,7 @@ TEMPLATE_TEST_CASE("Vector Slopes", "[vector]", (long long), (mpz_class), (mpq_c
     auto square = makeSquare<V>();
 
     std::set<V, typename V::CompareSlope> slopes;
-    for (auto connection : SaddleConnections(*square).bound(1))
+    for (auto connection : SaddleConnections<FlatTriangulation<T>>(*square).bound(1))
       slopes.insert(connection.vector());
 
     REQUIRE(slopes.size() == 3);
@@ -91,6 +93,47 @@ TEMPLATE_TEST_CASE("Vector Sector Containment", "[vector][inSector]", (long long
   SECTION("A Vector is Not Contained in the Sector Ending at Itself") {
     V v(1, 0);
     REQUIRE(!v.inSector(-v, v));
+  }
+}
+
+TEMPLATE_TEST_CASE("Exact Vectors", "[vector]", (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+  using V = Vector<T>;
+
+  SECTION("CCWs are Computed") {
+    V v(2, 3);
+
+    REQUIRE(v.ccw(V(1, 2)) == CCW::COUNTERCLOCKWISE);
+    REQUIRE(v.ccw(V(-1, -1)) == CCW::COUNTERCLOCKWISE);
+    REQUIRE(v.ccw(V(0, -1)) == CCW::CLOCKWISE);
+  }
+
+  SECTION("Non-Zero Detection") {
+    REQUIRE(static_cast<bool>(V(2, 3)) == true);
+    REQUIRE(static_cast<bool>(V()) == false);
+  }
+
+  SECTION("Printing") {
+    REQUIRE(boost::lexical_cast<std::string>(V(2, 3)) == "(2, 3)");
+  }
+}
+
+TEMPLATE_TEST_CASE("Inexact Vectors", "[vector]", (exactreal::Arb)) {
+  using T = TestType;
+  using V = Vector<T>;
+
+  SECTION("Non-Zero Checks") {
+    REQUIRE(static_cast<std::optional<bool>>(V()) == false);
+    REQUIRE(static_cast<std::optional<bool>>(V(1, 1)) == true);
+
+    // A ball containing zero.
+    T ball({Arf(-1), Arf(1)});
+
+    REQUIRE(static_cast<std::optional<bool>>(V(ball, 0)) == std::nullopt);
+    REQUIRE(static_cast<std::optional<bool>>(V(ball, ball)) == std::nullopt);
+    REQUIRE(static_cast<std::optional<bool>>(V(ball, 1)) == true);
+    REQUIRE(static_cast<std::optional<bool>>(V(0, ball)) == std::nullopt);
+    REQUIRE(static_cast<std::optional<bool>>(V(1, ball)) == true);
   }
 }
 

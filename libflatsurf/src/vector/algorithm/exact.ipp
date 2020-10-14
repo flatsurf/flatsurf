@@ -67,6 +67,8 @@ bool VectorExact<Vector, T>::operator<(Bound bound) const {
   using Implementation = ImplementationOf<Vector>;
   const Vector& self = static_cast<const Vector&>(*this);
 
+  if (!bound) return false;
+
   if constexpr (has_lt_bound<Implementation>) {
     return *self.self < bound;
   } else if constexpr (is_forward_v<Implementation>) {
@@ -96,6 +98,8 @@ bool VectorExact<Vector, T>::operator>(Bound bound) const {
       return *maybe;
     return static_cast<const typename Implementation::Exact>(*self.self) > bound;
   } else {
+    if (!bound) return static_cast<bool>(self);
+
     return self.x() * self.x() + self.y() * self.y() > ::gmpxxll::mpz_class(bound.squared());
   }
 }

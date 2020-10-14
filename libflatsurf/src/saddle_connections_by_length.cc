@@ -58,6 +58,11 @@ std::optional<Bound> SaddleConnectionsByLength<Surface>::bound() const {
 }
 
 template <typename Surface>
+std::optional<Bound> SaddleConnectionsByLength<Surface>::lowerBound() const {
+  return byAngle().lowerBound();
+}
+
+template <typename Surface>
 SaddleConnections<Surface> SaddleConnectionsByLength<Surface>::byAngle() const {
   SaddleConnections<Surface> connections(self->surface);
   *connections.self = *self;
@@ -67,6 +72,11 @@ SaddleConnections<Surface> SaddleConnectionsByLength<Surface>::byAngle() const {
 template <typename Surface>
 SaddleConnectionsByLength<Surface> SaddleConnectionsByLength<Surface>::bound(Bound bound) const {
   return this->byAngle().bound(bound).byLength();
+}
+
+template <typename Surface>
+SaddleConnectionsByLength<Surface> SaddleConnectionsByLength<Surface>::lowerBound(Bound bound) const {
+  return this->byAngle().lowerBound(bound).byLength();
 }
 
 template <typename Surface>
