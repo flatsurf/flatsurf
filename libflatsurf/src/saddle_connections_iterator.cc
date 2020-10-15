@@ -78,8 +78,8 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::prepareSearch() {
   state.push_back(State::END);
   state.push_back(State::START_FROM_INSIDE_TO_INSIDE);
 
-  // Report the half edge "e" as a saddle connection unless it is already
-  // outside the search scope.
+  // Report the half edge "e" as a saddle connection unless it is outside the
+  // search scope.
   const auto initial = SaddleConnection(*connections.surface, e);
   if (std::holds_alternative<Vector<T>>(boundary[0]) && sector->contains(initial))
     boundary[0] = Chain(*connections.surface) + e;
