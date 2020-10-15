@@ -29,50 +29,7 @@ namespace flatsurf {
 
 template <typename Surface>
 void SaddleConnectionsSampleIterator<Surface>::increment() {
-  if (self->connections.bound())
-    throw std::logic_error("not implemented: random sampling of saddle connections is not implemented when there is an upper bound set");
-
-  const auto& sectors = self->connections.self->sectors;
-
-  if (sectors.size() == 0)
-    throw std::logic_error("not implemented: random sampling of empty sets of saddle connections is not implemented");
-
-  std::uniform_int_distribution<> sector_distribution(0, static_cast<int>(sectors.size()) - 1);
-  auto& sector = sectors[sector_distribution(self->rand)];
-
-  auto connections = self->connections.byAngle().sector(sector.source);
-  ASSERT(!sector.sector || sector.sector->first != sector.sector->second, "SaddleConnections contains an empty sector, such sectors should have been thrown out from the list of sectors");
-
-  const auto sectorBegin = sector.sector ? sector.sector->first : self->connections.surface().fromHalfEdge(sector.source);
-  const auto sectorEnd = sector.sector ? sector.sector->second : self->connections.surface().fromHalfEdge(self->connections.surface().nextAtVertex(sector.source));
-
-  using std::begin;
-  using std::end;
-
-  std::uniform_int_distribution<> ccw_distribution(0, 1);
-
-  auto it = begin(connections);
-  it++;
-  while (true) {
-    self->current = *it;
-
-    if (self->seen.find(self->current) != end(self->seen)) {
-      if (self->current.vector() == sectorBegin)
-        it.skipSector(CCW::CLOCKWISE);
-      else if (self->current.vector() == sectorEnd)
-        it.skipSector(CCW::COUNTERCLOCKWISE);
-      else if (ccw_distribution(self->rand) % 2)
-        it.skipSector(CCW::CLOCKWISE);
-      else
-        it.skipSector(CCW::COUNTERCLOCKWISE);
-
-      ++it;
-      continue;
-    }
-
-    self->seen.insert(self->current);
-    return;
-  }
+  self->increment();
 }
 
 template <typename Surface>
@@ -96,7 +53,57 @@ ImplementationOf<SaddleConnectionsSampleIterator<Surface>>::ImplementationOf(con
   connections(connections),
   seen(),
   current(connections.surface(), connections.self->sectors[0].source),
-  rand(std::random_device()()) {}
+  rand(std::random_device()()) {
+  increment();
+}
+
+template <typename Surface>
+void ImplementationOf<SaddleConnectionsSampleIterator<Surface>>::increment() {
+  if (connections.bound())
+    throw std::logic_error("not implemented: random sampling of saddle connections is not implemented when there is an upper bound set");
+
+  const auto& sectors = connections.self->sectors;
+
+  if (sectors.size() == 0)
+    throw std::logic_error("not implemented: random sampling of empty sets of saddle connections is not implemented");
+
+  std::uniform_int_distribution<> sector_distribution(0, static_cast<int>(sectors.size()) - 1);
+  auto& sector = sectors[sector_distribution(rand)];
+
+  auto connections = this->connections.byAngle().sector(sector.source);
+  ASSERT(!sector.sector || sector.sector->first != sector.sector->second, "SaddleConnections contains an empty sector, such sectors should have been thrown out from the list of sectors");
+
+  const auto sectorBegin = sector.sector ? sector.sector->first : connections.surface().fromHalfEdge(sector.source);
+  const auto sectorEnd = sector.sector ? sector.sector->second : connections.surface().fromHalfEdge(connections.surface().nextAtVertex(sector.source));
+
+  using std::begin;
+  using std::end;
+
+  std::uniform_int_distribution<> ccw_distribution(0, 1);
+
+  auto it = begin(connections);
+  it++;
+  while (true) {
+    current = *it;
+
+    if (seen.find(current) != end(seen)) {
+      if (current.vector() == sectorBegin)
+        it.skipSector(CCW::CLOCKWISE);
+      else if (current.vector() == sectorEnd)
+        it.skipSector(CCW::COUNTERCLOCKWISE);
+      else if (ccw_distribution(rand) % 2)
+        it.skipSector(CCW::CLOCKWISE);
+      else
+        it.skipSector(CCW::COUNTERCLOCKWISE);
+
+      ++it;
+      continue;
+    }
+
+    seen.insert(current);
+    return;
+  }
+}
 
 }  // namespace flatsurf
 

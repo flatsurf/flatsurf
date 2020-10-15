@@ -67,6 +67,8 @@
 #include "saddle_connections_by_length.hpp"
 #include "saddle_connections_by_length_iterator.hpp"
 #include "saddle_connections_iterator.hpp"
+#include "saddle_connections_sample.hpp"
+#include "saddle_connections_sample_iterator.hpp"
 #include "serializable.hpp"
 #include "tracked.hpp"
 #include "vector.hpp"

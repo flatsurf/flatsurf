@@ -36,6 +36,8 @@ class ImplementationOf<SaddleConnectionsSampleIterator<Surface>> {
  public:
   ImplementationOf(const SaddleConnectionsSample<Surface>&);
 
+  void increment();
+
   const SaddleConnectionsSample<Surface>& connections;
   std::unordered_set<SaddleConnection<Surface>> seen;
 
