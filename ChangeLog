@@ -4,6 +4,17 @@ intervalxt Change Log
 
 .. current developments
 
+v2.1.1
+====================
+
+**Fixed:**
+
+* category collection in changelog
+* added sample headers to `flatsurf.hpp` so they can be used without explicit `cppyy.include` from pyflatsurf
+* do not report trivial connection coming from a half edge in `SaddleConnectionsSample`
+
+
+
 v2.1.0
 ====================
 
