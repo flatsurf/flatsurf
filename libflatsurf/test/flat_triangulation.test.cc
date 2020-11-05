@@ -190,4 +190,50 @@ TEMPLATE_TEST_CASE("Eliminate Marked Points", "[flat_triangulation][eliminate_ma
   }
 }
 
+TEMPLATE_TEST_CASE("Detect Isomorphic Surfaces", "[flat_triangulation][isomorphism]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+  using Transformation = std::tuple<T, T, T, T>;
+
+  const auto [name, surface] = GENERATE(makeSurface<T>());
+  GIVEN("The Surface " << *name) {
+    REQUIRE((*surface)->isomorphism(**surface));
+
+    std::vector<Transformation> transformations = {Transformation{1, 0, 0, 1}};
+
+    Transformation candidate;
+    auto filter = [&](const T& a, const T& b, const T& c, const T& d) {
+      candidate = Transformation{a, b, c, d};
+      return std::find(begin(transformations), end(transformations), candidate) == end(transformations);
+    };
+
+    while (true) {
+      const auto deformation = (*surface)->isomorphism(**surface, filter);
+
+      if (!deformation)
+        break;
+
+      transformations.push_back(candidate);
+      const auto [a, b, c, d] = candidate;
+      CAPTURE(a, b, c, d);
+
+      std::unordered_set<HalfEdge> image;
+      for (const auto& he : (*surface)->halfEdges()) {
+        HalfEdge he_ = (*deformation)(he).value();
+
+        image.insert(he_);
+
+        const auto v = (*surface)->fromHalfEdge(he);
+        const auto v_ = deformation->surface().fromHalfEdge(he_);
+        REQUIRE(Vector<T>(v.x() * a + v.y() * b, v.x() * c + v.y() * d) == v_);
+      }
+      REQUIRE(image.size() == (*surface)->halfEdges().size());
+    }
+
+    auto scaled = (*surface)->scale(2);
+    CAPTURE(scaled);
+    REQUIRE(!(*surface)->isomorphism(scaled));
+    REQUIRE((*surface)->isomorphism(scaled, [](const auto&, const auto&, const auto&, const auto&) { return true; }));
+  }
+}
+
 }  // namespace flatsurf::test

@@ -29,6 +29,7 @@
 #include <vector>
 
 #include "flat_triangulation_combinatorial.hpp"
+#include "half_edge.hpp"
 #include "managed_movable.hpp"
 #include "serializable.hpp"
 
@@ -87,6 +88,16 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
   // Return a simplified flat triangulation with marked points, i.e., verticas
   // with a total angle of 2π, eliminated.
   Deformation<FlatTriangulation<T>> eliminateMarkedPoints() const;
+
+  // Return an isomorphism from this surface to the given surface, i.e., a
+  // bijection of faces such that all half edges transform subject to the
+  // same linear transformation (note that that transformation might have
+  // negative determinant, i.e., the order of half edges in a face might
+  // change under this map.)
+  std::optional<Deformation<FlatTriangulation<T>>> isomorphism(
+      const FlatTriangulation &,
+      std::function<bool(const T &, const T &, const T &, const T &)> = [](const T &a, const T &b, const T &c, const T &d) { return a == 1 && b == 0 && c == 0 && d == 1; },
+      std::function<bool(HalfEdge, HalfEdge)> = [](HalfEdge, HalfEdge) { return true; }) const;
 
   Vector<T> shortest() const;
 

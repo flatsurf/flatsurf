@@ -62,6 +62,9 @@ cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_met
 cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_method("undeterminedComponents")(lambda self: [component for component in self.components() if not (component.cylinder() == True) and not (component.withoutPeriodicTrajectory() == True)])), "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_method("__str__")(lambda self: "FlowDecomposition with %d cylinders, %d minimal components and %d undetermined components" % (len(self.cylinders()), len(self.minimalComponents()), len(self.undeterminedComponents())))), "flatsurf")
 
+# We have to workaround issues with complex std::function parameters in cppyy
+cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(add_method("isomorphism")(lambda self, other, filter_matrix=lambda a,b,c,d: a == 1 and b == 0 and c == 0 and d == 1, filter_map=lambda a, b: True: cppyy.gbl.flatsurf.isomorphism[type(self).Coordinate.__cpp_name__](self, other, lambda m: filter_matrix(m.a, m.b, m.c, m.d), filter_map))), "flatsurf")
+
 
 for path in os.environ.get('PYFLATSURF_INCLUDE','').split(':'):
     if path: cppyy.add_include_path(path)

@@ -7,7 +7,7 @@
 
 We release this package regularly with [rever](https://regro.github.io/rever-docs/index.html); typically with every push to the master branch.
 
-This repository contains three related projects:
+This repository contains two related projects:
 
 * **libflatsurf** a C++ library
 * **pyflatsurf** a Python wrapper for **libflatsurf**
@@ -61,7 +61,7 @@ which does not hurt performance but gives a better debugging experience. For
 the best debugging experience, you might want to replace `-O3` with `-Og` or
 even `-O0` but the latter results in very poor performance.
 
-Additionally, you might want to run with configure with ` --disable-static`
+Additionally, you might want to run configure with ` --disable-static`
 which improves the build time.
 
 [perf](https://perf.wiki.kernel.org/index.php/Main_Page) works well to profile
@@ -126,11 +126,7 @@ conda activate flatsurf-test
 ## Run Tests and Benchmark
 
 `make check` runs all tests and benchmarks. During development `make check TESTS=module`
-only runs the tests for `module`. For randomized tests, you might want to add
-`GTEST_REPEAT=1024` to run such tests repeatedly. Note that the environment
-variable `EXACTREAL_CHECK` is passed on to the tests and benchmarks, i.e., you
-could add `EXACTREAL_CHECK="--benchmark_min_time=.02"` to not let the
-benchmarks run as long as they would usually.
+only runs the tests for `module`.
 
 ## How to Cite This Project
 

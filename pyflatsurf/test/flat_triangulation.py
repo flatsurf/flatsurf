@@ -134,6 +134,13 @@ def test_deform_hexagon():
     hexagon_ = surfaces.random_hexagon()
     hexagon + [hexagon_.fromHalfEdge(e.positive()) for e in hexagon.edges()]
 
+def test_isomorphism():
+    vector = flatsurf.Vector['mpq_class']
+    L = surfaces.L(vector)
+    assert L.isomorphism(L)
+    assert L.isomorphism(L, lambda a, b, c, d: a == -1 and b == 0 and c == 0 and d == -1)
+    assert not L.isomorphism(L, lambda a, b, c, d: a*d - b*c not in [-1, 1])
+
 def test_serialization():
     hexagon = surfaces.random_hexagon()
 
