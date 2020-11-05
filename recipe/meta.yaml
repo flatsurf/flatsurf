@@ -45,7 +45,7 @@ requirements:
 {%- if action == "benchmark" %}
     - git
 {%- elif action == "style" %}
-    - clangdev ==10.0.1
+    - clangdev ==11.0.0
 {%- endif %}
   host:
 {%- if libflatsurf_requirements %}
