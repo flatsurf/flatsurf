@@ -4,6 +4,16 @@ intervalxt Change Log
 
 .. current developments
 
+v2.2.0
+====================
+
+**Added:**
+
+* implemented `FlatTriangulation::isomorphism` to detect isomorphisms of
+  triangulated translation surfaces.
+
+
+
 v2.1.1
 ====================
 
