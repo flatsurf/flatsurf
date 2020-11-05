@@ -20,13 +20,13 @@
 #ifndef LIBFLATSURF_DEFORMATION_HPP
 #define LIBFLATSURF_DEFORMATION_HPP
 
+#include <optional>
+
 #include "movable.hpp"
 
 namespace flatsurf {
 
 // The result of deforming a Flat Triangulation.
-// Note that currently this is mostly a trivial placeholder interface that we
-// will fill with more methods as the need arises.
 template <typename Surface>
 class Deformation {
   template <typename... Args>
@@ -34,7 +34,10 @@ class Deformation {
 
  public:
   // Create the identical deformation.
-  Deformation(Surface&&);
+  explicit Deformation(Surface&&);
+
+  // Return the image of the half edge under the deformation.
+  std::optional<HalfEdge> operator()(HalfEdge) const;
 
   // Return the result of the deformation.
   Surface surface();

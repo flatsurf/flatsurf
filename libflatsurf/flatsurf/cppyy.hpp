@@ -53,6 +53,28 @@ bool decomposeFlowDecomposition(FlowDecomposition<T> &decomposition, int limit =
   return decomposition.decompose(FlowDecomposition<T>::defaultTarget, limit);
 }
 
+template <typename T>
+struct IsomorphismFilterMatrix {
+  IsomorphismFilterMatrix(T a, T b, T c, T d) :
+    a(std::move(a)),
+    b(std::move(b)),
+    c(std::move(c)),
+    d(std::move(d)) {}
+  T a, b, c, d;
+};
+
+// cppyy has trouble with complex std::function parameters so we simplify the
+// interface of FlatTriangulation::isomorphism to take away all qualifiers and
+// most commas.
+template <typename T>
+std::optional<Deformation<FlatTriangulation<T>>> isomorphism(const FlatTriangulation<T> &preimage, const FlatTriangulation<T> &image, std::function<bool(IsomorphismFilterMatrix<T>)> filter_matrix, std::function<bool(HalfEdge, HalfEdge)> filter_map) {
+  return preimage.isomorphism(
+      image, [&](const T &a, const T &b, const T &c, const T &d) {
+        return filter_matrix(IsomorphismFilterMatrix<T>(a, b, c, d));
+      },
+      filter_map);
+}
+
 }  // namespace flatsurf
 
 #endif

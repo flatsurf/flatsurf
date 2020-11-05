@@ -47,6 +47,8 @@ libflatsurf_la_SOURCES =                                            \
 	saddle_connections_sample.cc                                \
 	saddle_connections_sample_iterator.cc                       \
 	tracked.cc                                                  \
+	transformation_deformation.cc                               \
+	trivial_deformation.cc                                      \
 	vector/vector.cc                                            \
 	vertex.cc                                                   \
 	vertical.cc                                                 \

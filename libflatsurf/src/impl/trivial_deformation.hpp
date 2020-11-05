@@ -17,36 +17,23 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_DEFORMATION_IMPL_HPP
-#define LIBFLATSURF_DEFORMATION_IMPL_HPP
+#ifndef LIBFLATSURF_TRIVIAL_DEFORMATION_IMPL_HPP
+#define LIBFLATSURF_TRIVIAL_DEFORMATION_IMPL_HPP
 
-#include "../../flatsurf/deformation.hpp"
+#include "./deformation.impl.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-class ImplementationOf<Deformation<Surface>> {
+class TrivialDeformation : ImplementationOf<Deformation<Surface>> {
  public:
-  ImplementationOf(Surface&& surface);
-  virtual ~ImplementationOf() {}
+  TrivialDeformation(Surface&&);
 
-  static Deformation<Surface> make(Surface&&);
+  template <typename... Args>
+  static Deformation<Surface> make(Args&&... args);
 
-  virtual std::optional<HalfEdge> operator()(HalfEdge) const;
-
-  template <typename S>
-  friend std::ostream& operator<<(std::ostream&, const ImplementationOf<Deformation<S>>& self);
-
-  Surface surface;
-
- protected:
-  static Deformation<Surface> make(spimpl::unique_impl_ptr<ImplementationOf>&& impl);
+  std::optional<HalfEdge> operator()(HalfEdge) const override;
 };
-
-template <typename Surface>
-template <typename... Args>
-Deformation<Surface>::Deformation(PrivateConstructor, Args&&... args) :
-  self(std::move(args)...) {}
 
 }  // namespace flatsurf
 

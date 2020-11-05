@@ -19,6 +19,7 @@
 
 #include "../flatsurf/flat_triangulation.hpp"
 
+#include <boost/type_traits/is_detected.hpp>
 #include <exact-real/arb.hpp>
 #include <exact-real/integer_ring.hpp>
 #include <exact-real/number_field.hpp>
@@ -45,9 +46,11 @@
 #include "../flatsurf/vertical.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/approximation.hpp"
+#include "impl/deformation.impl.hpp"
 #include "impl/flat_triangulation.impl.hpp"
 #include "impl/flat_triangulation_combinatorial.impl.hpp"
 #include "impl/quadratic_polynomial.hpp"
+#include "impl/transformation_deformation.hpp"
 #include "util/assert.ipp"
 
 namespace flatsurf {
@@ -230,9 +233,9 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
     while (!collapsing_->empty())
       combinatorial.collapse(begin(static_cast<const EdgeSet &>(collapsing_))->positive());
 
-    return FlatTriangulation<T>(
+    return ImplementationOf<Deformation<FlatTriangulation>>::make(FlatTriangulation<T>(
         std::move(combinatorial),
-        [&](const HalfEdge he) { return vectors->get(he); });
+        [&](const HalfEdge he) { return vectors->get(he); }));
   }
 }
 
@@ -254,7 +257,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
   }
 
   if (!collapse)
-    return clone();
+    return Deformation(clone());
 
   const auto marked = Vertex::source(*collapse, *this);
 
@@ -270,7 +273,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
   })).surface();
 
   ASSERT(simplified.vertices().size() < this->vertices().size(), "the numbers of vertices is reduced in each step but " << *this << " was simplified to " << simplified);
-  return simplified.eliminateMarkedPoints();
+  return ImplementationOf<Deformation<FlatTriangulation>>::make(simplified.eliminateMarkedPoints().surface());
 }
 
 template <typename T>
@@ -343,14 +346,14 @@ FlatTriangulation<T> FlatTriangulation<T>::clone() const {
 
 template <typename T>
 Deformation<FlatTriangulation<T>> FlatTriangulation<T>::slit(HalfEdge slit) const {
-  return FlatTriangulation(
+  return ImplementationOf<Deformation<FlatTriangulation>>::make(FlatTriangulation(
       static_cast<const FlatTriangulationCombinatorial &>(*this).slit(slit),
       [&](HalfEdge e) {
         HalfEdge newEdge = HalfEdge(static_cast<int>(this->halfEdges().size()) / 2 + 1);
         if (e == newEdge) return fromHalfEdge(slit);
         if (e == -newEdge) return -fromHalfEdge(slit);
         return fromHalfEdge(e);
-      });
+      }));
 }
 
 template <typename T>
@@ -435,7 +438,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &nextT
 
     auto combinatorial = static_cast<FlatTriangulationCombinatorial &>(surface).insertAt(nextTo);
 
-    return FlatTriangulation(combinatorial.clone(), [&](const HalfEdge e) {
+    return ImplementationOf<Deformation<FlatTriangulation>>::make(FlatTriangulation(combinatorial.clone(), [&](const HalfEdge e) {
       HalfEdge a = -combinatorial.nextAtVertex(nextTo);
       HalfEdge b = combinatorial.nextAtVertex(a);
       HalfEdge c = combinatorial.nextAtVertex(b);
@@ -444,7 +447,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &nextT
       if (Edge(e) == b) return symmetric(e, b, surface.fromHalfEdge(nextTo) - slit);
       if (Edge(e) == c) return symmetric(e, c, surface.fromHalfEdge(surface.nextAtVertex(nextTo)) - slit);
       return surface.fromHalfEdge(e);
-    });
+    }));
   } else {
     // After the flips we did, v is collinear with the half edge e (but shorter.)
 
@@ -468,7 +471,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &nextT
 
     nextTo = combinatorial.previousAtVertex(nextAtSlot);
 
-    return ret;
+    return ImplementationOf<Deformation<FlatTriangulation>>::make(std::move(ret));
   }
 }
 
@@ -591,6 +594,114 @@ int FlatTriangulation<T>::angle(const Vertex &vertex) const {
   ASSERT(angle >= 1, "Total angle at vertex cannot be less than 2π");
 
   return angle;
+}
+
+template <typename T>
+using truediv_t = decltype(std::declval<T &>() /= std::declval<const T &>());
+
+template <typename T>
+std::optional<Deformation<FlatTriangulation<T>>> FlatTriangulation<T>::isomorphism(const FlatTriangulation<T> &other, std::function<bool(const T &, const T &, const T &, const T &)> filterMatrix, std::function<bool(HalfEdge, HalfEdge)> filterHalfEdgeMap) const {
+  if (this->hasBoundary() != other.hasBoundary())
+    return std::nullopt;
+
+  if (this->halfEdges().size() != other.halfEdges().size())
+    return std::nullopt;
+
+  if (this->hasBoundary())
+    throw std::logic_error("not implemented: isomorphism() not implemented for surfaces with boundary");
+
+  // We pick a fixed half edge of this surfaces and try to map it to every
+  // other half edge in the other surface. Taking into account another half
+  // edge in the same face, we get a 2×2 transformation matrix. (Or rather two,
+  // if we allow reflections.)
+  HalfEdge preimage = *begin(this->halfEdges());
+  for (auto image : other.halfEdges()) {
+    for (int sgn : {1, -1}) {
+      const auto nextAtTargetVertex = [&](const auto &e) {
+        return sgn == 1 ? other.nextAtVertex(e) : other.previousAtVertex(e);
+      };
+      const auto nextInTargetFace = [&](const auto &e) {
+        return sgn == 1 ? other.nextInFace(e) : other.nextAtVertex(-e);
+      };
+
+      auto v = this->fromHalfEdge(preimage);
+      auto w = this->fromHalfEdge(this->nextAtVertex(preimage));
+      auto v_ = other.fromHalfEdge(image);
+      auto w_ = other.fromHalfEdge(nextAtTargetVertex(image));
+
+      // To determine the matrix 2×2 matrix (a b c d) that sends v to v_ and w to w_ note that:
+      // ┌ v.x v.y   0   0 ┐ ┌ a ┐   ┌ v_.x ┐
+      // | w.x w.y   0   0 | | b |   | w_.x |
+      // |   0   0 v.x v.y | | c | = | v_.y |
+      // └   0   0 w.x w.y ┘ └ d ┘   └ w_.y ┘
+      // Hence, we can determine (a b) and (c d) by solving a 2×2 system for each.
+      const T denominator = v.x() * w.y() - v.y() * w.x();
+      T a = v_.x() * w.y() - v.y() * w_.x();
+      T b = v.x() * w_.x() - v_.x() * w.x();
+      T c = v_.y() * w.y() - v.y() * w_.y();
+      T d = v.x() * w_.y() - v_.y() * w.x();
+
+      if constexpr (boost::is_detected_v<truediv_t, T>) {
+        a /= denominator;
+        b /= denominator;
+        c /= denominator;
+        d /= denominator;
+      } else {
+        auto maybe = a.truediv(denominator);
+        if (!maybe) continue;
+        a = *maybe;
+
+        maybe = b.truediv(denominator);
+        if (!maybe) continue;
+        b = *maybe;
+
+        maybe = c.truediv(denominator);
+        if (!maybe) continue;
+        c = *maybe;
+
+        maybe = d.truediv(denominator);
+        if (!maybe) continue;
+        d = *maybe;
+      }
+
+      if (!filterMatrix(a, b, c, d))
+        continue;
+
+      // The isomorphism of half edges can now be determined by starting with
+      // the half edges of this face and depth-first searching through all the
+      // adjacent faces until we find a contradiction.
+      auto isomorphism = HalfEdgeMap<HalfEdge>(*this);
+      isomorphism[preimage] = image;
+      isomorphism[this->nextInFace(preimage)] = nextInTargetFace(image);
+      isomorphism[this->nextInFace(this->nextInFace(preimage))] = nextInTargetFace(nextInTargetFace(image));
+
+      const std::function<bool(HalfEdge, HalfEdge)> match = [&](HalfEdge from, HalfEdge to) {
+        if (!filterHalfEdgeMap(from, to))
+          return false;
+
+        if (isomorphism[from] != HalfEdge())
+          return isomorphism[from] == to;
+
+        isomorphism[from] = to;
+
+        if (this->fromHalfEdge(from).x() * a + this->fromHalfEdge(from).y() * b != other.fromHalfEdge(to).x())
+          return false;
+
+        if (this->fromHalfEdge(from).x() * c + this->fromHalfEdge(from).y() * d != other.fromHalfEdge(to).y())
+          return false;
+
+        // We found that this half edge is mapped in a consistent way. Now
+        // check its opposite and the other half edges in the same face.
+        return match(-from, -to) && match(this->nextInFace(from), nextInTargetFace(to)) && match(this->nextInFace(this->nextInFace(from)), nextInTargetFace(nextInTargetFace(to)));
+      };
+
+      if (match(-preimage, -image) && match(-this->nextInFace(preimage), -nextInTargetFace(image)) && match(-this->nextInFace(this->nextInFace(preimage)), -nextInTargetFace(nextInTargetFace(image)))) {
+        return TransformationDeformation<FlatTriangulation>::make(other.clone(), std::move(isomorphism));
+      }
+    }
+  }
+
+  return std::nullopt;
 }
 
 template <typename T>

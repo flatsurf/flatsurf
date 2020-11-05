@@ -35,7 +35,7 @@ namespace flatsurf {
 class FlatTriangulationCombinatorial : public FlatTriangulationCombinatorics<FlatTriangulationCombinatorial>,
                                        Serializable<FlatTriangulationCombinatorial> {
   template <typename... Args>
-  FlatTriangulationCombinatorial(PrivateConstructor, Args &&... args);
+  FlatTriangulationCombinatorial(PrivateConstructor, Args &&...args);
 
  public:
   FlatTriangulationCombinatorial() noexcept;

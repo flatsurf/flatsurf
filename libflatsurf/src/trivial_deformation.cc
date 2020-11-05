@@ -17,37 +17,24 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_DEFORMATION_IMPL_HPP
-#define LIBFLATSURF_DEFORMATION_IMPL_HPP
+#include "impl/trivial_deformation.hpp"
 
-#include "../../flatsurf/deformation.hpp"
+#include "../flatsurf/half_edge.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-class ImplementationOf<Deformation<Surface>> {
- public:
-  ImplementationOf(Surface&& surface);
-  virtual ~ImplementationOf() {}
-
-  static Deformation<Surface> make(Surface&&);
-
-  virtual std::optional<HalfEdge> operator()(HalfEdge) const;
-
-  template <typename S>
-  friend std::ostream& operator<<(std::ostream&, const ImplementationOf<Deformation<S>>& self);
-
-  Surface surface;
-
- protected:
-  static Deformation<Surface> make(spimpl::unique_impl_ptr<ImplementationOf>&& impl);
-};
+TrivialDeformation<Surface>::TrivialDeformation(Surface&& surface) :
+  ImplementationOf<Deformation<Surface>>(std::move(surface)) {}
 
 template <typename Surface>
-template <typename... Args>
-Deformation<Surface>::Deformation(PrivateConstructor, Args&&... args) :
-  self(std::move(args)...) {}
+std::optional<HalfEdge> TrivialDeformation<Surface>::operator()(HalfEdge he) const {
+  return he;
+}
 
 }  // namespace flatsurf
 
-#endif
+// Instantiations of templates so implementations are generated for the linker
+#include "util/instantiate.ipp"
+
+LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_STATIC), TrivialDeformation, LIBFLATSURF_FLAT_TRIANGULATION_TYPES)
