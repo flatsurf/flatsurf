@@ -160,6 +160,8 @@ noinst_HEADERS =                                                    \
 	impl/saddle_connections_sample.impl.hpp                     \
 	impl/saddle_connections_sample_iterator.impl.hpp            \
 	impl/tracked.impl.hpp                                       \
+	impl/transformation_deformation.hpp                         \
+	impl/trivial_transformation.hpp                             \
 	impl/vertex.impl.hpp                                        \
 	impl/vertical.impl.hpp                                      \
 	impl/weak_read_only.hpp                                     \
