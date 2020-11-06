@@ -136,14 +136,12 @@ void ImplementationOf<SaddleConnectionsSampleIterator<Surface>>::increment() {
     if (clockwiseAngle < 0) clockwiseAngle += 4;
 
     if (isfinite(totalAngle) && isfinite(clockwiseAngle)) {
-      return std::uniform_real_distribution<>(0, totalAngle)(rand) < clockwiseAngle ?
-        CCW::CLOCKWISE : CCW::COUNTERCLOCKWISE;
+      return std::uniform_real_distribution<>(0, totalAngle)(rand) < clockwiseAngle ? CCW::CLOCKWISE : CCW::COUNTERCLOCKWISE;
     } else {
       // The computation was unstable and produced infinities or NaN. That
       // might happen when the double values get extremely small. Just pick a
       // side randomly.
-      return std::uniform_int_distribution<>(0, 1)(rand) == 0 ?
-        CCW::CLOCKWISE : CCW::COUNTERCLOCKWISE;
+      return std::uniform_int_distribution<>(0, 1)(rand) == 0 ? CCW::CLOCKWISE : CCW::COUNTERCLOCKWISE;
     }
   };
 
