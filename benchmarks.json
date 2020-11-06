@@ -469,6 +469,86 @@
         "unit": "ns",
         "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
     },
+    "Benchmarks.track_SaddleConnectionsSampleSquare_Vector_eantic::renf_elem_class___256": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSampleSquare_Vector_eantic::renf_elem_class___256",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsSampleSquare_Vector_eantic::renf_elem_class___65536": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSampleSquare_Vector_eantic::renf_elem_class___65536",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsSampleSquare_Vector_exactreal::Element_exactreal::IntegerRing____256": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSampleSquare_Vector_exactreal::Element_exactreal::IntegerRing____256",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsSampleSquare_Vector_exactreal::Element_exactreal::IntegerRing____65536": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSampleSquare_Vector_exactreal::Element_exactreal::IntegerRing____65536",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsSampleSquare_Vector_long long___256": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSampleSquare_Vector_long long___256",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsSampleSquare_Vector_long long___65536": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSampleSquare_Vector_long long___65536",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsSampleSquare_Vector_mpq_class___256": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSampleSquare_Vector_mpq_class___256",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_SaddleConnectionsSampleSquare_Vector_mpq_class___65536": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_SaddleConnectionsSampleSquare_Vector_mpq_class___65536",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
     "Benchmarks.track_SaddleConnectionsSquare_Vector_eantic::renf_elem_class___1": {
         "code": "def asv_method(self, t=time): return t",
         "name": "Benchmarks.track_SaddleConnectionsSquare_Vector_eantic::renf_elem_class___1",
