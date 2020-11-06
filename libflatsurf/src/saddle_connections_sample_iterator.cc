@@ -70,37 +70,112 @@ void ImplementationOf<SaddleConnectionsSampleIterator<Surface>>::increment() {
   std::uniform_int_distribution<> sector_distribution(0, static_cast<int>(sectors.size()) - 1);
   auto& sector = sectors[sector_distribution(rand)];
 
-  auto connections = this->connections.byAngle().sector(sector.source);
+  // We rely on iteration through the saddle connections "by angle". However,
+  // we completely override the original logic there since we reset the
+  // lowerBound and call skipSector in every iteration.
+  auto connections = this->connections.byAngle().lowerBound(0).sector(sector.source);
   ASSERT(!sector.sector || sector.sector->first != sector.sector->second, "SaddleConnections contains an empty sector, such sectors should have been thrown out from the list of sectors");
 
-  const auto sectorBegin = sector.sector ? sector.sector->first : connections.surface().fromHalfEdge(sector.source);
-  const auto sectorEnd = sector.sector ? sector.sector->second : connections.surface().fromHalfEdge(connections.surface().nextAtVertex(sector.source));
+  const auto outerSectorBegin = sector.sector ? sector.sector->first : connections.surface().fromHalfEdge(sector.source);
+  const auto outerSectorEnd = sector.sector ? sector.sector->second : connections.surface().fromHalfEdge(connections.surface().nextAtVertex(sector.source));
 
   using std::begin;
   using std::end;
 
-  std::uniform_int_distribution<> ccw_distribution(0, 1);
+  auto sectorBegin = outerSectorBegin;
+  auto sectorEnd = outerSectorEnd;
+
+  const auto ccw = [&]() {
+    // When we see a saddle connection that we had already seen before, (or that
+    // is too short) we need to decide on which side of that connection we want
+    // to continue our search. Just picking the sides with equal probability
+    // leads to very small sectors quickly. Instead, we want to weigh the random
+    // choice by the size of the corresponding search sector.
+
+    const auto angle = [](const auto& x, const auto& y) {
+      // Ideally, we would compute the angles enclosed between (sectorBegin,
+      // connection) and (connection, sectorEnd) and then give probabilities
+      // relative to their sizes. Exact computations are way too expensive here
+      // so we only use double precision and hope for the best. To help
+      // stability a bit, we do not use standard angles for the Euclidean norm
+      // but rather what's sometimes called diamond angles, i.e., essentially
+      // an angle in the 1-norm. These angles are in [0, 4) instead of [0, 2π),
+      // see e.g.
+      // https://www.freesteel.co.uk/wpblog/2009/06/05/encoding-2d-angles-without-trigonometry/
+      // The distribution of such angles is not the same of course but it should be
+      // good enough for our purposes.
+      double xx, yy;
+      if constexpr (std::is_same_v<T, mpq_class> || std::is_same_v<T, mpz_class>) {
+        xx = x.get_d();
+        yy = x.get_d();
+      } else {
+        xx = static_cast<double>(x);
+        yy = static_cast<double>(y);
+      }
+
+      if (yy >= 0) {
+        if (xx >= 0)
+          return 0 + yy / (xx + yy);
+        else
+          return 1 + (-xx) / (yy + (-xx));
+      } else {
+        if (xx < 0)
+          return 2 + (-yy) / ((-xx) + (-yy));
+        else
+          return 3 + xx / (xx + (-yy));
+      }
+    };
+
+    const double sectorBeginAngle = angle(sectorBegin.x(), sectorBegin.y());
+    const double sectorEndAngle = angle(sectorEnd.x(), sectorEnd.y());
+    const double connectionAngle = angle(current.vector().x(), current.vector().y());
+
+    double totalAngle = sectorEndAngle - sectorBeginAngle;
+    if (totalAngle < 0) totalAngle += 4;
+    double clockwiseAngle = connectionAngle - sectorBeginAngle;
+    if (clockwiseAngle < 0) clockwiseAngle += 4;
+
+    if (isfinite(totalAngle) && isfinite(clockwiseAngle)) {
+      return std::uniform_real_distribution<>(0, totalAngle)(rand) < clockwiseAngle ? CCW::CLOCKWISE : CCW::COUNTERCLOCKWISE;
+    } else {
+      // The computation was unstable and produced infinities or NaN. That
+      // might happen when the double values get extremely small. Just pick a
+      // side randomly.
+      return std::uniform_int_distribution<>(0, 1)(rand) == 0 ? CCW::CLOCKWISE : CCW::COUNTERCLOCKWISE;
+    }
+  };
 
   auto it = begin(connections);
   it++;
   while (true) {
     current = *it;
 
-    if (seen.find(current) != end(seen)) {
-      if (current.vector() == sectorBegin)
-        it.skipSector(CCW::CLOCKWISE);
-      else if (current.vector() == sectorEnd)
-        it.skipSector(CCW::COUNTERCLOCKWISE);
-      else if (ccw_distribution(rand) % 2)
-        it.skipSector(CCW::CLOCKWISE);
+    bool eligible = current > this->connections.lowerBound();
+
+    if (eligible) {
+      if (seen.find(current) == end(seen))
+        seen.insert(current);
       else
+        eligible = false;
+    }
+
+    if (!eligible) {
+      if (current.vector() == outerSectorBegin)
+        it.skipSector(CCW::CLOCKWISE);
+      else if (current.vector() == outerSectorEnd)
         it.skipSector(CCW::COUNTERCLOCKWISE);
+      else if (ccw() == CCW::COUNTERCLOCKWISE) {
+        it.skipSector(CCW::CLOCKWISE);
+        sectorBegin = current;
+      } else {
+        it.skipSector(CCW::COUNTERCLOCKWISE);
+        sectorEnd = current;
+      }
 
       ++it;
       continue;
     }
 
-    seen.insert(current);
     return;
   }
 }
