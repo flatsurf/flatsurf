@@ -61,9 +61,14 @@ class VectorExact : public VectorBase<Vector>,
   // Return twice the area of the polygon described by the (counter-clockwise) perimeter.
   static T area(const std::vector<Vector> &perimeter);
 
-  // Provides an operator< for slopes of vectors which orders vectors (x, y) by
-  // their quotient y/x (sending y/0 to ±∞.)
+  // Implements a less-than operator which orders vectors by their slope,
+  // i.e., it orders vectors (x, y) by their quotient y/x (sending y/0 to ±∞.)
   struct CompareSlope {
+    bool operator()(const Vector &lhs, const Vector &rhs) const;
+  };
+
+  // Implements a less-than operator which orders vectors by their length.
+  struct CompareLength {
     bool operator()(const Vector &lhs, const Vector &rhs) const;
   };
 };

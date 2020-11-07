@@ -35,10 +35,11 @@ class Vector : public std::conditional_t<std::is_same_v<T, exactreal::Arb>, deta
 
   Vector() noexcept;
   Vector(const Coordinate& x, const Coordinate& y);
+  Vector(Coordinate&& x, Coordinate&& y);
 
-  template <typename X, typename Y>
-  Vector(const X& x, const Y& y) :
-    Vector(static_cast<Coordinate>(x), static_cast<Coordinate>(y)) {}
+  template <typename X, typename Y, std::enable_if_t<!std::is_convertible_v<X, Coordinate> || !std::is_convertible_v<Y, Coordinate>, int> = 0>
+  Vector(X&& x, Y&& y) :
+    Vector(static_cast<Coordinate>(std::forward<X>(x)), static_cast<Coordinate>(std::forward<Y>(y))) {}
 
   Coordinate x() const;
   Coordinate y() const;

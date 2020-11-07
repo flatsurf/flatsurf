@@ -88,11 +88,7 @@ void ImplementationOf<SaddleConnectionsByLengthIterator<Surface>>::increment() {
 
     // Fill connectionsWithinBounds with all connections between [lowerBoundInclusive, upperBoundExclusive)
     auto withinBounds = connections.byAngle().bound(upperBoundInclusive).lowerBound(lowerBoundExclusive) | rx::to_vector();
-    std::sort(begin(withinBounds), end(withinBounds), [](const auto& lhs, const auto& rhs) {
-      const auto a = lhs.vector();
-      const auto b = rhs.vector();
-      return a * a < b * b;
-    });
+    std::sort(begin(withinBounds), end(withinBounds), typename Vector<T>::CompareLength());
 
     std::copy(rbegin(withinBounds), rend(withinBounds), std::back_inserter(connectionsWithinBounds));
   }
