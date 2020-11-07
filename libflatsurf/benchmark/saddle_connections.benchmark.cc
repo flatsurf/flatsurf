@@ -28,41 +28,84 @@
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
+#include "../flatsurf/saddle_connections_by_length.hpp"
+#include "../flatsurf/saddle_connections_by_length_iterator.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../test/surfaces.hpp"
 
 using benchmark::DoNotOptimize;
 using benchmark::State;
-using eantic::renf_class;
 
 namespace flatsurf::benchmark {
 using namespace flatsurf::test;
 using std::begin;
 using std::end;
 
-const int LIMIT = 1 << 8;
-
+// Benchmark how long it takes to enumerate all saddle connections up to length "bound" in a torus.
 template <typename R2>
 void SaddleConnectionsSquare(State& state) {
-  auto square = makeSquare<R2>();
-  auto bound = Bound(state.range(0), 0);
+  const auto square = makeSquare<R2>();
+  const auto bound = Bound(state.range(0), 0);
+
   for (auto _ : state) {
-    auto connections = SaddleConnections<FlatTriangulation<typename R2::Coordinate>>(*square).bound(bound);
+    const auto connections = SaddleConnections<FlatTriangulation<typename R2::Coordinate>>(*square).bound(bound);
     DoNotOptimize(std::distance(begin(connections), end(connections)));
   }
 }
-BENCHMARK_TEMPLATE(SaddleConnectionsSquare, Vector<long long>)->Range(1, LIMIT);
-BENCHMARK_TEMPLATE(SaddleConnectionsSquare, Vector<mpq_class>)->Range(1, LIMIT);
-BENCHMARK_TEMPLATE(SaddleConnectionsSquare, Vector<eantic::renf_elem_class>)->Range(1, LIMIT);
-BENCHMARK_TEMPLATE(SaddleConnectionsSquare, Vector<exactreal::Element<exactreal::IntegerRing>>)->Range(1, LIMIT);
+BENCHMARK_TEMPLATE(SaddleConnectionsSquare, Vector<long long>)->Range(1, 64);
+BENCHMARK_TEMPLATE(SaddleConnectionsSquare, Vector<mpq_class>)->Range(1, 64);
+BENCHMARK_TEMPLATE(SaddleConnectionsSquare, Vector<eantic::renf_elem_class>)->Range(1, 64);
+BENCHMARK_TEMPLATE(SaddleConnectionsSquare, Vector<exactreal::Element<exactreal::IntegerRing>>)->Range(1, 64);
 
+// Benchmark how long it takes to enumaret all saddle connections up to length "bound" in the L surface.
+template <typename R2>
+void SaddleConnectionsL(State& state) {
+  const auto L = makeL<R2>();
+  const auto bound = Bound(state.range(0), 0);
+
+  for (auto _ : state) {
+    auto connections = SaddleConnections<FlatTriangulation<typename R2::Coordinate>>(*L).bound(bound);
+    DoNotOptimize(std::distance(begin(connections), end(connections)));
+  }
+}
+BENCHMARK_TEMPLATE(SaddleConnectionsL, Vector<long long>)->Range(1, 64);
+BENCHMARK_TEMPLATE(SaddleConnectionsL, Vector<mpq_class>)->Range(1, 64);
+BENCHMARK_TEMPLATE(SaddleConnectionsL, Vector<eantic::renf_elem_class>)->Range(1, 64);
+BENCHMARK_TEMPLATE(SaddleConnectionsL, Vector<exactreal::Element<exactreal::IntegerRing>>)->Range(1, 64);
+
+// Benchmark how long it takes to get the first few saddle connections in a
+// surface ordered by length. (This is crucial in sage-flatsurf in the initial
+// process when trying to compute orbit closures.)
+template <typename R2>
+void SaddleConnectionsByLength(State& state) {
+  auto surface = make1234<R2>();
+  const auto scale = state.range(0);
+
+  const auto scaled = FlatTriangulation<typename R2::Coordinate>(
+      static_cast<const FlatTriangulationCombinatorial&>(*surface).clone(),
+      [&](const HalfEdge he) { return surface->fromHalfEdge(he) / static_cast<int>(scale); });
+
+  for (auto _ : state) {
+    const auto connections = SaddleConnections<FlatTriangulation<typename R2::Coordinate>>(scaled).byLength();
+    auto it = begin(connections);
+
+    for (int i = 0; i < scale; i++)
+      DoNotOptimize(++it);
+  }
+}
+BENCHMARK_TEMPLATE(SaddleConnectionsByLength, Vector<eantic::renf_elem_class>)->Arg(1)->Arg(64);
+BENCHMARK_TEMPLATE(SaddleConnectionsByLength, Vector<exactreal::Element<exactreal::NumberField>>)->Arg(1)->Arg(64);
+
+// Benchmark how long it takes to get a single random saddle connection in the
+// torus that longer that "bound". (This is crucial in sage-flatsurf in the
+// later process when trying to compute orbit closures.)
 template <typename R2>
 void SaddleConnectionsSampleSquare(State& state) {
-  auto square = makeSquare<R2>();
-  auto bound = Bound(state.range(0), 0);
+  const auto square = makeSquare<R2>();
+  const auto bound = Bound(state.range(0), 0);
 
-  auto connections = SaddleConnections<FlatTriangulation<typename R2::Coordinate>>(*square).lowerBound(bound);
+  const auto connections = SaddleConnections<FlatTriangulation<typename R2::Coordinate>>(*square).lowerBound(bound);
 
   for (auto _ : state) {
     DoNotOptimize(*begin(connections));
@@ -73,37 +116,24 @@ BENCHMARK_TEMPLATE(SaddleConnectionsSampleSquare, Vector<mpq_class>)->Arg(256)->
 BENCHMARK_TEMPLATE(SaddleConnectionsSampleSquare, Vector<eantic::renf_elem_class>)->Arg(256)->Arg(65536);
 BENCHMARK_TEMPLATE(SaddleConnectionsSampleSquare, Vector<exactreal::Element<exactreal::IntegerRing>>)->Arg(256)->Arg(65536);
 
+// Benchmark how long it takes to enumerate all saddle connections up to length
+// "bound" in an L with an added slit.
 template <typename R2>
-void SaddleConnectionsL(State& state) {
-  auto L = makeL<R2>();
-  auto bound = Bound(state.range(0), 0);
-
-  for (auto _ : state) {
-    auto connections = SaddleConnections<FlatTriangulation<typename R2::Coordinate>>(*L).bound(bound);
-    DoNotOptimize(std::distance(begin(connections), end(connections)));
-  }
-}
-BENCHMARK_TEMPLATE(SaddleConnectionsL, Vector<long long>)->Range(1, LIMIT);
-BENCHMARK_TEMPLATE(SaddleConnectionsL, Vector<mpq_class>)->Range(1, LIMIT);
-BENCHMARK_TEMPLATE(SaddleConnectionsL, Vector<eantic::renf_elem_class>)->Range(1, LIMIT);
-BENCHMARK_TEMPLATE(SaddleConnectionsL, Vector<exactreal::Element<exactreal::IntegerRing>>)->Range(1, LIMIT);
-
-template <typename R2>
-void SaddleConnectionsLWithSlot(State& state) {
-  auto L = makeL<R2>();
-  auto bound = Bound(state.range(0), 0);
-  R2 vector({mpq_class(1009, 1361), 3});
+void SaddleConnectionsLWithSlit(State& state) {
+  const auto L = makeL<R2>();
+  const auto bound = Bound(state.range(0), 0);
+  const R2 vector({mpq_class(1009, 1361), 3});
 
   HalfEdge e(2);
 
-  auto LWithSlot = L->insertAt(e, vector).surface().slit(e).surface();
+  const auto LWithSlit = L->insertAt(e, vector).surface().slit(e).surface();
 
   for (auto _ : state) {
-    auto connections = SaddleConnections<FlatTriangulation<typename R2::Coordinate>>(LWithSlot).bound(bound).source(Vertex::source(e, LWithSlot));
+    auto connections = SaddleConnections<FlatTriangulation<typename R2::Coordinate>>(LWithSlit).bound(bound).source(Vertex::source(e, LWithSlit));
     DoNotOptimize(std::distance(begin(connections), end(connections)));
   }
 }
-BENCHMARK_TEMPLATE(SaddleConnectionsLWithSlot, Vector<mpq_class>)->Range(1, LIMIT);
-BENCHMARK_TEMPLATE(SaddleConnectionsLWithSlot, Vector<eantic::renf_elem_class>)->Range(1, LIMIT);
+BENCHMARK_TEMPLATE(SaddleConnectionsLWithSlit, Vector<mpq_class>)->Range(1, 64);
+BENCHMARK_TEMPLATE(SaddleConnectionsLWithSlit, Vector<eantic::renf_elem_class>)->Range(1, 64);
 
 }  // namespace flatsurf::benchmark
