@@ -23,31 +23,38 @@
 #include <exact-real/number_field.hpp>
 #include <exact-real/rational_field.hpp>
 
+#include "util/assert.ipp"
 #include "util/false.ipp"
 
 namespace flatsurf {
 
 template <typename T>
 exactreal::Arb Approximation<T>::arb(const T& x, slong prec) {
+  exactreal::Arb ret;
+
   if constexpr (std::is_same_v<T, mpz_class>) {
     (void)(prec);
-    return exactreal::Arb(x);
+    ret = exactreal::Arb(x);
   } else if constexpr (std::is_same_v<T, long long>) {
     (void)(prec);
-    return exactreal::Arb(x);
+    ret = exactreal::Arb(x);
   } else if constexpr (std::is_same_v<T, mpq_class>) {
-    return exactreal::Arb(x, prec);
+    ret = exactreal::Arb(x, prec);
   } else if constexpr (std::is_same_v<T, eantic::renf_elem_class>) {
-    return exactreal::Arb(x, prec);
+    ret = exactreal::Arb(x, prec);
   } else if constexpr (std::is_same_v<T, exactreal::Element<exactreal::IntegerRing>>) {
-    return x.arb(prec);
+    ret = x.arb(prec);
   } else if constexpr (std::is_same_v<T, exactreal::Element<exactreal::RationalField>>) {
-    return x.arb(prec);
+    ret = x.arb(prec);
   } else if constexpr (std::is_same_v<T, exactreal::Element<exactreal::NumberField>>) {
-    return x.arb(prec);
+    ret = x.arb(prec);
   } else {
     static_assert(false_type_v<T>, "not implemented: arb() for this type");
   }
+
+  ASSERT(arb_is_finite(ret.arb_t()), "Approximation of a finite number cannot be non-finite.");
+
+  return ret;
 }
 
 }  // namespace flatsurf
