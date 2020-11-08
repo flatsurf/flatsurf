@@ -67,6 +67,9 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/cppyy.hpp                                       \
 	../flatsurf/decomposition_step.hpp                          \
 	../flatsurf/deformation.hpp                                 \
+	../flatsurf/detail/vector_base.hpp                          \
+	../flatsurf/detail/vector_exact.hpp                         \
+	../flatsurf/detail/vector_with_error.hpp                    \
 	../flatsurf/edge.hpp                                        \
 	../flatsurf/edge_map.hpp                                    \
 	../flatsurf/edge_set.hpp                                    \
