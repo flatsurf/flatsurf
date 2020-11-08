@@ -649,6 +649,966 @@
         "unit": "ns",
         "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
     },
+    "Benchmarks.track_VectorArb_eantic::renf_elem_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorArb_eantic::renf_elem_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorArb_exactreal::Element_exactreal::IntegerRing__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorArb_exactreal::Element_exactreal::IntegerRing__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorArb_exactreal::Element_exactreal::NumberField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorArb_exactreal::Element_exactreal::NumberField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorArb_exactreal::Element_exactreal::RationalField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorArb_exactreal::Element_exactreal::RationalField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorArb_long long_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorArb_long long_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorArb_mpq_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorArb_mpq_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorArb_mpz_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorArb_mpz_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorCcw_eantic::renf_elem_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorCcw_eantic::renf_elem_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorCcw_exactreal::Element_exactreal::IntegerRing__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorCcw_exactreal::Element_exactreal::IntegerRing__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorCcw_exactreal::Element_exactreal::NumberField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorCcw_exactreal::Element_exactreal::NumberField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorCcw_exactreal::Element_exactreal::RationalField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorCcw_exactreal::Element_exactreal::RationalField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorCcw_long long_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorCcw_long long_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorCcw_mpq_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorCcw_mpq_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorCcw_mpz_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorCcw_mpz_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorDivInt_eantic::renf_elem_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorDivInt_eantic::renf_elem_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorDivInt_exactreal::Element_exactreal::NumberField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorDivInt_exactreal::Element_exactreal::NumberField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorDivInt_exactreal::Element_exactreal::RationalField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorDivInt_exactreal::Element_exactreal::RationalField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorDivInt_long long_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorDivInt_long long_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorDivInt_mpq_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorDivInt_mpq_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorDivInt_mpz_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorDivInt_mpz_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorDivMpz_eantic::renf_elem_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorDivMpz_eantic::renf_elem_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorDivMpz_exactreal::Element_exactreal::NumberField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorDivMpz_exactreal::Element_exactreal::NumberField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorDivMpz_exactreal::Element_exactreal::RationalField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorDivMpz_exactreal::Element_exactreal::RationalField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorDivMpz_long long_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorDivMpz_long long_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorDivMpz_mpq_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorDivMpz_mpq_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorDivMpz_mpz_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorDivMpz_mpz_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorEqVector_eantic::renf_elem_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorEqVector_eantic::renf_elem_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorEqVector_exactreal::Element_exactreal::IntegerRing__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorEqVector_exactreal::Element_exactreal::IntegerRing__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorEqVector_exactreal::Element_exactreal::NumberField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorEqVector_exactreal::Element_exactreal::NumberField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorEqVector_exactreal::Element_exactreal::RationalField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorEqVector_exactreal::Element_exactreal::RationalField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorEqVector_long long_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorEqVector_long long_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorEqVector_mpq_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorEqVector_mpq_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorEqVector_mpz_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorEqVector_mpz_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorLtBound_eantic::renf_elem_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorLtBound_eantic::renf_elem_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorLtBound_exactreal::Element_exactreal::IntegerRing__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorLtBound_exactreal::Element_exactreal::IntegerRing__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorLtBound_exactreal::Element_exactreal::NumberField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorLtBound_exactreal::Element_exactreal::NumberField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorLtBound_exactreal::Element_exactreal::RationalField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorLtBound_exactreal::Element_exactreal::RationalField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorLtBound_long long_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorLtBound_long long_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorLtBound_mpq_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorLtBound_mpq_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorLtBound_mpz_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorLtBound_mpz_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorMinus_eantic::renf_elem_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorMinus_eantic::renf_elem_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorMinus_exactreal::Element_exactreal::IntegerRing__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorMinus_exactreal::Element_exactreal::IntegerRing__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorMinus_exactreal::Element_exactreal::NumberField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorMinus_exactreal::Element_exactreal::NumberField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorMinus_exactreal::Element_exactreal::RationalField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorMinus_exactreal::Element_exactreal::RationalField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorMinus_long long_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorMinus_long long_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorMinus_mpq_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorMinus_mpq_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorMinus_mpz_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorMinus_mpz_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorOrientation_eantic::renf_elem_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorOrientation_eantic::renf_elem_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorOrientation_exactreal::Element_exactreal::IntegerRing__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorOrientation_exactreal::Element_exactreal::IntegerRing__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorOrientation_exactreal::Element_exactreal::NumberField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorOrientation_exactreal::Element_exactreal::NumberField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorOrientation_exactreal::Element_exactreal::RationalField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorOrientation_exactreal::Element_exactreal::RationalField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorOrientation_long long_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorOrientation_long long_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorOrientation_mpq_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorOrientation_mpq_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorOrientation_mpz_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorOrientation_mpz_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorPerpendicular_eantic::renf_elem_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorPerpendicular_eantic::renf_elem_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorPerpendicular_exactreal::Element_exactreal::IntegerRing__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorPerpendicular_exactreal::Element_exactreal::IntegerRing__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorPerpendicular_exactreal::Element_exactreal::NumberField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorPerpendicular_exactreal::Element_exactreal::NumberField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorPerpendicular_exactreal::Element_exactreal::RationalField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorPerpendicular_exactreal::Element_exactreal::RationalField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorPerpendicular_long long_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorPerpendicular_long long_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorPerpendicular_mpq_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorPerpendicular_mpq_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorPerpendicular_mpz_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorPerpendicular_mpz_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorPlus_eantic::renf_elem_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorPlus_eantic::renf_elem_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorPlus_exactreal::Element_exactreal::IntegerRing__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorPlus_exactreal::Element_exactreal::IntegerRing__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorPlus_exactreal::Element_exactreal::NumberField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorPlus_exactreal::Element_exactreal::NumberField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorPlus_exactreal::Element_exactreal::RationalField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorPlus_exactreal::Element_exactreal::RationalField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorPlus_long long_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorPlus_long long_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorPlus_mpq_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorPlus_mpq_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorPlus_mpz_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorPlus_mpz_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorTimesInt_eantic::renf_elem_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorTimesInt_eantic::renf_elem_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorTimesInt_exactreal::Element_exactreal::IntegerRing__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorTimesInt_exactreal::Element_exactreal::IntegerRing__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorTimesInt_exactreal::Element_exactreal::NumberField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorTimesInt_exactreal::Element_exactreal::NumberField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorTimesInt_exactreal::Element_exactreal::RationalField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorTimesInt_exactreal::Element_exactreal::RationalField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorTimesInt_long long_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorTimesInt_long long_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorTimesInt_mpq_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorTimesInt_mpq_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorTimesInt_mpz_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorTimesInt_mpz_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorTimesMpz_eantic::renf_elem_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorTimesMpz_eantic::renf_elem_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorTimesMpz_exactreal::Element_exactreal::IntegerRing__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorTimesMpz_exactreal::Element_exactreal::IntegerRing__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorTimesMpz_exactreal::Element_exactreal::NumberField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorTimesMpz_exactreal::Element_exactreal::NumberField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorTimesMpz_exactreal::Element_exactreal::RationalField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorTimesMpz_exactreal::Element_exactreal::RationalField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorTimesMpz_long long_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorTimesMpz_long long_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorTimesMpz_mpq_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorTimesMpz_mpq_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorTimesMpz_mpz_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorTimesMpz_mpz_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorTimesVector_eantic::renf_elem_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorTimesVector_eantic::renf_elem_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorTimesVector_exactreal::Element_exactreal::IntegerRing__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorTimesVector_exactreal::Element_exactreal::IntegerRing__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorTimesVector_exactreal::Element_exactreal::NumberField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorTimesVector_exactreal::Element_exactreal::NumberField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorTimesVector_exactreal::Element_exactreal::RationalField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorTimesVector_exactreal::Element_exactreal::RationalField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorTimesVector_long long_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorTimesVector_long long_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorTimesVector_mpq_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorTimesVector_mpq_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorTimesVector_mpz_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorTimesVector_mpz_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorUnaryMinus_eantic::renf_elem_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorUnaryMinus_eantic::renf_elem_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorUnaryMinus_exactreal::Element_exactreal::IntegerRing__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorUnaryMinus_exactreal::Element_exactreal::IntegerRing__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorUnaryMinus_exactreal::Element_exactreal::NumberField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorUnaryMinus_exactreal::Element_exactreal::NumberField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorUnaryMinus_exactreal::Element_exactreal::RationalField__": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorUnaryMinus_exactreal::Element_exactreal::RationalField__",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorUnaryMinus_long long_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorUnaryMinus_long long_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorUnaryMinus_mpq_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorUnaryMinus_mpq_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
+    "Benchmarks.track_VectorUnaryMinus_mpz_class_": {
+        "code": "def asv_method(self, t=time): return t",
+        "name": "Benchmarks.track_VectorUnaryMinus_mpz_class_",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "95504a3a7767fc6ea8c8805b5e5bf9157a3a0b5f0c0fda6bf99e361d0bb4b107"
+    },
     "Benchmarks.track_VertexAtSource": {
         "code": "def asv_method(self, t=time): return t",
         "name": "Benchmarks.track_VertexAtSource",
