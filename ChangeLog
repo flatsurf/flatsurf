@@ -4,6 +4,22 @@ intervalxt Change Log
 
 .. current developments
 
+v2.2.1
+====================
+
+**Fixed:**
+
+* speed up many vector operations in particular those involving exact-real elements.
+* enabled codecov reporting on pull requests
+
+**Performance:**
+
+* sampling saddle connections should be much faster now since we are giving
+  preference to large search sectors when selecting the random sector to
+  continue the search in.
+
+
+
 v2.2.0
 ====================
 
