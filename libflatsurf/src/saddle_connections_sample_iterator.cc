@@ -85,6 +85,14 @@ void ImplementationOf<SaddleConnectionsSampleIterator<Surface>>::increment() {
   auto sectorBegin = outerSectorBegin;
   auto sectorEnd = outerSectorEnd;
 
+  const auto dbl = [](const auto& x) {
+    if constexpr (std::is_same_v<std::decay_t<decltype(x)>, mpq_class> || std::is_same_v<std::decay_t<decltype(x)>, mpz_class>) {
+      return x.get_d();
+    } else {
+      return static_cast<double>(x);
+    }
+  };
+
   const auto ccw = [&]() {
     // When we see a saddle connection that we had already seen before, (or that
     // is too short) we need to decide on which side of that connection we want
@@ -92,56 +100,46 @@ void ImplementationOf<SaddleConnectionsSampleIterator<Surface>>::increment() {
     // leads to very small sectors quickly. Instead, we want to weigh the random
     // choice by the size of the corresponding search sector.
 
-    const auto angle = [](const auto& x, const auto& y) {
-      // Ideally, we would compute the angles enclosed between (sectorBegin,
-      // connection) and (connection, sectorEnd) and then give probabilities
-      // relative to their sizes. Exact computations are way too expensive here
-      // so we only use double precision and hope for the best. To help
-      // stability a bit, we do not use standard angles for the Euclidean norm
-      // but rather what's sometimes called diamond angles, i.e., essentially
-      // an angle in the 1-norm. These angles are in [0, 4) instead of [0, 2π),
-      // see e.g.
-      // https://www.freesteel.co.uk/wpblog/2009/06/05/encoding-2d-angles-without-trigonometry/
-      // The distribution of such angles is not the same of course but it should be
-      // good enough for our purposes.
-      double xx, yy;
-      if constexpr (std::is_same_v<T, mpq_class> || std::is_same_v<T, mpz_class>) {
-        xx = x.get_d();
-        yy = x.get_d();
+    const auto v = sectorBegin;
+    const auto w = sectorEnd;
+    const auto c = current.vector();
+
+    // We want the probability to go to the clockwise side to be p = α / β
+    // where α is the angle (v, c) and β the angle (v, w), i.e., the further c
+    // is from v the more likely we go to the clockwise side.
+    // Since all angles are typically extremely small, we can assume that
+    // sin(x) = x. When the above probability translates to p = v×c / v×w ·
+    // |w|/|c|.
+    // Computing these fractions is expensive or actually not possible for some
+    // types T.  If we cast everything to double, then v×c == v×w which does
+    // not help either. So instead, we estimate everything in a very crude way:
+    // The quotient |w|/|c| can safely be represented with double precision.
+    double wc = sqrt(dbl(T(w * w)) / dbl(T(c * c)));
+
+    if (!isfinite(wc))
+      throw std::logic_error("not implemented: saddle connection went into a sector with too distinct boundaries");
+
+    // The cross products v×c and v×w are often virtually indistinguishable
+    // when written in double precision. Therefore, we successively estimate
+    // their quotient in a very crude way.
+    T vc = v.x() * c.y() - v.y() * c.x();
+    T vw = v.x() * w.y() - v.y() * w.x();
+
+    if (wc < 1)
+      vw *= static_cast<int>(1 / wc);
+    if (wc > 1)
+      vc *= static_cast<int>(wc);
+
+    while (true) {
+      if (2 * vc < vw) {
+        if (std::uniform_real_distribution<>(0, 1)(rand) >= .5)
+          return CCW::COUNTERCLOCKWISE;
+        vc *= 2;
       } else {
-        xx = static_cast<double>(x);
-        yy = static_cast<double>(y);
+        if (std::uniform_real_distribution<>(0, 1)(rand) < .5)
+          return CCW::CLOCKWISE;
+        vw *= 2;
       }
-
-      if (yy >= 0) {
-        if (xx >= 0)
-          return 0 + yy / (xx + yy);
-        else
-          return 1 + (-xx) / (yy + (-xx));
-      } else {
-        if (xx < 0)
-          return 2 + (-yy) / ((-xx) + (-yy));
-        else
-          return 3 + xx / (xx + (-yy));
-      }
-    };
-
-    const double sectorBeginAngle = angle(sectorBegin.x(), sectorBegin.y());
-    const double sectorEndAngle = angle(sectorEnd.x(), sectorEnd.y());
-    const double connectionAngle = angle(current.vector().x(), current.vector().y());
-
-    double totalAngle = sectorEndAngle - sectorBeginAngle;
-    if (totalAngle < 0) totalAngle += 4;
-    double clockwiseAngle = connectionAngle - sectorBeginAngle;
-    if (clockwiseAngle < 0) clockwiseAngle += 4;
-
-    if (isfinite(totalAngle) && isfinite(clockwiseAngle)) {
-      return std::uniform_real_distribution<>(0, totalAngle)(rand) < clockwiseAngle ? CCW::CLOCKWISE : CCW::COUNTERCLOCKWISE;
-    } else {
-      // The computation was unstable and produced infinities or NaN. That
-      // might happen when the double values get extremely small. Just pick a
-      // side randomly.
-      return std::uniform_int_distribution<>(0, 1)(rand) == 0 ? CCW::CLOCKWISE : CCW::COUNTERCLOCKWISE;
     }
   };
 
