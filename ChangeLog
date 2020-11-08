@@ -4,6 +4,15 @@ intervalxt Change Log
 
 .. current developments
 
+v2.2.2
+====================
+
+**Fixed:**
+
+* made sector selection in SaddleConnectionsSample more stable in very thin sectors
+
+
+
 v2.2.1
 ====================
 
