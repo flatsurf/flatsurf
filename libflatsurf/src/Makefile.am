@@ -49,7 +49,7 @@ libflatsurf_la_SOURCES =                                            \
 	tracked.cc                                                  \
 	transformation_deformation.cc                               \
 	trivial_deformation.cc                                      \
-	vector/vector.cc                                            \
+	vector.cc                                                   \
 	vertex.cc                                                   \
 	vertical.cc                                                 \
 	weak_read_only.cc
@@ -67,6 +67,9 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/cppyy.hpp                                       \
 	../flatsurf/decomposition_step.hpp                          \
 	../flatsurf/deformation.hpp                                 \
+	../flatsurf/detail/vector_base.hpp                          \
+	../flatsurf/detail/vector_exact.hpp                         \
+	../flatsurf/detail/vector_with_error.hpp                    \
 	../flatsurf/edge.hpp                                        \
 	../flatsurf/edge_map.hpp                                    \
 	../flatsurf/edge_set.hpp                                    \
@@ -109,9 +112,6 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/vertical.hpp
 
 nobase_pkginclude_HEADERS +=                                        \
-	../flatsurf/detail/vector_base.hpp                          \
-	../flatsurf/detail/vector_exact.hpp                         \
-	../flatsurf/detail/vector_with_error.hpp                    \
 	../flatsurf/external/spimpl/spimpl.h
 
 noinst_HEADERS =                                                    \
@@ -162,6 +162,7 @@ noinst_HEADERS =                                                    \
 	impl/tracked.impl.hpp                                       \
 	impl/transformation_deformation.hpp                         \
 	impl/trivial_deformation.hpp                                \
+	impl/vector.impl.hpp                                        \
 	impl/vertex.impl.hpp                                        \
 	impl/vertical.impl.hpp                                      \
 	impl/weak_read_only.hpp                                     \
@@ -170,16 +171,7 @@ noinst_HEADERS =                                                    \
 	util/hash.ipp                                               \
 	util/instance_of.ipp                                        \
 	util/instantiate.ipp                                        \
-	util/union_find.ipp                                         \
-	vector/algorithm/exact.ipp                                  \
-	vector/algorithm/exact.extension.ipp                        \
-	vector/algorithm/extension.ipp                              \
-	vector/algorithm/base.ipp                                   \
-	vector/algorithm/base.extension.ipp                         \
-	vector/algorithm/with_error.ipp                             \
-	vector/algorithm/with_error.extension.ipp                   \
-	vector/storage/forward.ipp                                  \
-	vector/storage/cartesian.ipp
+	util/union_find.ipp
 
 libflatsurf_la_LDFLAGS = -version-info $(libflatsurf_version_info)
 # some of our vectors use arb directly and through exact-real's arb wrappers
