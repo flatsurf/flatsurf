@@ -187,6 +187,11 @@ ImplementationOf<SaddleConnections<Surface>>::ImplementationOf(const Surface& su
   sectors(surface.halfEdges() | rx::transform([](const auto he) { return Sector(he); }) | rx::to_vector()) {}
 
 template <typename Surface>
+void ImplementationOf<SaddleConnections<Surface>>::resetLowerBound(SaddleConnections<Surface>& connections) {
+  connections.self->lowerBound = 0;
+}
+
+template <typename Surface>
 std::vector<typename ImplementationOf<SaddleConnections<Surface>>::Sector> ImplementationOf<SaddleConnections<Surface>>::Sector::refine(const Surface& surface, const Vector<T>& sectorBegin, const Vector<T>& sectorEnd) const {
   auto sector = this->sector ? *this->sector : std::pair{surface.fromHalfEdge(source), surface.fromHalfEdge(surface.nextAtVertex(source))};
 
