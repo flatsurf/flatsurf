@@ -52,6 +52,10 @@ class ImplementationOf<SaddleConnections<Surface>> {
 
   ImplementationOf(const Surface&);
 
+  // Reset the lowerBound back to 0; note that the public lowerBound() can only
+  // increase the lower bound.
+  static void resetLowerBound(SaddleConnections<Surface>&);
+
   ReadOnly<Surface> surface;
   std::vector<Sector> sectors;
   std::optional<Bound> searchRadius;
