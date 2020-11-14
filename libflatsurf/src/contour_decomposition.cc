@@ -79,20 +79,12 @@ void ImplementationOf<ContourDecomposition<Surface>>::check(const std::vector<Pa
   {
     std::unordered_map<SaddleConnection<FlatTriangulation<T>>, int> connections;
 
-    auto track = [&](const auto& con) {
-      if (connections.find(con) == connections.end()) {
-        connections[con] = 1;
-        connections[-con] = 0;
-      } else {
-        connections[con]++;
-        CHECK(connections[con] == 1, "Each connection must show up exactly once with each sign in the perimeters of the components but " << con << " does show up " << connections[con] << " times.");
-        CHECK(connections[-con] == 1, "Each connection must show up exactly once with each sign in the perimeters of the components but " << con << " does show up " << connections[-con] << " times.");
-      }
-    };
-
     for (auto& component : decomposition)
       for (auto& connection : component)
-        track(connection);
+        connections[connection]++;
+
+    for (auto& connection : connections)
+      CHECK(connections[-connection.first] == 1, "Each connection must show up exactly once with each sign in the perimiters of the components but " << connection.first << " does show up " << connections[-connection.first] + connection.second << " times.");
   }
 
   // The total angle at each vertex has not changed
