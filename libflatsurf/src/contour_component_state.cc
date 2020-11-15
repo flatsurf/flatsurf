@@ -24,6 +24,7 @@
 #include <ostream>
 #include <unordered_set>
 
+#include "../flatsurf/ccw.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/saddle_connection.hpp"
@@ -44,10 +45,10 @@ ContourComponentState<Surface>::ContourComponentState(const ContourDecomposition
       return vertical.large(e);
     });
 
-    if (vertical.perpendicular(state.surface.fromHalfEdge(large)) < 0)
+    if (vertical.ccw(large) == CCW::COUNTERCLOCKWISE)
       large = -large;
 
-    ASSERT(vertical.perpendicular(state.surface.fromHalfEdge(large)) > 0, "A large edge and it's negative cannot both be right-to-left");
+    ASSERT(vertical.ccw(large) == CCW::CLOCKWISE, "A large edge and it's negative cannot both be right-to-left");
 
     return large;
   }()),

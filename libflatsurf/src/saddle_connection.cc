@@ -106,16 +106,16 @@ SaddleConnection<Surface> SaddleConnection<Surface>::inSector(const Surface& sur
 
 template <typename Surface>
 SaddleConnection<Surface> SaddleConnection<Surface>::inHalfPlane(const Surface& surface, HalfEdge side, const Vertical<Surface>& vertical, const Vector<T>& vector) {
-  CCW allowed = vertical.vertical().ccw(surface.fromHalfEdge(side));
+  const CCW allowed = vertical.ccw(side);
   HalfEdge sector;
-  for (sector = side; vertical.vertical().ccw(surface.fromHalfEdge(sector)) == allowed; sector = surface.previousAtVertex(sector))
+  for (sector = side; vertical.ccw(sector) == allowed; sector = surface.previousAtVertex(sector))
     ;
   do {
     if (surface.inSector(sector, vector)) {
       return SaddleConnection::inSector(surface, sector, vector);
     }
     sector = surface.nextAtVertex(sector);
-  } while (vertical.vertical().ccw(surface.fromHalfEdge(sector)) == allowed);
+  } while (vertical.ccw(sector) == allowed);
 
   CHECK_ARGUMENT(false, "vector " << vector << " not on the same side of " << vertical << " as HalfEdge " << side);
 }
@@ -148,7 +148,7 @@ SaddleConnection<Surface> SaddleConnection<Surface>::clockwise(const SaddleConne
 
 template <typename Surface>
 SaddleConnection<Surface> SaddleConnection<Surface>::alongVertical(const Surface& surface, const Vertical<Surface>& direction, HalfEdge plane) {
-  CCW ccw = surface.fromHalfEdge(plane).ccw(direction.vertical());
+  CCW ccw = -direction.ccw(plane);
 
   if (ccw == CCW::COLLINEAR || ccw == CCW::COUNTERCLOCKWISE) {
     while (!surface.inSector(plane, direction)) {
@@ -158,7 +158,7 @@ SaddleConnection<Surface> SaddleConnection<Surface>::alongVertical(const Surface
   } else {
     while (true) {
       plane = surface.previousAtVertex(plane);
-      ccw = surface.fromHalfEdge(plane).ccw(direction.vertical());
+      ccw = -direction.ccw(plane);
       if (ccw != CCW::CLOCKWISE) {
         return inSector(surface, plane, direction);
       }
@@ -168,12 +168,12 @@ SaddleConnection<Surface> SaddleConnection<Surface>::alongVertical(const Surface
 
 template <typename Surface>
 SaddleConnection<Surface> SaddleConnection<Surface>::inSector(const Surface& surface, HalfEdge source, const Vertical<Surface>& direction) {
-  CHECK_ARGUMENT(surface.inSector(source, direction.vertical()), "Cannot search in direction " << direction << " next to " << source << " in " << surface << "; that direction is not in the search sector");
+  CHECK_ARGUMENT(surface.inSector(source, direction), "Cannot search in direction " << direction << " next to " << source << " in " << surface << "; that direction is not in the search sector");
 
   const auto construction = SaddleConnections<Surface>(surface)
                                 .byLength()
                                 .sector(source)
-                                .sector(direction.vertical(), direction.vertical());
+                                .sector(direction, direction);
 
   const auto ret = begin(construction);
 
