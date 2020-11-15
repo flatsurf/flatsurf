@@ -53,19 +53,17 @@ using std::string;
 template <typename Surface>
 bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Surface>&)> target, int limit) {
   const auto check = [&]() {
-    ASSERTIONS(([&]() {
-      auto paths = self->state->components | rx::transform([&](const auto& component) { return Path(ImplementationOf<FlowComponent<Surface>>::make(self->state, &const_cast<FlowComponentState<Surface>&>(component)).perimeter() | rx::transform([](const auto& connection) { return connection.saddleConnection(); }) | rx::to_vector()); }) | rx::to_vector();
-      ImplementationOf<ContourDecomposition<Surface>>::check(paths, vertical());
-    }));
+    auto paths = self->state->components | rx::transform([&](const auto& component) { return Path(ImplementationOf<FlowComponent<Surface>>::make(self->state, &const_cast<FlowComponentState<Surface>&>(component)).perimeter() | rx::transform([](const auto& connection) { return connection.saddleConnection(); }) | rx::to_vector()); }) | rx::to_vector();
+    ImplementationOf<ContourDecomposition<Surface>>::check(paths, vertical());
   };
 
   while (!target(*this)) {
-    check();
-
     auto step = self->component->dynamicalComponent.decompositionStep(limit);
 
-    if (step.result == intervalxt::DecompositionStep::Result::LIMIT_REACHED)
+    if (step.result == intervalxt::DecompositionStep::Result::LIMIT_REACHED) {
+      ASSERTIONS(check);
       return false;
+    }
 
     if (step.equivalent) {
       // We found a SaddleConnection in intervalxt. step.equivalent contains a
@@ -222,6 +220,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
       self->state->detectedConnections.emplace(*step.connection, connection);
       self->state->detectedConnections.emplace(-*step.connection, -connection);
     }
+
     if (step.additionalComponent) {
       self->state->components.push_back({
           self->component->contourComponent,
@@ -231,13 +230,11 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
 
       auto additionalComponent = ImplementationOf<FlowComponent>::make(self->state, &*self->state->components.rbegin());
 
-      check();
-
       return decompose(target, limit) && additionalComponent.decompose(target, limit);
-    } else {
-      check();
     }
   }
+
+  ASSERTIONS(check);
 
   return true;
 }
