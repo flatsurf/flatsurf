@@ -153,7 +153,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
               case ORIENTATION::SAME:
                 return NORTH;
               default:
-                ASSERT(false, "cannot classify zero vector");
+                UNREACHABLE("cannot classify zero vector");
             }
         }
       };
