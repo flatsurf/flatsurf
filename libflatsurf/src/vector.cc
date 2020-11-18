@@ -412,7 +412,7 @@ CCW detail::VectorExact<Vector, T>::ccw(const Vector& other) const {
     }
   };
 
-  if constexpr (IsExactReal<T>) {
+  if constexpr (IsEAntic<T> || IsExactReal<T>) {
     const auto maybeCcw = static_cast<flatsurf::Vector<exactreal::Arb>>(self).ccw(static_cast<flatsurf::Vector<exactreal::Arb>>(other));
     if (maybeCcw)
       return *maybeCcw;
@@ -437,7 +437,7 @@ ORIENTATION detail::VectorExact<Vector, T>::orientation(const Vector& other) con
     }
   };
 
-  if constexpr (IsExactReal<T>) {
+  if constexpr (IsEAntic<T> || IsExactReal<T>) {
     const auto maybeOrientation = static_cast<flatsurf::Vector<exactreal::Arb>>(self).orientation(static_cast<flatsurf::Vector<exactreal::Arb>>(other));
     if (maybeOrientation)
       return *maybeOrientation;
@@ -459,7 +459,7 @@ bool detail::VectorExact<Vector, T>::operator>(Bound bound) const {
 
   if (!bound) return static_cast<bool>(self);
 
-  if constexpr (IsExactReal<T>) {
+  if constexpr (IsEAntic<T> || IsExactReal<T>) {
     const auto maybe = static_cast<flatsurf::Vector<exactreal::Arb>>(self) > bound;
     if (maybe)
       return *maybe;
@@ -474,7 +474,7 @@ bool detail::VectorExact<Vector, T>::operator<(Bound bound) const {
 
   if (!bound) return false;
 
-  if constexpr (IsExactReal<T>) {
+  if constexpr (IsEAntic<T> || IsExactReal<T>) {
     const auto maybe = static_cast<flatsurf::Vector<exactreal::Arb>>(self) < bound;
     if (maybe)
       return *maybe;
@@ -589,7 +589,7 @@ bool detail::VectorExact<Vector, T>::CompareSlope::operator()(const Vector& lhs,
 
 template <typename Vector, typename T>
 bool detail::VectorExact<Vector, T>::CompareLength::operator()(const Vector& lhs, const Vector& rhs) const {
-  if (IsExactReal<T>) {
+  if (IsEAntic<T> || IsExactReal<T>) {
     const auto lhsArb = static_cast<flatsurf::Vector<exactreal::Arb>>(lhs);
     const auto rhsArb = static_cast<flatsurf::Vector<exactreal::Arb>>(rhs);
 
