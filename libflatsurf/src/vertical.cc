@@ -23,10 +23,12 @@
 #include <intervalxt/label.hpp>
 #include <unordered_set>
 
+#include "../flatsurf/ccw.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/flat_triangulation_collapsed.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/interval_exchange_transformation.hpp"
+#include "../flatsurf/orientation.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vector.hpp"
 #include "impl/vertical.impl.hpp"
@@ -62,7 +64,7 @@ std::vector<std::unordered_set<HalfEdge>> Vertical<Surface>::components() const 
 template <typename Surface>
 bool Vertical<Surface>::large(HalfEdge e) const {
   auto length = [&](const HalfEdge edge) {
-    auto ret = perpendicular(self->surface->fromHalfEdge(edge));
+    auto ret = projectPerpendicular(edge);
     return ret > 0 ? ret : -ret;
   };
   auto len = length(e);
@@ -74,22 +76,62 @@ bool Vertical<Surface>::large(HalfEdge e) const {
 
 template <typename Surface>
 typename Surface::Coordinate Vertical<Surface>::perpendicular(const Vector<T>& v) const {
+  return projectPerpendicular(v);
+}
+
+template <typename Surface>
+typename Surface::Coordinate Vertical<Surface>::projectPerpendicular(HalfEdge he) const {
+  return projectPerpendicular(self->surface->fromHalfEdge(he));
+}
+
+template <typename Surface>
+typename Surface::Coordinate Vertical<Surface>::projectPerpendicular(const Vector<T>& v) const {
   return self->horizontal * v;
 }
 
 template <typename Surface>
 typename Surface::Coordinate Vertical<Surface>::parallel(const Vector<T>& v) const {
+  return project(v);
+}
+
+template <typename Surface>
+typename Surface::Coordinate Vertical<Surface>::project(HalfEdge he) const {
+  return project(self->surface->fromHalfEdge(he));
+}
+
+template <typename Surface>
+typename Surface::Coordinate Vertical<Surface>::project(const Vector<T>& v) const {
   return self->vertical * v;
 }
 
 template <typename Surface>
 bool Vertical<Surface>::perpendicular(HalfEdge e) const {
-  return !static_cast<bool>(parallel(self->surface->fromHalfEdge(e)));
+  return orientation(e) == ORIENTATION::ORTHOGONAL;
+}
+
+template <typename Surface>
+ORIENTATION Vertical<Surface>::orientation(HalfEdge e) const {
+  return orientation(self->surface->fromHalfEdge(e));
+}
+
+template <typename Surface>
+ORIENTATION Vertical<Surface>::orientation(const Vector<T>& v) const {
+  return self->vertical.orientation(v);
 }
 
 template <typename Surface>
 bool Vertical<Surface>::parallel(HalfEdge e) const {
-  return !static_cast<bool>(perpendicular(self->surface->fromHalfEdge(e)));
+  return ccw(e) == CCW::COLLINEAR;
+}
+
+template <typename Surface>
+CCW Vertical<Surface>::ccw(HalfEdge e) const {
+  return ccw(self->surface->fromHalfEdge(e));
+}
+
+template <typename Surface>
+CCW Vertical<Surface>::ccw(const Vector<T>& v) const {
+  return self->vertical.ccw(v);
 }
 
 template <typename Surface>
@@ -98,9 +140,9 @@ typename Vertical<Surface>::TRIANGLE Vertical<Surface>::classifyFace(HalfEdge fa
   // more important optimization would be to cache the values of perpendicular
   // in a HalfEdgeMap.
 
-  auto perp = perpendicular(self->surface->fromHalfEdge(face));
-  auto a = perpendicular(self->surface->fromHalfEdge(self->surface->nextInFace(face)));
-  auto b = perpendicular(self->surface->fromHalfEdge(self->surface->previousInFace(face)));
+  auto perp = projectPerpendicular(face);
+  auto a = projectPerpendicular(self->surface->nextInFace(face));
+  auto b = projectPerpendicular(self->surface->previousInFace(face));
 
   if (self->surface->nextInFace(face) == self->surface->previousInFace(face)) {
     assert(perp + a == 0 && "face is not closed");
@@ -155,6 +197,11 @@ const Vector<typename Surface::Coordinate>& Vertical<Surface>::horizontal() cons
 }
 
 template <typename Surface>
+Vertical<Surface>::operator const Vector<T>&() const {
+  return self->vertical;
+}
+
+template <typename Surface>
 ostream& operator<<(ostream& os, const Vertical<Surface>& self) {
   return os << self.self->vertical;
 }
@@ -178,7 +225,7 @@ bool ImplementationOf<Vertical<Surface>>::visit(const Vertical& self, HalfEdge s
     return false;
 
   // Do not cross vertical edges.
-  if (self.parallel(start))
+  if (self.ccw(start) == CCW::COLLINEAR)
     return true;
 
   // Visit all connected half edges.

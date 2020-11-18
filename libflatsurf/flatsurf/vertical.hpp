@@ -56,15 +56,42 @@ class Vertical : Serializable<Vertical<Surface>>,
   // both of its adjacent triangles.
   bool large(HalfEdge) const;
 
+  // Return the defining vector of this vertical direction.
   const Vector<T> &vertical() const;
-  const Vector<T> &horizontal() const;
 
-  T perpendicular(const Vector<T> &) const;
-  T parallel(const Vector<T> &) const;
+  // Return whether the vertical direction and  this edge are parallel.
   bool parallel(Edge) const;
+
+  // Return whether the vertical direction and this edge are orthogonal.
   bool perpendicular(Edge) const;
-  bool parallel(HalfEdge) const;
-  bool perpendicular(HalfEdge) const;
+
+  CCW ccw(HalfEdge) const;
+  ORIENTATION orientation(HalfEdge) const;
+
+  CCW ccw(const Vector<T> &) const;
+  ORIENTATION orientation(const Vector<T> &) const;
+
+  // Return a scalar projection of this half edge onto the vertical. Note that
+  // this projection might not be normalized, i.e., it is typically just the
+  // scalar product with the vertical defining vector.
+  T project(HalfEdge) const;
+
+  // Return a scalar projection of this vector onto the vertical. Note that
+  // this projection might not be normalized, i.e., it is typically just the
+  // scalar product with the vertical defining vector.
+  T project(const Vector<T> &) const;
+
+  // Return a scalar projection of this half edge onto the direction
+  // perpendicular to this vertical. Note that this projection might not be
+  // normalized, i.e., it is typically just the scalar product with a fixed
+  // vector that is orthogonal to the defining vector.
+  T projectPerpendicular(HalfEdge) const;
+
+  // Return a scalar projection of this vector onto the direction perpendicular
+  // to this vertical. Note that this projection might not be normalized, i.e.,
+  // it is typically just the scalar product with a fixed vector that is
+  // orthogonal to the defining vector.
+  T projectPerpendicular(const Vector<T> &) const;
 
   const Surface &surface() const;
 
@@ -73,6 +100,14 @@ class Vertical : Serializable<Vertical<Surface>>,
   bool operator==(const Vertical &) const;
 
   Vertical<Surface> operator-() const;
+
+  operator const Vector<T> &() const;
+
+  [[deprecated("use -vertical().perpendicular() instead.")]] const Vector<T> &horizontal() const;
+  [[deprecated("use vertical().projectPerpendicular() instead.")]] T perpendicular(const Vector<T> &) const;
+  [[deprecated("use vertical().project() instead.")]] T parallel(const Vector<T> &) const;
+  [[deprecated("use ccw() == CCW::COLLINEAR instead.")]] bool parallel(HalfEdge) const;
+  [[deprecated("use orientation() == ORIENTATION::ORTHOGONAL instead.")]] bool perpendicular(HalfEdge) const;
 
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const Vertical<S> &);

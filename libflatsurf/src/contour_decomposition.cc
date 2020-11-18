@@ -23,9 +23,11 @@
 #include <ostream>
 #include <vector>
 
+#include "../flatsurf/ccw.hpp"
 #include "../flatsurf/contour_component.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/orientation.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
@@ -98,15 +100,19 @@ void ImplementationOf<ContourDecomposition<Surface>>::check(const std::vector<Pa
       RIGHT };
 
     const auto classify = [&](const auto& connection) {
-      if (vertical.perpendicular(connection) == 0) {
-        if (vertical.parallel(connection) > 0)
-          return RIGHT;
-        else
-          return LEFT;
-      } else {
-        if (vertical.perpendicular(connection) > 0)
+      switch (vertical.ccw(connection)) {
+        case CCW::COLLINEAR:
+          switch (vertical.orientation(connection)) {
+            case ORIENTATION::SAME:
+              return RIGHT;
+            case ORIENTATION::OPPOSITE:
+              return LEFT;
+            default:
+              UNREACHABLE("connection cannot be collinear and orthogonal at the same time");
+          }
+        case CCW::CLOCKWISE:
           return BOTTOM;
-        else
+        default:
           return TOP;
       }
     };

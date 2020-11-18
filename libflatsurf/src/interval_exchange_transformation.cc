@@ -28,6 +28,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "../flatsurf/ccw.hpp"
 #include "../flatsurf/edge_set.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/tracked.hpp"
@@ -86,13 +87,13 @@ void IntervalExchangeTransformation<Surface>::makeUniqueLargeEdges(Surface& surf
     auto larges = surface.halfEdges() | rx::filter([&](const HalfEdge source) {
       if (sources->contains(source)) return false;
       if (!vertical.large(source)) return false;
-      if (vertical.perpendicular(surface.fromHalfEdge(source)) < 0) return false;
+      if (vertical.ccw(source) == CCW::COUNTERCLOCKWISE) return false;
       return true;
     }) | rx::to_vector();
 
     std::sort(begin(larges), end(larges), [&](const HalfEdge a, const HalfEdge b) {
-      auto alength = vertical.horizontal() * surface.fromHalfEdge(a);
-      auto blength = vertical.horizontal() * surface.fromHalfEdge(b);
+      auto alength = vertical.projectPerpendicular(a);
+      auto blength = vertical.projectPerpendicular(b);
 
       if (alength < 0) alength = -alength;
       if (blength < 0) blength = -blength;
@@ -144,7 +145,7 @@ std::unordered_set<HalfEdge> IntervalExchangeTransformation<Surface>::makeUnique
   Vertical<Surface> vertical(surface, vertical_);
 
   ASSERT_ARGUMENT(vertical.large(unique), "edge must already be large");
-  if (vertical.perpendicular(surface.fromHalfEdge(unique)) < 0)
+  if (vertical.ccw(unique) == CCW::COUNTERCLOCKWISE)
     unique = -static_cast<HalfEdge>(unique);
 
   // Collect the half edges connected to `unique`, the unique large edge in

@@ -22,6 +22,7 @@
 
 #include <intervalxt/interval_exchange_transformation.hpp>
 
+#include "../flatsurf/ccw.hpp"
 #include "../flatsurf/contour_connection.hpp"
 #include "../flatsurf/flat_triangulation_collapsed.hpp"
 #include "../flatsurf/half_edge.hpp"
@@ -47,7 +48,7 @@ using std::end;
 
 template <typename Surface>
 IntervalExchangeTransformation<FlatTriangulationCollapsed<typename Surface::Coordinate>> ContourComponent<Surface>::intervalExchangeTransformation() const {
-  return IntervalExchangeTransformation(self->state->surface, self->state->surface.vertical().vertical(), self->large());
+  return IntervalExchangeTransformation(self->state->surface, self->state->surface.vertical(), self->large());
 }
 
 template <typename Surface>
@@ -154,8 +155,8 @@ template <typename Surface>
 void ImplementationOf<ContourComponent<Surface>>::makeContour(std::back_insert_iterator<vector<HalfEdge>> target,
     const HalfEdge source, const Surface& parent,
     const Vertical<Surface>& vertical) {
-  ASSERT_ARGUMENT(!vertical.parallel(source), "vertical edges must have been collapsed before a contour can be built");
-  ASSERT_ARGUMENT(vertical.perpendicular(parent.fromHalfEdge(source)) > 0, "contour must procede in positive direction");
+  ASSERT_ARGUMENT(vertical.ccw(source) != CCW::COLLINEAR, "vertical edges must have been collapsed before a contour can be built");
+  ASSERT_ARGUMENT(vertical.ccw(source) == CCW::CLOCKWISE, "contour must procede in positive direction");
   switch (vertical.classifyFace(source)) {
     case Vertical<Surface>::TRIANGLE::BACKWARD:
       // In a backward triangle, we recurse into both edges on the top.

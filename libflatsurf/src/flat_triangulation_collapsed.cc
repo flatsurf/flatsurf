@@ -71,7 +71,7 @@ FlatTriangulationCollapsed<T>::FlatTriangulationCollapsed(const FlatTriangulatio
   FlatTriangulationCombinatorics<FlatTriangulationCollapsed>(ProtectedConstructor{}, std::make_shared<ImplementationOf<FlatTriangulationCollapsed>>(surface, vertical)) {
   while ([&]() {
     for (auto e : this->halfEdges()) {
-      if (this->vertical().parallel(e)) {
+      if (this->vertical().ccw(e) == CCW::COLLINEAR) {
         self->collapse(e);
         return true;
       }
@@ -138,7 +138,7 @@ const FlatTriangulation<T>& FlatTriangulationCollapsed<T>::uncollapsed() const {
 
 template <typename T>
 bool FlatTriangulationCollapsed<T>::operator==(const FlatTriangulationCollapsed<T>& rhs) const {
-  return uncollapsed() == rhs.uncollapsed() && vertical().vertical().ccw(rhs.vertical().vertical()) == CCW::COLLINEAR && vertical().vertical().orientation(rhs.vertical().vertical()) == ORIENTATION::SAME;
+  return uncollapsed() == rhs.uncollapsed() && vertical().ccw(rhs.vertical()) == CCW::COLLINEAR && vertical().orientation(rhs.vertical()) == ORIENTATION::SAME;
 }
 
 template <typename T>
@@ -225,7 +225,7 @@ bool ImplementationOf<FlatTriangulationCollapsed<T>>::faceClosed(HalfEdge face) 
     return true;
   if (self.nextInFace(face) == -face)
     return true;
-  T zero = self.vertical().perpendicular(self.fromHalfEdge(face)) + self.vertical().perpendicular(self.fromHalfEdge(self.nextInFace(face))) + self.vertical().perpendicular(self.fromHalfEdge(self.previousInFace(face)));
+  T zero = self.vertical().projectPerpendicular(face) + self.vertical().projectPerpendicular(self.nextInFace(face)) + self.vertical().projectPerpendicular(self.previousInFace(face));
   return zero == 0;
 }
 
@@ -284,9 +284,9 @@ void ImplementationOf<FlatTriangulationCollapsed<T>>::updateBeforeCollapse(HalfE
 
   HalfEdge collapse = collapse_.positive();
 
-  ASSERT(surface.vertical().parallel(collapse), "cannot collapse non-vertical edge " << collapse);
+  ASSERT(surface.vertical().ccw(collapse) == CCW::COLLINEAR, "cannot collapse non-vertical edge " << collapse);
 
-  if (surface.vertical().parallel(surface.fromHalfEdge(collapse)) < 0)
+  if (surface.vertical().orientation(collapse) == ORIENTATION::OPPOSITE)
     collapse = -collapse;
 
   auto& collapsedHalfEdges = surface.self->collapsedHalfEdges;
@@ -408,7 +408,7 @@ void ImplementationOf<FlatTriangulationCollapsed<T>>::flip(HalfEdge e) {
   CHECK_ARGUMENT(self.vertical().large(e), "in a CollapsedSurface, only large edges can be flipped");
   CHECK_ARGUMENT(self.nextInFace(self.nextInFace(self.nextInFace(e))) == e && self.nextInFace(self.nextInFace(self.nextInFace(-e))) == -e, "in a CollapsedSurface, only edges that are not in a collapsed face can be fliped");
 
-  if (self.vertical().perpendicular(self.fromHalfEdge(e)) < 0)
+  if (self.vertical().ccw(e) == CCW::COUNTERCLOCKWISE)
     e = -e;
 
   ImplementationOf<FlatTriangulationCombinatorial>::flip(e);
@@ -445,7 +445,7 @@ void ImplementationOf<FlatTriangulationCollapsed<T>>::flip(HalfEdge e) {
     }
   }));
 
-  if (self.vertical().parallel(e)) {
+  if (self.vertical().ccw(e) == CCW::COLLINEAR) {
     collapse(e);
   }
 }

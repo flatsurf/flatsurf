@@ -24,8 +24,10 @@
 
 #include <unordered_set>
 
+#include "../flatsurf/ccw.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/orientation.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
@@ -55,7 +57,7 @@ bool ContourConnection<Surface>::bottom() const {
 template <typename Surface>
 const SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>& ContourConnection<Surface>::horizontal() const {
   auto& connection = self->state->surface.fromHalfEdge(top() ? -self->halfEdge : self->halfEdge);
-  ASSERT(self->state->surface.vertical().perpendicular(connection) > 0, "ContourConnection::horizontal() must be left-to-right with respect to the vertical but " << connection << " is not.");
+  ASSERT(self->state->surface.vertical().ccw(connection) == CCW::CLOCKWISE, "ContourConnection::horizontal() must be left-to-right with respect to the vertical but " << connection << " is not.");
   return connection;
 }
 
@@ -67,8 +69,8 @@ Path<FlatTriangulation<typename Surface::Coordinate>> ContourConnection<Surface>
 
   ASSERTIONS([&]() {
     for (const auto& connection : left) {
-      ASSERT(self->state->surface.vertical().perpendicular(connection) == 0, "ContourConnection::left() must be vertical but " << connection << " is not.");
-      ASSERT(self->state->surface.vertical().parallel(connection) < 0, "ContourConnection::left() must be antiparallel but " << connection << " is not.");
+      ASSERT(self->state->surface.vertical().ccw(connection) == CCW::COLLINEAR, "ContourConnection::left() must be vertical but " << connection << " is not.");
+      ASSERT(self->state->surface.vertical().orientation(connection) == ORIENTATION::OPPOSITE, "ContourConnection::left() must be antiparallel but " << connection << " is not.");
     }
   });
   return left;
@@ -81,8 +83,8 @@ Path<FlatTriangulation<typename Surface::Coordinate>> ContourConnection<Surface>
                    : ImplementationOf<ContourConnection>::cross(*this, nextInPerimeter()).first;
   ASSERTIONS([&]() {
     for (const auto& connection : right) {
-      ASSERT(self->state->surface.vertical().perpendicular(connection) == 0, "ContourConnection::right() must be vertical but " << connection << " is not.");
-      ASSERT(self->state->surface.vertical().parallel(connection) > 0, "ContourConnection::right() must be parallel but " << connection << " is not.");
+      ASSERT(self->state->surface.vertical().ccw(connection) == CCW::COLLINEAR, "ContourConnection::right() must be vertical but " << connection << " is not.");
+      ASSERT(self->state->surface.vertical().orientation(connection) == ORIENTATION::SAME, "ContourConnection::right() must be parallel but " << connection << " is not.");
     }
   });
   return right;
@@ -95,13 +97,13 @@ Path<FlatTriangulation<typename Surface::Coordinate>> ContourConnection<Surface>
     perimeter = rx::chain(right(), std::vector{-horizontal()}, left()) | rx::to_vector();
     ASSERTIONS([&]() {
       for (const auto& connection : perimeter)
-        ASSERT(self->state->surface.vertical().perpendicular(connection) <= 0, "ContourConnection::perimeter() must be right-to-left but " << connection << " is not.");
+        ASSERT(self->state->surface.vertical().ccw(connection) != CCW::CLOCKWISE, "ContourConnection::perimeter() must be right-to-left but " << connection << " is not.");
     });
   } else {
     perimeter = rx::chain(left(), std::vector{horizontal()}, right()) | rx::to_vector();
     ASSERTIONS([&]() {
       for (const auto& connection : perimeter)
-        ASSERT(self->state->surface.vertical().perpendicular(connection) >= 0, "ContourConnection::perimeter() must be left-to-right but " << connection << " is not.");
+        ASSERT(self->state->surface.vertical().ccw(connection) != CCW::COUNTERCLOCKWISE, "ContourConnection::perimeter() must be left-to-right but " << connection << " is not.");
     });
   }
   ASSERT(perimeter.simple(), "Perimeter must be simple but " << perimeter << " is not.");
@@ -134,14 +136,14 @@ bool ContourConnection<Surface>::operator==(const ContourConnection<Surface>& rh
 template <typename Surface>
 ContourConnection<Surface> ImplementationOf<ContourConnection<Surface>>::makeTop(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* const component, HalfEdge e) {
   ContourConnection<Surface> ret(PrivateConstructor{}, state, component, e, true);
-  ASSERT(state->surface.vertical().perpendicular(state->surface.fromHalfEdge(e)) < 0, "HalfEdge must be from right to left but " << e << " is not in " << state->surface);
+  ASSERT(state->surface.vertical().ccw(e) == CCW::COUNTERCLOCKWISE, "HalfEdge must be from right to left but " << e << " is not in " << state->surface);
   return ret;
 }
 
 template <typename Surface>
 ContourConnection<Surface> ImplementationOf<ContourConnection<Surface>>::makeBottom(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* const component, HalfEdge e) {
   ContourConnection<Surface> ret(PrivateConstructor{}, state, component, e, false);
-  ASSERT(state->surface.vertical().perpendicular(state->surface.fromHalfEdge(e)) > 0, "HalfEdge must be from left to right but " << e << " is not in " << state->surface);
+  ASSERT(state->surface.vertical().ccw(e) == CCW::CLOCKWISE, "HalfEdge must be from left to right but " << e << " is not in " << state->surface);
   return ret;
 }
 
@@ -198,14 +200,14 @@ std::pair<Path<FlatTriangulation<typename Surface::Coordinate>>, Path<FlatTriang
 
   if (from.bottom() && to.bottom()) {
     // A typical pair of connections on the bottom of the contour.
-    atTo.splice(begin(atTo), connections, std::find_if(begin(connections), end(connections), [&](const auto& connection) { return vertical.parallel(connection) < 0; }), end(connections));
+    atTo.splice(begin(atTo), connections, std::find_if(begin(connections), end(connections), [&](const auto& connection) { return vertical.orientation(connection) == ORIENTATION::OPPOSITE; }), end(connections));
     atFrom = connections;
   } else if (from.bottom() && to.top()) {
     // The last connection on the bottom of the contour and the first on the top of the contour.
     atFrom = connections;
   } else if (from.top() && to.top()) {
     // A typical pair of connections on the top of the contour.
-    atTo.splice(begin(atTo), connections, std::find_if(begin(connections), end(connections), [&](const auto& connection) { return vertical.parallel(connection) > 0; }), end(connections));
+    atTo.splice(begin(atTo), connections, std::find_if(begin(connections), end(connections), [&](const auto& connection) { return vertical.orientation(connection) == ORIENTATION::SAME; }), end(connections));
     atFrom = connections;
   } else {
     // The last connection on the top of the contour and the first on the bottom of the contour.
@@ -215,19 +217,19 @@ std::pair<Path<FlatTriangulation<typename Surface::Coordinate>>, Path<FlatTriang
 
   ASSERTIONS([&]() {
     for (const auto& connection : atFrom) {
-      ASSERT(vertical.perpendicular(connection) == 0, "connection must be vertical");
+      ASSERT(vertical.ccw(connection) == CCW::COLLINEAR, "connection must be vertical");
       if (from.top()) {
-        ASSERT(vertical.parallel(connection) < 0, "connection must be antiparallel");
+        ASSERT(vertical.orientation(connection) == ORIENTATION::OPPOSITE, "connection must be antiparallel");
       } else {
-        ASSERT(vertical.parallel(connection) > 0, "connection must be parallel");
+        ASSERT(vertical.orientation(connection) == ORIENTATION::SAME, "connection must be parallel");
       }
     }
     for (const auto& connection : atTo) {
-      ASSERT(vertical.perpendicular(connection) == 0, "connection must be vertical");
+      ASSERT(vertical.ccw(connection) == CCW::COLLINEAR, "connection must be vertical");
       if (to.top()) {
-        ASSERT(vertical.parallel(connection) > 0, "connection must be parallel");
+        ASSERT(vertical.orientation(connection) == ORIENTATION::SAME, "connection must be parallel");
       } else {
-        ASSERT(vertical.parallel(connection) < 0, "connection must be antiparallel");
+        ASSERT(vertical.orientation(connection) == ORIENTATION::OPPOSITE, "connection must be antiparallel");
       }
     }
   });

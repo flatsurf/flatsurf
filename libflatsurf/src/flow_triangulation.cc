@@ -160,7 +160,7 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
     for (const auto& connection : component.perimeter()) {
       const HalfEdge halfEdge = toHalfEdge[connection];
       if (connection.top()) break;
-      x += component.vertical().perpendicular(connection.saddleConnection());
+      x += component.vertical().projectPerpendicular(connection.saddleConnection());
       chain.emplace_back(x, true, halfEdge);
     }
 
@@ -170,7 +170,7 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
     for (const auto& connection : component.perimeter() | rx::reverse() | rx::to_vector()) {
       const HalfEdge halfEdge = toHalfEdge[connection];
       if (halfEdge == bottomChainEnd) break;
-      x -= component.vertical().perpendicular(connection.saddleConnection());
+      x -= component.vertical().projectPerpendicular(connection.saddleConnection());
       chain.emplace_back(x, false, halfEdge);
     }
 

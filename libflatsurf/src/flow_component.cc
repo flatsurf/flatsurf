@@ -93,8 +93,8 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
       }
 
       ASSERT(vector, "SaddleConnection must not be the zero vector");
-      ASSERT(!vertical().perpendicular(vector), "SaddleConnection must be vertical");
-      ASSERT(vertical().parallel(vector) > 0, "SaddleConnection must be parallel but " << vector << " is antiparallel.");
+      ASSERT(vertical().ccw(vector) == CCW::COLLINEAR, "SaddleConnection must be vertical");
+      ASSERT(vertical().orientation(vector) == ORIENTATION::SAME, "SaddleConnection must be parallel but " << vector << " is antiparallel.");
 
       // The first SaddleConnection of step.equivalent. The new
       // SaddleConnection must start clockwise from that one.
@@ -127,19 +127,35 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
       };
 
       const auto classify = [](const auto& vertical, const auto& vector) {
-        if (vertical.perpendicular(vector) < 0) {
-          if (vertical.parallel(vector) < 0) return SOUTH_WEST;
-          if (vertical.parallel(vector) > 0) return NORTH_WEST;
-          return WEST;
+        switch (vertical.ccw(vector)) {
+          case CCW::COUNTERCLOCKWISE:
+            switch (vertical.orientation(vector)) {
+              case ORIENTATION::OPPOSITE:
+                return SOUTH_WEST;
+              case ORIENTATION::SAME:
+                return NORTH_WEST;
+              default:
+                return WEST;
+            }
+          case CCW::CLOCKWISE:
+            switch (vertical.orientation(vector)) {
+              case ORIENTATION::OPPOSITE:
+                return SOUTH_EAST;
+              case ORIENTATION::SAME:
+                return NORTH_EAST;
+              default:
+                return EAST;
+            }
+          default:
+            switch (vertical.orientation(vector)) {
+              case ORIENTATION::OPPOSITE:
+                return SOUTH;
+              case ORIENTATION::SAME:
+                return NORTH;
+              default:
+                UNREACHABLE("cannot classify zero vector");
+            }
         }
-        if (vertical.perpendicular(vector) > 0) {
-          if (vertical.parallel(vector) < 0) return SOUTH_EAST;
-          if (vertical.parallel(vector) > 0) return NORTH_EAST;
-          return EAST;
-        }
-        if (vertical.parallel(vector) < 0) return SOUTH;
-        if (vertical.parallel(vector) > 0) return NORTH;
-        throw std::logic_error("cannot classify zero vector");
       };
 
       // The following logic should probably be abstracted away into SaddleConnection somehow.
@@ -210,8 +226,8 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
 
       const auto connection = SaddleConnection<FlatTriangulation<T>>(surface, source, target, vector);
 
-      ASSERT(vertical().perpendicular(connection) == 0, "Detected connection must be vertical but " << connection << " is not.");
-      ASSERT(vertical().parallel(connection) > 0, " Detected connection is parallel but " << connection << " is antiparallel.");
+      ASSERT(vertical().ccw(connection) == CCW::COLLINEAR, "Detected connection must be vertical but " << connection << " is not.");
+      ASSERT(vertical().orientation(connection) == ORIENTATION::SAME, " Detected connection is parallel but " << connection << " is antiparallel.");
 
       ASSERT(connection.source() == source && connection.target() == target, "SaddleConnection normalization was unhappy with our source()/target() but we had picked them so they would be correct.");
 
@@ -251,7 +267,7 @@ boost::logic::tribool FlowComponent<Surface>::keane() const { return self->compo
 template <typename Surface>
 Vertical<Surface> FlowComponent<Surface>::vertical() const {
   const auto& collapsedSurface = self->state->contourDecomposition.collapsed();
-  return Vertical<Surface>(collapsedSurface.uncollapsed(), collapsedSurface.vertical().vertical());
+  return Vertical<Surface>(collapsedSurface.uncollapsed(), collapsedSurface.vertical());
 }
 
 template <typename Surface>
@@ -264,7 +280,7 @@ typename Surface::Coordinate FlowComponent<Surface>::width() const {
   T sum = T();
   auto vertical = this->vertical();
   for (const auto& c : perimeter()) {
-    auto width = vertical.perpendicular(c.saddleConnection());
+    auto width = vertical.projectPerpendicular(c.saddleConnection());
     if (width > 0)
       sum += width;
   }
