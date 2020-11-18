@@ -2,6 +2,7 @@ lib_LTLIBRARIES = libflatsurf.la
 
 libflatsurf_la_SOURCES =                                            \
 	approximation.cc                                            \
+	assert_connection.cc                                        \
 	bound.cc                                                    \
 	ccw.cc                                                      \
 	chain.cc                                                    \
@@ -116,6 +117,7 @@ nobase_pkginclude_HEADERS +=                                        \
 
 noinst_HEADERS =                                                    \
 	impl/approximation.hpp                                      \
+	impl/assert_connection.hpp                                  \
 	impl/chain.impl.hpp                                         \
 	impl/chain_iterator.impl.hpp                                \
 	impl/chain_vector.hpp                                       \

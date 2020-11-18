@@ -75,26 +75,6 @@ namespace flatsurf {
 template <typename E>
 void throw_for_assert(const E& e) { throw e; }
 
-template <typename T = mpz_class>
-class Amortized {
-  T budget;
-
- public:
-  Amortized(const T& budget = 1 << 10) :
-    budget(budget) {}
-
-  void reset(const T& budget) { this->budget = budget; }
-  bool pay(const T& cost) {
-    ASSERT(cost >= 0, "cost must be non-negative");
-    if (cost > budget) {
-      budget++;
-      return false;
-    }
-    budget -= cost;
-    return true;
-  }
-};
-
 }  // namespace flatsurf
 
 #endif
