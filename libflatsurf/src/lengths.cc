@@ -49,6 +49,7 @@
 #include "../flatsurf/vertical.hpp"
 #include "external/gmpxxll/gmpxxll/mpz_class.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
+#include "impl/assert_connection.hpp"
 #include "impl/flow_component.impl.hpp"
 #include "impl/flow_connection.impl.hpp"
 #include "impl/saddle_connection.impl.hpp"
@@ -234,25 +235,11 @@ void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iteratio
 
     ASSERT(minuendConnection->source() == target && minuendConnection->target() == source, "We tried to get SaddleConnection source/target right but SaddleConnection constructor disagrees.");
 
-    ASSERTIONS([&]() {
-      // A very similar bit of code lives in FlatTriangulationCollapsed. We
-      // might want to consolidate these when we touch this code again.
-      static Amortized cost;
+    ASSERTIONS(([&]() {
+      static thread_local AssertConnection<T> assertion;
 
-      const auto abs = [](const auto& x) -> std::decay_t<decltype(x)> {
-        return x < 0 ? -x : x;
-      };
-
-      const auto relativeCost = [&](const Vector<T>& dividend, const Vector<T>& divisor) -> mpz_class {
-        return gmpxxll::mpz_class(::intervalxt::sample::FloorDivision<T>()(dividend * dividend, abs(dividend * divisor)));
-      };
-
-      if (!cost.pay(relativeCost(static_cast<const Vector<T>&>(*minuendConnection), minuendConnection->surface().shortest(*minuendConnection)) + 1)) return;
-
-      const auto reconstruction = SaddleConnection<FlatTriangulation<T>>::inSector(minuendConnection->surface(), minuendConnection->source(), *minuendConnection);
-      ASSERT(*minuendConnection == reconstruction,
-          "Connection after subtract does not actually exist in surface. We claimed it's " << *minuendConnection << " but it is more likely " << reconstruction);
-    });
+      ASSERT(assertion(*minuendConnection), "Connection after subtract does not actually exist in surface. There is no saddle connection " << *minuendConnection << " in " << minuendConnection->surface());
+    }));
   }
 
   ASSERT(get(minuend), "lengths must be non-zero");

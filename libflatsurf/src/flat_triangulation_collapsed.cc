@@ -49,6 +49,7 @@
 #include "../flatsurf/vertical.hpp"
 #include "external/gmpxxll/gmpxxll/mpz_class.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
+#include "impl/assert_connection.hpp"
 #include "impl/collapsed_half_edge.hpp"
 #include "impl/flat_triangulation.impl.hpp"
 #include "impl/flat_triangulation_collapsed.impl.hpp"
@@ -415,17 +416,12 @@ void ImplementationOf<FlatTriangulationCollapsed<T>>::flip(HalfEdge e) {
 
   ASSERT(area() == self.area(), "Area inconsistent after flip of edge. Area is " << area() << " but should still be " << self.area());
   ASSERT(faceClosed(e), "Face attached to " << e << " not closed after flip in " << self);
-  ASSERTIONS([&]() {
-    static Amortized cost;
-    // The cost approximation here is were crude. We should probably look at
-    // the shortest vector in direction of e instead.
-    const auto connection = self.fromHalfEdge(e);
+  ASSERTIONS(([&]() {
+    static thread_local AssertConnection<T> assertion;
 
-    if (!cost.pay(relativeCost(connection.vector(), original->shortest(connection)) + 1)) return;
+    ASSERT(assertion(self.fromHalfEdge(e)), "Edges of Triangulation inconsistent after flip. The half edge " << e << " in the collapsed surface " << self << " claims to correspond to the " << self.fromHalfEdge(e) << ", however, there is no such saddle connection in the original surface " << original << ".");
+  }));
 
-    ASSERT(connection == SaddleConnection::inSector(original, connection.source(), connection),
-        "Edges of Triangulation inconsistent after flip. The half edge " << e << " in the collapsed surface " << self << " claims to correspond to the " << self.fromHalfEdge(e) << ", however, there is no such saddle connection in the original surface " << original << ".");
-  });
   ASSERTIONS(([&]() {
     std::unordered_map<Vertex, int> vertices;
     for (auto& vertex : original->vertices())
@@ -458,17 +454,15 @@ std::pair<HalfEdge, HalfEdge> ImplementationOf<FlatTriangulationCollapsed<T>>::c
 
   ASSERT(area() == self.area(), "Area inconsistent after collapse of edge. Area is " << area() << " but should still be " << self.area());
   ASSERT(self.halfEdges() | rx::all_of([&](const auto e) { return faceClosed(e); }), "Some faces are not closed after collapse of edge in " << self);
-  ASSERTIONS([&]() {
-    static Amortized cost;
+  ASSERTIONS(([&]() {
+    static thread_local AssertConnection<T> assertion;
 
     for (auto halfEdge : {ret.first, ret.second}) {
       const auto connection = self.fromHalfEdge(halfEdge);
-      if (!cost.pay(relativeCost(static_cast<const Vector<T>&>(connection), original->shortest(connection)) + 1)) return true;
-      const auto reconstruction = SaddleConnection::inSector(*original, connection.source(), connection);
-      ASSERT(connection == reconstruction, "Edges of Triangulation inconsistent after collapse. The half edge " << e << " in the collapsed surface " << self << " claims to correspond to the " << connection << ", however, there is no such saddle connection in the original surface " << original << " instead it should probably be " << reconstruction);
+      ASSERT(assertion(connection), "Edges of Triangulation inconsistent after collapse. The half edge " << e << " in the collapsed surface " << self << " claims to correspond to the " << connection << ", however, there is no such saddle connection in the original surface " << original << ".");
     }
-    return true;
-  });
+  }));
+
   ASSERTIONS(([&]() {
     std::unordered_map<Vertex, int> vertices;
     for (auto& vertex : original->vertices())
