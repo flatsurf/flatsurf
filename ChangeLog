@@ -4,6 +4,27 @@ intervalxt Change Log
 
 .. current developments
 
+v2.3.0
+====================
+
+**Added:**
+
+* several methods in `Vertical`, mostly replicating existing functionality but with more intuitive naming.
+
+**Deprecated:**
+
+* several methods in `Vertical`, namely some flavours of `parallel`, `perpendicular`, and `horizontal`.
+
+**Performance:**
+
+* speed up saddle connection assertions when collapsing half edges and during length computations
+* perform assertions less frequently in `FlowDecomposition::decompose()`; these assertions made up one third of the runtime in many triangle instances.
+* Perfom CCW and Orientation of e-antic vectors with inexact approximations first so we do not have to perform exact multiplications.
+* with exact-real vectors, not actually performing that many exact scalar
+  multiplication in `Vertical` might make a difference in some instances.
+
+
+
 v2.2.3
 ====================
 
