@@ -35,9 +35,12 @@
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/deformation.hpp"
+#include "../flatsurf/delaunay.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/edge_set.hpp"
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/half_edge_set.hpp"
+#include "../flatsurf/isomorphism.hpp"
 #include "../flatsurf/odd_half_edge_map.hpp"
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/saddle_connection.hpp"
@@ -480,17 +483,21 @@ void FlatTriangulation<T>::delaunay() {
   bool isDelaunay;
   do {
     isDelaunay = true;
-    for (auto edge : this->halfEdges()) {
-      if (!delaunay(edge)) {
+    for (auto edge : this->edges()) {
+      if (delaunay(edge) == DELAUNAY::NON_DELAUNAY) {
         isDelaunay = false;
-        this->flip(edge);
+        this->flip(edge.positive());
       }
     }
   } while (!isDelaunay);
 }
 
 template <typename T>
-bool FlatTriangulation<T>::delaunay(const HalfEdge edge) const {
+auto delaunay(const FlatTriangulation<T> &surface, const HalfEdge edge) {
+}
+
+template <typename T>
+DELAUNAY FlatTriangulation<T>::delaunay(const Edge edge) const {
   // We could eventually use Vector::insideCircumcircle() so vectors can
   // provide optimized implementations of this. However, at the moment, it
   // does not seem worth it.
@@ -500,19 +507,26 @@ bool FlatTriangulation<T>::delaunay(const HalfEdge edge) const {
   // this half edge is the triangle (a, b, c), and the face attached to the
   // reversed half edge is (a, c, d). We use a coordinate system where
   // d=(0,0).
-  auto ca = fromHalfEdge(edge);
-  auto cb = fromHalfEdge(this->nextAtVertex(edge));
-  auto dc = fromHalfEdge(-this->nextInFace(-edge));
+  const auto ca = this->fromHalfEdge(edge.positive());
+  const auto cb = this->fromHalfEdge(this->nextAtVertex(edge.positive()));
+  const auto dc = this->fromHalfEdge(-this->nextInFace(edge.negative()));
 
-  auto a = dc + ca;
-  auto b = dc + cb;
-  auto c = dc;
+  const auto a = dc + ca;
+  const auto b = dc + cb;
+  const auto c = dc;
 
-  auto det = [](const auto &x00, const auto &x01, const auto &x02, const auto &x10, const auto &x11, const auto &x12, const auto &x20, const auto &x21, const auto &x22) -> T {
-    return x00 * (x11 * x22 - x12 * x21) - x10 * (x01 * x22 - x02 * x21) + x20 * (x01 * x12 - x02 * x11);
+  const auto det = [](const auto &x00, const auto &x01, const auto &x02, const auto &x10, const auto &x11, const auto &x12, const auto &x20, const auto &x21, const auto &x22) -> T {
+    return x00 * (x11 * x22 - x12 * x21) - x10 * (x01 * x22 - x21 * x02) + x20 * (x01 * x12 - x11 * x02);
   };
 
-  return det(a.x(), a.y(), a.x() * a.x() + a.y() * a.y(), b.x(), b.y(), b.x() * b.x() + b.y() * b.y(), c.x(), c.y(), c.x() * c.x() + c.y() * c.y()) <= 0;
+  const auto del = det(a.x(), a.y(), a.x() * a.x() + a.y() * a.y(), b.x(), b.y(), b.x() * b.x() + b.y() * b.y(), c.x(), c.y(), c.x() * c.x() + c.y() * c.y());
+
+  if (del < 0)
+    return DELAUNAY::DELAUNAY;
+  else if (del == 0)
+    return DELAUNAY::AMBIGUOUS;
+  else
+    return DELAUNAY::NON_DELAUNAY;
 }
 
 template <typename T>
@@ -601,6 +615,11 @@ using truediv_t = decltype(std::declval<T &>() /= std::declval<const T &>());
 
 template <typename T>
 std::optional<Deformation<FlatTriangulation<T>>> FlatTriangulation<T>::isomorphism(const FlatTriangulation<T> &other, std::function<bool(const T &, const T &, const T &, const T &)> filterMatrix, std::function<bool(HalfEdge, HalfEdge)> filterHalfEdgeMap) const {
+  return this->isomorphism(other, ISOMORPHISM::FACES, filterMatrix, filterHalfEdgeMap);
+}
+
+template <typename T>
+std::optional<Deformation<FlatTriangulation<T>>> FlatTriangulation<T>::isomorphism(const FlatTriangulation<T> &other, ISOMORPHISM kind, std::function<bool(const T &, const T &, const T &, const T &)> filterMatrix, std::function<bool(HalfEdge, HalfEdge)> filterHalfEdgeMap) const {
   if (this->hasBoundary() != other.hasBoundary())
     return std::nullopt;
 
@@ -610,24 +629,60 @@ std::optional<Deformation<FlatTriangulation<T>>> FlatTriangulation<T>::isomorphi
   if (this->hasBoundary())
     throw std::logic_error("not implemented: isomorphism() not implemented for surfaces with boundary");
 
+  const auto ignore = [&](HalfEdge he) {
+    return kind == ISOMORPHISM::FACES ? false : this->delaunay(he.edge()) == DELAUNAY::AMBIGUOUS;
+  };
+  const auto ignoreImage = [&](HalfEdge he) {
+    return kind == ISOMORPHISM::FACES ? false : this->delaunay(he.edge()) == DELAUNAY::AMBIGUOUS;
+  };
+
+  if (kind == ISOMORPHISM::DELAUNAY_CELLS) {
+    ASSERT(this->edges() | rx::all_of([&](const auto e) { return this->delaunay(e) != DELAUNAY::NON_DELAUNAY; }), "source surface not Delaunay triangulated");
+    ASSERT(other.edges() | rx::all_of([&](const auto e) { return other.delaunay(e) != DELAUNAY::NON_DELAUNAY; }), "target surface not Delaunay triangulated");
+  }
+
   // We pick a fixed half edge of this surfaces and try to map it to every
   // other half edge in the other surface. Taking into account another half
-  // edge in the same face, we get a 2×2 transformation matrix. (Or rather two,
-  // if we allow reflections.)
-  HalfEdge preimage = *begin(this->halfEdges());
+  // edge in the same face, we get a single possible 2×2 transformation matrix.
+  // (Or rather two possible matrices, if we allow reflections.)
+  HalfEdge preimage = [&]() {
+    for (HalfEdge he : this->halfEdges())
+      if (!ignore(he))
+        return he;
+    throw std::logic_error("cannot detect isomorphism in surface without Delaunay cells");
+  }();
+
   for (auto image : other.halfEdges()) {
+    if (ignoreImage(image))
+      continue;
+
     for (int sgn : {1, -1}) {
-      const auto nextAtTargetVertex = [&](const auto &e) {
-        return sgn == 1 ? other.nextAtVertex(e) : other.previousAtVertex(e);
+      const auto nextInCell = [&](auto e) {
+        e = -e;
+        do {
+          e = this->previousAtVertex(e);
+        } while (ignore(e));
+        return e;
       };
-      const auto nextInTargetFace = [&](const auto &e) {
-        return sgn == 1 ? other.nextInFace(e) : other.nextAtVertex(-e);
+
+      const auto nextInImageCell = [&](auto e) {
+        e = -e;
+        if (sgn == 1) {
+          do {
+            e = other.previousAtVertex(e);
+          } while (ignoreImage(e));
+        } else {
+          do {
+            e = other.nextAtVertex(e);
+          } while (ignoreImage(e));
+        }
+        return e;
       };
 
       auto v = this->fromHalfEdge(preimage);
-      auto w = this->fromHalfEdge(this->nextAtVertex(preimage));
+      auto w = this->fromHalfEdge(nextInCell(preimage));
       auto v_ = other.fromHalfEdge(image);
-      auto w_ = other.fromHalfEdge(nextAtTargetVertex(image));
+      auto w_ = other.fromHalfEdge(nextInImageCell(image));
 
       // To determine the matrix 2×2 matrix (a b c d) that sends v to v_ and w to w_ note that:
       // ┌ v.x v.y   0   0 ┐ ┌ a ┐   ┌ v_.x ┐
@@ -668,14 +723,11 @@ std::optional<Deformation<FlatTriangulation<T>>> FlatTriangulation<T>::isomorphi
         continue;
 
       // The isomorphism of half edges can now be determined by starting with
-      // the half edges of this face and depth-first searching through all the
-      // adjacent faces until we find a contradiction.
+      // the half edges of this face/cell and depth-first searching through all
+      // the adjacent faces/cells until we find a contradiction.
       auto isomorphism = HalfEdgeMap<HalfEdge>(*this);
-      isomorphism[preimage] = image;
-      isomorphism[this->nextInFace(preimage)] = nextInTargetFace(image);
-      isomorphism[this->nextInFace(this->nextInFace(preimage))] = nextInTargetFace(nextInTargetFace(image));
 
-      const std::function<bool(HalfEdge, HalfEdge)> match = [&](HalfEdge from, HalfEdge to) {
+      const std::function<bool(HalfEdge, HalfEdge)> match = [&](const HalfEdge from, const HalfEdge to) {
         if (!filterHalfEdgeMap(from, to))
           return false;
 
@@ -691,13 +743,19 @@ std::optional<Deformation<FlatTriangulation<T>>> FlatTriangulation<T>::isomorphi
           return false;
 
         // We found that this half edge is mapped in a consistent way. Now
-        // check its opposite and the other half edges in the same face.
-        return match(-from, -to) && match(this->nextInFace(from), nextInTargetFace(to)) && match(this->nextInFace(this->nextInFace(from)), nextInTargetFace(nextInTargetFace(to)));
+        // check its negative.
+        if (!match(-from, -to))
+          return false;
+
+        // And check that every other edge in its face/cell maps consistently
+        if (!match(nextInCell(from), nextInImageCell(to)))
+          return false;
+
+        return true;
       };
 
-      if (match(-preimage, -image) && match(-this->nextInFace(preimage), -nextInTargetFace(image)) && match(-this->nextInFace(this->nextInFace(preimage)), -nextInTargetFace(nextInTargetFace(image)))) {
+      if (match(preimage, image))
         return TransformationDeformation<FlatTriangulation>::make(other.clone(), std::move(isomorphism));
-      }
     }
   }
 

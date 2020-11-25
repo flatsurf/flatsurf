@@ -26,16 +26,21 @@
 #include <exact-real/number_field.hpp>
 #include <numeric>
 
+#include "../flatsurf/ccw.hpp"
 #include "../flatsurf/deformation.hpp"
+#include "../flatsurf/delaunay.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/interval_exchange_transformation.hpp"
+#include "../flatsurf/isomorphism.hpp"
 #include "../flatsurf/odd_half_edge_map.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../src/external/rx-ranges/include/rx/ranges.hpp"
 #include "external/catch2/single_include/catch2/catch.hpp"
+#include "generators/half_edge_generator.hpp"
 #include "generators/surface_generator.hpp"
 #include "surfaces.hpp"
 
@@ -138,6 +143,106 @@ TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[flat_triangulation][ins
   }
 }
 
+TEMPLATE_TEST_CASE("Delaunay Triangulation of a Square", "[flat_triangulation][delaunay]", (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (Element<exactreal::IntegerRing>), (Element<exactreal::RationalField>), (Element<exactreal::NumberField>)) {
+  using T = TestType;
+  using Vector = Vector<T>;
+
+  GIVEN("A Flat Triangulation of a Square") {
+    auto square = makeSquare<Vector>();
+
+    auto bound = Bound(2, 0);
+
+    auto flip = GENERATE_COPY(halfEdges(square));
+    WHEN("We Flip Edge " << flip) {
+      square->flip(flip);
+      THEN("The Delaunay Condition holds after performing Delaunay Triangulation") {
+        square->delaunay();
+        CAPTURE(*square);
+        for (auto halfEdge : square->halfEdges()) {
+          REQUIRE(square->delaunay(halfEdge.edge()) != DELAUNAY::NON_DELAUNAY);
+          REQUIRE(square->fromHalfEdge(halfEdge) < bound);
+        }
+      }
+    }
+  }
+}
+
+TEMPLATE_TEST_CASE("Delaunay Triangulation of an Octagon", "[flat_triangulation][delaunay]", (eantic::renf_elem_class), (Element<exactreal::NumberField>)) {
+  using T = TestType;
+  using Vector = Vector<T>;
+
+  GIVEN("A Regular Octagon") {
+    auto octagon = makeOctagon<Vector>();
+
+    auto a = octagon->fromHalfEdge(HalfEdge(1)).x();
+
+    auto flip = GENERATE_COPY(halfEdges(octagon));
+    WHEN("We Flip Edge " << flip) {
+      if (octagon->convex(flip)) {
+        octagon->flip(flip);
+        THEN("The Delaunay Cells do not Change") {
+          octagon->delaunay();
+          CAPTURE(*octagon);
+          for (auto halfEdge : octagon->halfEdges()) {
+            CAPTURE(halfEdge);
+            auto v = octagon->fromHalfEdge(halfEdge);
+            CAPTURE(v);
+
+            const auto isBoundary = (v.x() == 0 && v.y() == 1) || (v.x() == 1 && v.y() == 0) || (v.x() == 0 && v.y() == -1) || (v.x() == -1 && v.y() == 0) || (v.x() == a && v.y() == a) || (v.x() == -a && v.y() == -a) || (v.x() == a && v.y() == -a) || (v.x() == -a && v.y() == a);
+            CAPTURE(isBoundary);
+            REQUIRE(octagon->delaunay(halfEdge.edge()) == (isBoundary ? DELAUNAY::DELAUNAY : DELAUNAY::AMBIGUOUS));
+          }
+        }
+      }
+    }
+  }
+}
+
+TEMPLATE_TEST_CASE("Delaunay Triangulation", "[flat_triangulation][delaunay]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  const auto [name, surface_] = GENERATE(makeSurface<TestType>());
+  auto surface = *surface_;
+
+  GIVEN("The Surface " << *name) {
+    surface->delaunay();
+
+    THEN("Delaunay Cells are Convex and their Boundaries Connected") {
+      HalfEdgeSet boundary;
+      for (auto halfEdge : surface->halfEdges())
+        if (surface->delaunay(halfEdge.edge()) == DELAUNAY::DELAUNAY)
+          boundary.insert(halfEdge);
+
+      HalfEdge anyBoundaryEdge;
+      for (auto he : surface->halfEdges())
+        if (boundary.contains(he))
+          anyBoundaryEdge = he;
+
+      HalfEdgeSet traced;
+      const std::function<void(HalfEdge)> walk = [&](const HalfEdge he) {
+        if (traced.contains(he))
+          return;
+
+        traced.insert(he);
+
+        walk(-he);
+
+        HalfEdge next = he;
+        do {
+          next = surface->nextAtVertex(next);
+        } while (!boundary.contains(next));
+
+        REQUIRE(surface->fromHalfEdge(he).ccw(surface->fromHalfEdge(next)) == CCW::COUNTERCLOCKWISE);
+
+        walk(next);
+      };
+
+      walk(anyBoundaryEdge);
+
+      for (auto he : surface->halfEdges())
+        REQUIRE(boundary.contains(he) == traced.contains(he));
+    }
+  }
+}
+
 TEMPLATE_TEST_CASE("Deform a Flat Triangulation", "[flat_triangulation][deformation]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using R2 = Vector<TestType>;
 
@@ -195,8 +300,14 @@ TEMPLATE_TEST_CASE("Detect Isomorphic Surfaces", "[flat_triangulation][isomorphi
   using Transformation = std::tuple<T, T, T, T>;
 
   const auto [name, surface] = GENERATE(makeSurface<T>());
+  const int delaunay = GENERATE(values({0, 1}));
+  const auto isomorphism = delaunay ? ISOMORPHISM::DELAUNAY_CELLS : ISOMORPHISM::FACES;
+
+  if (delaunay)
+    (*surface)->delaunay();
+
   GIVEN("The Surface " << *name) {
-    REQUIRE((*surface)->isomorphism(**surface));
+    REQUIRE((*surface)->isomorphism(**surface, isomorphism));
 
     std::vector<Transformation> transformations = {Transformation{1, 0, 0, 1}};
 
@@ -207,32 +318,38 @@ TEMPLATE_TEST_CASE("Detect Isomorphic Surfaces", "[flat_triangulation][isomorphi
     };
 
     while (true) {
-      const auto deformation = (*surface)->isomorphism(**surface, filter);
+      const auto deformation = (*surface)->isomorphism(**surface, isomorphism, filter);
 
       if (!deformation)
         break;
 
-      transformations.push_back(candidate);
       const auto [a, b, c, d] = candidate;
       CAPTURE(a, b, c, d);
 
       std::unordered_set<HalfEdge> image;
-      for (const auto& he : (*surface)->halfEdges()) {
-        HalfEdge he_ = (*deformation)(he).value();
+      for (const auto& halfEdge : (*surface)->halfEdges()) {
+        if (delaunay && (*surface)->delaunay(halfEdge.edge()) == DELAUNAY::AMBIGUOUS)
+          continue;
 
-        image.insert(he_);
+        HalfEdge he = (*deformation)(halfEdge).value();
 
-        const auto v = (*surface)->fromHalfEdge(he);
-        const auto v_ = deformation->surface().fromHalfEdge(he_);
+        image.insert(he);
+
+        const auto v = (*surface)->fromHalfEdge(halfEdge);
+        const auto v_ = deformation->surface().fromHalfEdge(he);
         REQUIRE(Vector<T>(v.x() * a + v.y() * b, v.x() * c + v.y() * d) == v_);
       }
-      REQUIRE(image.size() == (*surface)->halfEdges().size());
+      if (!delaunay)
+        REQUIRE(image.size() == (*surface)->halfEdges().size());
+
+      transformations.push_back(candidate);
     }
 
     auto scaled = (*surface)->scale(2);
     CAPTURE(scaled);
-    REQUIRE(!(*surface)->isomorphism(scaled));
-    REQUIRE((*surface)->isomorphism(scaled, [](const auto&, const auto&, const auto&, const auto&) { return true; }));
+
+    REQUIRE(!(*surface)->isomorphism(scaled, isomorphism));
+    REQUIRE((*surface)->isomorphism(scaled, isomorphism, [](const auto&, const auto&, const auto&, const auto&) { return true; }));
   }
 }
 

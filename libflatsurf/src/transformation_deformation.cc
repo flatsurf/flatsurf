@@ -19,6 +19,8 @@
 
 #include "impl/transformation_deformation.hpp"
 
+#include "../flatsurf/delaunay.hpp"
+#include "../flatsurf/edge.hpp"
 #include "../flatsurf/half_edge_set.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
 #include "util/assert.ipp"
@@ -30,14 +32,20 @@ TransformationDeformation<Surface>::TransformationDeformation(Surface&& surface,
   ImplementationOf<Deformation<Surface>>(std::move(surface)),
   isomorphism(std::move(halfEdgeMap)) {
   ASSERT_ARGUMENT(this->surface.halfEdges() | rx::all_of([&](const auto he) {
-    return this->isomorphism[he] != HalfEdge();
+    return this->isomorphism[he] != HalfEdge() || this->surface.delaunay(he.edge()) == DELAUNAY::AMBIGUOUS;
   }),
-      "half edge map is not a map");
+      "half edge map is not a total map");
   ASSERT_ARGUMENT([&]() {
-    HalfEdgeSet image;
-    for (auto he : this->surface.halfEdges())
-      image.insert(this->isomorphism[he]);
-    return image.size() == this->surface.size() * 2;
+    HalfEdgeSet im;
+    for (auto he : this->surface.halfEdges()) {
+      const auto image = this->isomorphism[he];
+      if (image != HalfEdge()) {
+        if (im.contains(image))
+          return false;
+        im.insert(image);
+      }
+    }
+    return true;
   }(),
       "half edge map is not a bijection");
 }

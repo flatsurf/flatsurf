@@ -56,13 +56,18 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
   // expects.
   FlatTriangulation<T> clone() const;
 
-  // Flip edges in this triangulation so that all faces satisfy the l²-Delaunay condition.
+  // Flip edges in this triangulation so that it satisfies the usual
+  // l²-Delaunay condition, see delaunay(Edge).
   void delaunay();
 
-  // Return whether this half edge satisfies the l²-Delaunay condition, i.e.,
-  // whether the circumcircles of the face attached to this edge does not
-  // contain the face attached to the reverse half edge.
-  bool delaunay(HalfEdge) const;
+  [[deprecated("use delaunay(Edge) instead")]] bool delaunay(HalfEdge) const;
+
+  // Return whether this edge satisfies the usual l²-Delaunay condition, i.e.,
+  // when embedding just the faces attached to this edge in R², whether the
+  // circumcircle of any of its faces does not contain any of the vertices of
+  // the faces in its interior. (Note that this condition is symmetric, so it
+  // holds for one of the circumcircles iff it holds for all of them.)
+  DELAUNAY delaunay(Edge) const;
 
   // Create an independent clone of this triangulation with an added vertex
   // next to e at v from e's source. If the vector does not fit into the face
@@ -94,8 +99,19 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
   // same linear transformation (note that that transformation might have
   // negative determinant, i.e., the order of half edges in a face might
   // change under this map.)
+  [[deprecated("use isomorphism() with a specific kind of isomorphism instead")]] std::optional<Deformation<FlatTriangulation<T>>> isomorphism(
+      const FlatTriangulation &,
+      std::function<bool(const T &, const T &, const T &, const T &)> = [](const T &a, const T &b, const T &c, const T &d) { return a == 1 && b == 0 && c == 0 && d == 1; },
+      std::function<bool(HalfEdge, HalfEdge)> = [](HalfEdge, HalfEdge) { return true; }) const;
+
+  // Return an isomorphism from this surface to the given surface, i.e., a
+  // bijection on some (depending on the selected "kind") of the half edges
+  // transforming them subject to the same linear transformation (note that
+  // that transformation might have negative determinant, i.e., the order of
+  // half edges in a face might change under this map.)
   std::optional<Deformation<FlatTriangulation<T>>> isomorphism(
       const FlatTriangulation &,
+      ISOMORPHISM kind,
       std::function<bool(const T &, const T &, const T &, const T &)> = [](const T &a, const T &b, const T &c, const T &d) { return a == 1 && b == 0 && c == 0 && d == 1; },
       std::function<bool(HalfEdge, HalfEdge)> = [](HalfEdge, HalfEdge) { return true; }) const;
 

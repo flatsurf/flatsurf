@@ -1,4 +1,4 @@
-check_PROGRAMS = cereal.test quadratic_polynomial.test approximation.test half_edge.test chain.test contour_decomposition.test delaunay.test saddle_connections.test vector_exactreal.test permutation.test flat_triangulation_combinatorial.test flat_triangulation.test flow_decomposition.test flat_triangulation_collapsed.test vertex.test edge.test parabolic.test bound.test vector.test
+check_PROGRAMS = cereal.test quadratic_polynomial.test approximation.test half_edge.test chain.test contour_decomposition.test saddle_connections.test vector_exactreal.test permutation.test flat_triangulation_combinatorial.test flat_triangulation.test flow_decomposition.test flat_triangulation_collapsed.test vertex.test edge.test parabolic.test bound.test vector.test
 
 TESTS = $(check_PROGRAMS)
 
@@ -7,8 +7,7 @@ bound_test_SOURCES = bound.test.cc main.cc
 cereal_test_SOURCES = cereal.test.cc cereal.helpers.hpp main.cc surfaces.hpp generators/saddle_connections_generator.hpp
 chain_test_SOURCES = chain.test.cc main.cc
 contour_decomposition_test_SOURCES = contour_decomposition.test.cc main.cc surfaces.hpp generators/vertical_generator.hpp generators/surface_generator.hpp
-delaunay_test_SOURCES = delaunay.test.cc main.cc generators/half_edge_generator.hpp
-flat_triangulation_test_SOURCES = flat_triangulation.test.cc main.cc surfaces.hpp
+flat_triangulation_test_SOURCES = flat_triangulation.test.cc main.cc surfaces.hpp generators/half_edge_generator.hpp generators/surface_generator.hpp
 flat_triangulation_collapsed_test_SOURCES = flat_triangulation_collapsed.test.cc main.cc surfaces.hpp generators/saddle_connections_generator.hpp
 flat_triangulation_combinatorial_test_SOURCES = flat_triangulation_combinatorial.test.cc main.cc surfaces.hpp generators/combinatorial_surface_generator.hpp
 flow_decomposition_test_SOURCES = flow_decomposition.test.cc main.cc surfaces.hpp generators/vertical_generator.hpp generators/surface_generator.hpp

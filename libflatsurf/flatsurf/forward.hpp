@@ -53,6 +53,8 @@ class DecompositionStep;
 template <typename Surface>
 class Deformation;
 
+enum class DELAUNAY;
+
 class Edge;
 
 template <typename T>
@@ -99,6 +101,8 @@ class ImplementationOf;
 
 template <typename Surface>
 class IntervalExchangeTransformation;
+
+enum class ISOMORPHISM;
 
 template <typename T>
 class ManagedMovable;
