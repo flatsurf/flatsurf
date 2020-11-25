@@ -68,6 +68,7 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/cppyy.hpp                                       \
 	../flatsurf/decomposition_step.hpp                          \
 	../flatsurf/deformation.hpp                                 \
+	../flatsurf/delaunay.hpp                                    \
 	../flatsurf/detail/vector_base.hpp                          \
 	../flatsurf/detail/vector_exact.hpp                         \
 	../flatsurf/detail/vector_with_error.hpp                    \
@@ -91,6 +92,7 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/half_edge_set.hpp                               \
 	../flatsurf/half_edge_set_iterator.hpp                      \
 	../flatsurf/interval_exchange_transformation.hpp            \
+	../flatsurf/isomorphism.hpp                                 \
 	../flatsurf/local.hpp                                       \
 	../flatsurf/managed_movable.hpp                             \
 	../flatsurf/movable.hpp                                     \

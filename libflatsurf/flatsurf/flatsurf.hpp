@@ -54,6 +54,7 @@
 #include "half_edge_set.hpp"
 #include "half_edge_set_iterator.hpp"
 #include "interval_exchange_transformation.hpp"
+#include "isomorphism.hpp"
 #include "local.hpp"
 #include "managed_movable.hpp"
 #include "movable.hpp"

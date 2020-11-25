@@ -103,5 +103,4 @@ size_t std::hash<flatsurf::Vertex>::operator()(const flatsurf::Vertex& v) const 
 namespace flatsurf {
 
 template Vertex::Vertex(PrivateConstructor, HalfEdgeSet&&);
-
 }

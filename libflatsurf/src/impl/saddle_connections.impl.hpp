@@ -39,9 +39,11 @@ class ImplementationOf<SaddleConnections<Surface>> {
 
   struct Sector {
     Sector(HalfEdge source) :
-      source(source), sector(std::nullopt) {}
+      source(source),
+      sector(std::nullopt) {}
     Sector(HalfEdge source, const Vector<T>& sectorBegin, const Vector<T>& sectorEnd) :
-      source(source), sector(std::pair{sectorBegin, sectorEnd}) {}
+      source(source),
+      sector(std::pair{sectorBegin, sectorEnd}) {}
 
     HalfEdge source;
     std::optional<std::pair<Vector<T>, Vector<T>>> sector;

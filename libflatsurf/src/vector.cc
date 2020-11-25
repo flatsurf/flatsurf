@@ -608,7 +608,8 @@ ImplementationOf<Vector<T>>::ImplementationOf() noexcept :
 
 template <typename T>
 ImplementationOf<Vector<T>>::ImplementationOf(const T& x, const T& y) :
-  x(x), y(y) {}
+  x(x),
+  y(y) {}
 
 template <typename T>
 ImplementationOf<Vector<T>>::ImplementationOf(T&& x, T&& y) :
