@@ -148,8 +148,9 @@ std::unordered_set<HalfEdge> IntervalExchangeTransformation<Surface>::makeUnique
   if (vertical.ccw(unique) == CCW::COUNTERCLOCKWISE)
     unique = -static_cast<HalfEdge>(unique);
 
-  // Collect the half edges connected to `unique`, the unique large edge in
-  // its component. Whenever a flip is performed, the process restarts.
+  // Collect the half edges connected to `unique`, eventually the unique large
+  // edge in its component. Whenever a flip needs to be performed, the process
+  // restarts.
   while (true) {
     std::unordered_set<HalfEdge> component;
     if (ImplementationOf<Vertical<Surface>>::visit(vertical, unique, component, [&](HalfEdge e) {

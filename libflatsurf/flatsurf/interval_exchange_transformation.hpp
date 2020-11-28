@@ -63,6 +63,7 @@ class IntervalExchangeTransformation {
   // contained in that component. (a component here contains all half edges
   // that can be reached by crossing faces or crossing over non-vertical
   // half edges.)
+  [[deprecated("use makeUniqueLargeEdges() instead")]]
   static std::unordered_set<HalfEdge> makeUniqueLargeEdge(Surface&, const Vector<T>& vertical, HalfEdge& source);
 
   intervalxt::IntervalExchangeTransformation& intervalExchangeTransformation();

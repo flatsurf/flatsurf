@@ -41,7 +41,7 @@ namespace flatsurf {
 
 template <typename Surface>
 Vertical<Surface>::Vertical(const Surface& surface, const Vector<T>& vertical) :
-  self(spimpl::make_impl<ImplementationOf<Vertical>>(surface, vertical)) {}
+  self(std::make_shared<ImplementationOf<Vertical>>(surface, vertical)) {}
 
 template <typename Surface>
 std::vector<std::unordered_set<HalfEdge>> Vertical<Surface>::components() const {
@@ -136,23 +136,21 @@ CCW Vertical<Surface>::ccw(const Vector<T>& v) const {
 
 template <typename Surface>
 typename Vertical<Surface>::TRIANGLE Vertical<Surface>::classifyFace(HalfEdge face) const {
-  // Some of these cases are not possible if Surface is collapsed. However, the
-  // more important optimization would be to cache the values of perpendicular
-  // in a HalfEdgeMap.
+  // Some of these cases are not possible if Surface is collapsed.
 
   auto perp = projectPerpendicular(face);
   auto a = projectPerpendicular(self->surface->nextInFace(face));
   auto b = projectPerpendicular(self->surface->previousInFace(face));
 
   if (self->surface->nextInFace(face) == self->surface->previousInFace(face)) {
-    assert(perp + a == 0 && "face is not closed");
+    ASSERT(perp + a == 0, "face is not closed");
     return TRIANGLE::COLLAPSED_TO_TWO_FACES;
   }
 
-  assert(perp + a + b == 0 && "face is not closed");
+  ASSERT(perp + a + b == 0, "face is not closed");
 
   if (perp == 0) {
-    assert(a != 0 && b != 0 && "face cannot have two vertical edges");
+    ASSERT(a != 0 && b != 0, "face cannot have two vertical edges");
     return classifyFace(self->surface->nextInFace(face));
   } else if (perp < 0) {
     return classifyFace(self->surface->nextInFace(face));

@@ -26,11 +26,12 @@
 #include "flat_triangulation.impl.hpp"
 #include "flat_triangulation_collapsed.impl.hpp"
 #include "read_only.hpp"
+#include "managed_movable.impl.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-class ImplementationOf<Vertical<Surface>> {
+class ImplementationOf<Vertical<Surface>> : ImplementationOf<ManagedMovable<Vertical<Surface>>> {
   using Vertical = ::flatsurf::Vertical<Surface>;
   using T = typename Surface::Coordinate;
 
@@ -48,6 +49,20 @@ class ImplementationOf<Vertical<Surface>> {
   ReadOnly<Surface> surface;
   Vector<T> vertical;
   Vector<T> horizontal;
+
+  // TODO Tracked<OddHalfEdgeMap<std::optional<T>>> parallelProjectionCache;
+  // TODO Tracked<OddHalfEdgeMap<std::optional<T>>> perpendicularProjectionCache;
+  // TODO Tracked<OddHalfEdgeMap<std::optional<CCW>>> ccwCache;
+  // TODO Tracked<OddHalfEdgeMap<std::optional<ORIENTATION>>> orientationCache;
+  // TODO Tracked<EdgeMap<std::optional<bool>>> largenessCache;
+  // TODO Tracked<EdgeMap<std::optional<T>>> lengthCache;
+
+ private:
+  using ImplementationOf<ManagedMovable<Vertical>>::from_this;
+  using ImplementationOf<ManagedMovable<Vertical>>::self;
+
+  friend ReadOnly<Vertical>;
+  friend ImplementationOf<ManagedMovable<Vertical>>;
 };
 
 }  // namespace flatsurf
