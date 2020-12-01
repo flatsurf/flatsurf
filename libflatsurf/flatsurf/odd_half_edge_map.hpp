@@ -48,10 +48,9 @@ class OddHalfEdgeMap {
     values[he] = value;
     if constexpr (is_optional<T>::value) {
       if (value) {
-        // The value_or here silences a warning in some versions of GCC. With
-        // -*value they complain that the value might be used uninitialized for
-        // enum types.
-        values[-he] = -value.value_or(typename T::value_type());
+        // We do not use -*value here since some versions of GCC report an
+        // annoying warning that value might be uninitialized then.
+        values[-he] = -*values[he];
       } else
         values[-he] = std::nullopt;
     } else {
