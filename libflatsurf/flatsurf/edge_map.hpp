@@ -25,6 +25,7 @@
 
 #include "edge.hpp"
 #include "flat_triangulation_combinatorial.hpp"
+#include "half_edge_map.hpp"
 
 namespace flatsurf {
 
@@ -46,6 +47,34 @@ class EdgeMap {
   void apply(std::function<void(Edge, const T&)> f) const {
     for (size_t i = 0; i < values.size(); i++)
       f(Edge::fromIndex(i), values[i]);
+  }
+
+  void pop() {
+    values.pop_back();
+  }
+
+  size_t size() const { return values.size(); }
+
+  friend std::ostream& operator<<(std::ostream& os, const EdgeMap& self) {
+    bool first = true;
+    os << "{";
+    for (size_t i = 0; i < self.values.size(); i++) {
+      if constexpr (is_optional<T>::value)
+        if (!self.values[i])
+          continue;
+
+      if (!first) os << ", ";
+
+      os << Edge::fromIndex(i) << ": ";
+
+      if constexpr (is_optional<T>::value)
+        os << *self.values[i];
+      else
+        os << self.values[i];
+
+      first = false;
+    }
+    return os << "}";
   }
 
  private:

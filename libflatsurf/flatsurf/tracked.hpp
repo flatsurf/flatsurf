@@ -52,6 +52,8 @@ class Tracked {
   operator const T&() const;
   const T* operator->() const;
   T* operator->();
+  const T& operator*() const;
+  T& operator*();
 
   Tracked& operator=(const Tracked&) noexcept;
   Tracked& operator=(Tracked&&) noexcept;

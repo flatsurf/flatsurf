@@ -32,8 +32,8 @@
 #include "../../flatsurf/edge.hpp"
 #include "../../flatsurf/edge_map.hpp"
 #include "../../flatsurf/saddle_connection.hpp"
-#include "read_only.hpp"
 #include "flow_decomposition_state.hpp"
+#include "read_only.hpp"
 
 namespace flatsurf {
 

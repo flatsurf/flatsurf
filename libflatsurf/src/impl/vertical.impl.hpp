@@ -25,8 +25,8 @@
 #include "../../flatsurf/vertical.hpp"
 #include "flat_triangulation.impl.hpp"
 #include "flat_triangulation_collapsed.impl.hpp"
-#include "read_only.hpp"
 #include "managed_movable.impl.hpp"
+#include "read_only.hpp"
 
 namespace flatsurf {
 
@@ -50,12 +50,12 @@ class ImplementationOf<Vertical<Surface>> : ImplementationOf<ManagedMovable<Vert
   Vector<T> vertical;
   Vector<T> horizontal;
 
-  // TODO Tracked<OddHalfEdgeMap<std::optional<T>>> parallelProjectionCache;
-  // TODO Tracked<OddHalfEdgeMap<std::optional<T>>> perpendicularProjectionCache;
-  // TODO Tracked<OddHalfEdgeMap<std::optional<CCW>>> ccwCache;
-  // TODO Tracked<OddHalfEdgeMap<std::optional<ORIENTATION>>> orientationCache;
-  // TODO Tracked<EdgeMap<std::optional<bool>>> largenessCache;
-  // TODO Tracked<EdgeMap<std::optional<T>>> lengthCache;
+  mutable Tracked<OddHalfEdgeMap<std::optional<T>>> parallelProjectionCache;
+  mutable Tracked<OddHalfEdgeMap<std::optional<T>>> perpendicularProjectionCache;
+  mutable Tracked<OddHalfEdgeMap<std::optional<CCW>>> ccwCache;
+  mutable Tracked<OddHalfEdgeMap<std::optional<ORIENTATION>>> orientationCache;
+  mutable Tracked<EdgeMap<std::optional<T>>> lengthCache;
+  mutable Tracked<EdgeMap<std::optional<bool>>> largenessCache;
 
  private:
   using ImplementationOf<ManagedMovable<Vertical>>::from_this;

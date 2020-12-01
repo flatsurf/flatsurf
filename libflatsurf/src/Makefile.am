@@ -35,6 +35,7 @@ libflatsurf_la_SOURCES =                                            \
 	indexed_set_iterator.cc                                     \
 	interval_exchange_transformation.cc                         \
 	lengths.cc                                                  \
+	orientation.cc                                              \
 	path.cc                                                     \
 	path_iterator.cc                                            \
 	permutation.cc                                              \

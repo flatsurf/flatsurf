@@ -29,14 +29,6 @@
 
 namespace flatsurf {
 
-namespace {
-template <typename T>
-struct is_optional : std::false_type {};
-
-template <typename T>
-struct is_optional<std::optional<T>> : std::true_type {};
-}  // namespace
-
 // A dictionary mapping each half edge of a triangulation to a T such that if e
 // maps to x, then -e maps to -x.
 template <typename T>
@@ -54,7 +46,17 @@ class OddHalfEdgeMap {
 
   void set(HalfEdge he, const T& value) {
     values[he] = value;
-    values[-he] = -value;
+    if constexpr (is_optional<T>::value) {
+      if (value) {
+        // The value_or here silences a warning in some versions of GCC. With
+        // -*value they complain that the value might be used uninitialized for
+        // enum types.
+        values[-he] = -value.value_or(typename T::value_type());
+      } else
+        values[-he] = std::nullopt;
+    } else {
+      values[-he] = -value;
+    }
   }
 
   size_t size() const { return values.size(); }
@@ -63,17 +65,26 @@ class OddHalfEdgeMap {
 
   friend std::ostream& operator<<(std::ostream& os, const OddHalfEdgeMap& self) {
     bool first = true;
+    os << "{";
     for (size_t i = 0; i < self.values.size(); i++) {
       const HalfEdge he = HalfEdge::fromIndex(i);
 
-      if (he != Edge(he).negative() || self.values[he] != -self.values[-he]) {
-        if (!first) os << ", ";
-        os << he << ": " << self.values[he];
-        first = false;
-      }
-    }
+      if constexpr (is_optional<T>::value)
+        if (!self.values[he])
+          continue;
 
-    return os;
+      if (he == Edge(he).negative())
+        continue;
+
+      if (!first) os << ", ";
+      os << he << ": ";
+      if constexpr (is_optional<T>::value)
+        os << *self.values[he];
+      else
+        os << self.values[he];
+      first = false;
+    }
+    return os << "}";
   }
 
  private:
