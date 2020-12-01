@@ -103,12 +103,6 @@ class Vertical : Serializable<Vertical<Surface>>,
 
   operator const Vector<T> &() const;
 
-  [[deprecated("use -vertical().perpendicular() instead.")]] const Vector<T> &horizontal() const;
-  [[deprecated("use vertical().projectPerpendicular() instead.")]] T perpendicular(const Vector<T> &) const;
-  [[deprecated("use vertical().project() instead.")]] T parallel(const Vector<T> &) const;
-  [[deprecated("use ccw() == CCW::COLLINEAR instead.")]] bool parallel(HalfEdge) const;
-  [[deprecated("use orientation() == ORIENTATION::ORTHOGONAL instead.")]] bool perpendicular(HalfEdge) const;
-
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const Vertical<S> &);
 

@@ -614,11 +614,6 @@ template <typename T>
 using truediv_t = decltype(std::declval<T &>() /= std::declval<const T &>());
 
 template <typename T>
-std::optional<Deformation<FlatTriangulation<T>>> FlatTriangulation<T>::isomorphism(const FlatTriangulation<T> &other, std::function<bool(const T &, const T &, const T &, const T &)> filterMatrix, std::function<bool(HalfEdge, HalfEdge)> filterHalfEdgeMap) const {
-  return this->isomorphism(other, ISOMORPHISM::FACES, filterMatrix, filterHalfEdgeMap);
-}
-
-template <typename T>
 std::optional<Deformation<FlatTriangulation<T>>> FlatTriangulation<T>::isomorphism(const FlatTriangulation<T> &other, ISOMORPHISM kind, std::function<bool(const T &, const T &, const T &, const T &)> filterMatrix, std::function<bool(HalfEdge, HalfEdge)> filterHalfEdgeMap) const {
   if (this->hasBoundary() != other.hasBoundary())
     return std::nullopt;

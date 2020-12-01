@@ -105,7 +105,7 @@ void IntervalExchangeTransformation<Surface>::makeUniqueLargeEdges(Surface& surf
 
     HalfEdge source = larges.back();
 
-    auto component = makeUniqueLargeEdge(surface, vertical_, source);
+    auto component = ImplementationOf<IntervalExchangeTransformation>::makeUniqueLargeEdge(surface, vertical_, source);
 
     if (splitContours) {
       bool trivial, trivialStart, trivialEnd;
@@ -137,39 +137,6 @@ const intervalxt::IntervalExchangeTransformation& IntervalExchangeTransformation
 
 template <typename Surface>
 typename intervalxt::IntervalExchangeTransformation& IntervalExchangeTransformation<Surface>::intervalExchangeTransformation() { return self->iet; }
-
-template <typename Surface>
-std::unordered_set<HalfEdge> IntervalExchangeTransformation<Surface>::makeUniqueLargeEdge(Surface& surface, const Vector<T>& vertical_, HalfEdge& unique_) {
-  Tracked<HalfEdge> unique(surface, HalfEdge(unique_));
-
-  Vertical<Surface> vertical(surface, vertical_);
-
-  ASSERT_ARGUMENT(vertical.large(unique), "edge must already be large");
-  if (vertical.ccw(unique) == CCW::COUNTERCLOCKWISE)
-    unique = -static_cast<HalfEdge>(unique);
-
-  // Collect the half edges connected to `unique`, eventually the unique large
-  // edge in its component. Whenever a flip needs to be performed, the process
-  // restarts.
-  while (true) {
-    std::unordered_set<HalfEdge> component;
-    if (ImplementationOf<Vertical<Surface>>::visit(vertical, unique, component, [&](HalfEdge e) {
-          if (e == static_cast<HalfEdge>(unique) || e == -static_cast<HalfEdge>(unique))
-            return true;
-
-          if (vertical.large(e)) {
-            surface.flip(e);
-            return false;
-          }
-
-          return true;
-        })) {
-      assert(component.size() >= 2);
-      unique_ = unique;
-      return component;
-    }
-  }
-}
 
 template <typename Surface>
 Edge IntervalExchangeTransformation<Surface>::edge(const Label& label) const {
@@ -230,6 +197,39 @@ ImplementationOf<IntervalExchangeTransformation<Surface>>::ImplementationOf(Inte
   auto erasedLengths = std::make_shared<intervalxt::Lengths>(Lengths<Surface>(*self.self->lengths, decomposition));
   iet = intervalxt::IntervalExchangeTransformation(erasedLengths, self.self->iet.top(), self.self->iet.bottom());
   lengths = boost::type_erasure::any_cast<Lengths<Surface>*>(erasedLengths.get());
+}
+
+template <typename Surface>
+std::unordered_set<HalfEdge> ImplementationOf<IntervalExchangeTransformation<Surface>>::makeUniqueLargeEdge(Surface& surface, const Vector<T>& vertical_, HalfEdge& unique_) {
+  Tracked<HalfEdge> unique(surface, HalfEdge(unique_));
+
+  Vertical<Surface> vertical(surface, vertical_);
+
+  ASSERT_ARGUMENT(vertical.large(unique), "edge must already be large");
+  if (vertical.ccw(unique) == CCW::COUNTERCLOCKWISE)
+    unique = -static_cast<HalfEdge>(unique);
+
+  // Collect the half edges connected to `unique`, eventually the unique large
+  // edge in its component. Whenever a flip needs to be performed, the process
+  // restarts.
+  while (true) {
+    std::unordered_set<HalfEdge> component;
+    if (ImplementationOf<Vertical<Surface>>::visit(vertical, unique, component, [&](HalfEdge e) {
+          if (e == static_cast<HalfEdge>(unique) || e == -static_cast<HalfEdge>(unique))
+            return true;
+
+          if (vertical.large(e)) {
+            surface.flip(e);
+            return false;
+          }
+
+          return true;
+        })) {
+      assert(component.size() >= 2);
+      unique_ = unique;
+      return component;
+    }
+  }
 }
 
 template <typename Surface>

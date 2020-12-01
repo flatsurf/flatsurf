@@ -81,11 +81,6 @@ bool Vertical<Surface>::large(HalfEdge e) const {
 }
 
 template <typename Surface>
-typename Surface::Coordinate Vertical<Surface>::perpendicular(const Vector<T>& v) const {
-  return projectPerpendicular(v);
-}
-
-template <typename Surface>
 typename Surface::Coordinate Vertical<Surface>::projectPerpendicular(HalfEdge he) const {
   if (!self->perpendicularProjectionCache->get(he))
     self->perpendicularProjectionCache->set(he, projectPerpendicular(self->surface->fromHalfEdge(he)));
@@ -95,11 +90,6 @@ typename Surface::Coordinate Vertical<Surface>::projectPerpendicular(HalfEdge he
 template <typename Surface>
 typename Surface::Coordinate Vertical<Surface>::projectPerpendicular(const Vector<T>& v) const {
   return self->horizontal * v;
-}
-
-template <typename Surface>
-typename Surface::Coordinate Vertical<Surface>::parallel(const Vector<T>& v) const {
-  return project(v);
 }
 
 template <typename Surface>
@@ -115,11 +105,6 @@ typename Surface::Coordinate Vertical<Surface>::project(const Vector<T>& v) cons
 }
 
 template <typename Surface>
-bool Vertical<Surface>::perpendicular(HalfEdge he) const {
-  return orientation(he) == ORIENTATION::ORTHOGONAL;
-}
-
-template <typename Surface>
 ORIENTATION Vertical<Surface>::orientation(HalfEdge he) const {
   if (!self->orientationCache->get(he))
     self->orientationCache->set(he, orientation(self->surface->fromHalfEdge(he)));
@@ -129,11 +114,6 @@ ORIENTATION Vertical<Surface>::orientation(HalfEdge he) const {
 template <typename Surface>
 ORIENTATION Vertical<Surface>::orientation(const Vector<T>& v) const {
   return self->vertical.orientation(v);
-}
-
-template <typename Surface>
-bool Vertical<Surface>::parallel(HalfEdge e) const {
-  return ccw(e) == CCW::COLLINEAR;
 }
 
 template <typename Surface>
@@ -201,11 +181,6 @@ bool Vertical<Surface>::operator==(const Vertical& rhs) const {
 template <typename Surface>
 const Vector<typename Surface::Coordinate>& Vertical<Surface>::vertical() const {
   return self->vertical;
-}
-
-template <typename Surface>
-const Vector<typename Surface::Coordinate>& Vertical<Surface>::horizontal() const {
-  return self->horizontal;
 }
 
 template <typename Surface>

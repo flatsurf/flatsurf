@@ -45,6 +45,13 @@ class ImplementationOf<IntervalExchangeTransformation<Surface>> {
     return IntervalExchangeTransformation<Surface>(PrivateConstructor{}, std::forward<Args>(args)...);
   }
 
+  // Modify the surface such that the component containing `source` has a
+  // unique large edge by performing necessary flips. Return the half edges
+  // contained in that component. (a component here contains all half edges
+  // that can be reached by crossing faces or crossing over non-vertical
+  // half edges.)
+  static std::unordered_set<HalfEdge> makeUniqueLargeEdge(Surface&, const Vector<T>& vertical, HalfEdge& source);
+
   ReadOnly<Surface> surface;
   intervalxt::IntervalExchangeTransformation iet;
   // A (correctly casted) pointer to the actual lengths stored inside iet.
