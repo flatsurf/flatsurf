@@ -13,6 +13,6 @@
 [submodule "libflatsurf/flatsurf/external/spimpl"]
 	path = libflatsurf/flatsurf/external/spimpl
 	url = https://github.com/oliora/samples.git
-[submodule "libflatsurf/src/external/slimsig"]
-	path = libflatsurf/src/external/slimsig
-	url = https://github.com/ilsken/slimsig.git
+[submodule "libflatsurf/src/external/sigslot"]
+	path = libflatsurf/src/external/sigslot
+	url = https://github.com/palacaze/sigslot.git

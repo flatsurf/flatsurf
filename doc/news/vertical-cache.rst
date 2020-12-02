@@ -4,6 +4,12 @@
 
 * Printing of `EdgeMap`, `HalfEdgeMap`, and `OddHalfEdgeMap` is now consistent.
 
+* Use GitHub Actions for CI which is easier to maintain than our conda-smithy approach.
+
+* Replace slimsig with sigslot. The former is not maintained anymore and
+  valgrind was unhappy with it, though it might be us using it incorrectly, it
+  did not really seem like it.
+
 **Performance:**
 
 * Most methods of `Vertical` that take an `Edge` or a `HalfEdge` are now

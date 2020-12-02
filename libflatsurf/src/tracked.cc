@@ -234,15 +234,8 @@ ImplementationOf<Tracked<T>>::ImplementationOf(ImplementationOf<FlatTriangulatio
 
 template <typename T>
 ImplementationOf<Tracked<T>>::~ImplementationOf() {
-  disconnect();
-}
-
-template <typename T>
-void ImplementationOf<Tracked<T>>::disconnect() {
-  if (!parent.expired()) {
+  if (!parent.expired())
     onChange.disconnect();
-    parent.reset();
-  }
 }
 
 template <typename T>
@@ -269,11 +262,11 @@ void ImplementationOf<Tracked<T>>::connect() {
         const auto surface = static_cast<ReadOnly<FlatTriangulationCombinatorial>>(parent);
         updateBeforeDestruction(value, surface);
       }
-      disconnect();
-      if (!parent.expired()) {
-        this->parent = moveMessage->target;
+      if (!parent.expired())
+        onChange.disconnect();
+      this->parent = moveMessage->target;
+      if (!parent.expired())
         connect();
-      }
     } else {
       throw std::logic_error("unknown Message");
     }
