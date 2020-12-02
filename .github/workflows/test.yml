@@ -22,7 +22,7 @@ jobs:
       - name: make ${{ matrix.target }}
         shell: bash -l {0}
         run: |
-          mamba install --yes --quiet automake boost-cpp coreutils cxx-compiler 'e-antic>=1.0.0rc8' fmt gmp gmpxxll libexactreal libtool ppl
+          mamba install --yes --quiet automake boost-cpp coreutils cxx-compiler 'e-antic>=1.0.0rc8' fmt gmp gmpxxll libexactreal 'libintervalxt>=3.0.0' libtool
           conda activate test
           cd libflatsurf
           ./bootstrap
@@ -55,7 +55,7 @@ jobs:
       - name: make check
         shell: bash -l {0}
         run: |
-          mamba install --yes --quiet automake boost-cpp coreutils cppyy cppyythonizations cxx-compiler fmt gmp gmpxxll gmpxxyy libtool ppl 'pyeantic>=1.0.0rc8' pyexactreal pytest python=${{ matrix.python }} setuptools
+          mamba install --yes --quiet automake boost-cpp coreutils cppyy cppyythonizations cxx-compiler fmt gmp gmpxxll gmpxxyy libtool 'pyexactreal>=1.3.2' pytest python=${{ matrix.python }} setuptools 
           conda activate test
           ./bootstrap
           ./configure --prefix="$PREFIX" --without-benchmark
@@ -75,7 +75,7 @@ jobs:
       - name: make check
         shell: bash -l {0}
         run: |
-          mamba install --yes --quiet automake benchmark boost-cpp coreutils cppyy cppyythonizations cxx-compiler fmt gmp gmpxxll gmpxxyy libtool ppl 'pyeantic>=1.0.0rc8' pyexactreal pytest python setuptools
+          mamba install --yes --quiet automake benchmark boost-cpp coreutils cppyy cppyythonizations cxx-compiler fmt gmp gmpxxll gmpxxyy 'libintervalxt>=3.0.0' libtool 'pyexactreal>=1.3.2' pytest python setuptools
           conda activate test
           ./bootstrap
           ./configure --prefix="$PREFIX"
