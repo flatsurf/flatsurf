@@ -49,8 +49,8 @@ class ImplementationOf<Chain<Surface>> {
   ImplementationOf& operator=(const ImplementationOf&) = delete;
   ImplementationOf& operator=(ImplementationOf&&) = delete;
 
-  operator const Vector<T>&() const;
-  operator const Vector<exactreal::Arb>&() const;
+  operator const Vector<T> &() const;
+  operator const Vector<exactreal::Arb> &() const;
 
   static size_t hash(const Chain<Surface>&);
 

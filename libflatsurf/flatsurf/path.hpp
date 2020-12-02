@@ -39,7 +39,7 @@ class Path : public Serializable<Path<Surface>>,
   Path() noexcept;
   Path(const std::vector<Segment>&);
 
-  operator const std::vector<Segment>&() const;
+  operator const std::vector<Segment> &() const;
 
   bool operator==(const Path&) const;
 

@@ -184,7 +184,7 @@ const Vector<typename Surface::Coordinate>& Vertical<Surface>::vertical() const 
 }
 
 template <typename Surface>
-Vertical<Surface>::operator const Vector<T>&() const {
+Vertical<Surface>::operator const Vector<T> &() const {
   return self->vertical;
 }
 

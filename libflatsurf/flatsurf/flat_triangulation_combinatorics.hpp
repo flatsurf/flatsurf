@@ -35,7 +35,7 @@ class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulat
 
  protected:
   template <typename... Args>
-  FlatTriangulationCombinatorics(ProtectedConstructor, Args &&...args);
+  FlatTriangulationCombinatorics(ProtectedConstructor, Args &&... args);
 
  public:
   // Create an independent clone of this triangulation that is built from the

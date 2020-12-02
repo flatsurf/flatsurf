@@ -34,7 +34,7 @@ class SaddleConnectionsByLengthIterator : public boost::iterator_facade<SaddleCo
   using T = typename Surface::Coordinate;
 
   template <typename... Args>
-  SaddleConnectionsByLengthIterator(PrivateConstructor, Args &&...args);
+  SaddleConnectionsByLengthIterator(PrivateConstructor, Args &&... args);
 
  public:
   // Advance the iterator to the next saddle connection.

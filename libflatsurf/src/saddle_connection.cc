@@ -231,7 +231,7 @@ const Vector<typename Surface::Coordinate>& SaddleConnection<Surface>::vector() 
 }
 
 template <typename Surface>
-SaddleConnection<Surface>::operator const Vector<typename Surface::Coordinate>&() const {
+SaddleConnection<Surface>::operator const Vector<typename Surface::Coordinate> &() const {
   return vector();
 }
 
@@ -241,7 +241,7 @@ const Chain<Surface>& SaddleConnection<Surface>::chain() const {
 }
 
 template <typename Surface>
-SaddleConnection<Surface>::operator const Chain<Surface>&() const {
+SaddleConnection<Surface>::operator const Chain<Surface> &() const {
   return chain();
 }
 
