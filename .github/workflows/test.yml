@@ -30,8 +30,7 @@ jobs:
           make
           make V=1 ${{ matrix.target }}
       - name: show logs
-        run: |
-          grep "" /dev/null **/*.log
+        run: grep "" /dev/null `find -name '*.log'`
         if: ${{ always() }}
   test-pyflatsurf:
     runs-on: ubuntu-20.04
@@ -55,7 +54,7 @@ jobs:
       - name: make check
         shell: bash -l {0}
         run: |
-          mamba install --yes --quiet automake boost-cpp coreutils cppyy cppyythonizations cxx-compiler fmt gmp gmpxxll gmpxxyy libtool 'pyexactreal>=1.3.2' pytest python=${{ matrix.python }} setuptools 
+          mamba install --yes --quiet automake boost-cpp coreutils cppyy cppyythonizations cxx-compiler fmt gmp gmpxxll gmpxxyy libtool 'pyexactreal>=1.3.2' pytest python=${{ matrix.python }} sagelib setuptools
           conda activate test
           ./bootstrap
           ./configure --prefix="$PREFIX" --without-benchmark
@@ -63,7 +62,7 @@ jobs:
           cd pyflatsurf
           make ${{ matrix.target }}
       - name: show logs
-        run: grep "" /dev/null **/*.log
+        run: grep "" /dev/null `find -name '*.log'`
         if: ${{ always() }}
   distcheck:
     runs-on: ubuntu-20.04
@@ -75,13 +74,13 @@ jobs:
       - name: make check
         shell: bash -l {0}
         run: |
-          mamba install --yes --quiet automake benchmark boost-cpp coreutils cppyy cppyythonizations cxx-compiler fmt gmp gmpxxll gmpxxyy 'libintervalxt>=3.0.0' libtool 'pyexactreal>=1.3.2' pytest python setuptools
+          mamba install --yes --quiet automake benchmark boost-cpp coreutils cppyy cppyythonizations cxx-compiler fmt gmp gmpxxll gmpxxyy 'libintervalxt>=3.0.0' libtool 'pyexactreal>=1.3.2' pytest python sagelib setuptools
           conda activate test
           ./bootstrap
           ./configure --prefix="$PREFIX"
           make distcheck
       - name: show logs
-        run: grep "" /dev/null **/*.log
+        run: grep "" /dev/null `find -name '*.log'`
         if: ${{ always() }}
 
 env:

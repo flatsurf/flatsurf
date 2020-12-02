@@ -11,7 +11,7 @@ jobs:
         with: { mamba-version: "*", channels: "flatsurf,conda-forge", channel-priority: true }
       - shell: bash -l {0}
         run: |
-          mamba install --yes --quiet automake boost-cpp coreutils cppyy cppyythonizations cxx-compiler fmt gmp gmpxxll gmpxxyy 'libintervalxt>=3.0.0' libtool 'pyexactreal>=1.3.2' pytest python setuptools
+          mamba install --yes --quiet automake boost-cpp coreutils cppyy cppyythonizations cxx-compiler fmt gmp gmpxxll gmpxxyy 'libintervalxt>=3.0.0' libtool 'pyexactreal>=1.3.2' pytest python sagelib setuptools
           conda activate test
           ./bootstrap
           ./configure --prefix="$PREFIX" CXXFLAGS="--coverage -O0 $CXXFLAGS" --without-benchmark
