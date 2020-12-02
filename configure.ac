@@ -5,7 +5,7 @@ AC_PREREQ([2.69])
 AC_INIT([flatsurf], [2.3.0], [julian.rueth@fsfe.org])
 
 AC_CONFIG_MACRO_DIR([m4])
-AM_INIT_AUTOMAKE([1.14.1 tar-pax])
+AM_INIT_AUTOMAKE([1.14.1 tar-pax foreign])
 
 AC_CONFIG_FILES([Makefile])
 

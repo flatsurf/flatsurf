@@ -6,7 +6,7 @@ AC_INIT([pyflatsurf], [2.3.0], [julian.rueth@fsfe.org])
 AC_CONFIG_AUX_DIR([.])
 
 AC_CONFIG_MACRO_DIR([m4])
-AM_INIT_AUTOMAKE([1.14.1])
+AM_INIT_AUTOMAKE([1.14.1 tar-pax subdir-objects foreign])
 
 dnl We run the valgrind test-suite in make check-valgrind
 AX_VALGRIND_DFLT([sgcheck], [off])
