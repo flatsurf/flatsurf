@@ -12,6 +12,7 @@ jobs:
     - uses: flatsurf/actions/conda-forge-build@main
       with:
         recipe: libflatsurf/recipe
+        channels: flatsurf
     - uses: flatsurf/actions/conda-forge-build@main
       with:
         recipe: pyflatsurf/recipe
