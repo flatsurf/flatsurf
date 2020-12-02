@@ -1,9 +1,6 @@
 [submodule "libflatsurf/test/external/cereal"]
 	path = libflatsurf/test/external/cereal
 	url = https://github.com/USCiLab/cereal.git
-[submodule "recipe/snippets"]
-	path = recipe/snippets
-	url = https://github.com/flatsurf/conda-recipes
 [submodule "libflatsurf/test/external/catch2"]
 	path = libflatsurf/test/external/catch2
 	url = https://github.com/catchorg/Catch2.git
