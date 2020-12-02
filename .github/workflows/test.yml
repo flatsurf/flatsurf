@@ -1,0 +1,88 @@
+name: Test
+on: [push, pull_request]
+
+jobs:
+  test-libflatsurf:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        target:
+          - check
+          - check-valgrind
+        include:
+          - target: check-valgrind
+    steps:
+      - uses: actions/checkout@v2
+        with: { submodules: recursive }
+      - name: install valgrind and libc debug symbols
+        run: sudo apt install libc6-dbg valgrind
+        if: ${{ matrix.target == 'check-valgrind' }}
+      - uses: conda-incubator/setup-miniconda@v2
+        with: { mamba-version: "*", channels: "flatsurf,conda-forge", channel-priority: true }
+      - name: make ${{ matrix.target }}
+        shell: bash -l {0}
+        run: |
+          mamba install --yes --quiet automake boost-cpp coreutils cxx-compiler 'e-antic>=1.0.0rc8' fmt gmp gmpxxll libexactreal libtool ppl
+          conda activate test
+          cd libflatsurf
+          ./bootstrap
+          ./configure --prefix="$PREFIX" --without-benchmark
+          make
+          make V=1 ${{ matrix.target }}
+      - name: show logs
+        run: |
+          grep "" /dev/null **/*.log
+        if: ${{ always() }}
+  test-pyflatsurf:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        # pyeantic is not built for 3.8 yet
+        python: ["3.6", "3.7"]
+        target:
+          - check
+        include:
+          - python: 3.7
+            target: check-valgrind
+    steps:
+      - uses: actions/checkout@v2
+        with: { submodules: recursive }
+      - name: install valgrind and libc debug symbols
+        run: sudo apt install libc6-dbg valgrind
+        if: ${{ matrix.target == 'check-valgrind' }}
+      - uses: conda-incubator/setup-miniconda@v2
+        with: { mamba-version: "*", channels: "flatsurf,conda-forge", channel-priority: true }
+      - name: make check
+        shell: bash -l {0}
+        run: |
+          mamba install --yes --quiet automake boost-cpp coreutils cppyy cppyythonizations cxx-compiler fmt gmp gmpxxll gmpxxyy libtool ppl 'pyeantic>=1.0.0rc8' pyexactreal pytest python=${{ matrix.python }} setuptools
+          conda activate test
+          ./bootstrap
+          ./configure --prefix="$PREFIX" --without-benchmark
+          make
+          cd pyflatsurf
+          make ${{ matrix.target }}
+      - name: show logs
+        run: grep "" /dev/null **/*.log
+        if: ${{ always() }}
+  distcheck:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with: { submodules: recursive }
+      - uses: conda-incubator/setup-miniconda@v2
+        with: { mamba-version: "*", channels: "flatsurf,conda-forge", channel-priority: true }
+      - name: make check
+        shell: bash -l {0}
+        run: |
+          mamba install --yes --quiet automake benchmark boost-cpp coreutils cppyy cppyythonizations cxx-compiler fmt gmp gmpxxll gmpxxyy libtool ppl 'pyeantic>=1.0.0rc8' pyexactreal pytest python setuptools
+          conda activate test
+          ./bootstrap
+          ./configure --prefix="$PREFIX"
+          make distcheck
+      - name: show logs
+        run: grep "" /dev/null **/*.log
+        if: ${{ always() }}
+
+env:
+  MAKEFLAGS: -j2

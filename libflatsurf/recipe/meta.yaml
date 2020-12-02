@@ -1,0 +1,42 @@
+{% set version = '2.3.0' %}
+
+package:
+  name: libflatsurf
+  version: {{ version }}
+
+source:
+  path: ../
+
+build:
+  number: 0
+  # e-antic is not available on Windows yet
+  skip: True  # [win]
+  # e-antic is not available on macOS yet
+  skip: True  # [osx]
+
+requirements:
+  build:
+    - libtool
+    - automake
+    - coreutils
+    - {{ compiler('cxx') }}
+  host:
+    - arb
+    - boost-cpp
+    - libintervalxt >=3.0.0
+    - libexactreal >=1.3.2
+    - e-antic >=1.0.0rc4
+    - gmp
+    - gmpxxll
+    - fmt
+
+test:
+  commands:
+    - test -f ${PREFIX}/lib/libflatsurf.so
+
+about:
+  home: https://github.com/flatsurf/flatsurf
+  license: GPL-3.0-or-later
+  license_file: COPYING
+  summary: TBD
+

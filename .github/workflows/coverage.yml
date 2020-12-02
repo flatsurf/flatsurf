@@ -1,0 +1,22 @@
+name: Code Coverage
+on: [push, pull_request]
+
+jobs:
+  codecov:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with: { submodules: recursive }
+      - uses: conda-incubator/setup-miniconda@v2
+        with: { mamba-version: "*", channels: "flatsurf,conda-forge", channel-priority: true }
+      - shell: bash -l {0}
+        run: |
+          mamba install --yes --quiet automake boost-cpp coreutils cppyy cppyythonizations cxx-compiler fmt gmp gmpxxll gmpxxyy libtool ppl 'pyeantic>=1.0.0rc8' pyexactreal pytest python setuptools
+          conda activate test
+          ./bootstrap
+          ./configure --prefix="$PREFIX" CXXFLAGS="--coverage -O0 $CXXFLAGS" --without-benchmark
+          make check
+      - uses: codecov/codecov-action@v1
+
+env:
+  MAKEFLAGS: -j2

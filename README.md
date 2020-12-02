@@ -1,4 +1,4 @@
-[![Linux](https://dev.azure.com/flatsurf/conda/_apis/build/status/flatsurf.flatsurf?branchName=master&jobName=linux&configuration=linux%20build_linux_)](https://dev.azure.com/flatsurf/conda/_build/latest?definitionId=&branchName=master)
+![Test](https://github.com/flatsurf/flatsurf/workflows/Test/badge.svg)
 [![codecov](https://codecov.io/gh/flatsurf/flatsurf/branch/master/graph/badge.svg)](https://codecov.io/gh/flatsurf/flatsurf)
 [![asv](http://img.shields.io/badge/benchmarked%20by-asv-blue.svg?style=flat)](https://flatsurf.github.io/flatsurf-asv/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4006152.svg)](https://doi.org/10.5281/zenodo.4006152)
@@ -81,8 +81,8 @@ then run
 
 ```
 conda config --add channels conda-forge
-conda config --add channels flatsurf # if you want to pull in the latest version of dependencies
-conda create -n flatsurf-build libtool automake coreutils arb boost-cpp libintervalxt libexactreal e-antic gmp fmt=6 python setuptools gmpxxyy pyexactreal cppyythonizations cppyy # and to run tests: pytest sagelib pip ipywidgets sympy benchmark valgrind asv
+conda config --add channels flatsurf
+conda create -n flatsurf-build libtool automake coreutils arb boost-cpp libintervalxt libexactreal e-antic gmp fmt python setuptools gmpxxyy pyexactreal cppyythonizations cppyy # and to run tests: pytest sagelib pip ipywidgets sympy benchmark valgrind asv
 conda activate flatsurf-build
 export CPPFLAGS="-isystem $CONDA_PREFIX/include"
 export CFLAGS="$CPPFLAGS"
@@ -98,23 +98,18 @@ make
 
 ## Build from the Source Code Repository with Conda
 
-The conda recipe in `recipe/` is built automatically as part of our Continuous
-Integration. If you want to build the recipe manually, something like the
-following should work:
+The conda recipes in `{lib,py}flatsurf/recipe/` are built automatically as part
+of our Continuous Integration. If you want to build a recipe manually,
+something like the following should work:
 
 ```
 git clone --recurse-submodules https://github.com/flatsurf/flatsurf.git
 cd flatsurf
 conda activate root
 conda config --add channels conda-forge
-conda config --add channels flatsurf # if you want to pull in the latest version of dependencies
-conda install conda-build conda-forge-ci-setup=2
-export FEEDSTOCK_ROOT=`pwd`
-export RECIPE_ROOT=${FEEDSTOCK_ROOT}/recipe
-export CI_SUPPORT=${FEEDSTOCK_ROOT}/.ci_support
-export CONFIG=linux_
-make_build_number "${FEEDSTOCK_ROOT}" "${RECIPE_ROOT}" "${CI_SUPPORT}/${CONFIG}.yaml"
-conda build "${RECIPE_ROOT}" -m "${CI_SUPPORT}/${CONFIG}.yaml" --clobber-file "${CI_SUPPORT}/clobber_${CONFIG}.yaml"
+conda config --add channels flatsurf
+conda install conda-build
+conda build libflatsurf/recipe pyflatsurf/recipe
 ```
 
 You can then try out the package that you just built with:
