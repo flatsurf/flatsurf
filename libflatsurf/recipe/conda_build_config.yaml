@@ -1,8 +1,10 @@
-python:
-  - 3.6.* *_cpython
-  - 3.7.* *_cpython
-
 # Pins from https://github.com/conda-forge/conda-forge-pinning-feedstock/blob/master/recipe/conda_build_config.yaml
 # so our packages is compatible with the choices made by conda-forge.
-boost-cpp:
+arb:
+  - '2.18'
+boost_cpp:
   - '1.72.0'
+gmp:
+  - '6'
+fmt:
+  - '7'
