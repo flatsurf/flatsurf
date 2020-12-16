@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "dvcs": "git",
+  "project": "flatsurf",
+  "project_url": "https://github.com/flatsurf/flatsurf",
+  "show_commit_url": "https://github.com/flatsurf/flatsurf/commit/",
+  "repo": ".",
+  "environment_type": "conda",
+  "matrix": {
+    "arb": [],
+    "automake": [],
+    "bash": [],
+    "benchmark==1.5.0": [],
+    "boost-cpp": [],
+    "ccache": [],
+    "cppyythonizations": [],
+    "cxx-compiler": [],
+    "e-antic": [],
+    "e-antic>=1.0.0rc4": [],
+    "fmt": [],
+    "gmp": [],
+    "gmpxxll": [],
+    "gmpxxyy": [],
+    "libexactreal>=1.3.2": [],
+    "libintervalxt>=3.0.0": [],
+    "libtool": [],
+    "make": [],
+    "pyexactreal>=1.3.2": [],
+    "setuptools": []
+  },
+  "conda_channels": ["flatsurf", "conda-forge", "default"],
+  "repo_subdir": "libflatsurf",
+  "build_command": [
+    "autoreconf -ivf",
+    "/bin/sh configure CXX='ccache c++'",
+    "make"
+  ],
+  "install_command": [],
+  "uninstall_command": [],
+  "benchmark_dir": "tools/asv",
+  "env_dir": ".asv/env",
+  "results_dir": ".asv/results",
+  "html_dir": ".asv/html"
+}
+
+

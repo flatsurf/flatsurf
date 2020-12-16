@@ -80,9 +80,9 @@ with conda. Download and install [Miniconda](https://conda.io/miniconda.html),
 then run
 
 ```
-conda config --add channels conda-forge
-conda config --add channels flatsurf
-conda create -n flatsurf-build libtool automake coreutils arb boost-cpp libintervalxt libexactreal e-antic gmp fmt python setuptools gmpxxyy pyexactreal cppyythonizations cppyy # and to run tests: pytest sagelib pip ipywidgets sympy benchmark valgrind asv
+conda create -n flatsurf-build
+conda env update -n flatsurf-build -f libflatsurf/environment.yml
+conda env update -n flatsurf-build -f pyflatsurf/environment.yml
 conda activate flatsurf-build
 export CPPFLAGS="-isystem $CONDA_PREFIX/include"
 export CFLAGS="$CPPFLAGS"
@@ -118,10 +118,23 @@ conda create -n flatsurf-test --use-local libflatsurf pyflatsurf
 conda activate flatsurf-test
 ```
 
-## Run Tests and Benchmark
+## Run Tests
 
-`make check` runs all tests and benchmarks. During development `make check TESTS=module`
-only runs the tests for `module`.
+`make check` runs all tests. During development `make check TESTS=module` only
+runs the tests for `module`.
+
+## Run Benchmarks
+
+To build the benchmarks run `make` in `libflatsurf`. To run the
+benchmarks, execute `libflatsurf/benchmark/benchmark`.
+
+Alternatively, the benchmarks can be run through
+[asv](https://asv.readthedocs.io/en/stable/index.html), e.g., with `asv dev`.
+
+In VPATH builds, you can use `asv dev` by copying the `asv.conf.json` over to
+the VPATH and setting `benchmark_dir` there to corresponding directory in the
+original source tree. Then `ASV_PROJECT_DIR=``pwd``/libflatsurf MAKEFLAGS="-j4" asv dev`
+should work as usual.
 
 ## How to Cite This Project
 

@@ -1,5 +1,7 @@
 name: Code Coverage
-on: [push, pull_request]
+on:
+  push: { branches: [ "master" ] }
+  pull_request: { branches: [ "master" ] }
 
 jobs:
   codecov:
@@ -9,13 +11,22 @@ jobs:
         with: { submodules: recursive }
       - uses: conda-incubator/setup-miniconda@v2
         with: { mamba-version: "*", channels: "flatsurf,conda-forge", channel-priority: true }
-      - shell: bash -l {0}
+      - name: install dependencies
+        shell: bash -l {0}
         run: |
-          mamba install --yes --quiet automake boost-cpp coreutils cppyy cppyythonizations cxx-compiler fmt gmp gmpxxll gmpxxyy 'libintervalxt>=3.0.0' libtool 'pyexactreal>=1.3.2' pytest python sagelib setuptools
-          conda activate test
+          mamba env update --quiet -n test -f libflatsurf/environment.yml
+          mamba env update --quiet -n test -f pyflatsurf/environment.yml
+          conda list
+      - name: make check
+        shell: bash -l {0}
+        run: |
           ./bootstrap
-          ./configure --prefix="$PREFIX" CXXFLAGS="--coverage -O0 $CXXFLAGS" --without-benchmark
+          export CXXFLAGS="$CXXFLAGS --coverage -O0 -UNDEBUG"
+          ./configure --prefix="$PREFIX" --without-benchmark
           make check
+      - name: show logs
+        run: grep "" /dev/null `find -name '*.log'` || true
+        if: ${{ always() }}
       - uses: codecov/codecov-action@v1
 
 env:

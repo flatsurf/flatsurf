@@ -1,0 +1,22 @@
+# This file lists the dependencies needed to build and test all of pyflatsurf.
+# Create a conda environment with these dependencies preinstalled with:
+# conda env create -f environment.yml
+# conda env update -n pyflatsurf-build -f environment.yml
+name: pyflatsurf-build
+channels:
+  - flatsurf
+  - conda-forge
+  - defaults
+dependencies:
+  - automake
+  - cppyy
+  - cppyythonizations
+  - gmpxxyy
+  - libtool
+  - pyexactreal>=1.3.2
+  - pytest
+  - python
+  - sagelib
+  - ipywidgets
+  - sympy
+  - setuptools

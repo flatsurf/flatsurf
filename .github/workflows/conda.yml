@@ -1,5 +1,7 @@
 name: Publish to Anaconda
-on: [push, pull_request]
+on:
+  push: { branches: [ "master" ] }
+  pull_request: { branches: [ "master" ] }
 
 jobs:
   conda-build:
@@ -9,11 +11,13 @@ jobs:
       with:
         submodules: recursive
     - run: docker pull condaforge/linux-anvil-comp7
-    - uses: flatsurf/actions/conda-forge-build@main
+    - name: Build libflatsurf
+      uses: flatsurf/actions/conda-forge-build@main
       with:
         recipe: libflatsurf/recipe
         channels: flatsurf
-    - uses: flatsurf/actions/conda-forge-build@main
+    - name: Build pyflatsurf
+      uses: flatsurf/actions/conda-forge-build@main
       with:
         recipe: pyflatsurf/recipe
         channels: flatsurf

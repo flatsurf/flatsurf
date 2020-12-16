@@ -27,6 +27,7 @@
 #include <exact-real/module.hpp>
 #include <exact-real/number_field.hpp>
 #include <exact-real/rational_field.hpp>
+#include <gmpxxll/mpz_class.hpp>
 #include <intervalxt/interval_exchange_transformation.hpp>
 #include <intervalxt/length.hpp>
 #include <intervalxt/sample/element_coefficients.hpp>
@@ -47,7 +48,6 @@
 #include "../flatsurf/interval_exchange_transformation.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertical.hpp"
-#include "external/gmpxxll/gmpxxll/mpz_class.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/assert_connection.hpp"
 #include "impl/flow_component.impl.hpp"

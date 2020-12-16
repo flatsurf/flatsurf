@@ -1,4 +1,4 @@
-export CXXFLAGS="$CXXFLAGS -g3"
+export CXXFLAGS="$CXXFLAGS -g3 -UNDEBUG"
 
 autoreconf -ivf
 ./configure --prefix="$PREFIX" --without-benchmark

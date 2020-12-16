@@ -31,12 +31,12 @@
 #include <exact-real/number_field.hpp>
 #include <exact-real/rational_field.hpp>
 #include <exact-real/yap/arb.hpp>
+#include <gmpxxll/mpz_class.hpp>
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/orientation.hpp"
-#include "external/gmpxxll/gmpxxll/mpz_class.hpp"
 #include "impl/approximation.hpp"
 #include "impl/vector.impl.hpp"
 #include "util/assert.ipp"
