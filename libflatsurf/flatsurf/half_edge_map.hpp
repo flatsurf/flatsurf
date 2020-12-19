@@ -29,6 +29,14 @@
 
 namespace flatsurf {
 
+namespace {
+template <typename T>
+struct is_optional : std::false_type {};
+
+template <typename T>
+struct is_optional<std::optional<T>> : std::true_type {};
+}  // namespace
+
 // A dictionary mapping each half edge of a triangulation to a T.
 template <typename T>
 class HalfEdgeMap {
@@ -67,9 +75,24 @@ class HalfEdgeMap {
   size_t size() const { return values.size(); }
 
   friend std::ostream& operator<<(std::ostream& os, const HalfEdgeMap& self) {
+    bool first = true;
     os << "{";
-    for (size_t i = 0; i < self.values.size(); i++)
-      os << (i ? ", " : "") << HalfEdge::fromIndex(i) << ": " << self.values[i];
+    for (size_t i = 0; i < self.values.size(); i++) {
+      if constexpr (is_optional<T>::value)
+        if (!self.values[i])
+          continue;
+
+      if (!first) os << ", ";
+
+      os << HalfEdge::fromIndex(i) << ": ";
+
+      if constexpr (is_optional<T>::value)
+        os << *self.values[i];
+      else
+        os << self.values[i];
+
+      first = false;
+    }
     return os << "}";
   }
 

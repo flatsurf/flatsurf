@@ -1,0 +1,44 @@
+{% set version = '2.3.0' %}
+
+package:
+  name: pyflatsurf
+  version: {{ version }}
+
+source:
+  path: ../../
+
+build:
+  number: 0
+  # libflatsurf is not available on Windows yet
+  skip: True  # [win]
+  # libflatsurf is not available on macOS yet
+  skip: True  # [osx]
+
+requirements:
+  build:
+    - libtool
+    - automake
+    - coreutils
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - setuptools
+    - gmpxxyy
+    - pyexactreal >=1.3.2
+    - cppyythonizations
+    - libflatsurf
+  run:
+    - python
+    - cppyy
+    - pyexactreal >=1.3.2
+    - boost-cpp
+
+test:
+  imports:
+    - pyflatsurf
+
+about:
+  home: https://github.com/flatsurf/flatsurf
+  license: GPL-3.0-or-later
+  license_file: COPYING
+  summary: TBD

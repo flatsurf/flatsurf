@@ -24,7 +24,7 @@ try:
 except KeyboardInterrupt:
   sys.exit(1)
 
-sys.path.insert(0, 'recipe/snippets/rever')
+sys.path.insert(0, 'tools/rever')
 
 import dist
 
@@ -49,6 +49,7 @@ $VERSION_BUMP_PATTERNS = [
 
 $CHANGELOG_FILENAME = 'ChangeLog'
 $CHANGELOG_TEMPLATE = 'TEMPLATE.rst'
+$CHANGELOG_NEWS = 'doc/news'
 $CHANGELOG_CATEGORIES = ('Added', 'Changed', 'Deprecated', 'Removed', 'Fixed', 'Performance')
 $PUSH_TAG_REMOTE = 'git@github.com:flatsurf/flatsurf.git'
 

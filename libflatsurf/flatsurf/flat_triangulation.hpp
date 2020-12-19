@@ -60,8 +60,6 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
   // l²-Delaunay condition, see delaunay(Edge).
   void delaunay();
 
-  [[deprecated("use delaunay(Edge) instead")]] bool delaunay(HalfEdge) const;
-
   // Return whether this edge satisfies the usual l²-Delaunay condition, i.e.,
   // when embedding just the faces attached to this edge in R², whether the
   // circumcircle of any of its faces does not contain any of the vertices of
@@ -93,16 +91,6 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
   // Return a simplified flat triangulation with marked points, i.e., verticas
   // with a total angle of 2π, eliminated.
   Deformation<FlatTriangulation<T>> eliminateMarkedPoints() const;
-
-  // Return an isomorphism from this surface to the given surface, i.e., a
-  // bijection of faces such that all half edges transform subject to the
-  // same linear transformation (note that that transformation might have
-  // negative determinant, i.e., the order of half edges in a face might
-  // change under this map.)
-  [[deprecated("use isomorphism() with a specific kind of isomorphism instead")]] std::optional<Deformation<FlatTriangulation<T>>> isomorphism(
-      const FlatTriangulation &,
-      std::function<bool(const T &, const T &, const T &, const T &)> = [](const T &a, const T &b, const T &c, const T &d) { return a == 1 && b == 0 && c == 0 && d == 1; },
-      std::function<bool(HalfEdge, HalfEdge)> = [](HalfEdge, HalfEdge) { return true; }) const;
 
   // Return an isomorphism from this surface to the given surface, i.e., a
   // bijection on some (depending on the selected "kind") of the half edges

@@ -67,9 +67,9 @@ struct IsomorphismFilterMatrix {
 // interface of FlatTriangulation::isomorphism to take away all qualifiers and
 // most commas.
 template <typename T>
-std::optional<Deformation<FlatTriangulation<T>>> isomorphism(const FlatTriangulation<T> &preimage, const FlatTriangulation<T> &image, std::function<bool(IsomorphismFilterMatrix<T>)> filter_matrix, std::function<bool(HalfEdge, HalfEdge)> filter_map) {
+std::optional<Deformation<FlatTriangulation<T>>> isomorphism(const FlatTriangulation<T> &preimage, const FlatTriangulation<T> &image, ISOMORPHISM kind, std::function<bool(IsomorphismFilterMatrix<T>)> filter_matrix, std::function<bool(HalfEdge, HalfEdge)> filter_map) {
   return preimage.isomorphism(
-      image, [&](const T &a, const T &b, const T &c, const T &d) {
+      image, kind, [&](const T &a, const T &b, const T &c, const T &d) {
         return filter_matrix(IsomorphismFilterMatrix<T>(a, b, c, d));
       },
       filter_map);

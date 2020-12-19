@@ -19,6 +19,7 @@
 
 #include "../flatsurf/tracked.hpp"
 
+#include "../flatsurf/odd_half_edge_map.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/read_only.hpp"
 #include "impl/tracked.impl.hpp"
@@ -28,6 +29,12 @@
 namespace flatsurf {
 
 namespace {
+template <typename T>
+struct is_edge_map : std::false_type {};
+
+template <typename T>
+struct is_edge_map<EdgeMap<T>> : std::true_type {};
+
 template <typename T>
 struct is_half_edge_map : std::false_type {};
 
@@ -102,6 +109,10 @@ void Tracked<T>::defaultSwap(T& self, const FlatTriangulationCombinatorial&, Hal
       self.erase(b);
       self.insert(a);
     }
+  } else if constexpr (is_edge_map<T>::value) {
+    if (a == b) return;
+    using std::swap;
+    swap(self[a], self[b]);
   } else if constexpr (is_half_edge_map<T>::value) {
     if (a == b) return;
     using std::swap;
@@ -129,8 +140,14 @@ void Tracked<T>::defaultErase(T& self, const FlatTriangulationCombinatorial&, co
   } else if constexpr (std::is_same_v<T, EdgeSet>) {
     for (auto e : erase)
       self.erase(e);
+  } else if constexpr (is_edge_map<T>::value) {
+    ASSERT(erase | rx::all_of([&](const auto& e) { return e.index() >= self.size() - erase.size(); }), "Can only erase Edges of maximal index from Tracked<EdgeMap>. But the given edges are not maximal.");
+    for (auto e : erase) {
+      (void)e;
+      self.pop();
+    }
   } else if constexpr (is_half_edge_map<T>::value || is_odd_half_edge_map<T>::value) {
-    ASSERT(erase | rx::all_of([&](const auto& e) { return e.positive().index() >= self.size() - 2 * erase.size(); }), "Can only erase HalfEdges of maximal index from Tracked<HalfEdgeSet>. But the given edges are not maximal.");
+    ASSERT(erase | rx::all_of([&](const auto& e) { return e.positive().index() >= self.size() - 2 * erase.size(); }), "Can only erase HalfEdges of maximal index from Tracked<(Odd)HalfEdgeMap>. But the given edges are not maximal.");
     for (auto e : erase) {
       (void)e;
       self.pop();
@@ -166,6 +183,16 @@ T* Tracked<T>::operator->() {
 }
 
 template <typename T>
+const T& Tracked<T>::operator*() const {
+  return self->value;
+}
+
+template <typename T>
+T& Tracked<T>::operator*() {
+  return self->value;
+}
+
+template <typename T>
 Tracked<T>& Tracked<T>::operator=(const Tracked& rhs) noexcept {
   *this = std::move(Tracked(rhs));
   return *this;
@@ -185,7 +212,11 @@ Tracked<T>& Tracked<T>::operator=(T&& value) {
 
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const Tracked<T>& self) {
-  return os << static_cast<const T&>(self);
+  if constexpr (is_optional<T>::value) {
+    return os << *static_cast<const T&>(self);
+  } else {
+    return os << static_cast<const T&>(self);
+  }
 }
 
 template <typename T>
@@ -203,15 +234,8 @@ ImplementationOf<Tracked<T>>::ImplementationOf(ImplementationOf<FlatTriangulatio
 
 template <typename T>
 ImplementationOf<Tracked<T>>::~ImplementationOf() {
-  disconnect();
-}
-
-template <typename T>
-void ImplementationOf<Tracked<T>>::disconnect() {
-  if (!parent.expired()) {
+  if (!parent.expired())
     onChange.disconnect();
-    parent.reset();
-  }
 }
 
 template <typename T>
@@ -238,11 +262,11 @@ void ImplementationOf<Tracked<T>>::connect() {
         const auto surface = static_cast<ReadOnly<FlatTriangulationCombinatorial>>(parent);
         updateBeforeDestruction(value, surface);
       }
-      disconnect();
-      if (!parent.expired()) {
-        this->parent = moveMessage->target;
+      if (!parent.expired())
+        onChange.disconnect();
+      this->parent = moveMessage->target;
+      if (!parent.expired())
         connect();
-      }
     } else {
       throw std::logic_error("unknown Message");
     }
@@ -252,9 +276,13 @@ void ImplementationOf<Tracked<T>>::connect() {
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
+#include "../flatsurf/ccw.hpp"
+#include "../flatsurf/edge_map.hpp"
 #include "../flatsurf/edge_set.hpp"
+#include "../flatsurf/half_edge_map.hpp"
 #include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/odd_half_edge_map.hpp"
+#include "../flatsurf/orientation.hpp"
 #include "../flatsurf/vector.hpp"
 #include "impl/collapsed_half_edge.hpp"
 #include "impl/flat_triangulation_collapsed.impl.hpp"
@@ -266,6 +294,15 @@ LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<
 
 #define LIBFLATSURF_WRAP_ODD_HALF_EDGE_MAP_VECTOR(R, TYPE, T) (TYPE<OddHalfEdgeMap<Vector<T>>>)
 LIBFLATSURF_INSTANTIATE_MANY_FROM_TRANSFORMATION((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), Tracked, LIBFLATSURF_REAL_TYPES(exactreal::Arb), LIBFLATSURF_WRAP_ODD_HALF_EDGE_MAP_VECTOR)
+
+#define LIBFLATSURF_WRAP_EDGE_MAP_OPTIONAL(R, TYPE, T) (TYPE<EdgeMap<std::optional<T>>>)
+LIBFLATSURF_INSTANTIATE_MANY_FROM_TRANSFORMATION((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), Tracked, LIBFLATSURF_REAL_TYPES(bool), LIBFLATSURF_WRAP_EDGE_MAP_OPTIONAL)
+
+#define LIBFLATSURF_WRAP_HALF_EDGE_MAP_OPTIONAL(R, TYPE, T) (TYPE<HalfEdgeMap<std::optional<T>>>)
+LIBFLATSURF_INSTANTIATE_MANY_FROM_TRANSFORMATION((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), Tracked, LIBFLATSURF_REAL_TYPES, LIBFLATSURF_WRAP_HALF_EDGE_MAP_OPTIONAL)
+
+#define LIBFLATSURF_WRAP_ODD_HALF_EDGE_MAP_OPTIONAL(R, TYPE, T) (TYPE<OddHalfEdgeMap<std::optional<T>>>)
+LIBFLATSURF_INSTANTIATE_MANY_FROM_TRANSFORMATION((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), Tracked, LIBFLATSURF_REAL_TYPES(flatsurf::CCW)(flatsurf::ORIENTATION), LIBFLATSURF_WRAP_ODD_HALF_EDGE_MAP_OPTIONAL)
 
 #define LIBFLATSURF_WRAP_HALF_EDGE_MAP_SADDLE_CONNECTION(R, TYPE, T) (TYPE<HalfEdgeMap<SaddleConnection<T>>>)
 LIBFLATSURF_INSTANTIATE_MANY_FROM_TRANSFORMATION((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), Tracked, LIBFLATSURF_FLAT_TRIANGULATION_TYPES, LIBFLATSURF_WRAP_HALF_EDGE_MAP_SADDLE_CONNECTION)

@@ -35,6 +35,7 @@ libflatsurf_la_SOURCES =                                            \
 	indexed_set_iterator.cc                                     \
 	interval_exchange_transformation.cc                         \
 	lengths.cc                                                  \
+	orientation.cc                                              \
 	path.cc                                                     \
 	path_iterator.cc                                            \
 	permutation.cc                                              \
@@ -199,11 +200,9 @@ BUILT_SOURCES = ../flatsurf/local.hpp
 EXTRA_DIST = ../flatsurf/local.hpp.in
 nodist_include_HEADERS = ../flatsurf/local.hpp
 
-# We vendor the header-only library slimsig
-EXTRA_DIST += external/slimsig/include
+# We vendor the header-only library sigslot
+EXTRA_DIST += external/sigslot/include
 # We vendor the header-only library rx-ranges
 EXTRA_DIST += external/rx-ranges/include/rx/ranges.hpp
-# We vendor the header-only library gmpxxll
-EXTRA_DIST += external/gmpxxll/gmpxxll/mpz_class.hpp
 
 CLEANFILES = ../flatsurf/local.hpp

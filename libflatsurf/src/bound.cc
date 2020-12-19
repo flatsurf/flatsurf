@@ -19,10 +19,10 @@
 
 #include "../flatsurf/bound.hpp"
 
+#include <gmpxxll/mpz_class.hpp>
 #include <ostream>
 
 #include "../flatsurf/vector.hpp"
-#include "external/gmpxxll/gmpxxll/mpz_class.hpp"
 
 namespace flatsurf {
 

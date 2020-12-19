@@ -29,7 +29,7 @@
 #include "../../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../../flatsurf/half_edge.hpp"
 #include "../../flatsurf/permutation.hpp"
-#include "../external/slimsig/include/slimsig/slimsig.h"
+#include "../external/sigslot/include/sigslot/signal.hpp"
 #include "flat_triangulation_combinatorics.impl.hpp"
 #include "forward.hpp"
 #include "managed_movable.impl.hpp"
@@ -76,7 +76,7 @@ class ImplementationOf<FlatTriangulationCombinatorial> : protected Implementatio
   virtual std::pair<HalfEdge, HalfEdge> collapse(HalfEdge);
 
   // Connect to change event.
-  static slimsig::signal<void(Message)>::connection connect(const ImplementationOf<FlatTriangulationCombinatorial>*, std::function<void(Message)>);
+  static sigslot::connection connect(const ImplementationOf<FlatTriangulationCombinatorial>*, std::function<void(Message)>);
 
   std::vector<Edge> edges;
   Permutation<HalfEdge> vertices;
@@ -84,7 +84,7 @@ class ImplementationOf<FlatTriangulationCombinatorial> : protected Implementatio
   std::vector<Vertex> vertexes;
   std::vector<HalfEdge> halfEdges;
 
-  mutable slimsig::signal<void(Message)> change;
+  mutable sigslot::signal_st<Message> change;
 
  protected:
   template <typename... Args>

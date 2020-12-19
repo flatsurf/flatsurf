@@ -48,7 +48,7 @@ Path<Surface>::Path(const std::vector<Segment>& path) :
   self(spimpl::make_impl<ImplementationOf<Path>>(path)) {}
 
 template <typename Surface>
-Path<Surface>::operator const std::vector<Segment>&() const {
+Path<Surface>::operator const std::vector<Segment> &() const {
   return self->path;
 }
 

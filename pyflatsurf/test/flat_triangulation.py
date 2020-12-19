@@ -138,8 +138,8 @@ def test_isomorphism():
     vector = flatsurf.Vector['mpq_class']
     L = surfaces.L(vector)
     assert L.isomorphism(L)
-    assert L.isomorphism(L, lambda a, b, c, d: a == -1 and b == 0 and c == 0 and d == -1)
-    assert not L.isomorphism(L, lambda a, b, c, d: a*d - b*c not in [-1, 1])
+    assert L.isomorphism(L, filter_matrix=lambda a, b, c, d: a == -1 and b == 0 and c == 0 and d == -1)
+    assert not L.isomorphism(L, filter_matrix=lambda a, b, c, d: a*d - b*c not in [-1, 1])
 
 def test_serialization():
     hexagon = surfaces.random_hexagon()

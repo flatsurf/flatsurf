@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2020 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,8 +17,25 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "../flatsurf/ccw.hpp"
+#include <ostream>
+
+#include "../flatsurf/orientation.hpp"
 
 namespace flatsurf {
-CCW operator-(CCW ccw) { return static_cast<CCW>(-static_cast<int>(ccw)); }
+std::ostream& operator<<(std::ostream& os, ORIENTATION orientation) {
+  switch (orientation) {
+    case ORIENTATION::SAME:
+      os << "SAME";
+      break;
+    case ORIENTATION::ORTHOGONAL:
+      os << "ORTHOGONAL";
+      break;
+    case ORIENTATION::OPPOSITE:
+      os << "OPPOSITE";
+      break;
+  }
+  return os;
+}
+
+ORIENTATION operator-(ORIENTATION orientation) { return static_cast<ORIENTATION>(-static_cast<int>(orientation)); }
 }  // namespace flatsurf

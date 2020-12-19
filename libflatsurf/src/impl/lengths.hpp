@@ -33,6 +33,7 @@
 #include "../../flatsurf/edge_map.hpp"
 #include "../../flatsurf/saddle_connection.hpp"
 #include "flow_decomposition_state.hpp"
+#include "read_only.hpp"
 
 namespace flatsurf {
 
@@ -73,7 +74,7 @@ class Lengths {
   FlowComponentState<FlatTriangulation<T>>& component(intervalxt::Label) const;
 
   std::weak_ptr<FlowDecompositionState<FlatTriangulation<T>>> state;
-  Vertical<FlatTriangulation<T>> vertical;
+  ReadOnly<Vertical<FlatTriangulation<T>>> vertical;
   EdgeMap<std::optional<SaddleConnection<FlatTriangulation<T>>>> lengths;
 
   std::deque<intervalxt::Label> stack;

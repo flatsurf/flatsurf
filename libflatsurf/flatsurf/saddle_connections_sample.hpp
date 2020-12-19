@@ -40,7 +40,7 @@ class SaddleConnectionsSample {
   using T = typename Surface::Coordinate;
 
   template <typename... Args>
-  SaddleConnectionsSample(PrivateConstructor, Args &&...args);
+  SaddleConnectionsSample(PrivateConstructor, Args &&... args);
 
  public:
   SaddleConnectionsSample(const SaddleConnections<Surface> &);

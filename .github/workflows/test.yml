@@ -1,0 +1,101 @@
+name: Test
+on:
+  push: { branches: [ "master" ] }
+  pull_request: { branches: [ "master" ] }
+
+jobs:
+  test-libflatsurf:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        target:
+          - check
+          - check-valgrind
+    steps:
+      - uses: actions/checkout@v2
+        with: { submodules: recursive }
+      - name: install valgrind and libc debug symbols
+        run: sudo apt install libc6-dbg valgrind
+        if: ${{ matrix.target == 'check-valgrind' }}
+      - uses: conda-incubator/setup-miniconda@v2
+        with: { mamba-version: "*", channels: "flatsurf,conda-forge", channel-priority: true }
+      - name: install dependencies
+        shell: bash -l {0}
+        run: |
+          mamba env update --quiet -n test -f libflatsurf/environment.yml
+          conda list
+      - name: make ${{ matrix.target }}
+        shell: bash -l {0}
+        run: |
+          cd libflatsurf
+          ./bootstrap
+          export CXXFLAGS="$CXXFLAGS -UNDEBUG"
+          ./configure --prefix="$PREFIX" --without-benchmark
+          make
+          make V=1 ${{ matrix.target }}
+      - name: show logs
+        run: grep "" /dev/null `find -name '*.log'` || true
+        if: ${{ always() }}
+  test-pyflatsurf:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        # pyeantic is not built for 3.8 yet
+        python: ["3.6", "3.7"]
+        target:
+          - check
+        include:
+          - python: 3.7
+            target: check-valgrind
+    steps:
+      - uses: actions/checkout@v2
+        with: { submodules: recursive }
+      - name: install valgrind and libc debug symbols
+        run: sudo apt install libc6-dbg valgrind
+        if: ${{ matrix.target == 'check-valgrind' }}
+      - uses: conda-incubator/setup-miniconda@v2
+        with: { mamba-version: "*", channels: "flatsurf,conda-forge", channel-priority: true }
+      - name: install dependencies
+        shell: bash -l {0}
+        run: |
+          mamba install --yes --quiet python=${{ matrix.python }}
+          mamba env update --quiet -n test -f libflatsurf/environment.yml
+          mamba env update --quiet -n test -f pyflatsurf/environment.yml
+          conda list
+      - name: make check
+        shell: bash -l {0}
+        run: |
+          ./bootstrap
+          export CXXFLAGS="$CXXFLAGS -UNDEBUG"
+          ./configure --prefix="$PREFIX" --without-benchmark
+          make
+          cd pyflatsurf
+          make ${{ matrix.target }}
+      - name: show logs
+        run: grep "" /dev/null `find -name '*.log'` || true
+        if: ${{ always() }}
+  distcheck:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with: { submodules: recursive }
+      - uses: conda-incubator/setup-miniconda@v2
+        with: { mamba-version: "*", channels: "flatsurf,conda-forge", channel-priority: true }
+      - name: install dependencies
+        shell: bash -l {0}
+        run: |
+          mamba env update --quiet -n test -f libflatsurf/environment.yml
+          mamba env update --quiet -n test -f pyflatsurf/environment.yml
+          conda list
+      - name: make check
+        shell: bash -l {0}
+        run: |
+          ./bootstrap
+          ./configure --prefix="$PREFIX"
+          make distcheck
+      - name: show logs
+        run: grep "" /dev/null `find -name '*.log'` || true
+        if: ${{ always() }}
+
+env:
+  MAKEFLAGS: -j2

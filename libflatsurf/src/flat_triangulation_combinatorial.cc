@@ -131,7 +131,7 @@ ImplementationOf<FlatTriangulationCombinatorial>::ImplementationOf(const Permuta
   check();
 }
 
-slimsig::signal<void(ImplementationOf<FlatTriangulationCombinatorial>::Message)>::connection ImplementationOf<FlatTriangulationCombinatorial>::connect(const ImplementationOf* surface, std::function<void(Message)> handler) {
+sigslot::connection ImplementationOf<FlatTriangulationCombinatorial>::connect(const ImplementationOf* surface, std::function<void(Message)> handler) {
   return surface->change.connect(handler);
 }
 
@@ -196,7 +196,7 @@ void ImplementationOf<FlatTriangulationCombinatorial>::resetEdges() {
 void ImplementationOf<FlatTriangulationCombinatorial>::swap(HalfEdge a, HalfEdge b) {
   if (a == b) return;
 
-  change.emit(ImplementationOf::MessageBeforeSwap{a, b});
+  change(ImplementationOf::MessageBeforeSwap{a, b});
 
   vertices *= {a, b};
   std::vector{a, b} *= vertices;
@@ -246,7 +246,7 @@ void ImplementationOf<FlatTriangulationCombinatorial>::flip(HalfEdge e) {
     ImplementationOf<Vertex>::afterFlip(vertex, self, e);
 
   // notify attached structures about this flip
-  change.emit(ImplementationOf<FlatTriangulationCombinatorial>::MessageAfterFlip{e});
+  change(ImplementationOf<FlatTriangulationCombinatorial>::MessageAfterFlip{e});
 
   check();
 }
@@ -261,7 +261,7 @@ std::pair<HalfEdge, HalfEdge> ImplementationOf<FlatTriangulationCombinatorial>::
     throw std::logic_error("not implemented: cannot collapse collapsed edge yet");
 
   // notify attached structures about this collapse
-  change.emit(ImplementationOf<FlatTriangulationCombinatorial>::MessageBeforeCollapse{collapse});
+  change(ImplementationOf<FlatTriangulationCombinatorial>::MessageBeforeCollapse{collapse});
 
   // In principle, we will drop three pairs of half edges, namely e,
   // previousAtVertex(-e), nextAtVertex(-e).
@@ -321,7 +321,7 @@ std::pair<HalfEdge, HalfEdge> ImplementationOf<FlatTriangulationCombinatorial>::
     dropHalfEdges.insert(d.negative());
   }
 
-  change.emit(ImplementationOf<FlatTriangulationCombinatorial>::MessageBeforeErase{dropEdges | rx::to_vector()});
+  change(ImplementationOf<FlatTriangulationCombinatorial>::MessageBeforeErase{dropEdges | rx::to_vector()});
 
   // Consider the faces (collapse, x, -a) and (-collapse, c, -y).
   const HalfEdge a = -self.previousInFace(collapse);
@@ -380,7 +380,7 @@ std::pair<HalfEdge, HalfEdge> ImplementationOf<FlatTriangulationCombinatorial>::
 }
 
 ImplementationOf<FlatTriangulationCombinatorial>::~ImplementationOf() {
-  change.emit(MessageAfterMove{nullptr});
+  change(MessageAfterMove{nullptr});
 }
 
 std::ostream& operator<<(std::ostream& os, const FlatTriangulationCombinatorial& self) {

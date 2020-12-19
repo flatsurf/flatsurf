@@ -20,6 +20,8 @@
 #ifndef LIBFLATSURF_CCW_HPP
 #define LIBFLATSURF_CCW_HPP
 
+#include <iosfwd>
+
 #include "forward.hpp"
 
 namespace flatsurf {
@@ -31,7 +33,9 @@ enum class CCW {
   CLOCKWISE = 1,
 };
 
-CCW operator-(CCW ccw);
+std::ostream& operator<<(std::ostream&, CCW);
+
+CCW operator-(CCW);
 }  // namespace flatsurf
 
 #endif

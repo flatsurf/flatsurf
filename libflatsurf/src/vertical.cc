@@ -24,10 +24,12 @@
 #include <unordered_set>
 
 #include "../flatsurf/ccw.hpp"
+#include "../flatsurf/edge_map.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/flat_triangulation_collapsed.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/interval_exchange_transformation.hpp"
+#include "../flatsurf/odd_half_edge_map.hpp"
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vector.hpp"
@@ -41,7 +43,7 @@ namespace flatsurf {
 
 template <typename Surface>
 Vertical<Surface>::Vertical(const Surface& surface, const Vector<T>& vertical) :
-  self(spimpl::make_impl<ImplementationOf<Vertical>>(surface, vertical)) {}
+  self(std::make_shared<ImplementationOf<Vertical>>(surface, vertical)) {}
 
 template <typename Surface>
 std::vector<std::unordered_set<HalfEdge>> Vertical<Surface>::components() const {
@@ -63,25 +65,26 @@ std::vector<std::unordered_set<HalfEdge>> Vertical<Surface>::components() const 
 
 template <typename Surface>
 bool Vertical<Surface>::large(HalfEdge e) const {
-  auto length = [&](const HalfEdge edge) {
-    auto ret = projectPerpendicular(edge);
-    return ret > 0 ? ret : -ret;
-  };
-  auto len = length(e);
-  return len >= length(self->surface->nextInFace(e)) &&
-         len >= length(self->surface->previousInFace(e)) &&
-         len >= length(self->surface->nextInFace(-e)) &&
-         len >= length(self->surface->previousInFace(-e));
-}
-
-template <typename Surface>
-typename Surface::Coordinate Vertical<Surface>::perpendicular(const Vector<T>& v) const {
-  return projectPerpendicular(v);
+  if (!(*self->largenessCache)[e]) {
+    auto length = [&](const HalfEdge edge) {
+      auto ret = projectPerpendicular(edge);
+      return ret > 0 ? ret : -ret;
+    };
+    auto len = length(e);
+    (*self->largenessCache)[e] =
+        len >= length(self->surface->nextInFace(e)) &&
+        len >= length(self->surface->previousInFace(e)) &&
+        len >= length(self->surface->nextInFace(-e)) &&
+        len >= length(self->surface->previousInFace(-e));
+  }
+  return *(*self->largenessCache)[e];
 }
 
 template <typename Surface>
 typename Surface::Coordinate Vertical<Surface>::projectPerpendicular(HalfEdge he) const {
-  return projectPerpendicular(self->surface->fromHalfEdge(he));
+  if (!self->perpendicularProjectionCache->get(he))
+    self->perpendicularProjectionCache->set(he, projectPerpendicular(self->surface->fromHalfEdge(he)));
+  return *self->perpendicularProjectionCache->get(he);
 }
 
 template <typename Surface>
@@ -90,13 +93,10 @@ typename Surface::Coordinate Vertical<Surface>::projectPerpendicular(const Vecto
 }
 
 template <typename Surface>
-typename Surface::Coordinate Vertical<Surface>::parallel(const Vector<T>& v) const {
-  return project(v);
-}
-
-template <typename Surface>
 typename Surface::Coordinate Vertical<Surface>::project(HalfEdge he) const {
-  return project(self->surface->fromHalfEdge(he));
+  if (!self->parallelProjectionCache->get(he))
+    self->parallelProjectionCache->set(he, project(self->surface->fromHalfEdge(he)));
+  return *self->parallelProjectionCache->get(he);
 }
 
 template <typename Surface>
@@ -105,13 +105,10 @@ typename Surface::Coordinate Vertical<Surface>::project(const Vector<T>& v) cons
 }
 
 template <typename Surface>
-bool Vertical<Surface>::perpendicular(HalfEdge e) const {
-  return orientation(e) == ORIENTATION::ORTHOGONAL;
-}
-
-template <typename Surface>
-ORIENTATION Vertical<Surface>::orientation(HalfEdge e) const {
-  return orientation(self->surface->fromHalfEdge(e));
+ORIENTATION Vertical<Surface>::orientation(HalfEdge he) const {
+  if (!self->orientationCache->get(he))
+    self->orientationCache->set(he, orientation(self->surface->fromHalfEdge(he)));
+  return *self->orientationCache->get(he);
 }
 
 template <typename Surface>
@@ -120,13 +117,10 @@ ORIENTATION Vertical<Surface>::orientation(const Vector<T>& v) const {
 }
 
 template <typename Surface>
-bool Vertical<Surface>::parallel(HalfEdge e) const {
-  return ccw(e) == CCW::COLLINEAR;
-}
-
-template <typename Surface>
-CCW Vertical<Surface>::ccw(HalfEdge e) const {
-  return ccw(self->surface->fromHalfEdge(e));
+CCW Vertical<Surface>::ccw(HalfEdge he) const {
+  if (!self->ccwCache->get(he))
+    self->ccwCache->set(he, ccw(self->surface->fromHalfEdge(he)));
+  return *self->ccwCache->get(he);
 }
 
 template <typename Surface>
@@ -136,23 +130,21 @@ CCW Vertical<Surface>::ccw(const Vector<T>& v) const {
 
 template <typename Surface>
 typename Vertical<Surface>::TRIANGLE Vertical<Surface>::classifyFace(HalfEdge face) const {
-  // Some of these cases are not possible if Surface is collapsed. However, the
-  // more important optimization would be to cache the values of perpendicular
-  // in a HalfEdgeMap.
+  // Some of these cases are not possible if Surface is collapsed.
 
   auto perp = projectPerpendicular(face);
   auto a = projectPerpendicular(self->surface->nextInFace(face));
   auto b = projectPerpendicular(self->surface->previousInFace(face));
 
   if (self->surface->nextInFace(face) == self->surface->previousInFace(face)) {
-    assert(perp + a == 0 && "face is not closed");
+    ASSERT(perp + a == 0, "face is not closed");
     return TRIANGLE::COLLAPSED_TO_TWO_FACES;
   }
 
-  assert(perp + a + b == 0 && "face is not closed");
+  ASSERT(perp + a + b == 0, "face is not closed");
 
   if (perp == 0) {
-    assert(a != 0 && b != 0 && "face cannot have two vertical edges");
+    ASSERT(a != 0 && b != 0, "face cannot have two vertical edges");
     return classifyFace(self->surface->nextInFace(face));
   } else if (perp < 0) {
     return classifyFace(self->surface->nextInFace(face));
@@ -192,12 +184,7 @@ const Vector<typename Surface::Coordinate>& Vertical<Surface>::vertical() const 
 }
 
 template <typename Surface>
-const Vector<typename Surface::Coordinate>& Vertical<Surface>::horizontal() const {
-  return self->horizontal;
-}
-
-template <typename Surface>
-Vertical<Surface>::operator const Vector<T>&() const {
+Vertical<Surface>::operator const Vector<T> &() const {
   return self->vertical;
 }
 
@@ -210,7 +197,28 @@ template <typename Surface>
 ImplementationOf<Vertical<Surface>>::ImplementationOf(const Surface& surface, const Vector<T>& vertical) :
   surface(surface),
   vertical(vertical),
-  horizontal(-vertical.perpendicular()) {
+  horizontal(-vertical.perpendicular()),
+  parallelProjectionCache(
+      surface, OddHalfEdgeMap<std::optional<T>>(surface), [](auto& cache, const auto&, HalfEdge flip) { cache.set(flip, std::nullopt); }, [](auto& cache, const auto&, Edge collapse) { cache.set(collapse.positive(), T()); }),
+  perpendicularProjectionCache(
+      surface, OddHalfEdgeMap<std::optional<T>>(surface), [](auto& cache, const auto&, HalfEdge flip) { cache.set(flip, std::nullopt); }, [](auto& cache, const auto&, Edge collapse) { ASSERT(!cache.get(collapse.positive()) || !*cache.get(collapse.positive()), "cannot collapse non-vertical edges"); }),
+  ccwCache(
+      surface, OddHalfEdgeMap<std::optional<CCW>>(surface), [](auto& cache, const auto&, HalfEdge flip) { cache.set(flip, std::nullopt); }, [](auto& cache, const auto&, Edge collapse) { ASSERT(!cache.get(collapse.positive()) || *cache.get(collapse.positive()) == CCW::COLLINEAR, "cannot collapse non-collinear edges"); }),
+  orientationCache(
+      surface, OddHalfEdgeMap<std::optional<ORIENTATION>>(surface), [](auto& cache, const auto&, HalfEdge flip) { cache.set(flip, std::nullopt); },
+      // intentionally empty: when collapsing an Edge we won't reason about its orientation anymore
+      [](auto&, const auto&, Edge) {}),
+  lengthCache(
+      surface, EdgeMap<std::optional<T>>(surface), [](auto& cache, const auto&, HalfEdge flip) { cache[flip] = std::nullopt; }, [](auto& cache, const auto&, Edge collapse) { ASSERT(!cache[collapse] || !*cache[collapse], "cannot collapse non-vertical edges"); }),
+  largenessCache(
+      surface, EdgeMap<std::optional<bool>>(surface), [](auto& cache, const auto& surface, HalfEdge flip) {
+    cache[flip]= std::nullopt;
+    cache[surface.nextInFace(flip)] = std::nullopt;
+    cache[surface.previousInFace(flip)] = std::nullopt;
+    cache[surface.nextInFace(-flip)] = std::nullopt;
+    cache[surface.previousInFace(-flip)] = std::nullopt; },
+      // intentionally empty: when collapsing an Edge we won't reason about it's largeness anymore
+      [](auto&, const auto&, Edge) {}) {
   CHECK_ARGUMENT(vertical, "vertical must be non-zero");
 }
 

@@ -39,7 +39,7 @@ class SaddleConnectionsSampleIterator : public boost::iterator_facade<SaddleConn
   using T = typename Surface::Coordinate;
 
   template <typename... Args>
-  SaddleConnectionsSampleIterator(PrivateConstructor, Args &&...args);
+  SaddleConnectionsSampleIterator(PrivateConstructor, Args &&... args);
 
  public:
   // Advance the iterator to the next saddle connection.

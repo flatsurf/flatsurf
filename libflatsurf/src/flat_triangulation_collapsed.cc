@@ -23,6 +23,7 @@
 #include <fmt/ostream.h>
 #include <gmpxx.h>
 
+#include <gmpxxll/mpz_class.hpp>
 #include <intervalxt/sample/element_floor_division.hpp>
 #include <intervalxt/sample/integer_floor_division.hpp>
 #include <intervalxt/sample/mpq_floor_division.hpp>
@@ -47,7 +48,6 @@
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertex.hpp"
 #include "../flatsurf/vertical.hpp"
-#include "external/gmpxxll/gmpxxll/mpz_class.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/assert_connection.hpp"
 #include "impl/collapsed_half_edge.hpp"

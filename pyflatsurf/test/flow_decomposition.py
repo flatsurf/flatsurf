@@ -50,14 +50,14 @@ def test_hexagon_eantic():
                 sc = p0.saddleConnection()
                 p0 = sc.vector()
                 vertical = component.vertical()
-                assert vertical.perpendicular(h) == 0
-                assert vertical.parallel(h) > 0
+                assert vertical.projectPerpendicular(h) == 0
+                assert vertical.project(h) > 0
                 area2 = p0.x() * h.y() - p0.y() * h.x()
 
                 v = vertical.vertical()
                 vx = v.x()
                 vy = v.y()
-                area3 = vertical.perpendicular(p0) * vertical.parallel(h)
+                area3 = vertical.projectPerpendicular(p0) * vertical.project(h)
 
                 assert area1 == 2 * area2
                 assert area3 == area2 * (vx*vx + vy*vy)

@@ -20,6 +20,8 @@
 #ifndef LIBFLATSURF_ORIENTATION_HPP
 #define LIBFLATSURF_ORIENTATION_HPP
 
+#include <iosfwd>
+
 #include "forward.hpp"
 
 namespace flatsurf {
@@ -29,6 +31,8 @@ enum class ORIENTATION {
   ORTHOGONAL = 0,
   OPPOSITE = -1,
 };
+
+std::ostream& operator<<(std::ostream&, ORIENTATION);
 
 ORIENTATION operator-(ORIENTATION orientation);
 }  // namespace flatsurf

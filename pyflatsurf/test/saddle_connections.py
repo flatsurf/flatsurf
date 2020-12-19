@@ -73,7 +73,7 @@ def test_hexagon_exactreal():
 def test_printing():
     for coefficients in ['long long', 'mpz_class', 'mpq_class', 'eantic::renf_elem_class', 'exactreal::Element<exactreal::IntegerRing>', 'exactreal::Element<exactreal::RationalField>', 'exactreal::Element<exactreal::NumberField>']:
         surface = surfaces.square(flatsurf.Vector[coefficients])
-        assert str(surface) == "FlatTriangulationCombinatorial(vertices = (1, 3, 2, -1, -3, -2), faces = (1, 2, -3)(-1, -2, 3)) with vectors 1: (1, 0), 2: (0, 1), 3: (1, 1)"
+        assert str(surface) == "FlatTriangulationCombinatorial(vertices = (1, 3, 2, -1, -3, -2), faces = (1, 2, -3)(-1, -2, 3)) with vectors {1: (1, 0), 2: (0, 1), 3: (1, 1)}"
         connections = surface.connections()
         assert str(connections) == "SaddleConnections()"
         connections = connections.byLength()

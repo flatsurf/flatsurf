@@ -209,7 +209,7 @@ double ChainVector<Surface, T>::recomputeCost() {
 }
 
 template <typename Surface, typename T>
-ChainVector<Surface, T>::operator const Vector<T>&() const {
+ChainVector<Surface, T>::operator const Vector<T> &() const {
   if (value) {
     for (const auto& [move, v] : pendingMoves) {
       switch (move) {

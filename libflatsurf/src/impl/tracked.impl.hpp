@@ -21,7 +21,7 @@
 #define LIBFLATSURF_TRACKED_IMPL_HPP
 
 #include "../../flatsurf/tracked.hpp"
-#include "../external/slimsig/include/slimsig/slimsig.h"
+#include "../external/sigslot/include/sigslot/signal.hpp"
 #include "flat_triangulation_combinatorial.impl.hpp"
 #include "weak_read_only.hpp"
 
@@ -45,7 +45,6 @@ class ImplementationOf<Tracked<T>> {
   ~ImplementationOf();
 
   void connect();
-  void disconnect();
 
   WeakReadOnly<FlatTriangulationCombinatorial> parent;
   T value;
@@ -56,7 +55,7 @@ class ImplementationOf<Tracked<T>> {
   const EraseHandler updateBeforeErase;
   const DestructionHandler updateBeforeDestruction;
 
-  typename slimsig::signal<void(Message)>::connection onChange;
+  typename sigslot::connection onChange;
 };
 
 }  // namespace flatsurf

@@ -27,6 +27,7 @@
 #include <exact-real/module.hpp>
 #include <exact-real/number_field.hpp>
 #include <exact-real/rational_field.hpp>
+#include <gmpxxll/mpz_class.hpp>
 #include <intervalxt/interval_exchange_transformation.hpp>
 #include <intervalxt/length.hpp>
 #include <intervalxt/sample/element_coefficients.hpp>
@@ -47,7 +48,6 @@
 #include "../flatsurf/interval_exchange_transformation.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertical.hpp"
-#include "external/gmpxxll/gmpxxll/mpz_class.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/assert_connection.hpp"
 #include "impl/flow_component.impl.hpp"
@@ -215,18 +215,18 @@ void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iteratio
     // the updated SaddleConnection.
     // This should probably be moved into SaddleConnection at some point.
 
-    ASSERT(vertical.ccw(vector) == CCW::COUNTERCLOCKWISE, "Length must be positive.");
+    ASSERT(vertical->ccw(vector) == CCW::COUNTERCLOCKWISE, "Length must be positive.");
 
     // We know that minuendConnection (which we reversed in the beginning) is
     // pointing left and that the new -minuendConnection must point left into
     // the same half plane.
     auto source = minuendConnection->source();
-    while (vertical.ccw(source) == CCW::COUNTERCLOCKWISE)
+    while (vertical->ccw(source) == CCW::COUNTERCLOCKWISE)
       source = minuendConnection->surface().previousAtVertex(source);
     while (!minuendConnection->surface().inSector(source, vector))
       source = minuendConnection->surface().nextAtVertex(source);
 
-    while (vertical.ccw(target) != CCW::CLOCKWISE)
+    while (vertical->ccw(target) != CCW::CLOCKWISE)
       target = minuendConnection->surface().previousAtVertex(target);
     while (!minuendConnection->surface().inSector(target, -vector))
       target = minuendConnection->surface().nextAtVertex(target);
@@ -317,7 +317,7 @@ typename Surface::Coordinate Lengths<Surface>::length() const {
 
 template <typename Surface>
 typename Surface::Coordinate Lengths<Surface>::length(intervalxt::Label label) const {
-  auto length = vertical.projectPerpendicular(*lengths[fromLabel(label)]);
+  auto length = vertical->projectPerpendicular(*lengths[fromLabel(label)]);
   ASSERT(length > 0, "length must be positive");
   return length;
 }

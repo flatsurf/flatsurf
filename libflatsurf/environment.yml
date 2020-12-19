@@ -1,0 +1,23 @@
+# This file lists the dependencies needed to build and test all of libflatsurf.
+# # Create a conda environment with these dependencies preinstalled with:
+# conda env create -f environment.yml
+name: libflatsurf-build
+channels:
+  - flatsurf
+  - conda-forge
+  - defaults
+dependencies:
+  - automake
+  - benchmark
+  - boost-cpp
+  - coreutils
+  - cxx-compiler
+  - e-antic>=1.0.0rc8
+  - fmt
+  - gmp
+  - gmpxxll
+  - libexactreal
+  - libintervalxt>=3.0.0
+  - libtool
+  # valgrind is only needed for make check-valgrind
+  # - valgrind

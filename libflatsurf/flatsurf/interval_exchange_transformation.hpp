@@ -58,13 +58,6 @@ class IntervalExchangeTransformation {
   // trivial.)
   static void makeUniqueLargeEdges(Surface&, const Vector<T>&);
 
-  // Modify the surface such that the component containing `source` has a
-  // unique large edge by performing necessary flips. Return the half edges
-  // contained in that component. (a component here contains all half edges
-  // that can be reached by crossing faces or crossing over non-vertical
-  // half edges.)
-  static std::unordered_set<HalfEdge> makeUniqueLargeEdge(Surface&, const Vector<T>& vertical, HalfEdge& source);
-
   intervalxt::IntervalExchangeTransformation& intervalExchangeTransformation();
   const intervalxt::IntervalExchangeTransformation& intervalExchangeTransformation() const;
 

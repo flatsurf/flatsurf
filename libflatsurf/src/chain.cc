@@ -61,12 +61,12 @@ mpz_class Chain<Surface>::operator[](const HalfEdge& halfEdge) const {
 }
 
 template <typename Surface>
-Chain<Surface>::operator const Vector<T>&() const {
+Chain<Surface>::operator const Vector<T> &() const {
   return *self;
 }
 
 template <typename Surface>
-Chain<Surface>::operator const Vector<exactreal::Arb>&() const {
+Chain<Surface>::operator const Vector<exactreal::Arb> &() const {
   return *self;
 }
 
@@ -258,12 +258,12 @@ size_t ImplementationOf<Chain<Surface>>::hash(const Chain<Surface>& self) {
 }
 
 template <typename Surface>
-ImplementationOf<Chain<Surface>>::operator const Vector<T>&() const {
+ImplementationOf<Chain<Surface>>::operator const Vector<T> &() const {
   return vector;
 }
 
 template <typename Surface>
-ImplementationOf<Chain<Surface>>::operator const Vector<exactreal::Arb>&() const {
+ImplementationOf<Chain<Surface>>::operator const Vector<exactreal::Arb> &() const {
   return approximateVector;
 }
 

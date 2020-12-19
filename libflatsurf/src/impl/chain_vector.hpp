@@ -41,7 +41,7 @@ class ChainVector {
   ChainVector(const ImplementationOf<Chain<Surface>>*, const ChainVector&);
   ChainVector(const ImplementationOf<Chain<Surface>>*, ChainVector&&);
 
-  operator const Vector<T>&() const;
+  operator const Vector<T> &() const;
 
   void reset() const;
 
