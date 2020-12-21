@@ -340,7 +340,7 @@ $(document).ready(function() {
             }
         }
         else {
-            info['location'] = str.replace(/\/+/, '/').split('/');
+            info['location'] = decodeURIComponent(str).replace(/\/+/, '/').split('/');
         }
         return info;
     }
