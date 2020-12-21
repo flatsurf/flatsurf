@@ -1,6 +1,6 @@
 ![Test](https://github.com/flatsurf/flatsurf/workflows/Test/badge.svg)
 [![codecov](https://codecov.io/gh/flatsurf/flatsurf/branch/master/graph/badge.svg)](https://codecov.io/gh/flatsurf/flatsurf)
-[![asv](http://img.shields.io/badge/benchmarked%20by-asv-blue.svg?style=flat)](https://flatsurf.github.io/flatsurf-asv/)
+[![asv](http://img.shields.io/badge/benchmarked%20by-asv-blue.svg?style=flat)](https://flatsurf.github.io/flatsurf/asv/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4006152.svg)](https://doi.org/10.5281/zenodo.4006152)
 
 ## Current Release Info
