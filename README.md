@@ -19,11 +19,10 @@ This repository contains two related projects:
 
 ## Install with Conda
 
-You can install these packages with conda. Download and install [Miniconda](https://conda.io/miniconda.html), then run
+You can install this package with conda. Download and install [Mambaforge](https://github.com/conda-forge/miniforge#mambaforge), then run
 
 ```
-conda config --add channels conda-forge
-conda create -n flatsurf -c flatsurf libflatsurf pyflatsurf
+mamba create -n flatsurf -c flatsurf libflatsurf pyflatsurf
 conda activate flatsurf
 ```
 
@@ -76,25 +75,29 @@ the time of this writing.
 To build these packages, you need a fairly recent C++ compiler and probably
 some packages that might not be readily available on your system. If you don't
 want to use your distribution's packages, you can provide these dependencies
-with conda. Download and install [Miniconda](https://conda.io/miniconda.html),
+with conda. Download and install [Mambaforge](https://github.com/conda-forge/miniforge#mambaforge),
 then run
 
 ```
-conda create -n flatsurf-build
-conda env update -n flatsurf-build -f libflatsurf/environment.yml
-conda env update -n flatsurf-build -f pyflatsurf/environment.yml
-conda activate flatsurf-build
-export CPPFLAGS="-isystem $CONDA_PREFIX/include"
-export CFLAGS="$CPPFLAGS"
-export LDFLAGS="-L$CONDA_PREFIX/lib -Wl,-rpath-link=$CONDA_PREFIX/lib"
-export CC="ccache cc"
-export CXX="ccache c++"
 git clone --recurse-submodules https://github.com/flatsurf/flatsurf.git
 cd flatsurf
+
+mamba create -n flatsurf-build
+mamba env update -n flatsurf-build -f libflatsurf/environment.yml
+mamba env update -n flatsurf-build -f pyflatsurf/environment.yml
+conda activate flatsurf-build
+
 ./bootstrap
-./configure --prefix="$CONDA_PREFIX"
+./configure
 make
 ```
+
+Note that the C++ compiler package from conda disabled all assertions. To
+enable assertions `export CPPFLAGS="$CPPFLAGS -UNDEBUG"` before running
+configure and make.
+
+For faster compile times, you might want to `mamba install ccache` and set
+`export CXX="ccache c++"` before running configure and make.
 
 ## Build from the Source Code Repository with Conda
 
