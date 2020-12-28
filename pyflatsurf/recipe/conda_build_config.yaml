@@ -3,5 +3,5 @@
 python:
   - 3.6.* *_cpython    # [not (osx and arm64)]
   - 3.7.* *_cpython    # [not (osx and arm64)]
-  # pyeantic does not build against Python 3.8 yet
-  # - 3.8.* *_cpython
+  - 3.8.* *_cpython    # [not (osx and arm64)]
+  - 3.9.* *_cpython    # [not (osx and arm64)]
