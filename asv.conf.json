@@ -13,6 +13,7 @@
     "benchmark==1.5.0": [],
     "boost-cpp": [],
     "ccache": [],
+    "cppasv": [],
     "cppyythonizations": [],
     "cxx-compiler": [],
     "e-antic": [],
