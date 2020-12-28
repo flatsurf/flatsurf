@@ -19,5 +19,6 @@ dependencies:
   - libexactreal
   - libintervalxt>=3.0.0
   - libtool
+  - make
   # valgrind is only needed for make check-valgrind
   # - valgrind
