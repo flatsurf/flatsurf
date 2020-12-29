@@ -66,7 +66,9 @@
 
 #endif
 
-#define UNREACHABLE(MESSAGE) { ASSERT_(false, std::logic_error, MESSAGE) __builtin_unreachable(); }
+#define UNREACHABLE(MESSAGE)                  \
+  { ASSERT_(false, std::logic_error, MESSAGE) \
+    __builtin_unreachable(); }
 
 namespace flatsurf {
 
