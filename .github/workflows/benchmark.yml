@@ -41,6 +41,7 @@ jobs:
           BRANCH: gh-pages
           FOLDER: .asv/html
           TARGET_FOLDER: asv
+        if: ${{ github.event_name == 'push' }}
 
 env:
   MAKEFLAGS: -j2
