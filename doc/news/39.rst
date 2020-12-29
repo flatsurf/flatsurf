@@ -1,0 +1,3 @@
+**Added:**
+
+* build and deploy for Python 3.8 and Python 3.9 in CI
