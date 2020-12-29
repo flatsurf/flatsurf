@@ -518,6 +518,8 @@ bool detail::VectorExact<Vector, T>::inSector(const Vector& begin, const Vector&
               return false;
             case CCW::COLLINEAR:
               return begin.orientation(self) == ORIENTATION::SAME;
+            default:
+              UNREACHABLE("vectors must be counterclockwise, clockwise or collinear");
           }
         default:
           UNREACHABLE("non-zero collinear vectors cannot be orthogonal");
