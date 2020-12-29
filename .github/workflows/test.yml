@@ -29,7 +29,7 @@ jobs:
         run: |
           cd libflatsurf
           ./bootstrap
-          export CXXFLAGS="$CXXFLAGS -UNDEBUG"
+          export CXXFLAGS="$CXXFLAGS -UNDEBUG -g3"
           ./configure --prefix="$PREFIX" --without-benchmark
           make
           make V=1 ${{ matrix.target }}
@@ -65,7 +65,7 @@ jobs:
         shell: bash -l {0}
         run: |
           ./bootstrap
-          export CXXFLAGS="$CXXFLAGS -UNDEBUG"
+          export CXXFLAGS="$CXXFLAGS -UNDEBUG -g3"
           ./configure --prefix="$PREFIX" --without-benchmark
           make
           cd pyflatsurf
