@@ -56,7 +56,6 @@
 #define ASSERT(CONDITION, MESSAGE) ASSERT_(true || (CONDITION), std::logic_error, MESSAGE)
 #define ASSERTIONS(LAMBDA) \
   while (false) LAMBDA()
-#define UNREACHABLE(MESSAGE) ASSERT_(false, std::logic_error, MESSAGE)
 
 #else
 
@@ -64,9 +63,12 @@
 #define ASSERT_ARGUMENT(CONDITION, MESSAGE) CHECK_ARGUMENT(CONDITION, MESSAGE)
 #define ASSERT(CONDITION, MESSAGE) ASSERT_(CONDITION, std::logic_error, MESSAGE)
 #define ASSERTIONS(LAMBDA) LAMBDA()
-#define UNREACHABLE(MESSAGE) ASSERT_(false, std::logic_error, MESSAGE)
 
 #endif
+
+#define UNREACHABLE(MESSAGE)                  \
+  { ASSERT_(false, std::logic_error, MESSAGE) \
+    __builtin_unreachable(); }
 
 namespace flatsurf {
 

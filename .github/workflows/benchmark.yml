@@ -34,12 +34,14 @@ jobs:
           branch: asv
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: ${{ github.event_name == 'push' }}
       - uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
           FOLDER: .asv/html
           TARGET_FOLDER: asv
+        if: ${{ github.event_name == 'push' }}
 
 env:
   MAKEFLAGS: -j2
