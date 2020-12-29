@@ -21,7 +21,7 @@
 import os
 from os.path import join
 
-from .cppasv import create_wrappers
+from cppasv import create_wrappers
 
 ASV_PROJECT_DIR = os.environ.get('ASV_PROJECT_DIR', None)
 
