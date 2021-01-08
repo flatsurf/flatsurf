@@ -37,8 +37,8 @@ def make_surface(surface_or_vertices, vectors = None):
     if hasattr(surface_or_vertices, "__module__") and surface_or_vertices.__module__ == "flatsurf.geometry.translation_surface":
         if vectors is not None:
             raise ValueError("vectors must be none when creating a FlatTriangulation from a SageMath flatsurf surface")
-        from .sage_conversion import to_FlatTriangulation
-        return to_FlatTriangulation(surface_or_vertices)
+        from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
+        return to_pyflatsurf(surface_or_vertices)
     elif isinstance(surface_or_vertices, Iterable) and isinstance(vectors, Iterable):
         return make_FlatTriangulation(surface_or_vertices, vectors)
     else:
