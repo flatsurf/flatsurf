@@ -27,14 +27,20 @@ jobs:
       - name: make ${{ matrix.target }}
         shell: bash -l {0}
         run: |
-          cd libflatsurf
+          echo "::group::bootstrap"
           ./bootstrap
+
+          echo "::group::configure"
+          cd libflatsurf
           export CXXFLAGS="$CXXFLAGS -UNDEBUG -g3"
           ./configure --prefix="$PREFIX" --without-benchmark
+
+          echo "::group::make"
           make
+
+          echo "::group::make ${{ matrix.target }}"
           make V=1 ${{ matrix.target }}
-      - name: show logs
-        run: grep "" /dev/null `find -name '*.log'` || true
+      - uses: flatsurf/actions/show-logs@main
         if: ${{ always() }}
   test-pyflatsurf:
     runs-on: ubuntu-20.04
@@ -64,14 +70,20 @@ jobs:
       - name: make ${{ matrix.target }}
         shell: bash -l {0}
         run: |
+          echo "::group::bootstrap"
           ./bootstrap
+
+          echo "::group::configure"
           export CXXFLAGS="$CXXFLAGS -UNDEBUG -g3"
           ./configure --prefix="$PREFIX" --without-benchmark
+
+          echo "::group::make"
           make
+
+          echo "::group::make ${{ matrix.target }}"
           cd pyflatsurf
           make ${{ matrix.target }}
-      - name: show logs
-        run: grep "" /dev/null `find -name '*.log'` || true
+      - uses: flatsurf/actions/show-logs@main
         if: ${{ always() }}
   distcheck:
     runs-on: ubuntu-20.04
@@ -89,11 +101,15 @@ jobs:
       - name: make distcheck
         shell: bash -l {0}
         run: |
+          echo "::group::bootstrap"
           ./bootstrap
+
+          echo "::group::configure"
           ./configure --prefix="$PREFIX"
+
+          echo "::group::make distcheck"
           make distcheck
-      - name: show logs
-        run: grep "" /dev/null `find -name '*.log'` || true
+      - uses: flatsurf/actions/show-logs@main
         if: ${{ always() }}
 
 env:

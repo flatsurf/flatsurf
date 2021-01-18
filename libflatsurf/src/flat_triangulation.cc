@@ -493,10 +493,6 @@ void FlatTriangulation<T>::delaunay() {
 }
 
 template <typename T>
-auto delaunay(const FlatTriangulation<T> &surface, const HalfEdge edge) {
-}
-
-template <typename T>
 DELAUNAY FlatTriangulation<T>::delaunay(const Edge edge) const {
   // We could eventually use Vector::insideCircumcircle() so vectors can
   // provide optimized implementations of this. However, at the moment, it
