@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-        with: { submodules: recursive }
+        with: { submodules: recursive, fetch-depth: 0 }
       - uses: conda-incubator/setup-miniconda@v2
         with: { mamba-version: "*", channels: "flatsurf,conda-forge", channel-priority: true }
       - name: install dependencies
@@ -22,12 +22,18 @@ jobs:
         run: |
           ./bootstrap
           export CXXFLAGS="$CXXFLAGS --coverage -O0 -UNDEBUG"
-          ./configure --prefix="$PREFIX" --without-benchmark
+          ./configure --without-benchmark
           make check
-      - name: show logs
-        run: grep "" /dev/null `find -name '*.log'` || true
-        if: ${{ always() }}
-      - uses: codecov/codecov-action@v1
+      - name: create & post coverage report
+        shell: bash -l {0}
+        run: |
+          pushd libflatsurf/test
+          find -type f -name '*.gcda' -exec gcov -pbs ../../../flatsurf '{}' ';'
+          popd
+          pushd libflatsurf/src
+          find -type f -name '*.gcda' -exec gcov -pbs ../../../flatsurf '{}' ';'
+          popd
+          curl -s https://codecov.io/bash | bash -s - -X gcov -R `pwd` .
 
 env:
   MAKEFLAGS: -j2
