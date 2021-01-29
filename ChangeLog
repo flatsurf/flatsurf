@@ -4,6 +4,15 @@ intervalxt Change Log
 
 .. current developments
 
+v3.0.2
+====================
+
+**Fixed:**
+
+* Added pyflatsurf dependency on cppyythonizations
+
+
+
 v3.0.1
 ====================
 
