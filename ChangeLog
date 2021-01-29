@@ -4,6 +4,17 @@ intervalxt Change Log
 
 .. current developments
 
+v3.0.1
+====================
+
+**Fixed:**
+
+* code coverage reports
+* conda packages now use `gmpxxyy` which works with cppyy 1.9.0
+* make `Surface(S)` work again for surfaces coming from sage-flatsurf (#207)
+
+
+
 v3.0.0
 ====================
 

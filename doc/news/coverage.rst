@@ -1,3 +1,0 @@
-**Fixed:**
-
-* code coverage reports
