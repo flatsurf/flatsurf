@@ -67,8 +67,9 @@ bool noassert() {
 }
 } // namespace flatsurf
 
-#define LIBFLATSURF_ASSERT_(CONDITION, EXCEPTION, MESSAGE)                                  \
+#define LIBFLATSURF_ASSERT_(CONDITION, EXCEPTION, MESSAGE)                      \
   while (BOOST_UNLIKELY(static_cast<bool>(not(CONDITION)))) {                   \
+    (void)noassert;                                                             \
     std::stringstream user_message, assertion_message;                          \
     user_message << MESSAGE;                                                    \
     assertion_message << (#CONDITION " does not hold");                         \
