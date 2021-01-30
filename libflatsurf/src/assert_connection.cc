@@ -45,14 +45,19 @@ bool AssertConnection<T>::operator()(const SaddleConnection<FlatTriangulation<T>
 
   long long steps = 1;
 
-  for (it = std::begin(connections); it != std::end(connections); ++it, ++steps) {
-    if (--budget == 0) {
-      // We could not trace this connection in the expected cost. Abort and
-      // assume that we need twice as long for a typical connection.
-      cost *= 2;
-      return true;
-    }
+  auto cw = claimed.surface().fromHalfEdge(claimed.source());
+  auto ccw = claimed.surface().fromHalfEdge(claimed.surface().nextAtVertex(claimed.source()));
 
+  // We keep going as long as the search sector is reasonably big. When the
+  // search sector gets very thin, incrementing the saddle connection
+  // iterator can take a very long time.
+  const auto isNextIterationFeasible = [](const auto &sectorBegin, const auto& sectorEnd, const int budget) -> bool {
+    const auto permitted = sectorBegin + (sectorEnd - sectorBegin) * budget;
+    const auto cost = sectorBegin + sectorBegin.perpendicular();
+    return permitted.ccw(cost) != CCW::COUNTERCLOCKWISE;
+  };
+
+  for (it = std::begin(connections); it != std::end(connections); ++it, ++steps) {
     const Vector<T> w = *it;
     switch (w.ccw(v)) {
       case CCW::COLLINEAR:
@@ -60,11 +65,22 @@ bool AssertConnection<T>::operator()(const SaddleConnection<FlatTriangulation<T>
         return w == v;
       case CCW::CLOCKWISE:
         it.skipSector(CCW::COUNTERCLOCKWISE);
+        ccw = w;
         break;
       case CCW::COUNTERCLOCKWISE:
         it.skipSector(CCW::CLOCKWISE);
+        cw = w;
         break;
     }
+
+    if (--budget <= 0 || !isNextIterationFeasible(cw, ccw, budget)) {
+      // We could not trace this connection in the expected cost. Abort and
+      // assume that we need twice as long for a typical connection.
+      cost *= 2;
+      budget = 0;
+      return true;
+    }
+
   }
 
   return false;

@@ -32,7 +32,7 @@ class AssertConnection {
   bool operator()(const SaddleConnection<FlatTriangulation<T>>&);
 
  private:
-  long long budget = 1024;
+  int budget = 1024;
   long long cost = 1;
 };
 
