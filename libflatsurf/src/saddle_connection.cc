@@ -117,7 +117,7 @@ SaddleConnection<Surface> SaddleConnection<Surface>::inHalfPlane(const Surface& 
     sector = surface.nextAtVertex(sector);
   } while (vertical.ccw(sector) == allowed);
 
-  CHECK_ARGUMENT(false, "vector " << vector << " not on the same side of " << vertical << " as HalfEdge " << side);
+  UNREACHABLE("vector " << vector << " not on the same side of " << vertical << " as HalfEdge " << side);
 }
 
 template <typename Surface>
