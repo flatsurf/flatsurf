@@ -39,12 +39,12 @@ HalfEdgeSet::HalfEdgeSet(const std::vector<HalfEdge>& items) :
   self(spimpl::make_impl<ImplementationOf<HalfEdgeSet>>(items)) {}
 
 bool HalfEdgeSet::contains(HalfEdge e) const {
-  ASSERT(e != HalfEdge(), "cannot check containment of invalid HalfEdge(0)");
+  LIBFLATSURF_ASSERT(e != HalfEdge(), "cannot check containment of invalid HalfEdge(0)");
   return self->contains(e);
 }
 
 void HalfEdgeSet::insert(HalfEdge e) {
-  ASSERT(e != HalfEdge(), "cannot insert invalid HalfEdge(0)");
+  LIBFLATSURF_ASSERT(e != HalfEdge(), "cannot insert invalid HalfEdge(0)");
   self->insert(e);
 }
 
@@ -65,7 +65,7 @@ size_t HalfEdgeSet::size() const {
 }
 
 void HalfEdgeSet::erase(HalfEdge e) {
-  ASSERT(e != HalfEdge(), "cannot remove invalid HalfEdge(0)");
+  LIBFLATSURF_ASSERT(e != HalfEdge(), "cannot remove invalid HalfEdge(0)");
   return self->erase(e);
 }
 

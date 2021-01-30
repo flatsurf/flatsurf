@@ -195,8 +195,8 @@ template <typename Surface>
 std::vector<typename ImplementationOf<SaddleConnections<Surface>>::Sector> ImplementationOf<SaddleConnections<Surface>>::Sector::refine(const Surface& surface, const Vector<T>& sectorBegin, const Vector<T>& sectorEnd) const {
   auto sector = this->sector ? *this->sector : std::pair{surface.fromHalfEdge(source), surface.fromHalfEdge(surface.nextAtVertex(source))};
 
-  ASSERT(sector.first.ccw(surface.fromHalfEdge(source)) != CCW::CLOCKWISE, "sector boundaries before refinement must not be outside of search sector");
-  ASSERT(sector.second.ccw(surface.fromHalfEdge(source)) != CCW::COUNTERCLOCKWISE, "sector boundaries before refinement must not be outside of search sector");
+  LIBFLATSURF_ASSERT(sector.first.ccw(surface.fromHalfEdge(source)) != CCW::CLOCKWISE, "sector boundaries before refinement must not be outside of search sector");
+  LIBFLATSURF_ASSERT(sector.second.ccw(surface.fromHalfEdge(source)) != CCW::COUNTERCLOCKWISE, "sector boundaries before refinement must not be outside of search sector");
 
   const auto inSector = [](const auto& v, const auto& begin, const auto& end) {
     return v.inSector(begin, end);

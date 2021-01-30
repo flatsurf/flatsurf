@@ -42,17 +42,17 @@ template <typename T>
 void check(const Permutation<T> &permutation) {
   vector<int> hits(permutation.size());
   for (const auto &target : permutation.domain()) {
-    ASSERT_ARGUMENT(index(target) < hits.size(), "permutation maps beyond its domain");
+    LIBFLATSURF_ASSERT_ARGUMENT(index(target) < hits.size(), "permutation maps beyond its domain");
     hits[index(target)]++;
   }
   for (int h : hits)
-    CHECK_ARGUMENT(h, "not a permutation, not surjective");
+    LIBFLATSURF_CHECK_ARGUMENT(h, "not a permutation, not surjective");
   for (int h : hits)
-    CHECK_ARGUMENT(h == 1, "not a permutation, not injective");
+    LIBFLATSURF_CHECK_ARGUMENT(h == 1, "not a permutation, not injective");
 
   for (const auto &v : permutation.domain()) {
-    ASSERT_ARGUMENT(permutation.preimage(permutation(v)) == v, "inverse incorrect");
-    ASSERT_ARGUMENT(permutation(permutation.preimage(v)) == v, "inverse incorrect");
+    LIBFLATSURF_ASSERT_ARGUMENT(permutation.preimage(permutation(v)) == v, "inverse incorrect");
+    LIBFLATSURF_ASSERT_ARGUMENT(permutation(permutation.preimage(v)) == v, "inverse incorrect");
   }
 }
 }  // namespace
@@ -77,7 +77,7 @@ Permutation<T>::Permutation(const vector<vector<T>> &cycles) :
     vector<T> data(accumulate(cycles, 0u, [](size_t sum, const auto &cycle) { return sum + cycle.size(); }));
     for (const auto cycle : cycles) {
       for (auto i = 0u; i < cycle.size(); i++) {
-        ASSERT_ARGUMENT(index(cycle[i]) < data.size(), "cycle contains an element beyond the size of the permutation");
+        LIBFLATSURF_ASSERT_ARGUMENT(index(cycle[i]) < data.size(), "cycle contains an element beyond the size of the permutation");
         data[index(cycle[i])] = cycle[(i + 1) % cycle.size()];
       }
     }
@@ -89,7 +89,7 @@ Permutation<T>::Permutation(const vector<pair<T, T>> &permutation) :
   Permutation([&]() {
     vector<T> data(permutation.size());
     for (auto ab : permutation) {
-      ASSERT_ARGUMENT(index(ab.first) < data.size(), "entry of permutation points to an element beoynd the size of the permutation");
+      LIBFLATSURF_ASSERT_ARGUMENT(index(ab.first) < data.size(), "entry of permutation points to an element beoynd the size of the permutation");
       data[index(ab.first)] = ab.second;
     }
     return data;
@@ -100,7 +100,7 @@ Permutation<T>::Permutation(const std::unordered_map<T, T> &permutation) :
   Permutation([&]() {
     vector<T> data(permutation.size());
     for (auto ab : permutation) {
-      ASSERT_ARGUMENT(index(ab.first) < data.size(), "entry of permutation points to an element beoynd the size of the permutation");
+      LIBFLATSURF_ASSERT_ARGUMENT(index(ab.first) < data.size(), "entry of permutation points to an element beoynd the size of the permutation");
       data[index(ab.first)] = ab.second;
     }
     return data;
@@ -108,7 +108,7 @@ Permutation<T>::Permutation(const std::unordered_map<T, T> &permutation) :
 
 template <typename T>
 Permutation<T> Permutation<T>::random(const vector<T> &domain) {
-  ASSERT_ARGUMENT(std::unordered_set<T>(domain.begin(), domain.end()).size() == domain.size(), "domain must not contain duplicates");
+  LIBFLATSURF_ASSERT_ARGUMENT(std::unordered_set<T>(domain.begin(), domain.end()).size() == domain.size(), "domain must not contain duplicates");
   vector<T> image = domain;
   std::random_shuffle(image.begin(), image.end());
   vector<pair<T, T>> permutation;
@@ -163,10 +163,10 @@ vector<vector<T>> Permutation<T>::cycles() const {
 template <typename T>
 void Permutation<T>::drop(const vector<T> &items) {
   for (auto &item : items)
-    CHECK_ARGUMENT(std::find(begin(items), end(items), this->operator()(item)) != end(items), "items to remove must be in isolated cycles");
+    LIBFLATSURF_CHECK_ARGUMENT(std::find(begin(items), end(items), this->operator()(item)) != end(items), "items to remove must be in isolated cycles");
 
   for (auto &item : items)
-    CHECK_ARGUMENT(index(item) >= permutation.size() - items.size(), "items to remove must have maximal index");
+    LIBFLATSURF_CHECK_ARGUMENT(index(item) >= permutation.size() - items.size(), "items to remove must have maximal index");
 
   permutation.resize(permutation.size() - items.size());
   inverse.resize(inverse.size() - items.size());
@@ -179,7 +179,7 @@ Permutation<T> Permutation<T>::operator~() const {
 
 template <typename T>
 Permutation<T> &Permutation<T>::operator*=(const Permutation<T> &rhs) {
-  CHECK_ARGUMENT(size() == rhs.size(), "permutations must have the same domain");
+  LIBFLATSURF_CHECK_ARGUMENT(size() == rhs.size(), "permutations must have the same domain");
 
   vector<T> permutation(rhs.permutation);
   for (auto it = permutation.begin(); it != permutation.end(); it++)
@@ -212,7 +212,7 @@ template <typename T>
 Permutation<T> &operator*=(const vector<T> &cycle, Permutation<T> &self) {
   if (std::unordered_set<T>(cycle.begin(), cycle.end()).size() <= 1) return self;
 
-  CHECK_ARGUMENT(std::unordered_set<T>(cycle.begin(), cycle.end()).size() == cycle.size(), "cycle must consist of distinct entries");
+  LIBFLATSURF_CHECK_ARGUMENT(std::unordered_set<T>(cycle.begin(), cycle.end()).size() == cycle.size(), "cycle must consist of distinct entries");
 
   T tmp = self.preimage(cycle[0]);
   for (auto it = cycle.begin(); it != cycle.end() - 1; it++) {
@@ -229,7 +229,7 @@ template <typename T>
 Permutation<T> &operator*=(Permutation<T> &self, const vector<T> &cycle) {
   if (std::unordered_set<T>(cycle.begin(), cycle.end()).size() <= 1) return self;
 
-  CHECK_ARGUMENT(std::unordered_set<T>(cycle.begin(), cycle.end()).size() == cycle.size(), "cycle must consist of distinct entries");
+  LIBFLATSURF_CHECK_ARGUMENT(std::unordered_set<T>(cycle.begin(), cycle.end()).size() == cycle.size(), "cycle must consist of distinct entries");
 
   T tmp = self(cycle[0]);
   for (auto it = cycle.begin(); it != cycle.end() - 1; it++) {

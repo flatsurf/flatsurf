@@ -77,7 +77,7 @@ FlowConnection<Surface> FlowConnection<Surface>::operator-() const {
   const auto find = [&](const auto& component) {
     for (const auto& connection : component.perimeter())
       if (connection.saddleConnection() == search) {
-        ASSERT(vertical() || this->component() == component, "Non-vertical connections can not be attached to distinct components.");
+        LIBFLATSURF_ASSERT(vertical() || this->component() == component, "Non-vertical connections can not be attached to distinct components.");
         return std::optional<FlowConnection>(connection);
       }
     return std::optional<FlowConnection>();
@@ -94,7 +94,7 @@ FlowConnection<Surface> FlowConnection<Surface>::operator-() const {
       }
   }
 
-  ASSERT(self->negative->self->kind == static_cast<typename ImplementationOf<FlowConnection>::Kind>(-static_cast<int>(self->kind)), "Negative of connection is of unexpected type.");
+  LIBFLATSURF_ASSERT(self->negative->self->kind == static_cast<typename ImplementationOf<FlowConnection>::Kind>(-static_cast<int>(self->kind)), "Negative of connection is of unexpected type.");
 
   return self->negative.value();
 }
@@ -109,7 +109,7 @@ FlowConnection<Surface> FlowConnection<Surface>::previousInPerimeter() const {
       return *--it;
     }
   }
-  UNREACHABLE("connection must appear in its own perimeter")
+  LIBFLATSURF_UNREACHABLE("connection must appear in its own perimeter")
 }
 
 template <typename Surface>
@@ -123,7 +123,7 @@ FlowConnection<Surface> FlowConnection<Surface>::nextInPerimeter() const {
       return *it;
     }
   }
-  UNREACHABLE("connection must appear in its own perimeter")
+  LIBFLATSURF_UNREACHABLE("connection must appear in its own perimeter")
 }
 
 template <typename Surface>
@@ -140,7 +140,7 @@ ImplementationOf<FlowConnection<Surface>>::ImplementationOf(std::shared_ptr<Flow
 
 template <typename Surface>
 FlowConnection<Surface> ImplementationOf<FlowConnection<Surface>>::make(std::shared_ptr<FlowDecompositionState<Surface>> state, const FlowComponent<Surface>& component, const intervalxt::Connection& connection) {
-  ASSERT(state->injectedConnections.find(connection) != end(state->injectedConnections) || state->detectedConnections.find(connection) != end(state->detectedConnections), "Connection " << connection << " not known to " << *state);
+  LIBFLATSURF_ASSERT(state->injectedConnections.find(connection) != end(state->injectedConnections) || state->detectedConnections.find(connection) != end(state->detectedConnections), "Connection " << connection << " not known to " << *state);
 
   const Kind kind = connection.parallel() ? Kind::PARALLEL : Kind::ANTIPARALLEL;
 
@@ -148,8 +148,8 @@ FlowConnection<Surface> ImplementationOf<FlowConnection<Surface>>::make(std::sha
                                     ? FlowConnection<Surface>(PrivateConstructor{}, state, component, state->injectedConnections.at(connection), kind)
                                     : FlowConnection<Surface>(PrivateConstructor{}, state, component, state->detectedConnections.at(connection), kind);
 
-  ASSERT(ret.vertical(), "FlowConnection created from vertical Connection must be vertical but " << ret << " created from " << connection << " is not.");
-  ASSERT(connection.parallel() == ret.parallel(), "FlowConnection must have same parallelity as Connection but " << ret << " and " << connection << " do not coincide");
+  LIBFLATSURF_ASSERT(ret.vertical(), "FlowConnection created from vertical Connection must be vertical but " << ret << " created from " << connection << " is not.");
+  LIBFLATSURF_ASSERT(connection.parallel() == ret.parallel(), "FlowConnection must have same parallelity as Connection but " << ret << " and " << connection << " do not coincide");
 
   return ret;
 }
@@ -161,7 +161,7 @@ FlowConnection<Surface> ImplementationOf<FlowConnection<Surface>>::make(std::sha
 
   FlowConnection<Surface> ret(PrivateConstructor{}, state, component, connection, edge.top() ? Kind::TOP : Kind::BOTTOM);
 
-  ASSERT(!ret.vertical(), "FlowConnection created from HalfEdge must not be vertical but " << ret << " created from " << edge << " is vertical.");
+  LIBFLATSURF_ASSERT(!ret.vertical(), "FlowConnection created from HalfEdge must not be vertical but " << ret << " created from " << edge << " is vertical.");
 
   return ret;
 }

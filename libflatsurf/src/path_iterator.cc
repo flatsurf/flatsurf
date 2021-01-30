@@ -28,8 +28,8 @@ namespace flatsurf {
 
 template <typename Surface>
 void PathIterator<Surface>::increment() {
-  ASSERT(!self->parent->empty(), "cannot increment iterator into empty path");
-  ASSERT(!self->end, "cannot increment end() iterator")
+  LIBFLATSURF_ASSERT(!self->parent->empty(), "cannot increment iterator into empty path");
+  LIBFLATSURF_ASSERT(!self->end, "cannot increment end() iterator")
   self->position++;
   if (self->position == end(self->parent->self->path)) {
     self->position = begin(self->parent->self->path);
@@ -39,9 +39,9 @@ void PathIterator<Surface>::increment() {
 
 template <typename Surface>
 const SaddleConnection<Surface>& PathIterator<Surface>::dereference() const {
-  ASSERT(!self->parent->empty(), "cannot dereference iterator into empty path");
-  ASSERT(!self->end, "cannot dereference end() iterator");
-  ASSERT(self->position != end(self->parent->self->path), "iterator in impossible end state");
+  LIBFLATSURF_ASSERT(!self->parent->empty(), "cannot dereference iterator into empty path");
+  LIBFLATSURF_ASSERT(!self->end, "cannot dereference end() iterator");
+  LIBFLATSURF_ASSERT(self->position != end(self->parent->self->path), "iterator in impossible end state");
   return *self->position;
 }
 

@@ -253,7 +253,7 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::onBoundary() {
 
 template <typename Surface>
 void ImplementationOf<SaddleConnectionsIterator<Surface>>::skipSector(CCW sector) {
-  ASSERT_ARGUMENT(sector != CCW::COLLINEAR, "Cannot skip this sector. There is no such thing as a collinear sector.");
+  LIBFLATSURF_ASSERT_ARGUMENT(sector != CCW::COLLINEAR, "Cannot skip this sector. There is no such thing as a collinear sector.");
   assert(state.size() && "cannot skip a sector in a completed search");
 
   switch (state.back()) {
@@ -272,7 +272,7 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::skipSector(CCW sector
           default:
             break;
         }
-        ASSERT(state.back() == State::SADDLE_CONNECTION_FOUND_SEARCHING_FIRST, "State machine of SaddleConnections is inconsistent when trying to skip clockwise sector.");
+        LIBFLATSURF_ASSERT(state.back() == State::SADDLE_CONNECTION_FOUND_SEARCHING_FIRST, "State machine of SaddleConnections is inconsistent when trying to skip clockwise sector.");
       } else if (sector == CCW::COUNTERCLOCKWISE) {
         // Skip the second recursive call by dropping its START.
         std::stack<State> unchanged;
@@ -467,7 +467,7 @@ void SaddleConnectionsIterator<Surface>::skipSector(CCW ccw) {
 
 template <typename Surface>
 std::optional<HalfEdge> SaddleConnectionsIterator<Surface>::incrementWithCrossings() {
-  ASSERT(self->sector != self->end, "iterator is at end()");
+  LIBFLATSURF_ASSERT(self->sector != self->end, "iterator is at end()");
 
   while (true) {
     if (self->sector == self->end) {
@@ -492,7 +492,7 @@ std::optional<HalfEdge> SaddleConnectionsIterator<Surface>::incrementWithCrossin
 
 template <typename Surface>
 const SaddleConnection<Surface>& SaddleConnectionsIterator<Surface>::dereference() const {
-  ASSERT(self->sector != self->end, "iterator is at end()");
+  LIBFLATSURF_ASSERT(self->sector != self->end, "iterator is at end()");
 
   switch (self->state.back()) {
     case ImplementationOf<SaddleConnectionsIterator>::State::START_FROM_INSIDE_TO_INSIDE:
@@ -503,11 +503,11 @@ const SaddleConnection<Surface>& SaddleConnectionsIterator<Surface>::dereference
       self->connection = SaddleConnection<Surface>(self->connections.surface, self->sector->source, self->connections.surface->previousAtVertex(-self->nextEdge), self->nextEdgeEnd);
       break;
     default:
-      ASSERT(false, "iterator cannot hold in this state");
+      LIBFLATSURF_ASSERT(false, "iterator cannot hold in this state");
   }
 
-  ASSERT(!self->connections.searchRadius || self->connection <= *self->connections.searchRadius, "Iterator stopped at connection " << self->connection << " which is beyond the search radius " << *self->connections.searchRadius);
-  ASSERT(self->connection > self->connections.lowerBound, "Iterator stopped at connection " << self->connection << " which is within the excluded lower bound " << self->connections.lowerBound);
+  LIBFLATSURF_ASSERT(!self->connections.searchRadius || self->connection <= *self->connections.searchRadius, "Iterator stopped at connection " << self->connection << " which is beyond the search radius " << *self->connections.searchRadius);
+  LIBFLATSURF_ASSERT(self->connection > self->connections.lowerBound, "Iterator stopped at connection " << self->connection << " which is within the excluded lower bound " << self->connections.lowerBound);
 
   return self->connection;
 }

@@ -38,7 +38,7 @@ void ChainIterator<Surface>::increment() {
 
 template <typename Surface>
 const typename ChainIterator<Surface>::value_type& ChainIterator<Surface>::dereference() const {
-  ASSERT(self->current.second != nullptr, "Cannot dereference iterator that is already at the end of Chain.");
+  LIBFLATSURF_ASSERT(self->current.second != nullptr, "Cannot dereference iterator that is already at the end of Chain.");
   return self->current;
 }
 

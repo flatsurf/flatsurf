@@ -45,7 +45,7 @@ FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(const std::vector
       boundaries | rx::transform([](int e) { return HalfEdge(e); }) | rx::to_vector()) {
   for (auto& cycle : vertices)
     for (auto it = cycle.rbegin(); it != cycle.rend(); it++)
-      CHECK_ARGUMENT(std::find(begin(boundaries), end(boundaries), *it) == end(boundaries) || it == cycle.rbegin(), "Boundary edges must be at the end of a vertex permutation");
+      LIBFLATSURF_CHECK_ARGUMENT(std::find(begin(boundaries), end(boundaries), *it) == end(boundaries) || it == cycle.rbegin(), "Boundary edges must be at the end of a vertex permutation");
 }
 
 FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(const Permutation<HalfEdge>& vertices) :
@@ -59,7 +59,7 @@ FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(const std::vector
 
     const auto record = [&](HalfEdge a, HalfEdge b) {
       nonboundary.insert(a);
-      ASSERT(vertexPermutation.find(a) == vertexPermutation.end(), "half edge must not be in two faces but " << a << " shows up more than once");
+      LIBFLATSURF_ASSERT(vertexPermutation.find(a) == vertexPermutation.end(), "half edge must not be in two faces but " << a << " shows up more than once");
       vertexPermutation[a] = b;
 
       if (initial.find(a) == initial.end())
@@ -84,16 +84,16 @@ FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(const std::vector
     }) | rx::to_vector();
 
     for (const auto halfEdge : boundary) {
-      ASSERT(vertexPermutation.find(halfEdge) == vertexPermutation.end(), "boundary edge must not be in any face");
-      ASSERT(final.at(halfEdge) == halfEdge, "boundary half edge must be final when walking around ccw a vertex");
-      ASSERT(initial.at(halfEdge) != halfEdge, "boundary half edge must not be initial when walking ccw around a vertex");
+      LIBFLATSURF_ASSERT(vertexPermutation.find(halfEdge) == vertexPermutation.end(), "boundary edge must not be in any face");
+      LIBFLATSURF_ASSERT(final.at(halfEdge) == halfEdge, "boundary half edge must be final when walking around ccw a vertex");
+      LIBFLATSURF_ASSERT(initial.at(halfEdge) != halfEdge, "boundary half edge must not be initial when walking ccw around a vertex");
       vertexPermutation[halfEdge] = initial.at(halfEdge);
-      ASSERT(final.at(vertexPermutation[halfEdge]) == halfEdge, "half edges around a vertex must form a loop but if we go from " << halfEdge << " to " << vertexPermutation[halfEdge] << " we eventually only get to " << final.at(vertexPermutation[halfEdge]) << " from there");
+      LIBFLATSURF_ASSERT(final.at(vertexPermutation[halfEdge]) == halfEdge, "half edges around a vertex must form a loop but if we go from " << halfEdge << " to " << vertexPermutation[halfEdge] << " we eventually only get to " << final.at(vertexPermutation[halfEdge]) << " from there");
     }
 
     return std::make_shared<ImplementationOf<FlatTriangulationCombinatorial>>(Permutation<HalfEdge>(vertexPermutation), boundary);
   }()) {
-  ASSERT(
+  LIBFLATSURF_ASSERT(
       faces | rx::all_of([&](const auto face) {
         return self->faces(std::get<0>(face)) == std::get<1>(face) && self->faces(std::get<1>(face)) == std::get<2>(face) && self->faces(std::get<2>(face)) == std::get<0>(face);
       }),
@@ -114,7 +114,7 @@ ImplementationOf<FlatTriangulationCombinatorial>::ImplementationOf(const Permuta
       }) |
       rx::to_vector()),
   vertexes() {
-  CHECK_ARGUMENT(vertices.size() % 2 == 0, "half edges must come in pairs");
+  LIBFLATSURF_CHECK_ARGUMENT(vertices.size() % 2 == 0, "half edges must come in pairs");
 
   resetVertexes();
   resetEdges();
@@ -122,9 +122,9 @@ ImplementationOf<FlatTriangulationCombinatorial>::ImplementationOf(const Permuta
   // check that faces are triangles
   for (auto edge : faces.domain()) {
     if (faces(edge) != edge) {
-      CHECK_ARGUMENT(faces(faces(faces(edge))) == edge, "not fully triangulated");
+      LIBFLATSURF_CHECK_ARGUMENT(faces(faces(faces(edge))) == edge, "not fully triangulated");
     } else {
-      ASSERT_ARGUMENT(std::find(begin(boundaries), end(boundaries), edge) != end(boundaries), "faces must not be trivial");
+      LIBFLATSURF_ASSERT_ARGUMENT(std::find(begin(boundaries), end(boundaries), edge) != end(boundaries), "faces must not be trivial");
     }
   }
 
@@ -220,7 +220,7 @@ void ImplementationOf<FlatTriangulationCombinatorial>::swap(HalfEdge a, HalfEdge
 void ImplementationOf<FlatTriangulationCombinatorial>::flip(HalfEdge e) {
   auto self = from_this();
 
-  ASSERT_ARGUMENT(!self.boundary(e) && !self.boundary(-e), "cannot flip a boundary edge");
+  LIBFLATSURF_ASSERT_ARGUMENT(!self.boundary(e) && !self.boundary(-e), "cannot flip a boundary edge");
 
   // Let (e a b) and (-e c d) be the faces containing e and -e before the flip.
   const HalfEdge a = self.nextInFace(e);

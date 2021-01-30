@@ -61,7 +61,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
     auto step = self->component->dynamicalComponent.decompositionStep(limit);
 
     if (step.result == intervalxt::DecompositionStep::Result::LIMIT_REACHED) {
-      ASSERTIONS(check);
+      LIBFLATSURF_ASSERTIONS(check);
       return false;
     }
 
@@ -92,9 +92,9 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
         }
       }
 
-      ASSERT(vector, "SaddleConnection must not be the zero vector");
-      ASSERT(vertical().ccw(vector) == CCW::COLLINEAR, "SaddleConnection must be vertical");
-      ASSERT(vertical().orientation(vector) == ORIENTATION::SAME, "SaddleConnection must be parallel but " << vector << " is antiparallel.");
+      LIBFLATSURF_ASSERT(vector, "SaddleConnection must not be the zero vector");
+      LIBFLATSURF_ASSERT(vertical().ccw(vector) == CCW::COLLINEAR, "SaddleConnection must be vertical");
+      LIBFLATSURF_ASSERT(vertical().orientation(vector) == ORIENTATION::SAME, "SaddleConnection must be parallel but " << vector << " is antiparallel.");
 
       // The first SaddleConnection of step.equivalent. The new
       // SaddleConnection must start clockwise from that one.
@@ -113,7 +113,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
         return finalFlowConnection.vertical() ? -finalFlowConnection.saddleConnection() : finalFlowConnection.saddleConnection();
       }();
 
-      ASSERT(clockwiseFrom.vector().ccw(vector) != CCW::COUNTERCLOCKWISE, "Vertical must be clockwise from the half edge direction");
+      LIBFLATSURF_ASSERT(clockwiseFrom.vector().ccw(vector) != CCW::COUNTERCLOCKWISE, "Vertical must be clockwise from the half edge direction");
 
       enum SECTOR {
         NORTH,
@@ -153,7 +153,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
               case ORIENTATION::SAME:
                 return NORTH;
               default:
-                UNREACHABLE("cannot classify zero vector");
+                LIBFLATSURF_UNREACHABLE("cannot classify zero vector");
             }
         }
       };
@@ -180,7 +180,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
           break;
         }
 
-        ASSERT(surface->inSector(ret, vector), "We determined that the new SaddleConnection " << vector << " must start in the sector counterclockwise from " << ret << " but that vector is not in the sector.");
+        LIBFLATSURF_ASSERT(surface->inSector(ret, vector), "We determined that the new SaddleConnection " << vector << " must start in the sector counterclockwise from " << ret << " but that vector is not in the sector.");
 
         return ret;
       }();
@@ -219,19 +219,19 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
 
         ret = surface->previousAtVertex(ret);
 
-        ASSERT(surface->inSector(ret, -vector), "We determined that the new SaddleConnection " << vector << " must end in the sector counterclockwise from " << ret << " but the negative of that vector is not in the sector.");
+        LIBFLATSURF_ASSERT(surface->inSector(ret, -vector), "We determined that the new SaddleConnection " << vector << " must end in the sector counterclockwise from " << ret << " but the negative of that vector is not in the sector.");
 
         return ret;
       }();
 
       const auto connection = SaddleConnection<FlatTriangulation<T>>(surface, source, target, vector);
 
-      ASSERT(vertical().ccw(connection) == CCW::COLLINEAR, "Detected connection must be vertical but " << connection << " is not.");
-      ASSERT(vertical().orientation(connection) == ORIENTATION::SAME, " Detected connection is parallel but " << connection << " is antiparallel.");
+      LIBFLATSURF_ASSERT(vertical().ccw(connection) == CCW::COLLINEAR, "Detected connection must be vertical but " << connection << " is not.");
+      LIBFLATSURF_ASSERT(vertical().orientation(connection) == ORIENTATION::SAME, " Detected connection is parallel but " << connection << " is antiparallel.");
 
-      ASSERT(connection.source() == source && connection.target() == target, "SaddleConnection normalization was unhappy with our source()/target() but we had picked them so they would be correct.");
+      LIBFLATSURF_ASSERT(connection.source() == source && connection.target() == target, "SaddleConnection normalization was unhappy with our source()/target() but we had picked them so they would be correct.");
 
-      ASSERT(clockwiseFrom.vector().ccw(connection) == CCW::CLOCKWISE || (clockwiseFrom.vector().ccw(connection) == CCW::COLLINEAR && clockwiseFrom.vector().orientation(connection) == ORIENTATION::OPPOSITE), "Detected SaddleConnection must be reachable clockwise from the existing contour but " << connection << " is not clockwise from " << clockwiseFrom);
+      LIBFLATSURF_ASSERT(clockwiseFrom.vector().ccw(connection) == CCW::CLOCKWISE || (clockwiseFrom.vector().ccw(connection) == CCW::COLLINEAR && clockwiseFrom.vector().orientation(connection) == ORIENTATION::OPPOSITE), "Detected SaddleConnection must be reachable clockwise from the existing contour but " << connection << " is not clockwise from " << clockwiseFrom);
 
       self->state->detectedConnections.emplace(*step.connection, connection);
       self->state->detectedConnections.emplace(-*step.connection, -connection);
@@ -250,7 +250,7 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
     }
   }
 
-  ASSERTIONS(check);
+  LIBFLATSURF_ASSERTIONS(check);
 
   return true;
 }
@@ -311,10 +311,10 @@ typename FlowComponent<Surface>::Perimeter FlowComponent<Surface>::perimeter() c
   for (const auto& side : self->component->dynamicalComponent.perimeter())
     perimeter.push_back(ImplementationOf<FlowConnection<Surface>>::make(self->state, *this, side));
 
-  ASSERTIONS([&]() {
+  LIBFLATSURF_ASSERTIONS([&]() {
     Path<FlatTriangulation<T>> path = perimeter | rx::transform([&](const auto connection) { return connection.saddleConnection(); }) | rx::to_vector();
-    ASSERT(path.simple(), "Perimeter of FlowComponent must not contain duplicates but " << path << " does.");
-    ASSERT(path.closed(), "Perimeter of FlowComponent must be closed but " << path << " is not.");
+    LIBFLATSURF_ASSERT(path.simple(), "Perimeter of FlowComponent must not contain duplicates but " << path << " does.");
+    LIBFLATSURF_ASSERT(path.closed(), "Perimeter of FlowComponent must be closed but " << path << " is not.");
   });
 
   return perimeter;

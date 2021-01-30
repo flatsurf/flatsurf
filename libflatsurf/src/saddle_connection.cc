@@ -51,20 +51,20 @@ SaddleConnection<Surface>::SaddleConnection(const Surface& surface, HalfEdge e) 
 template <typename Surface>
 SaddleConnection<Surface>::SaddleConnection(const Surface& surface, HalfEdge source, HalfEdge target, const Chain<Surface>& chain) :
   self(spimpl::make_impl<ImplementationOf<SaddleConnection>>(surface, source, target, chain)) {
-  ASSERT_ARGUMENT(self->chain, "saddle connection cannot be trivial");
+  LIBFLATSURF_ASSERT_ARGUMENT(self->chain, "saddle connection cannot be trivial");
 }
 
 template <typename Surface>
 SaddleConnection<Surface>::SaddleConnection(const Surface& surface, HalfEdge source, HalfEdge target, Chain<Surface>&& chain) :
   self(spimpl::make_impl<ImplementationOf<SaddleConnection>>(surface, source, target, std::move(chain))) {
-  ASSERT_ARGUMENT(self->chain, "saddle connection cannot be trivial");
+  LIBFLATSURF_ASSERT_ARGUMENT(self->chain, "saddle connection cannot be trivial");
 }
 
 template <typename Surface>
 bool SaddleConnection<Surface>::operator==(const SaddleConnection<Surface>& rhs) const {
   bool ret = *self->surface == *rhs.self->surface && vector() == rhs.vector() && self->source == rhs.self->source;
 
-  ASSERT((!ret || target() == rhs.target()), "saddle connection data is inconsistent, " << *this << " == " << rhs << " but their targets do not match since " << target() << " != " << rhs.target());
+  LIBFLATSURF_ASSERT((!ret || target() == rhs.target()), "saddle connection data is inconsistent, " << *this << " == " << rhs << " but their targets do not match since " << target() << " != " << rhs.target());
   return ret;
 }
 
@@ -90,7 +90,7 @@ SaddleConnection<Surface> SaddleConnection<Surface>::operator-() const {
 
 template <typename Surface>
 SaddleConnection<Surface> SaddleConnection<Surface>::inSector(const Surface& surface, HalfEdge source, const Vector<T>& vector) {
-  CHECK_ARGUMENT(surface.inSector(source, vector), "Cannot search for " << vector << " next to " << source << " in " << surface << "; that direction is not in the search sector");
+  LIBFLATSURF_CHECK_ARGUMENT(surface.inSector(source, vector), "Cannot search for " << vector << " next to " << source << " in " << surface << "; that direction is not in the search sector");
 
   const auto construction = SaddleConnections<Surface>(surface)
                                 .bound(Bound::upper(vector))
@@ -99,7 +99,7 @@ SaddleConnection<Surface> SaddleConnection<Surface>::inSector(const Surface& sur
 
   const auto ret = begin(construction);
 
-  CHECK_ARGUMENT(ret != end(construction), "No connection with vector " << vector << " in sector starting at " << source << " in " << surface);
+  LIBFLATSURF_CHECK_ARGUMENT(ret != end(construction), "No connection with vector " << vector << " in sector starting at " << source << " in " << surface);
 
   return *ret;
 }
@@ -117,12 +117,12 @@ SaddleConnection<Surface> SaddleConnection<Surface>::inHalfPlane(const Surface& 
     sector = surface.nextAtVertex(sector);
   } while (vertical.ccw(sector) == allowed);
 
-  UNREACHABLE("vector " << vector << " not on the same side of " << vertical << " as HalfEdge " << side);
+  LIBFLATSURF_UNREACHABLE("vector " << vector << " not on the same side of " << vertical << " as HalfEdge " << side);
 }
 
 template <typename Surface>
 SaddleConnection<Surface> SaddleConnection<Surface>::inPlane(const Surface& surface, HalfEdge plane, const Vector<T>& vector) {
-  CHECK_ARGUMENT(vector.ccw(surface.fromHalfEdge(plane)) != CCW::COLLINEAR || vector.orientation(surface.fromHalfEdge(plane)) != ORIENTATION::OPPOSITE, "vector must not be opposite to the HalfEdge defining the plane");
+  LIBFLATSURF_CHECK_ARGUMENT(vector.ccw(surface.fromHalfEdge(plane)) != CCW::COLLINEAR || vector.orientation(surface.fromHalfEdge(plane)) != ORIENTATION::OPPOSITE, "vector must not be opposite to the HalfEdge defining the plane");
 
   if (surface.fromHalfEdge(plane).ccw(vector) == CCW::CLOCKWISE) {
     while (surface.fromHalfEdge(plane).ccw(vector) == CCW::CLOCKWISE)
@@ -168,7 +168,7 @@ SaddleConnection<Surface> SaddleConnection<Surface>::alongVertical(const Surface
 
 template <typename Surface>
 SaddleConnection<Surface> SaddleConnection<Surface>::inSector(const Surface& surface, HalfEdge source, const Vertical<Surface>& direction) {
-  CHECK_ARGUMENT(surface.inSector(source, direction), "Cannot search in direction " << direction << " next to " << source << " in " << surface << "; that direction is not in the search sector");
+  LIBFLATSURF_CHECK_ARGUMENT(surface.inSector(source, direction), "Cannot search in direction " << direction << " next to " << source << " in " << surface << "; that direction is not in the search sector");
 
   const auto construction = SaddleConnections<Surface>(surface)
                                 .byLength()
@@ -192,7 +192,7 @@ std::vector<HalfEdge> SaddleConnection<Surface>::crossings() const {
   auto it = reconstruction.begin();
   while (*it != *this) {
     const auto ccw = it->vector().ccw(vector());
-    ASSERT(ccw != CCW::COLLINEAR, "There cannot be another saddle connection in exactly the same direction as this one but in " << self->surface << " at " << source() << " we found " << it->vector() << " which has the same direction as " << vector());
+    LIBFLATSURF_ASSERT(ccw != CCW::COLLINEAR, "There cannot be another saddle connection in exactly the same direction as this one but in " << self->surface << " at " << source() << " we found " << it->vector() << " which has the same direction as " << vector());
     it.skipSector(-ccw);
     while (true) {
       auto crossing = it.incrementWithCrossings();
@@ -204,7 +204,7 @@ std::vector<HalfEdge> SaddleConnection<Surface>::crossings() const {
     }
   }
 
-  ASSERT(it->target() == target(), "We reconstructed the saddle connection in " << self->surface << " starting from " << source() << " with vector " << vector() << " but it does not end at " << target() << " as claimed but at " << it->target());
+  LIBFLATSURF_ASSERT(it->target() == target(), "We reconstructed the saddle connection in " << self->surface << " starting from " << source() << " with vector " << vector() << " but it does not end at " << target() << " as claimed but at " << it->target());
 
   return ret;
 }

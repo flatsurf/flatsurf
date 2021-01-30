@@ -37,7 +37,7 @@ using std::begin;
 using std::end;
 
 bool Vertex::operator==(const Vertex& rhs) const {
-  ASSERT(ImplementationOf<Vertex>::comparable(self->sources, rhs.self->sources), "Cannot compare unrelated vertices; maybe the surface has changed since these vertices were created?");
+  LIBFLATSURF_ASSERT(ImplementationOf<Vertex>::comparable(self->sources, rhs.self->sources), "Cannot compare unrelated vertices; maybe the surface has changed since these vertices were created?");
 
   return *begin(self->sources) == *begin(rhs.self->sources);
 }

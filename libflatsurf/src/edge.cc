@@ -44,7 +44,7 @@ HalfEdge Edge::positive() const { return id; }
 HalfEdge Edge::negative() const { return -id; }
 
 size_t Edge::index() const {
-  ASSERT(id.index() % 2 == 0, "Edge should have been automatically set to its positive HalfEdge representative");
+  LIBFLATSURF_ASSERT(id.index() % 2 == 0, "Edge should have been automatically set to its positive HalfEdge representative");
   return id.index() / 2;
 }
 

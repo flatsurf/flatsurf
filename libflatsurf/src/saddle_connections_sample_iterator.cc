@@ -76,7 +76,7 @@ void ImplementationOf<SaddleConnectionsSampleIterator<Surface>>::increment() {
   auto connections = this->connections.byAngle().sector(sector.source);
   ImplementationOf<SaddleConnections<Surface>>::resetLowerBound(connections);
 
-  ASSERT(!sector.sector || sector.sector->first != sector.sector->second, "SaddleConnections contains an empty sector, such sectors should have been thrown out from the list of sectors");
+  LIBFLATSURF_ASSERT(!sector.sector || sector.sector->first != sector.sector->second, "SaddleConnections contains an empty sector, such sectors should have been thrown out from the list of sectors");
 
   const auto outerSectorBegin = sector.sector ? sector.sector->first : connections.surface().fromHalfEdge(sector.source);
   const auto outerSectorEnd = sector.sector ? sector.sector->second : connections.surface().fromHalfEdge(connections.surface().nextAtVertex(sector.source));
@@ -106,7 +106,7 @@ void ImplementationOf<SaddleConnectionsSampleIterator<Surface>>::increment() {
     const auto w = sectorEnd;
     const auto c = current.vector();
 
-    ASSERT(c.inSector(v, w), "Connection must be contained in the bounding sector but " << c << " is not in the sector spanned by " << v << " and " << w);
+    LIBFLATSURF_ASSERT(c.inSector(v, w), "Connection must be contained in the bounding sector but " << c << " is not in the sector spanned by " << v << " and " << w);
 
     // We want the probability to go to the clockwise side to be p = α / β
     // where α is the angle (v, c) and β the angle (v, w), i.e., the further c

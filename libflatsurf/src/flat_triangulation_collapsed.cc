@@ -119,7 +119,7 @@ template <typename T>
 Path<FlatTriangulation<T>> FlatTriangulationCollapsed<T>::turn(HalfEdge from, HalfEdge to) const {
   std::vector<SaddleConnection> connections;
 
-  CHECK_ARGUMENT(Vertex::source(from, *this) == Vertex::source(to, *this), "can only turn between half edges starting at the same vertex but " << from << " and " << to << " do not start at the same vertex");
+  LIBFLATSURF_CHECK_ARGUMENT(Vertex::source(from, *this) == Vertex::source(to, *this), "can only turn between half edges starting at the same vertex but " << from << " and " << to << " do not start at the same vertex");
 
   while (from != to) {
     for (auto connection : cross(from))
@@ -127,7 +127,7 @@ Path<FlatTriangulation<T>> FlatTriangulationCollapsed<T>::turn(HalfEdge from, Ha
     from = this->previousAtVertex(from);
   }
 
-  ASSERT(std::unordered_set<SaddleConnection>(begin(connections), end(connections)).size() == connections.size(), "collapsed connections cannot appear twice when turning around a vertex");
+  LIBFLATSURF_ASSERT(std::unordered_set<SaddleConnection>(begin(connections), end(connections)).size() == connections.size(), "collapsed connections cannot appear twice when turning around a vertex");
 
   return connections;
 }
@@ -168,7 +168,7 @@ ImplementationOf<FlatTriangulationCollapsed<T>>::ImplementationOf(const FlatTria
     // The shared pointer we used to build the Tracked is not going to remain
     // valid so we assert that noone else is holding on to it because it won't
     // work for other use cases than Tracked<>.
-    ASSERT(self.self.state.use_count() == 1, "Something is holding to an short lived shared pointer to a surface. This shared pointer is not actually valid and should not be used outside of Tracked<>.");
+    LIBFLATSURF_ASSERT(self.self.state.use_count() == 1, "Something is holding to an short lived shared pointer to a surface. This shared pointer is not actually valid and should not be used outside of Tracked<>.");
     return ret;
   }()),
   vectors([&]() {
@@ -189,7 +189,7 @@ ImplementationOf<FlatTriangulationCollapsed<T>>::ImplementationOf(const FlatTria
     // The shared pointer we used to build the Tracked is not going to remain
     // valid so we assert that noone else is holding on to it because it won't
     // work for other use cases than Tracked<>.
-    ASSERT(self.self.state.use_count() == 1, "Something is holding to an short lived shared pointer to a surface. This shared pointer is not actually valid and should not be used outside of Tracked<>.");
+    LIBFLATSURF_ASSERT(self.self.state.use_count() == 1, "Something is holding to an short lived shared pointer to a surface. This shared pointer is not actually valid and should not be used outside of Tracked<>.");
     return ret;
   }()) {}
 
@@ -276,7 +276,7 @@ void ImplementationOf<FlatTriangulationCollapsed<T>>::updateAfterFlip(HalfEdgeMa
   vectors[flip] = sum(vectors[d], vectors[a]);
   vectors[-flip] = -vectors[flip];
 
-  ASSERT(vectors[-flip] == sum(vectors[b], vectors[c]), "face not closed after flip");
+  LIBFLATSURF_ASSERT(vectors[-flip] == sum(vectors[b], vectors[c]), "face not closed after flip");
 }
 
 template <typename T>
@@ -285,7 +285,7 @@ void ImplementationOf<FlatTriangulationCollapsed<T>>::updateBeforeCollapse(HalfE
 
   HalfEdge collapse = collapse_.positive();
 
-  ASSERT(surface.vertical().ccw(collapse) == CCW::COLLINEAR, "cannot collapse non-vertical edge " << collapse);
+  LIBFLATSURF_ASSERT(surface.vertical().ccw(collapse) == CCW::COLLINEAR, "cannot collapse non-vertical edge " << collapse);
 
   if (surface.vertical().orientation(collapse) == ORIENTATION::OPPOSITE)
     collapse = -collapse;
@@ -301,7 +301,7 @@ void ImplementationOf<FlatTriangulationCollapsed<T>>::updateBeforeCollapse(HalfE
   // The new connection we need to record
   auto connection = vectors[collapse];
 
-  ASSERT(-connection == vectors[-collapse], "the vertical half edge cannot hide collapsed saddle connections so it must be the same in both of its faces but " << collapse << " is " << connection << " and " << -collapse << " is " << vectors[-collapse]);
+  LIBFLATSURF_ASSERT(-connection == vectors[-collapse], "the vertical half edge cannot hide collapsed saddle connections so it must be the same in both of its faces but " << collapse << " is " << connection << " and " << -collapse << " is " << vectors[-collapse]);
 
   collapsedHalfEdges->operator[](b).connections.push_front(connection);
   collapsedHalfEdges->operator[](d).connections.push_front(-connection);
@@ -383,7 +383,7 @@ void ImplementationOf<FlatTriangulationCollapsed<T>>::updateBeforeCollapse(HalfE
       set(c, -b);
     }
   } else {
-    ASSERT(std::unordered_set<HalfEdge>({a, b, c, d, -a, -b, -c, -d}).size() == 8, "Unhandled identification in gadget (" << collapse << " " << b << " " << c << ")(" << -collapse << " " << d << " " << a << ")");
+    LIBFLATSURF_ASSERT(std::unordered_set<HalfEdge>({a, b, c, d, -a, -b, -c, -d}).size() == 8, "Unhandled identification in gadget (" << collapse << " " << b << " " << c << ")(" << -collapse << " " << d << " " << a << ")");
 
     connections(-a).splice(connections(-a).end(), connections(d));
     connections(-b).splice(connections(-b).end(), connections(c));
@@ -406,23 +406,23 @@ template <typename T>
 void ImplementationOf<FlatTriangulationCollapsed<T>>::flip(HalfEdge e) {
   auto self = from_this();
 
-  CHECK_ARGUMENT(self.vertical().large(e), "in a CollapsedSurface, only large edges can be flipped");
-  CHECK_ARGUMENT(self.nextInFace(self.nextInFace(self.nextInFace(e))) == e && self.nextInFace(self.nextInFace(self.nextInFace(-e))) == -e, "in a CollapsedSurface, only edges that are not in a collapsed face can be fliped");
+  LIBFLATSURF_CHECK_ARGUMENT(self.vertical().large(e), "in a CollapsedSurface, only large edges can be flipped");
+  LIBFLATSURF_CHECK_ARGUMENT(self.nextInFace(self.nextInFace(self.nextInFace(e))) == e && self.nextInFace(self.nextInFace(self.nextInFace(-e))) == -e, "in a CollapsedSurface, only edges that are not in a collapsed face can be fliped");
 
   if (self.vertical().ccw(e) == CCW::COUNTERCLOCKWISE)
     e = -e;
 
   ImplementationOf<FlatTriangulationCombinatorial>::flip(e);
 
-  ASSERT(area() == self.area(), "Area inconsistent after flip of edge. Area is " << area() << " but should still be " << self.area());
-  ASSERT(faceClosed(e), "Face attached to " << e << " not closed after flip in " << self);
-  ASSERTIONS(([&]() {
+  LIBFLATSURF_ASSERT(area() == self.area(), "Area inconsistent after flip of edge. Area is " << area() << " but should still be " << self.area());
+  LIBFLATSURF_ASSERT(faceClosed(e), "Face attached to " << e << " not closed after flip in " << self);
+  LIBFLATSURF_ASSERTIONS(([&]() {
     static thread_local AssertConnection<T> assertion;
 
-    ASSERT(assertion(self.fromHalfEdge(e)), "Edges of Triangulation inconsistent after flip. The half edge " << e << " in the collapsed surface " << self << " claims to correspond to the " << self.fromHalfEdge(e) << ", however, there is no such saddle connection in the original surface " << original << ".");
+    LIBFLATSURF_ASSERT(assertion(self.fromHalfEdge(e)), "Edges of Triangulation inconsistent after flip. The half edge " << e << " in the collapsed surface " << self << " claims to correspond to the " << self.fromHalfEdge(e) << ", however, there is no such saddle connection in the original surface " << original << ".");
   }));
 
-  ASSERTIONS(([&]() {
+  LIBFLATSURF_ASSERTIONS(([&]() {
     std::unordered_map<Vertex, int> vertices;
     for (auto& vertex : original->vertices())
       vertices[vertex] = 0;
@@ -436,8 +436,8 @@ void ImplementationOf<FlatTriangulationCollapsed<T>>::flip(HalfEdge e) {
     }
 
     for (auto& count : vertices) {
-      ASSERT(count.second != 0, "Vertex " << count.first << " disappeared from surface after flip; the vertex was still there in the original surface " << original << " but is gone in the collapsed surface " << self);
-      ASSERT(count.second >= 2, "Vertex " << count.first << " almost disappeared from surface after flip; the vertex was still there in the original surface " << original << " but it has only one outgoing edge in the collapsed surface " << self);
+      LIBFLATSURF_ASSERT(count.second != 0, "Vertex " << count.first << " disappeared from surface after flip; the vertex was still there in the original surface " << original << " but is gone in the collapsed surface " << self);
+      LIBFLATSURF_ASSERT(count.second >= 2, "Vertex " << count.first << " almost disappeared from surface after flip; the vertex was still there in the original surface " << original << " but it has only one outgoing edge in the collapsed surface " << self);
     }
   }));
 
@@ -452,18 +452,18 @@ std::pair<HalfEdge, HalfEdge> ImplementationOf<FlatTriangulationCollapsed<T>>::c
 
   auto ret = ImplementationOf<FlatTriangulationCombinatorial>::collapse(e);
 
-  ASSERT(area() == self.area(), "Area inconsistent after collapse of edge. Area is " << area() << " but should still be " << self.area());
-  ASSERT(self.halfEdges() | rx::all_of([&](const auto e) { return faceClosed(e); }), "Some faces are not closed after collapse of edge in " << self);
-  ASSERTIONS(([&]() {
+  LIBFLATSURF_ASSERT(area() == self.area(), "Area inconsistent after collapse of edge. Area is " << area() << " but should still be " << self.area());
+  LIBFLATSURF_ASSERT(self.halfEdges() | rx::all_of([&](const auto e) { return faceClosed(e); }), "Some faces are not closed after collapse of edge in " << self);
+  LIBFLATSURF_ASSERTIONS(([&]() {
     static thread_local AssertConnection<T> assertion;
 
     for (auto halfEdge : {ret.first, ret.second}) {
       const auto connection = self.fromHalfEdge(halfEdge);
-      ASSERT(assertion(connection), "Edges of Triangulation inconsistent after collapse. The half edge " << e << " in the collapsed surface " << self << " claims to correspond to the " << connection << ", however, there is no such saddle connection in the original surface " << original << ".");
+      LIBFLATSURF_ASSERT(assertion(connection), "Edges of Triangulation inconsistent after collapse. The half edge " << e << " in the collapsed surface " << self << " claims to correspond to the " << connection << ", however, there is no such saddle connection in the original surface " << original << ".");
     }
   }));
 
-  ASSERTIONS(([&]() {
+  LIBFLATSURF_ASSERTIONS(([&]() {
     std::unordered_map<Vertex, int> vertices;
     for (auto& vertex : original->vertices())
       vertices[vertex] = 0;
@@ -477,8 +477,8 @@ std::pair<HalfEdge, HalfEdge> ImplementationOf<FlatTriangulationCollapsed<T>>::c
     }
 
     for (auto& count : vertices) {
-      ASSERT(count.second != 0, "Vertex " << count.first << " disappeared from surface after collapse; the vertex was still there in the original surface " << original << " but is gone in the collapsed surface " << self);
-      ASSERT(count.second >= 2, "Vertex " << count.first << " almost disappeared from surface after collapse; the vertex was still there in the original surface " << original << " but it has only one outgoing edge in the collapsed surface " << self);
+      LIBFLATSURF_ASSERT(count.second != 0, "Vertex " << count.first << " disappeared from surface after collapse; the vertex was still there in the original surface " << original << " but is gone in the collapsed surface " << self);
+      LIBFLATSURF_ASSERT(count.second >= 2, "Vertex " << count.first << " almost disappeared from surface after collapse; the vertex was still there in the original surface " << original << " but it has only one outgoing edge in the collapsed surface " << self);
     }
   }));
 

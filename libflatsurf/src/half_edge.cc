@@ -35,7 +35,7 @@ HalfEdge::HalfEdge(PrivateConstructor, size_t idx) :
 
 HalfEdge::HalfEdge(const int id) :
   HalfEdge(PrivateConstructor{}, id > 0 ? (2 * (id - 1)) : (-2 * id - 1)) {
-  ASSERT_ARGUMENT(id != 0, "id must be non-zero");
+  LIBFLATSURF_ASSERT_ARGUMENT(id != 0, "id must be non-zero");
 }
 
 HalfEdge HalfEdge::fromIndex(const size_t index) {
@@ -46,7 +46,7 @@ HalfEdge::HalfEdge() noexcept :
   HalfEdge(PrivateConstructor{}, static_cast<size_t>(-1)) {}
 
 int HalfEdge::id() const {
-  ASSERT(idx != static_cast<size_t>(-1), "id must be non-zero");
+  LIBFLATSURF_ASSERT(idx != static_cast<size_t>(-1), "id must be non-zero");
   return (idx % 2 ? -1 : 1) * static_cast<int>(idx / 2 + 1);
 }
 
@@ -56,7 +56,7 @@ HalfEdge HalfEdge::operator-() const {
 
 HalfEdge &HalfEdge::operator=(const HalfEdge &rhs) noexcept {
   idx = rhs.idx;
-  ASSERT(idx != static_cast<size_t>(-1), "id must be non-zero");
+  LIBFLATSURF_ASSERT(idx != static_cast<size_t>(-1), "id must be non-zero");
   return *this;
 }
 
@@ -65,7 +65,7 @@ bool HalfEdge::operator==(const HalfEdge &rhs) const {
 }
 
 size_t HalfEdge::index() const {
-  ASSERT(idx != static_cast<size_t>(-1), "id must be non-zero");
+  LIBFLATSURF_ASSERT(idx != static_cast<size_t>(-1), "id must be non-zero");
   return idx;
 }
 

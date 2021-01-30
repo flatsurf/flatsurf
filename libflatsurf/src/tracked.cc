@@ -90,7 +90,7 @@ void Tracked<T>::defaultCollapse(T& self, const FlatTriangulationCombinatorial&,
 
 template <typename T>
 void Tracked<T>::defaultSwap(T& self, const FlatTriangulationCombinatorial&, HalfEdge a, HalfEdge b) {
-  ASSERT(a != b, "cannot swap HalfEdge with itself");
+  LIBFLATSURF_ASSERT(a != b, "cannot swap HalfEdge with itself");
   if constexpr (std::is_same_v<T, HalfEdge>) {
     if (self == a)
       self = b;
@@ -141,13 +141,13 @@ void Tracked<T>::defaultErase(T& self, const FlatTriangulationCombinatorial&, co
     for (auto e : erase)
       self.erase(e);
   } else if constexpr (is_edge_map<T>::value) {
-    ASSERT(erase | rx::all_of([&](const auto& e) { return e.index() >= self.size() - erase.size(); }), "Can only erase Edges of maximal index from Tracked<EdgeMap>. But the given edges are not maximal.");
+    LIBFLATSURF_ASSERT(erase | rx::all_of([&](const auto& e) { return e.index() >= self.size() - erase.size(); }), "Can only erase Edges of maximal index from Tracked<EdgeMap>. But the given edges are not maximal.");
     for (auto e : erase) {
       (void)e;
       self.pop();
     }
   } else if constexpr (is_half_edge_map<T>::value || is_odd_half_edge_map<T>::value) {
-    ASSERT(erase | rx::all_of([&](const auto& e) { return e.positive().index() >= self.size() - 2 * erase.size(); }), "Can only erase HalfEdges of maximal index from Tracked<(Odd)HalfEdgeMap>. But the given edges are not maximal.");
+    LIBFLATSURF_ASSERT(erase | rx::all_of([&](const auto& e) { return e.positive().index() >= self.size() - 2 * erase.size(); }), "Can only erase HalfEdges of maximal index from Tracked<(Odd)HalfEdgeMap>. But the given edges are not maximal.");
     for (auto e : erase) {
       (void)e;
       self.pop();
@@ -240,7 +240,7 @@ ImplementationOf<Tracked<T>>::~ImplementationOf() {
 
 template <typename T>
 void ImplementationOf<Tracked<T>>::connect() {
-  ASSERT(!parent.expired(), "cannot connect without a parent FlatTriangulationCombinatorial");
+  LIBFLATSURF_ASSERT(!parent.expired(), "cannot connect without a parent FlatTriangulationCombinatorial");
 
   // This callback uses a reference to "this->parent". This reference will not
   // be dangling since we explicitly disconnect in ~Implementation.

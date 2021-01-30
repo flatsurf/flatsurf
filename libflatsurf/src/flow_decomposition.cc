@@ -69,7 +69,7 @@ namespace flatsurf {
 template <typename Surface>
 FlowDecomposition<Surface>::FlowDecomposition(Surface&& surface, const Vector<T>& vertical) :
   self(spimpl::make_unique_impl<ImplementationOf<FlowDecomposition>>(std::move(surface), vertical)) {
-  ASSERTIONS(([&]() {
+  LIBFLATSURF_ASSERTIONS(([&]() {
     auto paths = components() | rx::transform([](const auto& component) { return Path(component.perimeter() | rx::transform([](const auto& connection) { return connection.saddleConnection(); }) | rx::to_vector()); }) | rx::to_vector();
     ImplementationOf<ContourDecomposition<Surface>>::check(paths, Vertical(this->surface(), vertical));
   }));
@@ -177,12 +177,12 @@ Edge ImplementationOf<FlowDecomposition<Surface>>::firstInnerEdge(const FlowComp
   size_t perimeterHalfEdges = 0;
   for (const auto& other : component.decomposition().components())
     perimeterHalfEdges += other.perimeter().size();
-  ASSERT(perimeterHalfEdges % 2 == 0, "edges on the perimeter must come in pairs");
+  LIBFLATSURF_ASSERT(perimeterHalfEdges % 2 == 0, "edges on the perimeter must come in pairs");
 
   size_t innerHalfEdges = 0;
   for (const auto& other : component.decomposition().components()) {
     if (other == component) break;
-    ASSERT(other.perimeter().size() >= 4, "component has no area");
+    LIBFLATSURF_ASSERT(other.perimeter().size() >= 4, "component has no area");
     innerHalfEdges += 2 * (other.perimeter().size() - 3);
   }
 
@@ -202,7 +202,7 @@ HalfEdge ImplementationOf<FlowDecomposition<Surface>>::halfEdge(const FlowConnec
         return toHalfEdge.at(connection);
     }
   }
-  UNREACHABLE("connection does not show up in this decomposition");
+  LIBFLATSURF_UNREACHABLE("connection does not show up in this decomposition");
 }
 
 template <typename Surface>

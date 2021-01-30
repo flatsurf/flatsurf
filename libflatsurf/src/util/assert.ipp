@@ -31,11 +31,9 @@ namespace {
 // A throw statement that can be used in noexcept marked blocks without
 // triggering compiler warnings.
 template <typename E>
-[[maybe_unused]]
 void throw_for_assert(const E& e) { throw e; }
 
 // Return whether an environment variable should be considered as set.
-[[maybe_unused]]
 bool isSet(const char* env) {
   const auto* ptr = std::getenv(env);
   if (ptr == nullptr) return false;
@@ -50,17 +48,15 @@ bool isSet(const char* env) {
   return true;
 }
 
-// Return whether all CHECK_ and ASSERT_ macros have been disabled at runtime
+// Return whether all CHECK_ and LIBFLATSURF_ASSERT_ macros have been disabled at runtime
 // through the LIBFLATSURF_NOCHECK environment variable.
-[[maybe_unused]]
 bool nocheck() {
   static bool value = isSet("LIBFLATSURF_NOCHECK");
   return value;
 }
 
-// Return whether all ASSERT_ macros have been disabled at runtime through the
+// Return whether all LIBFLATSURF_ASSERT_ macros have been disabled at runtime through the
 // LIBFLATSURF_NOASSERT environment variable.
-[[maybe_unused]]
 bool noassert() {
   if (nocheck()) return true;
 
@@ -71,7 +67,7 @@ bool noassert() {
 }
 } // namespace flatsurf
 
-#define ASSERT_(CONDITION, EXCEPTION, MESSAGE)                                  \
+#define LIBFLATSURF_ASSERT_(CONDITION, EXCEPTION, MESSAGE)                                  \
   while (BOOST_UNLIKELY(static_cast<bool>(not(CONDITION)))) {                   \
     std::stringstream user_message, assertion_message;                          \
     user_message << MESSAGE;                                                    \
@@ -86,30 +82,29 @@ bool noassert() {
 
 // Run a (cheap) check that a (user provided) argument is valid.
 // If the check should be disabled when NDEBUG is defined, e.g., because it
-// occurs in a hotspot, use ASSERT_ARGUMENT instead.
-#define CHECK_ARGUMENT_(CONDITION) ASSERT_(::flatsurf::nocheck() || (CONDITION), std::invalid_argument, "")
-#define CHECK_ARGUMENT(CONDITION, MESSAGE) ASSERT_(::flatsurf::nocheck() || (CONDITION), std::invalid_argument, MESSAGE)
-#define CHECK(CONDITION, MESSAGE) ASSERT_(::flatsurf::nocheck() || (CONDITION), std::logic_error, MESSAGE)
+// occurs in a hotspot, use LIBFLATSURF_ASSERT_ARGUMENT instead.
+#define LIBFLATSURF_CHECK_ARGUMENT_(CONDITION) LIBFLATSURF_ASSERT_(::flatsurf::nocheck() || (CONDITION), std::invalid_argument, "")
+#define LIBFLATSURF_CHECK_ARGUMENT(CONDITION, MESSAGE) LIBFLATSURF_ASSERT_(::flatsurf::nocheck() || (CONDITION), std::invalid_argument, MESSAGE)
+#define LIBFLATSURF_CHECK(CONDITION, MESSAGE) LIBFLATSURF_ASSERT_(::flatsurf::nocheck() || (CONDITION), std::logic_error, MESSAGE)
 
 #ifdef NDEBUG
 
-#define ASSERT_ARGUMENT_(CONDITION) CHECK_ARGUMENT_(true || (CONDITION))
-#define ASSERT_ARGUMENT(CONDITION, MESSAGE) CHECK_ARGUMENT(true || (CONDITION), MESSAGE)
-#define ASSERT(CONDITION, MESSAGE) CHECK_ARGUMENT(true || (CONDITION), MESSAGE)
-#define ASSERTIONS(LAMBDA) while (false) LAMBDA()
+#define LIBFLATSURF_ASSERT_CONDITION(CONDITION) (true || ::flatsurf::noassert() || (CONDITION))
 
 #else
 
-#define ASSERT_ARGUMENT_(CONDITION) CHECK_ARGUMENT_(::flatsurf::noassert() || (CONDITION))
-#define ASSERT_ARGUMENT(CONDITION, MESSAGE) CHECK_ARGUMENT(::flatsurf::noassert() || (CONDITION), MESSAGE)
-#define ASSERT(CONDITION, MESSAGE) ASSERT_(::flatsurf::noassert() || (CONDITION), std::logic_error, MESSAGE)
-#define ASSERTIONS(LAMBDA) if (not ::flatsurf::noassert()) LAMBDA()
+#define LIBFLATSURF_ASSERT_CONDITION(CONDITION) (::flatsurf::noassert() || (CONDITION))
 
 #endif
 
-#define UNREACHABLE(MESSAGE)                  \
+#define LIBFLATSURF_ASSERT_ARGUMENT_(CONDITION) LIBFLATSURF_CHECK_ARGUMENT_(LIBFLATSURF_ASSERT_CONDITION(CONDITION))
+#define LIBFLATSURF_ASSERT_ARGUMENT(CONDITION, MESSAGE) LIBFLATSURF_CHECK_ARGUMENT(LIBFLATSURF_ASSERT_CONDITION(CONDITION), MESSAGE)
+#define LIBFLATSURF_ASSERT(CONDITION, MESSAGE) LIBFLATSURF_ASSERT_(LIBFLATSURF_ASSERT_CONDITION(CONDITION), std::logic_error, MESSAGE)
+#define LIBFLATSURF_ASSERTIONS(LAMBDA) if (not LIBFLATSURF_ASSERT_CONDITION(false)) LAMBDA()
+
+#define LIBFLATSURF_UNREACHABLE(MESSAGE)                  \
   {                                           \
-    ASSERT_(false, std::logic_error, MESSAGE) \
+    LIBFLATSURF_ASSERT_(false, std::logic_error, MESSAGE) \
     __builtin_unreachable();                  \
   }
 

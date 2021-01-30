@@ -45,7 +45,7 @@ using std::vector;
 template <typename Surface>
 ContourDecomposition<Surface>::ContourDecomposition(Surface surface, const Vector<T>& vertical) :
   self(spimpl::make_unique_impl<ImplementationOf<ContourDecomposition>>(std::move(surface), vertical)) {
-  ASSERTIONS([&]() {
+  LIBFLATSURF_ASSERTIONS([&]() {
     ImplementationOf<ContourDecomposition>::check(components() | rx::transform([&](const auto& component) { return component.perimeter(); }) | rx::to_vector(), Vertical(self->state->surface.uncollapsed(), vertical));
   });
 }
@@ -74,7 +74,7 @@ void ImplementationOf<ContourDecomposition<Surface>>::check(const std::vector<Pa
   // All components are closed
   {
     for (auto& component : decomposition)
-      CHECK(component.closed(), "Components in decomposition must be closed but " << component << " is not.");
+      LIBFLATSURF_CHECK(component.closed(), "Components in decomposition must be closed but " << component << " is not.");
   }
 
   // All Connections Show Up Once With Both Signs
@@ -86,7 +86,7 @@ void ImplementationOf<ContourDecomposition<Surface>>::check(const std::vector<Pa
         connections[connection]++;
 
     for (auto& connection : connections)
-      CHECK(connections[-connection.first] == 1, "Each connection must show up exactly once with each sign in the perimiters of the components but " << connection.first << " does show up " << connections[-connection.first] + connection.second << " times.");
+      LIBFLATSURF_CHECK(connections[-connection.first] == 1, "Each connection must show up exactly once with each sign in the perimiters of the components but " << connection.first << " does show up " << connections[-connection.first] + connection.second << " times.");
   }
 
   // The total angle at each vertex has not changed
@@ -108,7 +108,7 @@ void ImplementationOf<ContourDecomposition<Surface>>::check(const std::vector<Pa
             case ORIENTATION::OPPOSITE:
               return LEFT;
             default:
-              UNREACHABLE("connection cannot be collinear and orthogonal at the same time");
+              LIBFLATSURF_UNREACHABLE("connection cannot be collinear and orthogonal at the same time");
           }
         case CCW::CLOCKWISE:
           return BOTTOM;
@@ -185,21 +185,21 @@ void ImplementationOf<ContourDecomposition<Surface>>::check(const std::vector<Pa
     }
 
     for (const auto vertex : surface.vertices()) {
-      CHECK(totalAngle[vertex] != 0, "All marked vertices must still be present in decomposition but " << vertex << " was not found anywhere on the perimeters " << fmt::format("[{}]", fmt::join(decomposition, ", ")));
+      LIBFLATSURF_CHECK(totalAngle[vertex] != 0, "All marked vertices must still be present in decomposition but " << vertex << " was not found anywhere on the perimeters " << fmt::format("[{}]", fmt::join(decomposition, ", ")));
       const auto formatAngle = [](const int angle) {
         if (angle % 2)
           return fmt::format("{}·π/2", angle);
         else
           return fmt::format("{}π", angle / 2);
       };
-      CHECK(totalAngle[vertex] == 4 * surface.angle(vertex), "Total angle at each vertex must not change in decomposition but " << vertex << " has angle " << formatAngle(totalAngle[vertex]) << " in decomposition [" << fmt::format("[{}]", fmt::join(decomposition, ", ")) << "] with vertical " << vertical << " but had angle " << formatAngle(surface.angle(vertex) * 4) << " in surface originally.");
+      LIBFLATSURF_CHECK(totalAngle[vertex] == 4 * surface.angle(vertex), "Total angle at each vertex must not change in decomposition but " << vertex << " has angle " << formatAngle(totalAngle[vertex]) << " in decomposition [" << fmt::format("[{}]", fmt::join(decomposition, ", ")) << "] with vertical " << vertical << " but had angle " << formatAngle(surface.angle(vertex) * 4) << " in surface originally.");
     }
   }
 
   // Total Area has not Changed
   {
     const auto area = decomposition | rx::transform([](const auto& component) { return component.area(); }) | rx::sum();
-    CHECK(area == surface.area(), "Total area of components does not match area of original surface, " << area << " != " << surface.area());
+    LIBFLATSURF_CHECK(area == surface.area(), "Total area of components does not match area of original surface, " << area << " != " << surface.area());
   }
 
   // Components do not overlap
