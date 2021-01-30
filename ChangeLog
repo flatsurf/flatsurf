@@ -4,6 +4,19 @@ intervalxt Change Log
 
 .. current developments
 
+v3.1.0
+====================
+
+**Added:**
+
+* Checks and assertions can now be disabled at runtime by setting `LIBFLATSURF_NOCHECK` and `LIBFLATSURF_NOASSERT`.
+
+**Performance:**
+
+* Speed up assertions during flow decomposition.
+
+
+
 v3.0.2
 ====================
 
