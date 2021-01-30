@@ -51,7 +51,7 @@ bool AssertConnection<T>::operator()(const SaddleConnection<FlatTriangulation<T>
   // We keep going as long as the search sector is reasonably big. When the
   // search sector gets very thin, incrementing the saddle connection
   // iterator can take a very long time.
-  const auto isNextIterationFeasible = [](const auto &sectorBegin, const auto& sectorEnd, const int budget) -> bool {
+  const auto isNextIterationFeasible = [](const auto& sectorBegin, const auto& sectorEnd, const int budget) -> bool {
     const auto permitted = sectorBegin + (sectorEnd - sectorBegin) * budget;
     const auto cost = sectorBegin + sectorBegin.perpendicular();
     return permitted.ccw(cost) != CCW::COUNTERCLOCKWISE;
@@ -80,7 +80,6 @@ bool AssertConnection<T>::operator()(const SaddleConnection<FlatTriangulation<T>
       budget = 0;
       return true;
     }
-
   }
 
   return false;

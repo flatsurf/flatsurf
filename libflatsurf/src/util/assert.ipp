@@ -20,8 +20,8 @@
 #ifndef LIBFLATSURF_UTIL_ASSERT_IPP
 #define LIBFLATSURF_UTIL_ASSERT_IPP
 
-#include <boost/preprocessor/stringize.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/preprocessor/stringize.hpp>
 #include <cstdlib>
 #include <sstream>
 
@@ -64,20 +64,20 @@ bool noassert() {
   return value;
 }
 
-}
-} // namespace flatsurf
+}  // namespace
+}  // namespace flatsurf
 
-#define LIBFLATSURF_ASSERT_(CONDITION, EXCEPTION, MESSAGE)                      \
-  while (BOOST_UNLIKELY(static_cast<bool>(not(CONDITION)))) {                   \
-    (void)noassert;                                                             \
-    std::stringstream user_message, assertion_message;                          \
-    user_message << MESSAGE;                                                    \
-    assertion_message << (#CONDITION " does not hold");                         \
-    if (user_message.str().size())                                              \
-      assertion_message << ": " << user_message.str();                          \
-    else                                                                        \
-      assertion_message << " ";                                                 \
-    assertion_message << " in " __FILE__ ":" BOOST_PP_STRINGIZE(__LINE__);      \
+#define LIBFLATSURF_ASSERT_(CONDITION, EXCEPTION, MESSAGE)                    \
+  while (BOOST_UNLIKELY(static_cast<bool>(not(CONDITION)))) {                 \
+    (void)noassert;                                                           \
+    std::stringstream user_message, assertion_message;                        \
+    user_message << MESSAGE;                                                  \
+    assertion_message << (#CONDITION " does not hold");                       \
+    if (user_message.str().size())                                            \
+      assertion_message << ": " << user_message.str();                        \
+    else                                                                      \
+      assertion_message << " ";                                               \
+    assertion_message << " in " __FILE__ ":" BOOST_PP_STRINGIZE(__LINE__);    \
     ::flatsurf::throw_for_assert(EXCEPTION(assertion_message.str().c_str())); \
   }
 
@@ -101,12 +101,13 @@ bool noassert() {
 #define LIBFLATSURF_ASSERT_ARGUMENT_(CONDITION) LIBFLATSURF_CHECK_ARGUMENT_(LIBFLATSURF_ASSERT_CONDITION(CONDITION))
 #define LIBFLATSURF_ASSERT_ARGUMENT(CONDITION, MESSAGE) LIBFLATSURF_CHECK_ARGUMENT(LIBFLATSURF_ASSERT_CONDITION(CONDITION), MESSAGE)
 #define LIBFLATSURF_ASSERT(CONDITION, MESSAGE) LIBFLATSURF_ASSERT_(LIBFLATSURF_ASSERT_CONDITION(CONDITION), std::logic_error, MESSAGE)
-#define LIBFLATSURF_ASSERTIONS(LAMBDA) if (not LIBFLATSURF_ASSERT_CONDITION(false)) LAMBDA()
+#define LIBFLATSURF_ASSERTIONS(LAMBDA) \
+  if (not LIBFLATSURF_ASSERT_CONDITION(false)) LAMBDA()
 
 #define LIBFLATSURF_UNREACHABLE(MESSAGE)                  \
-  {                                           \
+  {                                                       \
     LIBFLATSURF_ASSERT_(false, std::logic_error, MESSAGE) \
-    __builtin_unreachable();                  \
+    __builtin_unreachable();                              \
   }
 
 #endif
