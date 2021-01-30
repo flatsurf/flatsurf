@@ -22,7 +22,6 @@
 #include <exact-real/yap/arb.hpp>
 
 #include "impl/approximation.hpp"
-#include "util/assert.ipp"
 
 namespace flatsurf {
 

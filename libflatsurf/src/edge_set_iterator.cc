@@ -23,7 +23,6 @@
 #include "../flatsurf/edge_set.hpp"
 #include "impl/edge_set.impl.hpp"
 #include "impl/edge_set_iterator.impl.hpp"
-#include "util/assert.ipp"
 
 namespace flatsurf {
 

@@ -33,7 +33,7 @@ template <typename Surface>
 ContourDecompositionState<Surface>::ContourDecompositionState(Surface surface, const Vector<T>& vert) :
   surface([&]() {
     if constexpr (std::is_same_v<Surface, FlatTriangulationCollapsed<T>>) {
-      CHECK_ARGUMENT(surface->vertical().vertical() == vert, "can only decompose with respect to the existing vertical " << surface->vertical().vertical() << " of this surface");
+      LIBFLATSURF_CHECK_ARGUMENT(surface->vertical().vertical() == vert, "can only decompose with respect to the existing vertical " << surface->vertical().vertical() << " of this surface");
       return surface;
     } else {
       auto collapsed = FlatTriangulationCollapsed<T>(surface, vert);

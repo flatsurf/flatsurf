@@ -31,11 +31,11 @@ template <typename Surface>
 TransformationDeformation<Surface>::TransformationDeformation(Surface&& surface, HalfEdgeMap<HalfEdge>&& halfEdgeMap) :
   ImplementationOf<Deformation<Surface>>(std::move(surface)),
   isomorphism(std::move(halfEdgeMap)) {
-  ASSERT_ARGUMENT(this->surface.halfEdges() | rx::all_of([&](const auto he) {
+  LIBFLATSURF_ASSERT_ARGUMENT(this->surface.halfEdges() | rx::all_of([&](const auto he) {
     return this->isomorphism[he] != HalfEdge() || this->surface.delaunay(he.edge()) == DELAUNAY::AMBIGUOUS;
   }),
       "half edge map is not a total map");
-  ASSERT_ARGUMENT([&]() {
+  LIBFLATSURF_ASSERT_ARGUMENT([&]() {
     HalfEdgeSet im;
     for (auto he : this->surface.halfEdges()) {
       const auto image = this->isomorphism[he];

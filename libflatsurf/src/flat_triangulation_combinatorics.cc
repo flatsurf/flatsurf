@@ -46,13 +46,13 @@ using std::end;
 
 template <typename Surface>
 HalfEdge FlatTriangulationCombinatorics<Surface>::nextInFace(const HalfEdge e) const {
-  ASSERT_ARGUMENT(!boundary(e), "boundary half edge has no successor since it is not on any face");
+  LIBFLATSURF_ASSERT_ARGUMENT(!boundary(e), "boundary half edge has no successor since it is not on any face");
   return self->faces(e);
 }
 
 template <typename Surface>
 HalfEdge FlatTriangulationCombinatorics<Surface>::previousInFace(const HalfEdge e) const {
-  ASSERT_ARGUMENT(!boundary(e), "boundary half edge has no predecessor since it is not on any face");
+  LIBFLATSURF_ASSERT_ARGUMENT(!boundary(e), "boundary half edge has no predecessor since it is not on any face");
   return self->faces.preimage(e);
 }
 
@@ -63,13 +63,13 @@ bool FlatTriangulationCombinatorics<Surface>::boundary(const HalfEdge e) const {
 
 template <typename Surface>
 HalfEdge FlatTriangulationCombinatorics<Surface>::nextAtVertex(const HalfEdge e) const {
-  ASSERT_ARGUMENT(!boundary(e), "boundary half edge has no successor at vertex");
+  LIBFLATSURF_ASSERT_ARGUMENT(!boundary(e), "boundary half edge has no successor at vertex");
   return self->vertices(e);
 }
 
 template <typename Surface>
 HalfEdge FlatTriangulationCombinatorics<Surface>::previousAtVertex(const HalfEdge e) const {
-  ASSERT_ARGUMENT(!boundary(-e), "complement of boundary half edge has no predecessor at vertex");
+  LIBFLATSURF_ASSERT_ARGUMENT(!boundary(-e), "complement of boundary half edge has no predecessor at vertex");
   return self->vertices.preimage(e);
 }
 
@@ -97,7 +97,7 @@ FlatTriangulationCombinatorial FlatTriangulationCombinatorics<Surface>::clone() 
 
 template <typename Surface>
 FlatTriangulationCombinatorial FlatTriangulationCombinatorics<Surface>::insertAt(HalfEdge e) const {
-  CHECK_ARGUMENT(!boundary(e), "cannot insert vertex beyond boundary");
+  LIBFLATSURF_CHECK_ARGUMENT(!boundary(e), "cannot insert vertex beyond boundary");
 
   // Insert three new half edges a, b, c which go around the new vertex such that -a is next to e.
   const int nextEdge = static_cast<int>(self->vertices.size() / 2) + 1;
@@ -139,7 +139,7 @@ std::vector<std::tuple<HalfEdge, HalfEdge, HalfEdge>> FlatTriangulationCombinato
 
 template <typename Surface>
 FlatTriangulationCombinatorial FlatTriangulationCombinatorics<Surface>::slit(HalfEdge e) const {
-  CHECK_ARGUMENT(!boundary(e) && !boundary(-e), "cannot disconnect half edge that is already boundary");
+  LIBFLATSURF_CHECK_ARGUMENT(!boundary(e) && !boundary(-e), "cannot disconnect half edge that is already boundary");
 
   // We insert a new half edge ee into the vertex permutation next to e
   auto ee = HalfEdge(static_cast<int>(halfEdges().size()) / 2 + 1);

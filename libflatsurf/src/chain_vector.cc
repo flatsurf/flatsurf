@@ -226,8 +226,8 @@ ChainVector<Surface, T>::operator const Vector<T> &() const {
     pendingMoves.clear();
     pendingMovesCost = 0;
   } else {
-    ASSERT(pendingMoves.empty(), "value and pendingMoves are out of sync");
-    ASSERT(pendingMovesCost == 0, "value and pendingMovesCost are out of sync");
+    LIBFLATSURF_ASSERT(pendingMoves.empty(), "value and pendingMoves are out of sync");
+    LIBFLATSURF_ASSERT(pendingMovesCost == 0, "value and pendingMovesCost are out of sync");
 
     using Coordinate = typename Surface::Coordinate;
 

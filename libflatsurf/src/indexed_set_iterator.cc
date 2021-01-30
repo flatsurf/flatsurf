@@ -29,7 +29,7 @@ namespace flatsurf {
 
 template <typename T>
 void IndexedSetIterator<T>::increment() {
-  ASSERT(*this != parent->end(), "iterator already at end");
+  LIBFLATSURF_ASSERT(*this != parent->end(), "iterator already at end");
   current = makeT(parent, parent->set.find_next(current.index()));
 }
 
@@ -52,7 +52,7 @@ template <typename T>
 IndexedSetIterator<T>::IndexedSetIterator(const IndexedSet<T>* parent, const T& current) :
   parent(parent),
   current(current) {
-  ASSERT(parent->set.size() == current.index() || parent->contains(current), "Current HalfEdge " << current << " not in set " << *parent);
+  LIBFLATSURF_ASSERT(parent->set.size() == current.index() || parent->contains(current), "Current HalfEdge " << current << " not in set " << *parent);
 }
 
 template <typename T>

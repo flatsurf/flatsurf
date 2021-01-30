@@ -85,8 +85,8 @@ std::vector<ContourConnection<Surface>> ContourComponent<Surface>::perimeterCont
 template <typename Surface>
 Path<FlatTriangulation<typename Surface::Coordinate>> ContourComponent<Surface>::perimeter() const {
   Path<FlatTriangulation<T>> perimeter = rx::chain(bottom(), top()) | rx::to_vector();
-  ASSERT(perimeter.closed(), "Perimeter of a component must be closed but " << perimeter << " is not.");
-  ASSERT(perimeter.simple(), "Perimeter of a component must be simple but " << perimeter << " is not.");
+  LIBFLATSURF_ASSERT(perimeter.closed(), "Perimeter of a component must be closed but " << perimeter << " is not.");
+  LIBFLATSURF_ASSERT(perimeter.simple(), "Perimeter of a component must be simple but " << perimeter << " is not.");
   return perimeter;
 }
 
@@ -155,8 +155,8 @@ template <typename Surface>
 void ImplementationOf<ContourComponent<Surface>>::makeContour(std::back_insert_iterator<vector<HalfEdge>> target,
     const HalfEdge source, const Surface& parent,
     const Vertical<Surface>& vertical) {
-  ASSERT_ARGUMENT(vertical.ccw(source) != CCW::COLLINEAR, "vertical edges must have been collapsed before a contour can be built");
-  ASSERT_ARGUMENT(vertical.ccw(source) == CCW::CLOCKWISE, "contour must procede in positive direction");
+  LIBFLATSURF_ASSERT_ARGUMENT(vertical.ccw(source) != CCW::COLLINEAR, "vertical edges must have been collapsed before a contour can be built");
+  LIBFLATSURF_ASSERT_ARGUMENT(vertical.ccw(source) == CCW::CLOCKWISE, "contour must procede in positive direction");
   switch (vertical.classifyFace(source)) {
     case Vertical<Surface>::TRIANGLE::BACKWARD:
       // In a backward triangle, we recurse into both edges on the top.

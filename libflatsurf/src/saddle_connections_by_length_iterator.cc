@@ -33,7 +33,7 @@ using std::end;
 
 template <typename Surface>
 void SaddleConnectionsByLengthIterator<Surface>::increment() {
-  ASSERT(!self->connectionsWithinBounds.empty(), "cannot increment iterator at end");
+  LIBFLATSURF_ASSERT(!self->connectionsWithinBounds.empty(), "cannot increment iterator at end");
   self->connectionsWithinBounds.pop_front();
   if (self->connectionsWithinBounds.empty())
     self->increment();
@@ -45,7 +45,7 @@ void SaddleConnectionsByLengthIterator<Surface>::increment() {
 
 template <typename Surface>
 const SaddleConnection<Surface>& SaddleConnectionsByLengthIterator<Surface>::dereference() const {
-  ASSERT(!self->connectionsWithinBounds.empty(), "Cannot dereference iterator at end.");
+  LIBFLATSURF_ASSERT(!self->connectionsWithinBounds.empty(), "Cannot dereference iterator at end.");
   return self->currents.front();
 }
 
@@ -68,7 +68,7 @@ ImplementationOf<SaddleConnectionsByLengthIterator<Surface>>::ImplementationOf(c
 
 template <typename Surface>
 void ImplementationOf<SaddleConnectionsByLengthIterator<Surface>>::increment() {
-  ASSERT(connectionsWithinBounds.empty(), "cannot increment if not all connections have been consumed yet");
+  LIBFLATSURF_ASSERT(connectionsWithinBounds.empty(), "cannot increment if not all connections have been consumed yet");
   while (connectionsWithinBounds.empty()) {
     if (upperBoundInclusive == 0) {
       // Start with only the shortest connections.

@@ -119,7 +119,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
           u(he) * y(he_) - u(he_) * y(he) + x(he) * v(he_) - x(he_) * v(he),
           x(he) * y(he_) - x(he_) * y(he));
 
-      ASSERT(det(T()) > 0, "Original surface " << *this << " already had a triangle with non-positive area before applying any shift to it.");
+      LIBFLATSURF_ASSERT(det(T()) > 0, "Original surface " << *this << " already had a triangle with non-positive area before applying any shift to it.");
 
       // If the determinant has a zero for any t in [0, 1], the area of a
       // triangle vanishes or becomes negative.
@@ -144,7 +144,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
         for (long prec = exactreal::ARB_PRECISION_FAST;; prec *= 2) {
           const auto t = det.root(prec);
           const auto arb = Approximation<T>::arb;
-          ASSERT(t, "determinant " << det << " must have a root in [0, 1]");
+          LIBFLATSURF_ASSERT(t, "determinant " << det << " must have a root in [0, 1]");
           const auto et = Vector<exactreal::Arb>(
               (arb(fromHalfEdge(he).x(), prec) + *t * arb(shift.get(he).x(), prec))(prec),
               (arb(fromHalfEdge(he).y(), prec) + *t * arb(shift.get(he).y(), prec))(prec));
@@ -157,7 +157,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
           if (orientation) {
             switch (*orientation) {
               case ORIENTATION::ORTHOGONAL:
-                UNREACHABLE("vectors cannot be orthogonal when their determinant is vanishing");
+                LIBFLATSURF_UNREACHABLE("vectors cannot be orthogonal when their determinant is vanishing");
               case ORIENTATION::SAME:
                 // The half edges he and he_ meet but the vertex at their source
                 // does not end up on the interior of the half edge opposite to
@@ -225,12 +225,12 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
     Tracked<OddHalfEdgeMap<Vector<T>>> vectors(combinatorial, OddHalfEdgeMap<Vector<T>>(combinatorial, [&](const HalfEdge he) { return fromHalfEdge(he) + shift.get(he); }),
         Tracked<OddHalfEdgeMap<Vector<T>>>::defaultFlip,
         [](OddHalfEdgeMap<Vector<T>> &vectors, const FlatTriangulationCombinatorial &, Edge e) {
-          ASSERT(!vectors.get(e.positive()), "can only collapse half edges that have become trivial");
+          LIBFLATSURF_ASSERT(!vectors.get(e.positive()), "can only collapse half edges that have become trivial");
         });
     Tracked<EdgeSet> collapsing_(combinatorial, collapsing,
         Tracked<EdgeSet>::defaultFlip,
         [](EdgeSet &self, const FlatTriangulationCombinatorial &, Edge e) {
-          ASSERT(self.contains(e), "can only collapse edges that have been found to collapse at t=1");
+          LIBFLATSURF_ASSERT(self.contains(e), "can only collapse edges that have been found to collapse at t=1");
         });
 
     while (!collapsing_->empty())
@@ -275,7 +275,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
     return Vector<T>();
   })).surface();
 
-  ASSERT(simplified.vertices().size() < this->vertices().size(), "the numbers of vertices is reduced in each step but " << *this << " was simplified to " << simplified);
+  LIBFLATSURF_ASSERT(simplified.vertices().size() < this->vertices().size(), "the numbers of vertices is reduced in each step but " << *this << " was simplified to " << simplified);
   return ImplementationOf<Deformation<FlatTriangulation>>::make(simplified.eliminateMarkedPoints().surface());
 }
 
@@ -333,7 +333,7 @@ FlatTriangulation<T>::FlatTriangulation(FlatTriangulationCombinatorial &&combina
     else
       return -vectors.at(e.index());
   }) {
-  CHECK_ARGUMENT(vectors.size() == this->edges().size(), "there must be exactly one vector for each edge");
+  LIBFLATSURF_CHECK_ARGUMENT(vectors.size() == this->edges().size(), "there must be exactly one vector for each edge");
 }
 
 template <typename T>
@@ -361,13 +361,13 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::slit(HalfEdge slit) cons
 
 template <typename T>
 Deformation<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &nextTo, const Vector<T> &slit) const {
-  CHECK_ARGUMENT(inSector(nextTo, slit), "vector must be contained in the sector next to the half edge");
+  LIBFLATSURF_CHECK_ARGUMENT(inSector(nextTo, slit), "vector must be contained in the sector next to the half edge");
 
   FlatTriangulation<T> surface = clone();
 
   auto check_orientation = [&](const Vector<T> &saddle_connection) {
     auto orient = (saddle_connection - slit).orientation(slit);
-    CHECK_ARGUMENT(orient != ORIENTATION::OPPOSITE, "cannot insert half edge that crosses over an existing vertex");
+    LIBFLATSURF_CHECK_ARGUMENT(orient != ORIENTATION::OPPOSITE, "cannot insert half edge that crosses over an existing vertex");
     if (orient == ORIENTATION::ORTHOGONAL) {
       // It is a bit unclear what to do if the new edge should end at a
       // vertex, in particular if it is collinear with an existing half
@@ -601,7 +601,7 @@ int FlatTriangulation<T>::angle(const Vertex &vertex) const {
     current = next;
   } while (current != first);
 
-  ASSERT(angle >= 1, "Total angle at vertex cannot be less than 2π");
+  LIBFLATSURF_ASSERT(angle >= 1, "Total angle at vertex cannot be less than 2π");
 
   return angle;
 }
@@ -628,8 +628,8 @@ std::optional<Deformation<FlatTriangulation<T>>> FlatTriangulation<T>::isomorphi
   };
 
   if (kind == ISOMORPHISM::DELAUNAY_CELLS) {
-    ASSERT(this->edges() | rx::all_of([&](const auto e) { return this->delaunay(e) != DELAUNAY::NON_DELAUNAY; }), "source surface not Delaunay triangulated");
-    ASSERT(other.edges() | rx::all_of([&](const auto e) { return other.delaunay(e) != DELAUNAY::NON_DELAUNAY; }), "target surface not Delaunay triangulated");
+    LIBFLATSURF_ASSERT(this->edges() | rx::all_of([&](const auto e) { return this->delaunay(e) != DELAUNAY::NON_DELAUNAY; }), "source surface not Delaunay triangulated");
+    LIBFLATSURF_ASSERT(other.edges() | rx::all_of([&](const auto e) { return other.delaunay(e) != DELAUNAY::NON_DELAUNAY; }), "target surface not Delaunay triangulated");
   }
 
   // We pick a fixed half edge of this surfaces and try to map it to every
@@ -774,7 +774,7 @@ ImplementationOf<FlatTriangulation<T>>::ImplementationOf(FlatTriangulationCombin
     // The shared pointer we used to build the Tracked is not going to remain
     // valid so we assert that noone else is holding on to it because it won't
     // work for other use cases than Tracked<>.
-    ASSERT(self.self.state.use_count() == 1, "Something is holding to an short lived shared pointer to a surface. This shared pointer is not actually valid and should not be used outside of Tracked<>.");
+    LIBFLATSURF_ASSERT(self.self.state.use_count() == 1, "Something is holding to an short lived shared pointer to a surface. This shared pointer is not actually valid and should not be used outside of Tracked<>.");
     return ret;
   }()),
   approximations([&]() {
@@ -797,7 +797,7 @@ ImplementationOf<FlatTriangulation<T>>::ImplementationOf(FlatTriangulationCombin
     // The shared pointer we used to build the Tracked is not going to remain
     // valid so we assert that noone else is holding on to it because it won't
     // work for other use cases than Tracked<>.
-    ASSERT(self.self.state.use_count() == 1, "Something is holding to an short lived shared pointer to a surface. This shared pointer is not actually valid and should not be used outside of Tracked<>.");
+    LIBFLATSURF_ASSERT(self.self.state.use_count() == 1, "Something is holding to an short lived shared pointer to a surface. This shared pointer is not actually valid and should not be used outside of Tracked<>.");
     return ret;
   }()) {}
 
@@ -816,7 +816,7 @@ template <typename T>
 void ImplementationOf<FlatTriangulation<T>>::flip(HalfEdge e) {
   const auto self = from_this();
 
-  CHECK_ARGUMENT(self.convex(e, true), "cannot flip this edge as a resulting face would not be strictly convex");
+  LIBFLATSURF_CHECK_ARGUMENT(self.convex(e, true), "cannot flip this edge as a resulting face would not be strictly convex");
 
   ImplementationOf<FlatTriangulationCombinatorial>::flip(e);
 
@@ -831,19 +831,19 @@ void ImplementationOf<FlatTriangulation<T>>::check() {
   for (auto edge : self.halfEdges()) {
     if (self.boundary(edge)) continue;
     auto zero = self.fromHalfEdge(edge);
-    CHECK_ARGUMENT(zero, "edges must not be trivial but " << edge << " is zero in " << self);
+    LIBFLATSURF_CHECK_ARGUMENT(zero, "edges must not be trivial but " << edge << " is zero in " << self);
     edge = self.nextInFace(edge);
     zero += self.fromHalfEdge(edge);
     edge = self.nextInFace(edge);
     zero += self.fromHalfEdge(edge);
-    CHECK_ARGUMENT(!zero, "face at " << edge << " is not closed in " << self);
+    LIBFLATSURF_CHECK_ARGUMENT(!zero, "face at " << edge << " is not closed in " << self);
   }
   // check that faces are oriented correctly
   for (auto edge : self.halfEdges()) {
     if (self.boundary(edge)) continue;
     auto next = self.nextInFace(edge);
-    CHECK_ARGUMENT(self.fromHalfEdge(edge).ccw(self.fromHalfEdge(next)) != CCW::COLLINEAR, "face at " << edge << " has vanishing area in " << self);
-    CHECK_ARGUMENT(self.fromHalfEdge(edge).ccw(self.fromHalfEdge(next)) == CCW::COUNTERCLOCKWISE, "face at " << edge << " is not oriented correctly in " << self);
+    LIBFLATSURF_CHECK_ARGUMENT(self.fromHalfEdge(edge).ccw(self.fromHalfEdge(next)) != CCW::COLLINEAR, "face at " << edge << " has vanishing area in " << self);
+    LIBFLATSURF_CHECK_ARGUMENT(self.fromHalfEdge(edge).ccw(self.fromHalfEdge(next)) == CCW::COUNTERCLOCKWISE, "face at " << edge << " is not oriented correctly in " << self);
   }
 }
 

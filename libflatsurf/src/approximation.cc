@@ -52,7 +52,7 @@ exactreal::Arb Approximation<T>::arb(const T& x, slong prec) {
     static_assert(false_type_v<T>, "not implemented: arb() for this type");
   }
 
-  ASSERT(arb_is_finite(ret.arb_t()), "Approximation of a finite number cannot be non-finite.");
+  LIBFLATSURF_ASSERT(arb_is_finite(ret.arb_t()), "Approximation of a finite number cannot be non-finite.");
 
   return ret;
 }

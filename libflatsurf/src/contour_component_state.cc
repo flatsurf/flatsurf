@@ -48,7 +48,7 @@ ContourComponentState<Surface>::ContourComponentState(const ContourDecomposition
     if (vertical.ccw(large) == CCW::COUNTERCLOCKWISE)
       large = -large;
 
-    ASSERT(vertical.ccw(large) == CCW::CLOCKWISE, "A large edge and it's negative cannot both be right-to-left");
+    LIBFLATSURF_ASSERT(vertical.ccw(large) == CCW::CLOCKWISE, "A large edge and it's negative cannot both be right-to-left");
 
     return large;
   }()),

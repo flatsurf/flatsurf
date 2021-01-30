@@ -29,7 +29,6 @@
 #include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/half_edge_set_iterator.hpp"
 #include "impl/indexed_set_iterator.hpp"
-#include "util/assert.ipp"
 
 namespace flatsurf {
 

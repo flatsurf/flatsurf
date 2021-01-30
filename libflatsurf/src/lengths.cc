@@ -70,23 +70,23 @@ Lengths<Surface>::Lengths(const Vertical<FlatTriangulation<T>>& vertical, EdgeMa
   stack(),
   sum() {
   this->lengths.apply([&](const auto& edge, const auto& connection) {
-    CHECK_ARGUMENT(!connection || vertical.ccw(*connection) == CCW::CLOCKWISE, "nontrivial length must be positive but " << edge << " is " << *connection);
+    LIBFLATSURF_CHECK_ARGUMENT(!connection || vertical.ccw(*connection) == CCW::CLOCKWISE, "nontrivial length must be positive but " << edge << " is " << *connection);
   });
 }
 
 template <typename Surface>
 void Lengths<Surface>::push(Label label) {
-  ASSERT(stack | none_of([&](const auto& l) { return l == label; }), "must not push the same label twice");
+  LIBFLATSURF_ASSERT(stack | none_of([&](const auto& l) { return l == label; }), "must not push the same label twice");
   stack.push_back(label);
   sum += length(label);
 }
 
 template <typename Surface>
 void Lengths<Surface>::pop() {
-  ASSERT(not stack.empty(), "cannot pop from an empty stack");
+  LIBFLATSURF_ASSERT(not stack.empty(), "cannot pop from an empty stack");
   sum -= length(stack.back());
   stack.pop_back();
-  ASSERT(!stack.empty() || sum == T(), "sum inconsistent with stack");
+  LIBFLATSURF_ASSERT(!stack.empty() || sum == T(), "sum inconsistent with stack");
 }
 
 template <typename Surface>
@@ -94,7 +94,7 @@ FlowComponentState<FlatTriangulation<typename Surface::Coordinate>>& Lengths<Sur
   const auto component = std::find_if(begin(state.lock()->components), end(state.lock()->components), [&](const auto& component) {
     return static_cast<::intervalxt::Label>(*begin(component.dynamicalComponent.topContour())) == label || static_cast<::intervalxt::Label>(*begin(component.dynamicalComponent.bottomContour())) == label;
   });
-  ASSERT(component != end(state.lock()->components), "Label nowhere in flow decomposition contour.")
+  LIBFLATSURF_ASSERT(component != end(state.lock()->components), "Label nowhere in flow decomposition contour.")
   return *component;
 }
 
@@ -102,7 +102,7 @@ template <typename Surface>
 bool Lengths<Surface>::minuendOnTop(Label minuend) const {
   const auto& component = this->component(minuend);
   bool minuendOnTop = static_cast<::intervalxt::Label>(*begin(component.dynamicalComponent.topContour())) == minuend;
-  ASSERT(minuendOnTop || static_cast<::intervalxt::Label>(*begin(component.dynamicalComponent.bottomContour())) == minuend, "minuend not found on any contour");
+  LIBFLATSURF_ASSERT(minuendOnTop || static_cast<::intervalxt::Label>(*begin(component.dynamicalComponent.bottomContour())) == minuend, "minuend not found on any contour");
   return minuendOnTop;
 }
 
@@ -118,7 +118,7 @@ Label Lengths<Surface>::subtractRepeated(Label minuend) {
   const auto subtrahendContour = minuendOnTop ? component.dynamicalComponent.bottomContour() : component.dynamicalComponent.topContour();
   const auto bottomMinuend = std::find_if(begin(subtrahendContour), end(subtrahendContour), [&](const auto& he) { return static_cast<Label>(he) == minuend; });
 
-  ASSERT(bottomMinuend != end(subtrahendContour), "each label must be in the top and bottom contour but minuend only found in the top contour");
+  LIBFLATSURF_ASSERT(bottomMinuend != end(subtrahendContour), "each label must be in the top and bottom contour but minuend only found in the top contour");
 
   const bool stableCombinatorics = bottomMinuend->left().size() == 0;
 
@@ -128,7 +128,7 @@ Label Lengths<Surface>::subtractRepeated(Label minuend) {
     mpz_class iterations = gmpxxll::mpz_class(quotient);
     if (quotient * length() == length(minuend))
       iterations -= 1;
-    ASSERT(iterations > mpz_class(), "subtractRepeated() should not be called when there is no full subtract possible; but the labels on the stack fit only " << iterations << " times into the minuend label " << render(minuend) << "; the code cannot handle partial subtracts yet.");
+    LIBFLATSURF_ASSERT(iterations > mpz_class(), "subtractRepeated() should not be called when there is no full subtract possible; but the labels on the stack fit only " << iterations << " times into the minuend label " << render(minuend) << "; the code cannot handle partial subtracts yet.");
     subtractRepeated(minuend, iterations);
   } else {
     subtractRepeated(minuend, 1);
@@ -139,8 +139,8 @@ Label Lengths<Surface>::subtractRepeated(Label minuend) {
 
 template <typename Surface>
 void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iterations) {
-  ASSERT(iterations > 0, "must subtract at least once");
-  ASSERT(length(minuend) > 0, "lengths must be positive");
+  LIBFLATSURF_ASSERT(iterations > 0, "must subtract at least once");
+  LIBFLATSURF_ASSERT(length(minuend) > 0, "lengths must be positive");
 
   const auto expected = [&]() -> T {
     if constexpr (std::is_same_v<T, long long>)
@@ -148,8 +148,8 @@ void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iteratio
     else
       return length(minuend) - iterations * length();
   }();
-  ASSERT(expected > 0, "Lengths must be positive but subtracting " << length() << " " << iterations << " times from edge " << fromLabel(minuend) << " of length " << length(minuend) << " would yield " << expected << " which is non-positive.");
-  ASSERT(expected < length(minuend), "subtraction must shorten lengths");
+  LIBFLATSURF_ASSERT(expected > 0, "Lengths must be positive but subtracting " << length() << " " << iterations << " times from edge " << fromLabel(minuend) << " of length " << length(minuend) << " would yield " << expected << " which is non-positive.");
+  LIBFLATSURF_ASSERT(expected < length(minuend), "subtraction must shorten lengths");
 
   auto& component = this->component(minuend);
 
@@ -189,7 +189,7 @@ void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iteratio
     // Walk across every subtrahend
     {
       for (const auto& subtrahend : subtrahendContour) {
-        ASSERT(subtrahend != *rbegin(subtrahendContour), "Stack cannot contain every label in the IntervalExchangeTransformation when subtracting.");
+        LIBFLATSURF_ASSERT(subtrahend != *rbegin(subtrahendContour), "Stack cannot contain every label in the IntervalExchangeTransformation when subtracting.");
 
         for (const auto& connection : flow(subtrahend.cross(), !minuendOnTop)) {
           walk += connection;
@@ -215,7 +215,7 @@ void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iteratio
     // the updated SaddleConnection.
     // This should probably be moved into SaddleConnection at some point.
 
-    ASSERT(vertical->ccw(vector) == CCW::COUNTERCLOCKWISE, "Length must be positive.");
+    LIBFLATSURF_ASSERT(vertical->ccw(vector) == CCW::COUNTERCLOCKWISE, "Length must be positive.");
 
     // We know that minuendConnection (which we reversed in the beginning) is
     // pointing left and that the new -minuendConnection must point left into
@@ -233,17 +233,17 @@ void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iteratio
 
     minuendConnection = SaddleConnection<FlatTriangulation<T>>(minuendConnection->surface(), target, source, -vector);
 
-    ASSERT(minuendConnection->source() == target && minuendConnection->target() == source, "We tried to get SaddleConnection source/target right but SaddleConnection constructor disagrees.");
+    LIBFLATSURF_ASSERT(minuendConnection->source() == target && minuendConnection->target() == source, "We tried to get SaddleConnection source/target right but SaddleConnection constructor disagrees.");
 
-    ASSERTIONS(([&]() {
+    LIBFLATSURF_ASSERTIONS(([&]() {
       static thread_local AssertConnection<T> assertion;
 
-      ASSERT(assertion(*minuendConnection), "Connection after subtract does not actually exist in surface. There is no saddle connection " << *minuendConnection << " in " << minuendConnection->surface());
+      LIBFLATSURF_ASSERT(assertion(*minuendConnection), "Connection after subtract does not actually exist in surface. There is no saddle connection " << *minuendConnection << " in " << minuendConnection->surface());
     }));
   }
 
-  ASSERT(get(minuend), "lengths must be non-zero");
-  ASSERT(length(minuend) == expected, "subtract inconsistent: subtracted " << length() << " from " << fromLabel(minuend) << " which should have yielded " << expected << " but got " << length(minuend) << " instead");
+  LIBFLATSURF_ASSERT(get(minuend), "lengths must be non-zero");
+  LIBFLATSURF_ASSERT(length(minuend) == expected, "subtract inconsistent: subtracted " << length() << " from " << fromLabel(minuend) << " which should have yielded " << expected << " but got " << length(minuend) << " instead");
 
   stack.clear();
   sum = T();
@@ -296,7 +296,7 @@ std::string Lengths<Surface>::render(Label label) const {
 
 template <typename Surface>
 intervalxt::Label Lengths<Surface>::toLabel(const Edge e) const {
-  ASSERT(lengths[e], "Cannot interact with edge that is vertical or not part of the original contour but " << e << " is of this type in " << *this);
+  LIBFLATSURF_ASSERT(lengths[e], "Cannot interact with edge that is vertical or not part of the original contour but " << e << " is of this type in " << *this);
   return Label(e.index());
 }
 
@@ -304,21 +304,21 @@ template <typename Surface>
 Edge Lengths<Surface>::fromLabel(Label l) const {
   const int index = static_cast<int>(std::hash<Label>()(l));
   Edge e(index + 1);
-  ASSERT(toLabel(e) == l, "fromLabel is not the inverse of toLabel");
-  ASSERT(lengths[e], "Cannot interact with vertical edge " << e << " in " << *this);
+  LIBFLATSURF_ASSERT(toLabel(e) == l, "fromLabel is not the inverse of toLabel");
+  LIBFLATSURF_ASSERT(lengths[e], "Cannot interact with vertical edge " << e << " in " << *this);
   return e;
 }
 
 template <typename Surface>
 typename Surface::Coordinate Lengths<Surface>::length() const {
-  ASSERT(sum >= 0, "Length must not be negative");
+  LIBFLATSURF_ASSERT(sum >= 0, "Length must not be negative");
   return sum;
 }
 
 template <typename Surface>
 typename Surface::Coordinate Lengths<Surface>::length(intervalxt::Label label) const {
   auto length = vertical->projectPerpendicular(*lengths[fromLabel(label)]);
-  ASSERT(length > 0, "length must be positive");
+  LIBFLATSURF_ASSERT(length > 0, "length must be positive");
   return length;
 }
 

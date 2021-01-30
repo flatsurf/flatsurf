@@ -57,7 +57,7 @@ IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(const Su
 template <typename Surface>
 IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(const Surface& surface, const Vector<T>& vertical, HalfEdge large) :
   self([&]() {
-    CHECK_ARGUMENT(Vertical<Surface>(surface, vertical).large(large), "can only construct IntervalExchangeTransformation from a large half edge");
+    LIBFLATSURF_CHECK_ARGUMENT(Vertical<Surface>(surface, vertical).large(large), "can only construct IntervalExchangeTransformation from a large half edge");
 
     vector<HalfEdge> top, bottom;
 
@@ -75,8 +75,8 @@ IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(const Su
 template <typename Surface>
 void IntervalExchangeTransformation<Surface>::makeUniqueLargeEdges(Surface& surface, const Vector<T>& vertical_) {
   Tracked<EdgeSet> sources(
-      surface, EdgeSet(), [](auto& sources, const auto&, HalfEdge e) { ASSERT(!sources.contains(e), "Selected source edges cannot be flipped."); }, [](auto& sources, const auto&, Edge e) { ASSERT(!sources.contains(e), "Selected source edges cannot be collapsed."); }, [](auto& sources, const auto& surface, HalfEdge a, HalfEdge b) { Tracked<EdgeSet>::defaultSwap(sources, surface, a, b); }, [](auto& sources, const auto& surface, const auto& edges) {
-    ASSERT(edges | rx::all_of([&](Edge e) { return !sources.contains(e); }), "Selected source edges cannot be erased.");
+      surface, EdgeSet(), [](auto& sources, const auto&, HalfEdge e) { LIBFLATSURF_ASSERT(!sources.contains(e), "Selected source edges cannot be flipped."); }, [](auto& sources, const auto&, Edge e) { LIBFLATSURF_ASSERT(!sources.contains(e), "Selected source edges cannot be collapsed."); }, [](auto& sources, const auto& surface, HalfEdge a, HalfEdge b) { Tracked<EdgeSet>::defaultSwap(sources, surface, a, b); }, [](auto& sources, const auto& surface, const auto& edges) {
+    LIBFLATSURF_ASSERT(edges | rx::all_of([&](Edge e) { return !sources.contains(e); }), "Selected source edges cannot be erased.");
     Tracked<EdgeSet>::defaultErase(sources, surface, edges); });
 
   const bool splitContours = true;
@@ -177,7 +177,7 @@ ImplementationOf<IntervalExchangeTransformation<Surface>>::ImplementationOf(cons
 
   lengths = boost::type_erasure::any_cast<Lengths<Surface>*>(erasedLengths.get());
 
-  ASSERT(lengths != nullptr, "Setting lengths from erasedLengths should produce the original length type again");
+  LIBFLATSURF_ASSERT(lengths != nullptr, "Setting lengths from erasedLengths should produce the original length type again");
 
   const auto connected = [&](const vector<HalfEdge>& contour) {
     for (auto it = contour.begin(); it != contour.end() - 1; it++)
@@ -185,10 +185,10 @@ ImplementationOf<IntervalExchangeTransformation<Surface>>::ImplementationOf(cons
     return true;
   };
 
-  CHECK_ARGUMENT(std::unordered_multiset<HalfEdge>(top.begin(), top.end()) == std::unordered_multiset<HalfEdge>(bottom.begin(), bottom.end()), "top and bottom contour must contain the same half edges");
-  CHECK_ARGUMENT(connected(top), fmt::format("top contour must be connected but {} is not connected in {}.", fmt::join(top, ", "), surface));
-  CHECK_ARGUMENT(connected(bottom), "bottom contour must be connected");
-  ASSERT(std::all_of(begin(top), end(top), [&](Edge e) { return lengths->get(intervalxt::Label(e.index())) > 0; }), "lengths in contour must be positive");
+  LIBFLATSURF_CHECK_ARGUMENT(std::unordered_multiset<HalfEdge>(top.begin(), top.end()) == std::unordered_multiset<HalfEdge>(bottom.begin(), bottom.end()), "top and bottom contour must contain the same half edges");
+  LIBFLATSURF_CHECK_ARGUMENT(connected(top), fmt::format("top contour must be connected but {} is not connected in {}.", fmt::join(top, ", "), surface));
+  LIBFLATSURF_CHECK_ARGUMENT(connected(bottom), "bottom contour must be connected");
+  LIBFLATSURF_ASSERT(std::all_of(begin(top), end(top), [&](Edge e) { return lengths->get(intervalxt::Label(e.index())) > 0; }), "lengths in contour must be positive");
 }
 
 template <typename Surface>
@@ -205,7 +205,7 @@ std::unordered_set<HalfEdge> ImplementationOf<IntervalExchangeTransformation<Sur
 
   Vertical<Surface> vertical(surface, vertical_);
 
-  ASSERT_ARGUMENT(vertical.large(unique), "edge must already be large");
+  LIBFLATSURF_ASSERT_ARGUMENT(vertical.large(unique), "edge must already be large");
   if (vertical.ccw(unique) == CCW::COUNTERCLOCKWISE)
     unique = -static_cast<HalfEdge>(unique);
 

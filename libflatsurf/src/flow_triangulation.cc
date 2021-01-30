@@ -58,7 +58,7 @@ HalfEdgeMap<HalfEdge> FlowTriangulation<Surface>::embedding() const {
   const auto localFirstInnerEdge = *std::min_element(begin(innerEdges), end(innerEdges), [](const auto a, const auto b) { return a.index() < b.index(); });
   Edge globalFirstInnerEdge = ImplementationOf<FlowDecomposition<Surface>>::firstInnerEdge(component());
   int shift = static_cast<int>(globalFirstInnerEdge.index()) - static_cast<int>(localFirstInnerEdge.index());
-  ASSERT(shift >= 0, "global triangulation cannot have fewer inner edges than local triangulation");
+  LIBFLATSURF_ASSERT(shift >= 0, "global triangulation cannot have fewer inner edges than local triangulation");
 
   auto embedding = HalfEdgeMap<HalfEdge>(triangulation, [&](const HalfEdge source) {
     if (triangulation.boundary(source)) {
@@ -86,7 +86,7 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
   const auto face = [&](HalfEdge f, HalfEdge g) {
     HalfEdge e(static_cast<int>(vectors.size() / 2 + 1));
 
-    ASSERT([&]() {
+    LIBFLATSURF_ASSERT([&]() {
       std::unordered_set<Edge> edges;
       edges.insert(e);
       edges.insert(f);
@@ -95,9 +95,9 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
     }(),
         "(" << e << " " << f << " " << g << ") can not form a face");
 
-    ASSERT(vectors.find(f) != vectors.end() && vectors.find(g) != vectors.end(), "at least two of (" << e << " " << f << " " << g << ") must be known when inserting a new face");
+    LIBFLATSURF_ASSERT(vectors.find(f) != vectors.end() && vectors.find(g) != vectors.end(), "at least two of (" << e << " " << f << " " << g << ") must be known when inserting a new face");
 
-    ASSERT(vectors[f].ccw(vectors[g]) == CCW::COUNTERCLOCKWISE, "half edges " << f << " and " << g << " do not form a convex corner");
+    LIBFLATSURF_ASSERT(vectors[f].ccw(vectors[g]) == CCW::COUNTERCLOCKWISE, "half edges " << f << " and " << g << " do not form a convex corner");
 
     faces.emplace_back(e, f, g);
     vectors[-e] = vectors[f] + vectors[g];
@@ -108,11 +108,11 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
 
   // We map the contour to half edges 1, 2, …
   for (const auto& connection : component.perimeter()) {
-    ASSERT(toHalfEdge.find(connection) == toHalfEdge.end(), "connection cannot show up more than once in a perimeter");
+    LIBFLATSURF_ASSERT(toHalfEdge.find(connection) == toHalfEdge.end(), "connection cannot show up more than once in a perimeter");
     const HalfEdge halfEdge = toHalfEdge.find(-connection) == toHalfEdge.end() ? HalfEdge(static_cast<int>(vectors.size() / 2 + 1)) : -toHalfEdge[-connection];
     toHalfEdge[connection] = halfEdge;
     toConnection.insert({halfEdge, connection});
-    ASSERT(vectors.find(halfEdge) == vectors.end() || vectors[halfEdge] == connection.saddleConnection(), "top & bottom contour vectors are inconsistent");
+    LIBFLATSURF_ASSERT(vectors.find(halfEdge) == vectors.end() || vectors[halfEdge] == connection.saddleConnection(), "top & bottom contour vectors are inconsistent");
     vectors[halfEdge] = connection.saddleConnection();
     vectors[-halfEdge] = -vectors[halfEdge];
   }
@@ -132,7 +132,7 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
       x(x),
       bottom(bottom),
       halfEdge(halfEdge) {
-      CHECK_ARGUMENT(x >= 0, "all vertices must be to the right of the bottom-left vertex");
+      LIBFLATSURF_CHECK_ARGUMENT(x >= 0, "all vertices must be to the right of the bottom-left vertex");
     }
 
     // A measure for the horizontal position of this vertex; the sort order in the monotone chain.
@@ -186,7 +186,7 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
     S.push_back(*u++);
 
     for (; u != end(chain) - 1; u++) {
-      ASSERT(S.size() >= 2, "The pending triangulation funnel cannot consists of a single vertex.");
+      LIBFLATSURF_ASSERT(S.size() >= 2, "The pending triangulation funnel cannot consists of a single vertex.");
       if (S.back().bottom != u->bottom) {
         while (S.size() > 1) {
           S.pop_front();
@@ -196,7 +196,7 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
             // The final face in the triangulation: All the half edges are
             // already there, we just need to add the combinatorial data for
             // this face.
-            ASSERT(u->bottom && !rbegin(chain)->bottom, "Since we consider the rightmost verticals to be part of the bottom contour, the second to last edge must be a bottom edge and the last edge a top edge.");
+            LIBFLATSURF_ASSERT(u->bottom && !rbegin(chain)->bottom, "Since we consider the rightmost verticals to be part of the bottom contour, the second to last edge must be a bottom edge and the last edge a top edge.");
             faces.emplace_back(v.halfEdge, u->halfEdge, rbegin(chain)->halfEdge);
             continue;
           }
@@ -209,20 +209,20 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
       } else {
         do {
           Vertex v = S.back();
-          ASSERT(u->bottom == v.bottom, "All vertices on the stack must be on the same chain.");
+          LIBFLATSURF_ASSERT(u->bottom == v.bottom, "All vertices on the stack must be on the same chain.");
 
           if (u == end(chain) - 2 && S.size() <= 2) {
             // The final face in the triangulation: All the half edges are
             // already there, we just need to add the combinatorial data for
             // this face.
-            ASSERT(u->bottom && !rbegin(chain)->bottom, "Since we consider the rightmost verticals to be part of the bottom contour, the second to last edge must be a bottom edge and the last edge a top edge.");
+            LIBFLATSURF_ASSERT(u->bottom && !rbegin(chain)->bottom, "Since we consider the rightmost verticals to be part of the bottom contour, the second to last edge must be a bottom edge and the last edge a top edge.");
             S.pop_back();
             faces.emplace_back(v.halfEdge, u->halfEdge, rbegin(chain)->halfEdge);
             break;
           }
 
           if (vectors[v.halfEdge].ccw(vectors[u->halfEdge]) != (u->bottom ? CCW::COUNTERCLOCKWISE : CCW::CLOCKWISE)) {
-            ASSERT(u != end(chain) - 2, "no concave angles can remain from the final vertex");
+            LIBFLATSURF_ASSERT(u != end(chain) - 2, "no concave angles can remain from the final vertex");
             break;
           }
 
@@ -240,7 +240,7 @@ ImplementationOf<FlowTriangulation<Surface>>::ImplementationOf(const FlowCompone
     return vectors[he];
   });
 
-  ASSERT([&]() {
+  LIBFLATSURF_ASSERT([&]() {
       std::unordered_set<HalfEdge> boundary;
 
       for (auto halfEdge : triangulation->halfEdges())

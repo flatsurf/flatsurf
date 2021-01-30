@@ -163,8 +163,8 @@ Vector& detail::VectorBase<Vector>::operator*=(const mpz_class& rhs) {
     self.self->y *= exactreal::Arb(rhs)(ARB_PRECISION_FAST);
   } else if constexpr (IsLongLong<T>) {
     using gmpxxll::mpz_class;
-    ASSERT(rhs * mpz_class(self.self->x) <= mpz_class(LONG_LONG_MAX), "Multiplication overflow");
-    ASSERT(rhs * mpz_class(self.self->y) <= mpz_class(LONG_LONG_MAX), "Multiplication overflow");
+    LIBFLATSURF_ASSERT(rhs * mpz_class(self.self->x) <= mpz_class(LONG_LONG_MAX), "Multiplication overflow");
+    LIBFLATSURF_ASSERT(rhs * mpz_class(self.self->y) <= mpz_class(LONG_LONG_MAX), "Multiplication overflow");
     self.self->x *= mpz_class(rhs).get_sll();
     self.self->y *= mpz_class(rhs).get_sll();
   } else {
@@ -501,9 +501,9 @@ template <typename Vector, typename T>
 bool detail::VectorExact<Vector, T>::inSector(const Vector& begin, const Vector& end) const {
   const Vector& self = static_cast<const Vector&>(*this);
 
-  CHECK_ARGUMENT(begin, "zero vector cannot define a sector");
-  CHECK_ARGUMENT(end, "zero vector cannot define a sector");
-  CHECK_ARGUMENT(self, "zero vector containement in sector is not well defined");
+  LIBFLATSURF_CHECK_ARGUMENT(begin, "zero vector cannot define a sector");
+  LIBFLATSURF_CHECK_ARGUMENT(end, "zero vector cannot define a sector");
+  LIBFLATSURF_CHECK_ARGUMENT(self, "zero vector containement in sector is not well defined");
 
   switch (begin.ccw(end)) {
     case CCW::COLLINEAR:
@@ -519,10 +519,10 @@ bool detail::VectorExact<Vector, T>::inSector(const Vector& begin, const Vector&
             case CCW::COLLINEAR:
               return begin.orientation(self) == ORIENTATION::SAME;
             default:
-              UNREACHABLE("vectors must be counterclockwise, clockwise or collinear");
+              LIBFLATSURF_UNREACHABLE("vectors must be counterclockwise, clockwise or collinear");
           }
         default:
-          UNREACHABLE("non-zero collinear vectors cannot be orthogonal");
+          LIBFLATSURF_UNREACHABLE("non-zero collinear vectors cannot be orthogonal");
       }
     case CCW::CLOCKWISE:
       return !inSector(end, begin);
@@ -530,7 +530,7 @@ bool detail::VectorExact<Vector, T>::inSector(const Vector& begin, const Vector&
       return begin.ccw(self) != CCW::CLOCKWISE && self.ccw(end) == CCW::COUNTERCLOCKWISE;
   }
 
-  UNREACHABLE("two vectors must be clockwise, counter-clockwise, or collinear");
+  LIBFLATSURF_UNREACHABLE("two vectors must be clockwise, counter-clockwise, or collinear");
 }
 
 template <typename Vector, typename T>
@@ -561,17 +561,17 @@ T detail::VectorExact<Vector, T>::area(const std::vector<Vector>& perimeter) {
     current = next;
   }
 
-  ASSERT(!current, fmt::format("Polygon must be closed but this polygon's sides [{}] summed to {}", fmt::join(perimeter, ", "), current));
+  LIBFLATSURF_ASSERT(!current, fmt::format("Polygon must be closed but this polygon's sides [{}] summed to {}", fmt::join(perimeter, ", "), current));
 
-  ASSERT(area >= 0, fmt::format("Area of polygon must be positive but the area of this polygon [{}] was {}; maybe the polygon was not oriented counterclockwise?", fmt::join(perimeter, ", "), area));
+  LIBFLATSURF_ASSERT(area >= 0, fmt::format("Area of polygon must be positive but the area of this polygon [{}] was {}; maybe the polygon was not oriented counterclockwise?", fmt::join(perimeter, ", "), area));
 
   return area;
 }
 
 template <typename Vector, typename T>
 bool detail::VectorExact<Vector, T>::CompareSlope::operator()(const Vector& lhs, const Vector& rhs) const {
-  ASSERT(lhs.x() || lhs.y(), "zero vector has no slope");
-  ASSERT(rhs.x() || rhs.y(), "zero vector has no slope");
+  LIBFLATSURF_ASSERT(lhs.x() || lhs.y(), "zero vector has no slope");
+  LIBFLATSURF_ASSERT(rhs.x() || rhs.y(), "zero vector has no slope");
 
   const int lhs_infinite = lhs.x() ? 0 : (lhs.y() < 0 ? -1 : 1);
   const int rhs_infinite = rhs.x() ? 0 : (rhs.y() < 0 ? -1 : 1);

@@ -29,7 +29,6 @@
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "impl/edge_set.impl.hpp"
-#include "util/assert.ipp"
 
 namespace flatsurf {
 

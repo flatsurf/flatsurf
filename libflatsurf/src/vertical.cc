@@ -137,14 +137,14 @@ typename Vertical<Surface>::TRIANGLE Vertical<Surface>::classifyFace(HalfEdge fa
   auto b = projectPerpendicular(self->surface->previousInFace(face));
 
   if (self->surface->nextInFace(face) == self->surface->previousInFace(face)) {
-    ASSERT(perp + a == 0, "face is not closed");
+    LIBFLATSURF_ASSERT(perp + a == 0, "face is not closed");
     return TRIANGLE::COLLAPSED_TO_TWO_FACES;
   }
 
-  ASSERT(perp + a + b == 0, "face is not closed");
+  LIBFLATSURF_ASSERT(perp + a + b == 0, "face is not closed");
 
   if (perp == 0) {
-    ASSERT(a != 0 && b != 0, "face cannot have two vertical edges");
+    LIBFLATSURF_ASSERT(a != 0 && b != 0, "face cannot have two vertical edges");
     return classifyFace(self->surface->nextInFace(face));
   } else if (perp < 0) {
     return classifyFace(self->surface->nextInFace(face));
@@ -201,15 +201,15 @@ ImplementationOf<Vertical<Surface>>::ImplementationOf(const Surface& surface, co
   parallelProjectionCache(
       surface, OddHalfEdgeMap<std::optional<T>>(surface), [](auto& cache, const auto&, HalfEdge flip) { cache.set(flip, std::nullopt); }, [](auto& cache, const auto&, Edge collapse) { cache.set(collapse.positive(), T()); }),
   perpendicularProjectionCache(
-      surface, OddHalfEdgeMap<std::optional<T>>(surface), [](auto& cache, const auto&, HalfEdge flip) { cache.set(flip, std::nullopt); }, [](auto& cache, const auto&, Edge collapse) { ASSERT(!cache.get(collapse.positive()) || !*cache.get(collapse.positive()), "cannot collapse non-vertical edges"); }),
+      surface, OddHalfEdgeMap<std::optional<T>>(surface), [](auto& cache, const auto&, HalfEdge flip) { cache.set(flip, std::nullopt); }, [](auto& cache, const auto&, Edge collapse) { LIBFLATSURF_ASSERT(!cache.get(collapse.positive()) || !*cache.get(collapse.positive()), "cannot collapse non-vertical edges"); }),
   ccwCache(
-      surface, OddHalfEdgeMap<std::optional<CCW>>(surface), [](auto& cache, const auto&, HalfEdge flip) { cache.set(flip, std::nullopt); }, [](auto& cache, const auto&, Edge collapse) { ASSERT(!cache.get(collapse.positive()) || *cache.get(collapse.positive()) == CCW::COLLINEAR, "cannot collapse non-collinear edges"); }),
+      surface, OddHalfEdgeMap<std::optional<CCW>>(surface), [](auto& cache, const auto&, HalfEdge flip) { cache.set(flip, std::nullopt); }, [](auto& cache, const auto&, Edge collapse) { LIBFLATSURF_ASSERT(!cache.get(collapse.positive()) || *cache.get(collapse.positive()) == CCW::COLLINEAR, "cannot collapse non-collinear edges"); }),
   orientationCache(
       surface, OddHalfEdgeMap<std::optional<ORIENTATION>>(surface), [](auto& cache, const auto&, HalfEdge flip) { cache.set(flip, std::nullopt); },
       // intentionally empty: when collapsing an Edge we won't reason about its orientation anymore
       [](auto&, const auto&, Edge) {}),
   lengthCache(
-      surface, EdgeMap<std::optional<T>>(surface), [](auto& cache, const auto&, HalfEdge flip) { cache[flip] = std::nullopt; }, [](auto& cache, const auto&, Edge collapse) { ASSERT(!cache[collapse] || !*cache[collapse], "cannot collapse non-vertical edges"); }),
+      surface, EdgeMap<std::optional<T>>(surface), [](auto& cache, const auto&, HalfEdge flip) { cache[flip] = std::nullopt; }, [](auto& cache, const auto&, Edge collapse) { LIBFLATSURF_ASSERT(!cache[collapse] || !*cache[collapse], "cannot collapse non-vertical edges"); }),
   largenessCache(
       surface, EdgeMap<std::optional<bool>>(surface), [](auto& cache, const auto& surface, HalfEdge flip) {
     cache[flip]= std::nullopt;
@@ -219,7 +219,7 @@ ImplementationOf<Vertical<Surface>>::ImplementationOf(const Surface& surface, co
     cache[surface.previousInFace(-flip)] = std::nullopt; },
       // intentionally empty: when collapsing an Edge we won't reason about it's largeness anymore
       [](auto&, const auto&, Edge) {}) {
-  CHECK_ARGUMENT(vertical, "vertical must be non-zero");
+  LIBFLATSURF_CHECK_ARGUMENT(vertical, "vertical must be non-zero");
 }
 
 template <typename Surface>

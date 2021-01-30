@@ -59,7 +59,7 @@ std::shared_ptr<FlowDecompositionState<Surface>> FlowDecompositionState<Surface>
     auto iet = std::make_shared<IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>>(ImplementationOf<IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>>::make(contour.intervalExchangeTransformation(), self));
 
     auto decomposition = intervalxt::DynamicalDecomposition(iet->intervalExchangeTransformation());
-    ASSERT(decomposition.components().size() == 1, "contour component must yield exactly one flow component initially");
+    LIBFLATSURF_ASSERT(decomposition.components().size() == 1, "contour component must yield exactly one flow component initially");
     for (auto& component : decomposition.components()) {
       self->components.push_back(FlowComponentState<Surface>{contour, iet, component});
     }
@@ -87,15 +87,15 @@ std::shared_ptr<FlowDecompositionState<Surface>> FlowDecompositionState<Surface>
 
         for (const auto& [vertical, injected] : rx::zip(leftVerticals, leftInjected)) {
           self->injectedConnections.emplace(injected, vertical);
-          ASSERT(vertical.vector().ccw(direction) == CCW::COLLINEAR, "Injected verticals must be collinear with flow direction but " << vertical << " is not.");
+          LIBFLATSURF_ASSERT(vertical.vector().ccw(direction) == CCW::COLLINEAR, "Injected verticals must be collinear with flow direction but " << vertical << " is not.");
           ;
-          ASSERT(direction.orientation(vertical) == ORIENTATION::OPPOSITE, "Injected left verticals must be antiparallel with flow direction but " << vertical << " is not.");
+          LIBFLATSURF_ASSERT(direction.orientation(vertical) == ORIENTATION::OPPOSITE, "Injected left verticals must be antiparallel with flow direction but " << vertical << " is not.");
         }
         for (const auto& [vertical, injected] : rx::zip(rightVerticals, rightInjected)) {
           self->injectedConnections.emplace(injected, vertical);
-          ASSERT(vertical.vector().ccw(direction) == CCW::COLLINEAR, "Injected verticals must be collinear with flow direction but " << vertical << " is not.");
+          LIBFLATSURF_ASSERT(vertical.vector().ccw(direction) == CCW::COLLINEAR, "Injected verticals must be collinear with flow direction but " << vertical << " is not.");
           ;
-          ASSERT(direction.orientation(vertical) == ORIENTATION::SAME, "Injected right verticals must be parallel with flow direction but " << vertical << " is not.");
+          LIBFLATSURF_ASSERT(direction.orientation(vertical) == ORIENTATION::SAME, "Injected right verticals must be parallel with flow direction but " << vertical << " is not.");
         }
       };
 
@@ -118,7 +118,7 @@ std::shared_ptr<FlowDecompositionState<Surface>> FlowDecompositionState<Surface>
             if (top)
               std::reverse(begin(rights), end(rights));
             for (auto vertical : rights) {
-              ASSERT(injectedConnections.find(vertical) == end(injectedConnections), "an injected connection and its inverse must appear on different sides (left/right) of the contour");
+              LIBFLATSURF_ASSERT(injectedConnections.find(vertical) == end(injectedConnections), "an injected connection and its inverse must appear on different sides (left/right) of the contour");
               const auto target = ::intervalxt::Label(-(injectedConnections.size() + 1));
               injectHere.push_back(injectedConnections[vertical] = (top ? std::pair{target, source} : std::pair{source, target}));
               source = target;
@@ -133,7 +133,7 @@ std::shared_ptr<FlowDecompositionState<Surface>> FlowDecompositionState<Surface>
             if (!top)
               std::reverse(begin(lefts), end(lefts));
             for (auto vertical : lefts) {
-              ASSERT(injectedConnections.find(-vertical) != end(injectedConnections), "a left connection must have a corresponding right connection");
+              LIBFLATSURF_ASSERT(injectedConnections.find(-vertical) != end(injectedConnections), "a left connection must have a corresponding right connection");
               const auto corresponding = injectedConnections[-vertical];
               injectHere.push_back({corresponding.second, corresponding.first});
               verticals.push_back(vertical);

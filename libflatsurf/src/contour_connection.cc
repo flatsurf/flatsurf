@@ -57,7 +57,7 @@ bool ContourConnection<Surface>::bottom() const {
 template <typename Surface>
 const SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>& ContourConnection<Surface>::horizontal() const {
   auto& connection = self->state->surface.fromHalfEdge(top() ? -self->halfEdge : self->halfEdge);
-  ASSERT(self->state->surface.vertical().ccw(connection) == CCW::CLOCKWISE, "ContourConnection::horizontal() must be left-to-right with respect to the vertical but " << connection << " is not.");
+  LIBFLATSURF_ASSERT(self->state->surface.vertical().ccw(connection) == CCW::CLOCKWISE, "ContourConnection::horizontal() must be left-to-right with respect to the vertical but " << connection << " is not.");
   return connection;
 }
 
@@ -67,10 +67,10 @@ Path<FlatTriangulation<typename Surface::Coordinate>> ContourConnection<Surface>
                   ? ImplementationOf<ContourConnection>::cross(*this, nextInPerimeter()).first
                   : ImplementationOf<ContourConnection>::cross(previousInPerimeter(), *this).second;
 
-  ASSERTIONS([&]() {
+  LIBFLATSURF_ASSERTIONS([&]() {
     for (const auto& connection : left) {
-      ASSERT(self->state->surface.vertical().ccw(connection) == CCW::COLLINEAR, "ContourConnection::left() must be vertical but " << connection << " is not.");
-      ASSERT(self->state->surface.vertical().orientation(connection) == ORIENTATION::OPPOSITE, "ContourConnection::left() must be antiparallel but " << connection << " is not.");
+      LIBFLATSURF_ASSERT(self->state->surface.vertical().ccw(connection) == CCW::COLLINEAR, "ContourConnection::left() must be vertical but " << connection << " is not.");
+      LIBFLATSURF_ASSERT(self->state->surface.vertical().orientation(connection) == ORIENTATION::OPPOSITE, "ContourConnection::left() must be antiparallel but " << connection << " is not.");
     }
   });
   return left;
@@ -81,10 +81,10 @@ Path<FlatTriangulation<typename Surface::Coordinate>> ContourConnection<Surface>
   auto right = top()
                    ? ImplementationOf<ContourConnection>::cross(previousInPerimeter(), *this).second
                    : ImplementationOf<ContourConnection>::cross(*this, nextInPerimeter()).first;
-  ASSERTIONS([&]() {
+  LIBFLATSURF_ASSERTIONS([&]() {
     for (const auto& connection : right) {
-      ASSERT(self->state->surface.vertical().ccw(connection) == CCW::COLLINEAR, "ContourConnection::right() must be vertical but " << connection << " is not.");
-      ASSERT(self->state->surface.vertical().orientation(connection) == ORIENTATION::SAME, "ContourConnection::right() must be parallel but " << connection << " is not.");
+      LIBFLATSURF_ASSERT(self->state->surface.vertical().ccw(connection) == CCW::COLLINEAR, "ContourConnection::right() must be vertical but " << connection << " is not.");
+      LIBFLATSURF_ASSERT(self->state->surface.vertical().orientation(connection) == ORIENTATION::SAME, "ContourConnection::right() must be parallel but " << connection << " is not.");
     }
   });
   return right;
@@ -95,18 +95,18 @@ Path<FlatTriangulation<typename Surface::Coordinate>> ContourConnection<Surface>
   Path perimeter;
   if (top()) {
     perimeter = rx::chain(right(), std::vector{-horizontal()}, left()) | rx::to_vector();
-    ASSERTIONS([&]() {
+    LIBFLATSURF_ASSERTIONS([&]() {
       for (const auto& connection : perimeter)
-        ASSERT(self->state->surface.vertical().ccw(connection) != CCW::CLOCKWISE, "ContourConnection::perimeter() must be right-to-left but " << connection << " is not.");
+        LIBFLATSURF_ASSERT(self->state->surface.vertical().ccw(connection) != CCW::CLOCKWISE, "ContourConnection::perimeter() must be right-to-left but " << connection << " is not.");
     });
   } else {
     perimeter = rx::chain(left(), std::vector{horizontal()}, right()) | rx::to_vector();
-    ASSERTIONS([&]() {
+    LIBFLATSURF_ASSERTIONS([&]() {
       for (const auto& connection : perimeter)
-        ASSERT(self->state->surface.vertical().ccw(connection) != CCW::COUNTERCLOCKWISE, "ContourConnection::perimeter() must be left-to-right but " << connection << " is not.");
+        LIBFLATSURF_ASSERT(self->state->surface.vertical().ccw(connection) != CCW::COUNTERCLOCKWISE, "ContourConnection::perimeter() must be left-to-right but " << connection << " is not.");
     });
   }
-  ASSERT(perimeter.simple(), "Perimeter must be simple but " << perimeter << " is not.");
+  LIBFLATSURF_ASSERT(perimeter.simple(), "Perimeter must be simple but " << perimeter << " is not.");
   return perimeter;
 }
 
@@ -128,22 +128,22 @@ ContourConnection<Surface> ContourConnection<Surface>::operator-() const {
 template <typename Surface>
 bool ContourConnection<Surface>::operator==(const ContourConnection<Surface>& rhs) const {
   const bool ret = self->state == rhs.self->state && self->halfEdge == rhs.self->halfEdge;
-  ASSERT(!ret || self->component == rhs.self->component, "One half edge cannot be in two different components.");
-  ASSERT(!ret || self->contour == rhs.self->contour, "One half edge cannot be in two different contours.");
+  LIBFLATSURF_ASSERT(!ret || self->component == rhs.self->component, "One half edge cannot be in two different components.");
+  LIBFLATSURF_ASSERT(!ret || self->contour == rhs.self->contour, "One half edge cannot be in two different contours.");
   return ret;
 }
 
 template <typename Surface>
 ContourConnection<Surface> ImplementationOf<ContourConnection<Surface>>::makeTop(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* const component, HalfEdge e) {
   ContourConnection<Surface> ret(PrivateConstructor{}, state, component, e, true);
-  ASSERT(state->surface.vertical().ccw(e) == CCW::COUNTERCLOCKWISE, "HalfEdge must be from right to left but " << e << " is not in " << state->surface);
+  LIBFLATSURF_ASSERT(state->surface.vertical().ccw(e) == CCW::COUNTERCLOCKWISE, "HalfEdge must be from right to left but " << e << " is not in " << state->surface);
   return ret;
 }
 
 template <typename Surface>
 ContourConnection<Surface> ImplementationOf<ContourConnection<Surface>>::makeBottom(std::shared_ptr<ContourDecompositionState<Surface>> state, ContourComponentState<Surface>* const component, HalfEdge e) {
   ContourConnection<Surface> ret(PrivateConstructor{}, state, component, e, false);
-  ASSERT(state->surface.vertical().ccw(e) == CCW::CLOCKWISE, "HalfEdge must be from left to right but " << e << " is not in " << state->surface);
+  LIBFLATSURF_ASSERT(state->surface.vertical().ccw(e) == CCW::CLOCKWISE, "HalfEdge must be from left to right but " << e << " is not in " << state->surface);
   return ret;
 }
 
@@ -156,7 +156,7 @@ ImplementationOf<ContourConnection<Surface>>::ImplementationOf(std::shared_ptr<C
 
 template <typename Surface>
 Path<FlatTriangulation<typename Surface::Coordinate>> ImplementationOf<ContourConnection<Surface>>::turn(const ContourConnection<Surface>& from, const ContourConnection<Surface>& to) {
-  ASSERT(to == from.nextInPerimeter(), "can only cross between adjacent connections but " << to.self->halfEdge << " does not follow " << from.self->halfEdge);
+  LIBFLATSURF_ASSERT(to == from.nextInPerimeter(), "can only cross between adjacent connections but " << to.self->halfEdge << " does not follow " << from.self->halfEdge);
 
   auto& surface = from.self->state->surface;
 
@@ -167,7 +167,7 @@ Path<FlatTriangulation<typename Surface::Coordinate>> ImplementationOf<ContourCo
     turn = surface.turn(surface.nextInFace(from.self->halfEdge), to.self->halfEdge);
   } else if (from.bottom() && to.top()) {
     // The last connection on the bottom of the contour and the first on the top of the contour.
-    ASSERT(Vertex::target(from.self->halfEdge, surface) == Vertex::source(to.self->halfEdge, surface), "final connections must point to the same vertex but " << from.self->halfEdge << " and " << to.self->halfEdge << " do not");
+    LIBFLATSURF_ASSERT(Vertex::target(from.self->halfEdge, surface) == Vertex::source(to.self->halfEdge, surface), "final connections must point to the same vertex but " << from.self->halfEdge << " and " << to.self->halfEdge << " do not");
     turn = surface.cross(surface.nextInFace(from.self->halfEdge));
     turn.splice(end(turn), surface.turn(surface.previousAtVertex(surface.nextInFace(from.self->halfEdge)), surface.nextInFace(-to.self->halfEdge)));
   } else if (from.top() && to.top()) {
@@ -178,13 +178,13 @@ Path<FlatTriangulation<typename Surface::Coordinate>> ImplementationOf<ContourCo
     turn.splice(end(turn), surface.turn(surface.previousAtVertex(-from.self->halfEdge), surface.nextInFace(-to.self->halfEdge)));
   } else {
     // The last connection on the top of the contour and the first on the bottom of the contour.
-    ASSERT(from.top() && to.bottom(), "inconsistent top() / bottom()");
-    ASSERT(Vertex::target(from.self->halfEdge, surface) == Vertex::source(to.self->halfEdge, surface), "initial connections must start at the same vertex but " << from << " and " << to << " do not");
+    LIBFLATSURF_ASSERT(from.top() && to.bottom(), "inconsistent top() / bottom()");
+    LIBFLATSURF_ASSERT(Vertex::target(from.self->halfEdge, surface) == Vertex::source(to.self->halfEdge, surface), "initial connections must start at the same vertex but " << from << " and " << to << " do not");
     turn = surface.cross(-from.self->halfEdge);
     turn.splice(end(turn), surface.turn(surface.previousAtVertex(-from.self->halfEdge), to.self->halfEdge));
   }
 
-  ASSERT(turn.simple(), "Connections cannot appear more than once when moving from one contour connection to the next");
+  LIBFLATSURF_ASSERT(turn.simple(), "Connections cannot appear more than once when moving from one contour connection to the next");
 
   return turn;
 }
@@ -211,25 +211,25 @@ std::pair<Path<FlatTriangulation<typename Surface::Coordinate>>, Path<FlatTriang
     atFrom = connections;
   } else {
     // The last connection on the top of the contour and the first on the bottom of the contour.
-    ASSERT(from.top() && to.bottom(), "inconsistent top() / bottom()");
+    LIBFLATSURF_ASSERT(from.top() && to.bottom(), "inconsistent top() / bottom()");
     atFrom = connections;
   }
 
-  ASSERTIONS([&]() {
+  LIBFLATSURF_ASSERTIONS([&]() {
     for (const auto& connection : atFrom) {
-      ASSERT(vertical.ccw(connection) == CCW::COLLINEAR, "connection must be vertical");
+      LIBFLATSURF_ASSERT(vertical.ccw(connection) == CCW::COLLINEAR, "connection must be vertical");
       if (from.top()) {
-        ASSERT(vertical.orientation(connection) == ORIENTATION::OPPOSITE, "connection must be antiparallel");
+        LIBFLATSURF_ASSERT(vertical.orientation(connection) == ORIENTATION::OPPOSITE, "connection must be antiparallel");
       } else {
-        ASSERT(vertical.orientation(connection) == ORIENTATION::SAME, "connection must be parallel");
+        LIBFLATSURF_ASSERT(vertical.orientation(connection) == ORIENTATION::SAME, "connection must be parallel");
       }
     }
     for (const auto& connection : atTo) {
-      ASSERT(vertical.ccw(connection) == CCW::COLLINEAR, "connection must be vertical");
+      LIBFLATSURF_ASSERT(vertical.ccw(connection) == CCW::COLLINEAR, "connection must be vertical");
       if (to.top()) {
-        ASSERT(vertical.orientation(connection) == ORIENTATION::SAME, "connection must be parallel");
+        LIBFLATSURF_ASSERT(vertical.orientation(connection) == ORIENTATION::SAME, "connection must be parallel");
       } else {
-        ASSERT(vertical.orientation(connection) == ORIENTATION::OPPOSITE, "connection must be antiparallel");
+        LIBFLATSURF_ASSERT(vertical.orientation(connection) == ORIENTATION::OPPOSITE, "connection must be antiparallel");
       }
     }
   });

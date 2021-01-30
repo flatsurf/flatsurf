@@ -45,7 +45,7 @@ class ImplementationOf<ManagedMovable<T>> : boost::noncopyable {
 
   // Given an implementation pimpl of an object, return a corresponding object.
   static T from_this(std::shared_ptr<ImplementationOf<T>> self) {
-    ASSERT(self.get() != nullptr, "Cannot create an object from a null pointer implementation.");
+    LIBFLATSURF_ASSERT(self.get() != nullptr, "Cannot create an object from a null pointer implementation.");
 
     static_assert(sizeof(T) == sizeof(ManagedMovable<T>), "T must have a single field, namely a ManagedMovable<T>");
     static_assert(sizeof(ManagedMovable<T>) == sizeof(self), "ManagedMovable<T> must have a single field, namely a shared pointer to the implementation of T");

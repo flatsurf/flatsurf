@@ -87,26 +87,26 @@ size_t Path<Surface>::size() const {
 
 template <typename Surface>
 void Path<Surface>::push_front(const Segment& segment) {
-  ASSERT(empty() || ImplementationOf<Path>::connected(segment, *begin()), "Path must be connected but " << segment << " does not precede " << *begin() << " either because they are connected to different vertices or because the turn from " << -segment << " to " << *begin() << " is not turning clockwise in the range (0, 2π]");
+  LIBFLATSURF_ASSERT(empty() || ImplementationOf<Path>::connected(segment, *begin()), "Path must be connected but " << segment << " does not precede " << *begin() << " either because they are connected to different vertices or because the turn from " << -segment << " to " << *begin() << " is not turning clockwise in the range (0, 2π]");
   self->path.insert(std::begin(self->path), segment);
 }
 
 template <typename Surface>
 void Path<Surface>::push_back(const Segment& segment) {
-  ASSERT(empty() || ImplementationOf<Path>::connected(*self->path.rbegin(), segment), "Path must be connected but " << *self->path.rbegin() << " does not precede " << segment << " either because they are connected to different vertices or because the turn from " << -*self->path.rbegin() << " to " << segment << " is not turning clockwise in the range (0, 2π]");
+  LIBFLATSURF_ASSERT(empty() || ImplementationOf<Path>::connected(*self->path.rbegin(), segment), "Path must be connected but " << *self->path.rbegin() << " does not precede " << segment << " either because they are connected to different vertices or because the turn from " << -*self->path.rbegin() << " to " << segment << " is not turning clockwise in the range (0, 2π]");
   self->path.push_back(segment);
 }
 
 template <typename Surface>
 void Path<Surface>::splice(const PathIterator<Surface>& pos, Path& other) {
-  ASSERT_ARGUMENT(this != &other, "Cannot splice path into itself");
+  LIBFLATSURF_ASSERT_ARGUMENT(this != &other, "Cannot splice path into itself");
 
   const auto at = pos == end() ? std::end(self->path) : pos.self->position;
   self->path.insert(at, std::begin(other.self->path), std::end(other.self->path));
 
-  ASSERTIONS([&]() {
+  LIBFLATSURF_ASSERTIONS([&]() {
     for (auto segment = std::begin(self->path); segment != std::end(self->path); segment++) {
-      ASSERT(segment + 1 == std::end(self->path) || ImplementationOf<Path>::connected(*segment, *(segment + 1)), "Path must be connected but " << *segment << " does not precede " << *(segment + 1) << " either because they are connected to different vertices or because the turn from " << -*segment << " to " << *(segment + 1) << " is not turning clockwise in the range (0, 2π]");
+      LIBFLATSURF_ASSERT(segment + 1 == std::end(self->path) || ImplementationOf<Path>::connected(*segment, *(segment + 1)), "Path must be connected but " << *segment << " does not precede " << *(segment + 1) << " either because they are connected to different vertices or because the turn from " << -*segment << " to " << *(segment + 1) << " is not turning clockwise in the range (0, 2π]");
     }
     return true;
   });
@@ -122,7 +122,7 @@ void Path<Surface>::splice(const PathIterator<Surface>& pos, Path&& other) {
 
 template <typename Surface>
 typename Surface::Coordinate Path<Surface>::area() const {
-  CHECK_ARGUMENT(closed(), "Area can only be computed for closed paths but " << *this << " is not closed.");
+  LIBFLATSURF_CHECK_ARGUMENT(closed(), "Area can only be computed for closed paths but " << *this << " is not closed.");
   return Vector<T>::area(*this | rx::transform([](const auto& connection) { return connection.vector(); }) | rx::to_vector());
 }
 
@@ -148,7 +148,7 @@ ImplementationOf<Path<Surface>>::ImplementationOf() :
 template <typename Surface>
 ImplementationOf<Path<Surface>>::ImplementationOf(const std::vector<Segment>& path) {
   for (auto segment = begin(path); segment != end(path); segment++) {
-    ASSERT(segment + 1 == end(path) || connected(*segment, *(segment + 1)), "Path must be connected but " << *segment << " does not precede " << *(segment + 1) << " either because they are connected to different vertices or because the turn from " << -*segment << " to " << *(segment + 1) << " is not turning clockwise in the range (0, 2π]");
+    LIBFLATSURF_ASSERT(segment + 1 == end(path) || connected(*segment, *(segment + 1)), "Path must be connected but " << *segment << " does not precede " << *(segment + 1) << " either because they are connected to different vertices or because the turn from " << -*segment << " to " << *(segment + 1) << " is not turning clockwise in the range (0, 2π]");
     this->path.push_back(*segment);
   }
 }
