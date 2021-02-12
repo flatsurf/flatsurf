@@ -52,6 +52,8 @@ using std::string;
 
 template <typename Surface>
 bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Surface>&)> target, int limit) {
+  bool limitReached = false;
+
   const auto check = [&]() {
     auto paths = self->state->components | rx::transform([&](const auto& component) { return Path(ImplementationOf<FlowComponent<Surface>>::make(self->state, &const_cast<FlowComponentState<Surface>&>(component)).perimeter() | rx::transform([](const auto& connection) { return connection.saddleConnection(); }) | rx::to_vector()); }) | rx::to_vector();
     ImplementationOf<ContourDecomposition<Surface>>::check(paths, vertical());
@@ -62,7 +64,8 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
 
     if (step.result == intervalxt::DecompositionStep::Result::LIMIT_REACHED) {
       LIBFLATSURF_ASSERTIONS(check);
-      return false;
+      limitReached = true;
+      break;
     }
 
     if (step.equivalent) {
@@ -244,15 +247,15 @@ bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Su
           *step.additionalComponent,
       });
 
-      auto additionalComponent = ImplementationOf<FlowComponent>::make(self->state, &*self->state->components.rbegin());
+      auto component = ImplementationOf<FlowComponent>::make(self->state, &*self->state->components.rbegin());
 
-      return decompose(target, limit) && additionalComponent.decompose(target, limit);
+      limitReached = component.decompose(target, limit) || limitReached;
     }
   }
 
   LIBFLATSURF_ASSERTIONS(check);
 
-  return true;
+  return not limitReached;
 }
 
 template <typename Surface>
