@@ -336,6 +336,11 @@ FlowTriangulation<Surface> FlowComponent<Surface>::triangulation() const {
 }
 
 template <typename Surface>
+const ::intervalxt::Component& FlowComponent<Surface>::dynamicalComponent() const {
+  return self->component->dynamicalComponent;
+}
+
+template <typename Surface>
 FlowComponent<Surface> ImplementationOf<FlowComponent<Surface>>::make(std::shared_ptr<FlowDecompositionState<Surface>> state, FlowComponentState<Surface>* component) {
   return FlowComponent<Surface>(PrivateConstructor{}, state, component);
 }
