@@ -91,10 +91,13 @@ void Lengths<Surface>::pop() {
 
 template <typename Surface>
 FlowComponentState<FlatTriangulation<typename Surface::Coordinate>>& Lengths<Surface>::component(Label label) const {
-  const auto component = std::find_if(begin(state.lock()->components), end(state.lock()->components), [&](const auto& component) {
-    return static_cast<::intervalxt::Label>(*begin(component.dynamicalComponent.topContour())) == label || static_cast<::intervalxt::Label>(*begin(component.dynamicalComponent.bottomContour())) == label;
+  auto _state = state.lock();
+  const auto component = std::find_if(begin(_state->components), end(_state->components), [&](const auto& component) {
+    const auto firstTop = static_cast<::intervalxt::Label>(*begin(component.dynamicalComponent.topContour()));
+    const auto firstBottom = static_cast<::intervalxt::Label>(*begin(component.dynamicalComponent.bottomContour()));
+    return firstTop == label || firstBottom == label;
   });
-  LIBFLATSURF_ASSERT(component != end(state.lock()->components), "Label nowhere in flow decomposition contour.")
+  LIBFLATSURF_ASSERT(component != end(_state->components), "Label not at the left end of a flow component.")
   return *component;
 }
 
@@ -160,7 +163,8 @@ void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iteratio
 
   const auto flow = [&](const auto& connections, bool reverse) {
     auto flowed = connections | rx::transform([&](const auto& connection) {
-      return ImplementationOf<FlowConnection<FlatTriangulation<T>>>::make(state.lock(), ImplementationOf<FlowComponent<FlatTriangulation<T>>>::make(state.lock(), &component), connection).saddleConnection();
+      auto _state = state.lock();
+      return ImplementationOf<FlowConnection<FlatTriangulation<T>>>::make(_state, ImplementationOf<FlowComponent<FlatTriangulation<T>>>::make(_state, &component), connection).saddleConnection();
     }) | rx::transform([&](const auto& connection) {
       return reverse ? -connection : connection;
     }) | rx::to_vector();
