@@ -55,12 +55,28 @@ cppyy.py.add_pythonization(filtered(re.compile("vector<flatsurf::.*>"))(enable_l
 cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(wrap_method("__add__")(lambda self, cpp, rhs: cpp(cppyy.gbl.flatsurf.makeOddHalfEdgeMap[cppyy.gbl.flatsurf.Vector[type(self).Coordinate]](self.combinatorial(), rhs)))), "flatsurf")
 
 
-# We cannot call decompose() directly due to https://bitbucket.org/wlav/cppyy/issues/273/segfault-in-cpycppyy-anonymous-namespace
-cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_method("decompose")(lambda self, *args: cppyy.gbl.flatsurf.decomposeFlowDecomposition(self, *args))), "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_method("cylinders")(lambda self: [component for component in self.components() if component.cylinder()])), "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_method("minimalComponents")(lambda self: [component for component in self.components() if component.withoutPeriodicTrajectory()])), "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_method("undeterminedComponents")(lambda self: [component for component in self.components() if not (component.cylinder() == True) and not (component.withoutPeriodicTrajectory() == True)])), "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_method("__str__")(lambda self: "FlowDecomposition with %d cylinders, %d minimal components and %d undetermined components" % (len(self.cylinders()), len(self.minimalComponents()), len(self.undeterminedComponents())))), "flatsurf")
+
+# Make the target parameter of FlowDecomposition::decompose() optional.
+def decomposeFlowDecomposition(self, *args):
+    if args and isinstance(args[0], int):
+        args = (lambda component: type(self).defaultTarget(component),) + args
+    # Note that we need to call through a reference free callback wrapper due to https://bitbucket.org/wlav/cppyy/issues/310/templatized-reference-in-callback
+    return cppyy.gbl.flatsurf.decomposeFlowDecomposition[cppyy.gbl.flatsurf.FlatTriangulation[type(self).T]](self, *args)
+
+cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_method("decompose")(decomposeFlowDecomposition)), "flatsurf")
+
+# Make the target parameter of FlowComponent::decompose() optional.
+def decomposeFlowComponent(self, *args):
+    if args and isinstance(args[0], int):
+        args = (lambda component: type(self).defaultTarget(component),) + args
+    # Note that we need to call through a reference free callback wrapper due to https://bitbucket.org/wlav/cppyy/issues/310/templatized-reference-in-callback
+    return cppyy.gbl.flatsurf.decomposeFlowComponent[cppyy.gbl.flatsurf.FlatTriangulation[type(self).T]](self, *args)
+
+cppyy.py.add_pythonization(filtered(re.compile("FlowComponent<.*>"))(add_method("decompose")(decomposeFlowComponent)), "flatsurf")
 
 # We have to workaround issues with complex std::function parameters in cppyy
 cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(add_method("isomorphism")(lambda self, other, kind=None, filter_matrix=lambda a,b,c,d: a == 1 and b == 0 and c == 0 and d == 1, filter_map=lambda a, b: True: cppyy.gbl.flatsurf.isomorphism[type(self).Coordinate.__cpp_name__](self, other, kind or cppyy.gbl.flatsurf.ISOMORPHISM.FACES, lambda m: filter_matrix(m.a, m.b, m.c, m.d), filter_map))), "flatsurf")

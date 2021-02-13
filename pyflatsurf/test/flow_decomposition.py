@@ -117,14 +117,19 @@ def test_D33():
 
     assert decompositions == {(0, 2): 8, (2, 0): 20, (3, 0): 12}
 
+
 def test_undetermined():
     S = surfaces.D33()
-    decompositions = {(2, 0): 0, (3, 0): 0, (0, 2): 0}
 
     R2 = flatsurf.Vector['eantic::renf_elem_class']
     decomposition = flatsurf.makeFlowDecomposition(S, R2(135, 17))
     assert len(decomposition.undeterminedComponents()) == 1
-    decomposition.decompose(-1)
+    decomposition.decompose(lambda component: True, -1)
+    assert len(decomposition.undeterminedComponents()) == 1
+    decomposition.components()[0].decompose(lambda component: True, -1)
+    assert len(decomposition.undeterminedComponents()) == 1
+    decomposition.components()[0].decompose(-1)
     assert len(decomposition.undeterminedComponents()) == 0
+
 
 if __name__ == '__main__': sys.exit(pytest.main(sys.argv))

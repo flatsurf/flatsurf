@@ -56,12 +56,14 @@ class FlowComponent : boost::equality_comparable<FlowComponent<Surface>> {
 
   const FlowDecomposition<Surface> decomposition() const;
 
-  // Return whether all resulting components satisfy target, i.e., the limit
+  static bool defaultTarget(const FlowComponent<Surface>& c) {
+    return (c.cylinder() || c.withoutPeriodicTrajectory()) ? true : false;
+  };
+
+  // Return whether all resulting components satisfy target., i.e., the limit
   // was not reached.
   bool decompose(
-      std::function<bool(const FlowComponent&)> target = [](const auto& c) {
-        return (c.cylinder() || c.withoutPeriodicTrajectory()) ? true : false;
-      },
+      std::function<bool(const FlowComponent&)> target = defaultTarget,
       int limit = -1);
 
   // A walk around this component in counter clockwise order along saddle connections.
