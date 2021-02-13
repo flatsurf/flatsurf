@@ -27,6 +27,8 @@
 
 #include "movable.hpp"
 
+#include "flow_component.hpp"
+
 namespace flatsurf {
 
 // Decomposes a surface into Flow Components with respect to a certain vertical
@@ -50,7 +52,9 @@ class FlowDecomposition {
 
   // Return whether all resulting components satisfy target, i.e., target could
   // be established for all components without exceeding the limit.
-  bool decompose(std::function<bool(const FlowComponent<Surface>&)> target = defaultTarget, int limit = -1);
+  bool decompose(
+      std::function<bool(const FlowComponent<Surface>&)> target = defaultTarget,
+      int limit = -1);
 
   std::vector<FlowComponent<Surface>> components() const;
 
