@@ -4,6 +4,15 @@ intervalxt Change Log
 
 .. current developments
 
+v3.3.0
+====================
+
+**Added:**
+
+* `FlowComponent::bottom`, `FlowComponent::right`, `FlowComponent::top`, `FlowComponent::left` wrapping the corresponding methods of `intervalxt::Component`.
+
+
+
 v3.2.0
 ====================
 
