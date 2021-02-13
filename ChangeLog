@@ -4,6 +4,29 @@ intervalxt Change Log
 
 .. current developments
 
+v3.2.0
+====================
+
+**Added:**
+
+* `FlowComponent::dynamicalComponent()` to access the underlying Interval Exchange Transformation of a `FlowComponent`.
+* `SaddleConnections.slopes()` and `SaddleConnectionsByLength.slopes()` to
+  ignore saddle connections with repeated slopes.
+* `FlowDecomposition::decompose` and `FlowComponent::decompose` can now have a target set explicitly as a Python callback.
+
+**Deprecated:**
+
+* `FlowComponent::intervalExchangeTransformation()` as it does not do anything useful in most situations and rather exposes some implementation detail.
+
+**Fixed:**
+
+* Do not prune decomposition as soon as a component reached the induction limit
+  in a `FlowDecomposition::decompose()`. Such a pruning would only affect the
+  local subtree and not the entire decomposition. There is (and was) no way to
+  stop the entire decomposition once a limit has been reached.
+
+
+
 v3.1.0
 ====================
 
