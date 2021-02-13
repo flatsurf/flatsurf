@@ -26,9 +26,12 @@
 #include <exact-real/number_field.hpp>
 
 #include "../flatsurf/bound.hpp"
+#include "../flatsurf/ccw.hpp"
 #include "../flatsurf/flow_component.hpp"
+#include "../flatsurf/flow_connection.hpp"
 #include "../flatsurf/flow_decomposition.hpp"
 #include "../flatsurf/flow_triangulation.hpp"
+#include "../flatsurf/orientation.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
@@ -38,7 +41,6 @@
 #include "generators/vertical_generator.hpp"
 #include "surfaces.hpp"
 
-using eantic::renf_class;
 using eantic::renf_elem_class;
 
 namespace flatsurf::test {
@@ -73,8 +75,8 @@ TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (long long), (m
   const auto surface = *surface_;
 
   GIVEN("The surface " << *name << ", i.e., " << *surface) {
-    // The limit 3 here is extremely low. Unfortunately, these tests take a
-    // long time already (45 seconds in late 2020.)
+    // The limit 6 here is somewhat low. Unfortunately, these tests take some
+    // time already (45 seconds in early 2021.)
     const auto vertical = GENERATE_COPY(verticals<T>(surface, 6));
 
     AND_GIVEN("A direction of a Saddle Connection " << vertical) {
@@ -97,6 +99,75 @@ TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (long long), (m
           const auto triangulations = flowDecomposition.components() | rx::transform([](const auto& component) { return component.triangulation(); }) | rx::to_vector();
           REQUIRE((triangulations | rx::transform([](const auto& component) { return component.triangulation().area(); }) | rx::sum()) == surface->area());
           REQUIRE(flowDecomposition.triangulation().area() == surface->area());
+        }
+
+        AND_THEN("Each component's bottom contour goes to the right") {
+          for (const auto& component : flowDecomposition.components()) {
+            for (const auto& bottom : component.bottom()) {
+              CAPTURE(bottom);
+              REQUIRE(!bottom.top());
+              REQUIRE(vertical.ccw(bottom.saddleConnection()) != CCW::COUNTERCLOCKWISE);
+            }
+            REQUIRE(vertical.ccw(begin(component.bottom())->saddleConnection()) == CCW::CLOCKWISE);
+            REQUIRE(vertical.ccw(rbegin(component.bottom())->saddleConnection()) == CCW::CLOCKWISE);
+          }
+        }
+
+        AND_THEN("Each component's right contour goes to the top") {
+          for (const auto& component : flowDecomposition.components()) {
+            for (const auto& right : component.right()) {
+              CAPTURE(right);
+              REQUIRE(right.parallel());
+              REQUIRE(vertical.ccw(right.saddleConnection()) == CCW::COLLINEAR);
+              REQUIRE(vertical.orientation(right.saddleConnection()) == ORIENTATION::SAME);
+            }
+          }
+        }
+
+        AND_THEN("Each component's top contour goes to the left") {
+          for (const auto& component : flowDecomposition.components()) {
+            for (const auto& top : component.top()) {
+              CAPTURE(top);
+              REQUIRE(!top.bottom());
+              REQUIRE(vertical.ccw(top.saddleConnection()) != CCW::CLOCKWISE);
+            }
+            REQUIRE(vertical.ccw(begin(component.top())->saddleConnection()) == CCW::COUNTERCLOCKWISE);
+            REQUIRE(vertical.ccw(rbegin(component.top())->saddleConnection()) == CCW::COUNTERCLOCKWISE);
+          }
+        }
+
+        AND_THEN("Each component's left contour goes to the bottom") {
+          for (const auto& component : flowDecomposition.components()) {
+            for (const auto& left : component.left()) {
+              CAPTURE(left);
+              REQUIRE(left.antiparallel());
+              REQUIRE(vertical.ccw(left.saddleConnection()) == CCW::COLLINEAR);
+              REQUIRE(vertical.orientation(left.saddleConnection()) == ORIENTATION::OPPOSITE);
+            }
+          }
+        }
+
+        AND_THEN("Each component's perimeter is made up of bottom + right + top + left") {
+          for (const auto& component : flowDecomposition.components()) {
+            auto perimeter = component.perimeter();
+            for (const auto bottom : component.bottom()) {
+              REQUIRE(*begin(perimeter) == bottom);
+              perimeter.pop_front();
+            }
+            for (const auto right : component.right()) {
+              REQUIRE(*begin(perimeter) == right);
+              perimeter.pop_front();
+            }
+            for (const auto top : component.top()) {
+              REQUIRE(*begin(perimeter) == top);
+              perimeter.pop_front();
+            }
+            for (const auto left : component.left()) {
+              REQUIRE(*begin(perimeter) == left);
+              perimeter.pop_front();
+            }
+            REQUIRE(perimeter.size() == 0);
+          }
         }
       }
     }

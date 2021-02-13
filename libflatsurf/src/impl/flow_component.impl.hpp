@@ -32,12 +32,15 @@ template <typename Surface>
 class ImplementationOf<FlowComponent<Surface>> {
  public:
   class ComponentState;
+  using Perimeter = typename FlowComponent<Surface>::Perimeter;
 
   ImplementationOf(std::shared_ptr<FlowDecompositionState<Surface>>, FlowComponentState<Surface>*);
 
   static FlowComponent<Surface> make(std::shared_ptr<FlowDecompositionState<Surface>>, FlowComponentState<Surface>*);
 
   std::string id() const;
+
+  Perimeter makePerimeter(const std::vector<intervalxt::Side>&) const;
 
   std::shared_ptr<FlowDecompositionState<Surface>> state;
   FlowComponentState<Surface>* const component;

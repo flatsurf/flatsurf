@@ -57,8 +57,10 @@ class FlowConnection : Serializable<FlowConnection<Surface>>,
 
   bool antiparallel() const;
 
+  // Return whether this is a non-vertical connection in the top contour.
   bool top() const;
 
+  // Return whether this is a non-vertical connection in the bottom contour.
   bool bottom() const;
 
   // Return whether this edge is a (vertical) boundary between two distinct FlowComponents.
