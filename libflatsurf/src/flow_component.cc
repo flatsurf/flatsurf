@@ -308,16 +308,47 @@ Vector<typename Surface::Coordinate> FlowComponent<Surface>::circumferenceHolono
 }
 
 template <typename Surface>
-typename FlowComponent<Surface>::Perimeter FlowComponent<Surface>::perimeter() const {
-  Perimeter perimeter;
+typename FlowComponent<Surface>::Perimeter FlowComponent<Surface>::bottom() const {
+  return self->makePerimeter(self->component->dynamicalComponent.bottom());
+}
 
-  for (const auto& side : self->component->dynamicalComponent.perimeter())
-    perimeter.push_back(ImplementationOf<FlowConnection<Surface>>::make(self->state, *this, side));
+template <typename Surface>
+typename FlowComponent<Surface>::Perimeter FlowComponent<Surface>::right() const {
+  return self->makePerimeter(self->component->dynamicalComponent.right());
+}
+
+template <typename Surface>
+typename FlowComponent<Surface>::Perimeter FlowComponent<Surface>::top() const {
+  return self->makePerimeter(self->component->dynamicalComponent.top());
+}
+
+template <typename Surface>
+typename FlowComponent<Surface>::Perimeter FlowComponent<Surface>::left() const {
+  return self->makePerimeter(self->component->dynamicalComponent.left());
+}
+
+template <typename Surface>
+typename FlowComponent<Surface>::Perimeter FlowComponent<Surface>::perimeter() const {
+  auto perimeter = self->makePerimeter(self->component->dynamicalComponent.perimeter());
 
   LIBFLATSURF_ASSERTIONS([&]() {
-    Path<FlatTriangulation<T>> path = perimeter | rx::transform([&](const auto connection) { return connection.saddleConnection(); }) | rx::to_vector();
-    LIBFLATSURF_ASSERT(path.simple(), "Perimeter of FlowComponent must not contain duplicates but " << path << " does.");
+    Path<FlatTriangulation<typename Surface::Coordinate>> path = perimeter | rx::transform([&](const auto connection) { return connection.saddleConnection(); }) | rx::to_vector();
     LIBFLATSURF_ASSERT(path.closed(), "Perimeter of FlowComponent must be closed but " << path << " is not.");
+  });
+
+  return perimeter;
+}
+
+template <typename Surface>
+typename FlowComponent<Surface>::Perimeter ImplementationOf<FlowComponent<Surface>>::makePerimeter(const std::vector<intervalxt::Side>& sides) const {
+  Perimeter perimeter;
+
+  for (const auto& side : sides)
+    perimeter.push_back(ImplementationOf<FlowConnection<Surface>>::make(state, ImplementationOf<FlowComponent<Surface>>::make(state, component), side));
+
+  LIBFLATSURF_ASSERTIONS([&]() {
+    Path<FlatTriangulation<typename Surface::Coordinate>> path = perimeter | rx::transform([&](const auto connection) { return connection.saddleConnection(); }) | rx::to_vector();
+    LIBFLATSURF_ASSERT(path.simple(), "Perimeter of FlowComponent must not contain duplicates but " << path << " does.");
   });
 
   return perimeter;

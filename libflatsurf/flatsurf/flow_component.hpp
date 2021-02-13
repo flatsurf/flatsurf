@@ -70,6 +70,11 @@ class FlowComponent : boost::equality_comparable<FlowComponent<Surface>> {
   // A walk around this component in counter clockwise order along saddle connections.
   Perimeter perimeter() const;
 
+  Perimeter bottom() const;
+  Perimeter right() const;
+  Perimeter top() const;
+  Perimeter left() const;
+
   FlowTriangulation<Surface> triangulation() const;
 
   const intervalxt::Component& dynamicalComponent() const;
