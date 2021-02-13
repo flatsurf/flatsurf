@@ -23,6 +23,7 @@
 #include <boost/logic/tribool_fwd.hpp>
 #include <boost/operators.hpp>
 #include <functional>
+#include <intervalxt/forward.hpp>
 #include <list>
 
 #include "copyable.hpp"
@@ -69,6 +70,9 @@ class FlowComponent : boost::equality_comparable<FlowComponent<Surface>> {
 
   FlowTriangulation<Surface> triangulation() const;
 
+  const intervalxt::Component& dynamicalComponent() const;
+
+  [[deprecated("This method returns a inconsistent version of the IET from which this component was created originally. Use dynamicalComponent().iet() instead.")]]
   const IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>& intervalExchangeTransformation() const;
 
   T width() const;
