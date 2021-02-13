@@ -50,6 +50,24 @@ cppyy.py.add_pythonization(enable_pretty_printing, "flatsurf")
 cppyy.py.add_pythonization(lambda proxy, name: enable_cereal(proxy, name, ["flatsurf/cereal.hpp"]), "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("vector<flatsurf::.*>"))(enable_list_printing), "std")
 
+# Add .slopes() for sets of saddle connections, i.e., ignore saddle connections that have the same quotient Δy/Δx.
+def slopes(connections):
+    slopes = None
+
+    for connection in connections:
+        direction = connection.vector()
+
+        if slopes is None:
+            slopes = cppyy.gbl.std.set[type(direction), type(direction).CompareSlope]()
+
+        if slopes.find(direction) != slopes.end():
+            continue
+
+        slopes.insert(direction)
+        yield connection
+
+cppyy.py.add_pythonization(filtered(re.compile("SaddleConnections<.*>"))(add_method("slopes")(slopes)), "flatsurf")
+cppyy.py.add_pythonization(filtered(re.compile("SaddleConnectionsByLength<.*>"))(add_method("slopes")(slopes)), "flatsurf")
 
 # We cannot create an OddHalfEdgeMap directly due to https://bitbucket.org/wlav/cppyy/issues/273/segfault-in-cpycppyy-anonymous-namespace
 cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(wrap_method("__add__")(lambda self, cpp, rhs: cpp(cppyy.gbl.flatsurf.makeOddHalfEdgeMap[cppyy.gbl.flatsurf.Vector[type(self).Coordinate]](self.combinatorial(), rhs)))), "flatsurf")
