@@ -72,8 +72,7 @@ class FlowComponent : boost::equality_comparable<FlowComponent<Surface>> {
 
   const intervalxt::Component& dynamicalComponent() const;
 
-  [[deprecated("This method returns a inconsistent version of the IET from which this component was created originally. Use dynamicalComponent().iet() instead.")]]
-  const IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>& intervalExchangeTransformation() const;
+  [[deprecated("This method returns a inconsistent version of the IET from which this component was created originally. Use dynamicalComponent().iet() instead.")]] const IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>& intervalExchangeTransformation() const;
 
   T width() const;
 
