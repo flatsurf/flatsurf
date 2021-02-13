@@ -25,9 +25,8 @@
 #include <iosfwd>
 #include <vector>
 
-#include "movable.hpp"
-
 #include "flow_component.hpp"
+#include "movable.hpp"
 
 namespace flatsurf {
 
