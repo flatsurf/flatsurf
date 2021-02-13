@@ -82,10 +82,10 @@ const Surface& FlowDecomposition<Surface>::surface() const {
 
 template <typename Surface>
 bool FlowDecomposition<Surface>::decompose(std::function<bool(const FlowComponent<Surface>&)> target, int limit) {
-  bool targetReached = true;
+  bool limitSufficed = true;
   for (auto& component : components())
-    targetReached = component.decompose(target, limit) && targetReached;
-  return targetReached;
+    limitSufficed = component.decompose(target, limit) && limitSufficed;
+  return limitSufficed;
 }
 
 template <typename Surface>
