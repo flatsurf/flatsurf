@@ -291,20 +291,46 @@ typename Surface::Coordinate FlowComponent<Surface>::width() const {
 }
 
 template <typename Surface>
+std::vector<Vector<typename Surface::Coordinate>> FlowComponent<Surface>::holonomy() const {
+  std::unordered_map<SaddleConnection<Surface>, Vector<T>> toSaddleConnection;
+  
+  Vector<T> pos;
+  for (const auto& connection : perimeter()) {
+    if (connection.bottom())
+      toSaddleConnection[connection.saddleConnection()] = pos;
+    pos += connection.saddleConnection();
+    if (connection.top())
+      toSaddleConnection[connection.saddleConnection()] = pos;
+  }
+
+  LIBFLATSURF_ASSERT(!pos, "perimeter is not closed");
+
+  std::vector<Vector<T>> holonomy;
+  for (const auto& connection : bottom()) {
+    if (connection.vertical()) continue;
+
+    const auto saddleConnection = connection.saddleConnection();
+    const auto zeta = toSaddleConnection.at(-saddleConnection) - toSaddleConnection.at(saddleConnection);
+    LIBFLATSURF_ASSERT(zeta, "holonomy cannot be zero");
+    holonomy.emplace_back(zeta);
+  }
+
+  return holonomy;
+}
+
+template <typename Surface>
 Vector<typename Surface::Coordinate> FlowComponent<Surface>::circumferenceHolonomy() const {
   if (not this->cylinder())
     throw std::logic_error("circumferenceHolonomy can only be called on cylinders");
-  Vector<T> h = Vector<T>();
-  bool basis = false;
-  for (const auto& c : perimeter()) {
-    if (!c.vertical()) {
-      if (basis) break;
-      basis = true;
-    } else {
-      h += c.saddleConnection().vector();
-    }
-  }
-  return h;
+  return *begin(holonomy());
+}
+
+template <typename Surface>
+typename Surface::Coordinate FlowComponent<Surface>::height() const {
+  // The vertical components of the holonomies are a lower bound for the
+  // circumference of a cylinder. Note that these can be negative.
+  // We have to use rx::max() because of a bug in rx::min(), see https://github.com/simonask/rx-ranges/pull/47
+  return -*(holonomy() | rx::transform([&](const auto& v) { return vertical().project(-v); }) | rx::max());
 }
 
 template <typename Surface>

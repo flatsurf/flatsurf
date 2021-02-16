@@ -35,6 +35,7 @@
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
+#include "../flatsurf/vertical.hpp"
 #include "../src/external/rx-ranges/include/rx/ranges.hpp"
 #include "external/catch2/single_include/catch2/catch.hpp"
 #include "generators/surface_generator.hpp"
@@ -94,6 +95,15 @@ TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (long long), (m
 
         CAPTURE(flowDecomposition);
         REQUIRE(area(flowDecomposition.components()) == surface->area());
+
+        AND_THEN("The Area of the Cylinders is Consistent with Their Width & Height (modulo some scaling)") {
+          for (const auto& component : flowDecomposition.components()) {
+            if (component.cylinder()) {
+              REQUIRE(component.holonomy() == std::vector{component.circumferenceHolonomy()});
+              REQUIRE(2 * component.width() * component.height() == component.vertical().vertical() * component.vertical().vertical() * component.area());
+            }
+          }
+        }
 
         AND_THEN("Each of its components can be triangulated") {
           const auto triangulations = flowDecomposition.components() | rx::transform([](const auto& component) { return component.triangulation(); }) | rx::to_vector();
