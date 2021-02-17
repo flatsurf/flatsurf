@@ -13,3 +13,6 @@
 [submodule "libflatsurf/src/external/sigslot"]
 	path = libflatsurf/src/external/sigslot
 	url = https://github.com/palacaze/sigslot.git
+[submodule "libflatsurf/src/external/gmpxxll"]
+	path = libflatsurf/src/external/gmpxxll
+	url = https://github.com:flatsurf/gmpxxll

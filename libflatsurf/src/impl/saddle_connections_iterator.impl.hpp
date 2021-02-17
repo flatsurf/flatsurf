@@ -46,11 +46,13 @@ class ImplementationOf<SaddleConnectionsIterator<Surface>> {
 
   enum class State {
     // The search will now cross nextEdge which starts and ends inside the search radius
-    START_FROM_INSIDE_TO_INSIDE,
+    START_AT_EDGE_FROM_INSIDE_RADIUS_TO_INSIDE_RADIUS,
     // The search will now cross nextEdge which starts inside the search radius and ends outside or at the search radius
-    START_FROM_INSIDE_TO_OUTSIDE,
+    START_AT_EDGE_FROM_INSIDE_RADIUS_TO_OUTSIDE_RADIUS,
     // The search will now cross nextEdge which starts outside or at the search radius and ends inside the search radius
-    START_FROM_OUTSIDE_TO_INSIDE,
+    START_AT_EDGE_FROM_OUTSIDE_RADIUS_TO_INSIDE_RADIUS,
+    // The search will now cross nextEdge which starts and ends outside or at the search radius
+    START_AT_EDGE_FROM_OUTSIDE_RADIUS_TO_OUTSIDE_RADIUS,
     OUTSIDE_SEARCH_SECTOR_COUNTERCLOCKWISE,
     OUTSIDE_SEARCH_SECTOR_CLOCKWISE,
     // The iterator has stopped at a Saddle Connection inside or at the search radius
@@ -134,6 +136,8 @@ class ImplementationOf<SaddleConnectionsIterator<Surface>> {
   Classification classifyHalfEdgeEnd();
 
   void pushStart(bool fromOutside, bool toOutside);
+  void pushStart(State current, bool toOutside);
+  void pushStart(bool fromOutside, State current);
 };
 
 template <typename Surface>

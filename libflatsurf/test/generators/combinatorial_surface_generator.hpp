@@ -38,6 +38,7 @@ class CombinatorialSurfaceGenerator : public Catch::Generators::IGenerator<std::
     L,
     _125,
     _1221,
+    _22313,
     HEXAGON,
     HEPTAGON_L,
     LAST = HEPTAGON_L
@@ -56,6 +57,8 @@ class CombinatorialSurfaceGenerator : public Catch::Generators::IGenerator<std::
         return make125Combinatorial();
       case Surface::_1221:
         return make1221Combinatorial();
+      case Surface::_22313:
+        return make22313Combinatorial();
       case Surface::HEXAGON:
         return makeHexagonCombinatorial();
       case Surface::HEPTAGON_L:

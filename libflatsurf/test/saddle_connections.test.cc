@@ -46,6 +46,23 @@
 
 namespace flatsurf::test {
 
+TEMPLATE_TEST_CASE("Saddle Connections on a (2, 2, 3, 13) Quadrilateral", "[saddle_connections]", (renf_elem_class), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+  using R2 = Vector<T>;
+  auto surface = make22313<R2>();
+
+  GIVEN("The Quadrilateral " << *surface) {
+    // We check that this saddle connection from -3 to 6 is found; verifying
+    // that a bug that appeared in early 2021 has been fixed.
+    const auto search = Vector<T>(-L_->gen() + 2, 0);
+    // The connections starting at edge -3 of length at most sqrt(7)
+    const auto connections = SaddleConnections<FlatTriangulation<T>>(*surface).sector(-3).bound(Bound::upper(search));
+    REQUIRE(std::find_if(begin(connections), end(connections), [&](const auto& connection) {
+      return connection.vector() == search;
+    }) != end(connections));
+  }
+}
+
 TEMPLATE_TEST_CASE("Saddle Connections on a Torus", "[saddle_connections]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
   using R2 = Vector<TestType>;
   auto square = makeSquare<R2>();

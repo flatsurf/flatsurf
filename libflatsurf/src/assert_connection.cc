@@ -83,6 +83,8 @@ bool AssertConnection<T>::operator()(const SaddleConnection<FlatTriangulation<T>
     }
   }
 
+  // The above loop finished and explored all candidate saddle connections.
+  // This saddle connection does not exist in the surface.
   return false;
 }
 

@@ -49,6 +49,7 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::tuple<std::st
     _125,
     _1221,
     _1234,
+    _22313,
     _235,
     HEXAGON,
     OCTAGON,
@@ -140,6 +141,13 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::tuple<std::st
         if constexpr (hasFractions<T> && hasNumberFieldElements<T>) {
           name = "(1, 2, 3, 4)";
           value = make1234<R2>();
+        } else
+          value = nullptr;
+        return;
+      case Surface::_22313:
+        if constexpr (hasNumberFieldElements<T>) {
+          name = "(2, 2, 3, 13)";
+          value = make22313<R2>();
         } else
           value = nullptr;
         return;
