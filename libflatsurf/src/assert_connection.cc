@@ -35,6 +35,7 @@ template <typename T>
 bool AssertConnection<T>::operator()(const SaddleConnection<FlatTriangulation<T>>& claimed) {
   if (cost > budget) {
     budget++;
+    // We ran out of gas. Assume that this saddle connection actually exists.
     return true;
   }
 
@@ -62,7 +63,7 @@ bool AssertConnection<T>::operator()(const SaddleConnection<FlatTriangulation<T>
     switch (w.ccw(v)) {
       case CCW::COLLINEAR:
         cost = steps;
-        return w == v;
+        return *it == claimed;
       case CCW::CLOCKWISE:
         it.skipSector(CCW::COUNTERCLOCKWISE);
         ccw = w;
