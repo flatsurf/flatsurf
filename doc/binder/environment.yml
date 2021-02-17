@@ -5,7 +5,6 @@ channels:
   - flatsurf
   - conda-forge
 dependencies:
-  - boost-cpp
   - libflatsurf>=3.0.0
   - notebook
   - pyflatsurf>=3.0.0
