@@ -213,7 +213,11 @@ Tracked<T>& Tracked<T>::operator=(T&& value) {
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const Tracked<T>& self) {
   if constexpr (is_optional<T>::value) {
-    return os << *static_cast<const T&>(self);
+    if (static_cast<const T&>(self)) {
+      return os << *static_cast<const T&>(self);
+    } else {
+      return os << "{}";
+    }
   } else {
     return os << static_cast<const T&>(self);
   }
