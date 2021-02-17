@@ -81,12 +81,30 @@ class FlowComponent : boost::equality_comparable<FlowComponent<Surface>> {
 
   [[deprecated("This method returns a inconsistent version of the IET from which this component was created originally. Use dynamicalComponent().iet() instead.")]] const IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>& intervalExchangeTransformation() const;
 
+  // Return the width of this component multiplied with the length of the
+  // vertical().
   T width() const;
 
+  // If this is a cylinder, return the height of this component multplied with
+  // the length of the vertical(), i.e., the scalar product of
+  // circumferenceHolonomy() and vertical().
+  // In general this returns a lower bound of the height of any cylinder in
+  // vertical direction contained in this component, again scaled by the length
+  // of vertical().
+  T height() const;
+
+  // Return twice the area of this component. Note that even for cylinders this
+  // is usually not width() * height().
   T area() const;
 
+  // Return the vectors going from the non-vertical saddle connections on the
+  // bottom to their counterparts on the top; ordered as on the bottom contour
+  // from left to right.
+  std::vector<Vector<T>> holonomy() const;
+
   // Return the holonomy of the circumference of this cylinder, i.e., the
-  // vector that corresponds the period of this cylinder.
+  // vector that corresponds the period of this cylinder. Note that this is
+  // holonomy()[0].
   Vector<T> circumferenceHolonomy() const;
 
   Vertical<Surface> vertical() const;
