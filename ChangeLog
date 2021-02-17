@@ -4,6 +4,15 @@ intervalxt Change Log
 
 .. current developments
 
+v3.4.0
+====================
+
+**Added:**
+
+* Add `FlowComponent::height()` and `FlowComponent::holonomy()`.
+
+
+
 v3.3.0
 ====================
 
