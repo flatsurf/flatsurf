@@ -293,7 +293,7 @@ typename Surface::Coordinate FlowComponent<Surface>::width() const {
 template <typename Surface>
 std::vector<Vector<typename Surface::Coordinate>> FlowComponent<Surface>::holonomy() const {
   std::unordered_map<SaddleConnection<Surface>, Vector<T>> toSaddleConnection;
-  
+
   Vector<T> pos;
   for (const auto& connection : perimeter()) {
     if (connection.bottom())
