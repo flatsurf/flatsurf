@@ -24,6 +24,7 @@
 #include <type_traits>
 #include <variant>
 #include <vector>
+#include <boost/logic/tribool.hpp>
 
 #include "../flatsurf/chain.hpp"
 #include "../flatsurf/fmt.hpp"
@@ -33,6 +34,7 @@
 #include "external/gmpxxll/gmpxxll/mpz_class.hpp"
 #include "impl/saddle_connections.impl.hpp"
 #include "impl/saddle_connections_iterator.impl.hpp"
+#include "impl/quadratic_polynomial.hpp"
 #include "util/assert.ipp"
 
 namespace flatsurf {
@@ -78,7 +80,10 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::prepareSearch() {
 
   nextEdgeEnd = (Chain<Surface>(connections.surface) += e) += nextEdge;
   state.push_back(State::END);
-  state.push_back(State::START_AT_EDGE_FROM_INSIDE_RADIUS_TO_INSIDE_RADIUS);
+  // We assume for simplicity that the first half edge is inside the search
+  // radius for the increment() logic. If it is not, no wrong results will be
+  // reported but we could be a bit faster in such (rare) cases.
+  state.push_back(State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_INSIDE_RADIUS);
 
   // Report the half edge "e" as a saddle connection unless it is outside the
   // search scope.
@@ -125,8 +130,22 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
 
   applyMoves();
 
-  const auto s = state.back();
+  auto s = state.back();
   state.pop_back();
+
+  // If we don't know anything about the next edge, we need to find out whether
+  // it has one endpoint inside/outside the search radius. Otherwise there are
+  // cases where this algorithm never stops.
+  if (s == State::START_AT_EDGE) {
+    if (connections.searchRadius) {
+      applyMoves();
+
+      if (static_cast<const Vector<T>&>(nextEdgeEnd) < *connections.searchRadius)
+        s = State::START_AT_EDGE_ENDS_INSIDE_RADIUS;
+      else
+        s = State::START_AT_EDGE_ENDS_OUTSIDE_RADIUS;
+    }
+  }
 
   switch (s) {
     case State::END:
@@ -136,36 +155,47 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
         prepareSearch();
       }
       return true;
-    case State::START_AT_EDGE_FROM_OUTSIDE_RADIUS_TO_OUTSIDE_RADIUS:
+
+    // Some endpoints of nextEdge are outside the search radius. If all of
+    // the edge corresponding to nextEdgeEnd is outside the search radius, we
+    // can abort the search.
+    case State::START_AT_EDGE_ENDS_OUTSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_OUTSIDE_RADIUS:
       LIBFLATSURF_ASSERT(connections.searchRadius, "If no search radius has been specified, the endpoints cannot be beyond the search radius.");
       
-      applyMoves();
-      // The endpoints of nextEdgeEnd are outside the search radius. If all of
-      // the edge corresponding to nextEdgeEnd is outside the search radius, we
-      // can abort the search.
+      // We write this edge as p + λe. Then it is completely outside the search
+      // radius if |p + λe|² - R² > 0 for all λ in [0, 1].
+      // Note that there was no relevant performance gain in treating the cases
+      // where only one endpoint is known to be outside the search radius
+      // differently.
       {
-        // We compute the distance of the origin to the edge we are about to
-        // cross. We use the usual formula, obtaining the distance from the
-        // height of the triangle formed by the origin and the endpoints of the
-        // edge.
-        const Vector<T> edge = connections.surface->fromHalfEdge(nextEdge);
-        const Vector<T> edgeEnd = nextEdgeEnd;
+        applyMoves();
+        const Vector<T>& edge = connections.surface->fromHalfEdge(-nextEdge);
+        const Vector<T>& edgeEnd = nextEdgeEnd;
 
-        using S = std::conditional_t<std::is_same_v<T, long long>, gmpxxll::mpz_class, T>;
-        
-        S base2height2 = edge.x() * edgeEnd.y() - edge.y() * edgeEnd.x();
-        base2height2 *= base2height2;
+        T R2;
+        if constexpr (std::is_same_v<T, long long>) {
+          R2 = gmpxxll::mpz_class((*connections.searchRadius).squared()).get_sll();
+        } else {
+          R2 = T((*connections.searchRadius).squared());
+        }
 
-        mpz_class base2radius2 = Bound::upper(edge).squared() * (*connections.searchRadius).squared();
-
-        // We abort the search when height² ≥ radius² i.e., when base²·height² ≥ base²·radius².
-        if (base2height2 >= base2radius2)
+        if (QuadraticPolynomial<T>(
+          edge.x() * edge.x() + edge.y() * edge.y(),
+          2 * edgeEnd.x() * edge.x() + 2 * edgeEnd.y() * edge.y(),
+          edgeEnd.x() * edgeEnd.x() + edgeEnd.y() * edgeEnd.y() - R2).positive())
           return false;
       }
       [[fallthrough]];
-    case State::START_AT_EDGE_FROM_INSIDE_RADIUS_TO_INSIDE_RADIUS:
-    case State::START_AT_EDGE_FROM_INSIDE_RADIUS_TO_OUTSIDE_RADIUS:
-    case State::START_AT_EDGE_FROM_OUTSIDE_RADIUS_TO_INSIDE_RADIUS:
+    
+    // Some endpoint of nextEdge is inside the search radius. We cross over
+    // this edge and search for saddle connections.
+    case State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_INSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_INSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_OUTSIDE_RADIUS:
+    case State::START_AT_EDGE_ENDS_INSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_INSIDE_RADIUS:
       moves.push_back(Move::GOTO_OTHER_FACE);
 
       if (onBoundary()) {
@@ -177,8 +207,6 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
 
       switch (classifyHalfEdgeEnd()) {
         case Classification::OUTSIDE_SEARCH_SECTOR_CLOCKWISE: {
-          const bool nothingBeyondThisVertex = connections.searchRadius && !(nextEdgeEnd < *connections.searchRadius);
-
           // This vertex is outside of the search sector on the
           // clockwise side, we skip the clockwise sector in the recursive
           // search and recurse into the counterclockwise sector.
@@ -186,18 +214,26 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
 
           state.push_back(State::OUTSIDE_SEARCH_SECTOR_CLOCKWISE);
 
-          pushStart(nothingBeyondThisVertex, s);
+          // When crossing over this edge, we (often) already know whether one
+          // of its endpoints is inside or outside the search radius; that's
+          // encoded in s. Now that we just performed a classifyHalfEdgeEnd()
+          // it is cheap to also ask whether we are below the search radius
+          // with the other end point.
+          pushStart(connections.searchRadius && !(nextEdgeEnd < *connections.searchRadius), s);
 
           return false;
         }
         case Classification::OUTSIDE_SEARCH_SECTOR_COUNTERCLOCKWISE: {
-          const bool nothingBeyondThisVertex = connections.searchRadius && !(nextEdgeEnd < *connections.searchRadius);
-
           // Similarly, we skip the counterclockwise sector (but only after
           // we visited the clockwise one.)
           state.push_back(State::OUTSIDE_SEARCH_SECTOR_COUNTERCLOCKWISE);
-
-          pushStart(s, nothingBeyondThisVertex);
+          
+          // In parallel to the previous case, we could ask cheaply whether one
+          // end point is still within the search radius. I.e., perform this call:
+          // pushStart(s, connections.searchRadius && !(nextEdgeEnd < *connections.searchRadius));
+          // However, it is beneficial to only perform this call in one of
+          // these branches as the check does not come entirely for free.
+          pushStart(s, {boost::logic::indeterminate});
 
           return false;
         }
@@ -294,10 +330,15 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::skipSector(CCW sector
         // Go directly to the second sector by skipping the recursive call,
         // i.e., the START.
         switch (state.back()) {
-          case State::START_AT_EDGE_FROM_INSIDE_RADIUS_TO_INSIDE_RADIUS:
-          case State::START_AT_EDGE_FROM_INSIDE_RADIUS_TO_OUTSIDE_RADIUS:
-          case State::START_AT_EDGE_FROM_OUTSIDE_RADIUS_TO_INSIDE_RADIUS:
-          case State::START_AT_EDGE_FROM_OUTSIDE_RADIUS_TO_OUTSIDE_RADIUS:
+          case State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_INSIDE_RADIUS:
+          case State::START_AT_EDGE_STARTS_INSIDE_RADIUS:
+          case State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_OUTSIDE_RADIUS:
+          case State::START_AT_EDGE_ENDS_INSIDE_RADIUS:
+          case State::START_AT_EDGE:
+          case State::START_AT_EDGE_ENDS_OUTSIDE_RADIUS:
+          case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_INSIDE_RADIUS:
+          case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS:
+          case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_OUTSIDE_RADIUS:
             state.pop_back();
             break;
           default:
@@ -313,10 +354,15 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::skipSector(CCW sector
         }
 
         switch (unchanged.top()) {
-          case State::START_AT_EDGE_FROM_INSIDE_RADIUS_TO_INSIDE_RADIUS:
-          case State::START_AT_EDGE_FROM_INSIDE_RADIUS_TO_OUTSIDE_RADIUS:
-          case State::START_AT_EDGE_FROM_OUTSIDE_RADIUS_TO_INSIDE_RADIUS:
-          case State::START_AT_EDGE_FROM_OUTSIDE_RADIUS_TO_OUTSIDE_RADIUS:
+          case State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_INSIDE_RADIUS:
+          case State::START_AT_EDGE_STARTS_INSIDE_RADIUS:
+          case State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_OUTSIDE_RADIUS:
+          case State::START_AT_EDGE_ENDS_INSIDE_RADIUS:
+          case State::START_AT_EDGE:
+          case State::START_AT_EDGE_ENDS_OUTSIDE_RADIUS:
+          case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_INSIDE_RADIUS:
+          case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS:
+          case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_OUTSIDE_RADIUS:
             unchanged.pop();
           default:
             break;
@@ -328,10 +374,15 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::skipSector(CCW sector
         }
       }
       break;
-    case State::START_AT_EDGE_FROM_INSIDE_RADIUS_TO_INSIDE_RADIUS:
-    case State::START_AT_EDGE_FROM_OUTSIDE_RADIUS_TO_INSIDE_RADIUS:
-    case State::START_AT_EDGE_FROM_INSIDE_RADIUS_TO_OUTSIDE_RADIUS:
-    case State::START_AT_EDGE_FROM_OUTSIDE_RADIUS_TO_OUTSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_INSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_INSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_OUTSIDE_RADIUS:
+    case State::START_AT_EDGE_ENDS_INSIDE_RADIUS:
+    case State::START_AT_EDGE:
+    case State::START_AT_EDGE_ENDS_OUTSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_INSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_OUTSIDE_RADIUS:
       if (state.size() == 2) {
         if (sector == CCW::COUNTERCLOCKWISE) {
           // We are in the initial state, the reported saddle connection is on
@@ -459,44 +510,68 @@ typename ImplementationOf<SaddleConnectionsIterator<Surface>>::Classification Im
 }
 
 template <typename Surface>
-void ImplementationOf<SaddleConnectionsIterator<Surface>>::pushStart(bool fromOutside, State current) {
+void ImplementationOf<SaddleConnectionsIterator<Surface>>::pushStart(boost::logic::tribool fromOutside, State current) {
   switch (current) {
-    case State::START_AT_EDGE_FROM_INSIDE_RADIUS_TO_OUTSIDE_RADIUS:
-    case State::START_AT_EDGE_FROM_OUTSIDE_RADIUS_TO_OUTSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_INSIDE_RADIUS:
+    case State::START_AT_EDGE_ENDS_INSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_INSIDE_RADIUS:
+      pushStart(fromOutside, false);
+      return;
+    case State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_OUTSIDE_RADIUS:
+    case State::START_AT_EDGE_ENDS_OUTSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_OUTSIDE_RADIUS:
       pushStart(fromOutside, true);
       return;
     default:
-      pushStart(fromOutside, false);
+      pushStart(fromOutside, {boost::logic::indeterminate});
       return;
   }
 }
 
 template <typename Surface>
-void ImplementationOf<SaddleConnectionsIterator<Surface>>::pushStart(State current, bool toOutside) {
+void ImplementationOf<SaddleConnectionsIterator<Surface>>::pushStart(State current, boost::logic::tribool toOutside) {
   switch (current) {
-    case State::START_AT_EDGE_FROM_OUTSIDE_RADIUS_TO_INSIDE_RADIUS:
-    case State::START_AT_EDGE_FROM_OUTSIDE_RADIUS_TO_OUTSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_INSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_INSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_OUTSIDE_RADIUS:
+      pushStart(false, toOutside);
+      return;
+    case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_INSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_OUTSIDE_RADIUS:
       pushStart(true, toOutside);
       return;
     default:
-      pushStart(false, toOutside);
+      pushStart({boost::logic::indeterminate}, toOutside);
       return;
   }
 }
 
 template <typename Surface>
-void ImplementationOf<SaddleConnectionsIterator<Surface>>::pushStart(bool fromOutside, bool toOutside) {
+void ImplementationOf<SaddleConnectionsIterator<Surface>>::pushStart(boost::logic::tribool fromOutside, boost::logic::tribool toOutside) {
   if (fromOutside) {
     if (toOutside) {
-      state.push_back(State::START_AT_EDGE_FROM_OUTSIDE_RADIUS_TO_OUTSIDE_RADIUS);
+      state.push_back(State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_OUTSIDE_RADIUS);
+    } else if (!toOutside) {
+      state.push_back(State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_INSIDE_RADIUS);
     } else {
-      state.push_back(State::START_AT_EDGE_FROM_OUTSIDE_RADIUS_TO_INSIDE_RADIUS);
+      state.push_back(State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS);
+    }
+  } else if (!fromOutside) {
+    if (toOutside) {
+      state.push_back(State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_OUTSIDE_RADIUS);
+    } else if (!toOutside) {
+      state.push_back(State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_INSIDE_RADIUS);
+    } else {
+      state.push_back(State::START_AT_EDGE_STARTS_INSIDE_RADIUS);
     }
   } else {
     if (toOutside) {
-      state.push_back(State::START_AT_EDGE_FROM_INSIDE_RADIUS_TO_OUTSIDE_RADIUS);
+      state.push_back(State::START_AT_EDGE_ENDS_OUTSIDE_RADIUS);
+    } else if (!toOutside) {
+      state.push_back(State::START_AT_EDGE_ENDS_INSIDE_RADIUS);
     } else {
-      state.push_back(State::START_AT_EDGE_FROM_INSIDE_RADIUS_TO_INSIDE_RADIUS);
+      state.push_back(State::START_AT_EDGE);
     }
   }
 }
@@ -526,6 +601,7 @@ void SaddleConnectionsIterator<Surface>::skipSector(CCW ccw) {
 
 template <typename Surface>
 std::optional<HalfEdge> SaddleConnectionsIterator<Surface>::incrementWithCrossings() {
+  using Implementation = ImplementationOf<SaddleConnectionsIterator<Surface>>;
   LIBFLATSURF_ASSERT(self->sector != self->end, "iterator is at end()");
 
   while (true) {
@@ -533,10 +609,14 @@ std::optional<HalfEdge> SaddleConnectionsIterator<Surface>::incrementWithCrossin
       return std::nullopt;
     } else
       switch (self->state.back()) {
-        case ImplementationOf<SaddleConnectionsIterator>::State::START_AT_EDGE_FROM_INSIDE_RADIUS_TO_INSIDE_RADIUS:
-        case ImplementationOf<SaddleConnectionsIterator>::State::START_AT_EDGE_FROM_INSIDE_RADIUS_TO_OUTSIDE_RADIUS:
-        case ImplementationOf<SaddleConnectionsIterator>::State::START_AT_EDGE_FROM_OUTSIDE_RADIUS_TO_INSIDE_RADIUS:
-        case ImplementationOf<SaddleConnectionsIterator>::State::START_AT_EDGE_FROM_OUTSIDE_RADIUS_TO_OUTSIDE_RADIUS: {
+        case Implementation::State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_INSIDE_RADIUS:
+        case Implementation::State::START_AT_EDGE_STARTS_INSIDE_RADIUS:
+        case Implementation::State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_OUTSIDE_RADIUS:
+        case Implementation::State::START_AT_EDGE_ENDS_INSIDE_RADIUS:
+        case Implementation::State::START_AT_EDGE_ENDS_OUTSIDE_RADIUS:
+        case Implementation::State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_INSIDE_RADIUS:
+        case Implementation::State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS:
+        case Implementation::State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_OUTSIDE_RADIUS: {
           self->applyMoves();
           const auto ret = self->nextEdge;
           self->increment();
@@ -555,7 +635,7 @@ const SaddleConnection<Surface>& SaddleConnectionsIterator<Surface>::dereference
   LIBFLATSURF_ASSERT(self->sector != self->end, "iterator is at end()");
 
   switch (self->state.back()) {
-    case ImplementationOf<SaddleConnectionsIterator>::State::START_AT_EDGE_FROM_INSIDE_RADIUS_TO_INSIDE_RADIUS:
+    case ImplementationOf<SaddleConnectionsIterator>::State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_INSIDE_RADIUS:
       // This makes the first reported connection work: It is not nextEdgeEnd but the sector boundary.
       self->connection = SaddleConnection(*self->connections.surface, self->sector->source);
       break;
@@ -582,14 +662,22 @@ std::ostream& operator<<(std::ostream& os, const SaddleConnectionsIterator<Surfa
   } else {
     return os << fmt::format("Iterator(sector={}, nextEdge={}, nextEdgeEnd={}, stack=[{}])", self.self->sector->source, self.self->nextEdge, static_cast<Vector<T>>(self.self->nextEdgeEnd), fmt::join(self.self->state | rx::transform([](const auto& state) {
       switch (state) {
-        case Implementation::State::START_AT_EDGE_FROM_INSIDE_RADIUS_TO_INSIDE_RADIUS:
-          return "START_AT_EDGE_FROM_INSIDE_RADIUS_TO_INSIDE_RADIUS";
-        case Implementation::State::START_AT_EDGE_FROM_INSIDE_RADIUS_TO_OUTSIDE_RADIUS:
-          return "START_AT_EDGE_FROM_INSIDE_RADIUS_TO_OUTSIDE_RADIUS";
-        case Implementation::State::START_AT_EDGE_FROM_OUTSIDE_RADIUS_TO_INSIDE_RADIUS:
-          return "START_AT_EDGE_FROM_OUTSIDE_RADIUS_TO_INSIDE_RADIUS";
-        case Implementation::State::START_AT_EDGE_FROM_OUTSIDE_RADIUS_TO_OUTSIDE_RADIUS:
-          return "START_AT_EDGE_FROM_OUTSIDE_RADIUS_TO_OUTSIDE_RADIUS";
+        case Implementation::State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_INSIDE_RADIUS:
+          return "START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_INSIDE_RADIUS";
+        case Implementation::State::START_AT_EDGE_STARTS_INSIDE_RADIUS:
+          return "START_AT_EDGE_STARTS_INSIDE_RADIUS";
+        case Implementation::State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_OUTSIDE_RADIUS:
+          return "START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_OUTSIDE_RADIUS";
+        case Implementation::State::START_AT_EDGE_ENDS_INSIDE_RADIUS:
+          return "START_AT_EDGE_ENDS_INSIDE_RADIUS";
+        case Implementation::State::START_AT_EDGE_ENDS_OUTSIDE_RADIUS:
+          return "START_AT_EDGE_ENDS_OUTSIDE_RADIUS";
+        case Implementation::State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_INSIDE_RADIUS:
+          return "START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_INSIDE_RADIUS";
+        case Implementation::State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS:
+          return "START_AT_EDGE_STARTS_OUTSIDE_RADIUS";
+        case Implementation::State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_OUTSIDE_RADIUS:
+          return "START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_OUTSIDE_RADIUS";
         case Implementation::State::OUTSIDE_SEARCH_SECTOR_COUNTERCLOCKWISE:
           return "OUTSIDE_SEARCH_SECTOR_COUNTERCLOCKWISE";
         case Implementation::State::OUTSIDE_SEARCH_SECTOR_CLOCKWISE:
