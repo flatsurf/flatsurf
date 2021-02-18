@@ -156,8 +156,16 @@ class ImplementationOf<SaddleConnectionsIterator<Surface>> {
 
   Classification classifyHalfEdgeEnd();
 
+  // Return the topmost State from the recursion stack.
+  State pop();
+
+  // Push a START_* state onto the stack.
   void pushStart(boost::logic::tribool fromOutside, boost::logic::tribool toOutside);
+
+  // Push a START_* state onto the stack.
   void pushStart(State current, boost::logic::tribool toOutside);
+
+  // Push a START_* state onto the stack.
   void pushStart(boost::logic::tribool fromOutside, State current);
 };
 

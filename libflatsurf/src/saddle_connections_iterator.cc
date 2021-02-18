@@ -120,13 +120,7 @@ CCW ImplementationOf<SaddleConnectionsIterator<Surface>>::ccw(const Boundary& lh
 }
 
 template <typename Surface>
-bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
-  assert(state.size());
-  assert(sector != end);
-  assert(ccw(boundary[0], boundary[1]) != CCW::CLOCKWISE);
-
-  applyMoves();
-
+typename ImplementationOf<SaddleConnectionsIterator<Surface>>::State ImplementationOf<SaddleConnectionsIterator<Surface>>::pop() {
   auto s = state.back();
   state.pop_back();
 
@@ -143,6 +137,17 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
         s = State::START_AT_EDGE_ENDS_OUTSIDE_RADIUS;
     }
   }
+
+  return s;
+}
+
+template <typename Surface>
+bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
+  assert(state.size());
+  assert(sector != end);
+  assert(ccw(boundary[0], boundary[1]) != CCW::CLOCKWISE);
+
+  const auto s = pop();
 
   switch (s) {
     case State::END:
@@ -188,6 +193,7 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
     
     // Some endpoint of nextEdge is inside the search radius. We cross over
     // this edge and search for saddle connections.
+    case State::START_AT_EDGE:
     case State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_INSIDE_RADIUS:
     case State::START_AT_EDGE_STARTS_INSIDE_RADIUS:
     case State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_OUTSIDE_RADIUS:
