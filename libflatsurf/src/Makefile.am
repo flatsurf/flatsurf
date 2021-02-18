@@ -204,5 +204,7 @@ nodist_include_HEADERS = ../flatsurf/local.hpp
 EXTRA_DIST += external/sigslot/include
 # We vendor the header-only library rx-ranges
 EXTRA_DIST += external/rx-ranges/include/rx/ranges.hpp
+# We vendor our header-only library gmpxxll
+EXTRA_DIST += external/gmpxxll/gmpxxll/mpz_class.hpp
 
 CLEANFILES = ../flatsurf/local.hpp

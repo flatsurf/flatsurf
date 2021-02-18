@@ -24,6 +24,7 @@
 #include <stack>
 #include <variant>
 #include <vector>
+#include <boost/logic/tribool_fwd.hpp>
 
 #include "../../flatsurf/bound.hpp"
 #include "../../flatsurf/ccw.hpp"
@@ -45,12 +46,34 @@ class ImplementationOf<SaddleConnectionsIterator<Surface>> {
   };
 
   enum class State {
-    // The search will now cross nextEdge which starts and ends inside the search radius
-    START_FROM_INSIDE_TO_INSIDE,
-    // The search will now cross nextEdge which starts inside the search radius and ends outside or at the search radius
-    START_FROM_INSIDE_TO_OUTSIDE,
-    // The search will now cross nextEdge which starts outside or at the search radius and ends inside the search radius
-    START_FROM_OUTSIDE_TO_INSIDE,
+    // The search will now cross nextEdge which starts and ends inside the
+    // search radius (or at least that's what we are assuming for simplicity.)
+    START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_INSIDE_RADIUS,
+    // The search will now cross nextEdge which starts inside the search radius
+    // (and probably also ends there but we do not know.)
+    START_AT_EDGE_STARTS_INSIDE_RADIUS,
+    // The search will now cross nextEdge which starts inside the search radius
+    // but ends outside of the search radius.
+    START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_OUTSIDE_RADIUS,
+    // The search will now cross nextEdge which ends inside the search radius
+    // but we do not know whether it also starts there.
+    START_AT_EDGE_ENDS_INSIDE_RADIUS,
+    // The search will now cross nextEdge. We don know whether it starts or
+    // ends inside the search radius.
+    START_AT_EDGE,
+    // The search will now cross nextEdge which ends outside (or at) the search
+    // radius. We do not know whether it starts inside or outside.
+    START_AT_EDGE_ENDS_OUTSIDE_RADIUS,
+    // The search will now cross nextEdge which starts outside (or at) the
+    // search radius and ends inside the search radius.
+    START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_INSIDE_RADIUS,
+    // The search will now cross nextEdge which starts outside (or at) the
+    // search radius. We do not know whether it ends inside or outside the
+    // search radius.
+    START_AT_EDGE_STARTS_OUTSIDE_RADIUS,
+    // The search will now cross nexetEdge with starts and ends outside (or at)
+    // the search radius.
+    START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_OUTSIDE_RADIUS,
     OUTSIDE_SEARCH_SECTOR_COUNTERCLOCKWISE,
     OUTSIDE_SEARCH_SECTOR_CLOCKWISE,
     // The iterator has stopped at a Saddle Connection inside or at the search radius
@@ -133,7 +156,17 @@ class ImplementationOf<SaddleConnectionsIterator<Surface>> {
 
   Classification classifyHalfEdgeEnd();
 
-  void pushStart(bool fromOutside, bool toOutside);
+  // Return the topmost State from the recursion stack.
+  State pop();
+
+  // Push a START_* state onto the stack.
+  void pushStart(boost::logic::tribool fromOutside, boost::logic::tribool toOutside);
+
+  // Push a START_* state onto the stack.
+  void pushStart(State current, boost::logic::tribool toOutside);
+
+  // Push a START_* state onto the stack.
+  void pushStart(boost::logic::tribool fromOutside, State current);
 };
 
 template <typename Surface>

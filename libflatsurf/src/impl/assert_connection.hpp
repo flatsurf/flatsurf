@@ -29,6 +29,9 @@ namespace flatsurf {
 template <typename T>
 class AssertConnection {
  public:
+  // Return whether this saddle connection actually exists in the surface.
+  // Also, returns ``true`` when we found that it would take an unreasonable
+  // amount of time to check.
   bool operator()(const SaddleConnection<FlatTriangulation<T>>&);
 
  private:
