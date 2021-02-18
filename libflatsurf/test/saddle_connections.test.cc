@@ -46,23 +46,6 @@
 
 namespace flatsurf::test {
 
-TEMPLATE_TEST_CASE("Saddle Connections on a (2, 2, 3, 13) Quadrilateral", "[saddle_connections]", (renf_elem_class), (exactreal::Element<exactreal::NumberField>)) {
-  using T = TestType;
-  using R2 = Vector<T>;
-  auto surface = make22313<R2>();
-
-  GIVEN("The Quadrilateral " << *surface) {
-    // We check that this saddle connection from -3 to 6 is found; verifying
-    // that a bug that appeared in early 2021 has been fixed.
-    const auto search = Vector<T>(-L_->gen() + 2, 0);
-    // The connections starting at edge -3 of length at most sqrt(7)
-    const auto connections = SaddleConnections<FlatTriangulation<T>>(*surface).sector(-3).bound(Bound::upper(search));
-    REQUIRE(std::find_if(begin(connections), end(connections), [&](const auto& connection) {
-      return connection.vector() == search;
-    }) != end(connections));
-  }
-}
-
 TEMPLATE_TEST_CASE("Saddle Connections on a Torus", "[saddle_connections]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
   using R2 = Vector<TestType>;
   auto square = makeSquare<R2>();
@@ -200,7 +183,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Surface", "[saddle_connections]", (l
       const auto connection = GENERATE_REF(saddleConnections(surface, 3));
       const auto bound = Bound::upper(connection.vector());
 
-      AND_GIVEN("The saddle connection " << connection) {
+      GIVEN("The saddle connection " << connection) {
         THEN("There is exactly that saddle connection in the sector bounded by this connection") {
           const auto connections_ = surface->connections().bound(2 * bound).sector(connection, connection);
           REQUIRE(std::distance(begin(connections_), end(connections_)) == 1);
@@ -215,9 +198,16 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Surface", "[saddle_connections]", (l
           const auto connections_ = surface->connections().bound(2 * bound).sector(connection.vector(), connection.vector()).sector(connection.source());
           REQUIRE(std::distance(begin(connections_), end(connections_)) == 1);
         }
+
+        THEN("There is that saddle connection among the connections starting at its source and using its length as a bound") {
+          const auto connections = surface->connections().bound(Bound::upper(connection.vector())).sector(connection.source());
+          REQUIRE(std::find_if(begin(connections), end(connections), [&](const auto& c) {
+            return c == connection;
+          }) != end(connections));
+        }
       }
 
-      AND_GIVEN("Two connections that define sectors that cover the entire plane") {
+      GIVEN("Two connections that define sectors that cover the entire plane") {
         const auto sectorBegin = connection;
         const auto sectorEnd = GENERATE_REF(saddleConnections(surface, 3));
 
