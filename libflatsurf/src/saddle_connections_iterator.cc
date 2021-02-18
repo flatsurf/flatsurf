@@ -80,10 +80,7 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::prepareSearch() {
 
   nextEdgeEnd = (Chain<Surface>(connections.surface) += e) += nextEdge;
   state.push_back(State::END);
-  // We assume for simplicity that the first half edge is inside the search
-  // radius for the increment() logic. If it is not, no wrong results will be
-  // reported but we could be a bit faster in such (rare) cases.
-  state.push_back(State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_INSIDE_RADIUS);
+  state.push_back(State::START_AT_EDGE);
 
   // Report the half edge "e" as a saddle connection unless it is outside the
   // search scope.
@@ -635,7 +632,7 @@ const SaddleConnection<Surface>& SaddleConnectionsIterator<Surface>::dereference
   LIBFLATSURF_ASSERT(self->sector != self->end, "iterator is at end()");
 
   switch (self->state.back()) {
-    case ImplementationOf<SaddleConnectionsIterator>::State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_INSIDE_RADIUS:
+    case ImplementationOf<SaddleConnectionsIterator>::State::START_AT_EDGE:
       // This makes the first reported connection work: It is not nextEdgeEnd but the sector boundary.
       self->connection = SaddleConnection(*self->connections.surface, self->sector->source);
       break;
