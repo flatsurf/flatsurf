@@ -20,11 +20,11 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTIONS_ITERATOR_IMPL_HPP
 #define LIBFLATSURF_SADDLE_CONNECTIONS_ITERATOR_IMPL_HPP
 
+#include <boost/logic/tribool_fwd.hpp>
 #include <deque>
 #include <stack>
 #include <variant>
 #include <vector>
-#include <boost/logic/tribool_fwd.hpp>
 
 #include "../../flatsurf/bound.hpp"
 #include "../../flatsurf/ccw.hpp"

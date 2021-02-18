@@ -19,22 +19,22 @@
 
 #include <fmt/format.h>
 
+#include <boost/logic/tribool.hpp>
 #include <exact-real/arb.hpp>
 #include <optional>
 #include <type_traits>
 #include <variant>
 #include <vector>
-#include <boost/logic/tribool.hpp>
 
 #include "../flatsurf/chain.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vector.hpp"
-#include "external/rx-ranges/include/rx/ranges.hpp"
 #include "external/gmpxxll/gmpxxll/mpz_class.hpp"
+#include "external/rx-ranges/include/rx/ranges.hpp"
+#include "impl/quadratic_polynomial.hpp"
 #include "impl/saddle_connections.impl.hpp"
 #include "impl/saddle_connections_iterator.impl.hpp"
-#include "impl/quadratic_polynomial.hpp"
 #include "util/assert.ipp"
 
 namespace flatsurf {
@@ -165,7 +165,7 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
     case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS:
     case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_OUTSIDE_RADIUS:
       LIBFLATSURF_ASSERT(connections.searchRadius, "If no search radius has been specified, the endpoints cannot be beyond the search radius.");
-      
+
       // We write this edge as p + λe. Then it is completely outside the search
       // radius if |p + λe|² - R² > 0 for all λ in [0, 1].
       // Note that there was no relevant performance gain in treating the cases
@@ -184,13 +184,14 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
         }
 
         if (QuadraticPolynomial<T>(
-          edge.x() * edge.x() + edge.y() * edge.y(),
-          2 * edgeEnd.x() * edge.x() + 2 * edgeEnd.y() * edge.y(),
-          edgeEnd.x() * edgeEnd.x() + edgeEnd.y() * edgeEnd.y() - R2).positive())
+                edge.x() * edge.x() + edge.y() * edge.y(),
+                2 * edgeEnd.x() * edge.x() + 2 * edgeEnd.y() * edge.y(),
+                edgeEnd.x() * edgeEnd.x() + edgeEnd.y() * edgeEnd.y() - R2)
+                .positive())
           return false;
       }
       [[fallthrough]];
-    
+
     // Some endpoint of nextEdge is inside the search radius. We cross over
     // this edge and search for saddle connections.
     case State::START_AT_EDGE:
@@ -230,7 +231,7 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
           // Similarly, we skip the counterclockwise sector (but only after
           // we visited the clockwise one.)
           state.push_back(State::OUTSIDE_SEARCH_SECTOR_COUNTERCLOCKWISE);
-          
+
           // In parallel to the previous case, we could ask cheaply whether one
           // end point is still within the search radius. I.e., perform this call:
           // pushStart(s, connections.searchRadius && !(nextEdgeEnd < *connections.searchRadius));
