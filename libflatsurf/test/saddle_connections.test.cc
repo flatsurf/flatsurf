@@ -21,6 +21,7 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
+#include <algorithm>
 #include <exact-real/element.hpp>
 #include <exact-real/number_field.hpp>
 #include <unordered_set>
@@ -204,6 +205,21 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Surface", "[saddle_connections]", (l
           REQUIRE(std::find_if(begin(connections), end(connections), [&](const auto& c) {
             return c == connection;
           }) != end(connections));
+        }
+
+        THEN("The Reported Crossings are Consistent") {
+          const auto crossings = connection.crossings();
+
+          const bool isHalfEdge = connection == SaddleConnection(*surface, connection.source());
+
+          CAPTURE(crossings);
+          REQUIRE((crossings.size() == 0) == isHalfEdge);
+
+          auto crossings_ = (-connection).crossings();
+          for (auto& crossing: crossings_) crossing = -crossing;
+          std::reverse(begin(crossings_), end(crossings_));
+
+          REQUIRE(crossings == crossings_);
         }
       }
 
