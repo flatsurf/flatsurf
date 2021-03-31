@@ -58,7 +58,7 @@ class ImplementationOf<SaddleConnectionsIterator<Surface>> {
     // The search will now cross nextEdge which ends inside the search radius
     // but we do not know whether it also starts there.
     START_AT_EDGE_ENDS_INSIDE_RADIUS,
-    // The search will now cross nextEdge. We don know whether it starts or
+    // The search will now cross nextEdge. We do not know whether it starts or
     // ends inside the search radius.
     START_AT_EDGE,
     // The search will now cross nextEdge which ends outside (or at) the search

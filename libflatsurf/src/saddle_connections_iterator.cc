@@ -613,6 +613,7 @@ std::optional<HalfEdge> SaddleConnectionsIterator<Surface>::incrementWithCrossin
       return std::nullopt;
     } else
       switch (self->state.back()) {
+        case Implementation::State::START_AT_EDGE:
         case Implementation::State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_INSIDE_RADIUS:
         case Implementation::State::START_AT_EDGE_STARTS_INSIDE_RADIUS:
         case Implementation::State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_OUTSIDE_RADIUS:
