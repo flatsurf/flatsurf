@@ -216,7 +216,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Surface", "[saddle_connections]", (l
           REQUIRE((crossings.size() == 0) == isHalfEdge);
 
           auto crossings_ = (-connection).crossings();
-          for (auto& crossing: crossings_) crossing = -crossing;
+          for (auto& crossing : crossings_) crossing = -crossing;
           std::reverse(begin(crossings_), end(crossings_));
 
           REQUIRE(crossings == crossings_);
