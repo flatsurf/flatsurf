@@ -48,6 +48,9 @@ template <typename Surface>
 class ContourDecomposition;
 
 template <typename Surface>
+class HalfEdgeIntersection;
+
+template <typename Surface>
 class DecompositionStep;
 
 template <typename Surface>

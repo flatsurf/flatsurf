@@ -2,7 +2,7 @@
  *  This file is part of flatsurf.
  *
  *        Copyright (C) 2019 Vincent Delecroix
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,12 +25,14 @@
 #include <exact-real/element.hpp>
 #include <exact-real/number_field.hpp>
 #include <unordered_set>
+#include <set>
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/deformation.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/half_edge_intersection.hpp"
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
@@ -220,6 +222,30 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Surface", "[saddle_connections]", (l
           std::reverse(begin(crossings_), end(crossings_));
 
           REQUIRE(crossings == crossings_);
+        }
+
+        THEN("The Reported Path is Consistent") {
+          const auto path = connection.path();
+
+          const bool isHalfEdge = connection == SaddleConnection(*surface, connection.source());
+
+          CAPTURE(path);
+          REQUIRE((path.size() == 0) == isHalfEdge);
+
+          for (auto& intersection : path) {
+            const double at = intersection.at();
+            REQUIRE(at >= 0);
+            REQUIRE(at <= 1);
+
+            for (auto& other : path) {
+              CAPTURE(intersection);
+              CAPTURE(other);
+              if (&intersection == &other)
+                REQUIRE((intersection <= other && intersection >= other));
+              else if (intersection.halfEdge() == other.halfEdge())
+                REQUIRE((intersection < other || intersection > other));
+            }
+          }
         }
       }
 

@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2020-2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,10 +28,12 @@
 
 #include "../flatsurf/chain.hpp"
 #include "../flatsurf/fmt.hpp"
+#include "../flatsurf/half_edge_intersection.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vector.hpp"
 #include "external/gmpxxll/gmpxxll/mpz_class.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
+#include "impl/half_edge_intersection.impl.hpp"
 #include "impl/quadratic_polynomial.hpp"
 #include "impl/saddle_connections.impl.hpp"
 #include "impl/saddle_connections_iterator.impl.hpp"
@@ -309,7 +311,7 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
       moves.push_back(Move::GOTO_OTHER_FACE);
       return false;
     default:
-      throw std::logic_error("unknown State");
+      throw std::logic_error("unknown State in increment()");
   }
 }
 
@@ -594,6 +596,7 @@ bool SaddleConnectionsIterator<Surface>::equal(const SaddleConnectionsIterator<S
 
 template <typename Surface>
 void SaddleConnectionsIterator<Surface>::increment() {
+  // Run the search for saddle connections until we find a connection that is within the search bounds.
   while (!self->increment())
     ;
 }
@@ -605,6 +608,16 @@ void SaddleConnectionsIterator<Surface>::skipSector(CCW ccw) {
 
 template <typename Surface>
 std::optional<HalfEdge> SaddleConnectionsIterator<Surface>::incrementWithCrossings() {
+  auto intersection = incrementWithIntersections();
+
+  if (intersection)
+    return intersection->second;
+
+  return std::nullopt;
+}
+
+template <typename Surface>
+std::optional<std::pair<Chain<Surface>, HalfEdge>> SaddleConnectionsIterator<Surface>::incrementWithIntersections() {
   using Implementation = ImplementationOf<SaddleConnectionsIterator<Surface>>;
   LIBFLATSURF_ASSERT(self->sector != self->end, "iterator is at end()");
 
@@ -623,9 +636,11 @@ std::optional<HalfEdge> SaddleConnectionsIterator<Surface>::incrementWithCrossin
         case Implementation::State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS:
         case Implementation::State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_OUTSIDE_RADIUS: {
           self->applyMoves();
-          const auto ret = self->nextEdge;
+          const auto crossing = self->nextEdge;
+          const auto base = self->nextEdgeEnd - crossing;
+
           self->increment();
-          return ret;
+          return std::pair{base, crossing};
         }
         case ImplementationOf<SaddleConnectionsIterator>::State::SADDLE_CONNECTION_FOUND:
           return std::nullopt;
@@ -648,7 +663,8 @@ const SaddleConnection<Surface>& SaddleConnectionsIterator<Surface>::dereference
       self->connection = SaddleConnection<Surface>(self->connections.surface, self->sector->source, self->connections.surface->previousAtVertex(-self->nextEdge), self->nextEdgeEnd);
       break;
     default:
-      LIBFLATSURF_ASSERT(false, "iterator cannot hold in this state");
+      LIBFLATSURF_ASSERT(false, "iterator cannot be dereferenced in this state");
+      break;
   }
 
   LIBFLATSURF_ASSERT(!self->connections.searchRadius || self->connection <= *self->connections.searchRadius, "Iterator stopped at connection " << self->connection << " which is beyond the search radius " << *self->connections.searchRadius);
@@ -675,6 +691,8 @@ std::ostream& operator<<(std::ostream& os, const SaddleConnectionsIterator<Surfa
           return "START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_OUTSIDE_RADIUS";
         case Implementation::State::START_AT_EDGE_ENDS_INSIDE_RADIUS:
           return "START_AT_EDGE_ENDS_INSIDE_RADIUS";
+        case Implementation::State::START_AT_EDGE:
+          return "START_AT_EDGE";
         case Implementation::State::START_AT_EDGE_ENDS_OUTSIDE_RADIUS:
           return "START_AT_EDGE_ENDS_OUTSIDE_RADIUS";
         case Implementation::State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_INSIDE_RADIUS:
@@ -696,7 +714,7 @@ std::ostream& operator<<(std::ostream& os, const SaddleConnectionsIterator<Surfa
         case Implementation::State::END:
           return "END";
         default:
-          throw std::logic_error("unknown State");
+          throw std::logic_error("unknown State in operator<<");
       }
     }) | rx::to_vector(),
                                                                                                                                                                                                  ", "));

@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2020-2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -40,12 +40,27 @@ class SaddleConnectionsIterator : public boost::iterator_facade<SaddleConnection
  public:
   // Advance the iterator to the next saddle connection.
   void increment();
+
   // Advance the iterator to the next saddle connection or until a HalfEdge is
   // being crossed during the search (in forward direction.) This can be useful
   // if information about the exact path in the surface for a saddle connection
   // needs to be reconstructed.
+  [[deprecated("Use incrementWithIntersections() instead.")]]
   std::optional<HalfEdge> incrementWithCrossings();
+
+  // Advance the iterator to the next saddle connection or until a HalfEdge is
+  // being crossed during the search (in forward direction.) This can be useful
+  // if information about the exact path in the surface for a saddle connection
+  // needs to be reconstructed.
+  // Note that the iterator is initially starting on a saddle connection. The
+  // intersections reported by this method do not include the ones that were
+  // taken to get to that initial saddle connection, i.e., setting a
+  // lower/upper bound or a sector that excludes the source half edge, will
+  // lead to missing initial intersections.
+  std::optional<std::pair<Chain<Surface>, HalfEdge>> incrementWithIntersections();
+
   bool equal(const SaddleConnectionsIterator &other) const;
+
   const SaddleConnection<Surface> &dereference() const;
 
   void skipSector(CCW sector);

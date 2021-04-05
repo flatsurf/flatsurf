@@ -31,6 +31,7 @@ libflatsurf_la_SOURCES =                                            \
 	flow_decomposition_state.cc                                 \
 	flow_triangulation.cc                                       \
 	half_edge.cc                                                \
+	half_edge_intersection.cc                                   \
 	indexed_set.cc                                              \
 	indexed_set_iterator.cc                                     \
 	interval_exchange_transformation.cc                         \
@@ -89,6 +90,7 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/fmt.hpp                                         \
 	../flatsurf/forward.hpp                                     \
 	../flatsurf/half_edge.hpp                                   \
+	../flatsurf/half_edge_intersection.hpp                      \
 	../flatsurf/half_edge_map.hpp                               \
 	../flatsurf/half_edge_set.hpp                               \
 	../flatsurf/half_edge_set_iterator.hpp                      \
@@ -145,6 +147,7 @@ noinst_HEADERS =                                                    \
 	impl/flow_decomposition_state.hpp                           \
 	impl/flow_triangulation.impl.hpp                            \
 	impl/forward.hpp                                            \
+	impl/half_edge_intersection.impl.hpp                        \
 	impl/half_edge_set.impl.hpp                                 \
 	impl/half_edge_set_iterator.impl.hpp                        \
 	impl/indexed_map.hpp                                        \

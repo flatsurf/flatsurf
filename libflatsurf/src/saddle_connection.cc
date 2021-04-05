@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
+#include "../flatsurf/half_edge_intersection.hpp"
 #include "../flatsurf/half_edge_map.hpp"
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/saddle_connections.hpp"
@@ -37,6 +38,7 @@
 #include "impl/saddle_connection.impl.hpp"
 #include "util/assert.ipp"
 #include "util/hash.ipp"
+#include "impl/half_edge_intersection.impl.hpp"
 
 namespace flatsurf {
 
@@ -184,29 +186,37 @@ template <typename Surface>
 std::vector<HalfEdge> SaddleConnection<Surface>::crossings() const {
   std::vector<HalfEdge> ret;
 
+  for (auto& intersection : this->path())
+    ret.emplace_back(intersection.halfEdge());
+
+  return ret;
+}
+
+template <typename Surface>
+std::vector<HalfEdgeIntersection<Surface>> SaddleConnection<Surface>::path() const {
+  std::vector<HalfEdgeIntersection<Surface>> path;
+
   // We reconstruct the sequence of half edges that this saddle connection
-  // crossed. This is expensive (but cheap in terms of the output size.) This
-  // information seems to be essential to properly plot a saddle connection.
-  // It would be good to use a finite bound instead, see https://github.com/flatsurf/flatsurf/issues/153
-  auto reconstruction = SaddleConnections<Surface>(self->surface).bound(INT_MAX).sector(source());
+  // crossed. This is expensive (but cheap in terms of the output size.)
+  auto reconstruction = SaddleConnections<Surface>(self->surface).sector(source());
   auto it = reconstruction.begin();
+
   while (*it != *this) {
     const auto ccw = it->vector().ccw(vector());
     LIBFLATSURF_ASSERT(ccw != CCW::COLLINEAR, "There cannot be another saddle connection in exactly the same direction as this one but in " << self->surface << " at " << source() << " we found " << it->vector() << " which has the same direction as " << vector());
     it.skipSector(-ccw);
     while (true) {
-      auto crossing = it.incrementWithCrossings();
-      if (crossing.has_value()) {
-        ret.push_back(*crossing);
-      } else {
+      auto intersection = it.incrementWithIntersections();
+      if (!intersection.has_value())
         break;
-      }
+
+      path.emplace_back(ImplementationOf<HalfEdgeIntersection<Surface>>::make(*self->surface, -intersection->first, intersection->second, *this));
     }
   }
 
   LIBFLATSURF_ASSERT(it->target() == target(), "We reconstructed the saddle connection in " << self->surface << " starting from " << source() << " with vector " << vector() << " but it does not end at " << target() << " as claimed but at " << it->target());
 
-  return ret;
+  return path;
 }
 
 template <typename Surface>
