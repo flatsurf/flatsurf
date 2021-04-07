@@ -179,6 +179,22 @@ TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (long long), (m
             REQUIRE(perimeter.size() == 0);
           }
         }
+
+        AND_THEN("The Boundary Connections Are Consistent") {
+          const bool single = flowDecomposition.components().size() == 1;
+
+          for (const auto& component : flowDecomposition.components()) {
+            auto perimeter = component.perimeter();
+            for (const auto& connection : perimeter) {
+              if (single)
+                REQUIRE(!connection.boundary());
+              REQUIRE(connection.boundary() == (-connection).boundary());
+            }
+
+            if (!single)
+              REQUIRE((perimeter | rx::any_of([](const auto& connection) { return connection.boundary(); })));
+          }
+        }
       }
     }
   }
