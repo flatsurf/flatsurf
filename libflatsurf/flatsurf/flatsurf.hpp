@@ -50,6 +50,7 @@
 #include "fmt.hpp"
 #include "forward.hpp"
 #include "half_edge.hpp"
+#include "half_edge_intersection.hpp"
 #include "half_edge_map.hpp"
 #include "half_edge_set.hpp"
 #include "half_edge_set_iterator.hpp"
