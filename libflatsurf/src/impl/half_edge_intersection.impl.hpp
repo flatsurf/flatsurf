@@ -20,9 +20,8 @@
 #ifndef LIBFLATSURF_HALF_EDGE_INTERSECTION_IMPL_HPP
 #define LIBFLATSURF_HALF_EDGE_INTERSECTION_IMPL_HPP
 
-#include "../../flatsurf/half_edge_intersection.hpp"
-
 #include "../../flatsurf/half_edge.hpp"
+#include "../../flatsurf/half_edge_intersection.hpp"
 #include "../../flatsurf/vector.hpp"
 #include "read_only.hpp"
 
@@ -58,6 +57,6 @@ template <typename... Args>
 HalfEdgeIntersection<Surface>::HalfEdgeIntersection(PrivateConstructor, Args&&... args) :
   self(spimpl::make_impl<ImplementationOf<HalfEdgeIntersection>>(std::forward<Args>(args)...)) {}
 
-}
+}  // namespace flatsurf
 
 #endif

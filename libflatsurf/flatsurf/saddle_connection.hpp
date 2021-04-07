@@ -79,8 +79,7 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   const Surface &surface() const;
 
   // Return the sequence of half edges this saddle connection crosses.
-  [[deprecated("Use path() instead")]]
-  std::vector<HalfEdge> crossings() const;
+  [[deprecated("Use path() instead")]] std::vector<HalfEdge> crossings() const;
 
   // The sequence of vertices and half edges this saddle connection crosses.
   std::vector<HalfEdgeIntersection<Surface>> path() const;

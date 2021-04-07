@@ -35,7 +35,7 @@ class HalfEdgeIntersection : boost::less_than_comparable<HalfEdgeIntersection<Su
   using T = typename Surface::Coordinate;
 
   template <typename... Args>
-  HalfEdgeIntersection(PrivateConstructor, Args &&... args);
+  HalfEdgeIntersection(PrivateConstructor, Args&&... args);
 
  public:
   // Return the approximate point where this crosses the half edge as a number
@@ -59,6 +59,6 @@ class HalfEdgeIntersection : boost::less_than_comparable<HalfEdgeIntersection<Su
   friend ImplementationOf<HalfEdgeIntersection>;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

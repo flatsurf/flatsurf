@@ -24,8 +24,8 @@
 #include <algorithm>
 #include <exact-real/element.hpp>
 #include <exact-real/number_field.hpp>
-#include <unordered_set>
 #include <set>
+#include <unordered_set>
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/ccw.hpp"
