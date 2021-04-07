@@ -45,8 +45,7 @@ class SaddleConnectionsIterator : public boost::iterator_facade<SaddleConnection
   // being crossed during the search (in forward direction.) This can be useful
   // if information about the exact path in the surface for a saddle connection
   // needs to be reconstructed.
-  [[deprecated("Use incrementWithIntersections() instead.")]]
-  std::optional<HalfEdge> incrementWithCrossings();
+  [[deprecated("Use incrementWithIntersections() instead.")]] std::optional<HalfEdge> incrementWithCrossings();
 
   // Advance the iterator to the next saddle connection or until a HalfEdge is
   // being crossed during the search (in forward direction.) This can be useful

@@ -17,17 +17,16 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "../flatsurf/half_edge_intersection.hpp"
+
 #include <exact-real/yap/arb.hpp>
+#include <ostream>
 
 #include "../flatsurf/half_edge.hpp"
-#include "../flatsurf/half_edge_intersection.hpp"
 #include "../flatsurf/vector.hpp"
-
-#include "impl/half_edge_intersection.impl.hpp"
 #include "impl/approximation.hpp"
+#include "impl/half_edge_intersection.impl.hpp"
 #include "util/assert.ipp"
-
-#include <ostream>
 
 namespace flatsurf {
 
@@ -67,9 +66,9 @@ std::tuple<typename Surface::Coordinate, typename Surface::Coordinate, typename 
   const std::tuple<T, T, T> line_{-surface->fromHalfEdge(halfEdge).y(), surface->fromHalfEdge(halfEdge).x(), T{}};
 
   return std::tuple{
-    std::get<2>(line_) * std::get<1>(line) - std::get<2>(line) * std::get<1>(line_),
-    std::get<2>(line) * std::get<0>(line_) - std::get<2>(line_) * std::get<0>(line),
-    std::get<1>(line_) * std::get<0>(line) - std::get<0>(line_) * std::get<1>(line),
+      std::get<2>(line_) * std::get<1>(line) - std::get<2>(line) * std::get<1>(line_),
+      std::get<2>(line) * std::get<0>(line_) - std::get<2>(line_) * std::get<0>(line),
+      std::get<1>(line_) * std::get<0>(line) - std::get<0>(line_) * std::get<1>(line),
   };
 }
 
@@ -90,7 +89,8 @@ std::tuple<typename Surface::Coordinate, typename Surface::Coordinate> Implement
 }
 
 template <typename Surface>
-ImplementationOf<HalfEdgeIntersection<Surface>>::ImplementationOf(const Surface& surface, const Vector<T>& base, HalfEdge halfEdge, const Vector<T>& direction) : surface(surface), base(base), direction(direction), halfEdge(halfEdge) {}
+ImplementationOf<HalfEdgeIntersection<Surface>>::ImplementationOf(const Surface& surface, const Vector<T>& base, HalfEdge halfEdge, const Vector<T>& direction) :
+  surface(surface), base(base), direction(direction), halfEdge(halfEdge) {}
 
 template <typename Surface>
 HalfEdgeIntersection<Surface> ImplementationOf<HalfEdgeIntersection<Surface>>::make(const Surface& surface, const Vector<T>& base, HalfEdge cross, const Vector<T>& direction) {
@@ -102,10 +102,9 @@ std::ostream& operator<<(std::ostream& os, const HalfEdgeIntersection<Surface>& 
   return os << self.at() << " * " << self.halfEdge();
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"
 
 LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), HalfEdgeIntersection, LIBFLATSURF_FLAT_TRIANGULATION_TYPES)
-

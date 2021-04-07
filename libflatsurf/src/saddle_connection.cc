@@ -35,10 +35,10 @@
 #include "../flatsurf/saddle_connections_iterator.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertical.hpp"
+#include "impl/half_edge_intersection.impl.hpp"
 #include "impl/saddle_connection.impl.hpp"
 #include "util/assert.ipp"
 #include "util/hash.ipp"
-#include "impl/half_edge_intersection.impl.hpp"
 
 namespace flatsurf {
 
