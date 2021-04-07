@@ -71,6 +71,11 @@ bool FlowConnection<Surface>::top() const {
 }
 
 template <typename Surface>
+bool FlowConnection<Surface>::boundary() const {
+  return vertical() && (-*this).component() != component();
+}
+
+template <typename Surface>
 FlowConnection<Surface> FlowConnection<Surface>::operator-() const {
   const auto search = -saddleConnection();
 
