@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -71,13 +71,19 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   // It is leaving in a direction that is contained in the sector next to
   // source (counterclockwise) inclusive.
   HalfEdge source() const;
+
   // Symmetrical to source(), the connection is such that -vector() is in the
   // sector counterclockwise next to target() inclusive.
   HalfEdge target() const;
 
   const Surface &surface() const;
 
+  // Return the sequence of half edges this saddle connection crosses.
+  [[deprecated("Use path() instead")]]
   std::vector<HalfEdge> crossings() const;
+
+  // The sequence of vertices and half edges this saddle connection crosses.
+  std::vector<HalfEdgeIntersection<Surface>> path() const;
 
   std::optional<int> angle(const SaddleConnection<Surface> &) const;
 
