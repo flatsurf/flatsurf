@@ -122,8 +122,9 @@ TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[flat_triangulation][ins
           R2 v = R2(x, y);
           HalfEdge e(1);
           WHEN("We Insert a Vertex at " << v << " next to " << e) {
-            auto surf = surface.insertAt(e, v).surface();
+            auto surf = surface.insertAt(e, v).codomain().clone();
 
+            CAPTURE(e);
             CAPTURE(surf);
 
             THEN("The Surface has Changed in the Right Way") {
@@ -132,7 +133,7 @@ TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[flat_triangulation][ins
             }
 
             AND_WHEN("We Make a Slot There") {
-              surf = surf.slit(surf.nextAtVertex(e)).surface();
+              surf = surf.slit(surf.nextAtVertex(e)).codomain().clone();
 
               THEN("There is a Boundary at " << e) {
                 REQUIRE(surf.boundary(surf.nextAtVertex(e)));
@@ -251,8 +252,8 @@ TEMPLATE_TEST_CASE("Deform a Flat Triangulation", "[flat_triangulation][deformat
   const auto surface = makeL<R2>();
 
   SECTION("Trivially deform an L") {
-    auto shift = OddHalfEdgeMap<R2>(*surface);
-    REQUIRE(surface->operator+(shift).surface() == *surface);
+    const auto shift = OddHalfEdgeMap<R2>(*surface);
+    REQUIRE(surface->operator+(shift).codomain() == *surface);
   }
 
   SECTION("Stretch an L") {
@@ -261,39 +262,74 @@ TEMPLATE_TEST_CASE("Deform a Flat Triangulation", "[flat_triangulation][deformat
     shift.set(HalfEdge(8), R2(0, 1));
     shift.set(HalfEdge(7), R2(0, 1));
 
-    REQUIRE(surface->operator+(shift).surface() != *surface);
+    const auto shifted = surface->operator+(shift);
+
+    REQUIRE(shifted.codomain() != *surface);
+
+    for (const auto he : surface->halfEdges())
+      REQUIRE(shifted(Path(SaddleConnection(*surface, he))).has_value());
+
+    REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(8)))->size() == 1);
+    REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(8)))->begin()->vector() == surface->fromHalfEdge(HalfEdge(8)) + R2(0, 1));
+
+    REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(7)))->size() == 1);
+    REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(7)))->begin()->vector() == surface->fromHalfEdge(HalfEdge(7)) + R2(0, 1));
   }
 }
 
 TEMPLATE_TEST_CASE("Eliminate Marked Points", "[flat_triangulation][eliminate_marked_points]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
+  using Surface = FlatTriangulation<T>;
 
   const auto [name, surface] = GENERATE(makeSurface<T>());
+  CAPTURE(**surface);
   GIVEN("The Surface " << *name) {
-    const auto simplified = (*surface)->eliminateMarkedPoints().surface();
+    const auto simplified = (*surface)->eliminateMarkedPoints();
 
     CAPTURE(simplified);
 
     const auto unmarkedPoints = [](const auto& surface) {
-      return surface.vertices() | rx::filter([&](const auto& vertex) { return surface.angle(vertex) != 1; }) | rx::count();
+      return surface.vertices() | rx::filter([&](const auto& vertex) { return surface.angle(vertex) != 1; }) | rx::to_vector();
     };
 
     const auto markedPoints = [](const auto& surface) {
-      return surface.vertices() | rx::filter([&](const auto& vertex) { return surface.angle(vertex) == 1; }) | rx::count();
+      return surface.codomain().vertices() | rx::filter([&](const auto& vertex) { return surface.codomain().angle(vertex) == 1; }) | rx::to_vector();
     };
 
-    if (unmarkedPoints(**surface)) {
-      THEN("All Marked Points Can Be Removed") {
-        REQUIRE(markedPoints(simplified) == 0);
-      }
+    if (unmarkedPoints(**surface).size()) {
+      REQUIRE(markedPoints(simplified).size() == 0);
     } else {
-      THEN("All But A Single Marked Point Can Be Removed") {
-        REQUIRE(markedPoints(simplified) == 1);
-        REQUIRE(unmarkedPoints(simplified) == 0);
+      REQUIRE(markedPoints(simplified).size() == 1);
+      REQUIRE(unmarkedPoints(simplified.codomain()).size() == 0);
+    }
+
+    REQUIRE((*surface)->area() == simplified.codomain().area());
+
+    for (const auto preimage : (*surface)->halfEdges()) {
+      if ((*surface)->angle(Vertex::source(preimage, **surface)) != 1 && (*surface)->angle(Vertex::target(preimage, **surface)) != 1) {
+        REQUIRE(simplified(SaddleConnection<Surface>(**surface, preimage)).has_value());
+        REQUIRE(simplified(SaddleConnection<Surface>(**surface, preimage))->begin()->vector() == (*surface)->fromHalfEdge(preimage));
       }
     }
 
-    REQUIRE((*surface)->area() == simplified.area());
+    const auto section = simplified.section();
+    CAPTURE(section);
+
+    for (const auto image : section.domain().halfEdges()) {
+      CAPTURE(image);
+
+      const auto preimage = section(SaddleConnection<Surface>(section.domain(), image));
+
+      REQUIRE(preimage);
+
+      CAPTURE(*preimage);
+
+      Vector<T> vector;
+      for (const auto& connection : *preimage)
+        vector += connection;
+
+      REQUIRE(vector == section.domain().fromHalfEdge(image));
+    }
   }
 }
 
@@ -305,6 +341,8 @@ TEMPLATE_TEST_CASE("Detect Isomorphic Surfaces", "[flat_triangulation][isomorphi
   const int delaunay = GENERATE(values({0, 1}));
   const auto isomorphism = delaunay ? ISOMORPHISM::DELAUNAY_CELLS : ISOMORPHISM::FACES;
 
+  CAPTURE(**surface);
+  CAPTURE(delaunay);
   if (delaunay)
     (*surface)->delaunay();
 
@@ -330,15 +368,19 @@ TEMPLATE_TEST_CASE("Detect Isomorphic Surfaces", "[flat_triangulation][isomorphi
 
       std::unordered_set<HalfEdge> image;
       for (const auto& halfEdge : (*surface)->halfEdges()) {
+        CAPTURE(halfEdge);
+
         if (delaunay && (*surface)->delaunay(halfEdge.edge()) == DELAUNAY::AMBIGUOUS)
           continue;
 
-        HalfEdge he = (*deformation)(halfEdge).value();
+        auto he = (*deformation)(halfEdge);
 
-        image.insert(he);
+        REQUIRE(he.has_value());
+
+        image.insert(*he);
 
         const auto v = (*surface)->fromHalfEdge(halfEdge);
-        const auto v_ = deformation->surface().fromHalfEdge(he);
+        const auto v_ = deformation->surface().fromHalfEdge(*he);
         REQUIRE(Vector<T>(v.x() * a + v.y() * b, v.x() * c + v.y() * d) == v_);
       }
       if (!delaunay)

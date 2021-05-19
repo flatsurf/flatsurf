@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,33 +20,40 @@
 #ifndef LIBFLATSURF_DEFORMATION_IMPL_HPP
 #define LIBFLATSURF_DEFORMATION_IMPL_HPP
 
+#include <functional>
+#include <stdexcept>
+
 #include "../../flatsurf/deformation.hpp"
+
+#include "read_only.hpp"
+#include "deformation_relation.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
 class ImplementationOf<Deformation<Surface>> {
  public:
-  ImplementationOf(Surface&& surface);
-  virtual ~ImplementationOf() {}
+  ImplementationOf(std::unique_ptr<DeformationRelation<Surface>> relation);
 
-  static Deformation<Surface> make(Surface&&);
+  static Deformation<Surface> make(std::unique_ptr<DeformationRelation<Surface>> relation) {
+    return Deformation<Surface>(PrivateConstructor{}, std::move(relation));
+  }
 
-  virtual std::optional<HalfEdge> operator()(HalfEdge) const;
+  static Deformation<Surface> make(std::function<std::unique_ptr<DeformationRelation<Surface>>()>) {
+    throw std::logic_error("not implemented: Deformation::make");
+    // TODO
+    /*
+    return Deformation<Surface>(PrivateConstructor{}, domain, codomain, factory);
+    */
+  }
 
-  template <typename S>
-  friend std::ostream& operator<<(std::ostream&, const ImplementationOf<Deformation<S>>& self);
-
-  Surface surface;
-
- protected:
-  static Deformation<Surface> make(spimpl::unique_impl_ptr<ImplementationOf>&& impl);
+  std::unique_ptr<DeformationRelation<Surface>> relation;
 };
 
 template <typename Surface>
 template <typename... Args>
 Deformation<Surface>::Deformation(PrivateConstructor, Args&&... args) :
-  self(std::move(args)...) {}
+  self(spimpl::make_unique_impl<ImplementationOf<Deformation<Surface>>>(std::forward<Args>(args)...)) {}
 
 }  // namespace flatsurf
 

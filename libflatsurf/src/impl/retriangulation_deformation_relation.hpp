@@ -17,26 +17,23 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_TRANSFORMATION_DEFORMATION_IMPL_HPP
-#define LIBFLATSURF_TRANSFORMATION_DEFORMATION_IMPL_HPP
+#ifndef LIBFLATSURF_IMPL_RETRIANGULATION_DEFORMATION_RELATION_HPP
+#define LIBFLATSURF_IMPL_RETRIANGULATION_DEFORMATION_RELATION_HPP
 
-#include "../../flatsurf/half_edge_map.hpp"
-#include "./deformation.impl.hpp"
-
-// TODO: Delete
+#include "deformation_relation.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-class TransformationDeformation : ImplementationOf<Deformation<Surface>> {
+class RetriangulationDeformationRelation : public DeformationRelation<Surface> {
+ protected:
+  using DeformationRelation<Surface>::DeformationRelation;
+
  public:
-  TransformationDeformation(const Surface& source, const Surface& target, HalfEdgeMap<HalfEdge>&&);
-
-  static Deformation<Surface> make(const Surface& source, const Surface& target, HalfEdgeMap<HalfEdge>&&);
-
-  HalfEdgeMap<HalfEdge> isomorphism;
+  std::optional<Path<Surface>> operator()(const Path<Surface>&) const override;
 };
 
-}  // namespace flatsurf
+}
 
 #endif
+

@@ -17,26 +17,37 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_TRANSFORMATION_DEFORMATION_IMPL_HPP
-#define LIBFLATSURF_TRANSFORMATION_DEFORMATION_IMPL_HPP
+#ifndef LIBFLATSURF_IMPL_DEFORMATION_RELATION_HPP
+#define LIBFLATSURF_IMPL_DEFORMATION_RELATION_HPP
 
-#include "../../flatsurf/half_edge_map.hpp"
-#include "./deformation.impl.hpp"
+#include <memory>
+#include <optional>
+#include <vector>
 
-// TODO: Delete
+#include "read_only.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-class TransformationDeformation : ImplementationOf<Deformation<Surface>> {
+class DeformationRelation {
  public:
-  TransformationDeformation(const Surface& source, const Surface& target, HalfEdgeMap<HalfEdge>&&);
+  DeformationRelation(const Surface& domain, const Surface& codomain) : domain(domain), codomain(codomain) {}
+  virtual ~DeformationRelation() {}
 
-  static Deformation<Surface> make(const Surface& source, const Surface& target, HalfEdgeMap<HalfEdge>&&);
+  virtual std::unique_ptr<DeformationRelation<Surface>> clone() const = 0;
 
-  HalfEdgeMap<HalfEdge> isomorphism;
+  virtual std::unique_ptr<DeformationRelation<Surface>> section() const = 0;
+  
+  virtual std::optional<Path<Surface>> operator()(const Path<Surface>&) const = 0;
+
+  virtual bool trivial() const = 0;
+
+  virtual std::ostream& operator>>(std::ostream&) const = 0;
+
+  ReadOnly<Surface> domain;
+  ReadOnly<Surface> codomain;
 };
 
-}  // namespace flatsurf
+}
 
 #endif

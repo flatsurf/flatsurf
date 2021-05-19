@@ -9,6 +9,7 @@ libflatsurf_la_SOURCES =                                            \
 	chain_vector.cc                                             \
 	chain_iterator.cc                                           \
 	collapsed_half_edge.cc                                      \
+	composite_deformation_relation.cc                           \
 	contour_component.cc                                        \
 	contour_component_state.cc                                  \
 	contour_connection.cc                                       \
@@ -24,24 +25,30 @@ libflatsurf_la_SOURCES =                                            \
 	flat_triangulation_collapsed.cc                             \
 	flat_triangulation_combinatorial.cc                         \
 	flat_triangulation_combinatorics.cc                         \
+	flip_deformation_relation.cc                                \
 	flow_component.cc                                           \
 	flow_component_state.cc                                     \
 	flow_connection.cc                                          \
 	flow_decomposition.cc                                       \
 	flow_decomposition_state.cc                                 \
 	flow_triangulation.cc                                       \
+	generic_deformation_relation.cc                             \
 	half_edge.cc                                                \
 	half_edge_intersection.cc                                   \
 	indexed_set.cc                                              \
 	indexed_set_iterator.cc                                     \
+	insert_marked_deformation_relation.cc                       \
+	trivial_deformation_relation.cc                             \
 	interval_exchange_transformation.cc                         \
 	lengths.cc                                                  \
+	linear_deformation_relation.cc                              \
 	orientation.cc                                              \
 	path.cc                                                     \
 	path_iterator.cc                                            \
 	permutation.cc                                              \
 	quadratic_polynomial.cc                                     \
 	read_only.cc                                                \
+	retriangulation_deformation_relation.cc                     \
 	saddle_connection.cc                                        \
 	saddle_connections.cc                                       \
 	saddle_connections_by_length.cc                             \
@@ -49,9 +56,8 @@ libflatsurf_la_SOURCES =                                            \
 	saddle_connections_by_length_iterator.cc                    \
 	saddle_connections_sample.cc                                \
 	saddle_connections_sample_iterator.cc                       \
+	slit_deformation_relation.cc                                \
 	tracked.cc                                                  \
-	transformation_deformation.cc                               \
-	trivial_deformation.cc                                      \
 	vector.cc                                                   \
 	vertex.cc                                                   \
 	vertical.cc                                                 \
@@ -155,6 +161,7 @@ noinst_HEADERS =                                                    \
 	impl/indexed_set_iterator.hpp                               \
 	impl/interval_exchange_transformation.impl.hpp              \
 	impl/lengths.hpp                                            \
+	impl/linear_deformation_relation.hpp                        \
 	impl/managed_movable.impl.hpp                               \
 	impl/path.impl.hpp                                          \
 	impl/path_iterator.impl.hpp                                 \
@@ -168,8 +175,6 @@ noinst_HEADERS =                                                    \
 	impl/saddle_connections_sample.impl.hpp                     \
 	impl/saddle_connections_sample_iterator.impl.hpp            \
 	impl/tracked.impl.hpp                                       \
-	impl/transformation_deformation.hpp                         \
-	impl/trivial_deformation.hpp                                \
 	impl/vector.impl.hpp                                        \
 	impl/vertex.impl.hpp                                        \
 	impl/vertical.impl.hpp                                      \

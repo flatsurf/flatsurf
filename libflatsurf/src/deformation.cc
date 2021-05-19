@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,57 +17,101 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <stdexcept>
+
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/path.hpp"
+#include "../flatsurf/path_iterator.hpp"
+
 #include "impl/deformation.impl.hpp"
+#include "impl/trivial_deformation_relation.hpp"
+#include "impl/composite_deformation_relation.hpp"
+#include "util/assert.ipp"
 
 namespace flatsurf {
 
 template <typename Surface>
 Deformation<Surface>::Deformation(Surface&& surface) :
-  self(spimpl::make_unique_impl<ImplementationOf<Deformation>>(std::move(surface))) {}
+  Deformation(surface) {}
+
+template <typename Surface>
+Deformation<Surface>::Deformation(const Surface& surface) :
+  Deformation(PrivateConstructor{}, std::make_unique<TrivialDeformationRelation<Surface>>(surface)) {}
 
 template <typename Surface>
 Surface Deformation<Surface>::surface() {
-  return self->surface.clone();
+  return this->codomain().clone();
 }
 
 template <typename Surface>
 const Surface& Deformation<Surface>::surface() const {
-  return self->surface;
+  return this->codomain();
+}
+
+template <typename Surface>
+const Surface& Deformation<Surface>::domain() const {
+  return self->relation->domain;
+}
+
+template <typename Surface>
+const Surface& Deformation<Surface>::codomain() const {
+  return self->relation->codomain;
 }
 
 template <typename Surface>
 std::optional<HalfEdge> Deformation<Surface>::operator()(HalfEdge he) const {
-  return (*self)(he);
+  auto image = operator()(SaddleConnection<Surface>(domain(), he));
+  if (!image)
+    return std::nullopt;
+  if (image->size() == 1)
+    if (*image->begin() == SaddleConnection<Surface>(codomain(), (*image->begin()).source()))
+      return (*image->begin()).source();
+  throw std::invalid_argument("Half edge does not map to a single half edge under this deformation.");
 }
 
 template <typename Surface>
-ImplementationOf<Deformation<Surface>>::ImplementationOf(Surface&& surface) :
-  surface(std::move(surface)) {}
-
-template <typename Surface>
-Deformation<Surface> ImplementationOf<Deformation<Surface>>::make(Surface&& surface) {
-  return make(spimpl::make_unique_impl<ImplementationOf>(std::move(surface)));
+std::optional<Path<Surface>> Deformation<Surface>::operator()(const Path<Surface>& path) const {
+  return self->relation->operator()(path);
 }
 
 template <typename Surface>
-std::optional<HalfEdge> ImplementationOf<Deformation<Surface>>::operator()(HalfEdge) const {
-  throw std::logic_error("not implemented: this deformation does not track mapping of half edges");
+Deformation<Surface> Deformation<Surface>::operator*(const Deformation<Surface>& rhs) const {
+  LIBFLATSURF_CHECK_ARGUMENT(rhs.codomain() == domain(), "Deformations are not compatible. Cannot compose " << *this << " and " << rhs << " since the codomain of the latter does not match the domain of the former.");
+
+  if (this->trivial())
+    return ImplementationOf<Deformation>::make(rhs.self->relation->clone());
+  if (rhs.trivial())
+    return ImplementationOf<Deformation>::make(self->relation->clone());
+
+  return ImplementationOf<Deformation>::make(std::make_unique<CompositeDeformationRelation<Surface>>(*self->relation, *rhs.self->relation));
 }
 
 template <typename Surface>
-Deformation<Surface> ImplementationOf<Deformation<Surface>>::make(spimpl::unique_impl_ptr<ImplementationOf>&& impl) {
-  return Deformation<Surface>(PrivateConstructor{}, std::move(impl));
+Deformation<Surface> Deformation<Surface>::section() const {
+  return ImplementationOf<Deformation>::make(self->relation->section());
 }
+
+template <typename Surface>
+bool Deformation<Surface>::trivial() const {
+  LIBFLATSURF_ASSERT(self->relation, "Deformation not in a valid state. Has it been moved out?");
+
+  if (domain() != codomain())
+    return false;
+
+  if (self->relation->trivial())
+    // TODO: Replace with trivial.
+    return true;
+
+  return false;
+}
+
+template <typename Surface>
+ImplementationOf<Deformation<Surface>>::ImplementationOf(std::unique_ptr<DeformationRelation<Surface>> relation): relation(std::move(relation)) {}
 
 template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const Deformation<Surface>& self) {
-  return os << *self.self;
-}
-
-template <typename Surface>
-std::ostream& operator<<(std::ostream& os, const ImplementationOf<Deformation<Surface>>& self) {
-  return os << self.surface;
+  return *self.self->relation >> os;
 }
 
 }  // namespace flatsurf

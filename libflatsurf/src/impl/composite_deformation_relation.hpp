@@ -17,26 +17,32 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_TRANSFORMATION_DEFORMATION_IMPL_HPP
-#define LIBFLATSURF_TRANSFORMATION_DEFORMATION_IMPL_HPP
+#ifndef LIBFLATSURF_IMPL_COMPOSITE_DEFORMATION_RELATION_HPP
+#define LIBFLATSURF_IMPL_COMPOSITE_DEFORMATION_RELATION_HPP
 
-#include "../../flatsurf/half_edge_map.hpp"
-#include "./deformation.impl.hpp"
-
-// TODO: Delete
+#include "deformation_relation.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-class TransformationDeformation : ImplementationOf<Deformation<Surface>> {
+class CompositeDeformationRelation : public DeformationRelation<Surface> {
  public:
-  TransformationDeformation(const Surface& source, const Surface& target, HalfEdgeMap<HalfEdge>&&);
+  CompositeDeformationRelation(const DeformationRelation<Surface>& lhs, const DeformationRelation<Surface>& rhs);
 
-  static Deformation<Surface> make(const Surface& source, const Surface& target, HalfEdgeMap<HalfEdge>&&);
+  std::optional<Path<Surface>> operator()(const Path<Surface>&) const override;
 
-  HalfEdgeMap<HalfEdge> isomorphism;
+  std::unique_ptr<DeformationRelation<Surface>> clone() const override;
+
+  std::unique_ptr<DeformationRelation<Surface>> section() const override;
+
+  bool trivial() const override;
+  
+  std::ostream& operator>>(std::ostream& os) const override;
+
+  std::unique_ptr<DeformationRelation<Surface>> lhs;
+  std::unique_ptr<DeformationRelation<Surface>> rhs;
 };
 
-}  // namespace flatsurf
+}
 
 #endif

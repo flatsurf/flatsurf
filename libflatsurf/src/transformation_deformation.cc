@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,6 +17,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+
+//TODO: Delete
 #include "impl/transformation_deformation.hpp"
 
 #include "../flatsurf/delaunay.hpp"
@@ -28,11 +30,11 @@
 namespace flatsurf {
 
 template <typename Surface>
-TransformationDeformation<Surface>::TransformationDeformation(Surface&& surface, HalfEdgeMap<HalfEdge>&& halfEdgeMap) :
-  ImplementationOf<Deformation<Surface>>(std::move(surface)),
+TransformationDeformation<Surface>::TransformationDeformation(const Surface& source, const Surface& target, HalfEdgeMap<HalfEdge>&& halfEdgeMap) :
+  ImplementationOf<Deformation<Surface>>(source, target),
   isomorphism(std::move(halfEdgeMap)) {
-  LIBFLATSURF_ASSERT_ARGUMENT(this->surface.halfEdges() | rx::all_of([&](const auto he) {
-    return this->isomorphism[he] != HalfEdge() || this->surface.delaunay(he.edge()) == DELAUNAY::AMBIGUOUS;
+  LIBFLATSURF_ASSERT_ARGUMENT(this->surface->halfEdges() | rx::all_of([&](const auto he) {
+    return this->isomorphism[he] != HalfEdge() || this->surface->delaunay(he.edge()) == DELAUNAY::AMBIGUOUS;
   }),
       "half edge map is not a total map");
   LIBFLATSURF_ASSERT_ARGUMENT([&]() {
@@ -56,7 +58,7 @@ std::optional<HalfEdge> TransformationDeformation<Surface>::operator()(HalfEdge 
 }
 
 template <typename Surface>
-Deformation<Surface> TransformationDeformation<Surface>::make(Surface&& surface, HalfEdgeMap<HalfEdge>&& halfEdgeMap) {
+Deformation<Surface> TransformationDeformation<Surface>::make(const Surface& source, const Surface& target, HalfEdgeMap<HalfEdge>&& halfEdgeMap) {
   return ImplementationOf<Deformation<Surface>>::make(std::move(spimpl::unique_impl_ptr<ImplementationOf<Deformation<Surface>>>(new TransformationDeformation<Surface>(std::move(surface), std::move(halfEdgeMap)), spimpl::details::default_delete<ImplementationOf<Deformation<Surface>>>)));
 }
 

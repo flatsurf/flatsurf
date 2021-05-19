@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,24 +17,22 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_TRIVIAL_DEFORMATION_IMPL_HPP
-#define LIBFLATSURF_TRIVIAL_DEFORMATION_IMPL_HPP
+#include "../flatsurf/flat_triangulation.hpp"
+#include "../flatsurf/path.hpp"
 
-#include "./deformation.impl.hpp"
+#include "impl/retriangulation_deformation_relation.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-class TrivialDeformation : ImplementationOf<Deformation<Surface>> {
- public:
-  TrivialDeformation(Surface&&);
+std::optional<Path<Surface>> RetriangulationDeformationRelation<Surface>::operator()(const Path<Surface>&) const {
+  throw std::logic_error("not implemented: RetriangulationDeformationRelation::operator()");
+}
 
-  template <typename... Args>
-  static Deformation<Surface> make(Args&&... args);
+}
 
-  std::optional<HalfEdge> operator()(HalfEdge) const override;
-};
+// Instantiations of templates so implementations are generated for the linker
+#include "util/instantiate.ipp"
 
-}  // namespace flatsurf
+LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_STATIC), RetriangulationDeformationRelation, LIBFLATSURF_FLAT_TRIANGULATION_TYPES)
 
-#endif
