@@ -53,13 +53,19 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   static SaddleConnection<Surface> inSector(const Surface &, HalfEdge source, const Vertical<Surface> &direction);
   static SaddleConnection<Surface> inHalfPlane(const Surface &, HalfEdge side, const Vertical<Surface> &, const Vector<T> &);
   static SaddleConnection<Surface> inPlane(const Surface &, HalfEdge plane, const Vector<T> &);
+  static SaddleConnection<Surface> inPlane(const Surface &, HalfEdge plane, const Vertical<Surface> &direction);
+  static SaddleConnection<Surface> inPlane(const Surface &, HalfEdge sourcePlane, HalfEdge targetPlane, const Chain<Surface> &);
   static SaddleConnection<Surface> alongVertical(const Surface &, const Vertical<Surface> &direction, HalfEdge plane);
   static SaddleConnection<Surface> clockwise(const SaddleConnection &from, const Vector<T> &);
   // Return the saddle connection that starts counterclockwise from source
   // (but not necessarily in the sector next to source) and ends
   // counterclockwise from target (but not necessarily in the sector next to
-  // source.)
+  // target.)
   static SaddleConnection<Surface> counterclockwise(const Surface &, HalfEdge source, HalfEdge target, const Chain<Surface> &);
+
+  // Return the saddle connection that starts counterclockwise (or collinear)
+  // from source and goes in `direction`.
+  static SaddleConnection<Surface> counterclockwise(const Surface &, const SaddleConnection<Surface>& source, const Vertical<Surface>& direction);
 
   const Vector<T> &vector() const;
   const Chain<Surface> &chain() const;
