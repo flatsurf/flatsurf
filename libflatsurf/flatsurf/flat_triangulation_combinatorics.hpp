@@ -51,7 +51,7 @@ class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulat
   // e, and then look at the successors of -a.
   FlatTriangulationCombinatorial insertAt(HalfEdge e) const;
 
-  // Create an independent clone of this triangulation with an edded boundary
+  // Create an independent clone of this triangulation with an added boundary
   // at the half edge e by removing the identification of the two corresponding
   // half edges there.
   FlatTriangulationCombinatorial slit(HalfEdge e) const;
