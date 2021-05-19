@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ class Path : public Serializable<Path<Surface>>,
 
   bool operator==(const Path&) const;
 
-  // Return whether the list is cyclic, i.e., the last element joins up with the first.
+  // Return whether the path is cyclic, i.e., the last element joins up with the first.
   bool closed() const;
 
   // Return whether there are no segments showing up more than once.
