@@ -35,6 +35,12 @@ struct is_optional : std::false_type {};
 
 template <typename T>
 struct is_optional<std::optional<T>> : std::true_type {};
+
+template<typename T, typename _ = void>
+struct is_printable : std::false_type {};
+
+template <typename T>
+struct is_printable<T, std::void_t<decltype(std::declval<std::ostream&>() << std::declval<T>())>> : std::true_type {};
 }  // namespace
 
 // A dictionary mapping each half edge of a triangulation to a T.
@@ -87,9 +93,18 @@ class HalfEdgeMap {
       os << HalfEdge::fromIndex(i) << ": ";
 
       if constexpr (is_optional<T>::value)
-        os << *self.values[i];
-      else
-        os << self.values[i];
+        if constexpr (is_printable<typename T::value_type>::value) {
+          os << *self.values[i];
+        } else {
+          os << "?";
+        }
+      else {
+        if constexpr (is_printable<T>::value) {
+          os << self.values[i];
+        } else {
+          os << "?";
+        }
+      }
 
       first = false;
     }
