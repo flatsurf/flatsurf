@@ -90,7 +90,10 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   // The sequence of vertices and half edges this saddle connection crosses.
   std::vector<HalfEdgeIntersection<Surface>> path() const;
 
-  std::optional<int> angle(const SaddleConnection<Surface> &) const;
+  // Return the turns between saddle connections.
+  // If the angle between this saddle connection and the argument is α going
+  // in counter-clockwise direction, returns ⌊α/2π⌋.
+  int angle(const SaddleConnection<Surface> &) const;
 
   SaddleConnection<Surface> operator-() const;
 

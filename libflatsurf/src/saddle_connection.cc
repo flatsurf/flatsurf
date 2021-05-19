@@ -226,6 +226,35 @@ SaddleConnection<Surface> SaddleConnection<Surface>::inSector(const Surface& sur
 }
 
 template <typename Surface>
+int SaddleConnection<Surface>::angle(const SaddleConnection<Surface>& rhs) const {
+  LIBFLATSURF_CHECK_ARGUMENT(surface() == rhs.surface(), "Cannot determine angle between saddle connections in different surfaces.");
+  LIBFLATSURF_CHECK_ARGUMENT(Vertex::source(source(), surface()) == Vertex::source(rhs.source(), rhs.surface()), "Cannot determine angle between saddle connections at different vertices.");
+
+  HalfEdge source = this->source();
+  Vector<T> turned = vector();
+
+  int angle = 0;
+
+  while (source != rhs.source() || turned.ccw(rhs.vector()) != CCW::COLLINEAR) {
+    bool cw = vector().ccw(turned) == CCW::CLOCKWISE;
+
+    if (source == rhs.source() && turned.ccw(rhs.vector()) != CCW::CLOCKWISE) {
+      turned = rhs.vector();
+    } else {
+      source = surface().nextAtVertex(source);
+      turned = surface().fromHalfEdge(source);
+    }
+
+    if (cw && vector().ccw(turned) != CCW::CLOCKWISE)
+      angle++;
+  }
+
+  LIBFLATSURF_ASSERT(angle < surface().angle(Vertex::source(this->source(), surface())), "Turn angle must be smaller than the full vertex angle but the turn from " << *this << " to " << rhs << " in " << surface() << " is " << angle);
+
+  return angle;
+}
+
+template <typename Surface>
 std::vector<HalfEdge> SaddleConnection<Surface>::crossings() const {
   std::vector<HalfEdge> ret;
 
