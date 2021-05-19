@@ -37,6 +37,7 @@ class Path : public Serializable<Path<Surface>>,
 
  public:
   Path() noexcept;
+  Path(const Segment&);
   Path(const std::vector<Segment>&);
 
   operator const std::vector<Segment> &() const;
@@ -59,8 +60,19 @@ class Path : public Serializable<Path<Surface>>,
   void splice(const PathIterator<Surface>&, Path& other);
   void splice(const PathIterator<Surface>&, Path&& other);
 
+  // Append `other` to this path.
+  Path& operator+=(const Path& other);
+
+  // Return the path that results from appending `other` to this path.
+  Path operator+(const Path& other) const;
+
+  Path operator-() const;
+
   void push_front(const Segment&);
   void push_back(const Segment&);
+
+  void pop_front();
+  void pop_back();
 
   size_t size() const;
 
@@ -84,6 +96,9 @@ class Path : public Serializable<Path<Surface>>,
 
 template <typename Surface>
 Path(const std::vector<SaddleConnection<Surface>>&) -> Path<Surface>;
+
+template <typename Surface>
+Path(const SaddleConnection<Surface>&) -> Path<Surface>;
 
 }  // namespace flatsurf
 #endif
