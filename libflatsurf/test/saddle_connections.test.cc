@@ -58,7 +58,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Torus", "[saddle_connections]", (lon
       const auto connections = square->connections().bound(2).sector(HalfEdge(1));
       auto search = begin(connections);
 
-      REQUIRE(fmt::format("{}", *search) == "(1, 0) from 1 to -1");
+      REQUIRE(fmt::format("{}", *search) == "1");
       REQUIRE(++search == end(connections));
     }
 
@@ -66,7 +66,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Torus", "[saddle_connections]", (lon
       const auto connections = square->connections().bound(2).sector(SaddleConnection(*square, HalfEdge(1)), SaddleConnection(*square, square->nextAtVertex(HalfEdge(1))));
       auto search = begin(connections);
 
-      REQUIRE(fmt::format("{}", *search) == "(1, 0) from 1 to -1");
+      REQUIRE(fmt::format("{}", *search) == "1");
       REQUIRE(++search == end(connections));
     }
 
@@ -74,7 +74,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Torus", "[saddle_connections]", (lon
       const auto connections = square->connections().bound(2).sector(square->fromHalfEdge(HalfEdge(1)), square->fromHalfEdge(square->nextAtVertex(HalfEdge(1))));
       auto search = begin(connections);
 
-      REQUIRE(fmt::format("{}", *search) == "(1, 0) from 1 to -1");
+      REQUIRE(fmt::format("{}", *search) == "1");
       REQUIRE(++search == end(connections));
     }
 

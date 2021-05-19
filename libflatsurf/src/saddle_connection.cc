@@ -354,7 +354,10 @@ bool SaddleConnection<Surface>::operator<(const Bound bound) const {
 
 template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const SaddleConnection<Surface>& self) {
-  return os << self.vector() << " from " << self.source() << " to " << self.target();
+  if (self.source() == -self.target() && self.vector() == self.surface().fromHalfEdge(self.source()))
+    return os << self.source();
+  else
+    return os << self.vector() << " from " << self.source() << " to " << self.target();
 }
 
 template <typename Surface>
