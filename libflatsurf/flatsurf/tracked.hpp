@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2020-2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -44,17 +44,20 @@ class Tracked {
   // A callback of this type is invoked when the parent surface is destructed.
   using DestructionHandler = std::function<void(T&, const FlatTriangulationCombinatorial&)>;
 
+  [[deprecated("Do not copy a Tracked<T>. If you really need a copy, create a copy from the underlying value.")]]
   Tracked(const Tracked&) noexcept;
   Tracked(Tracked&&) noexcept;
   Tracked(const FlatTriangulationCombinatorial&, T value, const FlipHandler& updateAfterFlip = defaultFlip, const CollapseHandler& updateBeforeCollapse = defaultCollapse, const SwapHandler& updateBeforeSwap = defaultSwap, const EraseHandler& updateBeforeErase = defaultErase, const DestructionHandler& updateBeforeDestruction = forgetParent);
 
   operator T&();
   operator const T&() const;
+  operator T&&() &&;
   const T* operator->() const;
   T* operator->();
   const T& operator*() const;
   T& operator*();
 
+  [[deprecated("Do not copy a Tracked<T>. If you really need a copy, create a copy from the underlying value.")]]
   Tracked& operator=(const Tracked&) noexcept;
   Tracked& operator=(Tracked&&) noexcept;
 

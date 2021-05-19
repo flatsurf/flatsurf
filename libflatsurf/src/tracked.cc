@@ -17,6 +17,9 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <fmt/format.h>
+#include <boost/type_index.hpp>
+
 #include "../flatsurf/tracked.hpp"
 
 #include "../flatsurf/odd_half_edge_map.hpp"
@@ -73,7 +76,7 @@ void Tracked<T>::defaultFlip(T& self, const FlatTriangulationCombinatorial&, Hal
       throw std::logic_error("This Tracked<HalfEdge> cannot be flipped.");
   } else {
     (void)e;
-    throw std::logic_error("This Tracked<T> of a FlatTriangulationCombinatorial does not support flipping of edges.");
+    throw std::logic_error(fmt::format("This Tracked<{}> of a FlatTriangulationCombinatorial does not support flipping of edges.", boost::typeindex::type_id<T>().pretty_name()));
   }
 }
 
@@ -84,7 +87,7 @@ void Tracked<T>::defaultCollapse(T& self, const FlatTriangulationCombinatorial&,
       throw std::logic_error("This Tracked<HalfEdge> cannot be collapsed.");
   } else {
     (void)e;
-    throw std::logic_error("This Tracked<T> of a FlatTriangulationCombinatorial does not support collapsing of edges.");
+    throw std::logic_error(fmt::format("This Tracked<{}> of a FlatTriangulationCombinatorial does not support collapsing of edges.", boost::typeindex::type_id<T>().pretty_name()));
   }
 }
 
@@ -128,7 +131,7 @@ void Tracked<T>::defaultSwap(T& self, const FlatTriangulationCombinatorial&, Hal
       self.set(b, tmp);
     }
   } else {
-    throw std::logic_error("This Tracked<T> of a FlatTriangulationCombinatorial does not support swapping of half edges.");
+    throw std::logic_error(fmt::format("This Tracked<{}> of a FlatTriangulationCombinatorial does not support swapping of half edges.", boost::typeindex::type_id<T>().pretty_name()));
   }
 }
 
@@ -153,7 +156,7 @@ void Tracked<T>::defaultErase(T& self, const FlatTriangulationCombinatorial&, co
       self.pop();
     }
   } else {
-    throw std::logic_error("This Tracked<T> of a FlatTriangulationCombinatorial does not support removal of edges.");
+    throw std::logic_error(fmt::format("This Tracked<{}> of a FlatTriangulationCombinatorial does not support removal of edges.", boost::typeindex::type_id<T>().pretty_name()));
   }
 }
 
@@ -170,6 +173,11 @@ Tracked<T>::operator T&() {
 template <typename T>
 Tracked<T>::operator const T&() const {
   return self->value;
+}
+
+template <typename T>
+Tracked<T>::operator T&&() && {
+  return std::move(self->value);
 }
 
 template <typename T>
@@ -194,8 +202,7 @@ T& Tracked<T>::operator*() {
 
 template <typename T>
 Tracked<T>& Tracked<T>::operator=(const Tracked& rhs) noexcept {
-  *this = std::move(Tracked(rhs));
-  return *this;
+  return *this = Tracked(rhs);
 }
 
 template <typename T>
@@ -280,6 +287,8 @@ void ImplementationOf<Tracked<T>>::connect() {
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
+#include <unordered_set>
+
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/edge_map.hpp"
 #include "../flatsurf/edge_set.hpp"
@@ -295,6 +304,8 @@ void ImplementationOf<Tracked<T>>::connect() {
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<HalfEdge>))
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<HalfEdgeSet>))
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<EdgeSet>))
+LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<OddHalfEdgeMap<HalfEdge>>))
+LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<HalfEdgeMap<std::unordered_set<HalfEdge>>>))
 
 #define LIBFLATSURF_WRAP_ODD_HALF_EDGE_MAP_VECTOR(R, TYPE, T) (TYPE<OddHalfEdgeMap<Vector<T>>>)
 LIBFLATSURF_INSTANTIATE_MANY_FROM_TRANSFORMATION((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), Tracked, LIBFLATSURF_REAL_TYPES(exactreal::Arb), LIBFLATSURF_WRAP_ODD_HALF_EDGE_MAP_VECTOR)
