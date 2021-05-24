@@ -6,8 +6,8 @@ libflatsurf_la_SOURCES =                                            \
 	bound.cc                                                    \
 	ccw.cc                                                      \
 	chain.cc                                                    \
-	chain_vector.cc                                             \
 	chain_iterator.cc                                           \
+	chain_vector.cc                                             \
 	collapsed_half_edge.cc                                      \
 	composite_deformation_relation.cc                           \
 	contour_component.cc                                        \
@@ -18,10 +18,8 @@ libflatsurf_la_SOURCES =                                            \
 	deformation.cc                                              \
 	deformation_relation.cc                                     \
 	edge.cc                                                     \
-	edge_set_iterator.cc                                        \
 	edge_set.cc                                                 \
-	half_edge_set.cc                                            \
-	half_edge_set_iterator.cc                                   \
+	edge_set_iterator.cc                                        \
 	flat_triangulation.cc                                       \
 	flat_triangulation_collapsed.cc                             \
 	flat_triangulation_combinatorial.cc                         \
@@ -33,13 +31,14 @@ libflatsurf_la_SOURCES =                                            \
 	flow_decomposition.cc                                       \
 	flow_decomposition_state.cc                                 \
 	flow_triangulation.cc                                       \
-	generic_deformation_relation.cc                             \
+	generic_retriangulation_deformation_relation.cc             \
 	half_edge.cc                                                \
 	half_edge_intersection.cc                                   \
+	half_edge_set.cc                                            \
+	half_edge_set_iterator.cc                                   \
 	indexed_set.cc                                              \
 	indexed_set_iterator.cc                                     \
 	insert_marked_deformation_relation.cc                       \
-	trivial_deformation_relation.cc                             \
 	interval_exchange_transformation.cc                         \
 	lengths.cc                                                  \
 	linear_deformation_relation.cc                              \
@@ -53,12 +52,14 @@ libflatsurf_la_SOURCES =                                            \
 	saddle_connection.cc                                        \
 	saddle_connections.cc                                       \
 	saddle_connections_by_length.cc                             \
-	saddle_connections_iterator.cc                              \
 	saddle_connections_by_length_iterator.cc                    \
+	saddle_connections_iterator.cc                              \
 	saddle_connections_sample.cc                                \
 	saddle_connections_sample_iterator.cc                       \
+	shift_deformation_relation.cc                               \
 	slit_deformation_relation.cc                                \
 	tracked.cc                                                  \
+	trivial_deformation_relation.cc                             \
 	vector.cc                                                   \
 	vertex.cc                                                   \
 	vertical.cc                                                 \

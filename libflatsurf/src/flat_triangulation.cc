@@ -57,8 +57,9 @@
 #include "impl/flat_triangulation_combinatorial.impl.hpp"
 #include "impl/flip_deformation_relation.hpp"
 #include "impl/linear_deformation_relation.hpp"
-#include "impl/generic_deformation_relation.hpp"
+#include "impl/generic_retriangulation_deformation_relation.hpp"
 #include "impl/retriangulation_deformation_relation.hpp"
+#include "impl/shift_deformation_relation.hpp"
 #include "impl/slit_deformation_relation.hpp"
 #include "impl/quadratic_polynomial.hpp"
 #include "impl/insert_marked_deformation_relation.hpp"
@@ -276,9 +277,10 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
         std::move(combinatorial),
         [&](const HalfEdge he) { return vectors->get(he); });
 
-    return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<GenericDeformationRelation<FlatTriangulation>>(
+    // TODO
+    return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<ShiftDeformationRelation<FlatTriangulation>>(
       *this,
-      codomain,
+      codomain/*,
       [&]() {
         using Path = flatsurf::Path<FlatTriangulation>;
 
@@ -300,7 +302,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
         }
 
         return relation;
-    }()));
+    }()*/));
   }
 }
 
@@ -451,7 +453,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
   }
 
   // Eliminate all the other marked points.
-  auto elimination = shift.codomain().eliminateMarkedPoints() * ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<GenericDeformationRelation<FlatTriangulation>>(*this, shift.codomain(), relation));
+  auto elimination = shift.codomain().eliminateMarkedPoints() * ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<GenericRetriangulationDeformationRelation<FlatTriangulation>>(*this, shift.codomain(), relation));
 
   /* TODO
   // ;
@@ -982,7 +984,7 @@ std::optional<Deformation<FlatTriangulation<T>>> FlatTriangulation<T>::isomorphi
             SaddleConnection<FlatTriangulation>(other, isomorphism[he])});
         }
  
-        return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<GenericDeformationRelation<FlatTriangulation>>(linear.codomain(), other, relation)) * linear;
+        return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<GenericRetriangulationDeformationRelation<FlatTriangulation>>(linear.codomain(), other, relation)) * linear;
       }
     }
   }

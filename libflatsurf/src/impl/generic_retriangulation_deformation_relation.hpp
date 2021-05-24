@@ -25,13 +25,13 @@
 
 #include "../../flatsurf/saddle_connection.hpp"
 
-#include "deformation_relation.hpp"
+#include "retriangulation_deformation_relation.hpp"
 
 namespace flatsurf {
 
 // TODO: Should this rather be a GenericRetriangulationDeformation?
 template <typename Surface>
-class GenericDeformationRelation : public DeformationRelation<Surface> {
+class GenericRetriangulationDeformationRelation : public RetriangulationDeformationRelation<Surface> {
   using T = typename Surface::Coordinate;
 
  public:
@@ -39,7 +39,7 @@ class GenericDeformationRelation : public DeformationRelation<Surface> {
   // implementation could then compute all the relations the first time they
   // are needed. In particular, there should be constructor that just takes
   // two paths. Or even Half Edges instead.
-  GenericDeformationRelation(const Surface& domain, const Surface& codomain, std::vector<std::pair<Path<Surface>, Path<Surface>>> relation);
+  GenericRetriangulationDeformationRelation(const Surface& domain, const Surface& codomain, std::vector<std::pair<Path<Surface>, Path<Surface>>> relation);
 
   std::optional<Path<Surface>> operator()(const Path<Surface>&) const override;
 

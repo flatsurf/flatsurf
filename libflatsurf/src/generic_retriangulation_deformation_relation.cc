@@ -30,18 +30,18 @@
 #include "../flatsurf/vertex.hpp"
 #include "../flatsurf/vertical.hpp"
 #include "../flatsurf/ccw.hpp"
-#include "impl/generic_deformation_relation.hpp"
+#include "impl/generic_retriangulation_deformation_relation.hpp"
 #include "util/assert.ipp"
 
 namespace flatsurf {
 
 template <typename Surface>
-GenericDeformationRelation<Surface>::GenericDeformationRelation(const Surface& domain, const Surface& codomain, std::vector<std::pair<Path<Surface>, Path<Surface>>> relation) : DeformationRelation<Surface>(domain, codomain), relation(std::move(relation)) {
+GenericRetriangulationDeformationRelation<Surface>::GenericRetriangulationDeformationRelation(const Surface& domain, const Surface& codomain, std::vector<std::pair<Path<Surface>, Path<Surface>>> relation) : RetriangulationDeformationRelation<Surface>(domain, codomain), relation(std::move(relation)) {
   // TODO: Check arguments. Here and in all the other relations.
 }
 
 template <typename Surface>
-std::optional<Path<Surface>> GenericDeformationRelation<Surface>::operator()(const Path<Surface>& path) const {
+std::optional<Path<Surface>> GenericRetriangulationDeformationRelation<Surface>::operator()(const Path<Surface>& path) const {
   if (path.size() == 0)
     return Path<Surface>{};
 
@@ -120,20 +120,20 @@ std::optional<Path<Surface>> GenericDeformationRelation<Surface>::operator()(con
 }
 
 template <typename Surface>
-std::unique_ptr<DeformationRelation<Surface>> GenericDeformationRelation<Surface>::clone() const {
-  return std::make_unique<GenericDeformationRelation<Surface>>(*this);
+std::unique_ptr<DeformationRelation<Surface>> GenericRetriangulationDeformationRelation<Surface>::clone() const {
+  return std::make_unique<GenericRetriangulationDeformationRelation<Surface>>(*this);
 }
 
 template <typename Surface>
-std::unique_ptr<DeformationRelation<Surface>> GenericDeformationRelation<Surface>::section() const {
+std::unique_ptr<DeformationRelation<Surface>> GenericRetriangulationDeformationRelation<Surface>::section() const {
   auto reversed = relation;
   for (auto& rel : reversed)
     std::swap(rel.first, rel.second);
-  return std::make_unique<GenericDeformationRelation>(this->codomain, this->domain, reversed);
+  return std::make_unique<GenericRetriangulationDeformationRelation>(this->codomain, this->domain, reversed);
 }
 
 template <typename Surface>
-bool GenericDeformationRelation<Surface>::trivial() const {
+bool GenericRetriangulationDeformationRelation<Surface>::trivial() const {
   if (this->domain != this->codomain)
     return false;
 
@@ -145,7 +145,7 @@ bool GenericDeformationRelation<Surface>::trivial() const {
 }
 
 template <typename Surface>
-std::ostream& GenericDeformationRelation<Surface>::operator>>(std::ostream& os) const {
+std::ostream& GenericRetriangulationDeformationRelation<Surface>::operator>>(std::ostream& os) const {
   return os << this->domain << " → " << this->codomain << " given by " << fmt::format("{{{}}}", fmt::join([&]() {
     std::vector<std::string> relations;
     for (const auto& rel : relation)
@@ -159,4 +159,4 @@ std::ostream& GenericDeformationRelation<Surface>::operator>>(std::ostream& os) 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"
 
-LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_STATIC), GenericDeformationRelation, LIBFLATSURF_FLAT_TRIANGULATION_TYPES)
+LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_STATIC), GenericRetriangulationDeformationRelation, LIBFLATSURF_FLAT_TRIANGULATION_TYPES)
