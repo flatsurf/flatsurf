@@ -17,7 +17,6 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <iostream> // TODO
 #include <ostream>
 
 #include "../flatsurf/flat_triangulation.hpp"
@@ -34,17 +33,8 @@ CompositeDeformationRelation<Surface>::CompositeDeformationRelation(const Deform
 template <typename Surface>
 std::optional<Path<Surface>> CompositeDeformationRelation<Surface>::operator()(const Path<Surface>& path) const {
   auto ret = rhs->operator()(path);
-  if (!ret) {
-    std::cout << "Could not map " << path << " through "; 
-    (*rhs >> std::cout) << std::endl;
-  }
-  if (ret) {
+  if (ret)
     ret = lhs->operator()(*ret);
-    if (!ret) {
-      std::cout << "Could not map " << *(rhs->operator()(path)) << " through "; 
-      (*lhs >> std::cout) << std::endl;
-    }
-  }
   return ret;
 }
 
