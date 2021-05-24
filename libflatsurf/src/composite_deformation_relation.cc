@@ -50,7 +50,12 @@ std::unique_ptr<DeformationRelation<Surface>> CompositeDeformationRelation<Surfa
 
 template <typename Surface>
 bool CompositeDeformationRelation<Surface>::trivial() const {
-  throw std::logic_error("not implemented: CompositeDeformationRelation::trivial()");
+  if (lhs->trivial())
+    return rhs->trivial();
+  if (rhs->trivial())
+    return lhs->trivial();
+
+  return DeformationRelation<Surface>::trivial();
 }
 
 template <typename Surface>

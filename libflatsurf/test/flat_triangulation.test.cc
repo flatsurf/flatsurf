@@ -366,6 +366,8 @@ TEMPLATE_TEST_CASE("Detect Isomorphic Surfaces", "[flat_triangulation][isomorphi
       const auto [a, b, c, d] = candidate;
       CAPTURE(a, b, c, d);
 
+      REQUIRE((!deformation->trivial() || (a == 1 && b == 0 && c == 0 && d == 1)));
+
       std::unordered_set<HalfEdge> image;
       for (const auto& halfEdge : (*surface)->halfEdges()) {
         CAPTURE(halfEdge);

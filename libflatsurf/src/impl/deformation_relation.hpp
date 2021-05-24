@@ -40,7 +40,7 @@ class DeformationRelation {
   
   virtual std::optional<Path<Surface>> operator()(const Path<Surface>&) const = 0;
 
-  virtual bool trivial() const = 0;
+  virtual bool trivial() const;
 
   virtual std::ostream& operator>>(std::ostream&) const = 0;
 

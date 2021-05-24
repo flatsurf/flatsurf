@@ -16,6 +16,7 @@ libflatsurf_la_SOURCES =                                            \
 	contour_decomposition.cc                                    \
 	contour_decomposition_state.cc                              \
 	deformation.cc                                              \
+	deformation_relation.cc                                     \
 	edge.cc                                                     \
 	edge_set_iterator.cc                                        \
 	edge_set.cc                                                 \

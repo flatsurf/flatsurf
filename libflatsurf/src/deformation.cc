@@ -96,12 +96,11 @@ template <typename Surface>
 bool Deformation<Surface>::trivial() const {
   LIBFLATSURF_ASSERT(self->relation, "Deformation not in a valid state. Has it been moved out?");
 
-  if (domain() != codomain())
-    return false;
-
-  if (self->relation->trivial())
-    // TODO: Replace with trivial.
+  if (self->relation->trivial()) {
+    if (dynamic_cast<TrivialDeformationRelation<Surface>*>(self->relation.get()) == nullptr)
+      self->relation = std::make_unique<TrivialDeformationRelation<Surface>>(domain());
     return true;
+  }
 
   return false;
 }
