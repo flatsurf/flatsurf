@@ -29,7 +29,7 @@ class ShiftDeformationRelation : public DeformationRelation<Surface> {
   using T = typename Surface::Coordinate;
 
  public:
-  using DeformationRelation<Surface>::DeformationRelation;
+  ShiftDeformationRelation(const Surface& domain, const Surface& codomain, OddHalfEdgeMap<Path<Surface>> shift);
 
   std::optional<Path<Surface>> operator()(const Path<Surface>&) const override;
 
@@ -40,6 +40,8 @@ class ShiftDeformationRelation : public DeformationRelation<Surface> {
   bool trivial() const override;
   
   std::ostream& operator>>(std::ostream& os) const override;
+
+  OddHalfEdgeMap<Path<Surface>> shifted;
 };
 
 }

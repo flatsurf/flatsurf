@@ -226,32 +226,38 @@ SaddleConnection<Surface> SaddleConnection<Surface>::inSector(const Surface& sur
 }
 
 template <typename Surface>
-int SaddleConnection<Surface>::angle(const SaddleConnection<Surface>& rhs) const {
-  LIBFLATSURF_CHECK_ARGUMENT(surface() == rhs.surface(), "Cannot determine angle between saddle connections in different surfaces.");
-  LIBFLATSURF_CHECK_ARGUMENT(Vertex::source(source(), surface()) == Vertex::source(rhs.source(), rhs.surface()), "Cannot determine angle between saddle connections at different vertices.");
+int SaddleConnection<Surface>::angle(HalfEdge source, const Vector<T>& vector) const {
+  LIBFLATSURF_CHECK_ARGUMENT(Vertex::source(this->source(), surface()) == Vertex::source(source, surface()), "Cannot determine angle between saddle connections at different vertices.");
 
-  HalfEdge source = this->source();
-  Vector<T> turned = vector();
+  HalfEdge sector = this->source();
+  Vector<T> turned = this->vector();
 
   int angle = 0;
 
-  while (source != rhs.source() || turned.ccw(rhs.vector()) != CCW::COLLINEAR) {
-    bool cw = vector().ccw(turned) == CCW::CLOCKWISE;
+  while (sector != source || turned.ccw(vector) != CCW::COLLINEAR) {
+    bool cw = this->vector().ccw(turned) == CCW::CLOCKWISE;
 
-    if (source == rhs.source() && turned.ccw(rhs.vector()) != CCW::CLOCKWISE) {
-      turned = rhs.vector();
+    if (sector == source && turned.ccw(vector) != CCW::CLOCKWISE) {
+      turned = vector;
     } else {
-      source = surface().nextAtVertex(source);
-      turned = surface().fromHalfEdge(source);
+      sector = surface().nextAtVertex(sector);
+      turned = surface().fromHalfEdge(sector);
     }
 
-    if (cw && vector().ccw(turned) != CCW::CLOCKWISE)
+    if (cw && this->vector().ccw(turned) != CCW::CLOCKWISE)
       angle++;
   }
 
-  LIBFLATSURF_ASSERT(angle < surface().angle(Vertex::source(this->source(), surface())), "Turn angle must be smaller than the full vertex angle but the turn from " << *this << " to " << rhs << " in " << surface() << " is " << angle);
+  LIBFLATSURF_ASSERT(angle < surface().angle(Vertex::source(this->source(), surface())), "Turn angle must be smaller than the full vertex angle but the turn from " << *this << " to " << source << ", " << vector << " in " << surface() << " is " << angle);
 
   return angle;
+}
+
+template <typename Surface>
+int SaddleConnection<Surface>::angle(const SaddleConnection<Surface>& rhs) const {
+  LIBFLATSURF_CHECK_ARGUMENT(surface() == rhs.surface(), "Cannot determine angle between " << *this << " and " << rhs << " since they live in different surfaces, i.e., " << surface() << " and " << rhs.surface() << " respectively.");
+
+  return angle(rhs.source(), rhs.vector());
 }
 
 template <typename Surface>

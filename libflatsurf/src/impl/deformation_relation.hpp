@@ -48,6 +48,11 @@ class DeformationRelation {
   ReadOnly<Surface> codomain;
 };
 
+template <typename Surface>
+std::ostream& operator<<(std::ostream& os, const DeformationRelation<Surface>& relation) {
+  return relation >> os;
+}
+
 }
 
 #endif

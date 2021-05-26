@@ -17,12 +17,9 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <iostream> // TODO
-
-#include <fmt/format.h>
-
-#include "../flatsurf/fmt.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
+#include "../flatsurf/half_edge_set.hpp"
+#include "../flatsurf/half_edge_set_iterator.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/vector.hpp"
@@ -30,14 +27,28 @@
 #include "../flatsurf/vertex.hpp"
 #include "../flatsurf/vertical.hpp"
 #include "../flatsurf/ccw.hpp"
+#include "../flatsurf/saddle_connections.hpp"
+#include "../flatsurf/saddle_connections_by_length.hpp"
+#include "../flatsurf/saddle_connections_by_length_iterator.hpp"
+#include "../flatsurf/saddle_connections_iterator.hpp"
 #include "impl/generic_retriangulation_deformation_relation.hpp"
 #include "util/assert.ipp"
 
 namespace flatsurf {
 
 template <typename Surface>
-GenericRetriangulationDeformationRelation<Surface>::GenericRetriangulationDeformationRelation(const Surface& domain, const Surface& codomain, std::vector<std::pair<Path<Surface>, Path<Surface>>> relation) : RetriangulationDeformationRelation<Surface>(domain, codomain), relation(std::move(relation)) {
-  // TODO: Check arguments. Here and in all the other relations.
+GenericRetriangulationDeformationRelation<Surface>::GenericRetriangulationDeformationRelation(const Surface& domain, const Surface& codomain, HalfEdge preimage, HalfEdge image) : GenericRetriangulationDeformationRelation<Surface>(domain, codomain, Path{SaddleConnection<Surface>(domain, preimage)}, Path{SaddleConnection<Surface>(codomain, image)}) {
+}
+
+template <typename Surface>
+GenericRetriangulationDeformationRelation<Surface>::GenericRetriangulationDeformationRelation(const Surface& domain, const Surface& codomain, Path<Surface> preimage, Path<Surface> image) : RetriangulationDeformationRelation<Surface>(domain, codomain), preimage(std::move(preimage)), image(std::move(image)) {
+  LIBFLATSURF_ASSERT(this->preimage.begin() != this->preimage.end(), "preimage must be a non-trivial path");
+  LIBFLATSURF_ASSERT(this->preimage.begin()->surface() == *this->domain, "preimage must live in the domain");
+  LIBFLATSURF_ASSERT(this->image.begin() != this->image.end(), "preimage must be a non-trivial path");
+  LIBFLATSURF_ASSERT(this->image.begin()->surface() == *this->codomain, "image must live in the codomain");
+  LIBFLATSURF_ASSERT(this->domain->angle(Vertex::source(this->preimage.begin()->source(), *this->domain)) == this->codomain->angle(Vertex::source(this->image.begin()->source(), *this->codomain)), "Paths in domain and codomain cannot be equivalent since the total angle at their starting points do not match.");
+  LIBFLATSURF_ASSERT(this->preimage.begin()->vector().ccw(this->image.begin()->vector()) == CCW::COLLINEAR, "Preimage and image are not collinear. They do not define a retriangulation.");
+  LIBFLATSURF_ASSERT(this->preimage.begin()->vector().orientation(this->image.begin()->vector()) == ORIENTATION::SAME, "Preimage and image are not oriented identically. They do not define a retriangulation.");
 }
 
 template <typename Surface>
@@ -45,18 +56,10 @@ std::optional<Path<Surface>> GenericRetriangulationDeformationRelation<Surface>:
   if (path.size() == 0)
     return Path<Surface>{};
 
-  for (auto& rel : relation) {
-    if (rel.first == path)
-      return rel.second;
-    if (rel.first == -path)
-      return -rel.second;
-  }
-
-  // TODO: What are the assumptions for this to be correct? We use this for operator+ where it is not correct.
-  // TODO: Should we tighten first?
   Path<Surface> pending = path;
 
-  HalfEdge source = pending.begin()->source();
+  const HalfEdge source = pending.begin()->source();
+  HalfEdge target = pending.begin()->target();
   auto vector = pending.begin()->vector();
 
   pending.pop_front();
@@ -67,56 +70,136 @@ std::optional<Path<Surface>> GenericRetriangulationDeformationRelation<Surface>:
       // The first entries of the path are collinear and cross over a marked
       // point. Combine them into one (search) vector.
       vector += vector_;
+      target = pending.begin()->target();
       pending.pop_front();
     }
   }
 
-  auto source_ = [&]() {
-    for (auto& rel : relation) {
-      if (rel.first == SaddleConnection<Surface>{this->domain, source})
-        return rel.second;
-      if (rel.first == -SaddleConnection<Surface>{this->domain, source})
-        return -rel.second;
-    }
-    throw std::logic_error("not implemented: cannot determine image when relation is not given on the level of half edges yet.");
-  }();
-
-  if (source_.size() == 0) {
-    std::cout << "Cannot find source " << source << std::endl;
-    // TODO: When is this allowed to happen?
+  const auto path_ = this->operator()(source, target, vector);
+  if (!path_)
     return std::nullopt;
-  }
 
-  if (source_.size() > 1) {
-    // TODO: Assert that the bits are collinear.
-  }
-
-  Path<Surface> path_;
-  Vector<typename Surface::Coordinate> vector_;
-
-  const auto extend = [&](auto&& connection) {
-    vector_ += connection.vector();
-    path_.push_back(connection);
-  };
-
-  extend(SaddleConnection<Surface>::counterclockwise(this->codomain, *source_.begin(), Vertical<Surface>(this->codomain, vector)));
-
-  while (vector != vector_) {
-    LIBFLATSURF_ASSERT((vector - vector_).orientation(vector) == ORIENTATION::SAME, "Partial path " << path_ << " was longer than " << path << " but it can only be shorter.");
-
-    HalfEdge target = (-path_).begin()->source();
-
-    LIBFLATSURF_ASSERT(this->codomain->angle(Vertex::source(target, *this->codomain)) == 1, "Image of saddle connection crosses over non-marked point.");
-
-    extend(SaddleConnection<Surface>::inPlane(this->codomain, this->codomain->nextAtVertex(target), vector - vector_));
-  }
-
-  auto pending_ = this->operator()(pending);
-
+  const auto pending_ = this->operator()(pending);
   if (!pending_)
     return std::nullopt;
 
-  return path_ + *pending_;
+  return *path_ + *pending_;
+}
+
+template <typename Surface>
+std::optional<Path<Surface>> GenericRetriangulationDeformationRelation<Surface>::operator()(HalfEdge source, HalfEdge target, const Vector<T>& vector) const {
+  auto source_ = this->source(source, vector);
+  if (!source_)
+    return std::nullopt;
+
+  auto target_ = this->source(target, -vector);
+  if (!target_)
+    return std::nullopt;
+
+  // TODO: In some cases, e.g., when no vertices have been inserted, we can
+  // speed this up since we do not need to search the saddle connection at all.
+
+  Path<Surface> image;
+  Vector<T> vector_;
+  while(true) {
+    const auto search = SaddleConnection<Surface>::counterclockwise(*this->codomain, SaddleConnection<Surface>(*this->codomain, *source_), Vertical<Surface>(*this->codomain, vector));
+
+    vector_ += search;
+    image += search;
+
+    if (vector_ == vector)
+      break;
+
+    LIBFLATSURF_ASSERT((vector - vector_).orientation(vector) == ORIENTATION::SAME, "Partial path " << image << " was longer than its preimage " << vector << " from " << source << " to " << target << " but it can only be shorter when applying " << *this);
+    LIBFLATSURF_ASSERT(this->codomain->angle(Vertex::source(search.target(), *this->codomain)) == 1, "Image of path crosses over a singularity.");
+
+    source_ = this->codomain->nextAtVertex(search.target());
+  }
+
+  return image;
+}
+
+template <typename Surface>
+std::optional<HalfEdge> GenericRetriangulationDeformationRelation<Surface>::source(HalfEdge source, const Vector<T>& vector) const {
+  const auto relation = this->relation(Vertex::source(source, *this->domain));
+  if (!relation)
+    return std::nullopt;
+
+  // These two saddle connections are equal but live in domain and codomain respectively.
+  const auto& basepreimage = relation->first;
+  const auto& baseimage = relation->second;
+
+  // To reconstruct the path in the codomain we need to determine the angle
+  // from `basepreimage` to `vector` and then reproduce the same angle in the
+  // codomain from `baseimage`.
+  const int angle = basepreimage.angle(source, vector);
+
+  HalfEdge source_ = baseimage.source();
+  {
+    LIBFLATSURF_ASSERT(this->domain->angle(Vertex::source(source, *this->domain)) == this->codomain->angle(Vertex::source(source_, *this->codomain)), "Total angle at vertex must be the same in domain and codomain.");
+
+    // Perform `angle` full turns of baseimage.
+    source_ = turn(this->codomain, source_, baseimage.vector(), angle);
+
+    // Now `baseimage.vector()` is in the sector next to `source_` which has
+    // been turned `angle` times from its original value. Now we perform the
+    // turn <2π from `basepreimage` to `(source, vector)`.
+    source_ = turn(this->codomain, source_, baseimage.vector(), vector);
+  }
+
+  return source_;
+}
+
+template <typename Surface>
+std::optional<std::pair<SaddleConnection<Surface>, SaddleConnection<Surface>>> GenericRetriangulationDeformationRelation<Surface>::relation(const Vertex& search) const {
+  LIBFLATSURF_ASSERT(search == Vertex::source(*search.outgoing().begin(), *this->domain), "source " << search << " is not a vertex of " << *this->domain);
+
+  if (relations.find(search) != relations.end())
+    return relations.at(search);
+
+  const auto insert = [&](const auto& a, const auto& b) {
+    this->relations.insert({
+        Vertex::source(a.source(), *this->domain),
+        std::pair{a, b}});
+  };
+
+  insert(*preimage.begin(), *image.begin());
+  insert(*(-preimage).begin(), *(-image).begin());
+
+  for (const auto& connection : SaddleConnections<Surface>{*this->domain}.byLength()) {
+    const auto source = Vertex::source(connection.source(), *this->domain);
+    const auto target = Vertex::source(connection.target(), *this->domain);
+
+    if (relations.find(source) == relations.end())
+      continue;
+
+    // This saddle connection starts from a known vertex so we can use it to
+    // create a relation between domain and codomain.
+
+    if (relations.find(target) == relations.end()) {
+      // This saddle connection starts at an unknown vertex. It will give us a
+      // new relation.
+
+      // Reconstruct the same saddle connection in the codomain.
+      HalfEdge cosource = relations.at(source).second.source();
+      cosource = turn(this->codomain, cosource, relations.at(source).second.vector(), relations.at(source).first.angle(connection));
+      cosource = turn(this->codomain, cosource, relations.at(source).second.vector(), connection.vector());
+
+      const auto coconnections = SaddleConnections<Surface>{*this->codomain}.sector(cosource).sector(connection.vector(), connection.vector()).bound(Bound::upper(connection.vector()));
+      if (coconnections.begin() == coconnections.end()) {
+        // The connection's target is a marked point that has been removed in the codomain.
+        if (target == search)
+          return std::nullopt;
+      } else {
+        insert(-connection, -*coconnections.begin());
+      }
+    }
+
+    if (relations.find(search) != relations.end())
+      return relations.at(search);
+  }
+
+  LIBFLATSURF_UNREACHABLE("Surface only had a finite number of saddle connections.");
 }
 
 template <typename Surface>
@@ -125,11 +208,25 @@ std::unique_ptr<DeformationRelation<Surface>> GenericRetriangulationDeformationR
 }
 
 template <typename Surface>
+HalfEdge GenericRetriangulationDeformationRelation<Surface>::turn(const Surface& surface, HalfEdge source, Vector<T> from, const Vector<T>& to) {
+  while(from.ccw(to) != CCW::COLLINEAR || from.orientation(to) != ORIENTATION::SAME) {
+    if (from.ccw(to) == CCW::COUNTERCLOCKWISE) {
+      if (surface.fromHalfEdge(surface.nextAtVertex(source)).ccw(to) == CCW::CLOCKWISE) {
+        // The image is in the same sector as from, i.e., next to source.
+        from = to;
+        break;
+      }
+    }
+    source = surface.nextAtVertex(source);
+    from = surface.fromHalfEdge(source);
+  }
+
+  return source;
+}
+
+template <typename Surface>
 std::unique_ptr<DeformationRelation<Surface>> GenericRetriangulationDeformationRelation<Surface>::section() const {
-  auto reversed = relation;
-  for (auto& rel : reversed)
-    std::swap(rel.first, rel.second);
-  return std::make_unique<GenericRetriangulationDeformationRelation>(this->codomain, this->domain, reversed);
+  return std::make_unique<GenericRetriangulationDeformationRelation>(this->codomain, this->domain, this->image, this->preimage);
 }
 
 template <typename Surface>
@@ -137,21 +234,26 @@ bool GenericRetriangulationDeformationRelation<Surface>::trivial() const {
   if (this->domain != this->codomain)
     return false;
 
-  for (auto rel : relation)
-    if (rel.first != rel.second)
-      return false;
+  return preimage == image;
+}
 
-  return true;
+template <typename Surface>
+HalfEdge GenericRetriangulationDeformationRelation<Surface>::turn(const Surface& surface, HalfEdge source, Vector<T> direction, int angle) {
+  for (int turn = 0; turn < angle; turn++) {
+    while(direction.ccw(surface.fromHalfEdge(source)) != CCW::COUNTERCLOCKWISE)
+      source = surface.nextAtVertex(source);
+    while(direction.ccw(surface.fromHalfEdge(source)) != CCW::CLOCKWISE)
+      source = surface.nextAtVertex(source);
+    while(direction.ccw(surface.fromHalfEdge(source)) != CCW::COUNTERCLOCKWISE)
+      source = surface.nextAtVertex(source);
+    source = surface.previousAtVertex(source);
+  }
+  return source;
 }
 
 template <typename Surface>
 std::ostream& GenericRetriangulationDeformationRelation<Surface>::operator>>(std::ostream& os) const {
-  return os << this->domain << " → " << this->codomain << " given by " << fmt::format("{{{}}}", fmt::join([&]() {
-    std::vector<std::string> relations;
-    for (const auto& rel : relation)
-      relations.push_back(fmt::format("{} ≈ {}", rel.first, rel.second));
-    return relations;
-  }(), ", "));
+  return os << this->domain << " → " << this->codomain << " given by " << this->preimage << " ≈ " << this->image;
 }
 
 }

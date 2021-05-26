@@ -22,6 +22,7 @@
 
 #include <vector>
 #include <utility>
+#include <unordered_map>
 
 #include "../../flatsurf/saddle_connection.hpp"
 
@@ -29,29 +30,47 @@
 
 namespace flatsurf {
 
-// TODO: Should this rather be a GenericRetriangulationDeformation?
 template <typename Surface>
 class GenericRetriangulationDeformationRelation : public RetriangulationDeformationRelation<Surface> {
   using T = typename Surface::Coordinate;
 
  public:
-  // TODO: For the callers it is enough to pass a single relation. The
-  // implementation could then compute all the relations the first time they
-  // are needed. In particular, there should be constructor that just takes
-  // two paths. Or even Half Edges instead.
-  GenericRetriangulationDeformationRelation(const Surface& domain, const Surface& codomain, std::vector<std::pair<Path<Surface>, Path<Surface>>> relation);
+  GenericRetriangulationDeformationRelation(const Surface& domain, const Surface& codomain, HalfEdge preimage, HalfEdge image);
+
+  GenericRetriangulationDeformationRelation(const Surface& domain, const Surface& codomain, Path<Surface> preimage, Path<Surface> image);
 
   std::optional<Path<Surface>> operator()(const Path<Surface>&) const override;
+
+  std::optional<Path<Surface>> operator()(HalfEdge source, HalfEdge target, const Vector<T>& vector) const;
+
+  /// Return a pair whose first entry is a saddle connection starting at
+  /// `source` in `domain` and whose second entry is a corresponding saddle
+  /// connection in `codomain`.
+  /// The two entries might not be exactly equivalent due to them being shorter
+  /// because they are stopping at marked points but they are starting at the
+  /// same vertex and going in the same direction on the surface.
+  std::optional<std::pair<SaddleConnection<Surface>, SaddleConnection<Surface>>> relation(const Vertex& source) const;
+
+  std::optional<HalfEdge> source(HalfEdge source, const Vector<T>& vector) const;
 
   std::unique_ptr<DeformationRelation<Surface>> clone() const override;
 
   std::unique_ptr<DeformationRelation<Surface>> section() const override;
 
+  static HalfEdge turn(const Surface&, HalfEdge source, Vector<T> direction, int angle);
+
+  static HalfEdge turn(const Surface&, HalfEdge source, Vector<T> from, const Vector<T>& to);
+
   bool trivial() const override;
-  
+
   std::ostream& operator>>(std::ostream&) const override;
 
-  std::vector<std::pair<Path<Surface>, Path<Surface>>> relation;
+  Path<Surface> preimage;
+  Path<Surface> image;
+
+ private:
+  mutable std::unordered_map<Vertex, std::pair<SaddleConnection<Surface>, SaddleConnection<Surface>>> relations;
+
 };
 
 }

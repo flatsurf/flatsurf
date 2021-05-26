@@ -60,11 +60,7 @@ bool CompositeDeformationRelation<Surface>::trivial() const {
 
 template <typename Surface>
 std::ostream& CompositeDeformationRelation<Surface>::operator>>(std::ostream& os) const {
-  os << "(";
-  *rhs >> os;
-  os << ") then (";
-  *lhs >> os;
-  return os << ")";
+  return os << "(" << *rhs << ") then (" << *lhs << ")";
 }
 
 }

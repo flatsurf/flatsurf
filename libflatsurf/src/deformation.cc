@@ -110,7 +110,7 @@ ImplementationOf<Deformation<Surface>>::ImplementationOf(std::unique_ptr<Deforma
 
 template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const Deformation<Surface>& self) {
-  return *self.self->relation >> os;
+  return os << *self.self->relation;
 }
 
 }  // namespace flatsurf

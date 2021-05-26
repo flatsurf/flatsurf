@@ -53,6 +53,15 @@ class Path : public Serializable<Path<Surface>>,
   // Return whether there are no segments followed by their negatives.
   bool reduced() const;
 
+  // Return whether the two paths are equivalent in homotopy.
+  // The equivalence is relative to the start and end point, in particular this
+  // function returns false if their respective start and end points to do not
+  // match.
+  bool homotopic(const Path&) const;
+
+  // Return the shortest path that is homotopic to this path.
+  Path tighten() const;
+
   Path reversed() const;
 
   T area() const;

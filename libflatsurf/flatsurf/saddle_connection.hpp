@@ -95,6 +95,8 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   // in counter-clockwise direction, returns ⌊α/2π⌋.
   int angle(const SaddleConnection<Surface> &) const;
 
+  int angle(HalfEdge source, const Vector<T>& vector) const;
+
   SaddleConnection<Surface> operator-() const;
 
   bool operator==(const SaddleConnection<Surface> &) const;

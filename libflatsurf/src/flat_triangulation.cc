@@ -277,32 +277,21 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
         std::move(combinatorial),
         [&](const HalfEdge he) { return vectors->get(he); });
 
-    // TODO
     return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<ShiftDeformationRelation<FlatTriangulation>>(
       *this,
-      codomain/*,
-      [&]() {
-        using Path = flatsurf::Path<FlatTriangulation>;
-
-        std::vector<std::pair<Path, Path>> relation;
-
-        for (const auto lhs : this->halfEdges()) {
-          relation.push_back(std::pair{Path{SaddleConnection<FlatTriangulation>{*this, lhs}}, [&]() {
-            for (const auto& image : codomain.halfEdges()) {
-              for (const auto& preimage : halfEdges->operator[](image)) {
-                if (preimage == lhs) {
-                  LIBFLATSURF_ASSERT(vectors->get(image) == fromHalfEdge(lhs) + shift.get(lhs), "Half edge " << lhs << " should have been shifted from " << fromHalfEdge(lhs) << " to " << fromHalfEdge(lhs) + shift.get(lhs) << " but instead it became " << image << " which is " << vectors->get(image));
-                  return Path{SaddleConnection<FlatTriangulation>(codomain, image)};
-                }
-              }
+      codomain,
+      OddHalfEdgeMap<Path<FlatTriangulation>>(*this, [&](HalfEdge he) {
+        for (const auto& image : codomain.halfEdges()) {
+          for (const auto& preimage : halfEdges->operator[](image)) {
+            if (preimage == he) {
+              LIBFLATSURF_ASSERT(vectors->get(image) == fromHalfEdge(he) + shift.get(he), "Half edge " << he << " should have been shifted from " << fromHalfEdge(he) << " to " << fromHalfEdge(he) + shift.get(he) << " but instead it became " << image << " which is " << vectors->get(image));
+              return Path{SaddleConnection<FlatTriangulation>(codomain, image)};
             }
-            // This half edge has been collapsed.
-            return Path{};
-          }()});
+          }
         }
-
-        return relation;
-    }()*/));
+        // This half edge has been collapsed.
+        return Path<FlatTriangulation>{};
+      })));
   }
 }
 
@@ -351,16 +340,10 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
   // The shift deformation moves around the saddle connections. We need to
   // rebuild the deformation here so we can pull back saddle connections in the
   // codomain to the equivalent saddle connection(s) in the domain.
-  using Path = flatsurf::Path<FlatTriangulation>;
-  std::vector<std::pair<Path, Path>> relation;
-
   // The mapping provided by shift is correct on half edges that have not moved.
   // The half edges that have moved have no image under the mapping anymore
   // since one of their endpoints has disappeared. However, they might show up
   // in the preimage if two collinear half edges met at the marked point.
-  // TODO: There is not really a point in doing all this for all half edges
-  // (signed).  Also we could probably postpone this to when somebody actually
-  // asks for this functionality.
   for (auto preimage : this->halfEdges()) {
     if (Vertex::source(preimage, *this) == marked || Vertex::target(preimage, *this) == marked)
       continue;
@@ -371,89 +354,15 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
 
     LIBFLATSURF_ASSERT(!image->empty(), "Edge " << preimage << " has not been collapsed so it should be non-trivial in the image.");
 
-    // TODO: What did we mean to check for here?
-    // LIBFLATSURF_ASSERT(this->angle(Vertex::source(preimage, *this)) == shift.codomain().angle(Vertex::source(image->at(0).source(), shift.codomain())), "TODO");
+    if (image->size() > 1)
+      continue;
 
-    relation.emplace_back(std::pair{std::vector{SaddleConnection<FlatTriangulation>(*this, preimage)}, image.value()});
+    // This half edge determines the deformation. Compose it with the
+    // elimination of all the other marked points.
+    return shift.codomain().eliminateMarkedPoints() * ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<GenericRetriangulationDeformationRelation<FlatTriangulation>>(*this, shift.codomain(), SaddleConnection<FlatTriangulation>(*this, preimage), *image->begin()));
   }
 
-  // Reconstructing the preimage of half edges is much more subtle. The idea
-  // is that the source vertex of a half edge already existed in the preimage.
-  // We find some saddle connection starting at this vertex and represent it
-  // in the domain and codomain of `shift`. Once we have this saddle
-  // connection in both, we can reconstruct any other saddle connection
-  // relative to that.
-  // TODO: This is not particular to eliminateMarkedPoints() and could be pulled into a Deformation.
-  for (const auto image_ : shift.codomain().halfEdges()) {
-    const auto image = SaddleConnection<FlatTriangulation>(shift.codomain(), image_);
-
-    const auto preimage = [&]() {
-      for (const auto& rel : relation) {
-        if (Vertex::source(rel.second.begin()->source(), shift.codomain()) != Vertex::source(image.source(), shift.codomain()))
-          continue;
-
-        // We found a saddle connection leaving at the same vertex in direction basepreimage/baseimage.
-        const auto& basepreimage = *rel.first.begin();
-        const auto& baseimage =  *rel.second.begin();
-
-        LIBFLATSURF_ASSERT(basepreimage.vector().ccw(baseimage.vector()) == CCW::COLLINEAR, "shift did not preserve vector directions on the saddle connections that it did not move.");
-
-        // To reconstruct `image` in shift.domain(), we need to determine the
-        // angle from `baseimage` to `image` and then reproduce the same angle in
-        // shift.domain() from `basepreimage`.
-        int angle = baseimage.angle(image);
-
-        // Perform `angle` full turns of basepreimage.
-        HalfEdge source = basepreimage.source();
-        Vector<T> turned = basepreimage.vector();
-
-        LIBFLATSURF_ASSERT(this->angle(Vertex::source(source, *this)) == shift.codomain().angle(Vertex::source(baseimage.source(), shift.codomain())), "Total angle at vertex must not change.");
-
-        for (int turn = 0; turn < angle; turn++) {
-          while(turned.ccw(fromHalfEdge(source)) != CCW::COUNTERCLOCKWISE)
-            source = this->nextAtVertex(source);
-          while(turned.ccw(fromHalfEdge(source)) != CCW::CLOCKWISE)
-            source = this->nextAtVertex(source);
-          while(turned.ccw(fromHalfEdge(source)) != CCW::COUNTERCLOCKWISE)
-            source = this->nextAtVertex(source);
-          source = this->previousAtVertex(source);
-        }
-
-        // Now `basepreimage.vector()` is in the sector next to `source` which
-        // has been turned `angle` times from its original value. Now we
-        // perform the turn <2π from `baseimage` to `image` in the preimage.
-        while(turned.ccw(image) != CCW::COLLINEAR || turned.orientation(image) != ORIENTATION::SAME) {
-          if (turned.ccw(image) == CCW::COUNTERCLOCKWISE) {
-            if (fromHalfEdge(this->nextAtVertex(source)).ccw(image) == CCW::CLOCKWISE) {
-              // The image is in the same sector as turned, i.e., next to source.
-              turned = image.vector();
-              break;
-            }
-          }
-          source = this->nextAtVertex(source);
-          turned = fromHalfEdge(source);
-        }
-
-        auto preimage = std::vector{SaddleConnection<FlatTriangulation>::inSector(*this, source, Vertical<FlatTriangulation>(*this, turned))};
-        LIBFLATSURF_ASSERT(this->angle(Vertex::source(preimage.at(0).source(), *this)) == shift.codomain().angle(Vertex::source(image.source(), shift.codomain())), "TODO");
-
-        if (preimage.at(0).vector() != image.vector()) {
-          LIBFLATSURF_ASSERT((image.vector() - preimage.at(0).vector()).orientation(image.vector()) == ORIENTATION::SAME, "Partial saddle connection " << preimage.at(0) << " was longer than " << image << " but it can only be shorter.");
-
-          preimage.push_back(SaddleConnection<FlatTriangulation>::inPlane(*this, this->nextAtVertex(preimage.at(0).target()), image.vector() - preimage.at(0).vector()));
-        }
-        
-        return preimage;
-      }
-
-      LIBFLATSURF_UNREACHABLE("Could not pull back " << image << " from " << shift.codomain() << " to " << *this << " after shift of " << delta << " since all its half edges are connected to the collapsed vertex.");
-    }();
-
-    relation.emplace_back(std::pair{preimage, std::vector{image}});
-  }
-
-  // Eliminate all the other marked points.
-  auto elimination = shift.codomain().eliminateMarkedPoints() * ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<GenericRetriangulationDeformationRelation<FlatTriangulation>>(*this, shift.codomain(), relation));
+  LIBFLATSURF_UNREACHABLE("No half edge was sent to a single saddle conection in deformation " << shift);
 
   /* TODO
   // ;
@@ -464,7 +373,6 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
       LIBFLATSURF_ASSERT(preimage, "Half edge " << image << " in surface " << elimination.codomain() << " which was created from " << *this << " by removing a marked point could not be pulled back to the original surface.");
       LIBFLATSURF_ASSERT(preimage->size(), "Half edge " << image << " in surface " << elimination.codomain() << " which was created from " << *this << " by removing a marked point pulled back to a trivial connection.");
 
-      // TODO
       throw std::logic_error("not implemented: assertions");
       LIBFLATSURF_ASSERT(elimination.codomain().angle(Vertex::source(image, elimination.codomain())) == this->angle(Vertex::source(preimage->at(0).source(), *this)), "Total angle at vertex changed. " << image << " in " << elimination.codomain() << " pulls back to [" << preimage->at(0) << ", ...] in " << *this << " but the the total turns at the source of the former is " << elimination.codomain().angle(Vertex::source(image, elimination.codomain())) << " and the total turn at the source of the latter is " << this->angle(Vertex::source(preimage->at(0).source(), *this)));
 
@@ -476,8 +384,6 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
     }
   });
   */
-  
-  return elimination;
 }
 
 template <typename T>
@@ -974,17 +880,14 @@ std::optional<Deformation<FlatTriangulation<T>>> FlatTriangulation<T>::isomorphi
           }),
           a, b, c, d));
 
-        std::vector<std::pair<Path<FlatTriangulation>, Path<FlatTriangulation>>> relation;
         for (auto he: this->halfEdges()) {
           if (isomorphism[he] == HalfEdge{})
             continue;
 
-          relation.push_back({
-            SaddleConnection<FlatTriangulation>(linear.codomain(), he),
-            SaddleConnection<FlatTriangulation>(other, isomorphism[he])});
+          return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<GenericRetriangulationDeformationRelation<FlatTriangulation>>(linear.codomain(), other, he, isomorphism[he])) * linear;
         }
  
-        return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<GenericRetriangulationDeformationRelation<FlatTriangulation>>(linear.codomain(), other, relation)) * linear;
+        LIBFLATSURF_UNREACHABLE("All half edges are inside a single Delaunay cell. This is not possible.");
       }
     }
   }
