@@ -113,7 +113,10 @@ class Deformation {
   // trivially between indistinguishable triangulations using the same labels.
   bool trivial() const;
 
-  Deformation operator*(const Deformation&) const;
+  // Return the concatenation of this deformation and `rhs`.
+  // The returned deformation corresponds to first applying `rhs` and then this
+  // deformation.
+  Deformation operator*(const Deformation& rhs) const;
 
   // Return a (partial) section of this deformation.
   Deformation section() const;

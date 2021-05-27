@@ -75,6 +75,8 @@ class Path : public Serializable<Path<Surface>>,
   // Return the path that results from appending `other` to this path.
   Path operator+(const Path& other) const;
 
+  // Return the inverse path, i.e., the path obtained by walking the reversed
+  // connections in reverse order.
   Path operator-() const;
 
   void push_front(const Segment&);
