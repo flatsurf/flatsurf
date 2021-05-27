@@ -90,6 +90,6 @@ def test_printing():
         assert str(connections) == "SaddleConnections()"
         connections = connections.byLength()
         assert str(connections) == "SaddleConnectionsByLength()"
-        assert str(next(iter(connections))) == "(0, -1) from -2 to 2"
+        assert str(next(iter(connections))) == "-2"
 
 if __name__ == '__main__': sys.exit(pytest.main(sys.argv))
