@@ -302,7 +302,16 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
   for (const auto &vertex : this->vertices()) {
     if (angle(vertex) == 1) {
 
-      // TODO: Why is this necessary? It is in the 1,2,3 example, by what's the underlying reason that this helps? And does it help in general?
+      // Prefer a vertex of minimal degree.
+      // For one, such a vertex likely minimizes the amount of work we need to do to eliminate it.
+      // More importantly, a non-minimal marked vertex might be attached to all
+      // edges in the surface so we cannot eliminate it, this is e.g. the case
+      // in this surface:
+      // ┌ a ┬ b ┐
+      // c / | \ c
+      // └ b ┴ a ┘
+      // There are two vertices in this surface and both are marked. However, ┬
+      // is connected to all edges whereas ┴ is not.
       if (collapse && vertex.outgoing().size() > Vertex::source(*collapse, *this).outgoing().size())
         continue;
 
@@ -359,31 +368,29 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
 
     // This half edge determines the deformation. Compose it with the
     // elimination of all the other marked points.
-    return shift.codomain().eliminateMarkedPoints() * ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<GenericRetriangulationDeformationRelation<FlatTriangulation>>(*this, shift.codomain(), SaddleConnection<FlatTriangulation>(*this, preimage), *image->begin()));
+    auto elimination = shift.codomain().eliminateMarkedPoints() * ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<GenericRetriangulationDeformationRelation<FlatTriangulation>>(*this, shift.codomain(), SaddleConnection<FlatTriangulation>(*this, preimage), *image->begin()));
+
+    LIBFLATSURF_ASSERTIONS([&]() {
+      const auto insertion = elimination.section();
+      for (const auto& image : elimination.codomain().halfEdges()) {
+        const auto preimage = insertion(SaddleConnection<FlatTriangulation>(elimination.codomain(), image));
+        LIBFLATSURF_ASSERT(preimage, "Half edge " << image << " in surface " << elimination.codomain() << " which was created from " << *this << " by removing a marked point could not be pulled back to the original surface.");
+        LIBFLATSURF_ASSERT(preimage->size(), "Half edge " << image << " in surface " << elimination.codomain() << " which was created from " << *this << " by removing a marked point pulled back to a trivial connection.");
+
+        LIBFLATSURF_ASSERT(elimination.codomain().angle(Vertex::source(image, elimination.codomain())) == this->angle(Vertex::source(preimage->begin()->source(), *this)), "Total angle at vertex changed. " << image << " in " << elimination.codomain() << " pulls back to [" << *preimage->begin() << ", ...] in " << *this << " but the the total turns at the source of the former is " << elimination.codomain().angle(Vertex::source(image, elimination.codomain())) << " and the total turn at the source of the latter is " << this->angle(Vertex::source(preimage->begin()->source(), *this)));
+
+        Vector<T> vector;
+        for (const auto& segment : *preimage)
+          vector += segment;
+
+        LIBFLATSURF_ASSERT(vector == elimination.codomain().fromHalfEdge(image), "Half edge " << image << " in surface " << elimination.codomain() << " pulled back to " << vector << " but it should have pulled back to " << elimination.codomain().fromHalfEdge(image));
+      }
+    });
+
+    return elimination;
   }
 
   LIBFLATSURF_UNREACHABLE("No half edge was sent to a single saddle conection in deformation " << shift);
-
-  /* TODO
-  // ;
-  LIBFLATSURF_ASSERTIONS([&]() {
-    const auto section = elimination.section();
-    for (const auto& image : elimination.codomain().halfEdges()) {
-      const auto preimage = section(std::vector{SaddleConnection<FlatTriangulation>(elimination.codomain(), image)});
-      LIBFLATSURF_ASSERT(preimage, "Half edge " << image << " in surface " << elimination.codomain() << " which was created from " << *this << " by removing a marked point could not be pulled back to the original surface.");
-      LIBFLATSURF_ASSERT(preimage->size(), "Half edge " << image << " in surface " << elimination.codomain() << " which was created from " << *this << " by removing a marked point pulled back to a trivial connection.");
-
-      throw std::logic_error("not implemented: assertions");
-      LIBFLATSURF_ASSERT(elimination.codomain().angle(Vertex::source(image, elimination.codomain())) == this->angle(Vertex::source(preimage->at(0).source(), *this)), "Total angle at vertex changed. " << image << " in " << elimination.codomain() << " pulls back to [" << preimage->at(0) << ", ...] in " << *this << " but the the total turns at the source of the former is " << elimination.codomain().angle(Vertex::source(image, elimination.codomain())) << " and the total turn at the source of the latter is " << this->angle(Vertex::source(preimage->at(0).source(), *this)));
-
-      Vector<T> vector;
-      for (const auto& segment : *preimage)
-        vector += segment;
-
-      LIBFLATSURF_ASSERT(vector == elimination.codomain().fromHalfEdge(image), "Half edge " << image << " in surface " << elimination.codomain() << " pulled back to " << vector << " but it should have pulled back to " << elimination.codomain().fromHalfEdge(image));
-    }
-  });
-  */
 }
 
 template <typename T>
