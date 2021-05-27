@@ -27,14 +27,14 @@ template <typename Surface>
 InsertMarkedDeformationRelation<Surface>::InsertMarkedDeformationRelation(const Surface& domain, const Surface& codomain, const Vertex& inserted) : DeformationRelation<Surface>(domain, codomain), inserted(inserted) {}
 
 template <typename Surface>
-InsertMarkedDeformationRelation<Surface>::InsertMarkedDeformationRelation(const Surface& domain, const Surface& codomain, const Vertex& inserted, HalfEdge split, HalfEdge a, HalfEdge b) : DeformationRelation<Surface>(domain, codomain), inserted(inserted) {}
+InsertMarkedDeformationRelation<Surface>::InsertMarkedDeformationRelation(const Surface& domain, const Surface& codomain, const Vertex& inserted, HalfEdge, HalfEdge, HalfEdge) : DeformationRelation<Surface>(domain, codomain), inserted(inserted) {}
 
 template <typename Surface>
 std::optional<Path<Surface>> InsertMarkedDeformationRelation<Surface>::operator()(const Path<Surface>& path) const {
   if (this->codomain->atVertex(inserted).size() == 3)
     return path;
   else
-    throw std::logic_error("not implemented: InsertMarkedDeformationRelation::operator()");
+    throw std::logic_error("not implemented: cannot map paths when a vertex was inserted in the interior of an existing edge");
 }
 
 template <typename Surface>
@@ -44,7 +44,7 @@ std::unique_ptr<DeformationRelation<Surface>> InsertMarkedDeformationRelation<Su
 
 template <typename Surface>
 std::unique_ptr<DeformationRelation<Surface>> InsertMarkedDeformationRelation<Surface>::section() const {
-  throw std::logic_error("not implemented: InsertMarkedDeformationRelation::section()");
+  throw std::logic_error("not implemented: cannot compute section of an insertion of a marked point");
 }
 
 template <typename Surface>
