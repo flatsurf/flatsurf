@@ -40,8 +40,7 @@ std::optional<Path<Surface>> ShiftDeformationRelation<Surface>::operator()(const
     if (connection.source() == -connection.target() && connection.vector() == this->domain->fromHalfEdge(connection.source())) {
       image += shifted.get(connection.source());
     } else {
-      // TODO: Map half edges on path, then tighten.
-      throw std::logic_error("not implemented: ShiftDeformationRelation::operator()");
+      throw std::logic_error("not implemented: Cannot map paths that are not given as a sequence of half edges.");
     }
   }
 
@@ -55,8 +54,7 @@ std::unique_ptr<DeformationRelation<Surface>> ShiftDeformationRelation<Surface>:
 
 template <typename Surface>
 std::unique_ptr<DeformationRelation<Surface>> ShiftDeformationRelation<Surface>::section() const {
-  // TODO
-  throw std::logic_error("not implemented: ShiftDeformationRelation::section()");
+  throw std::logic_error("not implemented: cannot determine section of a shift deformation");
 }
 
 template <typename Surface>
