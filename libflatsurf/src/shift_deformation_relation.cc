@@ -17,19 +17,20 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "impl/shift_deformation_relation.hpp"
+
 #include "../flatsurf/flat_triangulation.hpp"
+#include "../flatsurf/odd_half_edge_map.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
-#include "../flatsurf/odd_half_edge_map.hpp"
 #include "../flatsurf/vector.hpp"
-
-#include "impl/shift_deformation_relation.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-ShiftDeformationRelation<Surface>::ShiftDeformationRelation(const Surface& domain, const Surface& codomain, OddHalfEdgeMap<Path<Surface>> shift) : DeformationRelation<Surface>(domain, codomain), shifted(shift) {
+ShiftDeformationRelation<Surface>::ShiftDeformationRelation(const Surface& domain, const Surface& codomain, OddHalfEdgeMap<Path<Surface>> shift) :
+  DeformationRelation<Surface>(domain, codomain), shifted(shift) {
 }
 
 template <typename Surface>
@@ -74,10 +75,9 @@ std::ostream& ShiftDeformationRelation<Surface>::operator>>(std::ostream& os) co
   return os << this->domain << " → " << this->codomain << " given by " << shifted;
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"
 
 LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_STATIC), ShiftDeformationRelation, LIBFLATSURF_FLAT_TRIANGULATION_TYPES)
-

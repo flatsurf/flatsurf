@@ -17,10 +17,11 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <fmt/format.h>
-#include <boost/type_index.hpp>
-
 #include "../flatsurf/tracked.hpp"
+
+#include <fmt/format.h>
+
+#include <boost/type_index.hpp>
 
 #include "../flatsurf/odd_half_edge_map.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"

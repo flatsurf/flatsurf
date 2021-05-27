@@ -17,14 +17,16 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "impl/slit_deformation_relation.hpp"
+
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/path.hpp"
-#include "impl/slit_deformation_relation.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-SlitDeformationRelation<Surface>::SlitDeformationRelation(const Surface& domain, const Surface& codomain) : DeformationRelation<Surface>(domain, codomain) {}
+SlitDeformationRelation<Surface>::SlitDeformationRelation(const Surface& domain, const Surface& codomain) :
+  DeformationRelation<Surface>(domain, codomain) {}
 
 template <typename Surface>
 std::optional<Path<Surface>> SlitDeformationRelation<Surface>::operator()(const Path<Surface>&) const {
@@ -51,7 +53,7 @@ std::ostream& SlitDeformationRelation<Surface>::operator>>(std::ostream& os) con
   return os << this->domain << " → " << this->codomain;
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

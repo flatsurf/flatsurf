@@ -18,16 +18,19 @@
  *********************************************************************/
 
 #include "impl/insert_marked_deformation_relation.hpp"
-#include "../flatsurf/path.hpp"
+
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/path.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-InsertMarkedDeformationRelation<Surface>::InsertMarkedDeformationRelation(const Surface& domain, const Surface& codomain, const Vertex& inserted) : DeformationRelation<Surface>(domain, codomain), inserted(inserted) {}
+InsertMarkedDeformationRelation<Surface>::InsertMarkedDeformationRelation(const Surface& domain, const Surface& codomain, const Vertex& inserted) :
+  DeformationRelation<Surface>(domain, codomain), inserted(inserted) {}
 
 template <typename Surface>
-InsertMarkedDeformationRelation<Surface>::InsertMarkedDeformationRelation(const Surface& domain, const Surface& codomain, const Vertex& inserted, HalfEdge, HalfEdge, HalfEdge) : DeformationRelation<Surface>(domain, codomain), inserted(inserted) {}
+InsertMarkedDeformationRelation<Surface>::InsertMarkedDeformationRelation(const Surface& domain, const Surface& codomain, const Vertex& inserted, HalfEdge, HalfEdge, HalfEdge) :
+  DeformationRelation<Surface>(domain, codomain), inserted(inserted) {}
 
 template <typename Surface>
 std::optional<Path<Surface>> InsertMarkedDeformationRelation<Surface>::operator()(const Path<Surface>& path) const {
@@ -57,7 +60,7 @@ std::ostream& InsertMarkedDeformationRelation<Surface>::operator>>(std::ostream&
   return os << this->domain << " → " << this->codomain << " inserting " << this->inserted;
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

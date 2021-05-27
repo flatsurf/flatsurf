@@ -17,18 +17,19 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "impl/composite_deformation_relation.hpp"
+
 #include <ostream>
 
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/path.hpp"
-
-#include "impl/composite_deformation_relation.hpp"
 #include "impl/deformation.impl.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-CompositeDeformationRelation<Surface>::CompositeDeformationRelation(const DeformationRelation<Surface>& lhs, const DeformationRelation<Surface>& rhs) : DeformationRelation<Surface>(rhs.domain, lhs.codomain), lhs(lhs.clone()), rhs(rhs.clone()) {}
+CompositeDeformationRelation<Surface>::CompositeDeformationRelation(const DeformationRelation<Surface>& lhs, const DeformationRelation<Surface>& rhs) :
+  DeformationRelation<Surface>(rhs.domain, lhs.codomain), lhs(lhs.clone()), rhs(rhs.clone()) {}
 
 template <typename Surface>
 std::optional<Path<Surface>> CompositeDeformationRelation<Surface>::operator()(const Path<Surface>& path) const {
@@ -63,7 +64,7 @@ std::ostream& CompositeDeformationRelation<Surface>::operator>>(std::ostream& os
   return os << "(" << *rhs << ") then (" << *lhs << ")";
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

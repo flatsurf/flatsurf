@@ -17,17 +17,18 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "impl/flip_deformation_relation.hpp"
+
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 
-#include "impl/flip_deformation_relation.hpp"
-
 namespace flatsurf {
 
 template <typename Surface>
-FlipDeformationRelation<Surface>::FlipDeformationRelation(const Surface& domain, const Surface& codomain, HalfEdge flip) : RetriangulationDeformationRelation<Surface>(domain, codomain), flip(flip) {
+FlipDeformationRelation<Surface>::FlipDeformationRelation(const Surface& domain, const Surface& codomain, HalfEdge flip) :
+  RetriangulationDeformationRelation<Surface>(domain, codomain), flip(flip) {
 }
 
 template <typename Surface>
@@ -67,7 +68,7 @@ std::ostream& FlipDeformationRelation<Surface>::operator>>(std::ostream& os) con
   return os << this->domain << " → " << this->codomain << " flipping " << this->flip;
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

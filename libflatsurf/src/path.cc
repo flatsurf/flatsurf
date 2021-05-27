@@ -44,7 +44,8 @@ Path<Surface>::Path() noexcept :
   self(spimpl::make_impl<ImplementationOf<Path>>()) {}
 
 template <typename Surface>
-Path<Surface>::Path(const Segment& path) : Path(std::vector{ path }) {}
+Path<Surface>::Path(const Segment& path) :
+  Path(std::vector{path}) {}
 
 template <typename Surface>
 Path<Surface>::Path(const std::vector<Segment>& path) :

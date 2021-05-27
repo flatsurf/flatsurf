@@ -38,13 +38,12 @@ class ShiftDeformationRelation : public DeformationRelation<Surface> {
   std::unique_ptr<DeformationRelation<Surface>> section() const override;
 
   bool trivial() const override;
-  
+
   std::ostream& operator>>(std::ostream& os) const override;
 
   OddHalfEdgeMap<Path<Surface>> shifted;
 };
 
-}
+}  // namespace flatsurf
 
 #endif
-

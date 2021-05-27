@@ -17,20 +17,20 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "impl/linear_deformation_relation.hpp"
+
 #include <boost/type_traits/is_detected.hpp>
 
-#include "../flatsurf/deformation.hpp"
-#include "../flatsurf/half_edge.hpp"
-#include "../flatsurf/vector.hpp"
-#include "../flatsurf/vertex.hpp"
-#include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/chain.hpp"
+#include "../flatsurf/deformation.hpp"
 #include "../flatsurf/edge.hpp"
+#include "../flatsurf/flat_triangulation.hpp"
+#include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
-
-#include "impl/linear_deformation_relation.hpp"
+#include "../flatsurf/vector.hpp"
+#include "../flatsurf/vertex.hpp"
 #include "impl/deformation.impl.hpp"
 
 namespace flatsurf {
@@ -38,12 +38,13 @@ namespace flatsurf {
 namespace {
 
 template <typename T>
-using truediv_t = decltype(std::declval<T &>() /= std::declval<const T &>());
+using truediv_t = decltype(std::declval<T&>() /= std::declval<const T&>());
 
 }
 
 template <typename Surface>
-LinearDeformationRelation<Surface>::LinearDeformationRelation(const Surface& domain, const Surface& codomain, const T& a, const T& b, const T& c, const T& d) : DeformationRelation<Surface>(domain, codomain), a(a), b(b), c(c), d(d) {}
+LinearDeformationRelation<Surface>::LinearDeformationRelation(const Surface& domain, const Surface& codomain, const T& a, const T& b, const T& c, const T& d) :
+  DeformationRelation<Surface>(domain, codomain), a(a), b(b), c(c), d(d) {}
 
 template <typename Surface>
 std::unique_ptr<DeformationRelation<Surface>> LinearDeformationRelation<Surface>::clone() const {
@@ -112,7 +113,7 @@ bool LinearDeformationRelation<Surface>::truediv(T& lhs, const T& rhs) {
   }
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

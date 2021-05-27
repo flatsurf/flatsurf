@@ -17,31 +17,34 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "impl/generic_retriangulation_deformation_relation.hpp"
+
+#include "../flatsurf/ccw.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/half_edge_set_iterator.hpp"
+#include "../flatsurf/orientation.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/path_iterator.hpp"
-#include "../flatsurf/vector.hpp"
-#include "../flatsurf/orientation.hpp"
-#include "../flatsurf/vertex.hpp"
-#include "../flatsurf/vertical.hpp"
-#include "../flatsurf/ccw.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_by_length.hpp"
 #include "../flatsurf/saddle_connections_by_length_iterator.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
-#include "impl/generic_retriangulation_deformation_relation.hpp"
+#include "../flatsurf/vector.hpp"
+#include "../flatsurf/vertex.hpp"
+#include "../flatsurf/vertical.hpp"
 #include "util/assert.ipp"
 
 namespace flatsurf {
 
 template <typename Surface>
-GenericRetriangulationDeformationRelation<Surface>::GenericRetriangulationDeformationRelation(const Surface& domain, const Surface& codomain, HalfEdge preimage, HalfEdge image) : GenericRetriangulationDeformationRelation<Surface>(domain, codomain, Path{SaddleConnection<Surface>(domain, preimage)}, Path{SaddleConnection<Surface>(codomain, image)}) {
+GenericRetriangulationDeformationRelation<Surface>::GenericRetriangulationDeformationRelation(const Surface& domain, const Surface& codomain, HalfEdge preimage, HalfEdge image) :
+  GenericRetriangulationDeformationRelation<Surface>(domain, codomain, Path{SaddleConnection<Surface>(domain, preimage)}, Path{SaddleConnection<Surface>(codomain, image)}) {
 }
 
 template <typename Surface>
-GenericRetriangulationDeformationRelation<Surface>::GenericRetriangulationDeformationRelation(const Surface& domain, const Surface& codomain, Path<Surface> preimage, Path<Surface> image) : RetriangulationDeformationRelation<Surface>(domain, codomain), preimage(std::move(preimage)), image(std::move(image)) {
+GenericRetriangulationDeformationRelation<Surface>::GenericRetriangulationDeformationRelation(const Surface& domain, const Surface& codomain, Path<Surface> preimage, Path<Surface> image) :
+  RetriangulationDeformationRelation<Surface>(domain, codomain), preimage(std::move(preimage)), image(std::move(image)) {
   LIBFLATSURF_ASSERT(this->preimage.begin() != this->preimage.end(), "preimage must be a non-trivial path");
   LIBFLATSURF_ASSERT(this->preimage.begin()->surface() == *this->domain, "preimage must live in the domain");
   LIBFLATSURF_ASSERT(this->image.begin() != this->image.end(), "preimage must be a non-trivial path");
@@ -101,7 +104,7 @@ std::optional<Path<Surface>> GenericRetriangulationDeformationRelation<Surface>:
 
   Path<Surface> image;
   Vector<T> vector_;
-  while(true) {
+  while (true) {
     const auto search = SaddleConnection<Surface>::counterclockwise(*this->codomain, SaddleConnection<Surface>(*this->codomain, *source_), Vertical<Surface>(*this->codomain, vector));
 
     vector_ += search;
@@ -158,8 +161,7 @@ std::optional<std::pair<SaddleConnection<Surface>, SaddleConnection<Surface>>> G
     return relations.at(search);
 
   const auto insert = [&](const auto& a, const auto& b) {
-    this->relations.insert({
-        Vertex::source(a.source(), *this->domain),
+    this->relations.insert({Vertex::source(a.source(), *this->domain),
         std::pair{a, b}});
   };
 
@@ -209,7 +211,7 @@ std::unique_ptr<DeformationRelation<Surface>> GenericRetriangulationDeformationR
 
 template <typename Surface>
 HalfEdge GenericRetriangulationDeformationRelation<Surface>::turn(const Surface& surface, HalfEdge source, Vector<T> from, const Vector<T>& to) {
-  while(from.ccw(to) != CCW::COLLINEAR || from.orientation(to) != ORIENTATION::SAME) {
+  while (from.ccw(to) != CCW::COLLINEAR || from.orientation(to) != ORIENTATION::SAME) {
     if (from.ccw(to) == CCW::COUNTERCLOCKWISE) {
       if (surface.fromHalfEdge(surface.nextAtVertex(source)).ccw(to) == CCW::CLOCKWISE) {
         // The image is in the same sector as from, i.e., next to source.
@@ -240,11 +242,11 @@ bool GenericRetriangulationDeformationRelation<Surface>::trivial() const {
 template <typename Surface>
 HalfEdge GenericRetriangulationDeformationRelation<Surface>::turn(const Surface& surface, HalfEdge source, Vector<T> direction, int angle) {
   for (int turn = 0; turn < angle; turn++) {
-    while(direction.ccw(surface.fromHalfEdge(source)) != CCW::COUNTERCLOCKWISE)
+    while (direction.ccw(surface.fromHalfEdge(source)) != CCW::COUNTERCLOCKWISE)
       source = surface.nextAtVertex(source);
-    while(direction.ccw(surface.fromHalfEdge(source)) != CCW::CLOCKWISE)
+    while (direction.ccw(surface.fromHalfEdge(source)) != CCW::CLOCKWISE)
       source = surface.nextAtVertex(source);
-    while(direction.ccw(surface.fromHalfEdge(source)) != CCW::COUNTERCLOCKWISE)
+    while (direction.ccw(surface.fromHalfEdge(source)) != CCW::COUNTERCLOCKWISE)
       source = surface.nextAtVertex(source);
     source = surface.previousAtVertex(source);
   }
@@ -256,7 +258,7 @@ std::ostream& GenericRetriangulationDeformationRelation<Surface>::operator>>(std
   return os << this->domain << " → " << this->codomain << " given by " << this->preimage << " ≈ " << this->image;
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

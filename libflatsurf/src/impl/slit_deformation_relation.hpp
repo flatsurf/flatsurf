@@ -20,8 +20,8 @@
 #ifndef LIBFLATSURF_IMPL_SLIT_DEFORMATION_RELATION_HPP
 #define LIBFLATSURF_IMPL_SLIT_DEFORMATION_RELATION_HPP
 
-#include "deformation_relation.hpp"
 #include "../../flatsurf/half_edge.hpp"
+#include "deformation_relation.hpp"
 
 namespace flatsurf {
 
@@ -43,7 +43,6 @@ class SlitDeformationRelation : public DeformationRelation<Surface> {
   std::ostream& operator>>(std::ostream&) const override;
 };
 
-}
+}  // namespace flatsurf
 
 #endif
-

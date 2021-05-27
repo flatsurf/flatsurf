@@ -36,7 +36,7 @@ struct is_optional : std::false_type {};
 template <typename T>
 struct is_optional<std::optional<T>> : std::true_type {};
 
-template<typename T, typename _ = void>
+template <typename T, typename _ = void>
 struct is_printable : std::false_type {};
 
 template <typename T>

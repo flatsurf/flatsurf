@@ -21,7 +21,6 @@
 #define LIBFLATSURF_IMPL_FLIP_DEFORMATION_RELATION_HPP
 
 #include "../../flatsurf/half_edge.hpp"
-
 #include "retriangulation_deformation_relation.hpp"
 
 namespace flatsurf {
@@ -38,14 +37,12 @@ class FlipDeformationRelation : public RetriangulationDeformationRelation<Surfac
   std::unique_ptr<DeformationRelation<Surface>> section() const override;
 
   bool trivial() const override;
-  
+
   std::ostream& operator>>(std::ostream& os) const override;
 
   HalfEdge flip;
 };
 
-}
+}  // namespace flatsurf
 
 #endif
-
-

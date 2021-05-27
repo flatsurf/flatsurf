@@ -31,13 +31,14 @@ namespace flatsurf {
 template <typename Surface>
 class DeformationRelation {
  public:
-  DeformationRelation(const Surface& domain, const Surface& codomain) : domain(domain), codomain(codomain) {}
+  DeformationRelation(const Surface& domain, const Surface& codomain) :
+    domain(domain), codomain(codomain) {}
   virtual ~DeformationRelation() {}
 
   virtual std::unique_ptr<DeformationRelation<Surface>> clone() const = 0;
 
   virtual std::unique_ptr<DeformationRelation<Surface>> section() const = 0;
-  
+
   virtual std::optional<Path<Surface>> operator()(const Path<Surface>&) const = 0;
 
   virtual bool trivial() const;
@@ -53,6 +54,6 @@ std::ostream& operator<<(std::ostream& os, const DeformationRelation<Surface>& r
   return relation >> os;
 }
 
-}
+}  // namespace flatsurf
 
 #endif

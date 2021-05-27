@@ -70,7 +70,7 @@ HalfEdge turnNearestToDirection(const Surface& surface, HalfEdge source, const V
   return source;
 }
 
-}
+}  // namespace
 
 template <typename Surface>
 SaddleConnection<Surface>::SaddleConnection(const Surface& surface, HalfEdge e) :

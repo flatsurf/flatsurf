@@ -24,9 +24,8 @@
 #include <stdexcept>
 
 #include "../../flatsurf/deformation.hpp"
-
-#include "read_only.hpp"
 #include "deformation_relation.hpp"
+#include "read_only.hpp"
 
 namespace flatsurf {
 

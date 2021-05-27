@@ -17,11 +17,11 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "../flatsurf/edge.hpp"
-#include "../flatsurf/saddle_connection.hpp"
-#include "../flatsurf/path.hpp"
-
 #include "impl/deformation_relation.hpp"
+
+#include "../flatsurf/edge.hpp"
+#include "../flatsurf/path.hpp"
+#include "../flatsurf/saddle_connection.hpp"
 
 namespace flatsurf {
 
@@ -37,7 +37,7 @@ bool DeformationRelation<Surface>::trivial() const {
   return true;
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

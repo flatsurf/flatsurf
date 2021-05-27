@@ -17,10 +17,10 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "impl/retriangulation_deformation_relation.hpp"
+
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/path.hpp"
-
-#include "impl/retriangulation_deformation_relation.hpp"
 
 namespace flatsurf {
 
@@ -29,10 +29,9 @@ std::optional<Path<Surface>> RetriangulationDeformationRelation<Surface>::operat
   throw std::logic_error("not implemented: cannot compute image of a path when a generic retriangulation happened");
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"
 
 LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_STATIC), RetriangulationDeformationRelation, LIBFLATSURF_FLAT_TRIANGULATION_TYPES)
-

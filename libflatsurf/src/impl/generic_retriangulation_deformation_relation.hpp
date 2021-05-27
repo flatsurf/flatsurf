@@ -20,12 +20,11 @@
 #ifndef LIBFLATSURF_IMPL_GENERIC_DEFORMATION_RELATION_HPP
 #define LIBFLATSURF_IMPL_GENERIC_DEFORMATION_RELATION_HPP
 
-#include <vector>
-#include <utility>
 #include <unordered_map>
+#include <utility>
+#include <vector>
 
 #include "../../flatsurf/saddle_connection.hpp"
-
 #include "retriangulation_deformation_relation.hpp"
 
 namespace flatsurf {
@@ -70,9 +69,8 @@ class GenericRetriangulationDeformationRelation : public RetriangulationDeformat
 
  private:
   mutable std::unordered_map<Vertex, std::pair<SaddleConnection<Surface>, SaddleConnection<Surface>>> relations;
-
 };
 
-}
+}  // namespace flatsurf
 
 #endif

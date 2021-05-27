@@ -37,15 +37,13 @@ class Deformation {
   using Coordinate = typename Surface::Coordinate;
 
   // Create the identical deformation.
-  [[deprecated("Create from const Surface& instead.")]]
-  explicit Deformation(Surface&&);
+  [[deprecated("Create from const Surface& instead.")]] explicit Deformation(Surface&&);
 
   // Create the identical deformation.
   explicit Deformation(const Surface&);
 
   // Return the image of the half edge under the deformation.
-  [[deprecated("Use operator(Path) instead")]]
-  std::optional<HalfEdge> operator()(HalfEdge) const;
+  [[deprecated("Use operator(Path) instead")]] std::optional<HalfEdge> operator()(HalfEdge) const;
 
   // Return the image of a path under this deformation.
   // In general the returned value is only correct modulo homotopy (relative to
@@ -55,12 +53,10 @@ class Deformation {
   std::optional<Path<Surface>> operator()(const Path<Surface>&) const;
 
   // Return the result of the deformation.
-  [[deprecated("Use codomain().clone() instead.")]]
-  Surface surface();
+  [[deprecated("Use codomain().clone() instead.")]] Surface surface();
 
   // Return the result of the deformation.
-  [[deprecated("Use codomain() instead.")]]
-  const Surface& surface() const;
+  [[deprecated("Use codomain() instead.")]] const Surface& surface() const;
 
   const Surface& domain() const;
 
@@ -85,25 +81,25 @@ class Deformation {
   // performing a sequence of half edge flips.
   // Otherwise, return whether this deformation can be obtained by performing a
   // sequence of flips, and addition and removal of marked points.
-  bool retriangulating(bool marked=false) const;
+  bool retriangulating(bool marked = false) const;
 
   // Return whether this is a reflection map.
   // Return whether this deformation can be obtained by applying a matrix of
   // determinant -1 to the domain and then retriangulating; marked points are
   // taken into account if `marked` is set, see [retriangulation]().
-  bool reflecting(bool marked=false) const;
+  bool reflecting(bool marked = false) const;
 
   // Return whether this is a rotation map.
   // Return whether this deformation can be obtained by applying a rotation
   // matrix to the domain and then retriangulating; marked points are taken
   // into account if `marked` is set, see [retriangulation]().
-  bool rotating(bool marked=false) const;
+  bool rotating(bool marked = false) const;
 
   // Return whether this is a linear transformation.
   // Return whether this deformation can be obtained by applying a linear
   // transformation to the domain and then retriangulating; marked points are
   // taken into account if `marked` is set, see [retriangulation]().
-  bool linear(bool marked=false) const;
+  bool linear(bool marked = false) const;
 
   // Return whether this is a relabeling of half edges.
   bool relabeling() const;
@@ -130,6 +126,6 @@ class Deformation {
   friend ImplementationOf<Deformation>;
 };
 
-} // namespace flatsurf
+}  // namespace flatsurf
 
 #endif

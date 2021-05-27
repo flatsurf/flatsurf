@@ -83,12 +83,11 @@ class OddHalfEdgeMap {
         } else {
           os << "?";
         }
-      else
-        if constexpr (is_printable<T>::value) {
-          os << self.values[he];
-        } else {
-          os << "?";
-        }
+      else if constexpr (is_printable<T>::value) {
+        os << self.values[he];
+      } else {
+        os << "?";
+      }
       first = false;
     }
     return os << "}";

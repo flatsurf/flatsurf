@@ -20,8 +20,8 @@
 #ifndef LIBFLATSURF_IMPL_INSERT_MARKED_DEFORMATION_RELATION_HPP
 #define LIBFLATSURF_IMPL_INSERT_MARKED_DEFORMATION_RELATION_HPP
 
-#include "deformation_relation.hpp"
 #include "../../flatsurf/vertex.hpp"
+#include "deformation_relation.hpp"
 
 namespace flatsurf {
 
@@ -44,12 +44,12 @@ class InsertMarkedDeformationRelation : public DeformationRelation<Surface> {
   std::unique_ptr<DeformationRelation<Surface>> section() const override;
 
   bool trivial() const override;
-  
+
   std::ostream& operator>>(std::ostream&) const override;
 
   Vertex inserted;
 };
 
-}
+}  // namespace flatsurf
 
 #endif

@@ -44,8 +44,7 @@ class Tracked {
   // A callback of this type is invoked when the parent surface is destructed.
   using DestructionHandler = std::function<void(T&, const FlatTriangulationCombinatorial&)>;
 
-  [[deprecated("Do not copy a Tracked<T>. If you really need a copy, create a copy from the underlying value.")]]
-  Tracked(const Tracked&) noexcept;
+  [[deprecated("Do not copy a Tracked<T>. If you really need a copy, create a copy from the underlying value.")]] Tracked(const Tracked&) noexcept;
   Tracked(Tracked&&) noexcept;
   Tracked(const FlatTriangulationCombinatorial&, T value, const FlipHandler& updateAfterFlip = defaultFlip, const CollapseHandler& updateBeforeCollapse = defaultCollapse, const SwapHandler& updateBeforeSwap = defaultSwap, const EraseHandler& updateBeforeErase = defaultErase, const DestructionHandler& updateBeforeDestruction = forgetParent);
 
@@ -57,8 +56,7 @@ class Tracked {
   const T& operator*() const;
   T& operator*();
 
-  [[deprecated("Do not copy a Tracked<T>. If you really need a copy, create a copy from the underlying value.")]]
-  Tracked& operator=(const Tracked&) noexcept;
+  [[deprecated("Do not copy a Tracked<T>. If you really need a copy, create a copy from the underlying value.")]] Tracked& operator=(const Tracked&) noexcept;
   Tracked& operator=(Tracked&&) noexcept;
 
   Tracked& operator=(T&&);

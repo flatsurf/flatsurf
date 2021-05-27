@@ -65,7 +65,7 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
 
   // Return the saddle connection that starts counterclockwise (or collinear)
   // from source and goes in `direction`.
-  static SaddleConnection<Surface> counterclockwise(const Surface &, const SaddleConnection<Surface>& source, const Vertical<Surface>& direction);
+  static SaddleConnection<Surface> counterclockwise(const Surface &, const SaddleConnection<Surface> &source, const Vertical<Surface> &direction);
 
   const Vector<T> &vector() const;
   const Chain<Surface> &chain() const;
@@ -95,7 +95,7 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   // in counter-clockwise direction, returns ⌊α/2π⌋.
   int angle(const SaddleConnection<Surface> &) const;
 
-  int angle(HalfEdge source, const Vector<T>& vector) const;
+  int angle(HalfEdge source, const Vector<T> &vector) const;
 
   SaddleConnection<Surface> operator-() const;
 

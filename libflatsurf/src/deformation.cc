@@ -20,13 +20,12 @@
 #include <stdexcept>
 
 #include "../flatsurf/half_edge.hpp"
-#include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/path_iterator.hpp"
-
+#include "../flatsurf/saddle_connection.hpp"
+#include "impl/composite_deformation_relation.hpp"
 #include "impl/deformation.impl.hpp"
 #include "impl/trivial_deformation_relation.hpp"
-#include "impl/composite_deformation_relation.hpp"
 #include "util/assert.ipp"
 
 namespace flatsurf {
@@ -106,7 +105,8 @@ bool Deformation<Surface>::trivial() const {
 }
 
 template <typename Surface>
-ImplementationOf<Deformation<Surface>>::ImplementationOf(std::unique_ptr<DeformationRelation<Surface>> relation): relation(std::move(relation)) {}
+ImplementationOf<Deformation<Surface>>::ImplementationOf(std::unique_ptr<DeformationRelation<Surface>> relation) :
+  relation(std::move(relation)) {}
 
 template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const Deformation<Surface>& self) {

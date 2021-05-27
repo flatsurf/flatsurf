@@ -18,13 +18,15 @@
  *********************************************************************/
 
 #include "impl/trivial_deformation_relation.hpp"
-#include "impl/deformation_relation.hpp"
+
 #include "../flatsurf/path.hpp"
+#include "impl/deformation_relation.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-TrivialDeformationRelation<Surface>::TrivialDeformationRelation(const Surface& surface) : DeformationRelation<Surface>(surface, surface) {}
+TrivialDeformationRelation<Surface>::TrivialDeformationRelation(const Surface& surface) :
+  DeformationRelation<Surface>(surface, surface) {}
 
 template <typename Surface>
 std::optional<Path<Surface>> TrivialDeformationRelation<Surface>::operator()(const Path<Surface>& path) const {
@@ -51,7 +53,7 @@ std::ostream& TrivialDeformationRelation<Surface>::operator>>(std::ostream& os) 
   return os << this->domain;
 }
 
-}
+}  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

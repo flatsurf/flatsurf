@@ -56,13 +56,13 @@
 #include "impl/flat_triangulation.impl.hpp"
 #include "impl/flat_triangulation_combinatorial.impl.hpp"
 #include "impl/flip_deformation_relation.hpp"
-#include "impl/linear_deformation_relation.hpp"
 #include "impl/generic_retriangulation_deformation_relation.hpp"
+#include "impl/insert_marked_deformation_relation.hpp"
+#include "impl/linear_deformation_relation.hpp"
+#include "impl/quadratic_polynomial.hpp"
 #include "impl/retriangulation_deformation_relation.hpp"
 #include "impl/shift_deformation_relation.hpp"
 #include "impl/slit_deformation_relation.hpp"
-#include "impl/quadratic_polynomial.hpp"
-#include "impl/insert_marked_deformation_relation.hpp"
 #include "util/assert.ipp"
 
 namespace flatsurf {
@@ -241,7 +241,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
     // half edge to all its preimages under this identification.
     Tracked<HalfEdgeMap<std::unordered_set<HalfEdge>>> halfEdges(combinatorial, HalfEdgeMap<std::unordered_set<HalfEdge>>(combinatorial, [](const HalfEdge he) { return std::unordered_set{he}; }),
         Tracked<HalfEdgeMap<std::unordered_set<HalfEdge>>>::defaultFlip,
-        [](HalfEdgeMap<std::unordered_set<HalfEdge>>& self, const FlatTriangulationCombinatorial& surface, Edge e) {
+        [](HalfEdgeMap<std::unordered_set<HalfEdge>> &self, const FlatTriangulationCombinatorial &surface, Edge e) {
           const auto copy = [&](const HalfEdge from, const HalfEdge to) {
             for (const auto he : self[from])
               self[to].insert(he);
@@ -278,20 +278,20 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
         [&](const HalfEdge he) { return vectors->get(he); });
 
     return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<ShiftDeformationRelation<FlatTriangulation>>(
-      *this,
-      codomain,
-      OddHalfEdgeMap<Path<FlatTriangulation>>(*this, [&](HalfEdge he) {
-        for (const auto& image : codomain.halfEdges()) {
-          for (const auto& preimage : halfEdges->operator[](image)) {
-            if (preimage == he) {
-              LIBFLATSURF_ASSERT(vectors->get(image) == fromHalfEdge(he) + shift.get(he), "Half edge " << he << " should have been shifted from " << fromHalfEdge(he) << " to " << fromHalfEdge(he) + shift.get(he) << " but instead it became " << image << " which is " << vectors->get(image));
-              return Path{SaddleConnection<FlatTriangulation>(codomain, image)};
+        *this,
+        codomain,
+        OddHalfEdgeMap<Path<FlatTriangulation>>(*this, [&](HalfEdge he) {
+          for (const auto &image : codomain.halfEdges()) {
+            for (const auto &preimage : halfEdges->operator[](image)) {
+              if (preimage == he) {
+                LIBFLATSURF_ASSERT(vectors->get(image) == fromHalfEdge(he) + shift.get(he), "Half edge " << he << " should have been shifted from " << fromHalfEdge(he) << " to " << fromHalfEdge(he) + shift.get(he) << " but instead it became " << image << " which is " << vectors->get(image));
+                return Path{SaddleConnection<FlatTriangulation>(codomain, image)};
+              }
             }
           }
-        }
-        // This half edge has been collapsed.
-        return Path<FlatTriangulation>{};
-      })));
+          // This half edge has been collapsed.
+          return Path<FlatTriangulation>{};
+        })));
   }
 }
 
@@ -301,7 +301,6 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
 
   for (const auto &vertex : this->vertices()) {
     if (angle(vertex) == 1) {
-
       // Prefer a vertex of minimal degree.
       // For one, such a vertex likely minimizes the amount of work we need to do to eliminate it.
       // More importantly, a non-minimal marked vertex might be attached to all
@@ -372,7 +371,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
 
     LIBFLATSURF_ASSERTIONS([&]() {
       const auto insertion = elimination.section();
-      for (const auto& image : elimination.codomain().halfEdges()) {
+      for (const auto &image : elimination.codomain().halfEdges()) {
         const auto preimage = insertion(SaddleConnection<FlatTriangulation>(elimination.codomain(), image));
         LIBFLATSURF_ASSERT(preimage, "Half edge " << image << " in surface " << elimination.codomain() << " which was created from " << *this << " by removing a marked point could not be pulled back to the original surface.");
         LIBFLATSURF_ASSERT(preimage->size(), "Half edge " << image << " in surface " << elimination.codomain() << " which was created from " << *this << " by removing a marked point pulled back to a trivial connection.");
@@ -380,7 +379,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
         LIBFLATSURF_ASSERT(elimination.codomain().angle(Vertex::source(image, elimination.codomain())) == this->angle(Vertex::source(preimage->begin()->source(), *this)), "Total angle at vertex changed. " << image << " in " << elimination.codomain() << " pulls back to [" << *preimage->begin() << ", ...] in " << *this << " but the the total turns at the source of the former is " << elimination.codomain().angle(Vertex::source(image, elimination.codomain())) << " and the total turn at the source of the latter is " << this->angle(Vertex::source(preimage->begin()->source(), *this)));
 
         Vector<T> vector;
-        for (const auto& segment : *preimage)
+        for (const auto &segment : *preimage)
           vector += segment;
 
         LIBFLATSURF_ASSERT(vector == elimination.codomain().fromHalfEdge(image), "Half edge " << image << " in surface " << elimination.codomain() << " pulled back to " << vector << " but it should have pulled back to " << elimination.codomain().fromHalfEdge(image));
@@ -520,11 +519,11 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &nextT
 
         auto canFlip = [&](HalfEdge g) {
           return e != nextTo &&
-            e != -nextTo &&
-            e != deformation.codomain().nextAtVertex(nextTo) &&
-            e != -deformation.codomain().nextAtVertex(nextTo) &&
-            deformation.codomain().fromHalfEdge(deformation.codomain().previousAtVertex(g)).ccw(deformation.codomain().fromHalfEdge(deformation.codomain().nextAtVertex(g))) == CCW::COUNTERCLOCKWISE &&
-            deformation.codomain().fromHalfEdge(deformation.codomain().previousAtVertex(-g)).ccw(deformation.codomain().fromHalfEdge(deformation.codomain().nextAtVertex(-g))) == CCW::COUNTERCLOCKWISE;
+                 e != -nextTo &&
+                 e != deformation.codomain().nextAtVertex(nextTo) &&
+                 e != -deformation.codomain().nextAtVertex(nextTo) &&
+                 deformation.codomain().fromHalfEdge(deformation.codomain().previousAtVertex(g)).ccw(deformation.codomain().fromHalfEdge(deformation.codomain().nextAtVertex(g))) == CCW::COUNTERCLOCKWISE &&
+                 deformation.codomain().fromHalfEdge(deformation.codomain().previousAtVertex(-g)).ccw(deformation.codomain().fromHalfEdge(deformation.codomain().nextAtVertex(-g))) == CCW::COUNTERCLOCKWISE;
         };
 
         while (!canFlip(e)) {
@@ -537,7 +536,6 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &nextT
             flip(deformation.codomain().previousAtVertex(e));
             continue;
           }
-          
         }
 
         {
@@ -864,23 +862,23 @@ std::optional<Deformation<FlatTriangulation<T>>> FlatTriangulation<T>::isomorphi
 
       if (match(preimage, image)) {
         auto linear = ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<LinearDeformationRelation<FlatTriangulation>>(
-          *this,
-          FlatTriangulation(
-            sgn == - 1 ? ~*this : static_cast<const FlatTriangulationCombinatorial&>(*this).clone(),
-            [&](HalfEdge he) {
-              return Vector<T>(
-                fromHalfEdge(he).x() * a + fromHalfEdge(he).y() * b,
-                fromHalfEdge(he).x() * c + fromHalfEdge(he).y() * d);
-          }),
-          a, b, c, d));
+            *this,
+            FlatTriangulation(
+                sgn == -1 ? ~*this : static_cast<const FlatTriangulationCombinatorial &>(*this).clone(),
+                [&](HalfEdge he) {
+                  return Vector<T>(
+                      fromHalfEdge(he).x() * a + fromHalfEdge(he).y() * b,
+                      fromHalfEdge(he).x() * c + fromHalfEdge(he).y() * d);
+                }),
+            a, b, c, d));
 
-        for (auto he: this->halfEdges()) {
+        for (auto he : this->halfEdges()) {
           if (isomorphism[he] == HalfEdge{})
             continue;
 
           return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<GenericRetriangulationDeformationRelation<FlatTriangulation>>(linear.codomain(), other, he, isomorphism[he])) * linear;
         }
- 
+
         LIBFLATSURF_UNREACHABLE("All half edges are inside a single Delaunay cell. This is not possible.");
       }
     }
