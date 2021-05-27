@@ -73,8 +73,7 @@ bool ShiftDeformationRelation<Surface>::trivial() const {
 
 template <typename Surface>
 std::ostream& ShiftDeformationRelation<Surface>::operator>>(std::ostream& os) const {
-  // TODO
-  throw std::logic_error("not implemented: ShiftDeformationRelation::operator>>");
+  return os << this->domain << " → " << this->codomain << " given by " << shifted;
 }
 
 }
