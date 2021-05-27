@@ -119,6 +119,12 @@ class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulat
   // operators from Python, i.e., cppyy.
   const FlatTriangulationCombinatorial &combinatorial() const;
 
+  // Return this triangulation with inverted vertex permutation.
+  // The resulting triangulation corresponds to the triangulation after
+  // applying a linear transformation of negative determinant such as mirroring
+  // along an axis.
+  FlatTriangulationCombinatorial operator~() const;
+
   // Return whether rhs is combinatorially the same triangulation (with the
   // same numbering of edges.)
   bool operator==(const FlatTriangulationCombinatorial &rhs) const;

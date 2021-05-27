@@ -32,7 +32,6 @@
 
 #include "impl/linear_deformation_relation.hpp"
 #include "impl/deformation.impl.hpp"
-#include "util/assert.ipp"
 
 namespace flatsurf {
 

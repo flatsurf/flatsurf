@@ -866,20 +866,7 @@ std::optional<Deformation<FlatTriangulation<T>>> FlatTriangulation<T>::isomorphi
         auto linear = ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<LinearDeformationRelation<FlatTriangulation>>(
           *this,
           FlatTriangulation(
-            // TODO: Should there be an operator~ on FlatTriangulationCombinatorial?
-            FlatTriangulationCombinatorial(
-              [&]() {
-              auto faces = this->faces();
-              if (sgn == -1) {
-                for (auto& face : faces) {
-                  std::swap(std::get<0>(face), std::get<1>(face));
-                  std::get<0>(face) = -std::get<0>(face);
-                  std::get<1>(face) = -std::get<1>(face);
-                  std::get<2>(face) = -std::get<2>(face);
-                }
-              }
-              return faces;
-            }()),
+            sgn == - 1 ? ~*this : static_cast<const FlatTriangulationCombinatorial&>(*this).clone(),
             [&](HalfEdge he) {
               return Vector<T>(
                 fromHalfEdge(he).x() * a + fromHalfEdge(he).y() * b,

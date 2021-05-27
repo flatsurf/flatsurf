@@ -10,6 +10,10 @@
 
 * A conversion operator `Tracked<T>::operator T&&()` to move out of a `Tracked<T>`.
 
+* An operator ~ on combinatorial triangulations that "inverts" a triangulation,
+  i.e., it returns its mirror image. This is used, e.g., when applying a linear
+  transformation of negative determinant to a triangulation.
+
 **Changed:**
 
 * `SaddleConnection::counterclockwise` now does what the documentation claimed.
