@@ -28,10 +28,6 @@
   support this and the registered callbacks might not support such copying so
   it is better not to support this use case.
 
-**Removed:**
-
-* <news item>
-
 **Fixed:**
 
 * Make `HalfEdgeMap` work for types that are not printable.
@@ -39,7 +35,3 @@
 * Implemented `SaddleConnection::angle`. Technically, this is a breaking API
   change since the return type changed. However, before this method was not
   implemented at all so nobody could have relied on that.
-
-**Performance:**
-
-* <news item>
