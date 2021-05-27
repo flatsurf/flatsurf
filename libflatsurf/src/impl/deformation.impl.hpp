@@ -39,14 +39,6 @@ class ImplementationOf<Deformation<Surface>> {
     return Deformation<Surface>(PrivateConstructor{}, std::move(relation));
   }
 
-  static Deformation<Surface> make(std::function<std::unique_ptr<DeformationRelation<Surface>>()>) {
-    throw std::logic_error("not implemented: Deformation::make");
-    // TODO
-    /*
-    return Deformation<Surface>(PrivateConstructor{}, domain, codomain, factory);
-    */
-  }
-
   std::unique_ptr<DeformationRelation<Surface>> relation;
 };
 
