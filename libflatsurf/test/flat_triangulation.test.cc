@@ -389,6 +389,9 @@ TEMPLATE_TEST_CASE("Detect Isomorphic Surfaces", "[flat_triangulation][isomorphi
         REQUIRE(image.size() == (*surface)->halfEdges().size());
 
       transformations.push_back(candidate);
+
+      REQUIRE((*deformation * deformation->section()).trivial());
+      REQUIRE((deformation->section() * *deformation).trivial());
     }
 
     auto scaled = (*surface)->scale(2);
