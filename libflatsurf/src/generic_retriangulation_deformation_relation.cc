@@ -96,7 +96,7 @@ std::optional<Path<Surface>> GenericRetriangulationDeformationRelation<Surface>:
   if (!target_)
     return std::nullopt;
 
-  // TODO: In some cases, e.g., when no vertices have been inserted, we can
+  // Note: In some cases, e.g., when no vertices have been inserted, we could
   // speed this up since we do not need to search the saddle connection at all.
 
   Path<Surface> image;
