@@ -29,7 +29,6 @@
 
 #include "bound.hpp"
 #include "copyable.hpp"
-#include "half_edge.hpp"
 #include "serializable.hpp"
 
 namespace flatsurf {

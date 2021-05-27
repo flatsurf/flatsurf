@@ -20,9 +20,9 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTIONS_HPP
 #define LIBFLATSURF_SADDLE_CONNECTIONS_HPP
 
+#include <optional>
+
 #include "copyable.hpp"
-#include "half_edge.hpp"
-#include "vertex.hpp"
 
 namespace flatsurf {
 

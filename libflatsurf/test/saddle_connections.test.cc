@@ -42,6 +42,7 @@
 #include "../flatsurf/saddle_connections_sample.hpp"
 #include "../flatsurf/saddle_connections_sample_iterator.hpp"
 #include "../flatsurf/vector.hpp"
+#include "../flatsurf/vertex.hpp"
 #include "external/catch2/single_include/catch2/catch.hpp"
 #include "generators/saddle_connections_generator.hpp"
 #include "generators/surface_generator.hpp"

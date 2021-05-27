@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,21 +17,21 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "../flatsurf/chain.hpp"
-
-#include <flint/fmpz.h>
-#include <flint/fmpz_vec.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
-#include <gmp.h>
-#include <gmpxx.h>
 
-#include "../flatsurf/bound.hpp"
-#include "../flatsurf/fmt.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
+
+#include "../flatsurf/chain.hpp"
+#include "../flatsurf/fmt.hpp"
+#include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/edge.hpp"
+#include "../flatsurf/bound.hpp"
+#include "../flatsurf/vector.hpp"
+
 #include "impl/chain.impl.hpp"
 #include "impl/chain_iterator.impl.hpp"
-#include "util/assert.ipp"
+
 #include "util/hash.ipp"
 
 namespace flatsurf {

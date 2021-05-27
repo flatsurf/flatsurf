@@ -40,6 +40,7 @@
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
+#include "../flatsurf/vertex.hpp"
 #include "../src/external/rx-ranges/include/rx/ranges.hpp"
 #include "external/catch2/single_include/catch2/catch.hpp"
 #include "generators/half_edge_generator.hpp"

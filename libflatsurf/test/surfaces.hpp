@@ -32,6 +32,7 @@
 #include <vector>
 
 #include "../flatsurf/flat_triangulation.hpp"
+#include "../flatsurf/flat_triangulation_combinatorial.hpp"
 #include "../flatsurf/vector.hpp"
 #include "generators/real_generator.hpp"
 

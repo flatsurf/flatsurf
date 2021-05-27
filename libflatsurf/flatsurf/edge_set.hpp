@@ -25,7 +25,6 @@
 #include <vector>
 
 #include "copyable.hpp"
-#include "edge_set_iterator.hpp"
 
 namespace flatsurf {
 

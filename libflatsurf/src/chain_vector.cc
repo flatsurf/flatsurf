@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,10 @@
 #include "impl/chain_vector.hpp"
 
 #include <optional>
+#include <e-antic/renfxx_fwd.h>
 
+#include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/edge.hpp"
 #include "impl/chain.impl.hpp"
 #include "util/assert.ipp"
 

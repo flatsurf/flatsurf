@@ -32,6 +32,7 @@
 #include "../flatsurf/saddle_connections_by_length_iterator.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
 #include "../flatsurf/vector.hpp"
+#include "../flatsurf/vertex.hpp"
 #include "../test/surfaces.hpp"
 
 using benchmark::DoNotOptimize;

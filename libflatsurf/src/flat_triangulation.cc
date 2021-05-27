@@ -20,15 +20,9 @@
 #include "../flatsurf/flat_triangulation.hpp"
 
 #include <exact-real/arb.hpp>
-#include <exact-real/integer_ring.hpp>
-#include <exact-real/number_field.hpp>
-#include <exact-real/rational_field.hpp>
 #include <exact-real/yap/arb.hpp>
 #include <functional>
-#include <iosfwd>
-#include <map>
 #include <ostream>
-#include <type_traits>
 #include <vector>
 
 #include "../flatsurf/bound.hpp"
@@ -38,6 +32,7 @@
 #include "../flatsurf/delaunay.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/edge_set.hpp"
+#include "../flatsurf/edge_set_iterator.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/isomorphism.hpp"

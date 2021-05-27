@@ -29,7 +29,7 @@
 #include <optional>
 #include <vector>
 
-#include "flat_triangulation_combinatorial.hpp"
+#include "flat_triangulation_combinatorics.hpp"
 #include "half_edge.hpp"
 #include "managed_movable.hpp"
 #include "serializable.hpp"

@@ -38,6 +38,7 @@
 #include "../flatsurf/saddle_connections_iterator.hpp"
 #include "../flatsurf/saddle_connections_sample.hpp"
 #include "../flatsurf/vector.hpp"
+#include "../flatsurf/vertex.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/saddle_connections.impl.hpp"
 #include "impl/saddle_connections_by_length.impl.hpp"

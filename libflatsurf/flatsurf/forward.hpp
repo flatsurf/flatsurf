@@ -39,6 +39,9 @@ template <typename Surface>
 class Chain;
 
 template <typename Surface>
+class ChainIterator;
+
+template <typename Surface>
 class ContourComponent;
 
 template <typename Surface>

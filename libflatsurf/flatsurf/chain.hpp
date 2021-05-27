@@ -23,10 +23,9 @@
 #include <gmpxx.h>
 
 #include <boost/operators.hpp>
-#include <exact-real/arb.hpp>
+#include <exact-real/forward.hpp>
 #include <iosfwd>
 
-#include "chain_iterator.hpp"
 #include "copyable.hpp"
 #include "serializable.hpp"
 

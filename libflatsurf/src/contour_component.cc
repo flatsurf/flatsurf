@@ -17,29 +17,24 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <fmt/format.h>
-#include <fmt/ostream.h>
+#include <ostream>
+#include <limits>
 
-#include <intervalxt/interval_exchange_transformation.hpp>
+#include "external/rx-ranges/include/rx/ranges.hpp"
 
 #include "../flatsurf/ccw.hpp"
-#include "../flatsurf/contour_connection.hpp"
-#include "../flatsurf/flat_triangulation_collapsed.hpp"
-#include "../flatsurf/half_edge.hpp"
-#include "../flatsurf/interval_exchange_transformation.hpp"
+#include "../flatsurf/contour_component.hpp"
 #include "../flatsurf/path.hpp"
+#include "../flatsurf/vertical.hpp"
+#include "../flatsurf/interval_exchange_transformation.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
-#include "../flatsurf/vertical.hpp"
-#include "external/rx-ranges/include/rx/ranges.hpp"
-#include "impl/contour_component.impl.hpp"
-#include "impl/contour_component_state.hpp"
-#include "impl/contour_connection.impl.hpp"
-#include "impl/contour_decomposition_state.hpp"
-#include "util/assert.ipp"
+#include "../flatsurf/path.hpp"
 
-using std::ostream;
-using std::vector;
+#include "impl/contour_component.impl.hpp"
+#include "impl/contour_connection.impl.hpp"
+
+#include "util/assert.ipp"
 
 namespace flatsurf {
 
@@ -152,7 +147,7 @@ ContourConnection<Surface> ImplementationOf<ContourComponent<Surface>>::previous
 }
 
 template <typename Surface>
-void ImplementationOf<ContourComponent<Surface>>::makeContour(std::back_insert_iterator<vector<HalfEdge>> target,
+void ImplementationOf<ContourComponent<Surface>>::makeContour(std::back_insert_iterator<std::vector<HalfEdge>> target,
     const HalfEdge source, const Surface& parent,
     const Vertical<Surface>& vertical) {
   LIBFLATSURF_ASSERT_ARGUMENT(vertical.ccw(source) != CCW::COLLINEAR, "vertical edges must have been collapsed before a contour can be built");
@@ -188,7 +183,7 @@ bool ContourComponent<Surface>::operator==(const ContourComponent<Surface>& rhs)
 }
 
 template <typename Surface>
-ostream& operator<<(ostream& os, const ContourComponent<Surface>& self) {
+std::ostream& operator<<(std::ostream& os, const ContourComponent<Surface>& self) {
   return os << self.perimeter();
 }
 

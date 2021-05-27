@@ -20,17 +20,12 @@
 #ifndef LIBFLATSURF_CHAIN_IMPL_HPP
 #define LIBFLATSURF_CHAIN_IMPL_HPP
 
-#include <gmpxx.h>
-
-#include <exact-real/arb.hpp>
 #include <optional>
 
 #include "../../flatsurf/chain.hpp"
-#include "../../flatsurf/edge_map.hpp"
-#include "../../flatsurf/vector.hpp"
-#include "chain_vector.hpp"
-#include "flat_triangulation.impl.hpp"
+
 #include "read_only.hpp"
+#include "chain_vector.hpp"
 
 namespace flatsurf {
 
