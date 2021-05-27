@@ -42,7 +42,6 @@
 namespace flatsurf {
 
 using std::begin;
-using std::end;
 
 template <typename Surface>
 HalfEdge FlatTriangulationCombinatorics<Surface>::nextInFace(const HalfEdge e) const {
@@ -205,6 +204,11 @@ void FlatTriangulationCombinatorics<Surface>::flip(HalfEdge e) {
 template <typename Surface>
 std::pair<HalfEdge, HalfEdge> FlatTriangulationCombinatorics<Surface>::collapse(HalfEdge e) {
   return self->collapse(e);
+}
+
+template <typename Surface>
+FlatTriangulationCombinatorial FlatTriangulationCombinatorics<Surface>::operator~() const {
+  return ImplementationOf<FlatTriangulationCombinatorial>::make(~self->vertices, halfEdges() | rx::filter([&](HalfEdge he) { return boundary(he); }) | rx::transform([](HalfEdge he) { return -he; }) | rx::to_vector());
 }
 
 template <typename Surface>

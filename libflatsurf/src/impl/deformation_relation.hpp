@@ -17,36 +17,42 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_DEFORMATION_IMPL_HPP
-#define LIBFLATSURF_DEFORMATION_IMPL_HPP
+#ifndef LIBFLATSURF_IMPL_DEFORMATION_RELATION_HPP
+#define LIBFLATSURF_IMPL_DEFORMATION_RELATION_HPP
 
-#include <functional>
-#include <stdexcept>
-
-#include "../../flatsurf/deformation.hpp"
+#include <memory>
+#include <optional>
+#include <vector>
 
 #include "read_only.hpp"
-#include "deformation_relation.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-class ImplementationOf<Deformation<Surface>> {
+class DeformationRelation {
  public:
-  ImplementationOf(std::unique_ptr<DeformationRelation<Surface>> relation);
+  DeformationRelation(const Surface& domain, const Surface& codomain) : domain(domain), codomain(codomain) {}
+  virtual ~DeformationRelation() {}
 
-  static Deformation<Surface> make(std::unique_ptr<DeformationRelation<Surface>> relation) {
-    return Deformation<Surface>(PrivateConstructor{}, std::move(relation));
-  }
+  virtual std::unique_ptr<DeformationRelation<Surface>> clone() const = 0;
 
-  std::unique_ptr<DeformationRelation<Surface>> relation;
+  virtual std::unique_ptr<DeformationRelation<Surface>> section() const = 0;
+  
+  virtual std::optional<Path<Surface>> operator()(const Path<Surface>&) const = 0;
+
+  virtual bool trivial() const;
+
+  virtual std::ostream& operator>>(std::ostream&) const = 0;
+
+  ReadOnly<Surface> domain;
+  ReadOnly<Surface> codomain;
 };
 
 template <typename Surface>
-template <typename... Args>
-Deformation<Surface>::Deformation(PrivateConstructor, Args&&... args) :
-  self(spimpl::make_unique_impl<ImplementationOf<Deformation<Surface>>>(std::forward<Args>(args)...)) {}
+std::ostream& operator<<(std::ostream& os, const DeformationRelation<Surface>& relation) {
+  return relation >> os;
+}
 
-}  // namespace flatsurf
+}
 
 #endif

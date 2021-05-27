@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,24 +17,33 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "impl/trivial_deformation.hpp"
+#ifndef LIBFLATSURF_IMPL_SLIT_DEFORMATION_RELATION_HPP
+#define LIBFLATSURF_IMPL_SLIT_DEFORMATION_RELATION_HPP
 
-#include "../flatsurf/half_edge.hpp"
+#include "deformation_relation.hpp"
+#include "../../flatsurf/half_edge.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-TrivialDeformation<Surface>::TrivialDeformation(Surface&& surface) :
-  ImplementationOf<Deformation<Surface>>(std::move(surface)) {}
+class SlitDeformationRelation : public DeformationRelation<Surface> {
+ public:
+  // Create a deformation that adds/removes a slit to `domain` resulting in
+  // `codomain`.
+  SlitDeformationRelation(const Surface& domain, const Surface& codomain);
 
-template <typename Surface>
-std::optional<HalfEdge> TrivialDeformation<Surface>::operator()(HalfEdge he) const {
-  return he;
+  std::optional<Path<Surface>> operator()(const Path<Surface>&) const override;
+
+  std::unique_ptr<DeformationRelation<Surface>> clone() const override;
+
+  std::unique_ptr<DeformationRelation<Surface>> section() const override;
+
+  bool trivial() const override;
+
+  std::ostream& operator>>(std::ostream&) const override;
+};
+
 }
 
-}  // namespace flatsurf
+#endif
 
-// Instantiations of templates so implementations are generated for the linker
-#include "util/instantiate.ipp"
-
-LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_STATIC), TrivialDeformation, LIBFLATSURF_FLAT_TRIANGULATION_TYPES)

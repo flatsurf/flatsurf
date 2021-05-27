@@ -6,52 +6,60 @@ libflatsurf_la_SOURCES =                                            \
 	bound.cc                                                    \
 	ccw.cc                                                      \
 	chain.cc                                                    \
-	chain_vector.cc                                             \
 	chain_iterator.cc                                           \
+	chain_vector.cc                                             \
 	collapsed_half_edge.cc                                      \
+	composite_deformation_relation.cc                           \
 	contour_component.cc                                        \
 	contour_component_state.cc                                  \
 	contour_connection.cc                                       \
 	contour_decomposition.cc                                    \
 	contour_decomposition_state.cc                              \
 	deformation.cc                                              \
+	deformation_relation.cc                                     \
 	edge.cc                                                     \
-	edge_set_iterator.cc                                        \
 	edge_set.cc                                                 \
-	half_edge_set.cc                                            \
-	half_edge_set_iterator.cc                                   \
+	edge_set_iterator.cc                                        \
 	flat_triangulation.cc                                       \
 	flat_triangulation_collapsed.cc                             \
 	flat_triangulation_combinatorial.cc                         \
 	flat_triangulation_combinatorics.cc                         \
+	flip_deformation_relation.cc                                \
 	flow_component.cc                                           \
 	flow_component_state.cc                                     \
 	flow_connection.cc                                          \
 	flow_decomposition.cc                                       \
 	flow_decomposition_state.cc                                 \
 	flow_triangulation.cc                                       \
+	generic_retriangulation_deformation_relation.cc             \
 	half_edge.cc                                                \
 	half_edge_intersection.cc                                   \
+	half_edge_set.cc                                            \
+	half_edge_set_iterator.cc                                   \
 	indexed_set.cc                                              \
 	indexed_set_iterator.cc                                     \
+	insert_marked_deformation_relation.cc                       \
 	interval_exchange_transformation.cc                         \
 	lengths.cc                                                  \
+	linear_deformation_relation.cc                              \
 	orientation.cc                                              \
 	path.cc                                                     \
 	path_iterator.cc                                            \
 	permutation.cc                                              \
 	quadratic_polynomial.cc                                     \
 	read_only.cc                                                \
+	retriangulation_deformation_relation.cc                     \
 	saddle_connection.cc                                        \
 	saddle_connections.cc                                       \
 	saddle_connections_by_length.cc                             \
-	saddle_connections_iterator.cc                              \
 	saddle_connections_by_length_iterator.cc                    \
+	saddle_connections_iterator.cc                              \
 	saddle_connections_sample.cc                                \
 	saddle_connections_sample_iterator.cc                       \
+	shift_deformation_relation.cc                               \
+	slit_deformation_relation.cc                                \
 	tracked.cc                                                  \
-	transformation_deformation.cc                               \
-	trivial_deformation.cc                                      \
+	trivial_deformation_relation.cc                             \
 	vector.cc                                                   \
 	vertex.cc                                                   \
 	vertical.cc                                                 \
@@ -127,12 +135,14 @@ noinst_HEADERS =                                                    \
 	impl/chain_iterator.impl.hpp                                \
 	impl/chain_vector.hpp                                       \
 	impl/collapsed_half_edge.hpp                                \
+	impl/composite_deformation_relation.hpp                     \
 	impl/contour_component.impl.hpp                             \
 	impl/contour_component_state.hpp                            \
 	impl/contour_connection.impl.hpp                            \
 	impl/contour_decomposition.impl.hpp                         \
 	impl/contour_decomposition_state.hpp                        \
 	impl/deformation.impl.hpp                                   \
+	impl/deformation_relation.hpp                               \
 	impl/edge_map.impl.hpp                                      \
 	impl/edge_set.impl.hpp                                      \
 	impl/edge_set_iterator.impl.hpp                             \
@@ -140,6 +150,7 @@ noinst_HEADERS =                                                    \
 	impl/flat_triangulation_combinatorial.impl.hpp              \
 	impl/flat_triangulation_combinatorics.impl.hpp              \
 	impl/flat_triangulation.impl.hpp                            \
+	impl/flip_deformation_relation.hpp                          \
 	impl/flow_component.impl.hpp                                \
 	impl/flow_component_state.hpp                               \
 	impl/flow_connection.impl.hpp                               \
@@ -147,19 +158,23 @@ noinst_HEADERS =                                                    \
 	impl/flow_decomposition_state.hpp                           \
 	impl/flow_triangulation.impl.hpp                            \
 	impl/forward.hpp                                            \
+	impl/generic_retriangulation_deformation_relation.hpp       \
 	impl/half_edge_intersection.impl.hpp                        \
 	impl/half_edge_set.impl.hpp                                 \
 	impl/half_edge_set_iterator.impl.hpp                        \
 	impl/indexed_map.hpp                                        \
 	impl/indexed_set.hpp                                        \
 	impl/indexed_set_iterator.hpp                               \
+	impl/insert_marked_deformation_relation.hpp                 \
 	impl/interval_exchange_transformation.impl.hpp              \
 	impl/lengths.hpp                                            \
+	impl/linear_deformation_relation.hpp                        \
 	impl/managed_movable.impl.hpp                               \
 	impl/path.impl.hpp                                          \
 	impl/path_iterator.impl.hpp                                 \
 	impl/quadratic_polynomial.hpp                               \
 	impl/read_only.hpp                                          \
+	impl/retriangulation_deformation_relation.hpp               \
 	impl/saddle_connection.impl.hpp                             \
 	impl/saddle_connections.impl.hpp                            \
 	impl/saddle_connections_by_length.impl.hpp                  \
@@ -167,9 +182,10 @@ noinst_HEADERS =                                                    \
 	impl/saddle_connections_by_length_iterator.impl.hpp         \
 	impl/saddle_connections_sample.impl.hpp                     \
 	impl/saddle_connections_sample_iterator.impl.hpp            \
+	impl/shift_deformation_relation.hpp                         \
+	impl/slit_deformation_relation.hpp                          \
 	impl/tracked.impl.hpp                                       \
-	impl/transformation_deformation.hpp                         \
-	impl/trivial_deformation.hpp                                \
+	impl/trivial_deformation_relation.hpp                       \
 	impl/vector.impl.hpp                                        \
 	impl/vertex.impl.hpp                                        \
 	impl/vertical.impl.hpp                                      \

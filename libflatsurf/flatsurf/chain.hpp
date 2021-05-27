@@ -66,7 +66,7 @@ class Chain : public Serializable<Chain<Surface>>,
   using iterator = ChainIterator<Surface>;
 
   // Return an iterator over the summands of this chain, i.e., the pairs of
-  // coefficient and edges.
+  // edges and coefficients.
   iterator begin() const;
   iterator end() const;
 

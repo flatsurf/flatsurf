@@ -17,36 +17,29 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_DEFORMATION_IMPL_HPP
-#define LIBFLATSURF_DEFORMATION_IMPL_HPP
+#include "../flatsurf/edge.hpp"
+#include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/path.hpp"
 
-#include <functional>
-#include <stdexcept>
-
-#include "../../flatsurf/deformation.hpp"
-
-#include "read_only.hpp"
-#include "deformation_relation.hpp"
+#include "impl/deformation_relation.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-class ImplementationOf<Deformation<Surface>> {
- public:
-  ImplementationOf(std::unique_ptr<DeformationRelation<Surface>> relation);
+bool DeformationRelation<Surface>::trivial() const {
+  if (*domain != *codomain)
+    return false;
 
-  static Deformation<Surface> make(std::unique_ptr<DeformationRelation<Surface>> relation) {
-    return Deformation<Surface>(PrivateConstructor{}, std::move(relation));
-  }
+  for (const auto& e : domain->edges())
+    if (this->operator()(SaddleConnection<Surface>(*domain, e.positive())) != SaddleConnection<Surface>(*codomain, e.positive()))
+      return false;
 
-  std::unique_ptr<DeformationRelation<Surface>> relation;
-};
+  return true;
+}
 
-template <typename Surface>
-template <typename... Args>
-Deformation<Surface>::Deformation(PrivateConstructor, Args&&... args) :
-  self(spimpl::make_unique_impl<ImplementationOf<Deformation<Surface>>>(std::forward<Args>(args)...)) {}
+}
 
-}  // namespace flatsurf
+// Instantiations of templates so implementations are generated for the linker
+#include "util/instantiate.ipp"
 
-#endif
+LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_STATIC), DeformationRelation, LIBFLATSURF_FLAT_TRIANGULATION_TYPES)

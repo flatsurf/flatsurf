@@ -2,7 +2,7 @@
  *  This file is part of flatsurf.
  *
  *        Copyright (C) 2019 Vincent Delecroix
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -35,6 +35,8 @@
 #include "../flatsurf/interval_exchange_transformation.hpp"
 #include "../flatsurf/isomorphism.hpp"
 #include "../flatsurf/odd_half_edge_map.hpp"
+#include "../flatsurf/path.hpp"
+#include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
@@ -78,24 +80,24 @@ TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[flat_triangulation][ins
 
     SECTION("Insert without Flip") {
       auto sector = HalfEdge(1);
-      REQUIRE(fmt::format("{}", surface.insertAt(sector, R2(2, 1))) == "FlatTriangulationCombinatorial(vertices = (1, -10, 2, 3, 4, 5, -3, 6, 7, 8, -6, -2, -12, 9, -4, -5, -9, -11, -1, -7, -8)(10, 11, 12), faces = (1, -11, 10)(-1, -8, 7)(2, -6, -3)(-2, -10, 12)(3, 5, -4)(4, 9, -5)(6, 8, -7)(-9, -12, 11)) with vectors {1: (3, 0), 2: (3, 3), 3: (0, 3), 4: (-3, 0), 5: (-3, -3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (0, -3), 10: (-2, -1), 11: (1, -1), 12: (1, 2)}");
+      REQUIRE(fmt::format("{}", surface.insertAt(sector, R2(2, 1))) == "FlatTriangulationCombinatorial(vertices = (1, 2, 3, 4, 5, -3, 6, 7, 8, -6, -2, 9, -4, -5, -9, -1, -7, -8), faces = (1, -9, -2)(-1, -8, 7)(2, -6, -3)(3, 5, -4)(4, 9, -5)(6, 8, -7)) with vectors {1: (3, 0), 2: (3, 3), 3: (0, 3), 4: (-3, 0), 5: (-3, -3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (0, -3)} → FlatTriangulationCombinatorial(vertices = (1, -10, 2, 3, 4, 5, -3, 6, 7, 8, -6, -2, -12, 9, -4, -5, -9, -11, -1, -7, -8)(10, 11, 12), faces = (1, -11, 10)(-1, -8, 7)(2, -6, -3)(-2, -10, 12)(3, 5, -4)(4, 9, -5)(6, 8, -7)(-9, -12, 11)) with vectors {1: (3, 0), 2: (3, 3), 3: (0, 3), 4: (-3, 0), 5: (-3, -3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (0, -3), 10: (-2, -1), 11: (1, -1), 12: (1, 2)} inserting {10, 11, 12}");
     }
 
     SECTION("Insert without Flip onto Edge") {
       auto sector = HalfEdge(1);
-      REQUIRE(fmt::format("{}", surface.insertAt(sector, R2(1, 0))) == "FlatTriangulationCombinatorial(vertices = (1, 8, -6, -2, -12, 9, -4, -5, -9, -11, -7, -8, -10, 2, 3, 4, 5, -3, 6, 7)(-1, 11, 12, 10), faces = (1, 10, -8)(-1, 7, -11)(2, -6, -3)(-2, -10, 12)(3, 5, -4)(4, 9, -5)(6, 8, -7)(-9, -12, 11)) with vectors {1: (1, 3), 2: (3, 3), 3: (0, 3), 4: (-3, 0), 5: (-3, -3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (0, -3), 10: (-1, 0), 11: (2, 0), 12: (2, 3)}");
+      REQUIRE(fmt::format("{}", surface.insertAt(sector, R2(1, 0))) == "FlatTriangulationCombinatorial(vertices = (1, 2, 3, 4, 5, -3, 6, 7, 8, -6, -2, 9, -4, -5, -9, -1, -7, -8), faces = (1, -9, -2)(-1, -8, 7)(2, -6, -3)(3, 5, -4)(4, 9, -5)(6, 8, -7)) with vectors {1: (3, 0), 2: (3, 3), 3: (0, 3), 4: (-3, 0), 5: (-3, -3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (0, -3)} → FlatTriangulationCombinatorial(vertices = (1, 8, -6, -2, -12, 9, -4, -5, -9, -11, -7, -8, -10, 2, 3, 4, 5, -3, 6, 7)(-1, 11, 12, 10), faces = (1, 10, -8)(-1, 7, -11)(2, -6, -3)(-2, -10, 12)(3, 5, -4)(4, 9, -5)(6, 8, -7)(-9, -12, 11)) with vectors {1: (1, 3), 2: (3, 3), 3: (0, 3), 4: (-3, 0), 5: (-3, -3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (0, -3), 10: (-1, 0), 11: (2, 0), 12: (2, 3)} inserting {-1, 10, 11, 12}");
     }
 
     SECTION("Insert with Single Flip onto Edge") {
       auto sector = HalfEdge(1);
       // Actually, we perform more than one flip. One would be enough but we
       // cannot handle inserts onto a half edge other than the sector boundary.
-      REQUIRE(fmt::format("{}", surface.insertAt(sector, R2(4, 1))) == "FlatTriangulationCombinatorial(vertices = (1, -10, 5, 9, 2, 4, -9, 6, 7, 8, -6, -5, -12, 3, -2, -4, -3, -11, -1, -7, -8)(10, 11, 12), faces = (1, -11, 10)(-1, -8, 7)(2, 3, -4)(-2, 9, 4)(-3, -12, 11)(5, -6, -9)(-5, -10, 12)(6, 8, -7)) with vectors {1: (3, 0), 2: (3, 3), 3: (-6, -3), 4: (-3, 0), 5: (9, 3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (6, 3), 10: (-4, -1), 11: (-1, -1), 12: (5, 2)}");
+      REQUIRE(fmt::format("{}", surface.insertAt(sector, R2(4, 1))) == "(((FlatTriangulationCombinatorial(vertices = (1, 2, 3, 4, 5, -3, 6, 7, 8, -6, -2, 9, -4, -5, -9, -1, -7, -8), faces = (1, -9, -2)(-1, -8, 7)(2, -6, -3)(3, 5, -4)(4, 9, -5)(6, 8, -7)) with vectors {1: (3, 0), 2: (3, 3), 3: (0, 3), 4: (-3, 0), 5: (-3, -3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (0, -3)} → FlatTriangulationCombinatorial(vertices = (1, 9, 2, 3, 4, -9, 5, -3, 6, 7, 8, -6, -2, -4, -5, -1, -7, -8), faces = (1, -5, -9)(-1, -8, 7)(2, -6, -3)(-2, 9, 4)(3, 5, -4)(6, 8, -7)) with vectors {1: (3, 0), 2: (3, 3), 3: (0, 3), 4: (-3, 0), 5: (-3, -3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (6, 3)} flipping -9) then (FlatTriangulationCombinatorial(vertices = (1, 9, 2, 3, 4, -9, 5, -3, 6, 7, 8, -6, -2, -4, -5, -1, -7, -8), faces = (1, -5, -9)(-1, -8, 7)(2, -6, -3)(-2, 9, 4)(3, 5, -4)(6, 8, -7)) with vectors {1: (3, 0), 2: (3, 3), 3: (0, 3), 4: (-3, 0), 5: (-3, -3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (6, 3)} → FlatTriangulationCombinatorial(vertices = (1, 9, 2, 4, -9, 5, 6, 7, 8, -6, 3, -2, -4, -3, -5, -1, -7, -8), faces = (1, -5, -9)(-1, -8, 7)(2, 3, -4)(-2, 9, 4)(-3, -6, 5)(6, 8, -7)) with vectors {1: (3, 0), 2: (3, 3), 3: (-6, -3), 4: (-3, 0), 5: (-3, -3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (6, 3)} flipping 3)) then (FlatTriangulationCombinatorial(vertices = (1, 9, 2, 4, -9, 5, 6, 7, 8, -6, 3, -2, -4, -3, -5, -1, -7, -8), faces = (1, -5, -9)(-1, -8, 7)(2, 3, -4)(-2, 9, 4)(-3, -6, 5)(6, 8, -7)) with vectors {1: (3, 0), 2: (3, 3), 3: (-6, -3), 4: (-3, 0), 5: (-3, -3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (6, 3)} → FlatTriangulationCombinatorial(vertices = (1, 5, 9, 2, 4, -9, 6, 7, 8, -6, -5, 3, -2, -4, -3, -1, -7, -8), faces = (1, -3, -5)(-1, -8, 7)(2, 3, -4)(-2, 9, 4)(5, -6, -9)(6, 8, -7)) with vectors {1: (3, 0), 2: (3, 3), 3: (-6, -3), 4: (-3, 0), 5: (9, 3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (6, 3)} flipping -5)) then (FlatTriangulationCombinatorial(vertices = (1, 5, 9, 2, 4, -9, 6, 7, 8, -6, -5, 3, -2, -4, -3, -1, -7, -8), faces = (1, -3, -5)(-1, -8, 7)(2, 3, -4)(-2, 9, 4)(5, -6, -9)(6, 8, -7)) with vectors {1: (3, 0), 2: (3, 3), 3: (-6, -3), 4: (-3, 0), 5: (9, 3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (6, 3)} → FlatTriangulationCombinatorial(vertices = (1, -10, 5, 9, 2, 4, -9, 6, 7, 8, -6, -5, -12, 3, -2, -4, -3, -11, -1, -7, -8)(10, 11, 12), faces = (1, -11, 10)(-1, -8, 7)(2, 3, -4)(-2, 9, 4)(-3, -12, 11)(5, -6, -9)(-5, -10, 12)(6, 8, -7)) with vectors {1: (3, 0), 2: (3, 3), 3: (-6, -3), 4: (-3, 0), 5: (9, 3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (6, 3), 10: (-4, -1), 11: (-1, -1), 12: (5, 2)} inserting {10, 11, 12})");
     }
 
     SECTION("Insert with Several Flips") {
       auto sector = HalfEdge(1);
-      REQUIRE(fmt::format("{}", surface.insertAt(sector, R2(5, 1))) == "FlatTriangulationCombinatorial(vertices = (1, -10, 3, 5, 9, 4, -3, -12, 2, -9, 6, 7, 8, -6, -5, -4, -2, -11, -1, -7, -8)(10, 11, 12), faces = (1, -11, 10)(-1, -8, 7)(2, -4, 9)(-2, -12, 11)(3, 4, -5)(-3, -10, 12)(5, -6, -9)(6, 8, -7)) with vectors {1: (3, 0), 2: (-9, -3), 3: (12, 3), 4: (-3, 0), 5: (9, 3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (6, 3), 10: (-5, -1), 11: (-2, -1), 12: (7, 2)}");
+      REQUIRE(fmt::format("{}", surface.insertAt(sector, R2(5, 1))) == "(((((FlatTriangulationCombinatorial(vertices = (1, 2, 3, 4, 5, -3, 6, 7, 8, -6, -2, 9, -4, -5, -9, -1, -7, -8), faces = (1, -9, -2)(-1, -8, 7)(2, -6, -3)(3, 5, -4)(4, 9, -5)(6, 8, -7)) with vectors {1: (3, 0), 2: (3, 3), 3: (0, 3), 4: (-3, 0), 5: (-3, -3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (0, -3)} → FlatTriangulationCombinatorial(vertices = (1, 9, 2, 3, 4, -9, 5, -3, 6, 7, 8, -6, -2, -4, -5, -1, -7, -8), faces = (1, -5, -9)(-1, -8, 7)(2, -6, -3)(-2, 9, 4)(3, 5, -4)(6, 8, -7)) with vectors {1: (3, 0), 2: (3, 3), 3: (0, 3), 4: (-3, 0), 5: (-3, -3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (6, 3)} flipping -9) then (FlatTriangulationCombinatorial(vertices = (1, 9, 2, 3, 4, -9, 5, -3, 6, 7, 8, -6, -2, -4, -5, -1, -7, -8), faces = (1, -5, -9)(-1, -8, 7)(2, -6, -3)(-2, 9, 4)(3, 5, -4)(6, 8, -7)) with vectors {1: (3, 0), 2: (3, 3), 3: (0, 3), 4: (-3, 0), 5: (-3, -3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (6, 3)} → FlatTriangulationCombinatorial(vertices = (1, 9, 2, 4, -9, 5, 6, 7, 8, -6, 3, -2, -4, -3, -5, -1, -7, -8), faces = (1, -5, -9)(-1, -8, 7)(2, 3, -4)(-2, 9, 4)(-3, -6, 5)(6, 8, -7)) with vectors {1: (3, 0), 2: (3, 3), 3: (-6, -3), 4: (-3, 0), 5: (-3, -3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (6, 3)} flipping 3)) then (FlatTriangulationCombinatorial(vertices = (1, 9, 2, 4, -9, 5, 6, 7, 8, -6, 3, -2, -4, -3, -5, -1, -7, -8), faces = (1, -5, -9)(-1, -8, 7)(2, 3, -4)(-2, 9, 4)(-3, -6, 5)(6, 8, -7)) with vectors {1: (3, 0), 2: (3, 3), 3: (-6, -3), 4: (-3, 0), 5: (-3, -3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (6, 3)} → FlatTriangulationCombinatorial(vertices = (1, 5, 9, 2, 4, -9, 6, 7, 8, -6, -5, 3, -2, -4, -3, -1, -7, -8), faces = (1, -3, -5)(-1, -8, 7)(2, 3, -4)(-2, 9, 4)(5, -6, -9)(6, 8, -7)) with vectors {1: (3, 0), 2: (3, 3), 3: (-6, -3), 4: (-3, 0), 5: (9, 3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (6, 3)} flipping -5)) then (FlatTriangulationCombinatorial(vertices = (1, 5, 9, 2, 4, -9, 6, 7, 8, -6, -5, 3, -2, -4, -3, -1, -7, -8), faces = (1, -3, -5)(-1, -8, 7)(2, 3, -4)(-2, 9, 4)(5, -6, -9)(6, 8, -7)) with vectors {1: (3, 0), 2: (3, 3), 3: (-6, -3), 4: (-3, 0), 5: (9, 3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (6, 3)} → FlatTriangulationCombinatorial(vertices = (1, 5, 9, 4, 2, -9, 6, 7, 8, -6, -5, 3, -4, -2, -3, -1, -7, -8), faces = (1, -3, -5)(-1, -8, 7)(2, -4, 9)(-2, 4, 3)(5, -6, -9)(6, 8, -7)) with vectors {1: (3, 0), 2: (-9, -3), 3: (-6, -3), 4: (-3, 0), 5: (9, 3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (6, 3)} flipping 2)) then (FlatTriangulationCombinatorial(vertices = (1, 5, 9, 4, 2, -9, 6, 7, 8, -6, -5, 3, -4, -2, -3, -1, -7, -8), faces = (1, -3, -5)(-1, -8, 7)(2, -4, 9)(-2, 4, 3)(5, -6, -9)(6, 8, -7)) with vectors {1: (3, 0), 2: (-9, -3), 3: (-6, -3), 4: (-3, 0), 5: (9, 3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (6, 3)} → FlatTriangulationCombinatorial(vertices = (1, 3, 5, 9, 4, -3, 2, -9, 6, 7, 8, -6, -5, -4, -2, -1, -7, -8), faces = (1, -2, -3)(-1, -8, 7)(2, -4, 9)(3, 4, -5)(5, -6, -9)(6, 8, -7)) with vectors {1: (3, 0), 2: (-9, -3), 3: (12, 3), 4: (-3, 0), 5: (9, 3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (6, 3)} flipping -3)) then (FlatTriangulationCombinatorial(vertices = (1, 3, 5, 9, 4, -3, 2, -9, 6, 7, 8, -6, -5, -4, -2, -1, -7, -8), faces = (1, -2, -3)(-1, -8, 7)(2, -4, 9)(3, 4, -5)(5, -6, -9)(6, 8, -7)) with vectors {1: (3, 0), 2: (-9, -3), 3: (12, 3), 4: (-3, 0), 5: (9, 3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (6, 3)} → FlatTriangulationCombinatorial(vertices = (1, -10, 3, 5, 9, 4, -3, -12, 2, -9, 6, 7, 8, -6, -5, -4, -2, -11, -1, -7, -8)(10, 11, 12), faces = (1, -11, 10)(-1, -8, 7)(2, -4, 9)(-2, -12, 11)(3, 4, -5)(-3, -10, 12)(5, -6, -9)(6, 8, -7)) with vectors {1: (3, 0), 2: (-9, -3), 3: (12, 3), 4: (-3, 0), 5: (9, 3), 6: (3, 0), 7: (3, 3), 8: (0, 3), 9: (6, 3), 10: (-5, -1), 11: (-2, -1), 12: (7, 2)} inserting {10, 11, 12})");
     }
   }
 
@@ -120,8 +122,9 @@ TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[flat_triangulation][ins
           R2 v = R2(x, y);
           HalfEdge e(1);
           WHEN("We Insert a Vertex at " << v << " next to " << e) {
-            auto surf = surface.insertAt(e, v).surface();
+            auto surf = surface.insertAt(e, v).codomain().clone();
 
+            CAPTURE(e);
             CAPTURE(surf);
 
             THEN("The Surface has Changed in the Right Way") {
@@ -130,7 +133,7 @@ TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[flat_triangulation][ins
             }
 
             AND_WHEN("We Make a Slot There") {
-              surf = surf.slit(surf.nextAtVertex(e)).surface();
+              surf = surf.slit(surf.nextAtVertex(e)).codomain().clone();
 
               THEN("There is a Boundary at " << e) {
                 REQUIRE(surf.boundary(surf.nextAtVertex(e)));
@@ -249,8 +252,8 @@ TEMPLATE_TEST_CASE("Deform a Flat Triangulation", "[flat_triangulation][deformat
   const auto surface = makeL<R2>();
 
   SECTION("Trivially deform an L") {
-    auto shift = OddHalfEdgeMap<R2>(*surface);
-    REQUIRE(surface->operator+(shift).surface() == *surface);
+    const auto shift = OddHalfEdgeMap<R2>(*surface);
+    REQUIRE(surface->operator+(shift).codomain() == *surface);
   }
 
   SECTION("Stretch an L") {
@@ -259,39 +262,74 @@ TEMPLATE_TEST_CASE("Deform a Flat Triangulation", "[flat_triangulation][deformat
     shift.set(HalfEdge(8), R2(0, 1));
     shift.set(HalfEdge(7), R2(0, 1));
 
-    REQUIRE(surface->operator+(shift).surface() != *surface);
+    const auto shifted = surface->operator+(shift);
+
+    REQUIRE(shifted.codomain() != *surface);
+
+    for (const auto he : surface->halfEdges())
+      REQUIRE(shifted(Path(SaddleConnection(*surface, he))).has_value());
+
+    REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(8)))->size() == 1);
+    REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(8)))->begin()->vector() == surface->fromHalfEdge(HalfEdge(8)) + R2(0, 1));
+
+    REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(7)))->size() == 1);
+    REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(7)))->begin()->vector() == surface->fromHalfEdge(HalfEdge(7)) + R2(0, 1));
   }
 }
 
 TEMPLATE_TEST_CASE("Eliminate Marked Points", "[flat_triangulation][eliminate_marked_points]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
+  using Surface = FlatTriangulation<T>;
 
   const auto [name, surface] = GENERATE(makeSurface<T>());
+  CAPTURE(**surface);
   GIVEN("The Surface " << *name) {
-    const auto simplified = (*surface)->eliminateMarkedPoints().surface();
+    const auto simplified = (*surface)->eliminateMarkedPoints();
 
     CAPTURE(simplified);
 
     const auto unmarkedPoints = [](const auto& surface) {
-      return surface.vertices() | rx::filter([&](const auto& vertex) { return surface.angle(vertex) != 1; }) | rx::count();
+      return surface.vertices() | rx::filter([&](const auto& vertex) { return surface.angle(vertex) != 1; }) | rx::to_vector();
     };
 
     const auto markedPoints = [](const auto& surface) {
-      return surface.vertices() | rx::filter([&](const auto& vertex) { return surface.angle(vertex) == 1; }) | rx::count();
+      return surface.codomain().vertices() | rx::filter([&](const auto& vertex) { return surface.codomain().angle(vertex) == 1; }) | rx::to_vector();
     };
 
-    if (unmarkedPoints(**surface)) {
-      THEN("All Marked Points Can Be Removed") {
-        REQUIRE(markedPoints(simplified) == 0);
-      }
+    if (unmarkedPoints(**surface).size()) {
+      REQUIRE(markedPoints(simplified).size() == 0);
     } else {
-      THEN("All But A Single Marked Point Can Be Removed") {
-        REQUIRE(markedPoints(simplified) == 1);
-        REQUIRE(unmarkedPoints(simplified) == 0);
+      REQUIRE(markedPoints(simplified).size() == 1);
+      REQUIRE(unmarkedPoints(simplified.codomain()).size() == 0);
+    }
+
+    REQUIRE((*surface)->area() == simplified.codomain().area());
+
+    for (const auto preimage : (*surface)->halfEdges()) {
+      if ((*surface)->angle(Vertex::source(preimage, **surface)) != 1 && (*surface)->angle(Vertex::target(preimage, **surface)) != 1) {
+        REQUIRE(simplified(SaddleConnection<Surface>(**surface, preimage)).has_value());
+        REQUIRE(simplified(SaddleConnection<Surface>(**surface, preimage))->begin()->vector() == (*surface)->fromHalfEdge(preimage));
       }
     }
 
-    REQUIRE((*surface)->area() == simplified.area());
+    const auto section = simplified.section();
+    CAPTURE(section);
+
+    for (const auto image : section.domain().halfEdges()) {
+      CAPTURE(image);
+
+      const auto preimage = section(SaddleConnection<Surface>(section.domain(), image));
+
+      REQUIRE(preimage);
+
+      CAPTURE(*preimage);
+
+      Vector<T> vector;
+      for (const auto& connection : *preimage)
+        vector += connection;
+
+      REQUIRE(vector == section.domain().fromHalfEdge(image));
+    }
   }
 }
 
@@ -303,6 +341,8 @@ TEMPLATE_TEST_CASE("Detect Isomorphic Surfaces", "[flat_triangulation][isomorphi
   const int delaunay = GENERATE(values({0, 1}));
   const auto isomorphism = delaunay ? ISOMORPHISM::DELAUNAY_CELLS : ISOMORPHISM::FACES;
 
+  CAPTURE(**surface);
+  CAPTURE(delaunay);
   if (delaunay)
     (*surface)->delaunay();
 
@@ -326,23 +366,32 @@ TEMPLATE_TEST_CASE("Detect Isomorphic Surfaces", "[flat_triangulation][isomorphi
       const auto [a, b, c, d] = candidate;
       CAPTURE(a, b, c, d);
 
+      REQUIRE((!deformation->trivial() || (a == 1 && b == 0 && c == 0 && d == 1)));
+
       std::unordered_set<HalfEdge> image;
       for (const auto& halfEdge : (*surface)->halfEdges()) {
+        CAPTURE(halfEdge);
+
         if (delaunay && (*surface)->delaunay(halfEdge.edge()) == DELAUNAY::AMBIGUOUS)
           continue;
 
-        HalfEdge he = (*deformation)(halfEdge).value();
+        auto he = (*deformation)(halfEdge);
 
-        image.insert(he);
+        REQUIRE(he.has_value());
+
+        image.insert(*he);
 
         const auto v = (*surface)->fromHalfEdge(halfEdge);
-        const auto v_ = deformation->surface().fromHalfEdge(he);
+        const auto v_ = deformation->surface().fromHalfEdge(*he);
         REQUIRE(Vector<T>(v.x() * a + v.y() * b, v.x() * c + v.y() * d) == v_);
       }
       if (!delaunay)
         REQUIRE(image.size() == (*surface)->halfEdges().size());
 
       transformations.push_back(candidate);
+
+      REQUIRE((*deformation * deformation->section()).trivial());
+      REQUIRE((deformation->section() * *deformation).trivial());
     }
 
     auto scaled = (*surface)->scale(2);

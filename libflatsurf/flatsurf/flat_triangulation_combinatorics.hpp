@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulat
   // e, and then look at the successors of -a.
   FlatTriangulationCombinatorial insertAt(HalfEdge e) const;
 
-  // Create an independent clone of this triangulation with an edded boundary
+  // Create an independent clone of this triangulation with an added boundary
   // at the half edge e by removing the identification of the two corresponding
   // half edges there.
   FlatTriangulationCombinatorial slit(HalfEdge e) const;
@@ -92,7 +92,9 @@ class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulat
   // Return the number of edges in this triangulation.
   size_t size() const;
 
-  void flip(HalfEdge);
+  // Flip the half edge `e`.
+  // Turns the faces `(a b e)(c d -e)` into `(a -e d)(c e b)`.
+  void flip(HalfEdge e);
 
   // Return the connected components of this flat triangulation (in no specific
   // order.)
@@ -116,6 +118,12 @@ class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulat
   // below. This method exists because it is presently difficult to call cast
   // operators from Python, i.e., cppyy.
   const FlatTriangulationCombinatorial &combinatorial() const;
+
+  // Return this triangulation with inverted vertex permutation.
+  // The resulting triangulation corresponds to the triangulation after
+  // applying a linear transformation of negative determinant such as mirroring
+  // along an axis.
+  FlatTriangulationCombinatorial operator~() const;
 
   // Return whether rhs is combinatorially the same triangulation (with the
   // same numbering of edges.)

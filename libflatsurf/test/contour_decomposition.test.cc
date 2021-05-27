@@ -2,7 +2,7 @@
  *  This file is part of flatsurf.
  *
  *        Copyright (C) 2019-2020 Vincent Delecroix
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -41,10 +41,6 @@
 #include "generators/surface_generator.hpp"
 #include "generators/vertical_generator.hpp"
 
-using boost::lexical_cast;
-using eantic::renf_class;
-using eantic::renf_elem_class;
-
 namespace flatsurf::test {
 
 using namespace flatsurf;
@@ -59,7 +55,7 @@ TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimet
     auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), {1, 1});
 
     CAPTURE(decomposition);
-    REQUIRE(lexical_cast<std::string>(decomposition) == "[[(0, -1) from -2 to 2 → (1, 1) from 3 to -3 → (0, 1) from 2 to -2 → (-1, -1) from -3 to 3]]");
+    REQUIRE(boost::lexical_cast<std::string>(decomposition) == "[[-2 → 3 → 2 → -3]]");
   }
 
   SECTION("A Less Trivial Case") {
@@ -71,11 +67,11 @@ TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimet
     auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), {2, 1});
 
     CAPTURE(decomposition);
-    REQUIRE(lexical_cast<std::string>(decomposition) == "[[(-1, -1) from -2 to 2 → (2, 1) from 1 to 4 → (1, 1) from 2 to -2 → (-2, -1) from -6 to -4], [(-1, -1) from 5 to -5 → (2, 1) from -4 to -6 → (2, 1) from 6 to -1 → (1, 1) from -5 to 5 → (-2, -1) from 4 to 1 → (-2, -1) from -1 to 6]]");
+    REQUIRE(boost::lexical_cast<std::string>(decomposition) == "[[-2 → (2, 1) from 1 to 4 → 2 → (-2, -1) from -6 to -4], [5 → (2, 1) from -4 to -6 → (2, 1) from 6 to -1 → -5 → (-2, -1) from 4 to 1 → (-2, -1) from -1 to 6]]");
   }
 
   SECTION("A Complicated Surface With Some Collapsed Edges") {
-    using T = renf_elem_class;
+    using T = eantic::renf_elem_class;
     using R2 = Vector<T>;
     auto surface = make125<R2>();
     CAPTURE(*surface);
@@ -83,11 +79,11 @@ TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimet
     auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), {static_cast<R2>(-surface->fromHalfEdge(5)).x() + 3, static_cast<R2>(surface->fromHalfEdge(5)).x()});
 
     CAPTURE(decomposition);
-    REQUIRE(lexical_cast<std::string>(decomposition) == "[[((-1/2*x-1 ~ -1.7071068), (1/2*x-1 ~ -0.29289322)) from -1 to -11 → ((-3*x+1 ~ -3.2426407), (-x+1 ~ -0.41421356)) from -4 to -20 → ((x-1 ~ 0.41421356), 0) from -20 to 20 → ((x-1 ~ 0.41421356), 0) from 15 to -15 → ((2*x+1 ~ 3.8284271), (x-1 ~ 0.41421356)) from -2 to -4 → ((-x+1 ~ -0.41421356), (-x+1 ~ -0.41421356)) from -15 to 19 → ((1/2*x-2 ~ -1.2928932), (1/2*x-1 ~ -0.29289322)) from 17 to 1 → (1, 0) from 1 to -1 → (1, 0) from 24 to -24 → ((-1/2*x+2 ~ 1.2928932), (-1/2*x+1 ~ 0.29289322)) from 1 to 17 → ((3*x-1 ~ 3.2426407), (x-1 ~ 0.41421356)) from -20 to -4 → ((-2*x-1 ~ -3.8284271), (-x+1 ~ -0.41421356)) from -4 to -2 → ((x-1 ~ 0.41421356), (x-1 ~ 0.41421356)) from 19 to -15 → ((-x+1 ~ -0.41421356), 0) from -15 to 15 → ((-x+1 ~ -0.41421356), 0) from 20 to -20 → ((1/2*x+1 ~ 1.7071068), (-1/2*x+1 ~ 0.29289322)) from -11 to -1 → (-1, 0) from -1 to 1 → (-1, 0) from -24 to 24]]");
+    REQUIRE(boost::lexical_cast<std::string>(decomposition) == "[[((-1/2*x-1 ~ -1.7071068), (1/2*x-1 ~ -0.29289322)) from -1 to -11 → ((-3*x+1 ~ -3.2426407), (-x+1 ~ -0.41421356)) from -4 to -20 → -20 → 15 → ((2*x+1 ~ 3.8284271), (x-1 ~ 0.41421356)) from -2 to -4 → ((-x+1 ~ -0.41421356), (-x+1 ~ -0.41421356)) from -15 to 19 → ((1/2*x-2 ~ -1.2928932), (1/2*x-1 ~ -0.29289322)) from 17 to 1 → 1 → 24 → ((-1/2*x+2 ~ 1.2928932), (-1/2*x+1 ~ 0.29289322)) from 1 to 17 → ((3*x-1 ~ 3.2426407), (x-1 ~ 0.41421356)) from -20 to -4 → ((-2*x-1 ~ -3.8284271), (-x+1 ~ -0.41421356)) from -4 to -2 → ((x-1 ~ 0.41421356), (x-1 ~ 0.41421356)) from 19 to -15 → -15 → 20 → ((1/2*x+1 ~ 1.7071068), (-1/2*x+1 ~ 0.29289322)) from -11 to -1 → -1 → -24]]");
   }
 
   SECTION("A Complicated Case With Many Collapsed Edges") {
-    using T = renf_elem_class;
+    using T = eantic::renf_elem_class;
     using R2 = Vector<T>;
     auto surface = make125<R2>();
     CAPTURE(*surface);
@@ -95,11 +91,11 @@ TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimet
     auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), {static_cast<R2>(surface->fromHalfEdge(5)).x() + 1, static_cast<R2>(surface->fromHalfEdge(5)).x()});
 
     CAPTURE(decomposition);
-    REQUIRE(lexical_cast<std::string>(decomposition) == "[[((-1/2*x-2 ~ -2.7071068), (-1/2*x ~ -0.70710678)) from -1 to -2 → ((x+1 ~ 2.4142136), (x-1 ~ 0.41421356)) from -2 to -4 → ((-x+1 ~ -0.41421356), (-x+1 ~ -0.41421356)) from -15 to 19 → ((1/2*x-2 ~ -1.2928932), (1/2*x-1 ~ -0.29289322)) from 17 to 1 → ((-1/2*x ~ -0.70710678), (1/2*x-1 ~ -0.29289322)) from 22 to -22 → ((1/2*x+1 ~ 1.7071068), (-1/2*x+1 ~ 0.29289322)) from -11 to -1 → (1, 0) from 24 to -24 → ((-1/2*x+2 ~ 1.2928932), (-1/2*x+1 ~ 0.29289322)) from 1 to 17 → ((2*x-1 ~ 1.8284271), (x-1 ~ 0.41421356)) from -20 to -4 → ((-x-1 ~ -2.4142136), (-x+1 ~ -0.41421356)) from -4 to -2 → ((x-1 ~ 0.41421356), (x-1 ~ 0.41421356)) from 19 to -15 → ((1/2*x+2 ~ 2.7071068), (1/2*x ~ 0.70710678)) from -2 to -1 → ((-3/2*x-1 ~ -3.1213203), (-1/2*x ~ -0.70710678)) from -1 to 15 → ((3/2*x+1 ~ 3.1213203), (1/2*x ~ 0.70710678)) from 15 to -1 → ((-1/2*x-1 ~ -1.7071068), (1/2*x-1 ~ -0.29289322)) from -1 to -11 → ((-2*x+1 ~ -1.8284271), (-x+1 ~ -0.41421356)) from -4 to -20 → ((1/2*x ~ 0.70710678), (-1/2*x+1 ~ 0.29289322)) from -22 to 22 → (-1, 0) from -24 to 24]]");
+    REQUIRE(boost::lexical_cast<std::string>(decomposition) == "[[((-1/2*x-2 ~ -2.7071068), (-1/2*x ~ -0.70710678)) from -1 to -2 → ((x+1 ~ 2.4142136), (x-1 ~ 0.41421356)) from -2 to -4 → ((-x+1 ~ -0.41421356), (-x+1 ~ -0.41421356)) from -15 to 19 → ((1/2*x-2 ~ -1.2928932), (1/2*x-1 ~ -0.29289322)) from 17 to 1 → 22 → ((1/2*x+1 ~ 1.7071068), (-1/2*x+1 ~ 0.29289322)) from -11 to -1 → 24 → ((-1/2*x+2 ~ 1.2928932), (-1/2*x+1 ~ 0.29289322)) from 1 to 17 → ((2*x-1 ~ 1.8284271), (x-1 ~ 0.41421356)) from -20 to -4 → ((-x-1 ~ -2.4142136), (-x+1 ~ -0.41421356)) from -4 to -2 → ((x-1 ~ 0.41421356), (x-1 ~ 0.41421356)) from 19 to -15 → ((1/2*x+2 ~ 2.7071068), (1/2*x ~ 0.70710678)) from -2 to -1 → ((-3/2*x-1 ~ -3.1213203), (-1/2*x ~ -0.70710678)) from -1 to 15 → ((3/2*x+1 ~ 3.1213203), (1/2*x ~ 0.70710678)) from 15 to -1 → ((-1/2*x-1 ~ -1.7071068), (1/2*x-1 ~ -0.29289322)) from -1 to -11 → ((-2*x+1 ~ -1.8284271), (-x+1 ~ -0.41421356)) from -4 to -20 → -22 → -24]]");
   };
 }
 
-TEMPLATE_TEST_CASE("Connections and IET from Contour Decomposition", "[contour_decomposition][iet]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Connections and IET from Contour Decomposition", "[contour_decomposition][iet]", (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
   const auto [name, surface_] = GENERATE(makeSurface<T>());

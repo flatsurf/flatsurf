@@ -17,36 +17,23 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_DEFORMATION_IMPL_HPP
-#define LIBFLATSURF_DEFORMATION_IMPL_HPP
+#ifndef LIBFLATSURF_IMPL_RETRIANGULATION_DEFORMATION_RELATION_HPP
+#define LIBFLATSURF_IMPL_RETRIANGULATION_DEFORMATION_RELATION_HPP
 
-#include <functional>
-#include <stdexcept>
-
-#include "../../flatsurf/deformation.hpp"
-
-#include "read_only.hpp"
 #include "deformation_relation.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-class ImplementationOf<Deformation<Surface>> {
+class RetriangulationDeformationRelation : public DeformationRelation<Surface> {
+ protected:
+  using DeformationRelation<Surface>::DeformationRelation;
+
  public:
-  ImplementationOf(std::unique_ptr<DeformationRelation<Surface>> relation);
-
-  static Deformation<Surface> make(std::unique_ptr<DeformationRelation<Surface>> relation) {
-    return Deformation<Surface>(PrivateConstructor{}, std::move(relation));
-  }
-
-  std::unique_ptr<DeformationRelation<Surface>> relation;
+  std::optional<Path<Surface>> operator()(const Path<Surface>&) const override;
 };
 
-template <typename Surface>
-template <typename... Args>
-Deformation<Surface>::Deformation(PrivateConstructor, Args&&... args) :
-  self(spimpl::make_unique_impl<ImplementationOf<Deformation<Surface>>>(std::forward<Args>(args)...)) {}
-
-}  // namespace flatsurf
+}
 
 #endif
+

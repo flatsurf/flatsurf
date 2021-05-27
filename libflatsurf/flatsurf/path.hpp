@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,13 +37,14 @@ class Path : public Serializable<Path<Surface>>,
 
  public:
   Path() noexcept;
+  Path(const Segment&);
   Path(const std::vector<Segment>&);
 
   operator const std::vector<Segment> &() const;
 
   bool operator==(const Path&) const;
 
-  // Return whether the list is cyclic, i.e., the last element joins up with the first.
+  // Return whether the path is cyclic, i.e., the last element joins up with the first.
   bool closed() const;
 
   // Return whether there are no segments showing up more than once.
@@ -52,6 +53,15 @@ class Path : public Serializable<Path<Surface>>,
   // Return whether there are no segments followed by their negatives.
   bool reduced() const;
 
+  // Return whether the two paths are equivalent in homotopy.
+  // The equivalence is relative to the start and end point, in particular this
+  // function returns false if their respective start and end points to do not
+  // match.
+  bool homotopic(const Path&) const;
+
+  // Return the shortest path that is homotopic to this path.
+  Path tighten() const;
+
   Path reversed() const;
 
   T area() const;
@@ -59,8 +69,21 @@ class Path : public Serializable<Path<Surface>>,
   void splice(const PathIterator<Surface>&, Path& other);
   void splice(const PathIterator<Surface>&, Path&& other);
 
+  // Append `other` to this path.
+  Path& operator+=(const Path& other);
+
+  // Return the path that results from appending `other` to this path.
+  Path operator+(const Path& other) const;
+
+  // Return the inverse path, i.e., the path obtained by walking the reversed
+  // connections in reverse order.
+  Path operator-() const;
+
   void push_front(const Segment&);
   void push_back(const Segment&);
+
+  void pop_front();
+  void pop_back();
 
   size_t size() const;
 
@@ -84,6 +107,9 @@ class Path : public Serializable<Path<Surface>>,
 
 template <typename Surface>
 Path(const std::vector<SaddleConnection<Surface>>&) -> Path<Surface>;
+
+template <typename Surface>
+Path(const SaddleConnection<Surface>&) -> Path<Surface>;
 
 }  // namespace flatsurf
 #endif

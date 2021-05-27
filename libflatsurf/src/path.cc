@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2020-2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -44,12 +44,23 @@ Path<Surface>::Path() noexcept :
   self(spimpl::make_impl<ImplementationOf<Path>>()) {}
 
 template <typename Surface>
+Path<Surface>::Path(const Segment& path) : Path(std::vector{ path }) {}
+
+template <typename Surface>
 Path<Surface>::Path(const std::vector<Segment>& path) :
   self(spimpl::make_impl<ImplementationOf<Path>>(path)) {}
 
 template <typename Surface>
 Path<Surface>::operator const std::vector<Segment> &() const {
   return self->path;
+}
+
+template <typename Surface>
+Path<Surface> Path<Surface>::operator-() const {
+  std::vector<Segment> reversed;
+  for (auto p = rbegin(self->path); p != rend(self->path); p++)
+    reversed.push_back(-*p);
+  return reversed;
 }
 
 template <typename Surface>
@@ -95,6 +106,29 @@ template <typename Surface>
 void Path<Surface>::push_back(const Segment& segment) {
   LIBFLATSURF_ASSERT(empty() || ImplementationOf<Path>::connected(*self->path.rbegin(), segment), "Path must be connected but " << *self->path.rbegin() << " does not precede " << segment << " either because they are connected to different vertices or because the turn from " << -*self->path.rbegin() << " to " << segment << " is not turning clockwise in the range (0, 2π]");
   self->path.push_back(segment);
+}
+
+template <typename Surface>
+Path<Surface>& Path<Surface>::operator+=(const Path& other) {
+  for (auto& segment : other)
+    push_back(segment);
+  return *this;
+}
+
+template <typename Surface>
+Path<Surface> Path<Surface>::operator+(const Path& other) const {
+  auto path = *this;
+  return path += other;
+}
+
+template <typename Surface>
+void Path<Surface>::pop_back() {
+  self->path.pop_back();
+}
+
+template <typename Surface>
+void Path<Surface>::pop_front() {
+  self->path.erase(self->path.begin());
 }
 
 template <typename Surface>

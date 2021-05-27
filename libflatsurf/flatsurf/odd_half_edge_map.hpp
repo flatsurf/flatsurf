@@ -78,9 +78,17 @@ class OddHalfEdgeMap {
       if (!first) os << ", ";
       os << he << ": ";
       if constexpr (is_optional<T>::value)
-        os << *self.values[he];
+        if constexpr (is_printable<typename T::value_type>::value) {
+          os << *self.values[he];
+        } else {
+          os << "?";
+        }
       else
-        os << self.values[he];
+        if constexpr (is_printable<T>::value) {
+          os << self.values[he];
+        } else {
+          os << "?";
+        }
       first = false;
     }
     return os << "}";
