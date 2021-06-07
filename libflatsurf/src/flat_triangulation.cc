@@ -27,6 +27,7 @@
 #include <functional>
 #include <iosfwd>
 #include <map>
+#include <iomanip>
 #include <ostream>
 #include <type_traits>
 #include <vector>
@@ -78,7 +79,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
   // Records that the half edge e needs to be flipped at a time t in (0, 1]
   // that is given by a solution to det(t) = a*t^2 + b*t + c = 0.
   struct Flip {
-    HalfEdge flip;
+    std::vector<HalfEdge> flip;
     QuadraticPolynomial<T> det;
   };
 
@@ -187,12 +188,12 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
         // The half edge following e does not need to be flipped.
         continue;
 
-      const Flip proposed{this->nextInFace(he), det};
-
-      // Record that a half edge needs to be flipped at time t. We'll later
+      // Record that a half edge needs to be flipped before time t. We'll later
       // actually flip the one that needs to be flipped first and recurse.
-      if (!flip || proposed.det < flip->det)
-        flip = proposed;
+      if (!flip || det < flip->det)
+        flip = Flip{{}, det};
+      if (!(flip->det < det))
+        flip->flip.push_back(this->nextInFace(he));
     }
   }
 
@@ -222,9 +223,15 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
 
         const Tracked<OddHalfEdgeMap<Vector<T>>> remaining(closer, OddHalfEdgeMap<Vector<T>>(closer, [&](const HalfEdge he) { return shift.get(he) - partial.get(he); }), ImplementationOf<FlatTriangulation>::updateAfterFlip);
 
-        if (convex(flip->flip, true)) {
-          closer.flip(flip->flip);
-          deformation = ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<FlipDeformationRelation<FlatTriangulation>>(deformation.codomain(), closer, flip->flip)) * deformation;
+        for (auto& he : flip->flip) {
+          if (closer.convex(he, true)) {
+            closer.flip(he);
+            deformation = ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<FlipDeformationRelation<FlatTriangulation>>(deformation.codomain(), closer, he)) * deformation;
+
+            // We could consider flipping more than one here to improve
+            // performance.
+            return (deformation.codomain() + remaining) * deformation;
+          }
         }
 
         return (deformation.codomain() + remaining) * deformation;
