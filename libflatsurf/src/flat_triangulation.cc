@@ -25,9 +25,9 @@
 #include <exact-real/rational_field.hpp>
 #include <exact-real/yap/arb.hpp>
 #include <functional>
+#include <iomanip>
 #include <iosfwd>
 #include <map>
-#include <iomanip>
 #include <ostream>
 #include <type_traits>
 #include <vector>
@@ -223,7 +223,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
 
         const Tracked<OddHalfEdgeMap<Vector<T>>> remaining(closer, OddHalfEdgeMap<Vector<T>>(closer, [&](const HalfEdge he) { return shift.get(he) - partial.get(he); }), ImplementationOf<FlatTriangulation>::updateAfterFlip);
 
-        for (auto& he : flip->flip) {
+        for (auto &he : flip->flip) {
           if (closer.convex(he, true)) {
             closer.flip(he);
             deformation = ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<FlipDeformationRelation<FlatTriangulation>>(deformation.codomain(), closer, he)) * deformation;
