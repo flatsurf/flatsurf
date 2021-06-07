@@ -55,7 +55,8 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::tuple<std::st
     OCTAGON,
     HEPTAGON_L,
     GOLDEN_L,
-    LAST = GOLDEN_L,
+    _1072221,
+    LAST = _1072221,
   };
 
   Surface current;
@@ -183,6 +184,13 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::tuple<std::st
         if constexpr (hasNumberFieldElements<T>) {
           name = "Golden L";
           value = makeGoldenL<R2>();
+        } else
+          value = nullptr;
+        return;
+      case Surface::_1072221:
+        if constexpr (hasNumberFieldElements<T>) {
+          name = "(10, 7, 2, 2, 2, 1)";
+          value = make1072221<R2>();
         } else
           value = nullptr;
         return;
