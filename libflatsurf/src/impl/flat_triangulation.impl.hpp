@@ -45,6 +45,8 @@ class ImplementationOf<FlatTriangulation<T>> : protected ImplementationOf<Manage
 
   void flip(HalfEdge) override;
 
+  std::string yaml() const;
+
   const Tracked<OddHalfEdgeMap<Vector<T>>> vectors;
   // A cache of approximations for improved performance
   const Tracked<OddHalfEdgeMap<Vector<exactreal::Arb>>> approximations;

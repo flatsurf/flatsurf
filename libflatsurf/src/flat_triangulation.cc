@@ -948,6 +948,32 @@ void ImplementationOf<FlatTriangulation<T>>::updateAfterFlip(OddHalfEdgeMap<Vect
 }
 
 template <typename T>
+std::string ImplementationOf<FlatTriangulation<T>>::yaml() const {
+  std::stringstream out;
+  out << std::setprecision(std::numeric_limits<double>::digits10);
+  out << "vertices:" << std::endl;
+  for (auto c : this->vertices.cycles()) {
+    out << "- [";
+    for (size_t i = 0; i < c.size(); i++) {
+      if (i != 0)
+        out << ", ";
+      out << c[i];
+    }
+    out << "]" << std::endl;
+  }
+  out << "vectors:" << std::endl;
+  for (auto he : this->vertices.domain()) {
+    if (he == he.edge().positive()) {
+      out << "  " << he << ":" << std::endl;
+      out << "    x: " << static_cast<double>(static_cast<Vector<exactreal::Arb>>(this->vectors->get(he)).x()) << std::endl;
+      out << "    y: " << static_cast<double>(static_cast<Vector<exactreal::Arb>>(this->vectors->get(he)).y()) << std::endl;
+    }
+  }
+
+  return out.str();
+}
+
+template <typename T>
 void ImplementationOf<FlatTriangulation<T>>::updateApproximationAfterFlip(OddHalfEdgeMap<flatsurf::Vector<exactreal::Arb>> &vectors, const FlatTriangulationCombinatorial &combinatorial, HalfEdge flip) {
   const auto &surface = reinterpret_cast<const FlatTriangulation<T> &>(combinatorial);
   vectors.set(flip, static_cast<flatsurf::Vector<exactreal::Arb>>(surface.fromHalfEdge(-surface.nextInFace(flip)) + surface.fromHalfEdge(-surface.previousInFace(flip))));
