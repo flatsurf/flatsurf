@@ -4,6 +4,18 @@ intervalxt Change Log
 
 .. current developments
 
+v3.6.2
+====================
+
+**Fixed:**
+
+* Fixed stack overflow when eliminating marked points, #263.
+* Adapt to changes in latest e-antic (changed includes in header files.)
+
+* Adapt includes for latest version of boost.
+
+
+
 v3.6.1
 ====================
 
