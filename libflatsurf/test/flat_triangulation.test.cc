@@ -18,10 +18,10 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <e-antic/renfxx_fwd.hpp>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
+#include <e-antic/renfxx_fwd.hpp>
 #include <exact-real/element.hpp>
 #include <exact-real/number_field.hpp>
 #include <numeric>

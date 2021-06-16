@@ -22,8 +22,8 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <gmpxx.h>
-#include <boost/lexical_cast.hpp>
 
+#include <boost/lexical_cast.hpp>
 #include <gmpxxll/mpz_class.hpp>
 #include <intervalxt/sample/element_floor_division.hpp>
 #include <intervalxt/sample/integer_floor_division.hpp>

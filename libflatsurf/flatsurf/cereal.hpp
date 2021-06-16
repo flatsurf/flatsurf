@@ -21,7 +21,6 @@
 #ifndef LIBFLATSURF_CEREAL_HPP
 #define LIBFLATSURF_CEREAL_HPP
 
-#include <e-antic/cereal.hpp>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
@@ -29,6 +28,7 @@
 #include <cereal/types/unordered_map.hpp>
 #include <cereal/types/utility.hpp>
 #include <cereal/types/vector.hpp>
+#include <e-antic/cereal.hpp>
 #include <exact-real/cereal.hpp>
 
 #include "bound.hpp"

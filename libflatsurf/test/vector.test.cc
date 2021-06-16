@@ -20,13 +20,13 @@
 
 #include <e-antic/renfxx.h>
 
+#include <boost/lexical_cast.hpp>
 #include <exact-real/arb.hpp>
 #include <exact-real/element.hpp>
 #include <exact-real/module.hpp>
 #include <exact-real/number_field.hpp>
 #include <exact-real/real_number.hpp>
 #include <set>
-#include <boost/lexical_cast.hpp>
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/ccw.hpp"

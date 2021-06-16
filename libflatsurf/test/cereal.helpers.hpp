@@ -21,9 +21,9 @@
 #ifndef LIBFLATSURF_TEST_CEREAL_HELPERS_HPP
 #define LIBFLATSURF_TEST_CEREAL_HELPERS_HPP
 
+#include <boost/lexical_cast.hpp>
 #include <exact-real/arb.hpp>
 #include <memory>
-#include <boost/lexical_cast.hpp>
 
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/half_edge.hpp"

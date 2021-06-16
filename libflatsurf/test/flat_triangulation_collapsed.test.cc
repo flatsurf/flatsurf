@@ -19,7 +19,6 @@
  *********************************************************************/
 
 #include <e-antic/renfxx_fwd.hpp>
-
 #include <exact-real/element.hpp>
 #include <exact-real/number_field.hpp>
 #include <numeric>
