@@ -18,8 +18,6 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <boost/lexical_cast.hpp>
-
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/vector.hpp"
 #include "external/catch2/single_include/catch2/catch.hpp"

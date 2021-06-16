@@ -18,7 +18,6 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <boost/lexical_cast.hpp>
 #include <exact-real/element.hpp>
 #include <exact-real/integer_ring.hpp>
 #include <exact-real/number_field.hpp>
@@ -29,7 +28,6 @@
 #include "external/catch2/single_include/catch2/catch.hpp"
 #include "generators/surface_generator.hpp"
 
-using boost::lexical_cast;
 using eantic::renf_class;
 using eantic::renf_elem_class;
 

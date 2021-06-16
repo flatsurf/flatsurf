@@ -19,7 +19,6 @@
 
 #include "../flatsurf/saddle_connection.hpp"
 
-#include <boost/lexical_cast.hpp>
 #include <climits>
 #include <ostream>
 
