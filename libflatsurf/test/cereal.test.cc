@@ -18,8 +18,6 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <boost/lexical_cast.hpp>
-
 #include "../flatsurf/cereal.hpp"
 #include "../flatsurf/vertical.hpp"
 #include "cereal.helpers.hpp"

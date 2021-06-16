@@ -23,6 +23,7 @@
 
 #include <exact-real/arb.hpp>
 #include <memory>
+#include <boost/lexical_cast.hpp>
 
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/half_edge.hpp"

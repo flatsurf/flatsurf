@@ -2,7 +2,7 @@
  *  This file is part of flatsurf.
  *
  *        Copyright (C) 2019 Vincent Delecroix
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2021 Julian Rüth
  *
  *  flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 #ifndef LIBFLATSURF_CEREAL_HPP
 #define LIBFLATSURF_CEREAL_HPP
 
-#include <e-antic/renfxx_cereal.h>
+#include <e-antic/cereal.hpp>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
