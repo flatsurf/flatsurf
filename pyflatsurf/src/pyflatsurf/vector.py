@@ -467,7 +467,11 @@ class Vectors(UniqueRepresentation, Parent):
         if isinstance(x, cppyy.gbl.mpq_class):
             return x
         if isinstance(self.base_ring(), real_embedded_number_field.RealEmbeddedNumberField):
-            return self.base_ring()(x).renf_elem
+            # We create a copy of the coordinate. Otherwise, cppyy (as of
+            # 1.9.5) treats this as an r-value and moves x out even if it is
+            # referenced elsewhere.
+            value = self.base_ring()(x).renf_elem
+            return type(value)(value)
         if isinstance(self.base_ring(), ExactReals):
             return self.base_ring()(x)._backend
         if x in ZZ:
