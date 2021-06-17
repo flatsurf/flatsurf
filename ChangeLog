@@ -4,6 +4,15 @@ intervalxt Change Log
 
 .. current developments
 
+v3.6.3
+====================
+
+**Fixed:**
+
+* Work around a problem in cppyy when copying vectors in Python.
+
+
+
 v3.6.2
 ====================
 
