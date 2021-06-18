@@ -37,6 +37,7 @@ template <typename T>
 class SurfaceGenerator : public Catch::Generators::IGenerator<std::tuple<std::string*, std::shared_ptr<FlatTriangulation<T>>*>> {
   enum class Surface {
     SQUARE,
+    RECTANGLE,
     L,
     MCMULLEN_L1114,
     MCMULLEN_L2111,
@@ -72,6 +73,10 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::tuple<std::st
       case Surface::SQUARE:
         name = "Torus";
         value = makeSquare<R2>();
+        return;
+      case Surface::RECTANGLE:
+        name = "Rectangle";
+        value = makeRectangle<R2>();
         return;
       case Surface::L:
         name = "L";

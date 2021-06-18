@@ -67,6 +67,17 @@ inline auto makeSquareWithBoundaryCombinatorial() {
   return std::make_shared<FlatTriangulationCombinatorial>(vertices, std::vector{2, -4});
 }
 
+inline auto makeRectangleCombinatorial() {
+  auto vertices = vector<vector<int>>{{1, -3, 7, -9, 10, -12, 4, -6}, {-1, 8, -7, 11, -10, 5, -4, 2}, {-2, 12, -11, 3}, {-5, 9, -8, 6}};
+  return std::make_shared<FlatTriangulationCombinatorial>(vertices);
+}
+
+template <typename R2>
+auto makeRectangle() {
+  auto vectors = vector{R2{1, 6}, R2{-1, 0}, R2{0, -6}, R2{1, -6}, R2{0, 6}, R2{-1, 0}, R2{-1, 6}, R2{0, -6}, R2{1, 0}, R2{-1, -6}, R2{1, 0}, R2{0, 6}};
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeRectangleCombinatorial()), vectors);
+}
+
 template <typename R2>
 auto makeSquareWithBoundary() {
   auto vectors = vector{R2(1, 0), R2(0, 1), R2(1, 1), R2(0, 1)};
