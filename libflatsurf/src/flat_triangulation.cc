@@ -276,7 +276,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
     // Maps half edges to their vectors in the resulting surface.
     Tracked<OddHalfEdgeMap<Vector<T>>> vectors(combinatorial, OddHalfEdgeMap<Vector<T>>(combinatorial, [&](const HalfEdge he) { return fromHalfEdge(he) + shift.get(he); }),
       Tracked<OddHalfEdgeMap<Vector<T>>>::defaultFlip,
-      [&](auto &vectors, const FlatTriangulationCombinatorial &surface, Edge e) {
+      [&](auto &vectors, const FlatTriangulationCombinatorial &, Edge e) {
         LIBFLATSURF_ASSERT(!vectors.get(e.positive()), "can only collapse half edges that have become trivial");
       });
 
