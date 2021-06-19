@@ -264,50 +264,49 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
 
     // Maps each half edge to one of its preimages in the surface before collapsing.
     Tracked<HalfEdgeMap<HalfEdge>> preimage(combinatorial, HalfEdgeMap<HalfEdge>(combinatorial, [](HalfEdge he) { return he; }),
-      Tracked<HalfEdgeMap<HalfEdge>>::defaultFlip,
-      [&](auto &self, const FlatTriangulationCombinatorial &surface, Edge e) {
-
-        for (const auto he : {e.positive(), e.negative()}) {
-          union_(self[surface.nextInFace(he)], self[-surface.previousInFace(he)]);
-          union_(self[-surface.nextInFace(he)], self[surface.previousInFace(he)]);
-        }
-      });
+        Tracked<HalfEdgeMap<HalfEdge>>::defaultFlip,
+        [&](auto &self, const FlatTriangulationCombinatorial &surface, Edge e) {
+          for (const auto he : {e.positive(), e.negative()}) {
+            union_(self[surface.nextInFace(he)], self[-surface.previousInFace(he)]);
+            union_(self[-surface.nextInFace(he)], self[surface.previousInFace(he)]);
+          }
+        });
 
     // Maps half edges to their vectors in the resulting surface.
     Tracked<OddHalfEdgeMap<Vector<T>>> vectors(combinatorial, OddHalfEdgeMap<Vector<T>>(combinatorial, [&](const HalfEdge he) { return fromHalfEdge(he) + shift.get(he); }),
-      Tracked<OddHalfEdgeMap<Vector<T>>>::defaultFlip,
-      [&](auto &vectors, const FlatTriangulationCombinatorial &, Edge e) {
-        LIBFLATSURF_ASSERT(!vectors.get(e.positive()), "can only collapse half edges that have become trivial");
-      });
+        Tracked<OddHalfEdgeMap<Vector<T>>>::defaultFlip,
+        [&](auto &vectors, const FlatTriangulationCombinatorial &, Edge e) {
+          LIBFLATSURF_ASSERT(!vectors.get(e.positive()), "can only collapse half edges that have become trivial");
+        });
 
     // The edges that need to be collapsed in the target surface.
     Tracked<EdgeSet> collapsing_(combinatorial, collapsing,
-      Tracked<EdgeSet>::defaultFlip,
-      [](auto &self, const FlatTriangulationCombinatorial &, Edge e) {
-        LIBFLATSURF_ASSERT(self.contains(e), "can only collapse edges that have been found to collapse at t=1");
-      });
+        Tracked<EdgeSet>::defaultFlip,
+        [](auto &self, const FlatTriangulationCombinatorial &, Edge e) {
+          LIBFLATSURF_ASSERT(self.contains(e), "can only collapse edges that have been found to collapse at t=1");
+        });
 
     // Collapse edges in the combinatorial structure.
     while (!collapsing_->empty())
       combinatorial.collapse(begin(static_cast<const EdgeSet &>(collapsing_))->positive());
 
     const auto codomain = FlatTriangulation<T>(
-      std::move(combinatorial),
-      [&](const HalfEdge he) { return vectors->get(he); });
+        std::move(combinatorial),
+        [&](const HalfEdge he) { return vectors->get(he); });
 
     return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<ShiftDeformationRelation<FlatTriangulation>>(
-      *this,
-      codomain,
-      OddHalfEdgeMap<Path<FlatTriangulation>>(*this, [&](HalfEdge he) {
-        for (const HalfEdge image : codomain.halfEdges()) {
-          if (find_((*preimage)[image]) == find_(he)) {
-            LIBFLATSURF_ASSERT(vectors->get(image) == fromHalfEdge(he) + shift.get(he), "Half edge " << he << " should have been shifted from " << fromHalfEdge(he) << " to " << fromHalfEdge(he) + shift.get(he) << " but instead it became " << image << " which is " << vectors->get(image));
-            return Path{SaddleConnection<FlatTriangulation>(codomain, image)};
+        *this,
+        codomain,
+        OddHalfEdgeMap<Path<FlatTriangulation>>(*this, [&](HalfEdge he) {
+          for (const HalfEdge image : codomain.halfEdges()) {
+            if (find_((*preimage)[image]) == find_(he)) {
+              LIBFLATSURF_ASSERT(vectors->get(image) == fromHalfEdge(he) + shift.get(he), "Half edge " << he << " should have been shifted from " << fromHalfEdge(he) << " to " << fromHalfEdge(he) + shift.get(he) << " but instead it became " << image << " which is " << vectors->get(image));
+              return Path{SaddleConnection<FlatTriangulation>(codomain, image)};
+            }
           }
-        }
-        // This half edge has been collapsed.
-        return Path<FlatTriangulation>{};
-      })));
+          // This half edge has been collapsed.
+          return Path<FlatTriangulation>{};
+        })));
   }
 }
 
