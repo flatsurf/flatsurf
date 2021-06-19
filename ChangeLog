@@ -4,6 +4,15 @@ intervalxt Change Log
 
 .. current developments
 
+v3.6.4
+====================
+
+**Fixed:**
+
+* Fix tracking of collapsed half edges in `FlatTriangulation::operator+()`.
+
+
+
 v3.6.3
 ====================
 
