@@ -101,15 +101,17 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
     for (size_t i = 0; i < outgoing.size(); i++) {
       const auto he = outgoing.at(i);
 
-      if (fromHalfEdge(he).ccw(shift.get(he)) == CCW::COLLINEAR) {
-        switch (fromHalfEdge(he).orientation(fromHalfEdge(he) + shift.get(he))) {
-          case ORIENTATION::SAME:
-            // The critical time t is not in [0, 1]
-            break;
-          case ORIENTATION::OPPOSITE:
-            throw std::invalid_argument("shift must not collapse half edges for a time t in (0, 1)");
-          case ORIENTATION::ORTHOGONAL:
-            collapsing.insert(he);
+      if (shift.get(he)) {
+        if (fromHalfEdge(he).ccw(shift.get(he)) == CCW::COLLINEAR) {
+          switch (fromHalfEdge(he).orientation(fromHalfEdge(he) + shift.get(he))) {
+            case ORIENTATION::SAME:
+              // The critical time t is not in [0, 1]
+              break;
+            case ORIENTATION::OPPOSITE:
+              throw std::invalid_argument("shift must not collapse half edges for a time t in (0, 1)");
+            case ORIENTATION::ORTHOGONAL:
+              collapsing.insert(he);
+          }
         }
       }
     }
