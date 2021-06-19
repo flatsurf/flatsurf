@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2020-2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -288,8 +288,6 @@ void ImplementationOf<Tracked<T>>::connect() {
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
-#include <unordered_set>
-
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/edge_map.hpp"
 #include "../flatsurf/edge_set.hpp"
@@ -306,7 +304,7 @@ LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<HalfEdgeSet>))
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<EdgeSet>))
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<OddHalfEdgeMap<HalfEdge>>))
-LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<HalfEdgeMap<std::unordered_set<HalfEdge>>>))
+LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<HalfEdgeMap<HalfEdge>>))
 
 #define LIBFLATSURF_WRAP_ODD_HALF_EDGE_MAP_VECTOR(R, TYPE, T) (TYPE<OddHalfEdgeMap<Vector<T>>>)
 LIBFLATSURF_INSTANTIATE_MANY_FROM_TRANSFORMATION((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), Tracked, LIBFLATSURF_REAL_TYPES(exactreal::Arb), LIBFLATSURF_WRAP_ODD_HALF_EDGE_MAP_VECTOR)
