@@ -42,7 +42,7 @@ AC_CHECK_HEADERS([boost/type_traits.hpp], , AC_MSG_ERROR([boost headers not foun
 AC_CHECK_HEADERS([fmt/format.h], , AC_MSG_ERROR([fmt headers not found]))
 AX_CXX_CHECK_LIB([fmt], [fmt::v6::getpagesize()], , [
   AX_CXX_CHECK_LIB([fmt], [fmt::v7::getpagesize()], , [
-    AX_CXX_CHECK_LIB([fmt], [fmt::v7::report_system_error(int code=0, const char* message=nullptr)], , [AC_MSG_ERROR([fmt library not found])], [-lfmt])
+    AX_CXX_CHECK_LIB([fmt], [fmt::v8::report_system_error(int code=0, const char* message=nullptr)], , [AC_MSG_ERROR([fmt library not found])], [-lfmt])
   ], [-lfmt])
 ], [-lfmt])
 
