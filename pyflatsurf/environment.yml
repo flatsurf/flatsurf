@@ -9,14 +9,14 @@ channels:
   - defaults
 dependencies:
   - automake
-  - cppyy
+  # The latest cppyy has trouble with serializations, see https://bitbucket.org/wlav/cppyy/issues/364/segfault-in-clang-cxxrecorddecl
+  - cppyy<2
   - cppyythonizations
-  - cxx-compiler=1.1.3
   - gmpxxyy
   - ipywidgets
   - libtool
   - make
-  - pyexactreal>=1.3.2
+  - pyexactreal>=2.0.0,<3
   - pytest
   - python
   - sagelib
