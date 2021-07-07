@@ -55,7 +55,7 @@ AC_CHECK_LIB(flint, fmpz_init, [], [AC_MSG_ERROR([libflint not found])])
 # GMPXX does not contain anything that we can check for with AX_CXX_CHECK_LIB
 # so we just check for something from the standard library, i.e., that -lgmpxx
 # goes through
-AX_CXX_CHECK_LIB([gmpxx], [std::runtime_error::what () const], [have_gmpxx=yes], AC_MSG_ERROR([GMP library for C++ not found]), [-lmpfr])
+AX_CXX_CHECK_LIB([gmpxx], [std::runtime_error::what () const], , AC_MSG_ERROR([GMP library for C++ not found]), [-lmpfr])
 
 AC_CHECK_HEADERS([gmpxxll/mpz_class.hpp], [ ], [AC_MSG_ERROR([gmpxxll headers not found])])
 
