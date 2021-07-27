@@ -62,7 +62,7 @@ class VectorExact : public VectorBase<Vector>,
   static T area(const std::vector<Vector> &perimeter);
 
   // Implements a less-than operator which orders vectors by their slope,
-  // i.e., it orders vectors (x, y) by their quotient y/x (sending y/0 to ±∞.)
+  // i.e., it orders vectors (x, y) by their quotient y/x (sending y/0 to +∞.)
   struct CompareSlope {
     bool operator()(const Vector &lhs, const Vector &rhs) const;
   };
