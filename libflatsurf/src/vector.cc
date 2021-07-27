@@ -573,11 +573,13 @@ bool detail::VectorExact<Vector, T>::CompareSlope::operator()(const Vector& lhs,
   LIBFLATSURF_ASSERT(lhs.x() || lhs.y(), "zero vector has no slope");
   LIBFLATSURF_ASSERT(rhs.x() || rhs.y(), "zero vector has no slope");
 
-  const int lhs_infinite = lhs.x() ? 0 : (lhs.y() < 0 ? -1 : 1);
-  const int rhs_infinite = rhs.x() ? 0 : (rhs.y() < 0 ? -1 : 1);
+  const bool lhs_infinite = not lhs.x();
+  const bool rhs_infinite = not rhs.x();
 
-  if (lhs_infinite || rhs_infinite)
-    return lhs_infinite < rhs_infinite;
+  if (rhs_infinite)
+    return not lhs_infinite;
+  else if (lhs_infinite)
+    return false;
   else {
     const T a = lhs.y() * rhs.x();
     const T b = rhs.y() * lhs.x();
