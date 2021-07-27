@@ -400,7 +400,7 @@ class Vectors(UniqueRepresentation, Parent):
             sage: R = ExactReals()
             sage: V = Vectors(R)
             sage: V.decomposition([R.random_element(), R.random_element()])
-            [(ℝ(0.178809…), (1, 0)), (ℝ(0.478968…), (0, 1))]
+            [(ℝ(0.178808…), (1, 0)), (ℝ(0.478968…), (0, 1))]
 
         ::
 
@@ -415,8 +415,8 @@ class Vectors(UniqueRepresentation, Parent):
             sage: R = ExactReals(K)
             sage: V = Vectors(R)
             sage: V.decomposition([K.random_element() * R.random_element(), R.random_element(), R.random_element()])
-            [(ℝ(0.621223…), (0, 1, 0)),
-             (ℝ(0.673084…), (0, 0, 1)),
+            [(ℝ(0.621222…), (0, 1, 0)),
+             (ℝ(0.673083…), (0, 0, 1)),
              (ℝ(0.782515…), (-1/2*a^2 - 4, 0, 0))]
 
         """
