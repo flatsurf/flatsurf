@@ -23,6 +23,7 @@
 #include <functional>
 #include <ostream>
 #include <vector>
+#include <optional>
 
 #include "flat_triangulation_combinatorial.hpp"
 #include "half_edge.hpp"
