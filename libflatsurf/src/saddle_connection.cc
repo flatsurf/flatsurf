@@ -69,6 +69,42 @@ HalfEdge turnNearestToDirection(const Surface& surface, HalfEdge source, const V
   return source;
 }
 
+// Return the angle turning from sourceVector next to source to targetVector next target.
+// Namely, if the angle is α to turn in counterclockwise direction, return ⌊α/π⌋.
+template <typename Surface>
+int angle(const Surface& surface, HalfEdge source, const Vector<typename Surface::Coordinate>& sourceVector, HalfEdge target, const Vector<typename Surface::Coordinate>& targetVector) {
+  LIBFLATSURF_CHECK_ARGUMENT(Vertex::source(source, surface) == Vertex::source(target, surface), "Cannot determine angle between vector starting at " << source << " and a vector starting at " << target << " since they do not start at the same vertex.");
+
+  using T = typename Surface::Coordinate;
+
+  HalfEdge sector = source;
+  Vector<T> turned = sourceVector;
+
+  int angle = 0;
+
+  CCW sgn = CCW::COUNTERCLOCKWISE;
+
+  while (sector != target || turned.ccw(targetVector) != CCW::COLLINEAR) {
+    if (sector == target && turned.ccw(targetVector) != CCW::CLOCKWISE) {
+      turned = targetVector;
+    } else {
+      sector = surface.nextAtVertex(sector);
+      turned = surface.fromHalfEdge(sector);
+    }
+
+    const auto ccw = sourceVector.ccw(turned);
+
+    if (ccw == CCW::COLLINEAR || ccw != sgn)  {
+      angle++;
+      sgn = -sgn;
+    }
+  }
+
+  LIBFLATSURF_ASSERT(angle < 2 * surface.angle(Vertex::source(source, surface)), "Turn angle must be smaller than the full vertex angle but the turn from " << source << ", " << sourceVector << " to " << target << ", " << targetVector << " in " << surface << " is " << angle << "/2");
+
+  return angle;
+}
+
 }  // namespace
 
 template <typename Surface>
@@ -226,30 +262,7 @@ SaddleConnection<Surface> SaddleConnection<Surface>::inSector(const Surface& sur
 
 template <typename Surface>
 int SaddleConnection<Surface>::angle(HalfEdge source, const Vector<T>& vector) const {
-  LIBFLATSURF_CHECK_ARGUMENT(Vertex::source(this->source(), surface()) == Vertex::source(source, surface()), "Cannot determine angle between saddle connections at different vertices.");
-
-  HalfEdge sector = this->source();
-  Vector<T> turned = this->vector();
-
-  int angle = 0;
-
-  while (sector != source || turned.ccw(vector) != CCW::COLLINEAR) {
-    bool cw = this->vector().ccw(turned) == CCW::CLOCKWISE;
-
-    if (sector == source && turned.ccw(vector) != CCW::CLOCKWISE) {
-      turned = vector;
-    } else {
-      sector = surface().nextAtVertex(sector);
-      turned = surface().fromHalfEdge(sector);
-    }
-
-    if (cw && this->vector().ccw(turned) != CCW::CLOCKWISE)
-      angle++;
-  }
-
-  LIBFLATSURF_ASSERT(angle < surface().angle(Vertex::source(this->source(), surface())), "Turn angle must be smaller than the full vertex angle but the turn from " << *this << " to " << source << ", " << vector << " in " << surface() << " is " << angle);
-
-  return angle;
+  return flatsurf::angle(this->surface(), this->source(), this->vector(), source, vector) / 2;
 }
 
 template <typename Surface>
@@ -257,6 +270,35 @@ int SaddleConnection<Surface>::angle(const SaddleConnection<Surface>& rhs) const
   LIBFLATSURF_CHECK_ARGUMENT(surface() == rhs.surface(), "Cannot determine angle between " << *this << " and " << rhs << " since they live in different surfaces, i.e., " << surface() << " and " << rhs.surface() << " respectively.");
 
   return angle(rhs.source(), rhs.vector());
+}
+
+template <typename Surface>
+CCW SaddleConnection<Surface>::ccw(HalfEdge source, const Vector<T>& vector) const {
+  const int angle = flatsurf::angle(this->surface(), this->source(), this->vector(), source, vector);
+
+  if (angle == 0) {
+    if (source == this->source() && vector.ccw(this->vector()) == CCW::COLLINEAR)
+      return CCW::COLLINEAR;
+    else
+      return CCW::COUNTERCLOCKWISE;
+  }
+
+  const int totalAngle = this->surface().angle(Vertex::source(source, this->surface()));
+
+  if (angle == totalAngle && vector.ccw(this->vector()) == CCW::COLLINEAR)
+      return CCW::COLLINEAR;
+
+  if (angle < totalAngle)
+    return CCW::COUNTERCLOCKWISE;
+  else
+    return CCW::CLOCKWISE;
+}
+
+template <typename Surface>
+CCW SaddleConnection<Surface>::ccw(const SaddleConnection<Surface>& rhs) const {
+  LIBFLATSURF_CHECK_ARGUMENT(surface() == rhs.surface(), "Cannot determine turning direction between " << *this << " and " << rhs << " since they live in different surfaces, i.e., " << surface() << " and " << rhs.surface() << " respectively.");
+
+  return ccw(rhs.source(), rhs.vector());
 }
 
 template <typename Surface>
@@ -309,8 +351,8 @@ SaddleConnection<Surface> SaddleConnection<Surface>::inPlane(const Surface& surf
 template <typename Surface>
 SaddleConnection<Surface> SaddleConnection<Surface>::counterclockwise(const Surface& surface, HalfEdge source, HalfEdge target, const Chain<Surface>& chain) {
   const auto& vector = static_cast<const Vector<T>&>(chain);
-  source = turnCCWToDirection(surface, source, vector);
-  target = turnCCWToDirection(surface, target, -vector);
+  source = ImplementationOf<SaddleConnection>::turnCCWToDirection(surface, source, vector);
+  target = ImplementationOf<SaddleConnection>::turnCCWToDirection(surface, target, -vector);
 
   return SaddleConnection(surface, source, target, chain);
 }
@@ -322,7 +364,7 @@ SaddleConnection<Surface> SaddleConnection<Surface>::counterclockwise(const Surf
   if (source.vector().ccw(direction) == CCW::CLOCKWISE)
     source_ = surface.nextAtVertex(source_);
 
-  source_ = turnCCWToDirection(surface, source_, direction.vertical());
+  source_ = ImplementationOf<SaddleConnection>::turnCCWToDirection(surface, source_, direction.vertical());
 
   return inSector(surface, source_, direction);
 }
@@ -378,6 +420,26 @@ ImplementationOf<SaddleConnection<Surface>>::ImplementationOf(const Surface& sur
   source(source),
   target(target),
   chain(std::move(chain)) {}
+
+template <typename Surface>
+HalfEdge ImplementationOf<SaddleConnection<Surface>>::turnCCWToDirection(const Surface& surface, HalfEdge source, const Vector<typename Surface::Coordinate>& direction) {
+  while (surface.fromHalfEdge(source).ccw(direction) == CCW::CLOCKWISE)
+    source = surface.nextAtVertex(source);
+  while (surface.fromHalfEdge(source).ccw(direction) != CCW::CLOCKWISE)
+    source = surface.nextAtVertex(source);
+  source = surface.previousAtVertex(source);
+  return source;
+}
+
+template <typename Surface>
+HalfEdge ImplementationOf<SaddleConnection<Surface>>::turnCWToDirection(const Surface& surface, HalfEdge source, const Vector<typename Surface::Coordinate>& direction) {
+  source = surface.nextAtVertex(source);
+  while (surface.fromHalfEdge(source).ccw(direction) != CCW::CLOCKWISE)
+    source = surface.previousAtVertex(source);
+  while (surface.fromHalfEdge(source).ccw(direction) == CCW::CLOCKWISE)
+    source = surface.previousAtVertex(source);
+  return source;
+}
 
 }  // namespace flatsurf
 
