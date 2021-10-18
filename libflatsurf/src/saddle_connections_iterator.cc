@@ -326,7 +326,7 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::onBoundary() {
 template <typename Surface>
 void ImplementationOf<SaddleConnectionsIterator<Surface>>::skipSector(CCW sector) {
   LIBFLATSURF_ASSERT_ARGUMENT(sector != CCW::COLLINEAR, "Cannot skip this sector. There is no such thing as a collinear sector.");
-  assert(state.size() && "cannot skip a sector in a completed search");
+  LIBFLATSURF_ASSERT(state.size(), "cannot skip a sector in a completed search");
 
   switch (state.back()) {
     case State::SADDLE_CONNECTION_FOUND:

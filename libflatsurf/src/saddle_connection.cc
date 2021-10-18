@@ -48,18 +48,8 @@ using std::end;
 namespace {
 
 template <typename Surface>
-HalfEdge turnCCWToDirection(const Surface& surface, HalfEdge source, const Vector<typename Surface::Coordinate>& direction) {
-  while (surface.fromHalfEdge(source).ccw(direction) == CCW::CLOCKWISE)
-    source = surface.nextAtVertex(source);
-  while (surface.fromHalfEdge(source).ccw(direction) != CCW::CLOCKWISE)
-    source = surface.nextAtVertex(source);
-  source = surface.previousAtVertex(source);
-  return source;
-}
-
-template <typename Surface>
 HalfEdge turnNearestToDirection(const Surface& surface, HalfEdge source, const Vector<typename Surface::Coordinate>& direction) {
-  LIBFLATSURF_CHECK_ARGUMENT(surface.fromHalfEdge(source).ccw(direction) != CCW::COLLINEAR || surface.fromHalfEdge(source).orientation(direction) != ORIENTATION::OPPOSITE, "Direction does not single out a unique plane. Cannot decide which way to the source edge.");
+  LIBFLATSURF_CHECK_ARGUMENT(surface.fromHalfEdge(source).ccw(direction) != CCW::COLLINEAR || surface.fromHalfEdge(source).orientation(direction) != ORIENTATION::OPPOSITE, "Direction " << direction << " does not single out a unique plane at " << source << ". Cannot decide which way to the source edge.");
 
   while (surface.fromHalfEdge(source).ccw(direction) == CCW::COUNTERCLOCKWISE)
     source = surface.nextAtVertex(source);

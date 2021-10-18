@@ -4,6 +4,8 @@
 
 * Added `SaddleConnectionsIterator::skip()` to explicitly backtrack in saddle connection search.
 
+* Added `Path::tighten()`.
+
 **Changed:**
 
 * <news item>
