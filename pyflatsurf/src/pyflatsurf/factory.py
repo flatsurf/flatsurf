@@ -23,7 +23,7 @@ from .cppyy_flatsurf import flatsurf
 
 def make_FlatTriangulation(vertices, vectors):
     vertices = cppyy.gbl.std.vector[cppyy.gbl.std.vector[int]]([cppyy.gbl.std.vector[int](l) for l in vertices])
-    R2 = type(vectors[0])
+    R2 = cppyy.gbl.flatsurf.Vector._unwrapped[type(vectors[0]).Coordinate]
     vectors = cppyy.gbl.std.vector[R2](vectors)
 
     # The following does not work due to https://bitbucket.org/wlav/cppyy/issues/275/result-of-cppyygblstdmove-is-not-an-rvalue
