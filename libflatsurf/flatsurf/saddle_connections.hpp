@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,6 +19,8 @@
 
 #ifndef LIBFLATSURF_SADDLE_CONNECTIONS_HPP
 #define LIBFLATSURF_SADDLE_CONNECTIONS_HPP
+
+#include <optional>
 
 #include "copyable.hpp"
 #include "half_edge.hpp"

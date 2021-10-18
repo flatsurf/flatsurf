@@ -64,6 +64,8 @@ class SaddleConnectionsIterator : public boost::iterator_facade<SaddleConnection
 
   void skipSector(CCW sector);
 
+  void skip();
+
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const SaddleConnectionsIterator<S> &);
 
