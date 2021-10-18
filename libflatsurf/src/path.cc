@@ -30,11 +30,15 @@
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/saddle_connections.hpp"
+#include "../flatsurf/saddle_connections_iterator.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertex.hpp"
+#include "../flatsurf/orientation.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/path.impl.hpp"
 #include "impl/path_iterator.impl.hpp"
+#include "impl/saddle_connection.impl.hpp"
 #include "util/assert.ipp"
 
 namespace flatsurf {
@@ -99,13 +103,13 @@ size_t Path<Surface>::size() const {
 
 template <typename Surface>
 void Path<Surface>::push_front(const Segment& segment) {
-  LIBFLATSURF_ASSERT(empty() || ImplementationOf<Path>::connected(segment, *begin()), "Path must be connected but " << segment << " does not precede " << *begin() << " either because they are connected to different vertices or because the turn from " << -segment << " to " << *begin() << " is not turning clockwise in the range (0, 2π]");
+  LIBFLATSURF_ASSERT(empty() || ImplementationOf<Path>::connected(segment, *begin()), "Path must be connected but " << segment << " does not precede " << *begin());
   self->path.insert(std::begin(self->path), segment);
 }
 
 template <typename Surface>
 void Path<Surface>::push_back(const Segment& segment) {
-  LIBFLATSURF_ASSERT(empty() || ImplementationOf<Path>::connected(*self->path.rbegin(), segment), "Path must be connected but " << *self->path.rbegin() << " does not precede " << segment << " either because they are connected to different vertices or because the turn from " << -*self->path.rbegin() << " to " << segment << " is not turning clockwise in the range (0, 2π]");
+  LIBFLATSURF_ASSERT(empty() || ImplementationOf<Path>::connected(*self->path.rbegin(), segment), "Path must be connected but " << *self->path.rbegin() << " does not precede " << segment);
   self->path.push_back(segment);
 }
 
@@ -141,7 +145,7 @@ void Path<Surface>::splice(const PathIterator<Surface>& pos, Path& other) {
 
   LIBFLATSURF_ASSERTIONS([&]() {
     for (auto segment = std::begin(self->path); segment != std::end(self->path); segment++) {
-      LIBFLATSURF_ASSERT(segment + 1 == std::end(self->path) || ImplementationOf<Path>::connected(*segment, *(segment + 1)), "Path must be connected but " << *segment << " does not precede " << *(segment + 1) << " either because they are connected to different vertices or because the turn from " << -*segment << " to " << *(segment + 1) << " is not turning clockwise in the range (0, 2π]");
+      LIBFLATSURF_ASSERT(segment + 1 == std::end(self->path) || ImplementationOf<Path>::connected(*segment, *(segment + 1)), "Path must be connected but " << *segment << " does not precede " << *(segment + 1));
     }
     return true;
   });
@@ -189,59 +193,8 @@ ImplementationOf<Path<Surface>>::ImplementationOf(const std::vector<Segment>& pa
 }
 
 template <typename Surface>
-bool ImplementationOf<Path<Surface>>::connected(const Segment& a, const Segment& to) {
-  const auto& surface = a.surface();
-
-  const auto from = -a;
-
-  const auto ccw = [](const Chain<Surface>& lhs, const Chain<Surface>& rhs) {
-    // In typical flow decompositions, running ccw on approximations first
-    // does not seem to help the runtime of this method:
-    const auto approximate = static_cast<const Vector<exactreal::Arb>&>(lhs).ccw(static_cast<const Vector<exactreal::Arb>&>(rhs));
-    if (approximate)
-      return *approximate;
-    return static_cast<const Vector<T>&>(lhs).ccw(static_cast<const Vector<T>&>(rhs));
-  };
-
-  if (Vertex::source(from.source(), surface) != Vertex::source(to.source(), surface))
-    return false;
-
-  if (from.source() == to.source()) {
-    // If from and to are in the same sector, we essentially check whether
-    // we have to turn clockwise between them.
-    if (ccw(from, to) == CCW::CLOCKWISE) {
-      return true;
-    } else {
-      return surface.angle(Vertex::source(from.source(), surface)) == 1;
-    }
-  } else {
-    // If from and to are not in the same sector, we go through the sectors until we hit to.source().
-    // We keep track how far sector is turned from from.vector() in multiples of π.
-    int turn = 0;
-    for (auto sector = surface.previousAtVertex(from.source()); turn != 2; sector = surface.previousAtVertex(sector)) {
-      const auto chain = Chain(surface, sector);
-      if (turn == 0) {
-        if (ccw(from, chain) != CCW::CLOCKWISE) {
-          turn = 1;
-        }
-      } else if (turn == 1) {
-        if (ccw(from, chain) == CCW::CLOCKWISE) {
-          turn = 2;
-        }
-      }
-
-      if (sector == to.source()) {
-        if (turn < 2) {
-          // The entire sector is at most 2π from the "from" vector so "to" must be within a 2π turn.
-          return true;
-        } else {
-          // Parts of the sector are more than a 2π turn from the "from" vector.
-          return ccw(from, to) != CCW::CLOCKWISE;
-        }
-      }
-    }
-    return false;
-  }
+bool ImplementationOf<Path<Surface>>::connected(const Segment& from, const Segment& to) {
+  return Vertex::source(from.target(), from.surface()) == Vertex::source(to.source(), to.surface());
 }
 }  // namespace flatsurf
 

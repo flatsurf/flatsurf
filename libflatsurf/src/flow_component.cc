@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/vertical.hpp"
+#include "../flatsurf/path_iterator.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/collapsed_half_edge.hpp"
 #include "impl/contour_component.impl.hpp"
@@ -360,6 +361,16 @@ typename FlowComponent<Surface>::Perimeter FlowComponent<Surface>::perimeter() c
   LIBFLATSURF_ASSERTIONS([&]() {
     Path<FlatTriangulation<typename Surface::Coordinate>> path = perimeter | rx::transform([&](const auto connection) { return connection.saddleConnection(); }) | rx::to_vector();
     LIBFLATSURF_ASSERT(path.closed(), "Perimeter of FlowComponent must be closed but " << path << " is not.");
+
+    auto a = path.begin();
+
+    auto b = a;
+    ++b;
+
+    for(;b != path.end(); a++, b++) {
+      const int angle = b->angle(-*a);
+      LIBFLATSURF_ASSERT(angle == 0 || (angle == 1 && (-*b).vector().ccw(*a) == CCW::COLLINEAR && (-*b).vector().orientation(*a) == ORIENTATION::SAME), "Connections in perimeter must be turning clockwise by an angle in (0, 2π] but " << *b << " follows " << *a << " in perimeter.");
+    }
   });
 
   return perimeter;
