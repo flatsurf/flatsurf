@@ -2,7 +2,7 @@
 #*********************************************************************
 #  This file is part of flatsurf.
 #
-#        Copyright (C) 2019-2020 Julian Rüth
+#        Copyright (C) 2019-2021 Julian Rüth
 #        Copyright (C) 2020 Vincent Delecroix
 #
 #  Flatsurf is free software: you can redistribute it and/or modify
@@ -70,7 +70,7 @@ cppyy.py.add_pythonization(filtered(re.compile("SaddleConnections<.*>"))(add_met
 cppyy.py.add_pythonization(filtered(re.compile("SaddleConnectionsByLength<.*>"))(add_method("slopes")(slopes)), "flatsurf")
 
 # We cannot create an OddHalfEdgeMap directly due to https://bitbucket.org/wlav/cppyy/issues/273/segfault-in-cpycppyy-anonymous-namespace
-cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(wrap_method("__add__")(lambda self, cpp, rhs: cpp(cppyy.gbl.flatsurf.makeOddHalfEdgeMap[cppyy.gbl.flatsurf.Vector[type(self).Coordinate]](self.combinatorial(), rhs)))), "flatsurf")
+cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(wrap_method("__add__")(lambda self, cpp, rhs: cpp(cppyy.gbl.flatsurf.makeOddHalfEdgeMap[cppyy.gbl.flatsurf.Vector._unwrapped[type(self).Coordinate]](self.combinatorial(), rhs)))), "flatsurf")
 
 
 cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_method("cylinders")(lambda self: [component for component in self.components() if component.cylinder()])), "flatsurf")
@@ -106,5 +106,8 @@ for path in os.environ.get('PYFLATSURF_INCLUDE','').split(':'):
 
 cppyy.include("flatsurf/cppyy.hpp")
 
-
 from cppyy.gbl import flatsurf
+
+# Work around https://github.com/wlav/cppyy/issues/19
+cppyy.gbl.flatsurf.cppyy.Vector._unwrapped = cppyy.gbl.flatsurf.Vector
+cppyy.gbl.flatsurf.Vector = cppyy.gbl.flatsurf.cppyy.Vector

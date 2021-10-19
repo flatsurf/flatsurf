@@ -113,6 +113,7 @@ TEMPLATE_TEST_CASE("Connections and IET from Contour Decomposition", "[contour_d
 
         AND_THEN("We can construct the IETs from the components") {
           for (auto component : decomposition.components()) {
+            REQUIRE(component.perimeter().tighten() == Path<FlatTriangulation<T>>{});
             auto iet = component.intervalExchangeTransformation();
             REQUIRE(iet.intervalExchangeTransformation().size() == component.topContour().size());
           }

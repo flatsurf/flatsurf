@@ -25,6 +25,7 @@
 #include <functional>
 #include <intervalxt/forward.hpp>
 #include <list>
+#include <iosfwd>
 
 #include "copyable.hpp"
 

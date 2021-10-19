@@ -22,6 +22,7 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
+#include <ostream>
 #include <unordered_set>
 
 #include "../flatsurf/ccw.hpp"

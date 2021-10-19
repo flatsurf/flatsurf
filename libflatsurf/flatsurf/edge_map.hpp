@@ -20,6 +20,7 @@
 #ifndef LIBFLATSURF_EDGE_MAP_HPP
 #define LIBFLATSURF_EDGE_MAP_HPP
 
+#include <ostream>
 #include <stdexcept>
 #include <vector>
 

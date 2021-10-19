@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,6 +17,9 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <vector>
+#include <ostream>
+
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
@@ -31,15 +34,13 @@
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vertical.hpp"
+#include "../flatsurf/orientation.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/contour_component.impl.hpp"
 #include "impl/contour_component_state.hpp"
 #include "impl/contour_connection.impl.hpp"
 #include "impl/contour_decomposition_state.hpp"
 #include "util/assert.ipp"
-
-using std::ostream;
-using std::vector;
 
 namespace flatsurf {
 
@@ -79,6 +80,7 @@ template <typename Surface>
 std::vector<ContourConnection<Surface>> ContourComponent<Surface>::perimeterContour() const {
   auto perimeter = bottomContour();
   for (auto connection : topContour()) perimeter.push_back(connection);
+
   return perimeter;
 }
 
@@ -86,7 +88,20 @@ template <typename Surface>
 Path<FlatTriangulation<typename Surface::Coordinate>> ContourComponent<Surface>::perimeter() const {
   Path<FlatTriangulation<T>> perimeter = rx::chain(bottom(), top()) | rx::to_vector();
   LIBFLATSURF_ASSERT(perimeter.closed(), "Perimeter of a component must be closed but " << perimeter << " is not.");
-  LIBFLATSURF_ASSERT(perimeter.simple(), "Perimeter of a component must be simple but " << perimeter << " is not.");
+
+  LIBFLATSURF_ASSERTIONS([&]() {
+    auto a = perimeter.begin();
+
+    auto b = a;
+    ++b;
+
+    for(;b != perimeter.end(); a++, b++) {
+      const int angle = b->angle(-*a);
+      LIBFLATSURF_ASSERT(angle == 0 || (angle == 1 && (-*b).vector().ccw(*a) == CCW::COLLINEAR && (-*b).vector().orientation(*a) == ORIENTATION::SAME), "Connections in perimeter must be turning clockwise by an angle in (0, 2π] but " << *b << " follows " << *a << " in perimeter.");
+    }
+
+    LIBFLATSURF_ASSERT(perimeter.simple(), "Perimeter of a component must be simple but " << perimeter << " is not.");
+  });
   return perimeter;
 }
 
@@ -152,7 +167,7 @@ ContourConnection<Surface> ImplementationOf<ContourComponent<Surface>>::previous
 }
 
 template <typename Surface>
-void ImplementationOf<ContourComponent<Surface>>::makeContour(std::back_insert_iterator<vector<HalfEdge>> target,
+void ImplementationOf<ContourComponent<Surface>>::makeContour(std::back_insert_iterator<std::vector<HalfEdge>> target,
     const HalfEdge source, const Surface& parent,
     const Vertical<Surface>& vertical) {
   LIBFLATSURF_ASSERT_ARGUMENT(vertical.ccw(source) != CCW::COLLINEAR, "vertical edges must have been collapsed before a contour can be built");
@@ -188,7 +203,7 @@ bool ContourComponent<Surface>::operator==(const ContourComponent<Surface>& rhs)
 }
 
 template <typename Surface>
-ostream& operator<<(ostream& os, const ContourComponent<Surface>& self) {
+std::ostream& operator<<(std::ostream& os, const ContourComponent<Surface>& self) {
   return os << self.perimeter();
 }
 

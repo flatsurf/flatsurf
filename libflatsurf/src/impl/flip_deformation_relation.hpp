@@ -20,6 +20,8 @@
 #ifndef LIBFLATSURF_IMPL_FLIP_DEFORMATION_RELATION_HPP
 #define LIBFLATSURF_IMPL_FLIP_DEFORMATION_RELATION_HPP
 
+#include <iosfwd>
+
 #include "../../flatsurf/half_edge.hpp"
 #include "retriangulation_deformation_relation.hpp"
 

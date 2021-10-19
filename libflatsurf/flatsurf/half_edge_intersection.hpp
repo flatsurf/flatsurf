@@ -22,6 +22,7 @@
 
 #include <boost/operators.hpp>
 #include <optional>
+#include <iosfwd>
 
 #include "copyable.hpp"
 

@@ -19,6 +19,7 @@
 #ifndef LIBFLATSURF_VECTOR_HPP
 #define LIBFLATSURF_VECTOR_HPP
 
+#include <iosfwd>
 #include <exact-real/forward.hpp>
 
 #include "copyable.hpp"

@@ -20,6 +20,8 @@
 #ifndef LIBFLATSURF_CHAIN_ITERATOR_HPP
 #define LIBFLATSURF_CHAIN_ITERATOR_HPP
 
+#include <iosfwd>
+
 #include <gmpxx.h>
 
 #include <boost/iterator/iterator_categories.hpp>

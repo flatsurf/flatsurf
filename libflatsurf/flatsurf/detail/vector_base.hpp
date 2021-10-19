@@ -20,12 +20,13 @@
 #ifndef LIBFLATSURF_DETAIL_VECTOR_BASE_HPP
 #define LIBFLATSURF_DETAIL_VECTOR_BASE_HPP
 
+#include <complex>
+#include <iosfwd>
+
 #include <gmpxx.h>
 
 #include <boost/operators.hpp>
-#include <complex>
 #include <exact-real/forward.hpp>
-#include <iosfwd>
 
 #include "../forward.hpp"
 

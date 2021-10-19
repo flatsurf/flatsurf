@@ -20,6 +20,8 @@
 #ifndef LIBFLATSURF_IMPL_INDEXED_SET_HPP
 #define LIBFLATSURF_IMPL_INDEXED_SET_HPP
 
+#include <iosfwd>
+
 #include <boost/dynamic_bitset.hpp>
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
 

@@ -96,6 +96,8 @@ class Vector(SageVector):
 
         if isinstance(vector, parent.Vector):
             self.vector = vector
+        elif isinstance(vector, flatsurf.cppyy.Vector[parent.Vector.Coordinate]):
+            self.vector = vector
         else:
             vector = list(vector)
 
@@ -334,7 +336,7 @@ class Vectors(UniqueRepresentation, Parent):
     def __init__(self, base_ring, coordinate):
         self.coordinate = coordinate
 
-        self.Vector = flatsurf.Vector[self.coordinate]
+        self.Vector = flatsurf.Vector._unwrapped[self.coordinate]
 
         self._isomorphic_vector_space = FreeModule(base_ring, 2)
         if isinstance(base_ring, real_embedded_number_field.RealEmbeddedNumberField):

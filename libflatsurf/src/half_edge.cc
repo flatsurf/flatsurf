@@ -25,8 +25,6 @@
 #include "../flatsurf/permutation.hpp"
 #include "util/assert.ipp"
 
-using std::ostream;
-
 namespace flatsurf {
 
 HalfEdge::HalfEdge(PrivateConstructor, size_t idx) :
@@ -73,7 +71,7 @@ Edge HalfEdge::edge() const {
   return Edge(*this);
 }
 
-ostream &operator<<(ostream &os, const HalfEdge &self) { return os << self.id(); }
+std::ostream &operator<<(std::ostream &os, const HalfEdge &self) { return os << self.id(); }
 
 }  // namespace flatsurf
 

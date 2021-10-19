@@ -22,6 +22,7 @@
 
 #include <boost/iterator/iterator_facade.hpp>
 #include <optional>
+#include <iosfwd>
 
 #include "copyable.hpp"
 
@@ -63,6 +64,8 @@ class SaddleConnectionsIterator : public boost::iterator_facade<SaddleConnection
   const SaddleConnection<Surface> &dereference() const;
 
   void skipSector(CCW sector);
+
+  void skip();
 
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const SaddleConnectionsIterator<S> &);

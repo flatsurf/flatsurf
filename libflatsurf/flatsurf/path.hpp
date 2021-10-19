@@ -22,6 +22,7 @@
 
 #include <boost/operators.hpp>
 #include <vector>
+#include <iosfwd>
 
 #include "copyable.hpp"
 #include "serializable.hpp"

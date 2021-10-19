@@ -22,6 +22,7 @@
 
 #include <deque>
 #include <optional>
+#include <iosfwd>
 
 #include "../../flatsurf/chain.hpp"
 

@@ -60,10 +60,6 @@
 #include "impl/interval_exchange_transformation.impl.hpp"
 #include "util/assert.ipp"
 
-using std::ostream;
-
-using intervalxt::DynamicalDecomposition;
-
 namespace flatsurf {
 
 template <typename Surface>
@@ -217,7 +213,7 @@ template <typename Surface>
 const FlowDecomposition<Surface> FlowComponent<Surface>::decomposition() const { return ImplementationOf<FlowDecomposition<Surface>>::make(self->state); }
 
 template <typename Surface>
-ostream& operator<<(ostream& os, const FlowDecomposition<Surface>& self) {
+std::ostream& operator<<(std::ostream& os, const FlowDecomposition<Surface>& self) {
   std::vector<std::string> components;
   for (auto& component : self.components())
     components.push_back(boost::lexical_cast<std::string>(component));

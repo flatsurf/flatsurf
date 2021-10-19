@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -81,6 +81,23 @@ std::optional<Deformation<FlatTriangulation<T>>> isomorphism(const FlatTriangula
         return filter_matrix(IsomorphismFilterMatrix<T>(a, b, c, d));
       },
       filter_map);
+}
+
+// Work around https://github.com/wlav/cppyy/issues/19 by removing std::forward
+// from the converting constructor of Vector.
+namespace cppyy {
+template <typename T>
+class Vector : public ::flatsurf::Vector<T> {
+ public:
+  using Coordinate = T;
+
+  Vector() : ::flatsurf::Vector<T>() {}
+  Vector(const Coordinate& x, const Coordinate& y) : ::flatsurf::Vector<T>(x, y) {}
+
+  template <typename X, typename Y, std::enable_if_t<!std::is_convertible_v<X, Coordinate> || !std::is_convertible_v<Y, Coordinate>, int> = 0>
+  Vector(const X& x, const Y& y) : ::flatsurf::Vector<T>(static_cast<T>(x), static_cast<T>(y)) {}
+};
+
 }
 
 }  // namespace flatsurf

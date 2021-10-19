@@ -30,7 +30,7 @@ requirements:
     - libflatsurf
   run:
     - python
-    - cppyy >=1.9.3
+    - cppyy >=2.1.0
     - cppyythonizations
     - pyexactreal >=1.3.2
     - boost-cpp

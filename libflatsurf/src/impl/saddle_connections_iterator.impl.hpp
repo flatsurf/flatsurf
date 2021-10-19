@@ -150,6 +150,8 @@ class ImplementationOf<SaddleConnectionsIterator<Surface>> {
 
   void skipSector(CCW sector);
 
+  void skip();
+
   void apply(const Move m);
 
   void applyMoves();

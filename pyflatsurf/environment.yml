@@ -9,8 +9,7 @@ channels:
   - defaults
 dependencies:
   - automake
-  # The latest cppyy has trouble with serializations, see https://bitbucket.org/wlav/cppyy/issues/364/segfault-in-clang-cxxrecorddecl
-  - cppyy<2
+  - cppyy
   - cppyythonizations
   - gmpxxyy
   - ipywidgets

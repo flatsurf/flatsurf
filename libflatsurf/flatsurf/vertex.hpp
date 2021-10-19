@@ -20,6 +20,7 @@
 #ifndef LIBFLATSURF_VERTEX_HPP
 #define LIBFLATSURF_VERTEX_HPP
 
+#include <iosfwd>
 #include <boost/operators.hpp>
 
 #include "copyable.hpp"

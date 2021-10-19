@@ -20,6 +20,8 @@
 #ifndef LIBFLATSURF_PATH_ITERATOR_HPP
 #define LIBFLATSURF_PATH_ITERATOR_HPP
 
+#include <iosfwd>
+
 #include <boost/iterator/iterator_categories.hpp>
 #include <boost/iterator/iterator_facade.hpp>
 

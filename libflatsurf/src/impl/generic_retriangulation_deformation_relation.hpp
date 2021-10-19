@@ -20,6 +20,7 @@
 #ifndef LIBFLATSURF_IMPL_GENERIC_DEFORMATION_RELATION_HPP
 #define LIBFLATSURF_IMPL_GENERIC_DEFORMATION_RELATION_HPP
 
+#include <iosfwd>
 #include <unordered_map>
 #include <utility>
 #include <vector>

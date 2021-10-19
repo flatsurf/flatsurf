@@ -31,8 +31,6 @@
 #include "impl/saddle_connection.impl.hpp"
 #include "util/assert.ipp"
 
-using std::ostream;
-
 namespace flatsurf {
 
 template <typename Surface>
@@ -183,7 +181,7 @@ FlowConnection<Surface> ImplementationOf<FlowConnection<Surface>>::make(std::sha
 }
 
 template <typename Surface>
-ostream& operator<<(ostream& os, const FlowConnection<Surface>& self) {
+std::ostream& operator<<(std::ostream& os, const FlowConnection<Surface>& self) {
   return os << self.saddleConnection();
 }
 

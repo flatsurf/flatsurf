@@ -38,6 +38,14 @@ class ImplementationOf<SaddleConnection<Surface>> {
   ImplementationOf(const Surface&, HalfEdge source, HalfEdge target, const Chain<Surface>&);
   ImplementationOf(const Surface&, HalfEdge source, HalfEdge target, Chain<Surface>&&);
 
+  // Walk half edges in counterclockwise order from source until direction is
+  // in the counterclockwise sector next to that source (inclusive.)
+  static HalfEdge turnCCWToDirection(const Surface&, HalfEdge source, const Vector<typename Surface::Coordinate>& direction);
+
+  // Walk half edges in clockwise order from source until direction is
+  // in the counterclockwise sector next to that source (inclusive.)
+  static HalfEdge turnCWToDirection(const Surface&, HalfEdge source, const Vector<typename Surface::Coordinate>& direction);
+
   ReadOnly<Surface> surface;
   HalfEdge source;
   HalfEdge target;
