@@ -19,12 +19,12 @@
 
 #include <exact-real/element.hpp>
 
-#include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/orientation.hpp"
+#include "../flatsurf/saddle_connection.hpp"
 #include "external/catch2/single_include/catch2/catch.hpp"
-#include "generators/surface_generator.hpp"
 #include "generators/saddle_connections_generator.hpp"
+#include "generators/surface_generator.hpp"
 
 namespace flatsurf::test {
 
@@ -82,7 +82,6 @@ TEMPLATE_TEST_CASE("Angle between Saddle Connections", "[saddle_connection][angl
     } else {
       REQUIRE(angle <= totalAngle / 2);
     }
-
   }
 }
 

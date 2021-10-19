@@ -20,8 +20,8 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTIONS_SAMPLE_HPP
 #define LIBFLATSURF_SADDLE_CONNECTIONS_SAMPLE_HPP
 
-#include <optional>
 #include <iosfwd>
+#include <optional>
 
 #include "copyable.hpp"
 #include "half_edge.hpp"

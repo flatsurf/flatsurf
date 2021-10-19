@@ -21,9 +21,9 @@
 #define LIBFLATSURF_HALF_EDGE_MAP_HPP
 
 #include <functional>
+#include <optional>
 #include <ostream>
 #include <vector>
-#include <optional>
 
 #include "flat_triangulation_combinatorial.hpp"
 #include "half_edge.hpp"

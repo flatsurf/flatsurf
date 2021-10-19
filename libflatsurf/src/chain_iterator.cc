@@ -19,8 +19,9 @@
 
 #include "../flatsurf/chain_iterator.hpp"
 
-#include <ostream>
 #include <flint/fmpz.h>
+
+#include <ostream>
 
 #include "../flatsurf/chain.hpp"
 #include "../flatsurf/edge.hpp"

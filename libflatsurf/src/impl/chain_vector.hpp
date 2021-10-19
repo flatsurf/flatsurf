@@ -21,8 +21,8 @@
 #define LIBFLATSURF_CHAIN_VECTOR_IMPL_HPP
 
 #include <deque>
-#include <optional>
 #include <iosfwd>
+#include <optional>
 
 #include "../../flatsurf/chain.hpp"
 

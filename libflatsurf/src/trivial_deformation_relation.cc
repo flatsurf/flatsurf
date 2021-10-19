@@ -17,9 +17,9 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <ostream>
-
 #include "impl/trivial_deformation_relation.hpp"
+
+#include <ostream>
 
 #include "../flatsurf/path.hpp"
 #include "impl/deformation_relation.hpp"

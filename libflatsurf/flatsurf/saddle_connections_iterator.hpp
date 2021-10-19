@@ -21,8 +21,8 @@
 #define LIBFLATSURF_SADDLE_CONNECTIONS_ITERATOR_HPP
 
 #include <boost/iterator/iterator_facade.hpp>
-#include <optional>
 #include <iosfwd>
+#include <optional>
 
 #include "copyable.hpp"
 

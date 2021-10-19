@@ -21,7 +21,6 @@
 
 #include <intervalxt/interval_exchange_transformation.hpp>
 #include <intervalxt/label.hpp>
-
 #include <ostream>
 #include <unordered_set>
 

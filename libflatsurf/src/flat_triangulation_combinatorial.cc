@@ -21,9 +21,9 @@
 
 #include <fmt/format.h>
 
+#include <ostream>
 #include <unordered_map>
 #include <unordered_set>
-#include <ostream>
 #include <vector>
 
 #include "../flatsurf/fmt.hpp"

@@ -21,8 +21,8 @@
 #define LIBFLATSURF_HALF_EDGE_INTERSECTION_HPP
 
 #include <boost/operators.hpp>
-#include <optional>
 #include <iosfwd>
+#include <optional>
 
 #include "copyable.hpp"
 

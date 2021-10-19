@@ -17,24 +17,23 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <vector>
-#include <ostream>
-
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
 #include <intervalxt/interval_exchange_transformation.hpp>
+#include <ostream>
+#include <vector>
 
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/contour_connection.hpp"
 #include "../flatsurf/flat_triangulation_collapsed.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/interval_exchange_transformation.hpp"
+#include "../flatsurf/orientation.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vertical.hpp"
-#include "../flatsurf/orientation.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/contour_component.impl.hpp"
 #include "impl/contour_component_state.hpp"
@@ -95,7 +94,7 @@ Path<FlatTriangulation<typename Surface::Coordinate>> ContourComponent<Surface>:
     auto b = a;
     ++b;
 
-    for(;b != perimeter.end(); a++, b++) {
+    for (; b != perimeter.end(); a++, b++) {
       const int angle = b->angle(-*a);
       LIBFLATSURF_ASSERT(angle == 0 || (angle == 1 && (-*b).vector().ccw(*a) == CCW::COLLINEAR && (-*b).vector().orientation(*a) == ORIENTATION::SAME), "Connections in perimeter must be turning clockwise by an angle in (0, 2π] but " << *b << " follows " << *a << " in perimeter.");
     }

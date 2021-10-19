@@ -17,9 +17,9 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <ostream>
-
 #include "impl/generic_retriangulation_deformation_relation.hpp"
+
+#include <ostream>
 
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/flat_triangulation.hpp"

@@ -19,8 +19,8 @@
 
 #include "impl/chain_vector.hpp"
 
-#include <ostream>
 #include <optional>
+#include <ostream>
 
 #include "impl/chain.impl.hpp"
 #include "util/assert.ipp"

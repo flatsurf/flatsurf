@@ -91,14 +91,17 @@ class Vector : public ::flatsurf::Vector<T> {
  public:
   using Coordinate = T;
 
-  Vector() : ::flatsurf::Vector<T>() {}
-  Vector(const Coordinate& x, const Coordinate& y) : ::flatsurf::Vector<T>(x, y) {}
+  Vector() :
+    ::flatsurf::Vector<T>() {}
+  Vector(const Coordinate &x, const Coordinate &y) :
+    ::flatsurf::Vector<T>(x, y) {}
 
   template <typename X, typename Y, std::enable_if_t<!std::is_convertible_v<X, Coordinate> || !std::is_convertible_v<Y, Coordinate>, int> = 0>
-  Vector(const X& x, const Y& y) : ::flatsurf::Vector<T>(static_cast<T>(x), static_cast<T>(y)) {}
+  Vector(const X &x, const Y &y) :
+    ::flatsurf::Vector<T>(static_cast<T>(x), static_cast<T>(y)) {}
 };
 
-}
+}  // namespace cppyy
 
 }  // namespace flatsurf
 

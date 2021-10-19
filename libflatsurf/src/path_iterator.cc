@@ -17,9 +17,9 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <ostream>
-
 #include "../flatsurf/path_iterator.hpp"
+
+#include <ostream>
 
 #include "../flatsurf/saddle_connection.hpp"
 #include "impl/path.impl.hpp"

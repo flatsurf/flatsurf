@@ -17,9 +17,9 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <ostream>
-
 #include "impl/weak_read_only.hpp"
+
+#include <ostream>
 
 #include "../flatsurf/managed_movable.hpp"
 #include "impl/managed_movable.impl.hpp"

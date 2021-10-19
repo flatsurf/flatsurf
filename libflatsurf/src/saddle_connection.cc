@@ -84,7 +84,7 @@ int angle(const Surface& surface, HalfEdge source, const Vector<typename Surface
 
     const auto ccw = sourceVector.ccw(turned);
 
-    if (ccw == CCW::COLLINEAR || ccw != sgn)  {
+    if (ccw == CCW::COLLINEAR || ccw != sgn) {
       angle++;
       sgn = -sgn;
     }
@@ -276,7 +276,7 @@ CCW SaddleConnection<Surface>::ccw(HalfEdge source, const Vector<T>& vector) con
   const int totalAngle = this->surface().angle(Vertex::source(source, this->surface()));
 
   if (angle == totalAngle && vector.ccw(this->vector()) == CCW::COLLINEAR)
-      return CCW::COLLINEAR;
+    return CCW::COLLINEAR;
 
   if (angle < totalAngle)
     return CCW::COUNTERCLOCKWISE;

@@ -20,15 +20,15 @@
 #include <exact-real/element.hpp>
 
 #include "../flatsurf/path.hpp"
-#include "../flatsurf/saddle_connections.hpp"
-#include "../flatsurf/saddle_connections_sample.hpp"
-#include "../flatsurf/saddle_connections_iterator.hpp"
-#include "../flatsurf/saddle_connections_sample_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/saddle_connections.hpp"
+#include "../flatsurf/saddle_connections_iterator.hpp"
+#include "../flatsurf/saddle_connections_sample.hpp"
+#include "../flatsurf/saddle_connections_sample_iterator.hpp"
 #include "external/catch2/single_include/catch2/catch.hpp"
-#include "generators/surface_generator.hpp"
 #include "generators/half_edge_generator.hpp"
 #include "generators/saddle_connections_generator.hpp"
+#include "generators/surface_generator.hpp"
 
 namespace flatsurf::test {
 
@@ -73,8 +73,7 @@ TEMPLATE_TEST_CASE("Nullhomotopic Paths", "[path]", (long long), (mpq_class), (r
     const auto path = Path(std::vector{
         SaddleConnection{*surface, face},
         SaddleConnection{*surface, surface->nextInFace(face)},
-        SaddleConnection{*surface, surface->previousInFace(face)}
-    });
+        SaddleConnection{*surface, surface->previousInFace(face)}});
     CAPTURE(path);
 
     REQUIRE(path.tighten() == Path<Surface>());

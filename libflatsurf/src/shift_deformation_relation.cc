@@ -17,9 +17,9 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <ostream>
-
 #include "impl/shift_deformation_relation.hpp"
+
+#include <ostream>
 
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/odd_half_edge_map.hpp"

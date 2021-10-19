@@ -24,8 +24,8 @@
 #include <boost/operators.hpp>
 #include <functional>
 #include <intervalxt/forward.hpp>
-#include <list>
 #include <iosfwd>
+#include <list>
 
 #include "copyable.hpp"
 

@@ -23,9 +23,10 @@
 #include <flint/fmpz_vec.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
-#include <ostream>
 #include <gmp.h>
 #include <gmpxx.h>
+
+#include <ostream>
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/fmt.hpp"

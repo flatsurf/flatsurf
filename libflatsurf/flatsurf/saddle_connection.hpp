@@ -100,7 +100,7 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   // Return the turn direction between saddle connections.
   // Returns whether it is shorter to turn in counterclockwise or
   // clockwise direction. Returns COLLINEAR if both are the same.
-  CCW ccw(const SaddleConnection<Surface>&) const;
+  CCW ccw(const SaddleConnection<Surface> &) const;
 
   // Return the turn direction to the vector next to source.
   // Returns whether it is shorter to turn in counterclockwise or

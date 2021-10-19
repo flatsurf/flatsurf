@@ -17,8 +17,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include <stdexcept>
 #include <ostream>
+#include <stdexcept>
 
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/path.hpp"

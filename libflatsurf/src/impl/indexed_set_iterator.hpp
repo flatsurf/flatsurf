@@ -20,10 +20,9 @@
 #ifndef LIBFLATSURF_IMPL_INDEXED_SET_ITERATOR_HPP
 #define LIBFLATSURF_IMPL_INDEXED_SET_ITERATOR_HPP
 
-#include <iosfwd>
-
 #include <boost/iterator/iterator_categories.hpp>
 #include <boost/iterator/iterator_facade.hpp>
+#include <iosfwd>
 
 #include "forward.hpp"
 

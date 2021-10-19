@@ -20,8 +20,8 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTIONS_BY_LENGTH_HPP
 #define LIBFLATSURF_SADDLE_CONNECTIONS_BY_LENGTH_HPP
 
-#include <optional>
 #include <iosfwd>
+#include <optional>
 
 #include "copyable.hpp"
 #include "forward.hpp"

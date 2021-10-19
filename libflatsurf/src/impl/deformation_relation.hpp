@@ -22,8 +22,8 @@
 
 #include <memory>
 #include <optional>
-#include <vector>
 #include <ostream>
+#include <vector>
 
 #include "read_only.hpp"
 

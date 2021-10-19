@@ -19,8 +19,6 @@
 
 #include "../flatsurf/vector.hpp"
 
-#include <ostream>
-
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
@@ -34,6 +32,7 @@
 #include <exact-real/rational_field.hpp>
 #include <exact-real/yap/arb.hpp>
 #include <gmpxxll/mpz_class.hpp>
+#include <ostream>
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/ccw.hpp"

@@ -28,13 +28,13 @@
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/chain.hpp"
 #include "../flatsurf/fmt.hpp"
+#include "../flatsurf/orientation.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertex.hpp"
-#include "../flatsurf/orientation.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/path.impl.hpp"
 #include "impl/path_iterator.impl.hpp"
@@ -48,7 +48,8 @@ namespace {
 // Orders saddle connections around a vertex in counter clockwise order starting from a base connection b.
 template <typename Surface>
 struct SaddleConnectionOrdering {
-  SaddleConnectionOrdering(SaddleConnection<Surface> b) : b(std::move(b)) {}
+  SaddleConnectionOrdering(SaddleConnection<Surface> b) :
+    b(std::move(b)) {}
 
   bool operator()(const SaddleConnection<Surface>& x, const SaddleConnection<Surface>& y) {
     if (x == y)
@@ -77,7 +78,7 @@ struct SaddleConnectionOrdering {
                 // b < x < y
                 return true;
               default:
-              LIBFLATSURF_UNREACHABLE("Impossible configuration of saddle connections.");
+                LIBFLATSURF_UNREACHABLE("Impossible configuration of saddle connections.");
             }
           case CCW::CLOCKWISE:
             switch (b.ccw(y)) {
@@ -221,15 +222,15 @@ Path<Surface> tightenClockwise(const SaddleConnection<Surface>& a, const SaddleC
     const auto chain = j->chain() - i->chain();
     const auto vector = static_cast<const Vector<typename Surface::Coordinate>&>(chain);
     path.push_back(SaddleConnection<Surface>(surface,
-      ImplementationOf<SaddleConnection<Surface>>::turnCWToDirection(surface, i->target(), vector),
-      ImplementationOf<SaddleConnection<Surface>>::turnCCWToDirection(surface, j->target(), -vector),
-      chain));
+        ImplementationOf<SaddleConnection<Surface>>::turnCWToDirection(surface, i->target(), vector),
+        ImplementationOf<SaddleConnection<Surface>>::turnCCWToDirection(surface, j->target(), -vector),
+        chain));
   }
 
   return -Path<Surface>{path};
 }
 
-}
+}  // namespace
 
 template <typename Surface>
 Path<Surface>::Path() noexcept :
@@ -367,7 +368,7 @@ template <typename Surface>
 Path<Surface> Path<Surface>::tighten() const {
   std::list<SaddleConnection<Surface>> path;
 
-  for (const auto& connection: self->path)
+  for (const auto& connection : self->path)
     path.push_back(connection);
 
   auto a = path.begin();
@@ -395,7 +396,7 @@ Path<Surface> Path<Surface>::tighten() const {
     return begin ? path.begin() : d;
   };
 
-  while(true) {
+  while (true) {
     if (a == path.end())
       break;
 
@@ -405,7 +406,7 @@ Path<Surface> Path<Surface>::tighten() const {
     if (b == path.end())
       break;
 
-    LIBFLATSURF_ASSERT(Vertex::source(b->source(), b->surface()) == Vertex::source(a->target(), a->surface()) , "Path " << *this << " became disconnected at " << *a << ", " << *b << " during tigthening.");
+    LIBFLATSURF_ASSERT(Vertex::source(b->source(), b->surface()) == Vertex::source(a->target(), a->surface()), "Path " << *this << " became disconnected at " << *a << ", " << *b << " during tigthening.");
 
     // We will now try to replace the subpath a → b with a more tight version.
     if (*a == -*b) {
@@ -416,10 +417,8 @@ Path<Surface> Path<Surface>::tighten() const {
       // Try to replace the subpath a → b with a tightening starting a a's
       // source vertex and ending at b's target vertex.
       const CCW ccw = (-*a).ccw(*b);
-      if (ccw == (-a->vector()).ccw(b->vector()) && (
-          (ccw == CCW::COUNTERCLOCKWISE && (-*a).angle(*b) == 0) ||
-          (ccw == CCW::CLOCKWISE && (*b).angle(-*a) == 0))) {
-
+      if (ccw == (-a->vector()).ccw(b->vector()) && ((ccw == CCW::COUNTERCLOCKWISE && (-*a).angle(*b) == 0) ||
+                                                        (ccw == CCW::CLOCKWISE && (*b).angle(-*a) == 0))) {
         // The angle enclosed where a and b meet is less than π so the path can be tightened.
         if (ccw == CCW::CLOCKWISE)
           a = replace(a, path, tightenClockwise(*a, *b));

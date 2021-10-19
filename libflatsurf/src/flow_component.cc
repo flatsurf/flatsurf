@@ -33,8 +33,8 @@
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/orientation.hpp"
-#include "../flatsurf/vertical.hpp"
 #include "../flatsurf/path_iterator.hpp"
+#include "../flatsurf/vertical.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/collapsed_half_edge.hpp"
 #include "impl/contour_component.impl.hpp"
@@ -364,7 +364,7 @@ typename FlowComponent<Surface>::Perimeter FlowComponent<Surface>::perimeter() c
     auto b = a;
     ++b;
 
-    for(;b != path.end(); a++, b++) {
+    for (; b != path.end(); a++, b++) {
       const int angle = b->angle(-*a);
       LIBFLATSURF_ASSERT(angle == 0 || (angle == 1 && (-*b).vector().ccw(*a) == CCW::COLLINEAR && (-*b).vector().orientation(*a) == ORIENTATION::SAME), "Connections in perimeter must be turning clockwise by an angle in (0, 2π] but " << *b << " follows " << *a << " in perimeter.");
     }
