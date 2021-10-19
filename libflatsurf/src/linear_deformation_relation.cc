@@ -19,6 +19,7 @@
 
 #include "impl/linear_deformation_relation.hpp"
 
+#include <ostream>
 #include <boost/type_traits/is_detected.hpp>
 
 #include "../flatsurf/chain.hpp"

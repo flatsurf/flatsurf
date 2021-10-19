@@ -22,6 +22,7 @@
 #include <boost/logic/tribool.hpp>
 #include <exact-real/arb.hpp>
 #include <optional>
+#include <ostream>
 #include <type_traits>
 #include <variant>
 #include <vector>

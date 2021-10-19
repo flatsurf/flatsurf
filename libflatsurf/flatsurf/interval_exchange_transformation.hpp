@@ -22,6 +22,7 @@
 
 #include <unordered_set>
 #include <vector>
+#include <iosfwd>
 
 #include "intervalxt/forward.hpp"
 #include "movable.hpp"

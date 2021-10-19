@@ -48,9 +48,6 @@
 
 namespace flatsurf {
 
-using std::ostream;
-using std::string;
-
 template <typename Surface>
 bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Surface>&)> target, int limit) {
   bool limitSufficed = true;
@@ -428,8 +425,8 @@ std::string ImplementationOf<FlowComponent<Surface>>::id() const {
 }
 
 template <typename Surface>
-ostream& operator<<(ostream& os, const FlowComponent<Surface>& self) {
-  string kind = "Component";
+std::ostream& operator<<(std::ostream& os, const FlowComponent<Surface>& self) {
+  std::string kind = "Component";
   if (self.cylinder()) {
     kind = "Cylinder";
   } else if (self.keane()) {

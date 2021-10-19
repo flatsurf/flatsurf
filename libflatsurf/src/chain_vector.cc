@@ -19,6 +19,7 @@
 
 #include "impl/chain_vector.hpp"
 
+#include <ostream>
 #include <optional>
 
 #include "impl/chain.impl.hpp"

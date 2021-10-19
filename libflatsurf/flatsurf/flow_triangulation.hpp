@@ -20,6 +20,8 @@
 #ifndef LIBFLATSURF_FLOW_TRIANGULATION_HPP
 #define LIBFLATSURF_FLOW_TRIANGULATION_HPP
 
+#include <iosfwd>
+
 #include "copyable.hpp"
 
 namespace flatsurf {

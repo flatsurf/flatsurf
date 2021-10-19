@@ -20,6 +20,8 @@
 #ifndef LIBFLATSURF_IMPL_INSERT_MARKED_DEFORMATION_RELATION_HPP
 #define LIBFLATSURF_IMPL_INSERT_MARKED_DEFORMATION_RELATION_HPP
 
+#include <iosfwd>
+
 #include "../../flatsurf/vertex.hpp"
 #include "deformation_relation.hpp"
 

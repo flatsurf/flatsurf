@@ -20,6 +20,7 @@
 #ifndef LIBFLATSURF_FLAT_TRIANGULATION_COMBINATORIAL_HPP
 #define LIBFLATSURF_FLAT_TRIANGULATION_COMBINATORIAL_HPP
 
+#include <iosfwd>
 #include <vector>
 
 #include "flat_triangulation_combinatorics.hpp"

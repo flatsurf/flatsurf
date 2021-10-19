@@ -18,6 +18,7 @@
  *********************************************************************/
 
 #include <iterator>
+#include <ostream>
 
 #include "../flatsurf/saddle_connections_iterator.hpp"
 #include "../flatsurf/vector.hpp"

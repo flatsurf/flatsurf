@@ -20,8 +20,10 @@
 #ifndef LIBFLATSURF_QUADRATIC_POLYNOMIAL_HPP
 #define LIBFLATSURF_QUADRATIC_POLYNOMIAL_HPP
 
-#include <exact-real/arb.hpp>
+#include <iosfwd>
 #include <optional>
+
+#include <exact-real/arb.hpp>
 
 namespace flatsurf {
 

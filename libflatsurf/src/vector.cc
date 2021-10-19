@@ -19,6 +19,8 @@
 
 #include "../flatsurf/vector.hpp"
 
+#include <ostream>
+
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 

@@ -18,6 +18,7 @@
  *********************************************************************/
 
 #include <stdexcept>
+#include <ostream>
 
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/path.hpp"

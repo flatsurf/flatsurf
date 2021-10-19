@@ -19,6 +19,7 @@
 
 #include "../flatsurf/flow_triangulation.hpp"
 
+#include <ostream>
 #include <stack>
 #include <unordered_set>
 

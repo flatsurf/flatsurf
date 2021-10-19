@@ -22,6 +22,7 @@
 
 #include <boost/iterator/iterator_facade.hpp>
 #include <optional>
+#include <iosfwd>
 
 #include "copyable.hpp"
 

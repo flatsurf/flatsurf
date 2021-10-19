@@ -26,12 +26,6 @@
 
 #include "util/assert.ipp"
 
-using boost::accumulate;
-using std::function;
-using std::ostream;
-using std::pair;
-using std::vector;
-
 namespace flatsurf {
 
 namespace {
@@ -40,7 +34,7 @@ size_t index(const T &t) { return t.index(); }
 
 template <typename T>
 void check(const Permutation<T> &permutation) {
-  vector<int> hits(permutation.size());
+  std::vector<int> hits(permutation.size());
   for (const auto &target : permutation.domain()) {
     LIBFLATSURF_ASSERT_ARGUMENT(index(target) < hits.size(), "permutation maps beyond its domain");
     hits[index(target)]++;
@@ -59,10 +53,10 @@ void check(const Permutation<T> &permutation) {
 
 template <typename T>
 Permutation<T>::Permutation() noexcept :
-  Permutation(vector<pair<T, T>>()) {}
+  Permutation(std::vector<std::pair<T, T>>()) {}
 
 template <typename T>
-Permutation<T>::Permutation(const vector<T> &permutation) :
+Permutation<T>::Permutation(const std::vector<T> &permutation) :
   permutation(permutation),
   inverse(permutation) {
   for (auto &v : permutation)
@@ -72,9 +66,9 @@ Permutation<T>::Permutation(const vector<T> &permutation) :
 }
 
 template <typename T>
-Permutation<T>::Permutation(const vector<vector<T>> &cycles) :
+Permutation<T>::Permutation(const std::vector<std::vector<T>> &cycles) :
   Permutation([&]() {
-    vector<T> data(accumulate(cycles, 0u, [](size_t sum, const auto &cycle) { return sum + cycle.size(); }));
+    std::vector<T> data(boost::accumulate(cycles, 0u, [](size_t sum, const auto &cycle) { return sum + cycle.size(); }));
     for (const auto cycle : cycles) {
       for (auto i = 0u; i < cycle.size(); i++) {
         LIBFLATSURF_ASSERT_ARGUMENT(index(cycle[i]) < data.size(), "cycle contains an element beyond the size of the permutation");
@@ -85,9 +79,9 @@ Permutation<T>::Permutation(const vector<vector<T>> &cycles) :
   }()) {}
 
 template <typename T>
-Permutation<T>::Permutation(const vector<pair<T, T>> &permutation) :
+Permutation<T>::Permutation(const std::vector<std::pair<T, T>> &permutation) :
   Permutation([&]() {
-    vector<T> data(permutation.size());
+    std::vector<T> data(permutation.size());
     for (auto ab : permutation) {
       LIBFLATSURF_ASSERT_ARGUMENT(index(ab.first) < data.size(), "entry of permutation points to an element beoynd the size of the permutation");
       data[index(ab.first)] = ab.second;
@@ -98,7 +92,7 @@ Permutation<T>::Permutation(const vector<pair<T, T>> &permutation) :
 template <typename T>
 Permutation<T>::Permutation(const std::unordered_map<T, T> &permutation) :
   Permutation([&]() {
-    vector<T> data(permutation.size());
+    std::vector<T> data(permutation.size());
     for (auto ab : permutation) {
       LIBFLATSURF_ASSERT_ARGUMENT(index(ab.first) < data.size(), "entry of permutation points to an element beoynd the size of the permutation");
       data[index(ab.first)] = ab.second;
@@ -107,13 +101,13 @@ Permutation<T>::Permutation(const std::unordered_map<T, T> &permutation) :
   }()) {}
 
 template <typename T>
-Permutation<T> Permutation<T>::random(const vector<T> &domain) {
+Permutation<T> Permutation<T>::random(const std::vector<T> &domain) {
   LIBFLATSURF_ASSERT_ARGUMENT(std::unordered_set<T>(domain.begin(), domain.end()).size() == domain.size(), "domain must not contain duplicates");
-  vector<T> image = domain;
+  std::vector<T> image = domain;
   std::random_shuffle(image.begin(), image.end());
-  vector<pair<T, T>> permutation;
+  std::vector<std::pair<T, T>> permutation;
   for (size_t i = 0; i < domain.size(); i++) {
-    permutation.push_back(pair(domain[i], image[i]));
+    permutation.push_back(std::pair(domain[i], image[i]));
   }
   return Permutation<T>(permutation);
 }
@@ -134,19 +128,19 @@ size_t Permutation<T>::size() const {
 }
 
 template <typename T>
-const vector<T> &Permutation<T>::domain() const {
+const std::vector<T> &Permutation<T>::domain() const {
   return permutation;
 }
 
 template <typename T>
-vector<vector<T>> Permutation<T>::cycles() const {
+std::vector<std::vector<T>> Permutation<T>::cycles() const {
   std::unordered_set<T> seen;
-  vector<vector<T>> cycles;
+  std::vector<std::vector<T>> cycles;
   for (const auto &t : domain()) {
     if (seen.find(t) != seen.end())
       continue;
 
-    vector<T> cycle;
+    std::vector<T> cycle;
     auto s = t;
     do {
       cycle.push_back(s);
@@ -161,7 +155,7 @@ vector<vector<T>> Permutation<T>::cycles() const {
 }
 
 template <typename T>
-void Permutation<T>::drop(const vector<T> &items) {
+void Permutation<T>::drop(const std::vector<T> &items) {
   for (auto &item : items)
     LIBFLATSURF_CHECK_ARGUMENT(std::find(begin(items), end(items), this->operator()(item)) != end(items), "items to remove must be in isolated cycles");
 
@@ -181,7 +175,7 @@ template <typename T>
 Permutation<T> &Permutation<T>::operator*=(const Permutation<T> &rhs) {
   LIBFLATSURF_CHECK_ARGUMENT(size() == rhs.size(), "permutations must have the same domain");
 
-  vector<T> permutation(rhs.permutation);
+  std::vector<T> permutation(rhs.permutation);
   for (auto it = permutation.begin(); it != permutation.end(); it++)
     *it = (*this)(*it);
   return *this = Permutation<T>(permutation);
@@ -209,7 +203,7 @@ std::vector<T> Permutation<T>::cycle(const T &first) const {
 }
 
 template <typename T>
-Permutation<T> &operator*=(const vector<T> &cycle, Permutation<T> &self) {
+Permutation<T> &operator*=(const std::vector<T> &cycle, Permutation<T> &self) {
   if (std::unordered_set<T>(cycle.begin(), cycle.end()).size() <= 1) return self;
 
   LIBFLATSURF_CHECK_ARGUMENT(std::unordered_set<T>(cycle.begin(), cycle.end()).size() == cycle.size(), "cycle must consist of distinct entries");
@@ -226,7 +220,7 @@ Permutation<T> &operator*=(const vector<T> &cycle, Permutation<T> &self) {
 }
 
 template <typename T>
-Permutation<T> &operator*=(Permutation<T> &self, const vector<T> &cycle) {
+Permutation<T> &operator*=(Permutation<T> &self, const std::vector<T> &cycle) {
   if (std::unordered_set<T>(cycle.begin(), cycle.end()).size() <= 1) return self;
 
   LIBFLATSURF_CHECK_ARGUMENT(std::unordered_set<T>(cycle.begin(), cycle.end()).size() == cycle.size(), "cycle must consist of distinct entries");
@@ -248,7 +242,7 @@ bool Permutation<T>::operator==(const Permutation &rhs) const {
 }
 
 template <typename T>
-ostream &operator<<(ostream &os, const Permutation<T> &self) {
+std::ostream &operator<<(std::ostream &os, const Permutation<T> &self) {
   if (self.size() == 0) {
     return os << "()";
   }
@@ -285,6 +279,6 @@ using namespace flatsurf;
 #include "../flatsurf/half_edge.hpp"
 
 template class flatsurf::Permutation<HalfEdge>;
-template ostream &flatsurf::operator<<(ostream &os, const Permutation<HalfEdge> &self);
-template Permutation<HalfEdge> &flatsurf::operator*=(const vector<HalfEdge> &, Permutation<HalfEdge> &);
-template Permutation<HalfEdge> &flatsurf::operator*=(Permutation<HalfEdge> &, const vector<HalfEdge> &);
+template std::ostream &flatsurf::operator<<(std::ostream &os, const Permutation<HalfEdge> &self);
+template Permutation<HalfEdge> &flatsurf::operator*=(const std::vector<HalfEdge> &, Permutation<HalfEdge> &);
+template Permutation<HalfEdge> &flatsurf::operator*=(Permutation<HalfEdge> &, const std::vector<HalfEdge> &);

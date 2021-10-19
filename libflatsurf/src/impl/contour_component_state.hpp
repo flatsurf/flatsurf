@@ -20,6 +20,7 @@
 #ifndef LIBFLATSURF_CONTOUR_COMPONENT_IMPL_COMPONENT_STATE_HPP
 #define LIBFLATSURF_CONTOUR_COMPONENT_IMPL_COMPONENT_STATE_HPP
 
+#include <iosfwd>
 #include <list>
 #include <unordered_set>
 

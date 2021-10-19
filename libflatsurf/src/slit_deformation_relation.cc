@@ -17,6 +17,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <ostream>
+
 #include "impl/slit_deformation_relation.hpp"
 
 #include "../flatsurf/flat_triangulation.hpp"

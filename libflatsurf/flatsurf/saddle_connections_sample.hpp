@@ -20,6 +20,9 @@
 #ifndef LIBFLATSURF_SADDLE_CONNECTIONS_SAMPLE_HPP
 #define LIBFLATSURF_SADDLE_CONNECTIONS_SAMPLE_HPP
 
+#include <optional>
+#include <iosfwd>
+
 #include "copyable.hpp"
 #include "half_edge.hpp"
 #include "vertex.hpp"

@@ -21,6 +21,7 @@
 #define LIBFLATSURF_SADDLE_CONNECTIONS_BY_LENGTH_HPP
 
 #include <optional>
+#include <iosfwd>
 
 #include "copyable.hpp"
 #include "forward.hpp"

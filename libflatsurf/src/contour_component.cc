@@ -17,6 +17,9 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <vector>
+#include <ostream>
+
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
@@ -38,9 +41,6 @@
 #include "impl/contour_connection.impl.hpp"
 #include "impl/contour_decomposition_state.hpp"
 #include "util/assert.ipp"
-
-using std::ostream;
-using std::vector;
 
 namespace flatsurf {
 
@@ -167,7 +167,7 @@ ContourConnection<Surface> ImplementationOf<ContourComponent<Surface>>::previous
 }
 
 template <typename Surface>
-void ImplementationOf<ContourComponent<Surface>>::makeContour(std::back_insert_iterator<vector<HalfEdge>> target,
+void ImplementationOf<ContourComponent<Surface>>::makeContour(std::back_insert_iterator<std::vector<HalfEdge>> target,
     const HalfEdge source, const Surface& parent,
     const Vertical<Surface>& vertical) {
   LIBFLATSURF_ASSERT_ARGUMENT(vertical.ccw(source) != CCW::COLLINEAR, "vertical edges must have been collapsed before a contour can be built");
@@ -203,7 +203,7 @@ bool ContourComponent<Surface>::operator==(const ContourComponent<Surface>& rhs)
 }
 
 template <typename Surface>
-ostream& operator<<(ostream& os, const ContourComponent<Surface>& self) {
+std::ostream& operator<<(std::ostream& os, const ContourComponent<Surface>& self) {
   return os << self.perimeter();
 }
 

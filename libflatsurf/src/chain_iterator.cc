@@ -19,6 +19,7 @@
 
 #include "../flatsurf/chain_iterator.hpp"
 
+#include <ostream>
 #include <flint/fmpz.h>
 
 #include "../flatsurf/chain.hpp"

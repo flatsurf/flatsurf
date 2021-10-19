@@ -20,6 +20,7 @@
 #ifndef LIBFLATSURF_DEFORMATION_HPP
 #define LIBFLATSURF_DEFORMATION_HPP
 
+#include <iosfwd>
 #include <optional>
 #include <vector>
 
