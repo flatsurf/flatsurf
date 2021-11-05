@@ -83,6 +83,20 @@ std::optional<Deformation<FlatTriangulation<T>>> isomorphism(const FlatTriangula
       filter_map);
 }
 
+// cppyy has trouble with complex std::function parameters so we simplify the
+// interface of Tracked::Tracked to take away all qualifiers and most commas.
+template <typename T>
+Tracked<T> track(const FlatTriangulationCombinatorial& surface, T value) {
+  return Tracked<T>(surface, std::move(value));
+}
+
+// Extract the value of a Tracked<T>.
+// There seems to be no immediate way to call the operator* in cppyy.
+template <typename T>
+const T& unwrapTracked(const Tracked<T>& tracked) {
+  return tracked;
+}
+
 // Work around https://github.com/wlav/cppyy/issues/19 by removing std::forward
 // from the converting constructor of Vector.
 namespace cppyy {

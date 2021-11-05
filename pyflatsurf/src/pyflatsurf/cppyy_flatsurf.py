@@ -95,9 +95,14 @@ def decomposeFlowComponent(self, *args):
 
 cppyy.py.add_pythonization(filtered(re.compile("FlowComponent<.*>"))(add_method("decompose")(decomposeFlowComponent)), "flatsurf")
 
-# We have to workaround issues with complex std::function parameters in cppyy
-cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(add_method("isomorphism")(lambda self, other, kind=None, filter_matrix=lambda a,b,c,d: a == 1 and b == 0 and c == 0 and d == 1, filter_map=lambda a, b: True: cppyy.gbl.flatsurf.isomorphism[type(self).Coordinate.__cpp_name__](self, other, kind or cppyy.gbl.flatsurf.ISOMORPHISM.FACES, lambda m: filter_matrix(m.a, m.b, m.c, m.d), filter_map))), "flatsurf")
+# Make the value underlying a Tracked<T> accessible.
+def unwrapTracked(self):
+    from cppyy.gbl import flatsurf
+    return flatsurf.unwrapTracked(self)
+cppyy.py.add_pythonization(filtered(re.compile("Tracked<.*>"))(add_method("value")(unwrapTracked)), "flatsurf")
 
+# We have to work around issues with complex std::function parameters in cppyy
+cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(add_method("isomorphism")(lambda self, other, kind=None, filter_matrix=lambda a,b,c,d: a == 1 and b == 0 and c == 0 and d == 1, filter_map=lambda a, b: True: cppyy.gbl.flatsurf.isomorphism[type(self).Coordinate.__cpp_name__](self, other, kind or cppyy.gbl.flatsurf.ISOMORPHISM.FACES, lambda m: filter_matrix(m.a, m.b, m.c, m.d), filter_map))), "flatsurf")
 
 for path in os.environ.get('PYFLATSURF_INCLUDE','').split(':'):
     if path: cppyy.add_include_path(path)
@@ -110,3 +115,6 @@ from cppyy.gbl import flatsurf
 # Work around https://github.com/wlav/cppyy/issues/19
 cppyy.gbl.flatsurf.cppyy.Vector._unwrapped = cppyy.gbl.flatsurf.Vector
 cppyy.gbl.flatsurf.Vector = cppyy.gbl.flatsurf.cppyy.Vector
+
+# Work around issues with complex std::function parameters in cppyy
+flatsurf.Tracked = cppyy.gbl.flatsurf.track
