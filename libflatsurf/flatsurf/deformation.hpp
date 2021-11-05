@@ -43,6 +43,11 @@ class Deformation {
   // Create the identical deformation.
   explicit Deformation(const Surface&);
 
+  // Create a copy of this deformation.
+  Deformation(const Deformation&);
+
+  Deformation(Deformation&&);
+
   // Return the image of the half edge under the deformation.
   [[deprecated("Use operator(Path) instead")]] std::optional<HalfEdge> operator()(HalfEdge) const;
 
@@ -62,6 +67,10 @@ class Deformation {
   const Surface& domain() const;
 
   const Surface& codomain() const;
+
+  Deformation& operator=(const Deformation&);
+
+  Deformation& operator=(Deformation&&);
 
   // Return whether this is a total map of topological spaces.
   bool total() const;

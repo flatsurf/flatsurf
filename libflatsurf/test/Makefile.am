@@ -4,6 +4,7 @@ check_PROGRAMS =                        \
   cereal.test                           \
   chain.test                            \
   contour_decomposition.test            \
+  deformation.test                      \
   edge.test                             \
   flat_triangulation.test               \
   flat_triangulation_collapsed.test     \
@@ -27,6 +28,7 @@ bound_test_SOURCES = bound.test.cc main.cc
 cereal_test_SOURCES = cereal.test.cc cereal.helpers.hpp main.cc
 chain_test_SOURCES = chain.test.cc main.cc
 contour_decomposition_test_SOURCES = contour_decomposition.test.cc main.cc
+deformation_test_SOURCES = deformation.test.cc main.cc
 flat_triangulation_test_SOURCES = flat_triangulation.test.cc main.cc
 flat_triangulation_collapsed_test_SOURCES = flat_triangulation_collapsed.test.cc main.cc
 flat_triangulation_combinatorial_test_SOURCES = flat_triangulation_combinatorial.test.cc main.cc

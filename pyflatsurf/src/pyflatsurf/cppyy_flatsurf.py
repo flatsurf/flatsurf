@@ -72,7 +72,6 @@ cppyy.py.add_pythonization(filtered(re.compile("SaddleConnectionsByLength<.*>"))
 # We cannot create an OddHalfEdgeMap directly due to https://bitbucket.org/wlav/cppyy/issues/273/segfault-in-cpycppyy-anonymous-namespace
 cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(wrap_method("__add__")(lambda self, cpp, rhs: cpp(cppyy.gbl.flatsurf.makeOddHalfEdgeMap[cppyy.gbl.flatsurf.Vector._unwrapped[type(self).Coordinate]](self.combinatorial(), rhs)))), "flatsurf")
 
-
 cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_method("cylinders")(lambda self: [component for component in self.components() if component.cylinder()])), "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_method("minimalComponents")(lambda self: [component for component in self.components() if component.withoutPeriodicTrajectory()])), "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_method("undeterminedComponents")(lambda self: [component for component in self.components() if not (component.cylinder() == True) and not (component.withoutPeriodicTrajectory() == True)])), "flatsurf")
