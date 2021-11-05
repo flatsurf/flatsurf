@@ -29,6 +29,8 @@
 #include "impl/read_only.hpp"
 #include "impl/tracked.impl.hpp"
 #include "impl/weak_read_only.hpp"
+#include "impl/flip_deformation_relation.hpp"
+#include "impl/deformation.impl.hpp"
 #include "util/assert.ipp"
 
 namespace flatsurf {
@@ -51,6 +53,12 @@ struct is_odd_half_edge_map : std::false_type {};
 
 template <typename T>
 struct is_odd_half_edge_map<OddHalfEdgeMap<T>> : std::true_type {};
+
+template <typename T>
+struct is_deformation : std::false_type {};
+
+template <typename T>
+struct is_deformation<Deformation<T>> : std::true_type {};
 }  // namespace
 
 template <typename T>
@@ -72,10 +80,15 @@ Tracked<T>::~Tracked() {
 }
 
 template <typename T>
-void Tracked<T>::defaultFlip(T& self, const FlatTriangulationCombinatorial&, HalfEdge e) {
+void Tracked<T>::defaultFlip(T& self, const FlatTriangulationCombinatorial& surface, HalfEdge e) {
   if constexpr (std::is_same_v<T, HalfEdge>) {
     if (Edge(self) == Edge(e))
       throw std::logic_error("This Tracked<HalfEdge> cannot be flipped.");
+  } else if constexpr (is_deformation<T>::value) {
+    auto flipped = self.codomain().clone();
+    flipped.flip(e);
+    LIBFLATSURF_ASSERT(flipped.combinatorial() == surface, "Codomain of deformation must be equal to the tracked surface.");
+    self = ImplementationOf<T>::make(std::make_unique<FlipDeformationRelation<decltype(flipped)>>(self.codomain(), flipped, e)) * self;
   } else {
     (void)e;
     throw std::logic_error(fmt::format("This Tracked<{}> of a FlatTriangulationCombinatorial does not support flipping of edges.", boost::typeindex::type_id<T>().pretty_name()));
@@ -297,6 +310,7 @@ void ImplementationOf<Tracked<T>>::connect() {
 #include "../flatsurf/odd_half_edge_map.hpp"
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/vector.hpp"
+#include "../flatsurf/deformation.hpp"
 #include "impl/collapsed_half_edge.hpp"
 #include "impl/flat_triangulation_collapsed.impl.hpp"
 #include "util/instantiate.ipp"
@@ -324,3 +338,6 @@ LIBFLATSURF_INSTANTIATE_MANY_FROM_TRANSFORMATION((LIBFLATSURF_INSTANTIATE_WITH_I
 
 #define LIBFLATSURF_WRAP_HALF_EDGE_MAP_COLLAPSED(R, TYPE, T) (TYPE<HalfEdgeMap<CollapsedHalfEdge<T>>>)
 LIBFLATSURF_INSTANTIATE_MANY_FROM_TRANSFORMATION((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), Tracked, LIBFLATSURF_REAL_TYPES, LIBFLATSURF_WRAP_HALF_EDGE_MAP_COLLAPSED)
+
+#define LIBFLATSURF_WRAP_DEFORMATION(R, TYPE, T) (TYPE<Deformation<T>>)
+LIBFLATSURF_INSTANTIATE_MANY_FROM_TRANSFORMATION((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), Tracked, LIBFLATSURF_FLAT_TRIANGULATION_TYPES, LIBFLATSURF_WRAP_DEFORMATION)

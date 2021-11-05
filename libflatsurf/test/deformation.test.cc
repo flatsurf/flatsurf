@@ -20,6 +20,8 @@
 #include <exact-real/element.hpp>
 
 #include "../flatsurf/deformation.hpp"
+#include "../flatsurf/edge.hpp"
+#include "../flatsurf/tracked.hpp"
 
 #include "external/catch2/single_include/catch2/catch.hpp"
 #include "generators/surface_generator.hpp"
@@ -40,6 +42,24 @@ TEMPLATE_TEST_CASE("Deformations", "[deformation]", (long long), (mpq_class), (r
 
     auto move = std::move(trivial);
     trivial = std::move(move);
+  }
+
+  SECTION("Trivial Deformations Follow Flips") {
+    const auto domain = surface->clone();
+    auto track = Tracked(*surface, Deformation(domain));
+
+    for (auto edge : surface->edges()) {
+      if (surface->convex(edge.positive(), true))
+        surface->flip(edge.positive());
+    }
+
+    REQUIRE(track->domain() == domain);
+    REQUIRE(track->codomain() == *surface);
+
+    surface->delaunay();
+
+    REQUIRE(track->domain() == domain);
+    REQUIRE(track->codomain() == *surface);
   }
 }
 
