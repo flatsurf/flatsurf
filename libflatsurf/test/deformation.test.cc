@@ -22,7 +22,6 @@
 #include "../flatsurf/deformation.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/tracked.hpp"
-
 #include "external/catch2/single_include/catch2/catch.hpp"
 #include "generators/surface_generator.hpp"
 
@@ -63,4 +62,4 @@ TEMPLATE_TEST_CASE("Deformations", "[deformation]", (long long), (mpq_class), (r
   }
 }
 
-}
+}  // namespace flatsurf::test

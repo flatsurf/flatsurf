@@ -26,11 +26,11 @@
 
 #include "../flatsurf/odd_half_edge_map.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
+#include "impl/deformation.impl.hpp"
+#include "impl/flip_deformation_relation.hpp"
 #include "impl/read_only.hpp"
 #include "impl/tracked.impl.hpp"
 #include "impl/weak_read_only.hpp"
-#include "impl/flip_deformation_relation.hpp"
-#include "impl/deformation.impl.hpp"
 #include "util/assert.ipp"
 
 namespace flatsurf {
@@ -303,6 +303,7 @@ void ImplementationOf<Tracked<T>>::connect() {
 
 // Instantiations of templates so implementations are generated for the linker
 #include "../flatsurf/ccw.hpp"
+#include "../flatsurf/deformation.hpp"
 #include "../flatsurf/edge_map.hpp"
 #include "../flatsurf/edge_set.hpp"
 #include "../flatsurf/half_edge_map.hpp"
@@ -310,7 +311,6 @@ void ImplementationOf<Tracked<T>>::connect() {
 #include "../flatsurf/odd_half_edge_map.hpp"
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/vector.hpp"
-#include "../flatsurf/deformation.hpp"
 #include "impl/collapsed_half_edge.hpp"
 #include "impl/flat_triangulation_collapsed.impl.hpp"
 #include "util/instantiate.ipp"
