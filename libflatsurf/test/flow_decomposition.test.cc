@@ -2,7 +2,7 @@
  *  This file is part of flatsurf.
  *
  *        Copyright (C) 2019 Vincent Delecroix
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -194,6 +194,14 @@ TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (long long), (m
             if (!single)
               REQUIRE((perimeter | rx::any_of([](const auto& connection) { return connection.boundary(); })));
           }
+        }
+
+        AND_THEN("Each Component knows about the Decomposition that Created it") {
+          for (const auto& component : flowDecomposition.components())
+            REQUIRE(component.decomposition() == flowDecomposition);
+
+          for (auto& component : flowDecomposition.components())
+            REQUIRE(component.decomposition() == flowDecomposition);
         }
       }
     }

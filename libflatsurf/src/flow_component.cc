@@ -40,6 +40,7 @@
 #include "impl/contour_component.impl.hpp"
 #include "impl/contour_decomposition_state.hpp"
 #include "impl/flat_triangulation_collapsed.impl.hpp"
+#include "impl/flow_decomposition.impl.hpp"
 #include "impl/flow_component.impl.hpp"
 #include "impl/flow_connection.impl.hpp"
 #include "impl/flow_triangulation.impl.hpp"
@@ -407,6 +408,12 @@ template <typename Surface>
 const ::intervalxt::Component& FlowComponent<Surface>::dynamicalComponent() const {
   return self->component->dynamicalComponent;
 }
+
+template <typename Surface>
+FlowDecomposition<Surface> FlowComponent<Surface>::decomposition() { return ImplementationOf<FlowDecomposition<Surface>>::make(self->state); }
+
+template <typename Surface>
+const FlowDecomposition<Surface> FlowComponent<Surface>::decomposition() const { return ImplementationOf<FlowDecomposition<Surface>>::make(self->state); }
 
 template <typename Surface>
 FlowComponent<Surface> ImplementationOf<FlowComponent<Surface>>::make(std::shared_ptr<FlowDecompositionState<Surface>> state, FlowComponentState<Surface>* component) {

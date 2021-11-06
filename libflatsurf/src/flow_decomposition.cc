@@ -161,6 +161,11 @@ boost::logic::tribool FlowDecomposition<Surface>::parabolic() const {
 }
 
 template <typename Surface>
+bool FlowDecomposition<Surface>::operator==(const FlowDecomposition<Surface>& rhs) const {
+  return self->state == rhs.self->state;
+}
+
+template <typename Surface>
 ImplementationOf<FlowDecomposition<Surface>>::ImplementationOf(Surface&& surface, const Vector<T>& vertical) :
   state(FlowDecompositionState<Surface>::make(std::move(surface), vertical)) {}
 
@@ -205,12 +210,6 @@ template <typename Surface>
 FlowDecomposition<Surface> ImplementationOf<FlowDecomposition<Surface>>::make(std::shared_ptr<FlowDecompositionState<Surface>> state) {
   return FlowDecomposition<Surface>(PrivateConstructor{}, std::move(state));
 }
-
-template <typename Surface>
-FlowDecomposition<Surface> FlowComponent<Surface>::decomposition() { return ImplementationOf<FlowDecomposition<Surface>>::make(self->state); }
-
-template <typename Surface>
-const FlowDecomposition<Surface> FlowComponent<Surface>::decomposition() const { return ImplementationOf<FlowDecomposition<Surface>>::make(self->state); }
 
 template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const FlowDecomposition<Surface>& self) {
