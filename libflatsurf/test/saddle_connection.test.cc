@@ -28,8 +28,6 @@
 
 namespace flatsurf::test {
 
-using namespace flatsurf;
-
 TEMPLATE_TEST_CASE("Angle between Saddle Connections", "[saddle_connection][angle]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using Surface = FlatTriangulation<T>;

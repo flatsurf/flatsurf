@@ -32,6 +32,12 @@
 namespace flatsurf {
 
 template <typename Surface>
+Deformation<Surface>::Deformation(const Deformation& deformation) : Deformation(PrivateConstructor{}, deformation.self->relation->clone()) {}
+
+template <typename Surface>
+Deformation<Surface>::Deformation(Deformation&& deformation) : Deformation(PrivateConstructor{}, std::move(deformation.self->relation)) {}
+
+template <typename Surface>
 Deformation<Surface>::Deformation(Surface&& surface) :
   Deformation(surface) {}
 
@@ -57,6 +63,19 @@ const Surface& Deformation<Surface>::domain() const {
 template <typename Surface>
 const Surface& Deformation<Surface>::codomain() const {
   return self->relation->codomain;
+}
+
+
+template <typename Surface>
+Deformation<Surface>& Deformation<Surface>::operator=(const Deformation& deformation) {
+  self->relation = deformation.self->relation->clone();
+  return *this;
+}
+
+template <typename Surface>
+Deformation<Surface>& Deformation<Surface>::operator=(Deformation&& deformation) {
+  self->relation = std::move(deformation.self->relation);
+  return *this;
 }
 
 template <typename Surface>

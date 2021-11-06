@@ -72,15 +72,9 @@ def test_L_with_slit_mpq():
     assert len([1 for c in connections]) == 15
 
 def test_hexagon_eantic():
-    surface = surfaces.hexagon()
+    surface = surfaces.hexagon(flatsurf.Vector['eantic::renf_elem_class'])
     connections = surface.connections().bound(16).sector(flatsurf.HalfEdge(1))
     assert len([1 for c in connections]) == 10
-
-def test_hexagon_exactreal():
-    from pyexactreal import exactreal
-    surface = surfaces.random_hexagon()
-    connections = surface.connections().bound(16).sector(flatsurf.HalfEdge(1))
-    assert len([1 for c in connections]) >= 10
 
 def test_printing():
     for coefficients in ['long long', 'mpz_class', 'mpq_class', 'eantic::renf_elem_class', 'exactreal::Element<exactreal::IntegerRing>', 'exactreal::Element<exactreal::RationalField>', 'exactreal::Element<exactreal::NumberField>']:

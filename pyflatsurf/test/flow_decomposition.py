@@ -27,7 +27,7 @@ from pyflatsurf import flatsurf
 import surfaces
 
 def test_hexagon_eantic():
-    surface = surfaces.hexagon()
+    surface = surfaces.hexagon(flatsurf.Vector['eantic::renf_elem_class'])
     decompositions = {(1, 0): 0, (2, 0): 0}
 
     for connection in surface.connections().bound(16).sector(flatsurf.HalfEdge(1)):
@@ -79,7 +79,7 @@ def test_hexagon_eantic():
     assert decompositions == {(1, 0): 7, (2, 0): 3}
 
 def test_D33():
-    S = surfaces.D33()
+    S = surfaces.D33(flatsurf.Vector['eantic::renf_elem_class'])
     decompositions = {(2, 0): 0, (3, 0): 0, (0, 2): 0}
     for connection in S.connections().bound(4):
         v = connection.vector()
@@ -119,7 +119,7 @@ def test_D33():
 
 
 def test_undetermined():
-    S = surfaces.D33()
+    S = surfaces.D33(flatsurf.Vector['eantic::renf_elem_class'])
 
     R2 = flatsurf.Vector['eantic::renf_elem_class']
     decomposition = flatsurf.makeFlowDecomposition(S, R2(135, 17))
