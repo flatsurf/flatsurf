@@ -22,6 +22,7 @@ from pyexactreal import RealNumber, NumberFieldModule
 import pyexactreal
 from pyexactreal import exactreal
 from pyeantic import eantic
+import cppyy
 
 # The number field has to live out here and not be a local variable in the
 # methods as they would be destroyed by the garbage collector otherwise
@@ -40,10 +41,11 @@ def L(R2):
     vertices = [[1, 2, 3, 4, 5, -3, 6, 7, 8, -6, -2, 9, -4, -5, -9, -1, -7, -8]]
     return Surface(vertices, vectors)
 
-def hexagon(R2, R=None):
+def hexagon(R2):
     x = K.gen()
-    if R is None:
-        R = R2.Coordinate
+    R = R2.Coordinate
+    if R2 == flatsurf.Vector[cppyy.gbl.eantic.renf_elem_class]:
+        R = eantic.renf_elem
     vectors = [R2(R(K, 2), R(K, 0)), R2(R(K, 1), x), R2(R(K, 3), x), R2(R(K, 1), -x), R2(R(K, 4), R(K, 0)), R2(R(K, 3), x)]
     vertices = [[1, 3, -4, -5, -3, -2], [2, -1, -6, 4, 5, 6]]
     return Surface(vertices, vectors)
@@ -63,9 +65,10 @@ def random_hexagon(R2):
     vertices = [[1, 3, -4, -5, -3, -2], [2, -1, -6, 4, 5, 6]]
     return Surface(vertices, vectors)
 
-def D33(R2, R=None):
-    if R is None:
-        R = R2.Coordinate
+def D33(R2):
+    R = R2.Coordinate
+    if R2 == flatsurf.Vector[cppyy.gbl.eantic.renf_elem_class]:
+        R = eantic.renf_elem
     zero = R(O, 0)
     one = R(O, 1)
     two = R(O, 2)
@@ -90,8 +93,6 @@ def surfaces(T=None):
     else:
         R2 = flatsurf.Vector[T]
 
-        import cppyy
-
         surface = square(R2)
         surface.name = f"Square[{T}]"
         yield surface
@@ -111,11 +112,11 @@ def surfaces(T=None):
         elif R2 == flatsurf.Vector[cppyy.gbl.exactreal.Element[cppyy.gbl.exactreal.RationalField]]:
             pass
         elif R2 == flatsurf.Vector[cppyy.gbl.eantic.renf_elem_class]:
-            surface = hexagon(R2, R=eantic.renf_elem)
+            surface = hexagon(R2)
             surface.name = f"Hexagon[{T}]"
             yield surface
 
-            surface = D33(R2, R=eantic.renf_elem)
+            surface = D33(R2)
             surface.name = f"D33[{T}]"
             yield surface
             pass

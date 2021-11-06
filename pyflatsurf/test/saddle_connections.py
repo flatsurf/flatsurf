@@ -72,7 +72,7 @@ def test_L_with_slit_mpq():
     assert len([1 for c in connections]) == 15
 
 def test_hexagon_eantic():
-    surface = surfaces.hexagon(flatsurf.Vector['exactreal::Element<exactreal::NumberField>'])
+    surface = surfaces.hexagon(flatsurf.Vector['eantic::renf_elem_class'])
     connections = surface.connections().bound(16).sector(flatsurf.HalfEdge(1))
     assert len([1 for c in connections]) == 10
 
