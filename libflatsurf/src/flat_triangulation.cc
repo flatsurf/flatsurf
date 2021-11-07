@@ -725,6 +725,9 @@ bool FlatTriangulation<T>::operator==(const FlatTriangulation<T> &rhs) const {
   if (this == &rhs)
     return true;
 
+  if (this->self.state == rhs.self.state)
+    return true;
+
   if (static_cast<const FlatTriangulationCombinatorial &>(*this) != static_cast<const FlatTriangulationCombinatorial &>(rhs))
     return false;
   for (auto &edge : this->halfEdges()) {

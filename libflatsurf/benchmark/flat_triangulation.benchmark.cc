@@ -22,6 +22,9 @@
 
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/vertical.hpp"
+#include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/saddle_connections.hpp"
+#include "../flatsurf/saddle_connections_iterator.hpp"
 #include "../test/surfaces.hpp"
 
 using benchmark::State;
@@ -47,5 +50,29 @@ BENCHMARK_TEMPLATE(FlatTriangulationFlip, Vector<long long>);
 BENCHMARK_TEMPLATE(FlatTriangulationFlip, Vector<mpq_class>);
 BENCHMARK_TEMPLATE(FlatTriangulationFlip, Vector<eantic::renf_elem_class>);
 BENCHMARK_TEMPLATE(FlatTriangulationFlip, Vector<exactreal::Element<exactreal::IntegerRing>>);
+
+template <typename R2>
+void FlatTriangulationTrivialEquality(State& state) {
+  auto L = makeL<R2>();
+
+  auto connection = *std::begin(L->connections());
+
+  for (auto _ : state)
+    ::benchmark::DoNotOptimize(*L == connection.surface());
+}
+BENCHMARK_TEMPLATE(FlatTriangulationTrivialEquality, Vector<eantic::renf_elem_class>);
+
+template <typename R2>
+void FlatTriangulationEquality(State& state) {
+  auto L = makeL<R2>();
+  auto LL = L->clone();
+
+  for (auto _ : state)
+    ::benchmark::DoNotOptimize(*L == LL);
+}
+BENCHMARK_TEMPLATE(FlatTriangulationEquality, Vector<long long>);
+BENCHMARK_TEMPLATE(FlatTriangulationEquality, Vector<mpq_class>);
+BENCHMARK_TEMPLATE(FlatTriangulationEquality, Vector<eantic::renf_elem_class>);
+BENCHMARK_TEMPLATE(FlatTriangulationEquality, Vector<exactreal::Element<exactreal::IntegerRing>>);
 
 }  // namespace flatsurf::benchmark
