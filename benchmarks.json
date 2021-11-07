@@ -119,6 +119,46 @@
         "unit": "ns",
         "version": "0"
     },
+    "FlatTriangulationEquality\u27e8Vector\u27e8eantic\u2237renf_elem_class\u27e9\u27e9.track_time": {
+        "code": "class <locals>:\n    def run_benchmark(self, params=None):\n        filter = f\"{name}\"\n        if params:\n            filter = f\"{name}/{params.replace(', ', '/')}\"\n        out = subprocess.check_output([benchmark, f\"--benchmark_filter={filter}\", \"--benchmark_format=json\"])\n    \n        import json\n        out = json.loads(out)\n    \n        assert(len(out[\"benchmarks\"]) == 1)\n        time = out[\"benchmarks\"][0][\"cpu_time\"]\n        unit = out[\"benchmarks\"][0][\"time_unit\"]\n    \n        if unit == \"s\":\n            time *= 1000\n            unit = \"ms\"\n        if unit == \"ms\":\n            time *= 1000\n            unit = \"us\"\n        if unit == \"us\":\n            time *= 1000\n            unit = \"ns\"\n    \n        assert(unit == \"ns\")\n    \n        return time",
+        "name": "FlatTriangulationEquality\u27e8Vector\u27e8eantic\u2237renf_elem_class\u27e9\u27e9.track_time",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "0"
+    },
+    "FlatTriangulationEquality\u27e8Vector\u27e8exactreal\u2237Element\u27e8exactreal\u2237IntegerRing\u27e9\u27e9\u27e9.track_time": {
+        "code": "class <locals>:\n    def run_benchmark(self, params=None):\n        filter = f\"{name}\"\n        if params:\n            filter = f\"{name}/{params.replace(', ', '/')}\"\n        out = subprocess.check_output([benchmark, f\"--benchmark_filter={filter}\", \"--benchmark_format=json\"])\n    \n        import json\n        out = json.loads(out)\n    \n        assert(len(out[\"benchmarks\"]) == 1)\n        time = out[\"benchmarks\"][0][\"cpu_time\"]\n        unit = out[\"benchmarks\"][0][\"time_unit\"]\n    \n        if unit == \"s\":\n            time *= 1000\n            unit = \"ms\"\n        if unit == \"ms\":\n            time *= 1000\n            unit = \"us\"\n        if unit == \"us\":\n            time *= 1000\n            unit = \"ns\"\n    \n        assert(unit == \"ns\")\n    \n        return time",
+        "name": "FlatTriangulationEquality\u27e8Vector\u27e8exactreal\u2237Element\u27e8exactreal\u2237IntegerRing\u27e9\u27e9\u27e9.track_time",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "0"
+    },
+    "FlatTriangulationEquality\u27e8Vector\u27e8long long\u27e9\u27e9.track_time": {
+        "code": "class <locals>:\n    def run_benchmark(self, params=None):\n        filter = f\"{name}\"\n        if params:\n            filter = f\"{name}/{params.replace(', ', '/')}\"\n        out = subprocess.check_output([benchmark, f\"--benchmark_filter={filter}\", \"--benchmark_format=json\"])\n    \n        import json\n        out = json.loads(out)\n    \n        assert(len(out[\"benchmarks\"]) == 1)\n        time = out[\"benchmarks\"][0][\"cpu_time\"]\n        unit = out[\"benchmarks\"][0][\"time_unit\"]\n    \n        if unit == \"s\":\n            time *= 1000\n            unit = \"ms\"\n        if unit == \"ms\":\n            time *= 1000\n            unit = \"us\"\n        if unit == \"us\":\n            time *= 1000\n            unit = \"ns\"\n    \n        assert(unit == \"ns\")\n    \n        return time",
+        "name": "FlatTriangulationEquality\u27e8Vector\u27e8long long\u27e9\u27e9.track_time",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "0"
+    },
+    "FlatTriangulationEquality\u27e8Vector\u27e8mpq_class\u27e9\u27e9.track_time": {
+        "code": "class <locals>:\n    def run_benchmark(self, params=None):\n        filter = f\"{name}\"\n        if params:\n            filter = f\"{name}/{params.replace(', ', '/')}\"\n        out = subprocess.check_output([benchmark, f\"--benchmark_filter={filter}\", \"--benchmark_format=json\"])\n    \n        import json\n        out = json.loads(out)\n    \n        assert(len(out[\"benchmarks\"]) == 1)\n        time = out[\"benchmarks\"][0][\"cpu_time\"]\n        unit = out[\"benchmarks\"][0][\"time_unit\"]\n    \n        if unit == \"s\":\n            time *= 1000\n            unit = \"ms\"\n        if unit == \"ms\":\n            time *= 1000\n            unit = \"us\"\n        if unit == \"us\":\n            time *= 1000\n            unit = \"ns\"\n    \n        assert(unit == \"ns\")\n    \n        return time",
+        "name": "FlatTriangulationEquality\u27e8Vector\u27e8mpq_class\u27e9\u27e9.track_time",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "0"
+    },
     "FlatTriangulationFlip\u27e8Vector\u27e8eantic\u2237renf_elem_class\u27e9\u27e9.track_time": {
         "code": "class <locals>:\n    def run_benchmark(self, params=None):\n        filter = f\"{name}\"\n        if params:\n            filter = f\"{name}/{params.replace(', ', '/')}\"\n        out = subprocess.check_output([benchmark, f\"--benchmark_filter={filter}\", \"--benchmark_format=json\"])\n    \n        import json\n        out = json.loads(out)\n    \n        assert(len(out[\"benchmarks\"]) == 1)\n        time = out[\"benchmarks\"][0][\"cpu_time\"]\n        unit = out[\"benchmarks\"][0][\"time_unit\"]\n    \n        if unit == \"s\":\n            time *= 1000\n            unit = \"ms\"\n        if unit == \"ms\":\n            time *= 1000\n            unit = \"us\"\n        if unit == \"us\":\n            time *= 1000\n            unit = \"ns\"\n    \n        assert(unit == \"ns\")\n    \n        return time",
         "name": "FlatTriangulationFlip\u27e8Vector\u27e8eantic\u2237renf_elem_class\u27e9\u27e9.track_time",
@@ -152,6 +192,16 @@
     "FlatTriangulationFlip\u27e8Vector\u27e8mpq_class\u27e9\u27e9.track_time": {
         "code": "class <locals>:\n    def run_benchmark(self, params=None):\n        filter = f\"{name}\"\n        if params:\n            filter = f\"{name}/{params.replace(', ', '/')}\"\n        out = subprocess.check_output([benchmark, f\"--benchmark_filter={filter}\", \"--benchmark_format=json\"])\n    \n        import json\n        out = json.loads(out)\n    \n        assert(len(out[\"benchmarks\"]) == 1)\n        time = out[\"benchmarks\"][0][\"cpu_time\"]\n        unit = out[\"benchmarks\"][0][\"time_unit\"]\n    \n        if unit == \"s\":\n            time *= 1000\n            unit = \"ms\"\n        if unit == \"ms\":\n            time *= 1000\n            unit = \"us\"\n        if unit == \"us\":\n            time *= 1000\n            unit = \"ns\"\n    \n        assert(unit == \"ns\")\n    \n        return time",
         "name": "FlatTriangulationFlip\u27e8Vector\u27e8mpq_class\u27e9\u27e9.track_time",
+        "param_names": [],
+        "params": [],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "ns",
+        "version": "0"
+    },
+    "FlatTriangulationTrivialEquality\u27e8Vector\u27e8eantic\u2237renf_elem_class\u27e9\u27e9.track_time": {
+        "code": "class <locals>:\n    def run_benchmark(self, params=None):\n        filter = f\"{name}\"\n        if params:\n            filter = f\"{name}/{params.replace(', ', '/')}\"\n        out = subprocess.check_output([benchmark, f\"--benchmark_filter={filter}\", \"--benchmark_format=json\"])\n    \n        import json\n        out = json.loads(out)\n    \n        assert(len(out[\"benchmarks\"]) == 1)\n        time = out[\"benchmarks\"][0][\"cpu_time\"]\n        unit = out[\"benchmarks\"][0][\"time_unit\"]\n    \n        if unit == \"s\":\n            time *= 1000\n            unit = \"ms\"\n        if unit == \"ms\":\n            time *= 1000\n            unit = \"us\"\n        if unit == \"us\":\n            time *= 1000\n            unit = \"ns\"\n    \n        assert(unit == \"ns\")\n    \n        return time",
+        "name": "FlatTriangulationTrivialEquality\u27e8Vector\u27e8eantic\u2237renf_elem_class\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
         "timeout": 60.0,
