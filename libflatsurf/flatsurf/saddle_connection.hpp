@@ -96,6 +96,16 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
 
   int angle(HalfEdge source, const Vector<T> &vector) const;
 
+  // Return the turn direction between saddle connections.
+  // Returns whether it is shorter to turn in counterclockwise or
+  // clockwise direction. Returns COLLINEAR if both are the same.
+  CCW ccw(const SaddleConnection<Surface> &) const;
+
+  // Return the turn direction to the vector next to source.
+  // Returns whether it is shorter to turn in counterclockwise or
+  // clockwise direction. Returns COLLINEAR if both are the same.
+  CCW ccw(HalfEdge source, const Vector<T> &vector) const;
+
   SaddleConnection<Surface> operator-() const;
 
   bool operator==(const SaddleConnection<Surface> &) const;

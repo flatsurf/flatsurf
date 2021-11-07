@@ -24,6 +24,7 @@
 #include <boost/operators.hpp>
 #include <functional>
 #include <intervalxt/forward.hpp>
+#include <iosfwd>
 #include <list>
 
 #include "copyable.hpp"
@@ -53,8 +54,10 @@ class FlowComponent : boost::equality_comparable<FlowComponent<Surface>> {
 
   DecompositionStep<Surface> decompositionStep(int limit = -1);
 
+  // Return the decomposition from which this component was created.
   FlowDecomposition<Surface> decomposition();
 
+  // Return the decomposition from which this component was created.
   const FlowDecomposition<Surface> decomposition() const;
 
   static bool defaultTarget(const FlowComponent<Surface>& c) {

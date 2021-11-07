@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 ######################################################################
 # This file is part of flatsurf.
 #
-#       Copyright (C) 2019 Julian Rüth
+#       Copyright (C) 2019-2021 Julian Rüth
 #
 # flatsurf is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,9 +22,10 @@ from pyexactreal import RealNumber, NumberFieldModule
 import pyexactreal
 from pyexactreal import exactreal
 from pyeantic import eantic
+import cppyy
 
 # The number field has to live out here and not be a local variable in the
-# methods as it would be destroyed by the garbage collector otherwise
+# methods as they would be destroyed by the garbage collector otherwise
 # (segfault.) Eventually we want renf_class/Module to use shared_ptr here. Then
 # this won't be a problem anymore.
 K = eantic.renf_class.make("x^2 - 3", "x", "1.73 +/- 0.1")
@@ -41,18 +41,18 @@ def L(R2):
     vertices = [[1, 2, 3, 4, 5, -3, 6, 7, 8, -6, -2, 9, -4, -5, -9, -1, -7, -8]]
     return Surface(vertices, vectors)
 
-def hexagon():
-    R2 = flatsurf.Vector['eantic::renf_elem_class']
+def hexagon(R2):
     x = K.gen()
-    R = eantic.renf_elem
+    R = R2.Coordinate
+    if R2 == flatsurf.Vector[cppyy.gbl.eantic.renf_elem_class]:
+        R = eantic.renf_elem
     vectors = [R2(R(K, 2), R(K, 0)), R2(R(K, 1), x), R2(R(K, 3), x), R2(R(K, 1), -x), R2(R(K, 4), R(K, 0)), R2(R(K, 3), x)]
     vertices = [[1, 3, -4, -5, -3, -2], [2, -1, -6, 4, 5, 6]]
     return Surface(vertices, vectors)
 
-def random_hexagon():
+def random_hexagon(R2):
     x = K.gen()
     M = NumberFieldModule(K, RealNumber.rational(1), RealNumber.random(), RealNumber.random())
-    R2 = flatsurf.Vector['exactreal::Element<exactreal::NumberField>']
     # The side lengths are going to be 2, 2·μ, 2·ν where μ,ν are the random parameters of M.
     one = M.gen(0)
     μ = M.gen(1)
@@ -65,9 +65,10 @@ def random_hexagon():
     vertices = [[1, 3, -4, -5, -3, -2], [2, -1, -6, 4, 5, 6]]
     return Surface(vertices, vectors)
 
-def D33():
-    R2 = flatsurf.Vector['eantic::renf_elem_class']
-    R = eantic.renf_elem
+def D33(R2):
+    R = R2.Coordinate
+    if R2 == flatsurf.Vector[cppyy.gbl.eantic.renf_elem_class]:
+        R = eantic.renf_elem
     zero = R(O, 0)
     one = R(O, 1)
     two = R(O, 2)
@@ -83,3 +84,48 @@ def D33():
     vertices = [[1, -3, 5, -4, 9, -8, 10, -12, 11, -10, 6, -5],
                 [3, -2, 4, -6, 8, -7, 12, -11, 7, -9, 2, -1]]
     return Surface(vertices, vectors)
+
+def surfaces(T=None):
+    if T is None: 
+        for T in ['long long', 'mpz_class', 'mpq_class', 'eantic::renf_elem_class', 'exactreal::Element<exactreal::IntegerRing>', 'exactreal::Element<exactreal::RationalField>', 'exactreal::Element<exactreal::NumberField>']:
+            for surface in surfaces(T):
+                yield surface
+    else:
+        R2 = flatsurf.Vector[T]
+
+        surface = square(R2)
+        surface.name = f"Square[{T}]"
+        yield surface
+
+        surface = L(R2)
+        surface.name = f"L[{T}]"
+        yield surface
+
+        if R2 == flatsurf.Vector['long long']:
+            pass
+        elif R2 == flatsurf.Vector[cppyy.gbl.mpz_class]:
+            pass
+        elif R2 == flatsurf.Vector[cppyy.gbl.mpq_class]:
+            pass
+        elif R2 == flatsurf.Vector[cppyy.gbl.exactreal.Element[cppyy.gbl.exactreal.IntegerRing]]:
+            pass
+        elif R2 == flatsurf.Vector[cppyy.gbl.exactreal.Element[cppyy.gbl.exactreal.RationalField]]:
+            pass
+        elif R2 == flatsurf.Vector[cppyy.gbl.eantic.renf_elem_class]:
+            surface = hexagon(R2)
+            surface.name = f"Hexagon[{T}]"
+            yield surface
+
+            surface = D33(R2)
+            surface.name = f"D33[{T}]"
+            yield surface
+            pass
+        elif R2 == flatsurf.Vector[cppyy.gbl.exactreal.Element[cppyy.gbl.exactreal.NumberField]]:
+            surface = random_hexagon(R2)
+            surface.name = f"Hexagon[{T}]"
+            yield surface
+        else:
+            raise TypeError(R2)
+
+def name(surface):
+    return surface.name

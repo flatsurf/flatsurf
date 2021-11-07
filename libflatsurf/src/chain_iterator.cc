@@ -21,6 +21,8 @@
 
 #include <flint/fmpz.h>
 
+#include <ostream>
+
 #include "../flatsurf/chain.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/vector.hpp"

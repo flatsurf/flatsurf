@@ -19,6 +19,8 @@
 
 #include "../flatsurf/path_iterator.hpp"
 
+#include <ostream>
+
 #include "../flatsurf/saddle_connection.hpp"
 #include "impl/path.impl.hpp"
 #include "impl/path_iterator.impl.hpp"

@@ -20,6 +20,8 @@
 #ifndef LIBFLATSURF_IMPL_COMPOSITE_DEFORMATION_RELATION_HPP
 #define LIBFLATSURF_IMPL_COMPOSITE_DEFORMATION_RELATION_HPP
 
+#include <iosfwd>
+
 #include "deformation_relation.hpp"
 
 namespace flatsurf {

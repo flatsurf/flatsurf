@@ -17,6 +17,7 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <ostream>
 #include <random>
 
 #include "../flatsurf/ccw.hpp"

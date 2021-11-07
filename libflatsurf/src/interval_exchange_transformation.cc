@@ -41,16 +41,10 @@
 #include "impl/vertical.impl.hpp"
 #include "util/assert.ipp"
 
-using rx::to_vector;
-using rx::transform;
-using std::ostream;
-using std::string;
-using std::vector;
-
 namespace flatsurf {
 
 template <typename Surface>
-IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(const Surface& surface, const Vector<T>& vertical, const vector<HalfEdge>& top, const vector<HalfEdge>& bottom) :
+IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(const Surface& surface, const Vector<T>& vertical, const std::vector<HalfEdge>& top, const std::vector<HalfEdge>& bottom) :
   self(spimpl::make_unique_impl<ImplementationOf<IntervalExchangeTransformation>>(surface, vertical, top, bottom)) {
 }
 
@@ -59,7 +53,7 @@ IntervalExchangeTransformation<Surface>::IntervalExchangeTransformation(const Su
   self([&]() {
     LIBFLATSURF_CHECK_ARGUMENT(Vertical<Surface>(surface, vertical).large(large), "can only construct IntervalExchangeTransformation from a large half edge");
 
-    vector<HalfEdge> top, bottom;
+    std::vector<HalfEdge> top, bottom;
 
     ImplementationOf<ContourComponent<Surface>>::makeContour(back_inserter(top), large, surface, Vertical(surface, vertical));
 
@@ -149,7 +143,7 @@ const SaddleConnection<FlatTriangulation<typename Surface::Coordinate>>& Interva
 }
 
 template <typename Surface>
-ImplementationOf<IntervalExchangeTransformation<Surface>>::ImplementationOf(const Surface& surface, const Vector<T>& vertical, const vector<HalfEdge>& top, const vector<HalfEdge>& bottom) :
+ImplementationOf<IntervalExchangeTransformation<Surface>>::ImplementationOf(const Surface& surface, const Vector<T>& vertical, const std::vector<HalfEdge>& top, const std::vector<HalfEdge>& bottom) :
   surface(surface) {
   using SaddleConnection = flatsurf::SaddleConnection<FlatTriangulation<T>>;
 
@@ -172,14 +166,14 @@ ImplementationOf<IntervalExchangeTransformation<Surface>>::ImplementationOf(cons
 
   iet = intervalxt::IntervalExchangeTransformation(
       erasedLengths,
-      top | transform([&](Edge e) { return intervalxt::Label(e.index()); }) | to_vector(),
-      bottom | transform([&](Edge e) { return intervalxt::Label(e.index()); }) | to_vector());
+      top | rx::transform([&](Edge e) { return intervalxt::Label(e.index()); }) | rx::to_vector(),
+      bottom | rx::transform([&](Edge e) { return intervalxt::Label(e.index()); }) | rx::to_vector());
 
   lengths = boost::type_erasure::any_cast<Lengths<Surface>*>(erasedLengths.get());
 
   LIBFLATSURF_ASSERT(lengths != nullptr, "Setting lengths from erasedLengths should produce the original length type again");
 
-  const auto connected = [&](const vector<HalfEdge>& contour) {
+  const auto connected = [&](const std::vector<HalfEdge>& contour) {
     for (auto it = contour.begin(); it != contour.end() - 1; it++)
       if (Vertex::target(*it, surface) != Vertex::source(*(it + 1), surface)) return false;
     return true;
@@ -233,7 +227,7 @@ std::unordered_set<HalfEdge> ImplementationOf<IntervalExchangeTransformation<Sur
 }
 
 template <typename Surface>
-ostream& operator<<(ostream& os, const IntervalExchangeTransformation<Surface>& self) {
+std::ostream& operator<<(std::ostream& os, const IntervalExchangeTransformation<Surface>& self) {
   return os << self.intervalExchangeTransformation();
 }
 

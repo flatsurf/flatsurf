@@ -20,6 +20,7 @@
 #include "impl/quadratic_polynomial.hpp"
 
 #include <exact-real/yap/arb.hpp>
+#include <ostream>
 
 #include "impl/approximation.hpp"
 

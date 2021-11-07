@@ -96,6 +96,8 @@ class Vector(SageVector):
 
         if isinstance(vector, parent.Vector):
             self.vector = vector
+        elif isinstance(vector, flatsurf.cppyy.Vector[parent.Vector.Coordinate]):
+            self.vector = vector
         else:
             vector = list(vector)
 
@@ -334,7 +336,7 @@ class Vectors(UniqueRepresentation, Parent):
     def __init__(self, base_ring, coordinate):
         self.coordinate = coordinate
 
-        self.Vector = flatsurf.Vector[self.coordinate]
+        self.Vector = flatsurf.Vector._unwrapped[self.coordinate]
 
         self._isomorphic_vector_space = FreeModule(base_ring, 2)
         if isinstance(base_ring, real_embedded_number_field.RealEmbeddedNumberField):
@@ -467,7 +469,11 @@ class Vectors(UniqueRepresentation, Parent):
         if isinstance(x, cppyy.gbl.mpq_class):
             return x
         if isinstance(self.base_ring(), real_embedded_number_field.RealEmbeddedNumberField):
-            return self.base_ring()(x).renf_elem
+            # We create a copy of the coordinate. Otherwise, cppyy (as of
+            # 1.9.5) treats this as an r-value and moves x out even if it is
+            # referenced elsewhere.
+            value = self.base_ring()(x).renf_elem
+            return type(value)(value)
         if isinstance(self.base_ring(), ExactReals):
             return self.base_ring()(x)._backend
         if x in ZZ:

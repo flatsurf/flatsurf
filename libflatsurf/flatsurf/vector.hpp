@@ -20,6 +20,7 @@
 #define LIBFLATSURF_VECTOR_HPP
 
 #include <exact-real/forward.hpp>
+#include <iosfwd>
 
 #include "copyable.hpp"
 #include "detail/vector_exact.hpp"

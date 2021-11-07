@@ -46,8 +46,8 @@ def test_slopes():
     # The six half edges and the connection (1, -1) and its reverse (-1, 1)
     assert len([1 for c in connections]) == 8
 
-    # There are five slopes, -∞, -1, 0, 1, +∞.
-    assert len([1 for s in connections.slopes()]) == 5
+    # There are four slopes, -1, 0, 1, +∞.
+    assert len([1 for s in connections.slopes()]) == 4
 
 def test_L_mpq():
     surface = surfaces.L(flatsurf.Vector['mpq_class'])
@@ -72,15 +72,9 @@ def test_L_with_slit_mpq():
     assert len([1 for c in connections]) == 15
 
 def test_hexagon_eantic():
-    surface = surfaces.hexagon()
+    surface = surfaces.hexagon(flatsurf.Vector['eantic::renf_elem_class'])
     connections = surface.connections().bound(16).sector(flatsurf.HalfEdge(1))
     assert len([1 for c in connections]) == 10
-
-def test_hexagon_exactreal():
-    from pyexactreal import exactreal
-    surface = surfaces.random_hexagon()
-    connections = surface.connections().bound(16).sector(flatsurf.HalfEdge(1))
-    assert len([1 for c in connections]) >= 10
 
 def test_printing():
     for coefficients in ['long long', 'mpz_class', 'mpq_class', 'eantic::renf_elem_class', 'exactreal::Element<exactreal::IntegerRing>', 'exactreal::Element<exactreal::RationalField>', 'exactreal::Element<exactreal::NumberField>']:

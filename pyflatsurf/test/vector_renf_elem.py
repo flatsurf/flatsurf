@@ -29,7 +29,7 @@ from pyeantic import eantic
 import surfaces
 
 def test_printing():
-    surface = surfaces.hexagon()
+    surface = surfaces.hexagon(flatsurf.Vector['eantic::renf_elem_class'])
     assert str(surface.fromHalfEdge(flatsurf.HalfEdge(1))) == "(2, 0)"
     assert repr(surface.fromHalfEdge(flatsurf.HalfEdge(1))) == "(2, 0)"
 

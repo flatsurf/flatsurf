@@ -21,6 +21,7 @@
 #define LIBFLATSURF_FLOW_DECOMPOSITION_HPP
 
 #include <boost/logic/tribool.hpp>
+#include <boost/operators.hpp>
 #include <functional>
 #include <iosfwd>
 #include <vector>
@@ -34,7 +35,7 @@ namespace flatsurf {
 // direction. Such a decomposition consists of cylinders, minimal components,
 // and undetermined components.
 template <typename Surface>
-class FlowDecomposition {
+class FlowDecomposition : boost::equality_comparable<FlowDecomposition<Surface>> {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
   using T = typename Surface::Coordinate;
@@ -76,6 +77,9 @@ class FlowDecomposition {
   //   true: if all components are cylinders and moduli are commensurable
   //   unknown: otherwise
   boost::logic::tribool parabolic() const;
+
+  // Return whether these flow decompositions are identical.
+  bool operator==(const FlowDecomposition<Surface>&) const;
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const FlowDecomposition<S>&);

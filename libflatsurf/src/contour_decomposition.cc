@@ -39,9 +39,6 @@
 
 namespace flatsurf {
 
-using std::ostream;
-using std::vector;
-
 template <typename Surface>
 ContourDecomposition<Surface>::ContourDecomposition(Surface surface, const Vector<T>& vertical) :
   self(spimpl::make_unique_impl<ImplementationOf<ContourDecomposition>>(std::move(surface), vertical)) {
@@ -52,7 +49,7 @@ ContourDecomposition<Surface>::ContourDecomposition(Surface surface, const Vecto
 
 template <typename Surface>
 std::vector<ContourComponent<Surface>> ContourDecomposition<Surface>::components() const {
-  vector<ContourComponent<Surface>> components;
+  std::vector<ContourComponent<Surface>> components;
   for (auto& component : self->state->components)
     components.push_back(self->state->make(&component));
   return components;
@@ -209,7 +206,7 @@ void ImplementationOf<ContourDecomposition<Surface>>::check(const std::vector<Pa
 }
 
 template <typename Surface>
-ostream& operator<<(ostream& os, const ContourDecomposition<Surface>& self) {
+std::ostream& operator<<(std::ostream& os, const ContourDecomposition<Surface>& self) {
   return os << fmt::format("[{}]", fmt::join(self.components(), ", "));
 }
 }  // namespace flatsurf

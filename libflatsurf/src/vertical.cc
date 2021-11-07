@@ -21,6 +21,7 @@
 
 #include <intervalxt/interval_exchange_transformation.hpp>
 #include <intervalxt/label.hpp>
+#include <ostream>
 #include <unordered_set>
 
 #include "../flatsurf/ccw.hpp"
@@ -35,9 +36,6 @@
 #include "../flatsurf/vector.hpp"
 #include "impl/vertical.impl.hpp"
 #include "util/assert.ipp"
-
-using std::ostream;
-using namespace flatsurf;
 
 namespace flatsurf {
 
@@ -189,7 +187,7 @@ Vertical<Surface>::operator const Vector<T> &() const {
 }
 
 template <typename Surface>
-ostream& operator<<(ostream& os, const Vertical<Surface>& self) {
+std::ostream& operator<<(std::ostream& os, const Vertical<Surface>& self) {
   return os << self.self->vertical;
 }
 

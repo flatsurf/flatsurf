@@ -20,6 +20,7 @@
 #ifndef LIBFLATSURF_CONTOUR_DECOMPOSITION_HPP
 #define LIBFLATSURF_CONTOUR_DECOMPOSITION_HPP
 
+#include <iosfwd>
 #include <vector>
 
 #include "movable.hpp"

@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -82,6 +82,40 @@ std::optional<Deformation<FlatTriangulation<T>>> isomorphism(const FlatTriangula
       },
       filter_map);
 }
+
+// cppyy has trouble with complex std::function parameters so we simplify the
+// interface of Tracked::Tracked to take away all qualifiers and most commas.
+template <typename T>
+Tracked<T> track(const FlatTriangulationCombinatorial &surface, T value) {
+  return Tracked<T>(surface, std::move(value));
+}
+
+// Extract the value of a Tracked<T>.
+// There seems to be no immediate way to call the operator* in cppyy.
+template <typename T>
+const T &unwrapTracked(const Tracked<T> &tracked) {
+  return tracked;
+}
+
+// Work around https://github.com/wlav/cppyy/issues/19 by removing std::forward
+// from the converting constructor of Vector.
+namespace cppyy {
+template <typename T>
+class Vector : public ::flatsurf::Vector<T> {
+ public:
+  using Coordinate = T;
+
+  Vector() :
+    ::flatsurf::Vector<T>() {}
+  Vector(const Coordinate &x, const Coordinate &y) :
+    ::flatsurf::Vector<T>(x, y) {}
+
+  template <typename X, typename Y, std::enable_if_t<!std::is_convertible_v<X, Coordinate> || !std::is_convertible_v<Y, Coordinate>, int> = 0>
+  Vector(const X &x, const Y &y) :
+    ::flatsurf::Vector<T>(static_cast<T>(x), static_cast<T>(y)) {}
+};
+
+}  // namespace cppyy
 
 }  // namespace flatsurf
 

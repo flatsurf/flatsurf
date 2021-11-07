@@ -20,6 +20,8 @@
 #ifndef LIBFLATSURF_READ_ONLY_HPP
 #define LIBFLATSURF_READ_ONLY_HPP
 
+#include <iosfwd>
+
 #include "forward.hpp"
 
 namespace flatsurf {

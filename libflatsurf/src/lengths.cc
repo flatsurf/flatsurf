@@ -58,11 +58,6 @@
 
 namespace flatsurf {
 
-using fmt::format;
-using intervalxt::Label;
-using intervalxt::Length;
-using rx::none_of;
-
 template <typename Surface>
 Lengths<Surface>::Lengths(const Vertical<FlatTriangulation<T>>& vertical, EdgeMap<std::optional<SaddleConnection<FlatTriangulation<T>>>>&& lengths) :
   vertical(vertical),
@@ -75,8 +70,8 @@ Lengths<Surface>::Lengths(const Vertical<FlatTriangulation<T>>& vertical, EdgeMa
 }
 
 template <typename Surface>
-void Lengths<Surface>::push(Label label) {
-  LIBFLATSURF_ASSERT(stack | none_of([&](const auto& l) { return l == label; }), "must not push the same label twice");
+void Lengths<Surface>::push(intervalxt::Label label) {
+  LIBFLATSURF_ASSERT(stack | rx::none_of([&](const auto& l) { return l == label; }), "must not push the same label twice");
   stack.push_back(label);
   sum += length(label);
 }
@@ -90,7 +85,7 @@ void Lengths<Surface>::pop() {
 }
 
 template <typename Surface>
-FlowComponentState<FlatTriangulation<typename Surface::Coordinate>>& Lengths<Surface>::component(Label label) const {
+FlowComponentState<FlatTriangulation<typename Surface::Coordinate>>& Lengths<Surface>::component(intervalxt::Label label) const {
   auto _state = state.lock();
   const auto component = std::find_if(begin(_state->components), end(_state->components), [&](const auto& component) {
     const auto firstTop = static_cast<::intervalxt::Label>(*begin(component.dynamicalComponent.topContour()));
@@ -102,7 +97,7 @@ FlowComponentState<FlatTriangulation<typename Surface::Coordinate>>& Lengths<Sur
 }
 
 template <typename Surface>
-bool Lengths<Surface>::minuendOnTop(Label minuend) const {
+bool Lengths<Surface>::minuendOnTop(intervalxt::Label minuend) const {
   const auto& component = this->component(minuend);
   bool minuendOnTop = static_cast<::intervalxt::Label>(*begin(component.dynamicalComponent.topContour())) == minuend;
   LIBFLATSURF_ASSERT(minuendOnTop || static_cast<::intervalxt::Label>(*begin(component.dynamicalComponent.bottomContour())) == minuend, "minuend not found on any contour");
@@ -110,16 +105,16 @@ bool Lengths<Surface>::minuendOnTop(Label minuend) const {
 }
 
 template <typename Surface>
-void Lengths<Surface>::subtract(Label minuend) {
+void Lengths<Surface>::subtract(intervalxt::Label minuend) {
   subtractRepeated(minuend, 1);
 }
 
 template <typename Surface>
-Label Lengths<Surface>::subtractRepeated(Label minuend) {
+intervalxt::Label Lengths<Surface>::subtractRepeated(intervalxt::Label minuend) {
   const auto& component = this->component(minuend);
   const bool minuendOnTop = this->minuendOnTop(minuend);
   const auto subtrahendContour = minuendOnTop ? component.dynamicalComponent.bottomContour() : component.dynamicalComponent.topContour();
-  const auto bottomMinuend = std::find_if(begin(subtrahendContour), end(subtrahendContour), [&](const auto& he) { return static_cast<Label>(he) == minuend; });
+  const auto bottomMinuend = std::find_if(begin(subtrahendContour), end(subtrahendContour), [&](const auto& he) { return static_cast<intervalxt::Label>(he) == minuend; });
 
   LIBFLATSURF_ASSERT(bottomMinuend != end(subtrahendContour), "each label must be in the top and bottom contour but minuend only found in the top contour");
 
@@ -141,7 +136,7 @@ Label Lengths<Surface>::subtractRepeated(Label minuend) {
 }
 
 template <typename Surface>
-void Lengths<Surface>::subtractRepeated(Label minuend, const mpz_class& iterations) {
+void Lengths<Surface>::subtractRepeated(intervalxt::Label minuend, const mpz_class& iterations) {
   LIBFLATSURF_ASSERT(iterations > 0, "must subtract at least once");
   LIBFLATSURF_ASSERT(length(minuend) > 0, "lengths must be positive");
 
@@ -262,12 +257,12 @@ Lengths<Surface>::Lengths(const Lengths<Surface>& lengths, std::shared_ptr<FlowD
   sum(lengths.sum) {}
 
 template <typename Surface>
-std::vector<std::vector<mpq_class>> Lengths<Surface>::coefficients(const std::vector<Label>& labels) const {
-  return intervalxt::sample::Coefficients<T>()(labels | rx::transform([&](const Label& label) { return length(label); }) | rx::to_vector());
+std::vector<std::vector<mpq_class>> Lengths<Surface>::coefficients(const std::vector<intervalxt::Label>& labels) const {
+  return intervalxt::sample::Coefficients<T>()(labels | rx::transform([&](const intervalxt::Label& label) { return length(label); }) | rx::to_vector());
 }
 
 template <typename Surface>
-int Lengths<Surface>::cmp(Label rhs) const {
+int Lengths<Surface>::cmp(intervalxt::Label rhs) const {
   if (length() < length(rhs))
     return -1;
   else if (length() > length(rhs))
@@ -276,7 +271,7 @@ int Lengths<Surface>::cmp(Label rhs) const {
 }
 
 template <typename Surface>
-int Lengths<Surface>::cmp(Label lhs, Label rhs) const {
+int Lengths<Surface>::cmp(intervalxt::Label lhs, intervalxt::Label rhs) const {
   if (length(lhs) < length(rhs))
     return -1;
   else if (length(lhs) > length(rhs))
@@ -285,28 +280,28 @@ int Lengths<Surface>::cmp(Label lhs, Label rhs) const {
 }
 
 template <typename Surface>
-typename Surface::Coordinate Lengths<Surface>::get(Label label) const {
+typename Surface::Coordinate Lengths<Surface>::get(intervalxt::Label label) const {
   return length(label);
 }
 
 template <typename Surface>
-std::string Lengths<Surface>::render(Label label) const {
-  const size_t index = std::hash<Label>()(label);
+std::string Lengths<Surface>::render(intervalxt::Label label) const {
+  const size_t index = std::hash<intervalxt::Label>()(label);
   if (-index >= index)
-    return format("{}", (index + 1));
+    return fmt::format("{}", (index + 1));
   else
-    return format("{}*", -index);
+    return fmt::format("{}*", -index);
 }
 
 template <typename Surface>
 intervalxt::Label Lengths<Surface>::toLabel(const Edge e) const {
   LIBFLATSURF_ASSERT(lengths[e], "Cannot interact with edge that is vertical or not part of the original contour but " << e << " is of this type in " << *this);
-  return Label(e.index());
+  return intervalxt::Label(e.index());
 }
 
 template <typename Surface>
-Edge Lengths<Surface>::fromLabel(Label l) const {
-  const int index = static_cast<int>(std::hash<Label>()(l));
+Edge Lengths<Surface>::fromLabel(intervalxt::Label l) const {
+  const int index = static_cast<int>(std::hash<intervalxt::Label>()(l));
   Edge e(index + 1);
   LIBFLATSURF_ASSERT(toLabel(e) == l, "fromLabel is not the inverse of toLabel");
   LIBFLATSURF_ASSERT(lengths[e], "Cannot interact with vertical edge " << e << " in " << *this);
@@ -341,7 +336,7 @@ template <typename Surface>
 }
 
 template <typename Surface>
-::intervalxt::Lengths Lengths<Surface>::only(const std::unordered_set<Label>& labels) const {
+::intervalxt::Lengths Lengths<Surface>::only(const std::unordered_set<intervalxt::Label>& labels) const {
   return forget().only(labels);
 }
 

@@ -21,6 +21,7 @@
 #define LIBFLATSURF_VERTEX_HPP
 
 #include <boost/operators.hpp>
+#include <iosfwd>
 
 #include "copyable.hpp"
 #include "serializable.hpp"

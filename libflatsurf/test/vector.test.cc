@@ -20,6 +20,7 @@
 
 #include <e-antic/renfxx.h>
 
+#include <boost/lexical_cast.hpp>
 #include <exact-real/arb.hpp>
 #include <exact-real/element.hpp>
 #include <exact-real/module.hpp>
@@ -45,7 +46,7 @@ TEMPLATE_TEST_CASE("Vector Slopes", "[vector]", (long long), (mpz_class), (mpq_c
   SECTION("Slopes Compare Correctly") {
     const typename V::CompareSlope lt;
 
-    std::vector<V> vectors = {V(0, -1), V(0, -2), V(1, -1), V(-1, 1), V(1, 0), V(-1, 0), V(1, 1), V(-1, -1), V(0, 1), V(0, 2)};
+    std::vector<V> vectors = {V(1, -1), V(-1, 1), V(1, 0), V(-1, 0), V(1, 1), V(-1, -1), V(0, 1), V(0, -1)};
     for (size_t i = 0; i < vectors.size(); i++) {
       for (size_t j = 0; j < vectors.size(); j++) {
         const auto x = vectors[i];
@@ -72,7 +73,7 @@ TEMPLATE_TEST_CASE("Vector Slopes", "[vector]", (long long), (mpz_class), (mpq_c
     for (auto connection : SaddleConnections<FlatTriangulation<T>>(*square).bound(1))
       slopes.insert(connection.vector());
 
-    REQUIRE(slopes.size() == 3);
+    REQUIRE(slopes.size() == 2);
   }
 }
 

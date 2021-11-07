@@ -21,6 +21,7 @@
 #define LIBFLATSURF_CONTOUR_COMPONENT_HPP
 
 #include <boost/operators.hpp>
+#include <iosfwd>
 #include <vector>
 
 #include "copyable.hpp"

@@ -4,6 +4,85 @@ intervalxt Change Log
 
 .. current developments
 
+v3.9.0
+====================
+
+**Added:**
+
+* Added `FlowDecomposition::operator==` to check whether two flow
+  decompositions are internally coming from identical objects.
+
+**Fixed:**
+
+* Made missing `FlowComponent::decomposition()` and
+  `FlowComponent::decomposition() const` implementations available in the
+  shared library.
+
+
+
+v3.8.0
+====================
+
+**Added:**
+
+* Added a copy constructor, a copy assignment operator, a move constructor, and
+  a move assignment operator for a `Deformation`.
+* Implemented special handling of a `Tracked<Deformation>` so that it can track
+  flips in the tracked triangulation.
+* Added glue to `flatsurf::Tracked` to pyflatsurf.
+
+
+
+v3.7.0
+====================
+
+**Added:**
+
+* Added `SaddleConnection::ccw()`.
+
+* Added `SaddleConnectionsIterator::skip()` to explicitly backtrack in saddle connection search.
+
+* Added `Path::tighten()`.
+
+**Fixed:**
+
+* Allow build with fmt library version 6, 7, or 8.
+* Changed ordering produced by `flatsurf::detail::VectorExact<>::CompareSlope`
+  so it identifies infinite slopes, i.e., `(0, 1)` and `(0, -1)`.
+* A `Path` can now contain arbitrary turns. Before it was limited to the turn angles that show up in the perimeters of components.
+
+
+
+v3.6.4
+====================
+
+**Fixed:**
+
+* Fix tracking of collapsed half edges in `FlatTriangulation::operator+()`.
+
+
+
+v3.6.3
+====================
+
+**Fixed:**
+
+* Work around a problem in cppyy when copying vectors in Python.
+
+
+
+v3.6.2
+====================
+
+**Fixed:**
+
+* Fixed stack overflow when eliminating marked points, #263.
+* Adapt to changes in latest e-antic (changed includes in header files.)
+
+* Adapt includes for latest version of boost.
+
+
+
 v3.6.1
 ====================
 

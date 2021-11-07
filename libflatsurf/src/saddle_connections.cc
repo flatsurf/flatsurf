@@ -23,6 +23,7 @@
 
 #include <algorithm>
 #include <exact-real/arb.hpp>
+#include <ostream>
 #include <stack>
 #include <tuple>
 

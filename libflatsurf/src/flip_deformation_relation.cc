@@ -19,6 +19,8 @@
 
 #include "impl/flip_deformation_relation.hpp"
 
+#include <ostream>
+
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/path_iterator.hpp"

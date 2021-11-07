@@ -1,8 +1,8 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Vincent Delecroix
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C)      2019 Vincent Delecroix
+ *        Copyright (C) 2019-2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -66,6 +66,17 @@ auto makeSquare() {
 inline auto makeSquareWithBoundaryCombinatorial() {
   auto vertices = vector<vector<int>>{{-2, 1, 3, 2}, {4, -1, -3, -4}};
   return std::make_shared<FlatTriangulationCombinatorial>(vertices, std::vector{2, -4});
+}
+
+inline auto makeRectangleCombinatorial() {
+  auto vertices = vector<vector<int>>{{1, -3, 7, -9, 10, -12, 4, -6}, {-1, 8, -7, 11, -10, 5, -4, 2}, {-2, 12, -11, 3}, {-5, 9, -8, 6}};
+  return std::make_shared<FlatTriangulationCombinatorial>(vertices);
+}
+
+template <typename R2>
+auto makeRectangle() {
+  auto vectors = vector{R2{1, 6}, R2{-1, 0}, R2{0, -6}, R2{1, -6}, R2{0, 6}, R2{-1, 0}, R2{-1, 6}, R2{0, -6}, R2{1, 0}, R2{-1, -6}, R2{1, 0}, R2{0, 6}};
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeRectangleCombinatorial()), vectors);
 }
 
 template <typename R2>
@@ -260,16 +271,16 @@ template <typename R2>
 auto make1221() {
   vector<R2> vectors;
   auto x = -K->gen();
-  auto o = renf_elem_class(K, 1);
+  auto o = renf_elem_class(*K, 1);
   using R = eantic::renf_elem_class;
   if constexpr (std::is_same_v<R2, Vector<eantic::renf_elem_class>>) {
-    auto random = R(K, 200114) / 100000;
-    vectors = vector{R2(1, 0), R2((R(K, 1) / 2) * 1, (R(K, 1) / 2 * x) * 1), R2((R(K, 1) / 2) * 1, (R(K, -1) / 2 * x) * 1), R2((R(K, 3) / 2) * random, (R(K, -1) / 2 * x) * random), R2((R(K, -3) / 2) * random, (R(K, -1) / 2 * x) * random), R2(0, (x)*random), R2(0, (x)*random), R2(1, (-x) * random), R2((R(K, -3) / 2) * random, (R(K, -1) / 2 * x) * random), R2((R(K, -1) / 2) * 1 + (R(K, 3) / 2) * random, (R(K, 1) / 2 * x) * 1 + (R(K, 1) / 2 * x) * random), R2((R(K, 3) / 2) * random, (R(K, -1) / 2 * x) * random), R2((R(K, -1) / 2) * 1 + (R(K, -3) / 2) * random, (R(K, -1) / 2 * x) * 1 + (R(K, 1) / 2 * x) * random)};
+    auto random = R(*K, 200114) / 100000;
+    vectors = vector{R2(1, 0), R2((R(*K, 1) / 2) * 1, (R(*K, 1) / 2 * x) * 1), R2((R(*K, 1) / 2) * 1, (R(*K, -1) / 2 * x) * 1), R2((R(*K, 3) / 2) * random, (R(*K, -1) / 2 * x) * random), R2((R(*K, -3) / 2) * random, (R(*K, -1) / 2 * x) * random), R2(0, (x)*random), R2(0, (x)*random), R2(1, (-x) * random), R2((R(*K, -3) / 2) * random, (R(*K, -1) / 2 * x) * random), R2((R(*K, -1) / 2) * 1 + (R(*K, 3) / 2) * random, (R(*K, 1) / 2 * x) * 1 + (R(*K, 1) / 2 * x) * random), R2((R(*K, 3) / 2) * random, (R(*K, -1) / 2 * x) * random), R2((R(*K, -1) / 2) * 1 + (R(*K, -3) / 2) * random, (R(*K, -1) / 2 * x) * 1 + (R(*K, 1) / 2 * x) * random)};
   } else if constexpr (std::is_same_v<R2, Vector<Element<NumberField>>>) {
     auto module = Module<NumberField>::make({RealNumber::rational(1), RealNumber::random(2.00114)}, K);
     auto g = module->gen(0);
     auto random = module->gen(1);
-    vectors = vector{R2(g, 0 * g), R2((R(K, 1) / 2) * g, (R(K, 1) / 2 * x) * g), R2((R(K, 1) / 2) * g, (R(K, -1) / 2 * x) * g), R2((R(K, 3) / 2) * random, (R(K, -1) / 2 * x) * random), R2((R(K, -3) / 2) * random, (R(K, -1) / 2 * x) * random), R2(0 * g, (x)*random), R2(0 * g, (x)*random), R2(g, (-x) * random), R2((R(K, -3) / 2) * random, (R(K, -1) / 2 * x) * random), R2((R(K, -1) / 2) * g + (R(K, 3) / 2) * random, (R(K, 1) / 2 * x) * g + (R(K, 1) / 2 * x) * random), R2((R(K, 3) / 2) * random, (R(K, -1) / 2 * x) * random), R2((R(K, -1) / 2) * g + (R(K, -3) / 2) * random, (R(K, -1) / 2 * x) * g + (R(K, 1) / 2 * x) * random)};
+    vectors = vector{R2(g, 0 * g), R2((R(*K, 1) / 2) * g, (R(*K, 1) / 2 * x) * g), R2((R(*K, 1) / 2) * g, (R(*K, -1) / 2 * x) * g), R2((R(*K, 3) / 2) * random, (R(*K, -1) / 2 * x) * random), R2((R(*K, -3) / 2) * random, (R(*K, -1) / 2 * x) * random), R2(0 * g, (x)*random), R2(0 * g, (x)*random), R2(g, (-x) * random), R2((R(*K, -3) / 2) * random, (R(*K, -1) / 2 * x) * random), R2((R(*K, -1) / 2) * g + (R(*K, 3) / 2) * random, (R(*K, 1) / 2 * x) * g + (R(*K, 1) / 2 * x) * random), R2((R(*K, 3) / 2) * random, (R(*K, -1) / 2 * x) * random), R2((R(*K, -1) / 2) * g + (R(*K, -3) / 2) * random, (R(*K, -1) / 2 * x) * g + (R(*K, 1) / 2 * x) * random)};
   } else {
     throw std::logic_error("not implemented: make1221()");
   }

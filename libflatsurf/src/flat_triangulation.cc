@@ -98,15 +98,17 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
     for (size_t i = 0; i < outgoing.size(); i++) {
       const auto he = outgoing.at(i);
 
-      if (fromHalfEdge(he).ccw(shift.get(he)) == CCW::COLLINEAR) {
-        switch (fromHalfEdge(he).orientation(fromHalfEdge(he) + shift.get(he))) {
-          case ORIENTATION::SAME:
-            // The critical time t is not in [0, 1]
-            break;
-          case ORIENTATION::OPPOSITE:
-            throw std::invalid_argument("shift must not collapse half edges for a time t in (0, 1)");
-          case ORIENTATION::ORTHOGONAL:
-            collapsing.insert(he);
+      if (shift.get(he)) {
+        if (fromHalfEdge(he).ccw(shift.get(he)) == CCW::COLLINEAR) {
+          switch (fromHalfEdge(he).orientation(fromHalfEdge(he) + shift.get(he))) {
+            case ORIENTATION::SAME:
+              // The critical time t is not in [0, 1]
+              break;
+            case ORIENTATION::OPPOSITE:
+              throw std::invalid_argument("shift must not collapse half edges for a time t in (0, 1)");
+            case ORIENTATION::ORTHOGONAL:
+              collapsing.insert(he);
+          }
         }
       }
     }
@@ -237,43 +239,51 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
   } else {
     // We don't need to flip, so we perform shifts of half edges on a copy of
     // the surface's vector structure and collapse on a copy of the
-    // combinatorial structure.
+    // combinatorial structure if necessary.
     auto combinatorial = static_cast<const FlatTriangulationCombinatorial &>(*this).clone();
 
     // When trivial half edges are collapsed, the other edges in a triangle
-    // are identified. We keep track of such identifications here, mapping a
-    // half edge to all its preimages under this identification.
-    Tracked<HalfEdgeMap<std::unordered_set<HalfEdge>>> halfEdges(combinatorial, HalfEdgeMap<std::unordered_set<HalfEdge>>(combinatorial, [](const HalfEdge he) { return std::unordered_set{he}; }),
-        Tracked<HalfEdgeMap<std::unordered_set<HalfEdge>>>::defaultFlip,
-        [](HalfEdgeMap<std::unordered_set<HalfEdge>> &self, const FlatTriangulationCombinatorial &surface, Edge e) {
-          const auto copy = [&](const HalfEdge from, const HalfEdge to) {
-            for (const auto he : self[from])
-              self[to].insert(he);
-          };
+    // are identified. We keep track of such identifications here, keeping all
+    // identified half edges in a set.
+    HalfEdgeMap<HalfEdge> identified{combinatorial, [](HalfEdge he) { return he; }};
 
-          const auto equate = [&](const HalfEdge a, const HalfEdge b) {
-            copy(a, b);
-            copy(b, a);
-          };
+    const std::function<HalfEdge(HalfEdge)> find_ = [&](HalfEdge a) {
+      if (identified[a] == a)
+        return a;
+      return identified[a] = find_(identified[a]);
+    };
 
-          for (const auto collapse : {e.positive(), e.negative()}) {
-            equate(surface.nextInFace(collapse), -surface.previousInFace(collapse));
-            equate(-surface.nextInFace(collapse), surface.previousInFace(collapse));
+    const auto union_ = [&](HalfEdge a, HalfEdge b) {
+      LIBFLATSURF_ASSERT(fromHalfEdge(a) + shift.get(a) == fromHalfEdge(b) + shift.get(b), "A shift identified " << a << " and " << b << " but the shift was supposed to send " << a << " from " << fromHalfEdge(a) << " to " << fromHalfEdge(a) + shift.get(a) << " and " << b << " from " << fromHalfEdge(b) << " to " << fromHalfEdge(b) + shift.get(b) << " which is not the same.");
+
+      identified[find_(a)] = b;
+    };
+
+    // Maps each half edge to one of its preimages in the surface before collapsing.
+    Tracked<HalfEdgeMap<HalfEdge>> preimage(combinatorial, HalfEdgeMap<HalfEdge>(combinatorial, [](HalfEdge he) { return he; }),
+        Tracked<HalfEdgeMap<HalfEdge>>::defaultFlip,
+        [&](auto &self, const FlatTriangulationCombinatorial &surface, Edge e) {
+          for (const auto he : {e.positive(), e.negative()}) {
+            union_(self[surface.nextInFace(he)], self[-surface.previousInFace(he)]);
+            union_(self[-surface.nextInFace(he)], self[surface.previousInFace(he)]);
           }
         });
 
+    // Maps half edges to their vectors in the resulting surface.
     Tracked<OddHalfEdgeMap<Vector<T>>> vectors(combinatorial, OddHalfEdgeMap<Vector<T>>(combinatorial, [&](const HalfEdge he) { return fromHalfEdge(he) + shift.get(he); }),
         Tracked<OddHalfEdgeMap<Vector<T>>>::defaultFlip,
-        [](OddHalfEdgeMap<Vector<T>> &vectors, const FlatTriangulationCombinatorial &, Edge e) {
+        [&](auto &vectors, const FlatTriangulationCombinatorial &, Edge e) {
           LIBFLATSURF_ASSERT(!vectors.get(e.positive()), "can only collapse half edges that have become trivial");
         });
 
+    // The edges that need to be collapsed in the target surface.
     Tracked<EdgeSet> collapsing_(combinatorial, collapsing,
         Tracked<EdgeSet>::defaultFlip,
-        [](EdgeSet &self, const FlatTriangulationCombinatorial &, Edge e) {
+        [](auto &self, const FlatTriangulationCombinatorial &, Edge e) {
           LIBFLATSURF_ASSERT(self.contains(e), "can only collapse edges that have been found to collapse at t=1");
         });
 
+    // Collapse edges in the combinatorial structure.
     while (!collapsing_->empty())
       combinatorial.collapse(begin(static_cast<const EdgeSet &>(collapsing_))->positive());
 
@@ -285,12 +295,10 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
         *this,
         codomain,
         OddHalfEdgeMap<Path<FlatTriangulation>>(*this, [&](HalfEdge he) {
-          for (const auto &image : codomain.halfEdges()) {
-            for (const auto &preimage : halfEdges->operator[](image)) {
-              if (preimage == he) {
-                LIBFLATSURF_ASSERT(vectors->get(image) == fromHalfEdge(he) + shift.get(he), "Half edge " << he << " should have been shifted from " << fromHalfEdge(he) << " to " << fromHalfEdge(he) + shift.get(he) << " but instead it became " << image << " which is " << vectors->get(image));
-                return Path{SaddleConnection<FlatTriangulation>(codomain, image)};
-              }
+          for (const HalfEdge image : codomain.halfEdges()) {
+            if (find_((*preimage)[image]) == find_(he)) {
+              LIBFLATSURF_ASSERT(vectors->get(image) == fromHalfEdge(he) + shift.get(he), "Half edge " << he << " should have been shifted from " << fromHalfEdge(he) << " to " << fromHalfEdge(he) + shift.get(he) << " but instead it became " << image << " which is " << vectors->get(image));
+              return Path{SaddleConnection<FlatTriangulation>(codomain, image)};
             }
           }
           // This half edge has been collapsed.
@@ -393,7 +401,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
     return elimination;
   }
 
-  LIBFLATSURF_UNREACHABLE("No half edge was sent to a single saddle conection in deformation " << shift);
+  LIBFLATSURF_UNREACHABLE("No half edge was sent to a single saddle conection in deformation " << shift << " which eliminated " << marked << " by applying " << delta);
 }
 
 template <typename T>

@@ -19,6 +19,8 @@
 
 #include "impl/slit_deformation_relation.hpp"
 
+#include <ostream>
+
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/path.hpp"
 

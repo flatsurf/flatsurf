@@ -19,6 +19,8 @@
 
 #include "impl/weak_read_only.hpp"
 
+#include <ostream>
+
 #include "../flatsurf/managed_movable.hpp"
 #include "impl/managed_movable.impl.hpp"
 #include "impl/read_only.hpp"

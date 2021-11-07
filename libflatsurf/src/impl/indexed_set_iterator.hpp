@@ -22,6 +22,7 @@
 
 #include <boost/iterator/iterator_categories.hpp>
 #include <boost/iterator/iterator_facade.hpp>
+#include <iosfwd>
 
 #include "forward.hpp"
 

@@ -20,6 +20,7 @@
 #ifndef LIBFLATSURF_INTERVAL_EXCHANGE_TRANSFORMATION_HPP
 #define LIBFLATSURF_INTERVAL_EXCHANGE_TRANSFORMATION_HPP
 
+#include <iosfwd>
 #include <unordered_set>
 #include <vector>
 

@@ -21,6 +21,7 @@
 #define LIBFLATSURF_QUADRATIC_POLYNOMIAL_HPP
 
 #include <exact-real/arb.hpp>
+#include <iosfwd>
 #include <optional>
 
 namespace flatsurf {

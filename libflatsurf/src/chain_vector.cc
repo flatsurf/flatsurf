@@ -21,6 +21,7 @@
 
 #include <optional>
 #include <e-antic/renfxx_fwd.h>
+#include <ostream>
 
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/edge.hpp"

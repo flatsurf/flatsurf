@@ -20,6 +20,10 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
+#include <ostream>
+
+#include "../flatsurf/bound.hpp"
+#include "../flatsurf/fmt.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
 #include "../flatsurf/chain.hpp"

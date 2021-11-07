@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2020-2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,9 +22,12 @@
 #include <fmt/format.h>
 
 #include <boost/type_index.hpp>
+#include <ostream>
 
 #include "../flatsurf/odd_half_edge_map.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
+#include "impl/deformation.impl.hpp"
+#include "impl/flip_deformation_relation.hpp"
 #include "impl/read_only.hpp"
 #include "impl/tracked.impl.hpp"
 #include "impl/weak_read_only.hpp"
@@ -50,6 +53,12 @@ struct is_odd_half_edge_map : std::false_type {};
 
 template <typename T>
 struct is_odd_half_edge_map<OddHalfEdgeMap<T>> : std::true_type {};
+
+template <typename T>
+struct is_deformation : std::false_type {};
+
+template <typename T>
+struct is_deformation<Deformation<T>> : std::true_type {};
 }  // namespace
 
 template <typename T>
@@ -71,10 +80,15 @@ Tracked<T>::~Tracked() {
 }
 
 template <typename T>
-void Tracked<T>::defaultFlip(T& self, const FlatTriangulationCombinatorial&, HalfEdge e) {
+void Tracked<T>::defaultFlip(T& self, const FlatTriangulationCombinatorial& surface, HalfEdge e) {
   if constexpr (std::is_same_v<T, HalfEdge>) {
     if (Edge(self) == Edge(e))
       throw std::logic_error("This Tracked<HalfEdge> cannot be flipped.");
+  } else if constexpr (is_deformation<T>::value) {
+    auto flipped = self.codomain().clone();
+    flipped.flip(e);
+    LIBFLATSURF_ASSERT(flipped.combinatorial() == surface, "Codomain of deformation must be equal to the tracked surface.");
+    self = ImplementationOf<T>::make(std::make_unique<FlipDeformationRelation<decltype(flipped)>>(self.codomain(), flipped, e)) * self;
   } else {
     (void)e;
     throw std::logic_error(fmt::format("This Tracked<{}> of a FlatTriangulationCombinatorial does not support flipping of edges.", boost::typeindex::type_id<T>().pretty_name()));
@@ -288,9 +302,8 @@ void ImplementationOf<Tracked<T>>::connect() {
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
-#include <unordered_set>
-
 #include "../flatsurf/ccw.hpp"
+#include "../flatsurf/deformation.hpp"
 #include "../flatsurf/edge_map.hpp"
 #include "../flatsurf/edge_set.hpp"
 #include "../flatsurf/half_edge_map.hpp"
@@ -306,7 +319,7 @@ LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<HalfEdgeSet>))
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<EdgeSet>))
 LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<OddHalfEdgeMap<HalfEdge>>))
-LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<HalfEdgeMap<std::unordered_set<HalfEdge>>>))
+LIBFLATSURF_INSTANTIATE((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), (Tracked<HalfEdgeMap<HalfEdge>>))
 
 #define LIBFLATSURF_WRAP_ODD_HALF_EDGE_MAP_VECTOR(R, TYPE, T) (TYPE<OddHalfEdgeMap<Vector<T>>>)
 LIBFLATSURF_INSTANTIATE_MANY_FROM_TRANSFORMATION((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), Tracked, LIBFLATSURF_REAL_TYPES(exactreal::Arb), LIBFLATSURF_WRAP_ODD_HALF_EDGE_MAP_VECTOR)
@@ -325,3 +338,6 @@ LIBFLATSURF_INSTANTIATE_MANY_FROM_TRANSFORMATION((LIBFLATSURF_INSTANTIATE_WITH_I
 
 #define LIBFLATSURF_WRAP_HALF_EDGE_MAP_COLLAPSED(R, TYPE, T) (TYPE<HalfEdgeMap<CollapsedHalfEdge<T>>>)
 LIBFLATSURF_INSTANTIATE_MANY_FROM_TRANSFORMATION((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), Tracked, LIBFLATSURF_REAL_TYPES, LIBFLATSURF_WRAP_HALF_EDGE_MAP_COLLAPSED)
+
+#define LIBFLATSURF_WRAP_DEFORMATION(R, TYPE, T) (TYPE<Deformation<T>>)
+LIBFLATSURF_INSTANTIATE_MANY_FROM_TRANSFORMATION((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), Tracked, LIBFLATSURF_FLAT_TRIANGULATION_TYPES, LIBFLATSURF_WRAP_DEFORMATION)

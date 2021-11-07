@@ -22,6 +22,7 @@
 #include <boost/logic/tribool.hpp>
 #include <exact-real/arb.hpp>
 #include <optional>
+#include <ostream>
 #include <type_traits>
 #include <variant>
 #include <vector>
@@ -326,7 +327,7 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::onBoundary() {
 template <typename Surface>
 void ImplementationOf<SaddleConnectionsIterator<Surface>>::skipSector(CCW sector) {
   LIBFLATSURF_ASSERT_ARGUMENT(sector != CCW::COLLINEAR, "Cannot skip this sector. There is no such thing as a collinear sector.");
-  assert(state.size() && "cannot skip a sector in a completed search");
+  LIBFLATSURF_ASSERT(state.size(), "cannot skip a sector in a completed search");
 
   switch (state.back()) {
     case State::SADDLE_CONNECTION_FOUND:
@@ -405,6 +406,56 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::skipSector(CCW sector
       [[fallthrough]];
     default:
       throw std::logic_error("sectors can only be skipped when a saddle connection has been reported");
+  }
+}
+
+template <typename Surface>
+void ImplementationOf<SaddleConnectionsIterator<Surface>>::skip() {
+  LIBFLATSURF_ASSERT(state.size(), "cannot skip anything anymore in a completed search");
+
+  switch (state.back()) {
+    case State::SADDLE_CONNECTION_FOUND:
+      state.pop_back();
+
+      // Go directly to the second sector by skipping the recursive call,
+      // i.e., the START.
+      switch (state.back()) {
+        case State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_INSIDE_RADIUS:
+        case State::START_AT_EDGE_STARTS_INSIDE_RADIUS:
+        case State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_OUTSIDE_RADIUS:
+        case State::START_AT_EDGE_ENDS_INSIDE_RADIUS:
+        case State::START_AT_EDGE:
+        case State::START_AT_EDGE_ENDS_OUTSIDE_RADIUS:
+        case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_INSIDE_RADIUS:
+        case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS:
+        case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_OUTSIDE_RADIUS:
+          state.pop_back();
+        default:
+          break;
+      }
+      LIBFLATSURF_ASSERT(state.back() == State::SADDLE_CONNECTION_FOUND_SEARCHING_FIRST, "State machine of SaddleConnections is inconsistent when trying to skip clockwise sector.");
+      while (state.back() != State::SADDLE_CONNECTION_FOUND_SEARCHING_SECOND)
+        state.pop_back();
+      state.push_back(State::SADDLE_CONNECTION_FOUND_SEARCHING_FIRST);
+      break;
+    case State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_INSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_INSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_INSIDE_RADIUS_ENDS_OUTSIDE_RADIUS:
+    case State::START_AT_EDGE_ENDS_INSIDE_RADIUS:
+    case State::START_AT_EDGE:
+    case State::START_AT_EDGE_ENDS_OUTSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_INSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS:
+    case State::START_AT_EDGE_STARTS_OUTSIDE_RADIUS_ENDS_OUTSIDE_RADIUS:
+      if (state.size() == 2) {
+        // We are in the initial state.
+        state.pop_back();
+        assert(state.back() == State::END);
+        break;
+      }
+      [[fallthrough]];
+    default:
+      throw std::logic_error("search descend can only be skipped when a saddle connection has been reported");
   }
 }
 
@@ -604,6 +655,11 @@ void SaddleConnectionsIterator<Surface>::increment() {
 template <typename Surface>
 void SaddleConnectionsIterator<Surface>::skipSector(CCW ccw) {
   self->skipSector(ccw);
+}
+
+template <typename Surface>
+void SaddleConnectionsIterator<Surface>::skip() {
+  self->skip();
 }
 
 template <typename Surface>

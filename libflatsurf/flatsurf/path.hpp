@@ -21,6 +21,7 @@
 #define LIBFLATSURF_PATH_HPP
 
 #include <boost/operators.hpp>
+#include <iosfwd>
 #include <vector>
 
 #include "copyable.hpp"

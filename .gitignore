@@ -134,4 +134,4 @@ cysignals_crash_logs
 vgcore.*
 
 # Rever
-rever/
+/rever

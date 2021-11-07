@@ -19,6 +19,8 @@
 
 #include "impl/read_only.hpp"
 
+#include <ostream>
+
 #include "../flatsurf/managed_movable.hpp"
 
 namespace flatsurf {

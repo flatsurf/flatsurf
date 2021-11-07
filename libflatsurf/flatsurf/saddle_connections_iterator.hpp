@@ -21,6 +21,7 @@
 #define LIBFLATSURF_SADDLE_CONNECTIONS_ITERATOR_HPP
 
 #include <boost/iterator/iterator_facade.hpp>
+#include <iosfwd>
 #include <optional>
 
 #include "copyable.hpp"
@@ -63,6 +64,8 @@ class SaddleConnectionsIterator : public boost::iterator_facade<SaddleConnection
   const SaddleConnection<Surface> &dereference() const;
 
   void skipSector(CCW sector);
+
+  void skip();
 
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const SaddleConnectionsIterator<S> &);

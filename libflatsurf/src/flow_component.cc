@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/orientation.hpp"
+#include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/vertical.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/collapsed_half_edge.hpp"
@@ -41,14 +42,12 @@
 #include "impl/flat_triangulation_collapsed.impl.hpp"
 #include "impl/flow_component.impl.hpp"
 #include "impl/flow_connection.impl.hpp"
+#include "impl/flow_decomposition.impl.hpp"
 #include "impl/flow_triangulation.impl.hpp"
 #include "impl/saddle_connection.impl.hpp"
 #include "util/assert.ipp"
 
 namespace flatsurf {
-
-using std::ostream;
-using std::string;
 
 template <typename Surface>
 bool FlowComponent<Surface>::decompose(std::function<bool(const FlowComponent<Surface>&)> target, int limit) {
@@ -360,6 +359,16 @@ typename FlowComponent<Surface>::Perimeter FlowComponent<Surface>::perimeter() c
   LIBFLATSURF_ASSERTIONS([&]() {
     Path<FlatTriangulation<typename Surface::Coordinate>> path = perimeter | rx::transform([&](const auto connection) { return connection.saddleConnection(); }) | rx::to_vector();
     LIBFLATSURF_ASSERT(path.closed(), "Perimeter of FlowComponent must be closed but " << path << " is not.");
+
+    auto a = path.begin();
+
+    auto b = a;
+    ++b;
+
+    for (; b != path.end(); a++, b++) {
+      const int angle = b->angle(-*a);
+      LIBFLATSURF_ASSERT(angle == 0 || (angle == 1 && (-*b).vector().ccw(*a) == CCW::COLLINEAR && (-*b).vector().orientation(*a) == ORIENTATION::SAME), "Connections in perimeter must be turning clockwise by an angle in (0, 2π] but " << *b << " follows " << *a << " in perimeter.");
+    }
   });
 
   return perimeter;
@@ -401,6 +410,12 @@ const ::intervalxt::Component& FlowComponent<Surface>::dynamicalComponent() cons
 }
 
 template <typename Surface>
+FlowDecomposition<Surface> FlowComponent<Surface>::decomposition() { return ImplementationOf<FlowDecomposition<Surface>>::make(self->state); }
+
+template <typename Surface>
+const FlowDecomposition<Surface> FlowComponent<Surface>::decomposition() const { return ImplementationOf<FlowDecomposition<Surface>>::make(self->state); }
+
+template <typename Surface>
 FlowComponent<Surface> ImplementationOf<FlowComponent<Surface>>::make(std::shared_ptr<FlowDecompositionState<Surface>> state, FlowComponentState<Surface>* component) {
   return FlowComponent<Surface>(PrivateConstructor{}, state, component);
 }
@@ -417,8 +432,8 @@ std::string ImplementationOf<FlowComponent<Surface>>::id() const {
 }
 
 template <typename Surface>
-ostream& operator<<(ostream& os, const FlowComponent<Surface>& self) {
-  string kind = "Component";
+std::ostream& operator<<(std::ostream& os, const FlowComponent<Surface>& self) {
+  std::string kind = "Component";
   if (self.cylinder()) {
     kind = "Cylinder";
   } else if (self.keane()) {

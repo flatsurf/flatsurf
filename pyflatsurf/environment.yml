@@ -11,12 +11,11 @@ dependencies:
   - automake
   - cppyy
   - cppyythonizations
-  - cxx-compiler=1.1.3
   - gmpxxyy
   - ipywidgets
   - libtool
   - make
-  - pyexactreal>=1.3.2
+  - pyexactreal>=2.0.0,<3
   - pytest
   - python
   - sagelib

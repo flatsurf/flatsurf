@@ -21,6 +21,7 @@
 #define LIBFLATSURF_CONTOUR_CONNECTION_HPP
 
 #include <boost/operators.hpp>
+#include <iosfwd>
 
 #include "copyable.hpp"
 

@@ -21,6 +21,7 @@
 #define LIBFLATSURF_TRACKED_HPP
 
 #include <functional>
+#include <iosfwd>
 
 #include "movable.hpp"
 

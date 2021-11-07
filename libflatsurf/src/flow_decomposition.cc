@@ -60,10 +60,6 @@
 #include "impl/interval_exchange_transformation.impl.hpp"
 #include "util/assert.ipp"
 
-using std::ostream;
-
-using intervalxt::DynamicalDecomposition;
-
 namespace flatsurf {
 
 template <typename Surface>
@@ -165,6 +161,11 @@ boost::logic::tribool FlowDecomposition<Surface>::parabolic() const {
 }
 
 template <typename Surface>
+bool FlowDecomposition<Surface>::operator==(const FlowDecomposition<Surface>& rhs) const {
+  return self->state == rhs.self->state;
+}
+
+template <typename Surface>
 ImplementationOf<FlowDecomposition<Surface>>::ImplementationOf(Surface&& surface, const Vector<T>& vertical) :
   state(FlowDecompositionState<Surface>::make(std::move(surface), vertical)) {}
 
@@ -211,13 +212,7 @@ FlowDecomposition<Surface> ImplementationOf<FlowDecomposition<Surface>>::make(st
 }
 
 template <typename Surface>
-FlowDecomposition<Surface> FlowComponent<Surface>::decomposition() { return ImplementationOf<FlowDecomposition<Surface>>::make(self->state); }
-
-template <typename Surface>
-const FlowDecomposition<Surface> FlowComponent<Surface>::decomposition() const { return ImplementationOf<FlowDecomposition<Surface>>::make(self->state); }
-
-template <typename Surface>
-ostream& operator<<(ostream& os, const FlowDecomposition<Surface>& self) {
+std::ostream& operator<<(std::ostream& os, const FlowDecomposition<Surface>& self) {
   std::vector<std::string> components;
   for (auto& component : self.components())
     components.push_back(boost::lexical_cast<std::string>(component));

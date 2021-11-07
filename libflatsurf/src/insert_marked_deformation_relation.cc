@@ -19,6 +19,8 @@
 
 #include "impl/insert_marked_deformation_relation.hpp"
 
+#include <ostream>
+
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/path.hpp"
 
