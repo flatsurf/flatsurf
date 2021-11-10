@@ -31,12 +31,12 @@
 #include "../flatsurf/delaunay.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/edge.hpp"
 #include "../flatsurf/half_edge_set.hpp"
-#include "../flatsurf/interval_exchange_transformation.hpp"
-#include "../flatsurf/isomorphism.hpp"
-#include "../flatsurf/odd_half_edge_map.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/path_iterator.hpp"
+#include "../flatsurf/interval_exchange_transformation.hpp"
+#include "../flatsurf/isomorphism.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
@@ -243,37 +243,6 @@ TEMPLATE_TEST_CASE("Delaunay Triangulation", "[flat_triangulation][delaunay]", (
       for (auto he : surface->halfEdges())
         REQUIRE(boundary.contains(he) == traced.contains(he));
     }
-  }
-}
-
-TEMPLATE_TEST_CASE("Deform a Flat Triangulation", "[flat_triangulation][deformation]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
-  using R2 = Vector<TestType>;
-
-  const auto surface = makeL<R2>();
-
-  SECTION("Trivially deform an L") {
-    const auto shift = OddHalfEdgeMap<R2>(*surface);
-    REQUIRE(surface->operator+(shift).codomain() == *surface);
-  }
-
-  SECTION("Stretch an L") {
-    auto shift = OddHalfEdgeMap<R2>(*surface);
-
-    shift.set(HalfEdge(8), R2(0, 1));
-    shift.set(HalfEdge(7), R2(0, 1));
-
-    const auto shifted = surface->operator+(shift);
-
-    REQUIRE(shifted.codomain() != *surface);
-
-    for (const auto he : surface->halfEdges())
-      REQUIRE(shifted(Path(SaddleConnection(*surface, he))).has_value());
-
-    REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(8)))->size() == 1);
-    REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(8)))->begin()->vector() == surface->fromHalfEdge(HalfEdge(8)) + R2(0, 1));
-
-    REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(7)))->size() == 1);
-    REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(7)))->begin()->vector() == surface->fromHalfEdge(HalfEdge(7)) + R2(0, 1));
   }
 }
 

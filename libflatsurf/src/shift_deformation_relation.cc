@@ -27,6 +27,9 @@
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vector.hpp"
+#include "../flatsurf/half_edge_intersection.hpp"
+
+#include "util/assert.ipp"
 
 namespace flatsurf {
 
@@ -43,7 +46,41 @@ std::optional<Path<Surface>> ShiftDeformationRelation<Surface>::operator()(const
     if (connection.source() == -connection.target() && connection.vector() == this->domain->fromHalfEdge(connection.source())) {
       image += shifted.get(connection.source());
     } else {
-      throw std::logic_error("not implemented: Cannot map paths that are not given as a sequence of half edges.");
+      // To map a saddle connection, we rewrite it as a homotopic sequence of
+      // half edges and then map these half edges.
+      const auto& surface = connection.surface();
+
+      // To construct this sequence we pretend that we are currently inside the
+      // face which has `face` as one of its half edges and actually that we
+      // are at the vertex that has this half edge as an outgoing half edge.
+      auto face = connection.source();
+
+      std::vector<HalfEdge> targets;
+
+      for (const auto& intersection : connection.path())
+        targets.push_back(intersection.halfEdge());
+      targets.push_back(connection.target());
+
+      for (const auto& target : targets) {
+        // Compute the sequence of half edges that we have to traverse to go to
+        // the vertex which has "target" as an outgoing vertex.
+        LIBFLATSURF_ASSERT(face != target, "A saddle connection cannot cross the same half edge twice in a row but " << connection << " is crossing from " << face << " to " << target);
+
+        // Move to the target half edge.
+        image += shifted.get(face);
+        face = surface.nextInFace(face);
+
+        if (target == surface.nextInFace(face)) {
+          image += shifted.get(face);
+          face = surface.nextInFace(face);
+        }
+
+        LIBFLATSURF_ASSERT(target == face, "Target half edge " << target << " must be in the same face as " << face);
+
+        // Cross over the target half edge into the opposite face.
+        image += shifted.get(target);
+        face = -target;
+      }
     }
   }
 

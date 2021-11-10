@@ -22,8 +22,13 @@
 #include "../flatsurf/deformation.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/tracked.hpp"
+#include "../flatsurf/odd_half_edge_map.hpp"
+#include "../flatsurf/path.hpp"
+#include "../flatsurf/path_iterator.hpp"
 #include "external/catch2/single_include/catch2/catch.hpp"
 #include "generators/surface_generator.hpp"
+#include "generators/saddle_connections_generator.hpp"
+#include "generators/half_edge_generator.hpp"
 
 namespace flatsurf::test {
 
@@ -59,6 +64,48 @@ TEMPLATE_TEST_CASE("Deformations", "[deformation]", (long long), (mpq_class), (r
 
     REQUIRE(track->domain() == domain);
     REQUIRE(track->codomain() == *surface);
+  }
+}
+
+TEMPLATE_TEST_CASE("Deform a Flat Triangulation", "[flat_triangulation][deformation]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using R2 = Vector<TestType>;
+
+  const auto surface = makeL<R2>();
+
+  SECTION("Trivially deform an L") {
+    const auto shift = OddHalfEdgeMap<R2>(*surface);
+    REQUIRE(surface->operator+(shift).codomain() == *surface);
+  }
+
+  SECTION("Stretch an L") {
+    auto shift = OddHalfEdgeMap<R2>(*surface);
+
+    shift.set(HalfEdge(8), R2(0, 1));
+    shift.set(HalfEdge(7), R2(0, 1));
+
+    const auto shifted = surface->operator+(shift);
+
+    GIVEN("The Shifted Surface " << shifted) {
+      REQUIRE(shifted.codomain() != *surface);
+
+      THEN("Half Edges can be Mapped") {
+        for (auto he : surface->halfEdges())
+          REQUIRE(shifted(Path(SaddleConnection(*surface, he))).has_value());
+
+        REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(8)))->size() == 1);
+        REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(8)))->begin()->vector() == surface->fromHalfEdge(HalfEdge(8)) + R2(0, 1));
+
+        REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(7)))->size() == 1);
+        REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(7)))->begin()->vector() == surface->fromHalfEdge(HalfEdge(7)) + R2(0, 1));
+      }
+
+      AND_THEN("Saddle Connections can be Mapped") {
+        const auto connection = GENERATE_REF(saddleConnections(surface));
+
+        const auto image = shifted(connection);
+        REQUIRE(image.has_value());
+      }
+    }
   }
 }
 
