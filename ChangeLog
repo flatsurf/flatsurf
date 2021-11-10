@@ -4,6 +4,20 @@ intervalxt Change Log
 
 .. current developments
 
+v3.9.1
+====================
+
+**Fixed:**
+
+* Updated dependency of conda package in flatsurf channel to depend on libeantic instead of e-antic (libeantic + pyeantic)
+* Updated conda pins for packages in flatsurf channel.
+
+**Performance:**
+
+* Implemented shortcut equality check of surfaces when they are identical.
+
+
+
 v3.9.0
 ====================
 
