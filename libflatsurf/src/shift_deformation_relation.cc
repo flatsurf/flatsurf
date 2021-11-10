@@ -56,28 +56,26 @@ std::optional<Path<Surface>> ShiftDeformationRelation<Surface>::operator()(const
 
     for (const auto& intersection : connection.path())
       targets.push_back(intersection.halfEdge());
-    targets.push_back(connection.target());
 
     for (const auto& target : targets) {
       // Compute the sequence of half edges that we have to traverse to go to
       // the vertex which has "target" as an outgoing vertex.
       LIBFLATSURF_ASSERT(face != target, "A saddle connection cannot cross the same half edge twice in a row but " << connection << " is crossing from " << face << " to " << target);
 
-      // Move to the target half edge.
-      image += shifted.get(face);
-      face = surface.nextInFace(face);
-
-      if (target == surface.nextInFace(face)) {
+      if (target == surface.previousInFace(face)) {
+        // Cross over the target half edge into the opposite face.
+        face = -target;
+      } else if (target == surface.nextInFace(face)) {
+        // Cross over the target half edge into the opposite face.
         image += shifted.get(face);
-        face = surface.nextInFace(face);
+        image += shifted.get(target);
+        face = -target;
+      } else {
+        LIBFLATSURF_UNREACHABLE("Target half edge " << target << " must be in the same face as " << face);
       }
-
-      LIBFLATSURF_ASSERT(target == face, "Target half edge " << target << " must be in the same face as " << face);
-
-      // Cross over the target half edge into the opposite face.
-      image += shifted.get(target);
-      face = -target;
     }
+
+    image += shifted.get(-connection.target());
   }
 
   return image;
