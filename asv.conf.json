@@ -24,7 +24,7 @@
     "libintervalxt>=3.0.0": [],
     "libtool": [],
     "make": [],
-    "pyexactreal>=2.1.1": [],
+    "pyexactreal>=2.2.1": [],
     "setuptools": []
   },
   "conda_channels": ["flatsurf", "conda-forge", "default"],
