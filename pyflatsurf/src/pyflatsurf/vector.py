@@ -301,12 +301,16 @@ class Vectors(UniqueRepresentation, Parent):
 
         sage: from pyeantic import RealEmbeddedNumberField
         sage: R = RealEmbeddedNumberField(K)
-        sage: assert Vectors(R) is V
-        sage: assert Vectors(R.renf) is V
+        sage: Vectors(R) is V
+        True
+        sage: Vectors(R.renf) is V
+        True
 
         sage: from gmpxxyy import mpz, mpq
-        sage: assert Vectors(QQ) is Vectors(mpq)
-        sage: assert Vectors(ZZ) is Vectors(mpz)
+        sage: Vectors(QQ) is Vectors(mpq)
+        True
+        sage: Vectors(ZZ) is Vectors(mpz)
+        True
     """
     Element = Vector
 
