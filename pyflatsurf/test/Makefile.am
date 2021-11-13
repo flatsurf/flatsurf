@@ -18,7 +18,7 @@ sage-doctest.sh: test-env.sh
 @VALGRIND_CHECK_RULES@
 
 BUILT_SOURCES = test-env.sh python-doctest.sh sage-doctest.sh
-EXTRA_DIST += test-env.sh.in python-doctest.sh.in sage-doctest.sh.in
+EXTRA_DIST += test-env.sh.in python-doctest.sh.in sage-doctest.sh.in disable-pytest/pytest.py
 CLEANFILES = test-env.sh python-doctest.sh sage-doctest.sh
 $(builddir)/test-env.sh: $(srcdir)/test-env.sh.in Makefile
 	sed -e 's,[@]abs_srcdir[@],$(abs_srcdir),g' -e 's,[@]abs_builddir[@],$(abs_builddir),g' -e 's,[@]pythondir[@],$(pythondir),g' < $< > $@
