@@ -33,6 +33,7 @@
 #include <exact-real/yap/arb.hpp>
 #include <gmpxxll/mpz_class.hpp>
 #include <ostream>
+#include <limits>
 
 #include "../flatsurf/bound.hpp"
 #include "../flatsurf/ccw.hpp"
@@ -164,8 +165,8 @@ Vector& detail::VectorBase<Vector>::operator*=(const mpz_class& rhs) {
     self.self->y *= exactreal::Arb(rhs)(ARB_PRECISION_FAST);
   } else if constexpr (IsLongLong<T>) {
     using gmpxxll::mpz_class;
-    LIBFLATSURF_ASSERT(rhs * mpz_class(self.self->x) <= mpz_class(LONG_LONG_MAX), "Multiplication overflow");
-    LIBFLATSURF_ASSERT(rhs * mpz_class(self.self->y) <= mpz_class(LONG_LONG_MAX), "Multiplication overflow");
+    LIBFLATSURF_ASSERT(rhs * mpz_class(self.self->x) <= mpz_class(std::numeric_limits<long long>::max()), "Multiplication overflow");
+    LIBFLATSURF_ASSERT(rhs * mpz_class(self.self->y) <= mpz_class(std::numeric_limits<long long>::max()), "Multiplication overflow");
     self.self->x *= mpz_class(rhs).get_sll();
     self.self->y *= mpz_class(rhs).get_sll();
   } else {
@@ -207,7 +208,7 @@ Vector& detail::VectorBase<Vector>::operator/=(const mpz_class& rhs) {
     self.self->y /= exactreal::Arb(rhs)(ARB_PRECISION_FAST);
   } else if constexpr (IsLongLong<T>) {
     using gmpxxll::mpz_class;
-    if (rhs >= mpz_class(LONG_LONG_MAX)) {
+    if (rhs >= mpz_class(std::numeric_limits<long long>::max())) {
       self.self->x = 0;
       self.self->y = 0;
     } else {
