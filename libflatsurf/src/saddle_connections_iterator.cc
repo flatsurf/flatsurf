@@ -98,7 +98,7 @@ void ImplementationOf<SaddleConnectionsIterator<Surface>>::prepareSearch() {
 
 template <typename Surface>
 CCW ImplementationOf<SaddleConnectionsIterator<Surface>>::ccw(const Boundary& lhs, const Chain<Surface>& rhs) {
-  return std::visit([&](const auto& l) {
+  return visit([&](const auto& l) {
     using B = std::decay_t<decltype(l)>;
     if constexpr (std::is_same_v<B, Chain<Surface>>) {
       auto ccw = static_cast<const Vector<exactreal::Arb>&>(l).ccw(static_cast<const Vector<exactreal::Arb>&>(rhs));
@@ -106,17 +106,17 @@ CCW ImplementationOf<SaddleConnectionsIterator<Surface>>::ccw(const Boundary& lh
     }
     return ccw(lhs, static_cast<const Vector<T>&>(rhs));
   },
-      lhs);
+  lhs);
 }
 
 template <typename Surface>
 CCW ImplementationOf<SaddleConnectionsIterator<Surface>>::ccw(const Boundary& lhs, const Vector<T>& rhs) {
-  return std::visit([&](const auto& b) { return static_cast<const Vector<T>&>(b).ccw(rhs); }, lhs);
+  return visit([&](const auto& b) { return static_cast<const Vector<T>&>(b).ccw(rhs); }, lhs);
 }
 
 template <typename Surface>
 CCW ImplementationOf<SaddleConnectionsIterator<Surface>>::ccw(const Boundary& lhs, const Boundary& rhs) {
-  return std::visit([&](const auto& b) {
+  return visit([&](const auto& b) {
     return ccw(lhs, b);
   },
       rhs);
@@ -255,7 +255,7 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
           pushStart(s, beyondRadius);
 
           // Shrink the search sector for the clockwise descent.
-          if (std::holds_alternative<Chain<Surface>>(boundary[1]) || std::get<Vector<T>>(boundary[1]).ccw(nextEdgeEnd) != CCW::COUNTERCLOCKWISE) {
+          if (std::holds_alternative<Chain<Surface>>(boundary[1]) || std::get_if<Vector<T>>(&boundary[1])->ccw(nextEdgeEnd) != CCW::COUNTERCLOCKWISE) {
             tmp.push(std::move(boundary[1]));
             boundary[1] = nextEdgeEnd;
           } else {
@@ -264,7 +264,7 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
           // Exclude sectorBegin from future search if this saddle connections
           // hits it exactly so we hide all future vertices that lie on this
           // line.
-          if (std::holds_alternative<Vector<T>>(boundary[0]) && std::get<Vector<T>>(boundary[0]).ccw(nextEdgeEnd) == CCW::COLLINEAR)
+          if (std::holds_alternative<Vector<T>>(boundary[0]) && std::get_if<Vector<T>>(&boundary[0])->ccw(nextEdgeEnd) == CCW::COLLINEAR)
             boundary[0] = nextEdgeEnd;
 
           if (beyondRadius) {
@@ -286,7 +286,7 @@ bool ImplementationOf<SaddleConnectionsIterator<Surface>>::increment() {
       tmp.pop();
       applyMoves();
       // Shrink the search sector for the counter-clockwise descent
-      if (std::holds_alternative<Chain<Surface>>(boundary[0]) || std::get<Vector<T>>(boundary[0]).ccw(nextEdgeEnd) != CCW::CLOCKWISE) {
+      if (std::holds_alternative<Chain<Surface>>(boundary[0]) || std::get_if<Vector<T>>(&boundary[0])->ccw(nextEdgeEnd) != CCW::CLOCKWISE) {
         tmp.push(std::move(boundary[0]));
         boundary[0] = nextEdgeEnd;
       } else {

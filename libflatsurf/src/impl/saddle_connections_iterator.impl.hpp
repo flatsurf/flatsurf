@@ -30,6 +30,7 @@
 #include "../../flatsurf/ccw.hpp"
 #include "../../flatsurf/half_edge.hpp"
 #include "../../flatsurf/saddle_connections_iterator.hpp"
+#include "../util/assert.ipp"
 
 namespace flatsurf {
 
@@ -90,6 +91,18 @@ class ImplementationOf<SaddleConnectionsIterator<Surface>> {
   };
 
   using Boundary = std::variant<Chain<Surface>, Vector<T>>;
+
+  // A replacement for std::visit() which is not available in macOS < 10.13.
+  template <typename F>
+  static auto visit(F callback, const Boundary& boundary) {
+    if (std::holds_alternative<Chain<Surface>>(boundary)) {
+      return callback(*std::get_if<Chain<Surface>>(&boundary));
+    } else if (std::holds_alternative<Vector<typename Surface::Coordinate>>(boundary)) {
+      return callback(*std::get_if<Vector<typename Surface::Coordinate>>(&boundary));
+    } else {
+      LIBFLATSURF_UNREACHABLE("Boundary must be either a chain or a vector.");
+    }
+  }
 
   static CCW ccw(const Boundary& lhs, const Chain<Surface>& rhs);
   static CCW ccw(const Boundary& lhs, const Boundary& rhs);
