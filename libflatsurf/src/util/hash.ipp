@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2021 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include <cstdint>
 #include <functional>
 #include <type_traits>
+#include <limits>
 
 #include "false.ipp"
 
@@ -42,7 +43,7 @@ inline size_t hash_combine(const T& t) {
 
 template <typename S, typename T, typename... Args>
 inline size_t hash_combine(const S& s, const T& t, const Args&... args) {
-  if constexpr (std::is_same_v<size_t, uint64_t>) {
+  if constexpr (std::numeric_limits<size_t>::digits == 64) {
     // http://mostlymangling.blogspot.com/2019/01/better-stronger-mixer-and-test-procedure.html, public domain
     const auto rrxmxmx = [](size_t v) {
       const auto ror64 = [](size_t word, unsigned int shift) {
