@@ -20,6 +20,8 @@
 #include "../flatsurf/permutation.hpp"
 
 #include <boost/range/numeric.hpp>
+#include <algorithm>
+#include <random>
 #include <cassert>
 #include <ostream>
 #include <unordered_set>
@@ -104,12 +106,18 @@ Permutation<T>::Permutation(const std::unordered_map<T, T> &permutation) :
 template <typename T>
 Permutation<T> Permutation<T>::random(const std::vector<T> &domain) {
   LIBFLATSURF_ASSERT_ARGUMENT(std::unordered_set<T>(domain.begin(), domain.end()).size() == domain.size(), "domain must not contain duplicates");
+
   std::vector<T> image = domain;
-  std::random_shuffle(image.begin(), image.end());
+
+  std::random_device rand;
+  std::mt19937 generator(rand());
+  std::shuffle(image.begin(), image.end(), generator);
+
   std::vector<std::pair<T, T>> permutation;
   for (size_t i = 0; i < domain.size(); i++) {
     permutation.push_back(std::pair(domain[i], image[i]));
   }
+
   return Permutation<T>(permutation);
 }
 
