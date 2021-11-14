@@ -21,6 +21,7 @@
 #define LIBFLATSURF_VERTICAL_IMPL_HPP
 
 #include <functional>
+#include <unordered_set>
 
 #include "../../flatsurf/vertical.hpp"
 #include "flat_triangulation.impl.hpp"

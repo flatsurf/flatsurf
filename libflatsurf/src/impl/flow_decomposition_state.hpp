@@ -23,6 +23,7 @@
 #include <intervalxt/connection.hpp>
 #include <iosfwd>
 #include <list>
+#include <unordered_map>
 
 #include "../../flatsurf/contour_decomposition.hpp"
 #include "../../flatsurf/saddle_connection.hpp"
