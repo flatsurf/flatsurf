@@ -99,7 +99,9 @@ FlowConnection<Surface> FlowConnection<Surface>::operator-() const {
 
   LIBFLATSURF_ASSERT(self->negative->self->kind == static_cast<typename ImplementationOf<FlowConnection>::Kind>(-static_cast<int>(self->kind)), "Negative of connection is of unexpected type.");
 
-  return self->negative.value();
+  LIBFLATSURF_ASSERT(self->negative.has_value(), "Negative of flow connection must be computable.");
+
+  return *self->negative;
 }
 
 template <typename Surface>
