@@ -4,6 +4,15 @@ intervalxt Change Log
 
 .. current developments
 
+v3.9.3
+====================
+
+**Fixed:**
+
+* Fixed compilation on 64-bit macOS systems.
+
+
+
 v3.9.2
 ====================
 
