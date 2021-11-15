@@ -25,6 +25,7 @@
 #include <exact-real/element.hpp>
 #include <exact-real/number_field.hpp>
 #include <numeric>
+#include <unordered_set>
 
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/deformation.hpp"

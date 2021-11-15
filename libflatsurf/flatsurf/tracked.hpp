@@ -22,6 +22,7 @@
 
 #include <functional>
 #include <iosfwd>
+#include <vector>
 
 #include "movable.hpp"
 

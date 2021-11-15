@@ -19,6 +19,8 @@
 
 #include "impl/lengths.hpp"
 
+#include <unordered_set>
+
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 

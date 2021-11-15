@@ -21,7 +21,7 @@
 #define LIBFLATSURF_CONTOUR_COMPONENT_IMPL_COMPONENT_STATE_HPP
 
 #include <iosfwd>
-#include <list>
+#include <vector>
 #include <unordered_set>
 
 #include "../../flatsurf/half_edge.hpp"

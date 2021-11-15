@@ -28,7 +28,7 @@
 #include <intervalxt/label.hpp>
 #include <memory>
 #include <ostream>
-#include <unordered_set>
+#include <unordered_map>
 
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/fmt.hpp"

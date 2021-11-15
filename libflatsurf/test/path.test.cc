@@ -98,7 +98,7 @@ TEMPLATE_TEST_CASE("Short Paths", "[path]", (long long), (mpq_class), (renf_elem
     });
     CAPTURE(path);
 
-    REQUIRE(path.tighten() == Path<Surface>(-SaddleConnection{*surface, surface->previousInFace(face)}));
+    REQUIRE(path.tighten() == Path<Surface>(-SaddleConnection<Surface>(*surface, surface->previousInFace(face))));
   }
 }
 
@@ -119,7 +119,7 @@ TEMPLATE_TEST_CASE("Random Paths", "[path]", (long long), (mpq_class), (renf_ele
     auto last = SaddleConnection{*surface, initial};
     auto path = Path{last};
     for (int i = 1; i < length; i++) {
-      const auto connections = SaddleConnections{*surface}.source(Vertex::source(last.target(), *surface)).sample();
+      const auto connections = SaddleConnections<Surface>(*surface).source(Vertex::source(last.target(), *surface)).sample();
       for (const auto& next : connections) {
         CAPTURE(last, next);
         if ((-last).angle(next) != 0)

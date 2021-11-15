@@ -22,6 +22,7 @@
 
 #include <ostream>
 #include <vector>
+#include <unordered_map>
 
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/contour_component.hpp"
