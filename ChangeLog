@@ -4,6 +4,15 @@ intervalxt Change Log
 
 .. current developments
 
+v3.9.4
+====================
+
+**Fixed:**
+
+* Fixed elimination of marked points when marked points are collinear.
+
+
+
 v3.9.3
 ====================
 
