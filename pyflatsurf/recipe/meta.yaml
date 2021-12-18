@@ -1,4 +1,4 @@
-{% set version = '3.9.3' %}
+{% set version = '3.9.4' %}
 {% set build_number = '0' %}
 
 package:
