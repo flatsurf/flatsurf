@@ -57,7 +57,8 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::tuple<std::st
     HEPTAGON_L,
     GOLDEN_L,
     _1072221,
-    LAST = _1072221,
+    _12345034015233,
+    LAST = _12345034015233,
   };
 
   Surface current;
@@ -196,6 +197,13 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::tuple<std::st
         if constexpr (hasNumberFieldElements<T>) {
           name = "(10, 7, 2, 2, 2, 1)";
           value = make1072221<R2>();
+        } else
+          value = nullptr;
+        return;
+      case Surface::_12345034015233:
+        if constexpr (hasFractions<T>) {
+          name = "ThurstonVeech((1, 2, 3, 4, 5, 0), (3, 4, 0, 1, 5, 2), [3], [3])";
+          value = make12345034015233<R2>();
         } else
           value = nullptr;
         return;

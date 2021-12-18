@@ -141,7 +141,7 @@ std::optional<HalfEdge> GenericRetriangulationDeformationRelation<Surface>::sour
 
   HalfEdge source_ = baseimage.source();
   {
-    LIBFLATSURF_ASSERT(this->domain->angle(Vertex::source(source, *this->domain)) == this->codomain->angle(Vertex::source(source_, *this->codomain)), "Total angle at vertex must be the same in domain and codomain.");
+    LIBFLATSURF_ASSERT(this->domain->angle(Vertex::source(source, *this->domain)) == this->codomain->angle(Vertex::source(source_, *this->codomain)), "Total angle at vertex must be the same in domain and codomain but turn angle at " << Vertex::source(source, *this->domain) << " in " << *this->domain << " is " << this->domain->angle(Vertex::source(source, *this->domain)) << " whereas it is " << this->codomain->angle(Vertex::source(source_, *this->codomain)) << " at " << Vertex::source(source_, *this->codomain) << " in " << *this->codomain);
 
     // Perform `angle` full turns of baseimage.
     source_ = turn(this->codomain, source_, baseimage.vector(), angle);
