@@ -30,13 +30,19 @@
 
 namespace flatsurf {
 
+/// A deformation describing the relation between two surfaces, `domain` and
+/// `codomain`, that are identical up to retriangulation and marked points.
 template <typename Surface>
 class GenericRetriangulationDeformationRelation : public RetriangulationDeformationRelation<Surface> {
   using T = typename Surface::Coordinate;
 
  public:
+  /// Create a deformation that relates `domain` and `codomain` by identifying
+  /// the half edges `preimage` and `image`.
   GenericRetriangulationDeformationRelation(const Surface& domain, const Surface& codomain, HalfEdge preimage, HalfEdge image);
 
+  /// Create a deformation that relates `domain` and `codomain` by identifying
+  /// the straight paths `preimage` and `image`.
   GenericRetriangulationDeformationRelation(const Surface& domain, const Surface& codomain, Path<Surface> preimage, Path<Surface> image);
 
   std::optional<Path<Surface>> operator()(const Path<Surface>&) const override;
@@ -46,9 +52,8 @@ class GenericRetriangulationDeformationRelation : public RetriangulationDeformat
   /// Return a pair whose first entry is a saddle connection starting at
   /// `source` in `domain` and whose second entry is a corresponding saddle
   /// connection in `codomain`.
-  /// The two entries might not be exactly equivalent due to them being shorter
-  /// because they are stopping at marked points but they are starting at the
-  /// same vertex and going in the same direction on the surface.
+  /// The two entries might not be exactly equivalent if one of them stops at a
+  /// marked point that does not exist in the other surface.
   std::optional<std::pair<SaddleConnection<Surface>, SaddleConnection<Surface>>> relation(const Vertex& source) const;
 
   std::optional<HalfEdge> source(HalfEdge source, const Vector<T>& vector) const;
@@ -69,6 +74,12 @@ class GenericRetriangulationDeformationRelation : public RetriangulationDeformat
   Path<Surface> image;
 
  private:
+  /// For each vertex in the domain, a pair of corresponding saddle connections, i.e., they are
+  /// * starting at corresponding vertices
+  /// * going in corresponding directions.
+  /// However, they might not be equal, e.g., because one is shorter because it
+  /// is hitting a marked point before it reaches the corresponding target
+  /// vertex.
   mutable std::unordered_map<Vertex, std::pair<SaddleConnection<Surface>, SaddleConnection<Surface>>> relations;
 };
 

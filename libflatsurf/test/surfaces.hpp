@@ -326,6 +326,20 @@ auto make1072221() {
   return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*make1072221Combinatorial()), vectors);
 }
 
+inline auto make12345034015233Combinatorial() {
+  auto vertices = vector<vector<int>>{{1, -3, 8, -7, 12, -11}, {-1, 6, -5, 10, -12, 2}, {-2, 7, -9, 14, -13, 18, -17, 13, -15, 5, -4, 9, -8, 16, -18, 17, -16, 3}, {4, -6, 11, -10, 15, -14}};
+  return std::make_shared<FlatTriangulationCombinatorial>(vertices);
+}
+
+template <typename R2>
+auto make12345034015233() {
+  // ThurstonVeech((1, 2, 3, 4, 5, 0), (3, 4, 0, 1, 5, 2), [3], [3])
+  vector<R2> vectors;
+  vectors = {R2(18, 1) / 6, R2(-18, 0) / 6, R2(0, -1) / 6, R2(18, 1) / 6, R2(-18, 0) / 6, R2(0, -1) / 6, R2(18, 1) / 6, R2(-18, 0) / 6, R2(0, -1) / 6, R2(18, 1) / 6, R2(-18, 0) / 6, R2(0, -1) / 6, R2(18, 1) / 6, R2(-18, 0) / 6, R2(0, -1) / 6, R2(18, 1) / 6, R2(-18, 0) / 6, R2(0, -1) / 6};
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*make12345034015233Combinatorial()), vectors);
+}
+
+
 }  // namespace flatsurf::test
 
 #endif

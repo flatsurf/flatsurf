@@ -36,6 +36,7 @@
 #include "../flatsurf/vertex.hpp"
 #include "../flatsurf/vertical.hpp"
 #include "util/assert.ipp"
+#include "external/rx-ranges/include/rx/ranges.hpp"
 
 namespace flatsurf {
 
@@ -49,11 +50,23 @@ GenericRetriangulationDeformationRelation<Surface>::GenericRetriangulationDeform
   RetriangulationDeformationRelation<Surface>(domain, codomain), preimage(std::move(preimage)), image(std::move(image)) {
   LIBFLATSURF_ASSERT(this->preimage.begin() != this->preimage.end(), "preimage must be a non-trivial path");
   LIBFLATSURF_ASSERT(this->preimage.begin()->surface() == *this->domain, "preimage must live in the domain");
-  LIBFLATSURF_ASSERT(this->image.begin() != this->image.end(), "preimage must be a non-trivial path");
+  LIBFLATSURF_ASSERT(rx::zip(this->preimage, this->preimage | rx::skip_n(1)) | rx::all_of([&](const auto& connections) {
+      return domain.angle(Vertex::source(std::get<0>(connections).target(), domain)) == 1
+        && std::get<0>(connections).ccw(std::get<1>(connections)) == CCW::COLLINEAR
+        && std::get<0>(connections).vector().orientation(std::get<1>(connections)) == ORIENTATION::SAME;
+  }), "Preimage must be a sequence of collinear saddle connections only interrupted by marked points but it is not.");
+  LIBFLATSURF_ASSERT(rx::zip(this->image, this->image | rx::skip_n(1)) | rx::all_of([&](const auto& connections) {
+      return domain.angle(Vertex::source(std::get<0>(connections).target(), codomain)) == 1
+        && std::get<0>(connections).ccw(std::get<1>(connections)) == CCW::COLLINEAR
+        && std::get<0>(connections).vector().orientation(std::get<1>(connections)) == ORIENTATION::SAME;
+  }), "Image must be a sequence of collinear saddle connections only interrupted by marked points but it is not.");
+  LIBFLATSURF_ASSERT(this->image.begin() != this->image.end(), "image must be a non-trivial path");
   LIBFLATSURF_ASSERT(this->image.begin()->surface() == *this->codomain, "image must live in the codomain");
-  LIBFLATSURF_ASSERT(this->domain->angle(Vertex::source(this->preimage.begin()->source(), *this->domain)) == this->codomain->angle(Vertex::source(this->image.begin()->source(), *this->codomain)), "Paths in domain and codomain cannot be equivalent since the total angle at their starting points do not match.");
-  LIBFLATSURF_ASSERT(this->preimage.begin()->vector().ccw(this->image.begin()->vector()) == CCW::COLLINEAR, "Preimage and image are not collinear. They do not define a retriangulation.");
+  LIBFLATSURF_ASSERT(this->domain->angle(Vertex::source(this->preimage.begin()->source(), *this->domain)) == this->codomain->angle(Vertex::source(this->image.begin()->source(), *this->codomain)), "Paths in domain and codomain must be equivalent but the total angle at their starting points do not match.");
+  LIBFLATSURF_ASSERT(this->preimage.begin()->vector().ccw(this->image.begin()->vector()) == CCW::COLLINEAR, "Preimage and image must be collinear but they are not.");
   LIBFLATSURF_ASSERT(this->preimage.begin()->vector().orientation(this->image.begin()->vector()) == ORIENTATION::SAME, "Preimage and image are not oriented identically. They do not define a retriangulation.");
+  LIBFLATSURF_ASSERT((this->preimage | rx::transform([](const auto& connection) { return connection.vector(); }) | rx::sum())
+      == (this->image | rx::transform([](const auto& connection) { return connection.vector(); }) | rx::sum()), "Preimage and image must describe the same saddle connection up to marked points but the sum of their vectors do not match.")
 }
 
 template <typename Surface>
@@ -130,7 +143,7 @@ std::optional<HalfEdge> GenericRetriangulationDeformationRelation<Surface>::sour
   if (!relation)
     return std::nullopt;
 
-  // These two saddle connections are equal but live in domain and codomain respectively.
+  // These two saddle connections are equal but live in domain and codomain, respectively.
   const auto& basepreimage = relation->first;
   const auto& baseimage = relation->second;
 
@@ -141,7 +154,7 @@ std::optional<HalfEdge> GenericRetriangulationDeformationRelation<Surface>::sour
 
   HalfEdge source_ = baseimage.source();
   {
-    LIBFLATSURF_ASSERT(this->domain->angle(Vertex::source(source, *this->domain)) == this->codomain->angle(Vertex::source(source_, *this->codomain)), "Total angle at vertex must be the same in domain and codomain.");
+    LIBFLATSURF_ASSERT(this->domain->angle(Vertex::source(source, *this->domain)) == this->codomain->angle(Vertex::source(source_, *this->codomain)), "Total angle at vertex must be the same in domain and codomain but turn angle at " << Vertex::source(source, *this->domain) << " in " << *this->domain << " is " << this->domain->angle(Vertex::source(source, *this->domain)) << " whereas it is " << this->codomain->angle(Vertex::source(source_, *this->codomain)) << " at " << Vertex::source(source_, *this->codomain) << " in " << *this->codomain << ". The relation of these two surfaces is based upon " << this->preimage << " being equal to " << this->image);
 
     // Perform `angle` full turns of baseimage.
     source_ = turn(this->codomain, source_, baseimage.vector(), angle);
@@ -170,33 +183,46 @@ std::optional<std::pair<SaddleConnection<Surface>, SaddleConnection<Surface>>> G
   insert(*preimage.begin(), *image.begin());
   insert(*(-preimage).begin(), *(-image).begin());
 
-  for (const auto& connection : SaddleConnections<Surface>{*this->domain}.byLength()) {
-    const auto source = Vertex::source(connection.source(), *this->domain);
-    const auto target = Vertex::source(connection.target(), *this->domain);
+  for (const auto& connectionInDomain : SaddleConnections<Surface>{*this->domain}.byLength()) {
+    const auto sourceInDomain = Vertex::source(connectionInDomain.source(), *this->domain);
+    const auto targetInDomain = Vertex::source(connectionInDomain.target(), *this->domain);
 
-    if (relations.find(source) == relations.end())
+    if (relations.find(sourceInDomain) == relations.end())
       continue;
 
     // This saddle connection starts from a known vertex so we can use it to
     // create a relation between domain and codomain.
 
-    if (relations.find(target) == relations.end()) {
-      // This saddle connection starts at an unknown vertex. It will give us a
+    if (relations.find(targetInDomain) == relations.end()) {
+      // This saddle connection ends at an unknown vertex. It will give us a
       // new relation.
 
       // Reconstruct the same saddle connection in the codomain.
-      HalfEdge cosource = relations.at(source).second.source();
-      cosource = turn(this->codomain, cosource, relations.at(source).second.vector(), relations.at(source).first.angle(connection));
-      cosource = turn(this->codomain, cosource, relations.at(source).second.vector(), connection.vector());
+      HalfEdge sourceInCodomain = relations.at(sourceInDomain).second.source();
+      sourceInCodomain = turn(this->codomain, sourceInCodomain, relations.at(sourceInDomain).second.vector(), relations.at(sourceInDomain).first.angle(connectionInDomain));
+      sourceInCodomain = turn(this->codomain, sourceInCodomain, relations.at(sourceInDomain).second.vector(), connectionInDomain.vector());
 
-      const auto coconnections = SaddleConnections<Surface>{*this->codomain}.sector(cosource).sector(connection.vector(), connection.vector()).bound(Bound::upper(connection.vector()));
-      if (coconnections.begin() == coconnections.end()) {
-        // The connection's target is a marked point that has been removed in the codomain.
-        if (target == search)
+      const auto connectionsInCodomain = SaddleConnections<Surface>{*this->codomain}.sector(sourceInCodomain).sector(connectionInDomain.vector(), connectionInDomain.vector()).bound(Bound::upper(connectionInDomain.vector()));
+      if (connectionsInCodomain.begin() == connectionsInCodomain.end()) {
+        // The connection cannot be realized in the codomain because the
+        // connection's target is a marked point that has been removed in the
+        // codomain.
+        if (targetInDomain == search)
+          // That target is the vertex we are looking for but it does not exist
+          // in the codomain anymore.
           return std::nullopt;
-      } else {
-        insert(-connection, -*coconnections.begin());
+
+        continue;
       }
+
+      const auto connectionInCodomain = *connectionsInCodomain.begin();
+      if (connectionInCodomain.vector() != connectionInDomain.vector()) {
+        // The connection cannot be realized in the codomain because it hits a
+        // marked point before reaching the corresponding target.
+        continue;
+      }
+
+      insert(-connectionInDomain, -connectionInCodomain);
     }
 
     if (relations.find(search) != relations.end())
