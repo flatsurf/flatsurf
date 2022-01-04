@@ -4,6 +4,18 @@ intervalxt Change Log
 
 .. current developments
 
+v3.10.0
+====================
+
+**Added:**
+
+* Implemented `FlowDecomposition::vertical()` which had been declared in
+  `flow_decomposition.hpp` but was not implemented. (The return value of this
+  is now a `Vertical<Surface>`; same as `FlowComponent::vertical()`.)
+* Added comparison of vectors in pyflatsurf and implementation of the zero() method
+
+
+
 v3.9.4
 ====================
 
