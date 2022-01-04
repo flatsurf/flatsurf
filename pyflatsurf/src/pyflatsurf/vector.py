@@ -5,7 +5,7 @@ Vector wrapper and sage conversion for ``flatsurf.Vector``.
 #*********************************************************************
 #  This file is part of flatsurf.
 #
-#        Copyright (C) 2020 Vincent Delecroix
+#        Copyright (C) 2020-2021 Vincent Delecroix
 #                      2020 Julian Rüth
 #
 #  Flatsurf is free software: you can redistribute it and/or modify
@@ -33,6 +33,7 @@ from pyexactreal.exact_reals import ExactReals
 from sage.all import ZZ, QQ, FreeModule, FreeModules, Morphism, Hom, SetsWithPartialMaps, NumberFields, Parent, UniqueRepresentation
 from sage.rings.number_field.number_field_base import NumberField as SageNumberField
 from sage.structure.element import Vector as SageVector
+from sage.structure.richcmp import op_NE, op_EQ
 
 class Vector(SageVector):
     r"""
@@ -281,6 +282,30 @@ class Vector(SageVector):
         """
         return bool(self.vector)
 
+    def _richcmp_(self, other, op):
+        r"""
+        TESTS::
+
+            sage: from pyflatsurf import flatsurf
+            sage: from pyflatsurf.vector import Vectors
+            sage: from gmpxxyy import mpz
+            sage: V = Vectors(ZZ)
+            sage: V(1, 2) == V(1, 2)
+            True
+            sage: V(1, 2) == V(1, 1)
+            False
+            sage: V(1, 1) < V(1, 2)
+            Traceback (most recent call last):
+            ...
+            TypeError: unsupported comparison between vectors
+        """
+        if op == op_EQ:
+            return self.vector == other.vector
+        elif op == op_NE:
+            return self.vector != other.vector
+        else:
+            raise TypeError('unsupported comparison between vectors')
+
 
 class Vectors(UniqueRepresentation, Parent):
     r"""
@@ -503,6 +528,19 @@ class Vectors(UniqueRepresentation, Parent):
 
     def an_element(self):
         return self((1,0))
+
+    def zero(self):
+        r"""
+        Return the zero vector.
+
+        EXAMPLES::
+
+            sage: from pyflatsurf.vector import Vectors
+            sage: V = Vectors(QQ)
+            sage: V.zero()
+            (0, 0)
+        """
+        return self((0,0))
 
 
 class ConversionVectorSpace(Morphism):
