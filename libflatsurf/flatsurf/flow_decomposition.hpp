@@ -61,7 +61,7 @@ class FlowDecomposition : boost::equality_comparable<FlowDecomposition<Surface>>
   // Return the original surface from which this flow decomposition was created.
   const Surface& surface() const;
 
-  Vector<T> vertical() const;
+  Vertical<Surface> vertical() const;
 
   // Return a triangulation of surface consistent with the decomposition into flow components.
   FlatTriangulation<T> triangulation() const;
