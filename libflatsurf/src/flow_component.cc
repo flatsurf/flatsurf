@@ -268,8 +268,7 @@ boost::logic::tribool FlowComponent<Surface>::keane() const { return self->compo
 
 template <typename Surface>
 Vertical<Surface> FlowComponent<Surface>::vertical() const {
-  const auto& collapsedSurface = self->state->contourDecomposition.collapsed();
-  return Vertical<Surface>(collapsedSurface.uncollapsed(), collapsedSurface.vertical());
+  return decomposition().vertical();
 }
 
 template <typename Surface>
