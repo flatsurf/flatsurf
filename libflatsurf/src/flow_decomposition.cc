@@ -166,6 +166,12 @@ bool FlowDecomposition<Surface>::operator==(const FlowDecomposition<Surface>& rh
 }
 
 template <typename Surface>
+Vertical<Surface> FlowDecomposition<Surface>::vertical() const {
+  const auto& collapsedSurface = self->state->contourDecomposition.collapsed();
+  return Vertical<Surface>(collapsedSurface.uncollapsed(), collapsedSurface.vertical());
+}
+
+template <typename Surface>
 ImplementationOf<FlowDecomposition<Surface>>::ImplementationOf(Surface&& surface, const Vector<T>& vertical) :
   state(FlowDecompositionState<Surface>::make(std::move(surface), vertical)) {}
 

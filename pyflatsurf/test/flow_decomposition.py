@@ -32,8 +32,13 @@ def test_hexagon_eantic():
 
     for connection in surface.connections().bound(16).sector(flatsurf.HalfEdge(1)):
         decomposition = flatsurf.makeFlowDecomposition(surface, connection.vector())
+
         assert repr(decomposition).startswith("FlowDecomposition")
         assert str(decomposition).startswith("FlowDecomposition")
+
+        assert decomposition.vertical().vertical().ccw(connection.vector()) == flatsurf.CCW.COLLINEAR
+        assert decomposition.vertical().vertical().orientation(connection.vector()) == flatsurf.ORIENTATION.SAME
+
         decomposition.decompose(-1)
         n_cylinders = 0
         n_without_periodic_trajectory = 0
