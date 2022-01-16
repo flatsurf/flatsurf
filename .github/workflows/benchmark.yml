@@ -15,13 +15,13 @@ jobs:
         shell: bash -l {0}
         run: |
           mamba env update --quiet -n test -f libflatsurf/environment.yml
-          mamba install --quiet --yes asv
           conda list
       - name: Checkout historic performance data
         uses: actions/checkout@v2
         with:
           path: .asv/results
           ref: asv
+          fetch_depth: 0
       - name: Run benchmarks
         uses: flatsurf/actions/asv@main
       - name: Update historic performance data
