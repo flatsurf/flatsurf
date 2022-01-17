@@ -4,6 +4,21 @@ intervalxt Change Log
 
 .. current developments
 
+v3.10.1
+====================
+
+**Fixed:**
+
+* Fixed creation of ASV benchmark pages with every push to the master branch. See https://flatsurf.github.io/flatsurf/asv/.
+
+**Performance:**
+
+* Improved performance of `ContourDecompsoition` constructor by removing
+  redundant assertion. In flow decompositions that are trivial to compute, this
+  assertion often dominated the overall runtime.
+
+
+
 v3.10.0
 ====================
 
