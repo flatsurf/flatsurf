@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -42,8 +42,8 @@ class Vector : public std::conditional_t<std::is_same_v<T, exactreal::Arb>, deta
   Vector(X&& x, Y&& y) :
     Vector(static_cast<Coordinate>(std::forward<X>(x)), static_cast<Coordinate>(std::forward<Y>(y))) {}
 
-  Coordinate x() const;
-  Coordinate y() const;
+  const Coordinate& x() const;
+  const Coordinate& y() const;
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const Vector<S>&);
