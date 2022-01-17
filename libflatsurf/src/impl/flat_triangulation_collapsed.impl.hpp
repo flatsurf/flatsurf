@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -66,8 +66,12 @@ class ImplementationOf<FlatTriangulationCollapsed<T>> : protected Implementation
   // cross to the other face.
   Tracked<HalfEdgeMap<SaddleConnection>> vectors;
 
-  // Explicitly compute the area of this triangulation.
-  T area();
+  // Return the area of this triangulation.
+  // It is better to just call .area() on the collapsed triangulation directly
+  // which returns the area of the uncollapsed triangulation.
+  // This method exists for the sake of asserting that no area was lost in the
+  // process of collapsing triangles.
+  static T area(const FlatTriangulationCollapsed<T>&);
 
   // Check that the face of this half edge is actually closed.
   bool faceClosed(HalfEdge);
