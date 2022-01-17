@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -195,9 +195,7 @@ ImplementationOf<FlatTriangulationCollapsed<T>>::ImplementationOf(const FlatTria
   }()) {}
 
 template <typename T>
-T ImplementationOf<FlatTriangulationCollapsed<T>>::area() {
-  auto self = from_this();
-
+T ImplementationOf<FlatTriangulationCollapsed<T>>::area(const FlatTriangulationCollapsed<T>& self) {
   T area = T();
 
   for (auto e : self.halfEdges()) {
@@ -415,7 +413,14 @@ void ImplementationOf<FlatTriangulationCollapsed<T>>::flip(HalfEdge e) {
 
   ImplementationOf<FlatTriangulationCombinatorial>::flip(e);
 
-  LIBFLATSURF_ASSERT(area() == self.area(), "Area inconsistent after flip of edge. Area is " << area() << " but should still be " << self.area());
+
+  // In the past we verified that the area of the surface has not been changed
+  // by the flip. While this is a very powerful assertion, it is also extremely
+  // exponsive as lots of flips are performed and the actual flips are much
+  // cheaper than this check. Note that ContourDecomposition still performs
+  // this assertion after all flips have been performed which should be good
+  // enough to spot any issues here.
+  // LIBFLATSURF_ASSERT(ImplementationOf::area(from_this()) == self.area(), "Area inconsistent after flip of edge. Area is " << area(from_this()) << " but should still be " << self.area());
   LIBFLATSURF_ASSERT(faceClosed(e), "Face attached to " << e << " not closed after flip in " << self);
   LIBFLATSURF_ASSERTIONS(([&]() {
     static thread_local AssertConnection<T> assertion;
@@ -453,7 +458,13 @@ std::pair<HalfEdge, HalfEdge> ImplementationOf<FlatTriangulationCollapsed<T>>::c
 
   auto ret = ImplementationOf<FlatTriangulationCombinatorial>::collapse(e);
 
-  LIBFLATSURF_ASSERT(area() == self.area(), "Area inconsistent after collapse of edge. Area is " << area() << " but should still be " << self.area());
+  // In the past we verified that the area of the surface has not been changed
+  // by the collapse. While this is a very powerful assertion, it is also
+  // extremely exponsive as quite a few collapses are performed and the actual
+  // collapses are much cheaper than this check. Note that ContourDecomposition
+  // still performs this assertion after all flips have been performed which
+  // should be good enough to spot any issues here.
+  // LIBFLATSURF_ASSERT(ImplementationOf::area(from_this()) == self.area(), "Area inconsistent after collapse of edge. Area is " << ImplementationOf::area(from_this()) << " but should still be " << self.area());
   LIBFLATSURF_ASSERT(self.halfEdges() | rx::all_of([&](const auto e) { return faceClosed(e); }), "Some faces are not closed after collapse of edge in " << self);
   LIBFLATSURF_ASSERTIONS(([&]() {
     static thread_local AssertConnection<T> assertion;
