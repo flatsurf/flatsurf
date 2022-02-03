@@ -2,8 +2,8 @@
 #*********************************************************************
 #  This file is part of flatsurf.
 #
-#        Copyright (C) 2019-2021 Julian Rüth
-#        Copyright (C) 2020 Vincent Delecroix
+#        Copyright (C) 2019-2022 Julian Rüth
+#        Copyright (C)      2020 Vincent Delecroix
 #
 #  Flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -103,6 +103,9 @@ cppyy.py.add_pythonization(filtered(re.compile("Tracked<.*>"))(add_method("value
 
 # We have to work around issues with complex std::function parameters in cppyy
 cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(add_method("isomorphism")(lambda self, other, kind=None, filter_matrix=lambda a,b,c,d: a == 1 and b == 0 and c == 0 and d == 1, filter_map=lambda a, b: True: cppyy.gbl.flatsurf.isomorphism[type(self).Coordinate.__cpp_name__](self, other, kind or cppyy.gbl.flatsurf.ISOMORPHISM.FACES, lambda m: filter_matrix(m.a, m.b, m.c, m.d), filter_map))), "flatsurf")
+
+# Return the SAF invariant as a Python list
+cppyy.py.add_pythonization(filtered(re.compile("FlowComponent<.*>"))(wrap_method("safInvariant")(lambda self, cpp: list(cpp()))), "flatsurf")
 
 for path in os.environ.get('PYFLATSURF_INCLUDE','').split(':'):
     if path: cppyy.add_include_path(path)

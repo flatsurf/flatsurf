@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 #include <iosfwd>
 #include <list>
 #include <vector>
+#include <gmpxx.h>
 
 #include "copyable.hpp"
 
@@ -80,6 +81,8 @@ class FlowComponent : boost::equality_comparable<FlowComponent<Surface>> {
   Perimeter left() const;
 
   FlowTriangulation<Surface> triangulation() const;
+
+  std::vector<mpq_class> safInvariant() const;
 
   const intervalxt::Component& dynamicalComponent() const;
 
