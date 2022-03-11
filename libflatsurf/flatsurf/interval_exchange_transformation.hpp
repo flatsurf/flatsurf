@@ -74,9 +74,9 @@ class IntervalExchangeTransformation {
   // However, since that is a static type (living in an unnamed namespace) one
   // cannot `boost::type_erasure::any_cast` the result to that type. In
   // principle one could `any_cast` to a `void*` and then `reinterpret_cast` to
-  // that a `intervalxt::sample::Lengths<T>`. However, such a cast is only safe
-  // if the headers of intervalxt are binary compatible with the headers that
-  // were used to build libflatsurf.
+  // a `intervalxt::sample::Lengths<T>`. However, such a cast is only safe if
+  // the headers of intervalxt are binary compatible with the headers that were
+  // used to build libflatsurf.
   intervalxt::IntervalExchangeTransformation forget() const;
 
   // The Edge in the (collapsed) surface from which this label was created originally.
