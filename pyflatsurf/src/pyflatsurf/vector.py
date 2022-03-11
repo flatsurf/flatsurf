@@ -448,7 +448,7 @@ class Vectors(UniqueRepresentation, Parent):
             sage: V.decomposition([K.random_element() * R.random_element(), R.random_element(), R.random_element()])
             [(ℝ(0.621222…), (0, 1, 0)),
              (ℝ(0.673083…), (0, 0, 1)),
-             (ℝ(0.782515…), (-1/2*a^2 - 4, 0, 0))]
+             (ℝ(0.782515…), (..., 0, 0))]
 
         """
         vector = tuple(self._to_coordinate(x) for x in vector)
