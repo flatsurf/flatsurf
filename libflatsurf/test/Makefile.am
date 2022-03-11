@@ -11,6 +11,7 @@ check_PROGRAMS =                        \
   flat_triangulation_combinatorial.test \
   flow_decomposition.test               \
   half_edge.test                        \
+  interval_exchange_tranformation.test  \
   parabolic.test                        \
   path.test                             \
   permutation.test                      \
@@ -34,6 +35,7 @@ flat_triangulation_collapsed_test_SOURCES = flat_triangulation_collapsed.test.cc
 flat_triangulation_combinatorial_test_SOURCES = flat_triangulation_combinatorial.test.cc main.cc
 flow_decomposition_test_SOURCES = flow_decomposition.test.cc main.cc
 half_edge_test_SOURCES = half_edge.test.cc main.cc
+interval_exchange_tranformation_test_SOURCES = interval_exchange_transformation.test.cc main.cc
 edge_test_SOURCES = edge.test.cc main.cc
 path_test_SOURCES = path.test.cc main.cc
 permutation_test_SOURCES = permutation.test.cc main.cc
