@@ -4,6 +4,15 @@ intervalxt Change Log
 
 .. current developments
 
+v3.11.0
+====================
+
+**Added:**
+
+* Added `IntervalExchangeTransformation::forget()` to drop the information about the underlying surface from an IET.
+
+
+
 v3.10.1
 ====================
 
