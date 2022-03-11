@@ -56,7 +56,7 @@ TEMPLATE_TEST_CASE("Access intervalxt object underlying an Interval Exchange Tra
         for (const auto& label : jet.top()) {
           const auto length = jet.lengths()->get(label);
           CAPTURE(boost::type_erasure::typeid_of(length).name());
-          T l = boost::type_erasure::any_cast<T>(length);
+          REQUIRE_NOTHROW(boost::type_erasure::any_cast<T>(length));
         }
       }
     }
