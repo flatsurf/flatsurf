@@ -64,7 +64,7 @@ class IntervalExchangeTransformation {
 
   // Return a clone of this interval exchange transformation ignoring the
   // structure of the underlying surface.
-  // Note that the labels are normalized to 0, …, n in the resulting interval
+  // Note that the labels are normalized to A, …, in the resulting interval
   // exchange transformation. These labels are unrelated to the original
   // labels.
   // The lengths underlying the returned interval exchange transformation are
