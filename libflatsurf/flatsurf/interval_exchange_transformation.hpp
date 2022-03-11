@@ -24,7 +24,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include "intervalxt/sample/lengths.hpp"
+#include "intervalxt/forward.hpp"
 #include "movable.hpp"
 
 namespace flatsurf {
