@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2021 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -997,8 +997,6 @@ void ImplementationOf<FlatTriangulation<T>>::flip(HalfEdge e) {
   LIBFLATSURF_CHECK_ARGUMENT(self.convex(e, true), "cannot flip this edge as a resulting face would not be strictly convex");
 
   ImplementationOf<FlatTriangulationCombinatorial>::flip(e);
-
-  check();
 }
 
 template <typename T>
