@@ -4,6 +4,15 @@ intervalxt Change Log
 
 .. current developments
 
+v3.11.1
+====================
+
+**Performance:**
+
+* Remove redundant expensive assertions when Delaunay triangulating.
+
+
+
 v3.11.0
 ====================
 
