@@ -22,6 +22,7 @@
 
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/path.hpp"
+#include "../flatsurf/point.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "impl/composite_deformation_relation.hpp"
@@ -93,6 +94,11 @@ std::optional<HalfEdge> Deformation<Surface>::operator()(HalfEdge he) const {
 template <typename Surface>
 std::optional<Path<Surface>> Deformation<Surface>::operator()(const Path<Surface>& path) const {
   return self->relation->operator()(path);
+}
+
+template <typename Surface>
+Point<Surface> Deformation<Surface>::operator()(const Point<Surface>& point) const {
+  return self->relation->operator()(point);
 }
 
 template <typename Surface>

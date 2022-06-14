@@ -40,6 +40,11 @@ std::optional<Path<Surface>> CompositeDeformationRelation<Surface>::operator()(c
 }
 
 template <typename Surface>
+Point<Surface> CompositeDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
+  throw std::logic_error("not implemented: cannot map points with this kind of deformation yet");
+}
+
+template <typename Surface>
 std::unique_ptr<DeformationRelation<Surface>> CompositeDeformationRelation<Surface>::clone() const {
   return std::make_unique<CompositeDeformationRelation<Surface>>(*lhs, *rhs);
 }

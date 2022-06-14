@@ -46,6 +46,7 @@ class GenericRetriangulationDeformationRelation : public RetriangulationDeformat
   GenericRetriangulationDeformationRelation(const Surface& domain, const Surface& codomain, Path<Surface> preimage, Path<Surface> image);
 
   std::optional<Path<Surface>> operator()(const Path<Surface>&) const override;
+  Point<Surface> operator()(const Point<Surface>&) const override;
 
   std::optional<Path<Surface>> operator()(HalfEdge source, HalfEdge target, const Vector<T>& vector) const;
 

@@ -127,6 +127,9 @@ class PathIterator;
 template <typename T>
 class Permutation;
 
+template <typename Surface>
+class Point;
+
 struct PrivateConstructor {};
 
 struct ProtectedConstructor {};

@@ -91,6 +91,11 @@ std::optional<Path<Surface>> LinearDeformationRelation<Surface>::operator()(cons
 }
 
 template <typename Surface>
+Point<Surface> LinearDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
+  throw std::logic_error("not implemented: cannot map points with this kind of deformation yet");
+}
+
+template <typename Surface>
 bool LinearDeformationRelation<Surface>::trivial() const {
   return a == 1 && b == 0 && c == 0 && d == 1;
 }

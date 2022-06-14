@@ -29,6 +29,11 @@ std::optional<Path<Surface>> RetriangulationDeformationRelation<Surface>::operat
   throw std::logic_error("not implemented: cannot compute image of a path when a generic retriangulation happened");
 }
 
+template <typename Surface>
+Point<Surface> RetriangulationDeformationRelation<Surface>::operator()(const Point<Surface>&)pointst {
+  throw std::logic_error("not implemented: cannot map points with this kind of deformation yet");
+}
+
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker

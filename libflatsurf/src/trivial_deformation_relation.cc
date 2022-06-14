@@ -36,6 +36,11 @@ std::optional<Path<Surface>> TrivialDeformationRelation<Surface>::operator()(con
 }
 
 template <typename Surface>
+Point<Surface> TrivialDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
+  throw std::logic_error("not implemented: cannot map points with this kind of deformation yet");
+}
+
+template <typename Surface>
 std::unique_ptr<DeformationRelation<Surface>> TrivialDeformationRelation<Surface>::clone() const {
   return std::make_unique<TrivialDeformationRelation>(this->domain);
 }

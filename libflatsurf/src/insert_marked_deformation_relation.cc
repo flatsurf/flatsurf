@@ -43,6 +43,11 @@ std::optional<Path<Surface>> InsertMarkedDeformationRelation<Surface>::operator(
 }
 
 template <typename Surface>
+Point<Surface> InsertMarkedDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
+  throw std::logic_error("not implemented: cannot map points with this kind of deformation yet");
+}
+
+template <typename Surface>
 std::unique_ptr<DeformationRelation<Surface>> InsertMarkedDeformationRelation<Surface>::clone() const {
   return std::make_unique<InsertMarkedDeformationRelation>(this->domain, this->codomain, inserted);
 }

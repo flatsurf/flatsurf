@@ -23,8 +23,12 @@
 
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/path.hpp"
+#include "../flatsurf/point.hpp"
+#include "../flatsurf/edge.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/vector.hpp"
+#include "../flatsurf/ccw.hpp"
 
 namespace flatsurf {
 
@@ -48,6 +52,36 @@ std::optional<Path<Surface>> FlipDeformationRelation<Surface>::operator()(const 
     path_.push_back(SaddleConnection<Surface>::counterclockwise(this->codomain, source, target, segment));
   }
   return path_;
+}
+
+template <typename Surface>
+Point<Surface> FlipDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
+  HalfEdge face = point.face();
+
+  auto coordinates = point.weights(face);
+
+  if (Edge(face) == Edge(flip) || Edge(this->domain->nextInFace(face)) == Edge(flip) || Edge(this->domain->previousInFace(face)) == Edge(flip)) {
+    coordinates = point.weights(flip);
+
+    const HalfEdge origin = this->domain->previousInFace(flip);
+    const HalfEdge p0 = flip;
+    const HalfEdge p1 = this->domain->previousInFace(-flip);
+    const HalfEdge p2 = this->domain->nextInFace(flip);
+
+    const auto origin_point = point.vector(origin);
+
+    // TODO: This might actually be flip. What is the flipping convention?
+    if (this->codomain->fromHalfEdge(-flip).ccw(origin_point) == CCW::COUNTERCLOCKWISE) {
+      // Write the point with respect to the face flip.
+
+    } else {
+      // Write the point with respect to the face -flip.
+
+    }
+  }
+
+  // TODO: Should we change interface to accept tuple?
+  return Point(*this->codomain, face, std::get<0>(coordinates), std::get<1>(coordinates), std::get<2>(coordinates));
 }
 
 template <typename Surface>

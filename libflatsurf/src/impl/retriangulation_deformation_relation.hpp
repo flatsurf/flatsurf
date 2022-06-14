@@ -31,6 +31,7 @@ class RetriangulationDeformationRelation : public DeformationRelation<Surface> {
 
  public:
   std::optional<Path<Surface>> operator()(const Path<Surface>&) const override;
+  Point<Surface> operator()(const Point<Surface>&) const override;
 };
 
 }  // namespace flatsurf

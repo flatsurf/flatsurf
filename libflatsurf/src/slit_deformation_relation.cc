@@ -36,6 +36,11 @@ std::optional<Path<Surface>> SlitDeformationRelation<Surface>::operator()(const 
 }
 
 template <typename Surface>
+Point<Surface> SlitDeformationRelation<Surface>::operator()(const Point<Surface>&)pointst {
+  throw std::logic_error("not implemented: cannot map points with this kind of deformation yet");
+}
+
+template <typename Surface>
 std::unique_ptr<DeformationRelation<Surface>> SlitDeformationRelation<Surface>::clone() const {
   return std::make_unique<SlitDeformationRelation<Surface>>(*this);
 }

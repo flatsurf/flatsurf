@@ -105,6 +105,11 @@ std::optional<Path<Surface>> GenericRetriangulationDeformationRelation<Surface>:
 }
 
 template <typename Surface>
+Point<Surface> GenericRetriangulationDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
+  throw std::logic_error("not implemented: cannot map points with this kind of deformation yet");
+}
+
+template <typename Surface>
 std::optional<Path<Surface>> GenericRetriangulationDeformationRelation<Surface>::operator()(HalfEdge source, HalfEdge target, const Vector<T>& vector) const {
   auto source_ = this->source(source, vector);
   if (!source_)
