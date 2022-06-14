@@ -3,6 +3,16 @@
 [![asv](http://img.shields.io/badge/benchmarked%20by-asv-blue.svg?style=flat)](https://flatsurf.github.io/flatsurf/asv/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4006152.svg)](https://doi.org/10.5281/zenodo.4006152)
 
+<p align="center">
+    <img alt="logo" src="https://avatars.githubusercontent.com/u/46691578?s=300&u=c65d11085307f34e1998cc996e6ee2d16b4d458a&v=4">
+</p>
+
+<h1><p align="center">libflatsurf & pyflatsurf</p></h1>
+
+libflatsurf is C++ library to work with [translation surfaces](https://en.wikipedia.org/wiki/Translation_surface) and pyflatsurf is a low-level wrapper to use libflatsurf from Python.
+
+If you came here looking for the [**flatsurf project**](https://flatsurf.github.io), you probably want to start with [sage-flatsurf](https://github.com/flatsurf/sage-flatsurf) which provides a unified interface to these and many other libraries in the [SageMath](https://sagemath.org) computer algebra system.
+
 ## Current Release Info
 
 We release this package regularly with [rever](https://regro.github.io/rever-docs/index.html); typically with every push to the master branch.
