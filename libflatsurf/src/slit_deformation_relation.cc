@@ -37,7 +37,7 @@ std::optional<Path<Surface>> SlitDeformationRelation<Surface>::operator()(const 
 }
 
 template <typename Surface>
-Point<Surface> SlitDeformationRelation<Surface>::operator()(const Point<Surface>&)pointst {
+Point<Surface> SlitDeformationRelation<Surface>::operator()(const Point<Surface>&) const {
   throw std::logic_error("not implemented: cannot map points with this kind of deformation yet");
 }
 
