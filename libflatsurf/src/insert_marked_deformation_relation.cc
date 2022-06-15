@@ -23,6 +23,7 @@
 
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/path.hpp"
+#include "../flatsurf/point.hpp"
 
 namespace flatsurf {
 

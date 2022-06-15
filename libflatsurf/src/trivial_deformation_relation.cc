@@ -22,6 +22,7 @@
 #include <ostream>
 
 #include "../flatsurf/path.hpp"
+#include "../flatsurf/point.hpp"
 #include "impl/deformation_relation.hpp"
 
 namespace flatsurf {

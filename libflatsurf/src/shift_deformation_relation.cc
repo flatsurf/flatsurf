@@ -24,10 +24,12 @@
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/odd_half_edge_map.hpp"
 #include "../flatsurf/path.hpp"
+#include "../flatsurf/point.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/half_edge_intersection.hpp"
+#include "../flatsurf/point.hpp"
 
 #include "util/assert.ipp"
 

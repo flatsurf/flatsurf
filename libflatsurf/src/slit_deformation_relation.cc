@@ -23,6 +23,7 @@
 
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/path.hpp"
+#include "../flatsurf/point.hpp"
 
 namespace flatsurf {
 

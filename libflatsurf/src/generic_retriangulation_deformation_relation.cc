@@ -27,6 +27,7 @@
 #include "../flatsurf/half_edge_set_iterator.hpp"
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/path.hpp"
+#include "../flatsurf/point.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_by_length.hpp"
