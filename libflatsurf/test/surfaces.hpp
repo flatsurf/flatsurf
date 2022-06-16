@@ -339,6 +339,63 @@ auto make12345034015233() {
   return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*make12345034015233Combinatorial()), vectors);
 }
 
+inline auto makeDilationTorusCombinatorial() {
+  auto vertices = vector<vector<int>>{{1, 2, 3, 4, 5, -3}, {-1, -2, 6, -4, -5, -6}};
+  return std::make_shared<FlatTriangulationCombinatorial>(vertices);
+}
+
+template <typename R2>
+auto makeDilationTorus() {
+  // Returns the dilation surface given by a unit square and a (2, 1)
+  // rectangle glued as follows:
+  //
+  //    a  b
+  //   +-+---+
+  // c | |   | c
+  //   +-+---+
+  //    b  a
+  vector<R2> vectors;
+  vectors = {R2(0,  1), R2(-1, 0), R2(-1, -1), R2(0, -1), R2( 1, 0), R2( 1,  1),
+             R2(0, -1), R2( 2, 0), R2( 1,  1), R2(0,  1), R2(-2, 0), R2(-1, -1)};
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeDilationTorusCombinatorial()), vectors);
+}
+
+inline auto makeHalfTranslationSphereCombinatorial() {
+  auto vertices = vector<vector<int>>{{1, 2, 3}, {-1, 4, 5}, {-2, -5, 6}, {-3, -6, -4}};
+  return std::make_shared<FlatTriangulationCombinatorial>(vertices);
+}
+
+template <typename R2>
+inline auto makeHalfTranslationSphere() {
+  // Return the half-translation surface given by two unit squares glued as
+  // follows:
+  //
+  //    a a
+  //   +-+-+
+  // c | | | c
+  //   +-+-+
+  //    b b
+  vector<R2> vectors;
+  vectors = {R2(0,  1), R2(1, 0), R2( 1,  1), R2(-1, 0), R2(-1, -1), R2(0,  1),
+             R2(0, -1), R2(1, 0), R2(-1, -1), R2(-1, 0), R2( 1,  1), R2(0, -1)};
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeHalfTranslationSphereCombinatorial()), vectors);
+}
+
+template <typename R2>
+inline auto makeHalfDilationSphere() {
+  // Return the half-translation surface given by a unit squares and a (2, 1)
+  // rectangle glued as follows:
+  //
+  //    a  a
+  //   +-+---+
+  // c | |   | c
+  //   +-+---+
+  //    b  b
+  vector<R2> vectors;
+  vectors = {R2(0,  1), R2(1, 0), R2( 1,  1), R2(-2, 0), R2(-1, -1), R2(0,  1),
+             R2(0, -1), R2(2, 0), R2(-1, -1), R2(-1, 0), R2( 1,  1), R2(0, -1)};
+  return std::make_shared<FlatTriangulation<typename R2::Coordinate>>(std::move(*makeHalfTranslationSphereCombinatorial()), vectors);
+}
 
 }  // namespace flatsurf::test
 
