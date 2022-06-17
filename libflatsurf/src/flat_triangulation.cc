@@ -73,6 +73,9 @@ using std::end;
 
 template <typename T>
 Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfEdgeMap<Vector<T>> &shift) const {
+  if (!translation_surface())
+    throw std::logic_error("operator+ only implemented for translation surfaces");
+
   // Half edges that collapse at the end of the shift.
   EdgeSet collapsing;
 
@@ -312,6 +315,9 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
 
 template <typename T>
 Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() const {
+  if (!translation_surface())
+    throw std::logic_error("eliminating marked points only implemented for translation surfaces");
+
   std::optional<HalfEdge> collapse;
 
   for (const auto &vertex : this->vertices()) {
@@ -409,6 +415,9 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
 
 template <typename T>
 Vector<T> FlatTriangulation<T>::shortest() const {
+  if (!translation_surface())
+    throw std::logic_error("shortest() only implemented for translation surfaces");
+
   const auto edges = this->edges();
   Edge shortest = *std::min_element(begin(edges), end(edges), [&](const auto &a, const auto &b) {
     const Vector x = fromHalfEdge(a.positive());
@@ -440,11 +449,17 @@ Vector<T> FlatTriangulation<T>::shortest(const Vector<T> &direction) const {
 
 template <typename T>
 const Vector<T> &FlatTriangulation<T>::fromHalfEdge(const HalfEdge e) const {
+  if (!translation_surface())
+    throw std::logic_error("fromHalfEdge() only implemented for translation surfaces");
+
   return self->vectors->get(e);
 }
 
 template <typename T>
 const flatsurf::Vector<exactreal::Arb> &FlatTriangulation<T>::fromHalfEdgeApproximate(HalfEdge e) const {
+  if (!translation_surface())
+    throw std::logic_error("fromHalfEdgeApproximate() only implemented for translation surfaces");
+
   return self->approximations->get(e);
 }
 
@@ -477,6 +492,9 @@ FlatTriangulation<T> FlatTriangulation<T>::clone() const {
 
 template <typename T>
 Deformation<FlatTriangulation<T>> FlatTriangulation<T>::slit(HalfEdge slit) const {
+  if (!translation_surface())
+    throw std::logic_error("slit() only implemented for translation surfaces");
+
   const auto codomain = FlatTriangulation(
       static_cast<const FlatTriangulationCombinatorial &>(*this).slit(slit),
       [&](HalfEdge e) {
@@ -491,6 +509,9 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::slit(HalfEdge slit) cons
 
 template <typename T>
 Deformation<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &nextTo, const Vector<T> &vector) const {
+  if (!translation_surface())
+    throw std::logic_error("insertAt() only implemented for translation surfaces");
+
   LIBFLATSURF_CHECK_ARGUMENT(inSector(nextTo, vector), "vector must be contained in the sector next to the half edge");
 
   Deformation<FlatTriangulation<T>> deformation{*this};
@@ -628,6 +649,9 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &nextT
 
 template <typename T>
 void FlatTriangulation<T>::delaunay() {
+  if (!translation_surface())
+    throw std::logic_error("delaunay() only implemented for translation surfaces");
+
   bool isDelaunay;
   do {
     isDelaunay = true;
@@ -642,6 +666,9 @@ void FlatTriangulation<T>::delaunay() {
 
 template <typename T>
 DELAUNAY FlatTriangulation<T>::delaunay(const Edge edge) const {
+  if (!translation_surface())
+    throw std::logic_error("delaunay() only implemented for translation surfaces");
+
   // We could eventually use Vector::insideCircumcircle() so vectors can
   // provide optimized implementations of this. However, at the moment, it
   // does not seem worth it.
@@ -675,6 +702,9 @@ DELAUNAY FlatTriangulation<T>::delaunay(const Edge edge) const {
 
 template <typename T>
 T FlatTriangulation<T>::area() const {
+  if (!translation_surface())
+    throw std::logic_error("area() only implemented for translation surfaces");
+
   T area = T();
   for (auto e : this->halfEdges()) {
     if (this->boundary(e)) continue;
@@ -690,6 +720,9 @@ T FlatTriangulation<T>::area() const {
 
 template <typename T>
 FlatTriangulation<T> FlatTriangulation<T>::scale(const mpz_class &scalar) const {
+  if (!translation_surface())
+    throw std::logic_error("scale() only implemented for translation surfaces");
+
   return FlatTriangulation(static_cast<const FlatTriangulationCombinatorial &>(*this).clone(), [&](HalfEdge e) {
     return scalar * fromHalfEdge(e);
   });
@@ -697,6 +730,9 @@ FlatTriangulation<T> FlatTriangulation<T>::scale(const mpz_class &scalar) const 
 
 template <typename T>
 bool FlatTriangulation<T>::convex(HalfEdge e, bool strict) const {
+  if (!translation_surface())
+    throw std::logic_error("convex() only implemented for translation surfaces");
+
   if (strict)
     return fromHalfEdge(this->previousAtVertex(e)).ccw(fromHalfEdge(this->nextAtVertex(e))) == CCW::COUNTERCLOCKWISE &&
            fromHalfEdge(this->previousAtVertex(-e)).ccw(fromHalfEdge(this->nextAtVertex(-e))) == CCW::COUNTERCLOCKWISE;
@@ -707,21 +743,33 @@ bool FlatTriangulation<T>::convex(HalfEdge e, bool strict) const {
 
 template <typename T>
 bool FlatTriangulation<T>::inSector(const HalfEdge sector, const Vector<T> &vector) const {
+  if (!translation_surface())
+    throw std::logic_error("inSector() only implemented for translation surfaces");
+
   return fromHalfEdge(sector).ccw(vector) != CCW::CLOCKWISE && fromHalfEdge(this->nextAtVertex(sector)).ccw(vector) == CCW::CLOCKWISE;
 }
 
 template <typename T>
 bool FlatTriangulation<T>::inSector(const HalfEdge sector, const Vertical<FlatTriangulation<T>> &vector) const {
+  if (!translation_surface())
+    throw std::logic_error("inSector() only implemented for translation surfaces");
+
   return inSector(sector, vector.vertical());
 }
 
 template <typename T>
 SaddleConnections<FlatTriangulation<T>> FlatTriangulation<T>::connections() const {
+  if (!translation_surface())
+    throw std::logic_error("connections() only implemented for translation surfaces");
+
   return SaddleConnections(*this);
 }
 
 template <typename T>
 bool FlatTriangulation<T>::operator==(const FlatTriangulation<T> &rhs) const {
+  if (!translation_surface())
+    throw std::logic_error("equality testing only implemented for translation surfaces");
+
   if (this == &rhs)
     return true;
 
@@ -739,6 +787,9 @@ bool FlatTriangulation<T>::operator==(const FlatTriangulation<T> &rhs) const {
 
 template <typename T>
 int FlatTriangulation<T>::angle(const Vertex &vertex) const {
+  if (!translation_surface())
+    throw std::logic_error("angle() only implemented for translation surfaces");
+
   int angle = 0;
 
   const HalfEdge first = *begin(this->atVertex(vertex));
@@ -759,6 +810,9 @@ int FlatTriangulation<T>::angle(const Vertex &vertex) const {
 
 template <typename T>
 std::optional<Deformation<FlatTriangulation<T>>> FlatTriangulation<T>::isomorphism(const FlatTriangulation<T> &other, ISOMORPHISM kind, std::function<bool(const T &, const T &, const T &, const T &)> filterMatrix, std::function<bool(HalfEdge, HalfEdge)> filterHalfEdgeMap) const {
+  if (!translation_surface())
+    throw std::logic_error("isomorphism() only implemented for translation surfaces");
+
   if (this->hasBoundary() != other.hasBoundary())
     return std::nullopt;
 
@@ -955,11 +1009,21 @@ ImplementationOf<FlatTriangulation<T>>::ImplementationOf(FlatTriangulationCombin
 
 template <typename T>
 void ImplementationOf<FlatTriangulation<T>>::updateAfterFlip(OddHalfEdgeMap<Vector<T>> &vectors, const FlatTriangulationCombinatorial &parent, HalfEdge flip) {
+  const auto &surface = reinterpret_cast<const FlatTriangulation<T> &>(parent);
+
+  if (!surface.translation_surface())
+    throw std::logic_error("flipping only implemented for translation surfaces");
+
   vectors.set(flip, vectors.get(-parent.nextInFace(flip)) + vectors.get(-parent.previousInFace(flip)));
 }
 
 template <typename T>
 std::string ImplementationOf<FlatTriangulation<T>>::yaml() const {
+  const auto self = const_cast<ImplementationOf<FlatTriangulation<T>>*>(this)->from_this();
+
+  if (!self.translation_surface())
+    throw std::logic_error("yaml export only implemented for translation surfaces");
+
   std::stringstream out;
   out << std::setprecision(std::numeric_limits<double>::digits10);
   out << "vertices:" << std::endl;
@@ -987,12 +1051,19 @@ std::string ImplementationOf<FlatTriangulation<T>>::yaml() const {
 template <typename T>
 void ImplementationOf<FlatTriangulation<T>>::updateApproximationAfterFlip(OddHalfEdgeMap<flatsurf::Vector<exactreal::Arb>> &vectors, const FlatTriangulationCombinatorial &combinatorial, HalfEdge flip) {
   const auto &surface = reinterpret_cast<const FlatTriangulation<T> &>(combinatorial);
+
+  if (!surface.translation_surface())
+    throw std::logic_error("flipping only implemented for translation surfaces");
+
   vectors.set(flip, static_cast<flatsurf::Vector<exactreal::Arb>>(surface.fromHalfEdge(-surface.nextInFace(flip)) + surface.fromHalfEdge(-surface.previousInFace(flip))));
 }
 
 template <typename T>
 void ImplementationOf<FlatTriangulation<T>>::flip(HalfEdge e) {
   const auto self = from_this();
+
+  if (!self.translation_surface())
+    throw std::logic_error("flip only implemented for translation surfaces");
 
   LIBFLATSURF_CHECK_ARGUMENT(self.convex(e, true), "cannot flip this edge as a resulting face would not be strictly convex");
 
@@ -1002,6 +1073,9 @@ void ImplementationOf<FlatTriangulation<T>>::flip(HalfEdge e) {
 template <typename T>
 void ImplementationOf<FlatTriangulation<T>>::check() {
   const auto self = from_this();
+
+  if (!self.translation_surface())
+    throw std::logic_error("checking only implemented for translation surfaces");
 
   // check that faces are closed
   for (auto edge : self.halfEdges()) {
@@ -1025,6 +1099,9 @@ void ImplementationOf<FlatTriangulation<T>>::check() {
 
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const FlatTriangulation<T> &self) {
+  if (!self.translation_surface())
+    throw std::logic_error("printing only implemented for translation surfaces");
+
   return os << static_cast<const FlatTriangulationCombinatorial &>(self)
             << " with vectors " << self.self->vectors;
 }

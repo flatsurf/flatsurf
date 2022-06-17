@@ -24,8 +24,7 @@
 #include <unordered_set>
 
 #include "../../flatsurf/vertical.hpp"
-#include "flat_triangulation.impl.hpp"
-#include "flat_triangulation_collapsed.impl.hpp"
+#include "../../flatsurf/tracked.hpp"
 #include "managed_movable.impl.hpp"
 #include "read_only.hpp"
 

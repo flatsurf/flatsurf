@@ -52,7 +52,6 @@
 #include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/assert_connection.hpp"
 #include "impl/collapsed_half_edge.hpp"
-#include "impl/flat_triangulation.impl.hpp"
 #include "impl/flat_triangulation_collapsed.impl.hpp"
 #include "impl/flat_triangulation_combinatorial.impl.hpp"
 #include "impl/saddle_connection.impl.hpp"
