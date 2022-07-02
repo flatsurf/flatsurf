@@ -1,7 +1,8 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2021-2022 Julian Rüth
+ *                           2022 Sam Freedman
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,6 +29,7 @@
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vector.hpp"
+#include "../flatsurf/vertex.hpp"
 #include "../flatsurf/ccw.hpp"
 
 namespace flatsurf {
@@ -58,30 +60,29 @@ template <typename Surface>
 Point<Surface> FlipDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
   HalfEdge face = point.face();
 
-  auto coordinates = point.weights(face);
+  if (point.in(flip) || point.in(-flip)) {
+    // Rewrite the coordinates with respect to a face in the codomain, i.e.,
+    // the surface after the flip.
 
-  if (Edge(face) == Edge(flip) || Edge(this->domain->nextInFace(face)) == Edge(flip) || Edge(this->domain->previousInFace(face)) == Edge(flip)) {
-    coordinates = point.weights(flip);
+    // Let flip be the half edge AB in the following picture:
+    //
+    // A - C
+    // | \ |
+    // D - B
+    //
+    // We now rewrite the barycentric coordinates from the system ABC to the system ADC.
 
-    const HalfEdge origin = this->domain->previousInFace(flip);
-    const HalfEdge p0 = flip;
-    const HalfEdge p1 = this->domain->previousInFace(-flip);
-    const HalfEdge p2 = this->domain->nextInFace(flip);
+    auto [μa, μb, μc] = point.coordinates(flip);
 
-    const auto origin_point = point.vector(origin);
+    // Write B in the system ADC.
+    auto [νa, νd, νc] = Point(*this->codomain, Vertex::source(this->codomain->previousInFace(-flip), *this->codomain)).coordinates(flip);
 
-    // TODO: This might actually be flip. What is the flipping convention?
-    if (this->codomain->fromHalfEdge(-flip).ccw(origin_point) == CCW::COUNTERCLOCKWISE) {
-      // Write the point with respect to the face flip.
-
-    } else {
-      // Write the point with respect to the face -flip.
-
-    }
+    // Write the point in the system ADC.
+    return Point{*this->codomain, flip, μa + μb * νa, μb * νd, μc + μb * νc};
+  } else {
+    // The coordinates remain valid after the flip since the face still exists afterwards.
+    return Point(*this->codomain, face, point.coordinates(face));
   }
-
-  // TODO: Should we change interface to accept tuple?
-  return Point(*this->codomain, face, std::get<0>(coordinates), std::get<1>(coordinates), std::get<2>(coordinates));
 }
 
 template <typename Surface>

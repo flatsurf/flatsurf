@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2021-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
 #include "../flatsurf/path_iterator.hpp"
 #include "external/catch2/single_include/catch2/catch.hpp"
 #include "generators/surface_generator.hpp"
-#include "generators/saddle_connections_generator.hpp"
+#include "generators/saddle_connection_generator.hpp"
 #include "generators/half_edge_generator.hpp"
 
 namespace flatsurf::test {

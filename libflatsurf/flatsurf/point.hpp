@@ -39,7 +39,15 @@ class Point : Serializable<Point<Surface>>,
   using T = typename Surface::Coordinate;
 
  public:
-  Point(const Surface&, HalfEdge, const T&, const T&);
+  // The point corresponding to the vertex.
+  Point(const Surface&, const Vertex&);
+
+  // The point in the face next to ``face`` with barycentric coordinates given
+  // by the triple. (The coordinates do not have to sum to one.)
+  Point(const Surface&, HalfEdge face, const std::tuple<T, T, T>&);
+
+  // The point in the face next to ``face`` with barycentric coordinates given
+  // by the triple. (The coordinates do not have to sum to one.)
   Point(const Surface&, HalfEdge, const T&, const T&, const T&);
 
   bool operator==(const Point &) const;
@@ -49,21 +57,31 @@ class Point : Serializable<Point<Surface>>,
   // Return whether this point is a vertex of the triangulation.
   std::optional<Vertex> vertex() const;
 
-  // Return the half edge this point is on, if any.
-  // If its a vertex, return the edge whose source it is.
+  // Return an edge this point is on, if any.
   std::optional<Edge> edge() const;
 
-  // Return a face this point is in,
-  // i.e., weights(face) works.
+  // Return a face this point is in. i.e., a half edge such that
+  // coordinates(face) produces non-negative weights.
   HalfEdge face() const;  
 
-  T weight(HalfEdge source) const;
+  // Return whether this point is in ``face``, i.e., whether ``coordinates``
+  // would be all non-negative for this face.
+  bool in(HalfEdge face) const;
 
-  std::tuple<T, T, T> weights(HalfEdge face) const;
+  bool on(Edge edge) const;
 
+  bool at(const Vertex& vertex) const;
+
+  // Return the barycentric coordinates of this point with respect to the face,
+  // i.e., weights for the vertices in counterclockwise order, namely for the
+  // source of face, the target of face and the remaining vertex.
+  std::tuple<T, T, T> coordinates(HalfEdge face) const;
+
+  // Return the vector starting at the source of origin that ends at this point.
   Vector<T> vector(HalfEdge origin) const;
 
-  friend std::ostream &operator<<(std::ostream &, const Point &);
+  template <typename S>
+  friend std::ostream &operator<<(std::ostream &, const Point<S> &);
 
  private:
   Copyable<Point> self;
@@ -71,6 +89,10 @@ class Point : Serializable<Point<Surface>>,
   friend ImplementationOf<Point>;
   friend Serialization<Point>;
 };
+
+template <typename Surface, typename... T>
+Point(const Surface &, T &&...) -> Point<Surface>;
+
 }  // namespace flatsurf
 
 template <typename Surface>

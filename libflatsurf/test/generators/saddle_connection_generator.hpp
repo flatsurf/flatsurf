@@ -2,7 +2,7 @@
  *  This file is part of flatsurf.
  *
  *        Copyright (C) 2020 Vincent Delecroix
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2020-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_TEST_GENERATORS_SADDLE_CONNECTION_GENERATORS_HPP
-#define LIBFLATSURF_TEST_GENERATORS_SADDLE_CONNECTION_GENERATORS_HPP
+#ifndef LIBFLATSURF_TEST_GENERATORS_SADDLE_CONNECTION_GENERATOR_HPP
+#define LIBFLATSURF_TEST_GENERATORS_SADDLE_CONNECTION_GENERATOR_HPP
 
 #include <memory>
 
@@ -37,14 +37,14 @@ using std::begin;
 using std::end;
 
 template <typename T, typename C>
-class SaddleConnectionsGenerator : public Catch::Generators::IGenerator<SaddleConnection<FlatTriangulation<T>>> {
+class SaddleConnectionGenerator : public Catch::Generators::IGenerator<SaddleConnection<FlatTriangulation<T>>> {
   C connections;
   typename C::iterator current;
   int count;
   const int skip;
 
  public:
-  SaddleConnectionsGenerator(const C& connections, int count = -1, int skip = 0) :
+  SaddleConnectionGenerator(const C& connections, int count = -1, int skip = 0) :
     connections(connections),
     current(begin(this->connections)),
     count(count),
@@ -72,7 +72,7 @@ class SaddleConnectionsGenerator : public Catch::Generators::IGenerator<SaddleCo
 
 template <typename T>
 Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>> saddleConnections(std::shared_ptr<FlatTriangulation<T>> surface, Bound bound) {
-  return Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>>(std::unique_ptr<Catch::Generators::IGenerator<SaddleConnection<FlatTriangulation<T>>>>(new SaddleConnectionsGenerator<T, SaddleConnections<FlatTriangulation<T>>>(surface->connections().bound(bound))));
+  return Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>>(std::unique_ptr<Catch::Generators::IGenerator<SaddleConnection<FlatTriangulation<T>>>>(new SaddleConnectionGenerator<T, SaddleConnection<FlatTriangulation<T>>>(surface->connections().bound(bound))));
 }
 
 // Generates a sample of count saddle connections on this surface.
@@ -87,7 +87,7 @@ Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>> sadd
   if (skip == -1)
     skip = static_cast<int>(surface->size()) * 3 / count;
 
-  return Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>>(std::unique_ptr<Catch::Generators::IGenerator<SaddleConnection<FlatTriangulation<T>>>>(new SaddleConnectionsGenerator<T, SaddleConnectionsByLength<FlatTriangulation<T>>>(surface->connections().byLength(), count, skip)));
+  return Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>>(std::unique_ptr<Catch::Generators::IGenerator<SaddleConnection<FlatTriangulation<T>>>>(new SaddleConnectionGenerator<T, SaddleConnectionsByLength<FlatTriangulation<T>>>(surface->connections().byLength(), count, skip)));
 }
 
 template <typename T>
@@ -97,7 +97,7 @@ Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>> sadd
   if (skip == -1)
     skip = static_cast<int>(surface->size()) * 3 / count;
 
-  return Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>>(std::unique_ptr<Catch::Generators::IGenerator<SaddleConnection<FlatTriangulation<T>>>>(new SaddleConnectionsGenerator<T, SaddleConnectionsByLength<FlatTriangulation<T>>>(surface->connections().byLength().source(source), count, skip)));
+  return Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>>(std::unique_ptr<Catch::Generators::IGenerator<SaddleConnection<FlatTriangulation<T>>>>(new SaddleConnectionGenerator<T, SaddleConnectionsByLength<FlatTriangulation<T>>>(surface->connections().byLength().source(source), count, skip)));
 }
 
 }  // namespace flatsurf::test

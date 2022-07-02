@@ -2,7 +2,7 @@
  *  This file is part of flatsurf.
  *
  *        Copyright (C) 2019 Vincent Delecroix
- *        Copyright (C) 2019-2021 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@
 #include "../flatsurf/saddle_connections_sample_iterator.hpp"
 #include "../flatsurf/vector.hpp"
 #include "external/catch2/single_include/catch2/catch.hpp"
-#include "generators/saddle_connections_generator.hpp"
+#include "generators/saddle_connection_generator.hpp"
 #include "generators/surface_generator.hpp"
 #include "surfaces.hpp"
 

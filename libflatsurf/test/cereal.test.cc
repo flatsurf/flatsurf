@@ -23,7 +23,7 @@
 #include "cereal.helpers.hpp"
 #include "external/catch2/single_include/catch2/catch.hpp"
 #include "external/cereal/include/cereal/archives/json.hpp"
-#include "generators/saddle_connections_generator.hpp"
+#include "generators/saddle_connection_generator.hpp"
 #include "surfaces.hpp"
 
 namespace flatsurf::test {

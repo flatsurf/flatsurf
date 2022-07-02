@@ -15,6 +15,7 @@ check_PROGRAMS =                        \
   parabolic.test                        \
   path.test                             \
   permutation.test                      \
+	point.test                            \
   quadratic_polynomial.test             \
   saddle_connections.test               \
   saddle_connection.test                \
@@ -39,6 +40,7 @@ interval_exchange_tranformation_test_SOURCES = interval_exchange_transformation.
 edge_test_SOURCES = edge.test.cc main.cc
 path_test_SOURCES = path.test.cc main.cc
 permutation_test_SOURCES = permutation.test.cc main.cc
+point_test_SOURCES = point.test.cc main.cc
 quadratic_polynomial_test_SOURCES = quadratic_polynomial.test.cc main.cc
 saddle_connections_test_SOURCES = saddle_connections.test.cc main.cc
 saddle_connection_test_SOURCES = saddle_connection.test.cc main.cc
@@ -49,12 +51,13 @@ vector_test_SOURCES = vector.test.cc main.cc
 
 noinst_HEADERS =                                 \
   surfaces.hpp                                   \
-  generators/real_generator.hpp                  \
-  generators/surface_generator.hpp               \
-  generators/vertical_generator.hpp              \
-  generators/half_edge_generator.hpp             \
+	generators/point_generator.hpp                 \
   generators/combinatorial_surface_generator.hpp \
-  generators/saddle_connections_generator.hpp
+  generators/half_edge_generator.hpp             \
+  generators/real_generator.hpp                  \
+  generators/saddle_connection_generator.hpp     \
+  generators/surface_generator.hpp               \
+  generators/vertical_generator.hpp
 
 # We vendor the header-only library Cereal (serialization with C++ to be able
 # to run the tests even when cereal is not installed.

@@ -46,6 +46,7 @@ libflatsurf_la_SOURCES =                                            \
 	path.cc                                                     \
 	path_iterator.cc                                            \
 	permutation.cc                                              \
+	point.cc                                                    \
 	quadratic_polynomial.cc                                     \
 	read_only.cc                                                \
 	retriangulation_deformation_relation.cc                     \
@@ -112,6 +113,7 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/path.hpp                                        \
 	../flatsurf/path_iterator.hpp                               \
 	../flatsurf/permutation.hpp                                 \
+	../flatsurf/point.hpp                                       \
 	../flatsurf/saddle_connection.hpp                           \
 	../flatsurf/saddle_connections.hpp                          \
 	../flatsurf/saddle_connections_by_length.hpp                \
@@ -172,6 +174,7 @@ noinst_HEADERS =                                                    \
 	impl/managed_movable.impl.hpp                               \
 	impl/path.impl.hpp                                          \
 	impl/path_iterator.impl.hpp                                 \
+	impl/point.impl.hpp                                         \
 	impl/quadratic_polynomial.hpp                               \
 	impl/read_only.hpp                                          \
 	impl/retriangulation_deformation_relation.hpp               \

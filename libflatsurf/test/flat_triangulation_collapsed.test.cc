@@ -2,7 +2,7 @@
  *  This file is part of flatsurf.
  *
  *        Copyright (C) 2019 Vincent Delecroix
- *        Copyright (C) 2019-2021 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,13 +31,10 @@
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "external/catch2/single_include/catch2/catch.hpp"
-#include "generators/saddle_connections_generator.hpp"
+#include "generators/saddle_connection_generator.hpp"
 #include "surfaces.hpp"
 
 namespace flatsurf::test {
-
-using std::begin;
-using std::end;
 
 TEMPLATE_TEST_CASE("Collapse in a Flat Triangulation", "[flat_triangulation_collapsed][collapse]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
   using R2 = Vector<TestType>;
