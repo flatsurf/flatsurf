@@ -43,12 +43,18 @@ class Point : Serializable<Point<Surface>>,
   Point(const Surface&, const Vertex&);
 
   // The point in the face next to ``face`` with barycentric coordinates given
-  // by the triple. (The coordinates do not have to sum to one.)
+  // by the triple.
   Point(const Surface&, HalfEdge face, const std::tuple<T, T, T>&);
 
   // The point in the face next to ``face`` with barycentric coordinates given
-  // by the triple. (The coordinates do not have to sum to one.)
-  Point(const Surface&, HalfEdge, const T&, const T&, const T&);
+  // by the triple, i.e., P=\frac{aA + bB + cC}{a + b + c} where A, B, C are
+  // the vertices of the face in counterclockwise order starting from the
+  // source of ``face``.
+  // The sum of the coordinates must be positive. (It does not have to sum to one.)
+  // If the point is not inside the face, then exactly one of the coordinates
+  // must be negative. The point is then understood to lie across the edge
+  // opposite to the vertex with the negative coordinate.
+  Point(const Surface&, HalfEdge face, const T& a, const T& b, const T& c);
 
   bool operator==(const Point &) const;
 

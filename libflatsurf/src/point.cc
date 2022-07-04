@@ -18,6 +18,7 @@
  *********************************************************************/
 
 #include <ostream>
+#include <stdexcept>
 
 #include "../flatsurf/point.hpp"
 #include "../flatsurf/edge.hpp"
@@ -25,6 +26,7 @@
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/half_edge_set_iterator.hpp"
+#include "../flatsurf/vector.hpp"
 #include "util/assert.ipp"
 #include "impl/point.impl.hpp"
 
@@ -87,10 +89,17 @@ std::optional<Edge> Point<Surface>::edge() const {
 
 template <typename Surface>
 bool Point<Surface>::in(HalfEdge face) const {
-  if (face == self->face || face == self->surface->nextInFace(face) || face == self->surface->previousInFace(face))
-    return true;
+  HalfEdge boundary[] = { face, self->surface->nextInFace(face), self->surface->previousInFace(face) };
 
-  throw std::logic_error("not implemented: in()");
+  for (const auto& b : boundary)
+    if (self->face == b)
+      return true;
+
+  for (const auto& b : boundary)
+    if (this->on(b))
+      return true;
+
+  return false;
 }
 
 template <typename Surface>
@@ -117,8 +126,63 @@ void ImplementationOf<Point<Surface>>::normalize() {
   if (!a && !b && !c)
     throw std::invalid_argument("cannot create point from coordinates (0, 0, 0)");
 
-  if (a < 0 || b < 0 || c < 0)
-    throw std::logic_error("not implemented: normalize()");
+  if (a + b + c < 0) {
+    throw std::invalid_argument("sum of barycentric coordinates must not be negative");
+  }
+
+  if (a < 0 || b < 0 || c < 0) {
+    if ((a < 0) + (b < 0) + (c < 0) >= 2)
+      throw std::invalid_argument("at most one barycentric coordinate can be negative");
+
+    // Normalize coordinates such that c is negative.
+    if (a < 0) {
+      // Rotate the coordinates such that they are (b c a)
+      std::tie(a, b, c) = {b, c, a};
+      face = surface->nextInFace(face);
+    } else if (b < 0) {
+      // Rotate the coordinates such that they are (c a b)
+      std::tie(a, b, c) = {c, a, b};
+      face = surface->previousInFace(face);
+    }
+
+    LIBFLATSURF_ASSERT(a >= 0 && b >= 0 && c < 0, "Barycentric coordinates are not normalized correctly");
+
+    // Let D be the vertex opposite to -face.
+    // We have to write the point with coordinates in -face, i.e., (A, D, B).
+    // Let us first write C with coordinates in (A, D, B).
+    // If we pretend that D is the origin, we can write C = a_c A + b_c B + d_c D with an arbitrary d_c.
+    // For any λ if we set d_c such that λ a_c + λ b_c + d_c = λ, this gives
+    // barycentric coordinates for C. (Classically, one would pick λ=1 but
+    // since we want to avoid divisions, we are going to collect the divisors
+    // into the λ.)
+    // To determine a_c and b_c we solve the system:
+    // / B_x A_x \  / b_c \   / C_x \
+    // |         |  |     | = |     |
+    // \ B_y A_y /  \ a_c /   \ C_y /
+    const auto A = -surface->fromHalfEdge(surface->nextInFace(-face));
+    const auto B = surface->fromHalfEdge(surface->previousInFace(-face));
+    const auto C = B + surface->fromHalfEdge(surface->nextInFace(face));
+    const T det = B.x() * A.y() - B.y() * A.x();
+
+    const T λb_c =  A.y() * C.x() - A.x() * C.y();
+    const T λa_c = -B.y() * C.x() + B.x() * C.y();
+    const T d_c = det - λa_c - λb_c;
+
+    // Now we can rewrite this point in terms of the other face:
+    // P = (aA + bB + cC) / (a + b + c)
+    //   = (aA + bB + c(λ a_c A + λ b_c B + d_c D) / λ) / (a + b + c)
+    // So in (denormalized) barycentric coordinates with respect to (A, D, B) we get:
+    // P = (λ a + c λ a_c, c d_c , λ b + c λ b_c)
+    std::tie(a, b, c) = std::tuple<T, T, T>{
+      det * a + c * λa_c,
+      c * d_c,
+      det * b + c * λb_c,
+    };
+
+    // Recursively normalize in the new face. This could imply a lengthy walk
+    // on the surface if the point was way outside of the original face.
+    normalize();
+  }
 }
 
 template <typename Surface>
