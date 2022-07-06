@@ -32,7 +32,7 @@ std::optional<Path<Surface>> RetriangulationDeformationRelation<Surface>::operat
 
 template <typename Surface>
 Point<Surface> RetriangulationDeformationRelation<Surface>::operator()(const Point<Surface>&) const {
-  throw std::logic_error("not implemented: cannot map points with this kind of deformation yet");
+  throw std::logic_error("not implemented: cannot map points with this retriangulation yet");
 }
 
 }  // namespace flatsurf

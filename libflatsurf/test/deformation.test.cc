@@ -29,6 +29,8 @@
 #include "generators/surface_generator.hpp"
 #include "generators/saddle_connection_generator.hpp"
 #include "generators/half_edge_generator.hpp"
+#include "generators/point_generator.hpp"
+#include "generators/deformation_generator.hpp"
 
 namespace flatsurf::test {
 
@@ -64,6 +66,33 @@ TEMPLATE_TEST_CASE("Deformations", "[deformation]", (long long), (mpq_class), (r
 
     REQUIRE(track->domain() == domain);
     REQUIRE(track->codomain() == *surface);
+  }
+}
+
+TEMPLATE_TEST_CASE("Mapping Points Across Flips", "[deformation][point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+
+  const auto [name, surface_] = GENERATE(makeSurface<T>());
+  const auto surface = *surface_;
+  CAPTURE(*name, *surface);
+
+  const auto deformation = GENERATE_COPY(deformations(surface));
+  CAPTURE(deformation);
+
+  SECTION("Map Random Points") {
+    const auto face = GENERATE_COPY(halfEdges(surface));
+    const auto point = GENERATE_COPY(points(surface, face));
+    CAPTURE(point);
+
+    const auto image = deformation(point);
+    CAPTURE(image);
+
+    const auto preimage = deformation.section()(image);
+    CAPTURE(preimage);
+
+    REQUIRE(preimage.surface() == point.surface());
+
+    REQUIRE(preimage == point);
   }
 }
 

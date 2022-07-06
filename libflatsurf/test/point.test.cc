@@ -28,6 +28,31 @@
 
 namespace flatsurf::test {
 
+TEMPLATE_TEST_CASE("Coordinates of Points", "[point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+  using Surface = FlatTriangulation<T>;
+
+  const auto [name, surface_] = GENERATE(makeSurface<T>());
+  const auto surface = *surface_;
+  CAPTURE(*name, *surface);
+
+  const auto face = GENERATE_COPY(halfEdges(surface));
+  const auto point = GENERATE_COPY(points(surface, face));
+  CAPTURE(point);
+
+  SECTION("Point Coordinates Roundtrip") {
+    for (const auto face_ : surface->face(face)) {
+      CAPTURE(face_);
+      const auto coordinates_ = point.coordinates(face_);
+      CAPTURE(coordinates_);
+      const auto point_ = Point(*surface, face_, coordinates_);
+      CAPTURE(point_);
+
+      REQUIRE(point == point_);
+    }
+  }
+}
+
 TEMPLATE_TEST_CASE("Predicates of Points", "[point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using Surface = FlatTriangulation<T>;
@@ -69,23 +94,8 @@ TEMPLATE_TEST_CASE("Predicates of Points", "[point]", (long long), (mpq_class), 
       REQUIRE(!point.on(surface->previousInFace(edge->positive())));
     }
   } else {
-    REQUIRE(!point.in(-face));
+    REQUIRE(!point.in(-point.face()));
   }
-}
-
-TEMPLATE_TEST_CASE("Mapping Points", "[point][flip]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
-  using T = TestType;
-  using Surface = FlatTriangulation<T>;
-
-  const auto [name, surface_] = GENERATE(makeSurface<T>());
-  const auto surface = *surface_;
-  CAPTURE(*name, *surface);
-
-  HalfEdge face{1};
-  const auto flip = GENERATE_COPY(halfEdges(surface));
-  const auto point = GENERATE_COPY(points(surface, face));
-
-  // TODO: Move to deformation tests.
 }
 
 }

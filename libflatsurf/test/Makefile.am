@@ -15,7 +15,7 @@ check_PROGRAMS =                        \
   parabolic.test                        \
   path.test                             \
   permutation.test                      \
-	point.test                            \
+  point.test                            \
   quadratic_polynomial.test             \
   saddle_connections.test               \
   saddle_connection.test                \
@@ -51,8 +51,9 @@ vector_test_SOURCES = vector.test.cc main.cc
 
 noinst_HEADERS =                                 \
   surfaces.hpp                                   \
-	generators/point_generator.hpp                 \
+  generators/point_generator.hpp                 \
   generators/combinatorial_surface_generator.hpp \
+  generators/deformation_generator.hpp           \
   generators/half_edge_generator.hpp             \
   generators/real_generator.hpp                  \
   generators/saddle_connection_generator.hpp     \

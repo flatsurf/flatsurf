@@ -107,7 +107,7 @@ std::optional<Path<Surface>> GenericRetriangulationDeformationRelation<Surface>:
 
 template <typename Surface>
 Point<Surface> GenericRetriangulationDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
-  throw std::logic_error("not implemented: cannot map points with this kind of deformation yet");
+  throw std::logic_error("not implemented: cannot map points with this generic retriangulation yet");
 }
 
 template <typename Surface>

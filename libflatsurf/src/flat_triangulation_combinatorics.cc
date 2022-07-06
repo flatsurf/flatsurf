@@ -127,6 +127,11 @@ FlatTriangulationCombinatorial FlatTriangulationCombinatorics<Surface>::insertAt
 }
 
 template <typename Surface>
+std::array<HalfEdge, 3> FlatTriangulationCombinatorics<Surface>::face(HalfEdge face) const {
+  return {face, nextInFace(face), previousInFace(face)};
+}
+
+template <typename Surface>
 std::vector<std::tuple<HalfEdge, HalfEdge, HalfEdge>> FlatTriangulationCombinatorics<Surface>::faces() const {
   return self->faces.cycles() | rx::filter([](const auto& face) {
     // Boundary half edges have trivial faces.

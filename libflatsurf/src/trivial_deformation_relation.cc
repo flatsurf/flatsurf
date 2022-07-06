@@ -38,7 +38,7 @@ std::optional<Path<Surface>> TrivialDeformationRelation<Surface>::operator()(con
 
 template <typename Surface>
 Point<Surface> TrivialDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
-  throw std::logic_error("not implemented: cannot map points with this kind of deformation yet");
+  return point;
 }
 
 template <typename Surface>

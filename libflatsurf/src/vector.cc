@@ -456,6 +456,16 @@ T detail::VectorExact<Vector, T>::operator*(const Vector& rhs) const {
 }
 
 template <typename Vector, typename T>
+Vector& detail::VectorExact<Vector, T>::operator*=(const T& c) {
+  Vector& self = static_cast<Vector&>(*this);
+
+  self.self->x *= c;
+  self.self->y *= c;
+
+  return self;
+}
+
+template <typename Vector, typename T>
 bool detail::VectorExact<Vector, T>::operator>(Bound bound) const {
   const Vector& self = static_cast<const Vector&>(*this);
 

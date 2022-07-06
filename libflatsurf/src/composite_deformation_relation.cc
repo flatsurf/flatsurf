@@ -42,7 +42,7 @@ std::optional<Path<Surface>> CompositeDeformationRelation<Surface>::operator()(c
 
 template <typename Surface>
 Point<Surface> CompositeDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
-  throw std::logic_error("not implemented: cannot map points with this kind of deformation yet");
+  return lhs->operator()(rhs->operator()(point));
 }
 
 template <typename Surface>

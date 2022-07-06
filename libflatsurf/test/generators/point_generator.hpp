@@ -39,8 +39,7 @@ class PointGenerator : public Catch::Generators::IGenerator<Point<FlatTriangulat
     SOURCE = 0,
     MIDPOINT_EDGE = 1,
     CENTER_FACE = 2,
-    OUTSIDE = 3,
-    LAST = 3,
+    LAST = 2,
   } state;
   
   Point<FlatTriangulation<T>> current;
@@ -53,9 +52,6 @@ class PointGenerator : public Catch::Generators::IGenerator<Point<FlatTriangulat
         return Point{*surface, face, T(1), T(1), T(0)};
       case POINT::CENTER_FACE:
         return Point{*surface, face, T(1), T(1), T(1)};
-      case POINT::OUTSIDE:
-        // Note that this point might not exist.
-        return Point{*surface, face, T(1024), T(1024), T(-1)};
       default:
         throw std::logic_error("not implemented: PointGenerator::make()");
     }

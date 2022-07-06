@@ -85,7 +85,7 @@ std::optional<Path<Surface>> ShiftDeformationRelation<Surface>::operator()(const
 
 template <typename Surface>
 Point<Surface> ShiftDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
-  throw std::logic_error("not implemented: cannot map points with this kind of deformation yet");
+  throw std::logic_error("not implemented: cannot map points with this shift deformation yet");
 }
 
 template <typename Surface>

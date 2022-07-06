@@ -45,7 +45,7 @@ std::optional<Path<Surface>> InsertMarkedDeformationRelation<Surface>::operator(
 
 template <typename Surface>
 Point<Surface> InsertMarkedDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
-  throw std::logic_error("not implemented: cannot map points with this kind of deformation yet");
+  throw std::logic_error("not implemented: cannot map points with this insertion deformation yet");
 }
 
 template <typename Surface>

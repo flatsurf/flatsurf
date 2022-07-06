@@ -50,6 +50,9 @@ class VectorExact : public VectorBase<Vector>,
   bool operator==(const Vector &) const;
   explicit operator bool() const;
 
+  Vector& operator*=(const T&);
+  using VectorBase<Vector>::operator*=;
+
   // Return whether this vector is contained in the sector described by
   // inclusive and exclusive in counter-clockwise order. If inclusive and
   // exclusive are collinear, the sector consists of that single ray.

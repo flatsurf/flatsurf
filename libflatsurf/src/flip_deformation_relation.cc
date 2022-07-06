@@ -25,6 +25,7 @@
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/point.hpp"
+#include "impl/point.impl.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
@@ -58,30 +59,37 @@ std::optional<Path<Surface>> FlipDeformationRelation<Surface>::operator()(const 
 
 template <typename Surface>
 Point<Surface> FlipDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
-  HalfEdge face = point.face();
+  if (!point.in(flip) && !point.in(-flip)) {
+    // The coordinates remain valid after the flip since the face still exists afterwards.
+    const auto face = point.face();
+    return Point(*this->codomain, face, point.coordinates(face));
+  } else {
+    const HalfEdge AB = point.in(flip) ? flip : -flip;
 
-  if (point.in(flip) || point.in(-flip)) {
     // Rewrite the coordinates with respect to a face in the codomain, i.e.,
     // the surface after the flip.
 
-    // Let flip be the half edge AB in the following picture:
+    // Consider the following picture:
     //
     // A - C
     // | \ |
     // D - B
     //
     // We now rewrite the barycentric coordinates from the system ABC to the system ADC.
+    // Our point is P = (μa*A + μb*B + μc*C) / μ with μ = μa + μb + μc.
+    const auto [μa, μb, μc] = point.coordinates(AB);
 
-    auto [μa, μb, μc] = point.coordinates(flip);
-
-    // Write B in the system ADC.
-    auto [νa, νd, νc] = Point(*this->codomain, Vertex::source(this->codomain->previousInFace(-flip), *this->codomain)).coordinates(flip);
+    // Write B in the system ADC as B = (νd*D + νc*C + νa*A) / ν with ν = νd + νc + νa.
+    const auto BC = this->domain->nextInFace(AB);
+    const auto CD = this->codomain->nextInFace(BC);
+    const auto [νd, νc, νa] = ImplementationOf<Point<Surface>>{*this->codomain, CD, T(), T(), T(1)}.crossed();
+    const auto ν = νd + νc + νa;
 
     // Write the point in the system ADC.
-    return Point{*this->codomain, flip, μa + μb * νa, μb * νd, μc + μb * νc};
-  } else {
-    // The coordinates remain valid after the flip since the face still exists afterwards.
-    return Point(*this->codomain, face, point.coordinates(face));
+    const auto Q = ImplementationOf<Point<Surface>>{*this->codomain, -CD, μb * νd, ν * μc + μb * νc, ν * μa + μb * νa};
+
+    // Express the point in the system ADC or DCB so that all coordinates are non-negative.
+    return (Q.a < 0 || Q.b < 0 || Q.c < 0) ? Point{*this->codomain, CD, Q.crossed()} : Point{*this->codomain, -CD, Q.rotated(-CD)};
   }
 }
 

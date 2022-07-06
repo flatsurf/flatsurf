@@ -43,18 +43,14 @@ class Point : Serializable<Point<Surface>>,
   Point(const Surface&, const Vertex&);
 
   // The point in the face next to ``face`` with barycentric coordinates given
-  // by the triple.
-  Point(const Surface&, HalfEdge face, const std::tuple<T, T, T>&);
-
-  // The point in the face next to ``face`` with barycentric coordinates given
   // by the triple, i.e., P=\frac{aA + bB + cC}{a + b + c} where A, B, C are
   // the vertices of the face in counterclockwise order starting from the
   // source of ``face``.
-  // The sum of the coordinates must be positive. (It does not have to sum to one.)
-  // If the point is not inside the face, then exactly one of the coordinates
-  // must be negative. The point is then understood to lie across the edge
-  // opposite to the vertex with the negative coordinate.
+  // The sum of the coordinates must be positive (but they might not sum to
+  // one.) If the point is not inside the face, then we walk the surface until
+  // we find a face for which the coordinates become non-negative.
   Point(const Surface&, HalfEdge face, const T& a, const T& b, const T& c);
+  Point(const Surface&, HalfEdge face, const std::array<T, 3>&);
 
   bool operator==(const Point &) const;
 
@@ -79,9 +75,15 @@ class Point : Serializable<Point<Surface>>,
   bool at(const Vertex& vertex) const;
 
   // Return the barycentric coordinates of this point with respect to the face,
-  // i.e., weights for the vertices in counterclockwise order, namely for the
-  // source of face, the target of face and the remaining vertex.
-  std::tuple<T, T, T> coordinates(HalfEdge face) const;
+  // i.e., weights for the corners of the triangle in counterclockwise order,
+  // namely for the source of face, the target of face and the remaining
+  // corner.
+  // If this point is not in that face, some of the coordinates have to be negative.
+  // However, such barycentric coordinates are typically not unique on a
+  // translation surface. Therefore, we return coordinates that are consistent
+  // with our constructor. I.e., creating a point from these coordinates
+  // produces the original point.
+  std::array<T, 3> coordinates(HalfEdge face) const;
 
   // Return the vector starting at the source of origin that ends at this point.
   Vector<T> vector(HalfEdge origin) const;
