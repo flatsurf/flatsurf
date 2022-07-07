@@ -37,7 +37,7 @@ class HalfEdgeGenerator : public Catch::Generators::IGenerator<HalfEdge> {
   typename std::vector<HalfEdge>::const_iterator current;
 
  public:
-  HalfEdgeGenerator(std::shared_ptr<FlatTriangulation<T>> surface) :
+  HalfEdgeGenerator(std::shared_ptr<const FlatTriangulation<T>> surface) :
     halfEdges(surface->halfEdges()),
     current(begin(halfEdges)) {}
 
@@ -53,7 +53,7 @@ class HalfEdgeGenerator : public Catch::Generators::IGenerator<HalfEdge> {
 };
 
 template <typename T>
-Catch::Generators::GeneratorWrapper<HalfEdge> halfEdges(std::shared_ptr<FlatTriangulation<T>> surface) {
+Catch::Generators::GeneratorWrapper<HalfEdge> halfEdges(std::shared_ptr<const FlatTriangulation<T>> surface) {
   return Catch::Generators::GeneratorWrapper<HalfEdge>(std::unique_ptr<Catch::Generators::IGenerator<HalfEdge>>(new HalfEdgeGenerator<T>(surface)));
 }
 

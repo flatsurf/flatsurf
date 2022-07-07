@@ -37,9 +37,7 @@ namespace flatsurf::test {
 TEMPLATE_TEST_CASE("Deformations", "[deformation]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
-  const auto [name, surface_] = GENERATE(makeSurface<T>());
-  const auto surface = *surface_;
-  CAPTURE(*name, *surface);
+  const auto surface = GENERATE_SURFACES(T);
 
   SECTION("Deformations can be Copied and Moved") {
     auto trivial = Deformation(*surface);
@@ -51,31 +49,28 @@ TEMPLATE_TEST_CASE("Deformations", "[deformation]", (long long), (mpq_class), (r
   }
 
   SECTION("Trivial Deformations Follow Flips") {
-    const auto domain = surface->clone();
-    auto track = Tracked(*surface, Deformation(domain));
+    auto deformed = surface->clone();
+    auto track = Tracked(deformed, Deformation(*surface));
 
     for (auto edge : surface->edges()) {
-      if (surface->convex(edge.positive(), true))
-        surface->flip(edge.positive());
+      if (deformed.convex(edge.positive(), true))
+        deformed.flip(edge.positive());
     }
 
-    REQUIRE(track->domain() == domain);
-    REQUIRE(track->codomain() == *surface);
+    REQUIRE(track->domain() == *surface);
+    REQUIRE(track->codomain() == deformed);
 
-    surface->delaunay();
+    deformed.delaunay();
 
-    REQUIRE(track->domain() == domain);
-    REQUIRE(track->codomain() == *surface);
+    REQUIRE(track->domain() == *surface);
+    REQUIRE(track->codomain() == deformed);
   }
 }
 
 TEMPLATE_TEST_CASE("Mapping Points Across Flips", "[deformation][point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
-  const auto [name, surface_] = GENERATE(makeSurface<T>());
-  const auto surface = *surface_;
-  CAPTURE(*name, *surface);
-
+  const auto surface = GENERATE_SURFACES(T);
   const auto deformation = GENERATE_COPY(deformations(surface));
   CAPTURE(deformation);
 

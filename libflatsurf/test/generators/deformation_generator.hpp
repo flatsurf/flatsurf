@@ -28,12 +28,12 @@ namespace flatsurf::test {
 
 template <typename T>
 class DeformationGenerator : public Catch::Generators::IGenerator<Deformation<FlatTriangulation<T>>> {
-  std::shared_ptr<FlatTriangulation<T>> surface;
+  std::shared_ptr<const FlatTriangulation<T>> surface;
 
   Deformation<FlatTriangulation<T>> current;
 
  public:
-  DeformationGenerator(std::shared_ptr<FlatTriangulation<T>> surface) : surface(surface), current(*surface) {
+  DeformationGenerator(std::shared_ptr<const FlatTriangulation<T>> surface) : surface(surface), current(*surface) {
     // Currently, the only deformation we support is a lengthy sequence of flips.
     auto domain = surface->clone();
     auto deformed = domain.clone();
@@ -59,7 +59,7 @@ class DeformationGenerator : public Catch::Generators::IGenerator<Deformation<Fl
 };
 
 template <typename T>
-Catch::Generators::GeneratorWrapper<Deformation<FlatTriangulation<T>>> deformations(std::shared_ptr<FlatTriangulation<T>> surface) {
+Catch::Generators::GeneratorWrapper<Deformation<FlatTriangulation<T>>> deformations(std::shared_ptr<const FlatTriangulation<T>> surface) {
   return Catch::Generators::GeneratorWrapper<Deformation<FlatTriangulation<T>>>(std::unique_ptr<Catch::Generators::IGenerator<Deformation<FlatTriangulation<T>>>>(new DeformationGenerator<T>(surface)));
 }
 

@@ -32,7 +32,7 @@ namespace flatsurf::test {
 
 template <typename T>
 class PointGenerator : public Catch::Generators::IGenerator<Point<FlatTriangulation<T>>> {
-  std::shared_ptr<FlatTriangulation<T>> surface;
+  std::shared_ptr<const FlatTriangulation<T>> surface;
   HalfEdge face;
 
   enum class POINT {
@@ -58,7 +58,7 @@ class PointGenerator : public Catch::Generators::IGenerator<Point<FlatTriangulat
   }
 
  public:
-  PointGenerator(std::shared_ptr<FlatTriangulation<T>> surface, HalfEdge face) : surface(surface), face(face), state(POINT::SOURCE), current(make(state)) {
+  PointGenerator(std::shared_ptr<const FlatTriangulation<T>> surface, HalfEdge face) : surface(surface), face(face), state(POINT::SOURCE), current(make(state)) {
   }
 
   const Point<FlatTriangulation<T>>& get() const override {
@@ -78,7 +78,7 @@ class PointGenerator : public Catch::Generators::IGenerator<Point<FlatTriangulat
 };
 
 template <typename T>
-Catch::Generators::GeneratorWrapper<Point<FlatTriangulation<T>>> points(std::shared_ptr<FlatTriangulation<T>> surface, const HalfEdge face) {
+Catch::Generators::GeneratorWrapper<Point<FlatTriangulation<T>>> points(std::shared_ptr<const FlatTriangulation<T>> surface, const HalfEdge face) {
   return Catch::Generators::GeneratorWrapper<Point<FlatTriangulation<T>>>(std::unique_ptr<Catch::Generators::IGenerator<Point<FlatTriangulation<T>>>>(new PointGenerator<T>(surface, face)));
 }
 
