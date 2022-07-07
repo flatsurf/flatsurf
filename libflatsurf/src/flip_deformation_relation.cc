@@ -83,7 +83,7 @@ Point<Surface> FlipDeformationRelation<Surface>::operator()(const Point<Surface>
     const auto BC = this->domain->nextInFace(AB);
     const auto CD = this->codomain->nextInFace(BC);
     const auto [νd, νc, νa] = ImplementationOf<Point<Surface>>{*this->codomain, CD, T(), T(), T(1)}.crossed();
-    const auto ν = νd + νc + νa;
+    const T ν = νd + νc + νa;
 
     // Write the point in the system ADC.
     const auto Q = ImplementationOf<Point<Surface>>{*this->codomain, -CD, μb * νd, ν * μc + μb * νc, ν * μa + μb * νa};
