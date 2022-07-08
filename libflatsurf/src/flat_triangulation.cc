@@ -46,6 +46,7 @@
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/path_iterator.hpp"
+#include "../flatsurf/point.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
@@ -755,6 +756,16 @@ int FlatTriangulation<T>::angle(const Vertex &vertex) const {
   LIBFLATSURF_ASSERT(angle >= 1, "Total angle at vertex cannot be less than 2π");
 
   return angle;
+}
+
+template <typename T>
+int FlatTriangulation<T>::angle(const Point<FlatTriangulation> &point) const {
+  const auto vertex = point.vertex();
+
+  if (!vertex)
+    return 0;
+
+  return angle(*vertex);
 }
 
 template <typename T>
