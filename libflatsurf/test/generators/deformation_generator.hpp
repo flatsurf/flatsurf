@@ -30,11 +30,14 @@ template <typename T>
 class DeformationGenerator : public Catch::Generators::IGenerator<Deformation<FlatTriangulation<T>>> {
   std::shared_ptr<const FlatTriangulation<T>> surface;
 
-  Deformation<FlatTriangulation<T>> current;
+  using Cache = std::vector<Deformation<FlatTriangulation<T>>>;
+
+  Cache deformations;
+  typename Cache::const_iterator current;
 
  public:
-  DeformationGenerator(std::shared_ptr<const FlatTriangulation<T>> surface) : surface(surface), current(*surface) {
-    // Currently, the only deformation we support is a lengthy sequence of flips.
+  DeformationGenerator(std::shared_ptr<const FlatTriangulation<T>> surface) : surface(surface), current(deformations.end()) {
+    // A sequence of flips
     auto domain = surface->clone();
     auto deformed = domain.clone();
     auto track = Tracked(deformed, Deformation(*surface));
@@ -43,18 +46,23 @@ class DeformationGenerator : public Catch::Generators::IGenerator<Deformation<Fl
       if (deformed.convex(edge.positive(), true))
         deformed.flip(edge.positive());
     }
+    deformations.push_back(*track);
 
+    // Lengthen the sequence by Delaunay triangulating
     deformed.delaunay();
+    deformations.push_back(*track);
 
-    current = *track;
+    current = deformations.begin();
   }
 
   const Deformation<FlatTriangulation<T>>& get() const override {
-    return current;
+    return *current;
   }
 
   bool next() override {
-    return false;
+    current++;
+
+    return current != deformations.end();
   }
 };
 

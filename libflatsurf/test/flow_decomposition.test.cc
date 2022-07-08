@@ -1,8 +1,8 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Vincent Delecroix
- *        Copyright (C) 2019-2021 Julian Rüth
+ *        Copyright (C)      2019 Vincent Delecroix
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -42,11 +42,7 @@
 #include "generators/vertical_generator.hpp"
 #include "surfaces.hpp"
 
-using eantic::renf_elem_class;
-
 namespace flatsurf::test {
-
-using namespace flatsurf;
 
 TEST_CASE("Flow Decompositions Over Number Fields", "[flow_decomposition]") {
   using T = renf_elem_class;
