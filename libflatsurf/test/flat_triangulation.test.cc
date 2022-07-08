@@ -1,8 +1,8 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Vincent Delecroix
- *        Copyright (C) 2019-2021 Julian Rüth
+ *        Copyright (C)      2019 Vincent Delecroix
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -52,24 +52,25 @@ TEMPLATE_TEST_CASE("Flip in a Flat Triangulation", "[flat_triangulation][flip]",
   using R2 = Vector<TestType>;
   auto square = makeSquare<R2>();
   auto vertices = square->vertices();
+  CAPTURE(square);
 
-  GIVEN("The Square " << *square) {
-    auto halfEdge = GENERATE(as<HalfEdge>{}, 1, 2, 3, -1, -2, -3);
-    THEN("Four Flips of a Half Edge Restore the Initial Surface") {
-      const auto vector = square->fromHalfEdge(halfEdge);
-      square->flip(halfEdge);
-      REQUIRE(vector != square->fromHalfEdge(halfEdge));
-      square->flip(halfEdge);
-      REQUIRE(vector == -square->fromHalfEdge(halfEdge));
-      square->flip(halfEdge);
-      square->flip(halfEdge);
-      REQUIRE(vector == square->fromHalfEdge(halfEdge));
+  auto halfEdge = GENERATE(as<HalfEdge>{}, 1, 2, 3, -1, -2, -3);
+  CAPTURE(halfEdge);
 
-      // a square (torus) has only a single vertex so it won't change; in general
-      // it should not change, however, the representatives attached to a vertex
-      // are currently not properly updated: https://github.com/flatsurf/flatsurf/issues/100
-      REQUIRE(vertices == square->vertices());
-    }
+  SECTION("Four Flips of a Half Edge Restore the Initial Surface") {
+    const auto vector = square->fromHalfEdge(halfEdge);
+    square->flip(halfEdge);
+    REQUIRE(vector != square->fromHalfEdge(halfEdge));
+    square->flip(halfEdge);
+    REQUIRE(vector == -square->fromHalfEdge(halfEdge));
+    square->flip(halfEdge);
+    square->flip(halfEdge);
+    REQUIRE(vector == square->fromHalfEdge(halfEdge));
+
+    // a square (torus) has only a single vertex so it won't change; in general
+    // it should not change, however, the representatives attached to a vertex
+    // are currently not properly updated: https://github.com/flatsurf/flatsurf/issues/100
+    REQUIRE(vertices == square->vertices());
   }
 }
 
@@ -105,41 +106,39 @@ TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[flat_triangulation][ins
   SECTION("Slit at Many Places in the First Sector") {
     auto unscaled = GENERATE(values({makeSquare<R2>(), makeL<R2>()}));
     auto surface = unscaled->scale(3);
+    CAPTURE(surface);
 
-    GIVEN("The surface " << surface) {
-      auto x = GENERATE(range(1, 32));
-      auto y = GENERATE(range(1, 32));
+    auto x = GENERATE(range(1, 32));
+    auto y = GENERATE(range(1, 32));
 
-      if (x > y) {
-        bool crossesSingularity = false;
-        int xx = x / std::gcd(x, y);
-        int yy = y / std::gcd(x, y);
-        for (int n = 1; xx * n <= x; n++) {
-          if (xx * n % 3 == 0 && yy * n % 3 == 0)
-            crossesSingularity = true;
-        }
+    if (x > y) {
+      bool crossesSingularity = false;
+      int xx = x / std::gcd(x, y);
+      int yy = y / std::gcd(x, y);
+      for (int n = 1; xx * n <= x; n++) {
+        if (xx * n % 3 == 0 && yy * n % 3 == 0)
+          crossesSingularity = true;
+      }
 
-        if (!crossesSingularity) {
-          R2 v = R2(x, y);
-          HalfEdge e(1);
-          WHEN("We Insert a Vertex at " << v << " next to " << e) {
-            auto surf = surface.insertAt(e, v).codomain().clone();
+      if (!crossesSingularity) {
+        R2 v = R2(x, y);
+        HalfEdge e(1);
 
-            CAPTURE(e);
-            CAPTURE(surf);
+        DYNAMIC_SECTION("Insert a Vertex at " << v << " next to " << e) {
+          auto surf = surface.insertAt(e, v).codomain().clone();
 
-            THEN("The Surface has Changed in the Right Way") {
-              REQUIRE(surface != surf);
-              REQUIRE(surf.fromHalfEdge(surf.nextAtVertex(e)) == v);
-            }
+          CAPTURE(e);
+          CAPTURE(surf);
 
-            AND_WHEN("We Make a Slot There") {
-              surf = surf.slit(surf.nextAtVertex(e)).codomain().clone();
+          SECTION("The Surface has Changed in the Right Way") {
+            REQUIRE(surface != surf);
+            REQUIRE(surf.fromHalfEdge(surf.nextAtVertex(e)) == v);
+          }
 
-              THEN("There is a Boundary at " << e) {
-                REQUIRE(surf.boundary(surf.nextAtVertex(e)));
-              }
-            }
+          SECTION("Slot Introduces a Boundary") {
+            surf = surf.slit(surf.nextAtVertex(e)).codomain().clone();
+
+            REQUIRE(surf.boundary(surf.nextAtVertex(e)));
           }
         }
       }
@@ -151,22 +150,21 @@ TEMPLATE_TEST_CASE("Delaunay Triangulation of a Square", "[flat_triangulation][d
   using T = TestType;
   using Vector = Vector<T>;
 
-  GIVEN("A Flat Triangulation of a Square") {
-    auto square = makeSquare<Vector>();
+  auto square = makeSquare<Vector>();
 
-    auto bound = Bound(2, 0);
+  auto bound = Bound(2, 0);
 
-    auto flip = GENERATE_COPY(halfEdges(square));
-    WHEN("We Flip Edge " << flip) {
-      square->flip(flip);
-      THEN("The Delaunay Condition holds after performing Delaunay Triangulation") {
-        square->delaunay();
-        CAPTURE(*square);
-        for (auto halfEdge : square->halfEdges()) {
-          REQUIRE(square->delaunay(halfEdge.edge()) != DELAUNAY::NON_DELAUNAY);
-          REQUIRE(square->fromHalfEdge(halfEdge) < bound);
-        }
-      }
+  auto flip = GENERATE_COPY(halfEdges<T>(square));
+  CAPTURE(flip);
+
+  square->flip(flip);
+
+  SECTION("The Delaunay Condition holds after performing Delaunay Triangulation") {
+    square->delaunay();
+    CAPTURE(*square);
+    for (auto halfEdge : square->halfEdges()) {
+      REQUIRE(square->delaunay(halfEdge.edge()) != DELAUNAY::NON_DELAUNAY);
+      REQUIRE(square->fromHalfEdge(halfEdge) < bound);
     }
   }
 }
@@ -175,27 +173,28 @@ TEMPLATE_TEST_CASE("Delaunay Triangulation of an Octagon", "[flat_triangulation]
   using T = TestType;
   using Vector = Vector<T>;
 
-  GIVEN("A Regular Octagon") {
+  SECTION("A Regular Octagon") {
     auto octagon = makeOctagon<Vector>();
 
     auto a = octagon->fromHalfEdge(HalfEdge(1)).x();
 
-    auto flip = GENERATE_COPY(halfEdges(octagon));
-    WHEN("We Flip Edge " << flip) {
-      if (octagon->convex(flip)) {
-        octagon->flip(flip);
-        THEN("The Delaunay Cells do not Change") {
-          octagon->delaunay();
-          CAPTURE(*octagon);
-          for (auto halfEdge : octagon->halfEdges()) {
-            CAPTURE(halfEdge);
-            auto v = octagon->fromHalfEdge(halfEdge);
-            CAPTURE(v);
+    auto flip = GENERATE_COPY(halfEdges<T>(octagon));
+    CAPTURE(flip);
 
-            const auto isBoundary = (v.x() == 0 && v.y() == 1) || (v.x() == 1 && v.y() == 0) || (v.x() == 0 && v.y() == -1) || (v.x() == -1 && v.y() == 0) || (v.x() == a && v.y() == a) || (v.x() == -a && v.y() == -a) || (v.x() == a && v.y() == -a) || (v.x() == -a && v.y() == a);
-            CAPTURE(isBoundary);
-            REQUIRE(octagon->delaunay(halfEdge.edge()) == (isBoundary ? DELAUNAY::DELAUNAY : DELAUNAY::AMBIGUOUS));
-          }
+    if (octagon->convex(flip)) {
+      octagon->flip(flip);
+
+      SECTION("The Delaunay Cells do not Change") {
+        octagon->delaunay();
+        CAPTURE(*octagon);
+        for (auto halfEdge : octagon->halfEdges()) {
+          CAPTURE(halfEdge);
+          auto v = octagon->fromHalfEdge(halfEdge);
+          CAPTURE(v);
+
+          const auto isBoundary = (v.x() == 0 && v.y() == 1) || (v.x() == 1 && v.y() == 0) || (v.x() == 0 && v.y() == -1) || (v.x() == -1 && v.y() == 0) || (v.x() == a && v.y() == a) || (v.x() == -a && v.y() == -a) || (v.x() == a && v.y() == -a) || (v.x() == -a && v.y() == a);
+          CAPTURE(isBoundary);
+          REQUIRE(octagon->delaunay(halfEdge.edge()) == (isBoundary ? DELAUNAY::DELAUNAY : DELAUNAY::AMBIGUOUS));
         }
       }
     }
@@ -203,47 +202,47 @@ TEMPLATE_TEST_CASE("Delaunay Triangulation of an Octagon", "[flat_triangulation]
 }
 
 TEMPLATE_TEST_CASE("Delaunay Triangulation", "[flat_triangulation][delaunay]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
-  const auto [name, surface_] = GENERATE(makeSurface<TestType>());
-  auto surface = *surface_;
+  using T = TestType;
 
-  GIVEN("The Surface " << *name) {
-    surface->delaunay();
+  const auto surface_ = GENERATE_SURFACES(T);
+  auto surface = surface_->clone();
 
-    THEN("Delaunay Cells are Convex and their Boundaries Connected") {
-      HalfEdgeSet boundary;
-      for (auto halfEdge : surface->halfEdges())
-        if (surface->delaunay(halfEdge.edge()) == DELAUNAY::DELAUNAY)
-          boundary.insert(halfEdge);
+  surface.delaunay();
 
-      HalfEdge anyBoundaryEdge;
-      for (auto he : surface->halfEdges())
-        if (boundary.contains(he))
-          anyBoundaryEdge = he;
+  SECTION("Delaunay Cells are Convex and their Boundaries Connected") {
+    HalfEdgeSet boundary;
+    for (auto halfEdge : surface.halfEdges())
+      if (surface.delaunay(halfEdge.edge()) == DELAUNAY::DELAUNAY)
+        boundary.insert(halfEdge);
 
-      HalfEdgeSet traced;
-      const std::function<void(HalfEdge)> walk = [&](const HalfEdge he) {
-        if (traced.contains(he))
-          return;
+    HalfEdge anyBoundaryEdge;
+    for (auto he : surface.halfEdges())
+      if (boundary.contains(he))
+        anyBoundaryEdge = he;
 
-        traced.insert(he);
+    HalfEdgeSet traced;
+    const std::function<void(HalfEdge)> walk = [&](const HalfEdge he) {
+      if (traced.contains(he))
+        return;
 
-        walk(-he);
+      traced.insert(he);
 
-        HalfEdge next = he;
-        do {
-          next = surface->nextAtVertex(next);
-        } while (!boundary.contains(next));
+      walk(-he);
 
-        REQUIRE(surface->fromHalfEdge(he).ccw(surface->fromHalfEdge(next)) == CCW::COUNTERCLOCKWISE);
+      HalfEdge next = he;
+      do {
+        next = surface.nextAtVertex(next);
+      } while (!boundary.contains(next));
 
-        walk(next);
-      };
+      REQUIRE(surface.fromHalfEdge(he).ccw(surface.fromHalfEdge(next)) == CCW::COUNTERCLOCKWISE);
 
-      walk(anyBoundaryEdge);
+      walk(next);
+    };
 
-      for (auto he : surface->halfEdges())
-        REQUIRE(boundary.contains(he) == traced.contains(he));
-    }
+    walk(anyBoundaryEdge);
+
+    for (auto he : surface.halfEdges())
+      REQUIRE(boundary.contains(he) == traced.contains(he));
   }
 }
 
@@ -251,55 +250,53 @@ TEMPLATE_TEST_CASE("Eliminate Marked Points", "[flat_triangulation][eliminate_ma
   using T = TestType;
   using Surface = FlatTriangulation<T>;
 
-  const auto [name, surface] = GENERATE(makeSurface<T>());
-  CAPTURE(**surface);
-  GIVEN("The Surface " << *name) {
-    const auto simplified = (*surface)->eliminateMarkedPoints();
+  const auto surface = GENERATE_SURFACES(T);
 
-    CAPTURE(simplified);
+  const auto simplified = surface->eliminateMarkedPoints();
 
-    const auto unmarkedPoints = [](const auto& surface) {
-      return surface.vertices() | rx::filter([&](const auto& vertex) { return surface.angle(vertex) != 1; }) | rx::to_vector();
-    };
+  CAPTURE(simplified);
 
-    const auto markedPoints = [](const auto& surface) {
-      return surface.codomain().vertices() | rx::filter([&](const auto& vertex) { return surface.codomain().angle(vertex) == 1; }) | rx::to_vector();
-    };
+  const auto unmarkedPoints = [](const auto& surface) {
+    return surface.vertices() | rx::filter([&](const auto& vertex) { return surface.angle(vertex) != 1; }) | rx::to_vector();
+  };
 
-    if (unmarkedPoints(**surface).size()) {
-      REQUIRE(markedPoints(simplified).size() == 0);
-    } else {
-      REQUIRE(markedPoints(simplified).size() == 1);
-      REQUIRE(unmarkedPoints(simplified.codomain()).size() == 0);
+  const auto markedPoints = [](const auto& surface) {
+    return surface.codomain().vertices() | rx::filter([&](const auto& vertex) { return surface.codomain().angle(vertex) == 1; }) | rx::to_vector();
+  };
+
+  if (unmarkedPoints(*surface).size()) {
+    REQUIRE(markedPoints(simplified).size() == 0);
+  } else {
+    REQUIRE(markedPoints(simplified).size() == 1);
+    REQUIRE(unmarkedPoints(simplified.codomain()).size() == 0);
+  }
+
+  REQUIRE(surface->area() == simplified.codomain().area());
+
+  for (const auto preimage : surface->halfEdges()) {
+    if (surface->angle(Vertex::source(preimage, *surface)) != 1 && surface->angle(Vertex::target(preimage, *surface)) != 1) {
+      REQUIRE(simplified(SaddleConnection<Surface>(*surface, preimage)).has_value());
+      REQUIRE(simplified(SaddleConnection<Surface>(*surface, preimage))->begin()->vector() == surface->fromHalfEdge(preimage));
     }
+  }
 
-    REQUIRE((*surface)->area() == simplified.codomain().area());
+  const auto section = simplified.section();
+  CAPTURE(section);
 
-    for (const auto preimage : (*surface)->halfEdges()) {
-      if ((*surface)->angle(Vertex::source(preimage, **surface)) != 1 && (*surface)->angle(Vertex::target(preimage, **surface)) != 1) {
-        REQUIRE(simplified(SaddleConnection<Surface>(**surface, preimage)).has_value());
-        REQUIRE(simplified(SaddleConnection<Surface>(**surface, preimage))->begin()->vector() == (*surface)->fromHalfEdge(preimage));
-      }
-    }
+  for (const auto image : section.domain().halfEdges()) {
+    CAPTURE(image);
 
-    const auto section = simplified.section();
-    CAPTURE(section);
+    const auto preimage = section(SaddleConnection<Surface>(section.domain(), image));
 
-    for (const auto image : section.domain().halfEdges()) {
-      CAPTURE(image);
+    REQUIRE(preimage);
 
-      const auto preimage = section(SaddleConnection<Surface>(section.domain(), image));
+    CAPTURE(*preimage);
 
-      REQUIRE(preimage);
+    Vector<T> vector;
+    for (const auto& connection : *preimage)
+      vector += connection;
 
-      CAPTURE(*preimage);
-
-      Vector<T> vector;
-      for (const auto& connection : *preimage)
-        vector += connection;
-
-      REQUIRE(vector == section.domain().fromHalfEdge(image));
-    }
+    REQUIRE(vector == section.domain().fromHalfEdge(image));
   }
 }
 
@@ -307,69 +304,68 @@ TEMPLATE_TEST_CASE("Detect Isomorphic Surfaces", "[flat_triangulation][isomorphi
   using T = TestType;
   using Transformation = std::tuple<T, T, T, T>;
 
-  const auto [name, surface] = GENERATE(makeSurface<T>());
+  const auto surface_ = GENERATE_SURFACES(T);
+  auto surface = surface_->clone();
+
   const int delaunay = GENERATE(values({0, 1}));
   const auto isomorphism = delaunay ? ISOMORPHISM::DELAUNAY_CELLS : ISOMORPHISM::FACES;
 
-  CAPTURE(**surface);
   CAPTURE(delaunay);
   if (delaunay)
-    (*surface)->delaunay();
+    surface.delaunay();
 
-  GIVEN("The Surface " << *name) {
-    REQUIRE((*surface)->isomorphism(**surface, isomorphism));
+  REQUIRE(surface.isomorphism(surface, isomorphism));
 
-    std::vector<Transformation> transformations = {Transformation{1, 0, 0, 1}};
+  std::vector<Transformation> transformations = {Transformation{1, 0, 0, 1}};
 
-    Transformation candidate;
-    auto filter = [&](const T& a, const T& b, const T& c, const T& d) {
-      candidate = Transformation{a, b, c, d};
-      return std::find(begin(transformations), end(transformations), candidate) == end(transformations);
-    };
+  Transformation candidate;
+  auto filter = [&](const T& a, const T& b, const T& c, const T& d) {
+    candidate = Transformation{a, b, c, d};
+    return std::find(begin(transformations), end(transformations), candidate) == end(transformations);
+  };
 
-    while (true) {
-      const auto deformation = (*surface)->isomorphism(**surface, isomorphism, filter);
+  while (true) {
+    const auto deformation = surface.isomorphism(surface, isomorphism, filter);
 
-      if (!deformation)
-        break;
+    if (!deformation)
+      break;
 
-      const auto [a, b, c, d] = candidate;
-      CAPTURE(a, b, c, d);
+    const auto [a, b, c, d] = candidate;
+    CAPTURE(a, b, c, d);
 
-      REQUIRE((!deformation->trivial() || (a == 1 && b == 0 && c == 0 && d == 1)));
+    REQUIRE((!deformation->trivial() || (a == 1 && b == 0 && c == 0 && d == 1)));
 
-      std::unordered_set<HalfEdge> image;
-      for (const auto& halfEdge : (*surface)->halfEdges()) {
-        CAPTURE(halfEdge);
+    std::unordered_set<HalfEdge> image;
+    for (const auto& halfEdge : surface.halfEdges()) {
+      CAPTURE(halfEdge);
 
-        if (delaunay && (*surface)->delaunay(halfEdge.edge()) == DELAUNAY::AMBIGUOUS)
-          continue;
+      if (delaunay && surface.delaunay(halfEdge.edge()) == DELAUNAY::AMBIGUOUS)
+        continue;
 
-        auto he = (*deformation)(halfEdge);
+      auto he = (*deformation)(halfEdge);
 
-        REQUIRE(he.has_value());
+      REQUIRE(he.has_value());
 
-        image.insert(*he);
+      image.insert(*he);
 
-        const auto v = (*surface)->fromHalfEdge(halfEdge);
-        const auto v_ = deformation->surface().fromHalfEdge(*he);
-        REQUIRE(Vector<T>(v.x() * a + v.y() * b, v.x() * c + v.y() * d) == v_);
-      }
-      if (!delaunay)
-        REQUIRE(image.size() == (*surface)->halfEdges().size());
-
-      transformations.push_back(candidate);
-
-      REQUIRE((*deformation * deformation->section()).trivial());
-      REQUIRE((deformation->section() * *deformation).trivial());
+      const auto v = surface.fromHalfEdge(halfEdge);
+      const auto v_ = deformation->surface().fromHalfEdge(*he);
+      REQUIRE(Vector<T>(v.x() * a + v.y() * b, v.x() * c + v.y() * d) == v_);
     }
+    if (!delaunay)
+      REQUIRE(image.size() == surface.halfEdges().size());
 
-    auto scaled = (*surface)->scale(2);
-    CAPTURE(scaled);
+    transformations.push_back(candidate);
 
-    REQUIRE(!(*surface)->isomorphism(scaled, isomorphism));
-    REQUIRE((*surface)->isomorphism(scaled, isomorphism, [](const auto&, const auto&, const auto&, const auto&) { return true; }));
+    REQUIRE((*deformation * deformation->section()).trivial());
+    REQUIRE((deformation->section() * *deformation).trivial());
   }
+
+  auto scaled = surface.scale(2);
+  CAPTURE(scaled);
+
+  REQUIRE(!surface.isomorphism(scaled, isomorphism));
+  REQUIRE(surface.isomorphism(scaled, isomorphism, [](const auto&, const auto&, const auto&, const auto&) { return true; }));
 }
 
 }  // namespace flatsurf::test

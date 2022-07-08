@@ -30,11 +30,8 @@ namespace flatsurf::test {
 
 TEMPLATE_TEST_CASE("Coordinates of Points", "[point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
-  using Surface = FlatTriangulation<T>;
 
-  const auto [name, surface_] = GENERATE(makeSurface<T>());
-  const auto surface = *surface_;
-  CAPTURE(*name, *surface);
+  const auto surface = GENERATE_SURFACES(T);
 
   const auto face = GENERATE_COPY(halfEdges(surface));
   const auto point = GENERATE_COPY(points(surface, face));
@@ -55,13 +52,11 @@ TEMPLATE_TEST_CASE("Coordinates of Points", "[point]", (long long), (mpq_class),
 
 TEMPLATE_TEST_CASE("Predicates of Points", "[point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
-  using Surface = FlatTriangulation<T>;
 
-  const auto [name, surface_] = GENERATE(makeSurface<T>());
-  const auto surface = *surface_;
-  CAPTURE(*name, *surface);
+  const auto surface = GENERATE_SURFACES(T);
 
   const auto face = GENERATE_COPY(halfEdges(surface));
+
   const auto point = GENERATE_COPY(points(surface, face));
   CAPTURE(point);
 

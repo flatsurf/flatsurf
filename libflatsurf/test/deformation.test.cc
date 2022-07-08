@@ -91,7 +91,8 @@ TEMPLATE_TEST_CASE("Mapping Points Across Flips", "[deformation][point]", (long 
 }
 
 TEMPLATE_TEST_CASE("Deform a Flat Triangulation", "[flat_triangulation][deformation]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
-  using R2 = Vector<TestType>;
+  using T = TestType;
+  using R2 = Vector<T>;
 
   const auto surface = makeL<R2>();
 
@@ -107,27 +108,26 @@ TEMPLATE_TEST_CASE("Deform a Flat Triangulation", "[flat_triangulation][deformat
     shift.set(HalfEdge(7), R2(0, 1));
 
     const auto shifted = surface->operator+(shift);
+    CAPTURE(shifted);
 
-    GIVEN("The Shifted Surface " << shifted) {
-      REQUIRE(shifted.codomain() != *surface);
+    REQUIRE(shifted.codomain() != *surface);
 
-      THEN("Half Edges can be Mapped") {
-        for (auto he : surface->halfEdges())
-          REQUIRE(shifted(Path(SaddleConnection(*surface, he))).has_value());
+    SECTION("Half Edges can be Mapped") {
+      for (auto he : surface->halfEdges())
+        REQUIRE(shifted(Path(SaddleConnection(*surface, he))).has_value());
 
-        REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(8)))->size() == 1);
-        REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(8)))->begin()->vector() == surface->fromHalfEdge(HalfEdge(8)) + R2(0, 1));
+      REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(8)))->size() == 1);
+      REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(8)))->begin()->vector() == surface->fromHalfEdge(HalfEdge(8)) + R2(0, 1));
 
-        REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(7)))->size() == 1);
-        REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(7)))->begin()->vector() == surface->fromHalfEdge(HalfEdge(7)) + R2(0, 1));
-      }
+      REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(7)))->size() == 1);
+      REQUIRE(shifted(SaddleConnection(*surface, HalfEdge(7)))->begin()->vector() == surface->fromHalfEdge(HalfEdge(7)) + R2(0, 1));
+    }
 
-      AND_THEN("Saddle Connections can be Mapped") {
-        const auto connection = GENERATE_REF(saddleConnections(surface));
+    SECTION("Saddle Connections can be Mapped") {
+      const auto connection = GENERATE_REF(saddleConnections<T>(surface));
 
-        const auto image = shifted(connection);
-        REQUIRE(image.has_value());
-      }
+      const auto image = shifted(connection);
+      REQUIRE(image.has_value());
     }
   }
 }

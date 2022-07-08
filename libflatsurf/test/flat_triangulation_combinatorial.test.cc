@@ -34,76 +34,71 @@ namespace flatsurf::test {
 
 TEST_CASE("Flat Triangulation Comparisons", "[flat_triangulation_combinatorial][operator==]") {
   const auto surface = GENERATE(makeSurfaceCombinatorial());
+  CAPTURE(*surface);
 
-  GIVEN("The Surface " << *surface) {
-    REQUIRE(*surface == surface->clone());
-    REQUIRE(*surface != *makeSquareWithBoundaryCombinatorial());
-  }
+  REQUIRE(*surface == surface->clone());
+  REQUIRE(*surface != *makeSquareWithBoundaryCombinatorial());
 }
 
 TEST_CASE("Flat Triangulation Edges", "[flat_triangulation_combinatorial][edges]") {
   const auto surface = GENERATE(makeSurfaceCombinatorial());
+  CAPTURE(*surface);
 
-  GIVEN("The Surface " << *surface) {
-    auto edges = surface->edges();
+  auto edges = surface->edges();
 
-    REQUIRE(edges.size() == surface->halfEdges().size() / 2);
+  REQUIRE(edges.size() == surface->halfEdges().size() / 2);
 
-    // This is assumed by some tracking code for efficiency.
-    REQUIRE(std::is_sorted(begin(edges), end(edges), [](const auto& lhs, const auto& rhs) { return lhs.index() < rhs.index(); }));
-  }
+  // This is assumed by some tracking code for efficiency.
+  REQUIRE(std::is_sorted(begin(edges), end(edges), [](const auto& lhs, const auto& rhs) { return lhs.index() < rhs.index(); }));
 }
 
 TEST_CASE("Flat Triangulation Half Edges", "[flat_triangulation_combinatorial][half_edges]") {
   const auto surface = GENERATE(makeSurfaceCombinatorial());
+  CAPTURE(*surface);
 
-  GIVEN("The Surface " << *surface) {
-    auto halfEdges = surface->halfEdges();
+  auto halfEdges = surface->halfEdges();
 
-    // This is assumed by some tracking code for efficiency.
-    REQUIRE(std::is_sorted(begin(halfEdges), end(halfEdges), [](const auto& lhs, const auto& rhs) { return lhs.index() < rhs.index(); }));
-  }
+  // This is assumed by some tracking code for efficiency.
+  REQUIRE(std::is_sorted(begin(halfEdges), end(halfEdges), [](const auto& lhs, const auto& rhs) { return lhs.index() < rhs.index(); }));
 }
 
 TEST_CASE("Flat Triangulation Vertices", "[flat_triangulation_combinatorial][vertices]") {
   const auto surface = GENERATE(makeSurfaceCombinatorial());
+  CAPTURE(*surface);
 
-  GIVEN("The Surface " << *surface) {
-    auto vertices = surface->vertices();
+  auto vertices = surface->vertices();
 
-    THEN("Each Half Edge shows up as Outgoing Exactly Once") {
-      if (!surface->hasBoundary()) {
-        std::vector<HalfEdge> halfEdges;
-        for (auto vertex : vertices) {
-          for (auto halfEdge : surface->atVertex(vertex)) {
-            halfEdges.push_back(halfEdge);
-          }
+  SECTION("Each Half Edge shows up as Outgoing Exactly Once") {
+    if (!surface->hasBoundary()) {
+      std::vector<HalfEdge> halfEdges;
+      for (auto vertex : vertices) {
+        for (auto halfEdge : surface->atVertex(vertex)) {
+          halfEdges.push_back(halfEdge);
         }
-        REQUIRE(halfEdges.size() == surface->halfEdges().size());
       }
+      REQUIRE(halfEdges.size() == surface->halfEdges().size());
     }
   }
 }
 
 TEST_CASE("Flat Triangulation Insertions", "[flat_triangulation_combinatorial][insert]") {
   const auto surface = GENERATE(makeSurfaceCombinatorial());
+  CAPTURE(*surface);
 
-  GIVEN("The Surface " << *surface) {
-    auto e = surface->halfEdges()[0];
+  auto e = surface->halfEdges()[0];
 
-    WHEN("We Insert a Vertex Next to " << e) {
-      auto inserted = surface->insertAt(e);
-      CAPTURE(inserted);
+  WHEN("We Insert a Vertex Next to " << e) {
+    auto inserted = surface->insertAt(e);
+    CAPTURE(inserted);
 
-      THEN("The Combinatorics Have Changed in the Expected Way") {
-        REQUIRE(*surface != inserted);
-        REQUIRE(surface->vertices().size() + 1 == inserted.vertices().size());
-        REQUIRE(surface->halfEdges().size() + 6 == inserted.halfEdges().size());
+    THEN("The Combinatorics Have Changed in the Expected Way") {
+      REQUIRE(*surface != inserted);
+      REQUIRE(surface->vertices().size() + 1 == inserted.vertices().size());
+      REQUIRE(surface->halfEdges().size() + 6 == inserted.halfEdges().size());
 
-        auto a = -inserted.nextAtVertex(e);
-        REQUIRE(a != -surface->nextAtVertex(e));
-        REQUIRE(inserted.nextAtVertex(inserted.nextAtVertex(inserted.nextAtVertex(a))) == a);
-      }
+      auto a = -inserted.nextAtVertex(e);
+      REQUIRE(a != -surface->nextAtVertex(e));
+      REQUIRE(inserted.nextAtVertex(inserted.nextAtVertex(inserted.nextAtVertex(a))) == a);
     }
   }
 }

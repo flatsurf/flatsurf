@@ -37,6 +37,7 @@
 namespace flatsurf::test {
 
 TEMPLATE_TEST_CASE("Collapse in a Flat Triangulation", "[flat_triangulation_collapsed][collapse]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
   using R2 = Vector<TestType>;
 
   auto contains = [](auto& surf, auto& vector) {
@@ -47,31 +48,30 @@ TEMPLATE_TEST_CASE("Collapse in a Flat Triangulation", "[flat_triangulation_coll
 
   SECTION("Collapse on a Square") {
     auto surface = GENERATE(value(makeSquare<R2>()));
-    auto sc = GENERATE_COPY(saddleConnections(surface));
+    auto sc = GENERATE_COPY(saddleConnections<T>(surface));
+    CAPTURE(surface);
 
-    GIVEN("The Square " << *surface) {
-      WHEN("We collapse in the direction of " << sc) {
-        auto collapsed = FlatTriangulationCollapsed<TestType>(surface->clone(), sc);
+    WHEN("We collapse in the direction of " << sc) {
+      auto collapsed = FlatTriangulationCollapsed<TestType>(surface->clone(), sc);
 
-        if (contains(surface, sc)) {
-          THEN("We end up with " << collapsed << " where everything is collapsed into a single edge") {
-            REQUIRE(collapsed.edges().size() == 1);
-            REQUIRE(collapsed.fromHalfEdge(HalfEdge(1)) == -collapsed.fromHalfEdge(HalfEdge(-1)));
+      if (contains(surface, sc)) {
+        THEN("We end up with " << collapsed << " where everything is collapsed into a single edge") {
+          REQUIRE(collapsed.edges().size() == 1);
+          REQUIRE(collapsed.fromHalfEdge(HalfEdge(1)) == -collapsed.fromHalfEdge(HalfEdge(-1)));
 
-            auto cross = collapsed.cross(HalfEdge(1));
-            REQUIRE(cross.size() == 1);
-            CAPTURE(*cross.begin());
-            REQUIRE((*cross.begin() == sc || *cross.begin() == -sc));
+          auto cross = collapsed.cross(HalfEdge(1));
+          REQUIRE(cross.size() == 1);
+          CAPTURE(*cross.begin());
+          REQUIRE((*cross.begin() == sc || *cross.begin() == -sc));
 
-            cross = collapsed.cross(HalfEdge(-1));
-            REQUIRE(cross.size() == 1);
-            CAPTURE(*cross.begin());
-            REQUIRE((*cross.begin() == sc || *cross.begin() == -sc));
-          }
-        } else {
-          THEN("Nothing happens, we are left with the same " << collapsed) {
-            REQUIRE(collapsed.edges().size() == surface->edges().size());
-          }
+          cross = collapsed.cross(HalfEdge(-1));
+          REQUIRE(cross.size() == 1);
+          CAPTURE(*cross.begin());
+          REQUIRE((*cross.begin() == sc || *cross.begin() == -sc));
+        }
+      } else {
+        THEN("Nothing happens, we are left with the same " << collapsed) {
+          REQUIRE(collapsed.edges().size() == surface->edges().size());
         }
       }
     }
@@ -79,26 +79,25 @@ TEMPLATE_TEST_CASE("Collapse in a Flat Triangulation", "[flat_triangulation_coll
 
   SECTION("Collapse in an L") {
     auto surface = GENERATE(value(makeL<R2>()));
-    auto sc = GENERATE_COPY(saddleConnections(surface));
+    auto sc = GENERATE_COPY(saddleConnections<T>(surface));
+    CAPTURE(surface);
 
-    GIVEN("The L " << *surface) {
-      WHEN("We collapse in the direction of " << sc) {
-        auto collapsed = FlatTriangulationCollapsed<TestType>(surface->clone(), sc);
+    WHEN("We collapse in the direction of " << sc) {
+      auto collapsed = FlatTriangulationCollapsed<TestType>(surface->clone(), sc);
 
-        if (contains(surface, sc)) {
-          if (sc <= Bound(1, 0)) {
-            THEN("We end up with " << collapsed << " where everything is collapsed into two edges") {
-              REQUIRE(collapsed.edges().size() == 2);
-            }
-          } else {
-            THEN("We end up with " << collapsed << " where everything is collapsed into a single edge") {
-              REQUIRE(collapsed.edges().size() == 1);
-            }
+      if (contains(surface, sc)) {
+        if (sc <= Bound(1, 0)) {
+          THEN("We end up with " << collapsed << " where everything is collapsed into two edges") {
+            REQUIRE(collapsed.edges().size() == 2);
           }
         } else {
-          THEN("Nothing happens, we are left with the same " << collapsed) {
-            REQUIRE(collapsed.edges().size() == surface->edges().size());
+          THEN("We end up with " << collapsed << " where everything is collapsed into a single edge") {
+            REQUIRE(collapsed.edges().size() == 1);
           }
+        }
+      } else {
+        THEN("Nothing happens, we are left with the same " << collapsed) {
+          REQUIRE(collapsed.edges().size() == surface->edges().size());
         }
       }
     }

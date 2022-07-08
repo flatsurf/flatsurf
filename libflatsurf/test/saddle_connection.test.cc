@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2021-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,9 +32,7 @@ TEMPLATE_TEST_CASE("Angle between Saddle Connections", "[saddle_connection][angl
   using T = TestType;
   using Surface = FlatTriangulation<T>;
 
-  const auto [name, surface_] = GENERATE(makeSurface<T>());
-  const auto surface = *surface_;
-  CAPTURE(*name, *surface);
+  const auto surface = GENERATE_SURFACES(T);
 
   const auto connection = GENERATE_REF(saddleConnections(surface));
   CAPTURE(connection);

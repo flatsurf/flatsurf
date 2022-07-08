@@ -46,9 +46,7 @@ TEMPLATE_TEST_CASE("Nullhomotopic Paths", "[path]", (long long), (mpq_class), (r
     using T = TestType;
     using Surface = FlatTriangulation<T>;
 
-    const auto [name, surface_] = GENERATE(makeSurface<T>());
-    const auto surface = *surface_;
-    CAPTURE(*name, *surface);
+    const auto surface = GENERATE_SURFACES(T);
 
     const auto connection = GENERATE_REF(saddleConnections(surface));
     CAPTURE(connection);
@@ -63,9 +61,7 @@ TEMPLATE_TEST_CASE("Nullhomotopic Paths", "[path]", (long long), (mpq_class), (r
     using T = TestType;
     using Surface = FlatTriangulation<T>;
 
-    const auto [name, surface_] = GENERATE(makeSurface<T>());
-    const auto surface = *surface_;
-    CAPTURE(*name, *surface);
+    const auto surface = GENERATE_SURFACES(T);
 
     auto face = GENERATE_COPY(halfEdges(surface));
     CAPTURE(face);
@@ -85,9 +81,7 @@ TEMPLATE_TEST_CASE("Short Paths", "[path]", (long long), (mpq_class), (renf_elem
     using T = TestType;
     using Surface = FlatTriangulation<T>;
 
-    const auto [name, surface_] = GENERATE(makeSurface<T>());
-    const auto surface = *surface_;
-    CAPTURE(*name, *surface);
+    const auto surface = GENERATE_SURFACES(T);
 
     auto face = GENERATE_COPY(halfEdges(surface));
     CAPTURE(face);
@@ -107,9 +101,7 @@ TEMPLATE_TEST_CASE("Random Paths", "[path]", (long long), (mpq_class), (renf_ele
     using T = TestType;
     using Surface = FlatTriangulation<T>;
 
-    const auto [name, surface_] = GENERATE(makeSurface<T>());
-    const auto surface = *surface_;
-    CAPTURE(*name, *surface);
+    const auto surface = GENERATE_SURFACES(T);
 
     const auto initial = GENERATE_COPY(take(8, halfEdges(surface)));
     CAPTURE(initial);

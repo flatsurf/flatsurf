@@ -98,26 +98,22 @@ TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimet
 TEMPLATE_TEST_CASE("Connections and IET from Contour Decomposition", "[contour_decomposition][iet]", (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
-  const auto [name, surface_] = GENERATE(makeSurface<T>());
-  const auto surface = *surface_;
+  const auto surface = GENERATE_SURFACES(T);
 
-  GIVEN("The surface " << *name << ", i.e., " << *surface) {
-    const auto saddleConnection = GENERATE_COPY(verticals<T>(surface));
+  const auto saddleConnection = GENERATE_COPY(verticals<T>(surface));
+  CAPTURE(saddleConnection);
 
-    AND_GIVEN("A direction of a Saddle Connection " << saddleConnection) {
-      THEN("The Contour Decomposition in that Direction can be Computed") {
-        auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), saddleConnection);
+  SECTION("The Contour Decomposition in that Direction can be Computed") {
+    auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), saddleConnection);
 
-        CAPTURE(decomposition);
-        CAPTURE(decomposition.collapsed());
+    CAPTURE(decomposition);
+    CAPTURE(decomposition.collapsed());
 
-        AND_THEN("We can construct the IETs from the components") {
-          for (auto component : decomposition.components()) {
-            REQUIRE(component.perimeter().tighten() == Path<FlatTriangulation<T>>{});
-            auto iet = component.intervalExchangeTransformation();
-            REQUIRE(iet.intervalExchangeTransformation().size() == component.topContour().size());
-          }
-        }
+    SECTION("We can construct the IETs from the components") {
+      for (auto component : decomposition.components()) {
+        REQUIRE(component.perimeter().tighten() == Path<FlatTriangulation<T>>{});
+        auto iet = component.intervalExchangeTransformation();
+        REQUIRE(iet.intervalExchangeTransformation().size() == component.topContour().size());
       }
     }
   }
