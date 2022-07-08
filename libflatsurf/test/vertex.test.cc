@@ -24,32 +24,6 @@
 
 namespace flatsurf::test {
 
-TEST_CASE("Total Angle Around Vertices", "[flat_triangulation][angle]") {
-  using R2 = Vector<eantic::renf_elem_class>;
-
-  SECTION("A Square Has No Singularities") {
-    const auto square = makeSquare<R2>();
-    for (auto vertex : square->vertices()) {
-      REQUIRE(square->angle(vertex) == 1);
-    }
-  }
-
-  SECTION("The Unfolding of the (1, 2, 3) Triangle Has No Singularities") {
-    const auto _123 = make123<R2>();
-    for (auto vertex : _123->vertices()) {
-      REQUIRE(_123->angle(vertex) == 1);
-    }
-  }
-
-  SECTION("The L Has A Single Singularity") {
-    const auto L = makeL<R2>();
-    REQUIRE(L->vertices().size() == 1);
-    for (auto vertex : L->vertices()) {
-      REQUIRE(L->angle(vertex) == 3);
-    }
-  }
-}
-
 TEST_CASE("Vertices And Modifications of Surfaces", "[vertex][flip]") {
   auto hexagon = makeHexagonCombinatorial();
 

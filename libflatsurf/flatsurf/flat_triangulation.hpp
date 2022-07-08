@@ -118,6 +118,7 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
   // Return the total angle at this vertex as a multiple of 2π.
   int angle(const Vertex &) const;
 
+  // Return the total angle at this point as a multiple of 2π.
   int angle(const Point<FlatTriangulation>&) const;
 
   // Return whether the vector is in the sector counterclockwise next to the
