@@ -4,7 +4,6 @@
 # conda env update -n pyflatsurf-build -f environment.yml
 name: pyflatsurf-build
 channels:
-  - flatsurf
   - conda-forge
   - defaults
 dependencies:
