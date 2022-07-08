@@ -117,6 +117,12 @@ TEMPLATE_TEST_CASE("Exact Vectors", "[vector]", (long long), (mpz_class), (mpq_c
   SECTION("Printing") {
     REQUIRE(boost::lexical_cast<std::string>(V(2, 3)) == "(2, 3)");
   }
+
+  SECTION("Scaling") {
+    const V v{2, 3};
+
+    REQUIRE(2 * v == T(2) * v);
+  }
 }
 
 TEMPLATE_TEST_CASE("Inexact Vectors", "[vector]", (exactreal::Arb)) {
