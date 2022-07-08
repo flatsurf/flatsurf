@@ -157,7 +157,7 @@ TEMPLATE_TEST_CASE("Delaunay Triangulation of a Square", "[flat_triangulation][d
 
   auto bound = Bound(2, 0);
 
-  auto flip = GENERATE_COPY(halfEdges<T>(square));
+  auto flip = GENERATE_COPY(halfEdges(square));
   CAPTURE(flip);
 
   square->flip(flip);
@@ -181,7 +181,7 @@ TEMPLATE_TEST_CASE("Delaunay Triangulation of an Octagon", "[flat_triangulation]
 
     auto a = octagon->fromHalfEdge(HalfEdge(1)).x();
 
-    auto flip = GENERATE_COPY(halfEdges<T>(octagon));
+    auto flip = GENERATE_COPY(halfEdges(octagon));
     CAPTURE(flip);
 
     if (octagon->convex(flip)) {

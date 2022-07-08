@@ -83,6 +83,8 @@ class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulat
   const std::vector<HalfEdge> &halfEdges() const;
   const std::vector<Vertex> &vertices() const;
 
+  /// Return the three half edges that delimit this face, i.e., the argument
+  /// and the one that is `nextInFace` and the one that is `previousInFace`.
   std::array<HalfEdge, 3> face(HalfEdge) const;
 
   // Return the triples of half edges of each face in counterclockwise order.

@@ -1,8 +1,8 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Vincent Delecroix
- *        Copyright (C) 2019-2021 Julian Rüth
+ *        Copyright (C)      2019 Vincent Delecroix
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 #include "../flatsurf/vertex.hpp"
 #include "external/catch2/single_include/catch2/catch.hpp"
 #include "generators/combinatorial_surface_generator.hpp"
+#include "generators/half_edge_generator.hpp"
 
 namespace flatsurf::test {
 
@@ -60,6 +61,18 @@ TEST_CASE("Flat Triangulation Half Edges", "[flat_triangulation_combinatorial][h
 
   // This is assumed by some tracking code for efficiency.
   REQUIRE(std::is_sorted(begin(halfEdges), end(halfEdges), [](const auto& lhs, const auto& rhs) { return lhs.index() < rhs.index(); }));
+}
+
+TEST_CASE("Flat Triangulation Faces", "[flat_triangulation_combinatorial][face]") {
+  const auto surface = GENERATE(makeSurfaceCombinatorial());
+  CAPTURE(*surface);
+
+  const auto halfEdge = GENERATE_COPY(halfEdges(surface));
+  const auto face = surface->face(halfEdge);
+
+  REQUIRE(std::find(begin(face), end(face), halfEdge) != face.end());
+  REQUIRE(std::find(begin(face), end(face), surface->nextInFace(halfEdge)) != face.end());
+  REQUIRE(std::find(begin(face), end(face), surface->previousInFace(halfEdge)) != face.end());
 }
 
 TEST_CASE("Flat Triangulation Vertices", "[flat_triangulation_combinatorial][vertices]") {
