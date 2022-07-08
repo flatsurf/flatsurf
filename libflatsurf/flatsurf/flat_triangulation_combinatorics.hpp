@@ -86,7 +86,8 @@ class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulat
   std::array<HalfEdge, 3> face(HalfEdge) const;
 
   // Return the triples of half edges of each face in counterclockwise order.
-  // TODO: Should be array. (Probably also some other tuples should be.)
+  // The return type of this method is somewhat unfortunate, see
+  // https://github.com/flatsurf/flatsurf/issues/307.
   std::vector<std::tuple<HalfEdge, HalfEdge, HalfEdge>> faces() const;
 
   // Return the outgoing half edges from this vertex in order.
