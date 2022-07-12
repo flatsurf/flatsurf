@@ -20,6 +20,8 @@ libflatsurf_la_SOURCES =                                            \
 	edge.cc                                                     \
 	edge_set.cc                                                 \
 	edge_set_iterator.cc                                        \
+	equivalence.cc                                              \
+	equivalence_class.cc                                        \
 	flat_triangulation.cc                                       \
 	flat_triangulation_collapsed.cc                             \
 	flat_triangulation_combinatorial.cc                         \

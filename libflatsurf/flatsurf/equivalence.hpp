@@ -16,47 +16,48 @@
  *  You should have received a copy of the GNU General Public License
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
-#ifndef LIBFLATSURF_EQUIVALENCE_CLASS_HPP
-#define LIBFLATSURF_EQUIVALENCE_CLASS_HPP
+#ifndef LIBFLATSURF_EQUIVALENCE_HPP
+#define LIBFLATSURF_EQUIVALENCE_HPP
 
-#include <boost/operators.hpp>
+#include <type_traits>
+
+#include <tuple>
+#include <any>
+#include <functional>
 
 #include "copyable.hpp"
 
 namespace flatsurf {
 
-// An equivalence class of surfaces modulo a notion of equality.
 template <typename Surface>
-class EquivalenceClass : boost::equality_comparable<EquivalenceClass<Surface>> {
+class Equivalence {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
  public:
-  EquivalenceClass(const Surface&, const Equivalence<Surface>&);
+  template <typename T>
+  Equivalence(T&& impl) : self(impl) {}
 
-  // Return the number of isomorphisms from an element of this equivalence
-  // class to an element of the given equivalence class.
-  size_t isomorphisms(const EquivalenceClass&) const;
-
-  // Return a (possibly canonical) representative of this equivalence class.
-  const Surface& representative() const;
-
-  // Return whether two equivalence classes are equal.
-  friend bool operator==(const EquivalenceClass&, const EquivalenceClass&);
+  static Equivalence combinatorial();
+  static Equivalence combinatorial(std::function<bool(const Surface&, Edge)>);
 
   template <typename S>
-  friend std::ostream &operator<<(std::ostream &, const EquivalenceClass<S> &);
+  friend std::ostream &operator<<(std::ostream &, const Equivalence<S> &);
 
  private:
-  Copyable<EquivalenceClass> self;
+  Copyable<Equivalence> self;
 
-  friend ImplementationOf<EquivalenceClass>;
+  friend ImplementationOf<Equivalence>;
+};
+
+template <typename Surface>
+struct ImplementationOf<Equivalence<Surface>> {
+  virtual ~ImplementationOf();
+  virtual std::tuple<std::any, std::size_t> code(const Surface&) = 0;
+  virtual Iterable<Deformation<Surface>> automorphisms() = 0;
+  virtual void normalize(Surface&) = 0;
+  virtual void equal(const ImplementationOf&) = 0;
+  virtual std::string toString() = 0;
 };
 
 }
-
-template <typename Surface>
-struct std::hash<::flatsurf::EquivalenceClass<Surface>> {
-  size_t operator()(const ::flatsurf::EquivalenceClass<Surface>&) const;
-};
-
 #endif

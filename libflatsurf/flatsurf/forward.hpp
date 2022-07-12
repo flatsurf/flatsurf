@@ -67,6 +67,12 @@ class EdgeSet;
 
 class EdgeSetIterator;
 
+template <typename Surface>
+class Equivalence;
+
+template <typename Surface>
+class EquivalenceClass;
+
 template <typename T>
 class FlatTriangulation;
 
@@ -104,6 +110,12 @@ class ImplementationOf;
 
 template <typename Surface>
 class IntervalExchangeTransformation;
+
+template <typename T>
+class Iterable;
+
+template <typename T>
+class Iterator;
 
 enum class ISOMORPHISM;
 
