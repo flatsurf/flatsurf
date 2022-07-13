@@ -29,6 +29,7 @@
 #include "../flatsurf/half_edge_set_iterator.hpp"
 #include "../flatsurf/vector.hpp"
 #include "util/assert.ipp"
+#include "util/hash.ipp"
 #include "impl/point.impl.hpp"
 
 namespace flatsurf {
@@ -280,6 +281,84 @@ std::ostream& operator<<(std::ostream& os, const Point<Surface>& point) {
 
 }
 
+template <typename Surface>
+size_t std::hash<::flatsurf::Point<Surface>>::operator()(const ::flatsurf::Point<Surface>& point) const {
+  using T = typename Surface::Coordinate;
+
+  const auto vertex = point.vertex();
+  if (vertex)
+    return std::hash<::flatsurf::Vertex>{}(*vertex);
+
+  const auto face = point.face();
+  const auto [a, b, c] = point.coordinates(face);
+
+  const auto edge = point.edge();
+  const auto max = std::max({a, b, c});
+
+  // Computes a hash value for the quotient a/b.
+  const auto quot = [](const auto& a, const auto& b) -> size_t {
+    if constexpr (std::is_same_v<T, mpq_class>) {
+      mpq_class c = a / b;
+      return std::hash<double>{}(c.get_d());
+    } else if constexpr (std::is_same_v<T, mpz_class>) {
+      mpq_class c = mpq_class{a} / mpq_class{b};
+      return std::hash<double>{}(c.get_d());
+    } else {
+      LIBFLATSURF_ASSERT_ARGUMENT(a <= b && a >= 0 && b > 0, "hashing only implemented for quotients a / b with non-negative a < b.");
+
+      // Compute the binary expansion of the quotient a/b.
+      // This should probably be implemented by exact-real instead.
+      size_t hash = 0;
+
+      auto x = a;
+      auto y = b;
+
+      for (size_t i = 0; i < sizeof(size_t); i++) {
+        if (x >= y) {
+          x -= y;
+          LIBFLATSURF_ASSERT(x < y, "in the binary expansion, each digit must be 0 or 1");
+          hash++;
+        }
+        x *= 2;
+        hash <<= 1;
+      }
+
+      return hash;
+    }
+  };
+
+  if (edge) {
+    // We need to hash a point on an edge such that we do not distinguish its
+    // representative (a, b, 0) on face and its representative (b, a, 0) on
+    // -face.
+    LIBFLATSURF_ASSERT(!c, "point on an edge has coordinates (a, b, 0)");
+    return ::flatsurf::hash_combine(::flatsurf::Edge(face), a == max ? quot(b, a) : quot(a, b));
+  }
+
+
+  // We need to hash the coordinates (a, b, c) such that hash(a, b, c) =
+  // hash(λa, λb, λc) for a positive λ. we also need the hash to be invariant
+  // under rotation of the coordinates (a, b, c).
+  const auto boundary = point.surface().face(face);
+
+  if (a == max && b == max && c == max) {
+    const ::flatsurf::HalfEdge face = *std::min_element(boundary.begin(), boundary.end(), [](const auto& e, const auto& f) { return e.index() < f.index(); });
+    return ::flatsurf::hash_combine(face, point.surface().nextInFace(face));
+  } else if (a == max && b == max)
+    return ::flatsurf::hash_combine(face, quot(c, max));
+  else if (a == max && c == max)
+    return ::flatsurf::hash_combine(boundary[2], quot(b, max));
+  else if (b == max && c == max)
+    return ::flatsurf::hash_combine(boundary[1], quot(a, max));
+  else if (a == max)
+    return ::flatsurf::hash_combine(face, quot(b, max), quot(c, max));
+  else if (b == max)
+    return ::flatsurf::hash_combine(boundary[1], quot(c, max), quot(a, max));
+  else if (c == max)
+    return ::flatsurf::hash_combine(boundary[2], quot(a, max), quot(b, max));
+
+  LIBFLATSURF_UNREACHABLE("Impossible coordinates of point in face: " << point);
+}
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"

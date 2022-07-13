@@ -46,14 +46,16 @@ class Point : Serializable<Point<Surface>>,
   // by the triple, i.e., P=\frac{aA + bB + cC}{a + b + c} where A, B, C are
   // the vertices of the face in counterclockwise order starting from the
   // source of ``face``.
-  // The sum of the coordinates must be positive (but they might not sum to
-  // one.) If the point is not inside the face, then we walk the surface until
-  // we find a face for which the coordinates become non-negative.
   Point(const Surface&, HalfEdge face, const T& a, const T& b, const T& c);
   Point(const Surface&, HalfEdge face, const std::array<T, 3>&);
 
-  bool operator==(const Point &) const;
+  // Return whether this point is the same as ``other``.
+  // Points that were defined with coordinates on different faces get correctly
+  // identified by this method if they are on a shared edge or vertex of the
+  // faces.
+  bool operator==(const Point &other) const;
 
+  // Return the surface this point is defined on.
   const Surface &surface() const;
 
   // Return whether this point is a vertex of the triangulation.
@@ -66,23 +68,21 @@ class Point : Serializable<Point<Surface>>,
   // coordinates(face) produces non-negative weights.
   HalfEdge face() const;  
 
-  // Return whether this point is in ``face``, i.e., whether ``coordinates``
-  // would be all non-negative for this face.
+  // Return whether this point is in ``face``, i.e., whether it has all
+  // non-negative ``coordinates`` in this face.
   bool in(HalfEdge face) const;
 
+  // Return whether this point is on ``edge``, i.e., whether its coordinates
+  // for any face adjacent to this edge are of the form (a, b, 0).
   bool on(Edge edge) const;
 
+  // Return whether this point is the ``vertex``.
   bool at(const Vertex& vertex) const;
 
   // Return the barycentric coordinates of this point with respect to the face,
-  // i.e., weights for the corners of the triangle in counterclockwise order,
-  // namely for the source of face, the target of face and the remaining
-  // corner.
-  // If this point is not in that face, some of the coordinates have to be negative.
-  // However, such barycentric coordinates are typically not unique on a
-  // translation surface. Therefore, we return coordinates that are consistent
-  // with our constructor. I.e., creating a point from these coordinates
-  // produces the original point.
+  // i.e., non-negative weights for the corners of the triangle in
+  // counterclockwise order, namely for the source of face, the target of face
+  // and the remaining corner.
   std::array<T, 3> coordinates(HalfEdge face) const;
 
   // Return the vector starting at the source of origin that ends at this point.

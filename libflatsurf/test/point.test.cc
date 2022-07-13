@@ -28,14 +28,32 @@
 
 namespace flatsurf::test {
 
-TEMPLATE_TEST_CASE("Coordinates of Points", "[point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Coordinates of Points", "[point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
   const auto surface = GENERATE_SURFACES(T);
 
   const auto face = GENERATE_COPY(halfEdges(surface));
+
   const auto point = GENERATE_COPY(points(surface, face));
   CAPTURE(point);
+
+  SECTION("Point Coordinates Corresponding to Position in Face") {
+    const auto [a, b, c] = point.coordinates(point.face());
+    REQUIRE(a >= 0);
+    REQUIRE(b >= 0);
+    REQUIRE(c >= 0);
+
+    const int positives = (a > 0) + (b > 0) + (c > 0);
+    CAPTURE(positives);
+
+    const auto vertex = point.vertex();
+    const auto edge = point.edge();
+
+    REQUIRE(positives != 0);
+    REQUIRE((positives == 1) == vertex.has_value());
+    REQUIRE((positives <= 2) == edge.has_value());
+  }
 
   SECTION("Point Coordinates Roundtrip") {
     for (const auto face_ : surface->face(face)) {
@@ -50,7 +68,7 @@ TEMPLATE_TEST_CASE("Coordinates of Points", "[point]", (long long), (mpq_class),
   }
 }
 
-TEMPLATE_TEST_CASE("Predicates of Points", "[point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Predicates in/at/on of Points", "[point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
   const auto surface = GENERATE_SURFACES(T);
@@ -61,21 +79,9 @@ TEMPLATE_TEST_CASE("Predicates of Points", "[point]", (long long), (mpq_class), 
   CAPTURE(point);
 
   REQUIRE(point.in(point.face()));
-  
-  const auto [a, b, c] = point.coordinates(point.face());
-  REQUIRE(a >= 0);
-  REQUIRE(b >= 0);
-  REQUIRE(c >= 0);
-
-  const int positives = (a > 0) + (b > 0) + (c > 0);
-  CAPTURE(positives);
 
   const auto vertex = point.vertex();
   const auto edge = point.edge();
-
-  REQUIRE(positives != 0);
-  REQUIRE((positives == 1) == vertex.has_value());
-  REQUIRE((positives <= 2) == edge.has_value());
 
   if (vertex) {
     REQUIRE(point.at(*vertex));
@@ -91,6 +97,64 @@ TEMPLATE_TEST_CASE("Predicates of Points", "[point]", (long long), (mpq_class), 
   } else {
     REQUIRE(!point.in(-point.face()));
   }
+}
+
+TEMPLATE_TEST_CASE("Equality of Points", "[point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+  using Surface = FlatTriangulation<T>;
+
+  const auto surface = GENERATE_SURFACES(T);
+
+  const auto face = GENERATE_COPY(halfEdges(surface));
+
+  const auto point = GENERATE_COPY(points(surface, face));
+  CAPTURE(point);
+
+  REQUIRE(point == point);
+
+  SECTION("Compare to Vertices") {
+    const auto vertex = point.vertex();
+
+    if (vertex) {
+      REQUIRE(point == Point(*surface, *vertex));
+    } else {
+      REQUIRE(point != Point(*surface, *surface->vertices().begin()));
+    }
+  }
+
+  SECTION("Compare to Edges") {
+    const auto edge = point.edge();
+
+    if (edge) {
+      const auto coordinates = point.coordinates(edge->positive());
+      REQUIRE(!coordinates[2]);
+      REQUIRE(point == Point(*surface, edge->negative(), coordinates[1], coordinates[0], T()));
+    } else {
+      REQUIRE(point != Point(*surface, HalfEdge(1), T(1), T(1), T()));
+    }
+  }
+
+  SECTION("Point are Hashable") {
+    REQUIRE(std::hash<Point<Surface>>{}(point) == std::hash<Point<Surface>>{}(point));
+
+    const auto point_ = GENERATE_COPY(points(surface, face));
+    CAPTURE(point_);
+
+    if (point != point_)
+      REQUIRE(std::hash<Point<Surface>>{}(point) != std::hash<Point<Surface>>{}(point_));
+  }
+}
+
+TEMPLATE_TEST_CASE("Points Remember the Surface they are Defined On", "[point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+
+  const auto surface = GENERATE_SURFACES(T);
+
+  const auto face = GENERATE_COPY(halfEdges(surface));
+
+  const auto point = GENERATE_COPY(points(surface, face));
+
+  REQUIRE(point.surface() == *surface);
 }
 
 }
