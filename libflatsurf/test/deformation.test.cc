@@ -67,7 +67,7 @@ TEMPLATE_TEST_CASE("Deformations", "[deformation]", (long long), (mpq_class), (r
   }
 }
 
-TEMPLATE_TEST_CASE("Mapping Points Across Flips", "[deformation][point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Mapping Points Across Deformations", "[deformation][point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
   const auto surface = GENERATE_SURFACES(T);
@@ -87,6 +87,31 @@ TEMPLATE_TEST_CASE("Mapping Points Across Flips", "[deformation][point]", (long 
     REQUIRE(preimage.surface() == point.surface());
 
     REQUIRE(preimage == point);
+  }
+}
+
+TEMPLATE_TEST_CASE("Mapping Paths Across Deformation", "[deformation][path]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+
+  const auto surface = GENERATE_SURFACES(T);
+  const auto deformation = GENERATE_COPY(deformations(surface));
+
+  SECTION("Map Random Paths") {
+    const auto saddleConnection = GENERATE_REF(saddleConnections(surface));
+    CAPTURE(saddleConnection);
+
+    const auto image = deformation(saddleConnection);
+    REQUIRE(image);
+    CAPTURE(*image);
+
+    const auto preimage = deformation.section()(*image);
+    REQUIRE(preimage);
+    CAPTURE(*preimage);
+
+    REQUIRE(!preimage->empty());
+
+    REQUIRE(preimage->begin()->surface() == saddleConnection.surface());
+    REQUIRE(preimage == saddleConnection);
   }
 }
 
