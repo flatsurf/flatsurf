@@ -111,10 +111,6 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
 
   SaddleConnection<Surface> operator-() const;
 
-  Permutation<Point<Surface>> intersection(const SaddleConnection&) const;
-
-  // TODO: Also think about intersecting segments given by Point endpoints. (Under the hood, this is what the above is using anyway.)
-
   bool operator==(const SaddleConnection<Surface> &) const;
 
   bool operator>(const Bound) const;
