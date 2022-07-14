@@ -6,7 +6,7 @@ Vector wrapper and sage conversion for ``flatsurf.Vector``.
 #  This file is part of flatsurf.
 #
 #        Copyright (C) 2020-2021 Vincent Delecroix
-#                      2020 Julian Rüth
+#        Copyright (C)      2020 Julian Rüth
 #
 #  Flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by

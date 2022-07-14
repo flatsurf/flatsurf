@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020      Vincent Delecroix
+ *        Copyright (C)      2020 Vincent Delecroix
  *        Copyright (C) 2020-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify

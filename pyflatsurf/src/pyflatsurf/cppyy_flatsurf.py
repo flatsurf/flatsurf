@@ -3,7 +3,7 @@
 #  This file is part of flatsurf.
 #
 #        Copyright (C) 2019-2021 Julian Rüth
-#        Copyright (C) 2020 Vincent Delecroix
+#        Copyright (C)      2020 Vincent Delecroix
 #
 #  Flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by

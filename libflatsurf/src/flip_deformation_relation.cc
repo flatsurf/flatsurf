@@ -2,7 +2,7 @@
  *  This file is part of flatsurf.
  *
  *        Copyright (C) 2021-2022 Julian Rüth
- *                           2022 Sam Freedman
+ *        Copyright (C)      2022 Sam Freedman
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
