@@ -31,6 +31,7 @@
 #include "util/assert.ipp"
 #include "util/hash.ipp"
 #include "impl/point.impl.hpp"
+#include "impl/linear_deformation_relation.hpp"
 
 namespace flatsurf {
 
@@ -165,6 +166,24 @@ bool Point<Surface>::on(Edge edge) const {
 template <typename Surface>
 bool Point<Surface>::at(const Vertex& vertex) const {
   return this->vertex() == vertex;
+}
+
+template <typename Surface>
+Vector<typename Surface::Coordinate> Point<Surface>::vector(HalfEdge origin) const {
+  auto [a, b, c] = this->coordinates(origin);
+
+  const auto AC = -this->surface().fromHalfEdge(this->surface().previousInFace(origin));
+  const auto BC = this->surface().fromHalfEdge(origin);
+
+  const T abc = a + b + c;
+
+  if (!LinearDeformationRelation<Surface>::truediv(c, abc))
+    throw std::invalid_argument("cannot insert point since its Cartesian coordinates are not in the base ring");
+
+  if (!LinearDeformationRelation<Surface>::truediv(b, abc))
+    throw std::invalid_argument("cannot insert point since its Cartesian coordinates are not in the base ring");
+
+  return c * AC + b * BC;
 }
 
 template <typename Surface>
