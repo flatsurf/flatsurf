@@ -628,6 +628,20 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &nextT
 }
 
 template <typename T>
+Deformation<FlatTriangulation<T>> FlatTriangulation<T>::insert(const Point<FlatTriangulation<T>>& point) const {
+  LIBFLATSURF_CHECK_ARGUMENT(!point.vertex(), "point " << point << " is already a vertex of " << *this);
+
+  const auto edge = point.edge();
+  if (edge) {
+    HalfEdge nextTo = edge->positive();
+    return this->insertAt(nextTo, point.vector(nextTo));
+  }
+
+  HalfEdge face = point.face();
+  return this->insertAt(face, point.vector(face));
+}
+
+template <typename T>
 void FlatTriangulation<T>::delaunay() {
   bool isDelaunay;
   do {

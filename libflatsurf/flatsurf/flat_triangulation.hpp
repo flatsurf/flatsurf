@@ -73,6 +73,10 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
   // next to e, the necessary edge flips are performed to accomodate it.
   Deformation<FlatTriangulation<T>> insertAt(HalfEdge &e, const Vector<T> &v) const;
 
+  // Create an independent clone of this triangulation with an added vertex at
+  // ``p`` which is not a vertex already.
+  Deformation<FlatTriangulation<T>> insert(const Point<FlatTriangulation>& p) const;
+
   // Create an independent clone of this triangulation with all vectors scaled
   // by c.
   FlatTriangulation<T> scale(const mpz_class &c) const;

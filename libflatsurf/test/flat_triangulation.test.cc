@@ -78,7 +78,32 @@ TEMPLATE_TEST_CASE("Flip in a Flat Triangulation", "[flat_triangulation][flip]",
 }
 
 TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[flat_triangulation][insert][slit]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
-  using R2 = Vector<TestType>;
+  using T = TestType;
+  using R2 = Vector<T>;
+
+  SECTION("Insert into a Surface") {
+    auto surface = GENERATE_SURFACES(T);
+    CAPTURE(*surface);
+    auto face = GENERATE_COPY(halfEdges(surface));
+    auto point = GENERATE_COPY(points(surface, face));
+    CAPTURE(point);
+
+    if (point.vertex()) {
+      REQUIRE_THROWS(surface->insert(point));
+    } else {
+      const auto insertion = surface->insert(point);
+
+      REQUIRE(insertion.domain() == *surface);
+      CAPTURE(insertion.codomain());
+
+      const auto image = insertion(point);
+      CAPTURE(image);
+      REQUIRE(image.vertex());
+
+      const auto preimage = insertion.section()(image);
+      REQUIRE(preimage == point);
+    }
+  }
 
   SECTION("Insert into an L") {
     auto surface = makeL<R2>()->scale(3);
