@@ -622,7 +622,11 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &nextT
       return deformation.codomain().fromHalfEdge(e);
     });
 
-    return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<InsertMarkedPointOnEdgeDeformationRelation<FlatTriangulation>>(deformation.codomain(), codomain, Vertex::source(a, codomain), nextTo, -a, c)) * deformation;
+    const auto split = nextTo;
+
+    nextTo = deformation.codomain().previousAtVertex(nextTo);
+
+    return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<InsertMarkedPointOnEdgeDeformationRelation<FlatTriangulation>>(deformation.codomain(), codomain, Vertex::source(a, codomain), split, -a, c)) * deformation;
   }
 }
 
