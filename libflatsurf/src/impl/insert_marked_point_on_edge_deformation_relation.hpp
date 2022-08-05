@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2021-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,29 +17,26 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_IMPL_INSERT_MARKED_DEFORMATION_RELATION_HPP
-#define LIBFLATSURF_IMPL_INSERT_MARKED_DEFORMATION_RELATION_HPP
+#ifndef LIBFLATSURF_IMPL_INSERT_MARKED_POINT_ON_EDGE_DEFORMATION_RELATION_HPP
+#define LIBFLATSURF_IMPL_INSERT_MARKED_POINT_ON_EDGE_DEFORMATION_RELATION_HPP
 
 #include <iosfwd>
 
 #include "../../flatsurf/vertex.hpp"
+#include "../../flatsurf/half_edge.hpp"
 #include "deformation_relation.hpp"
 
 namespace flatsurf {
 
+// The deformation that inserts a marked point in the interior of a half edge
+// `split`.  The marked point is then attached to four half edges, two of them
+// sum as `split = a + b`.
 template <typename Surface>
-class InsertMarkedDeformationRelation : public DeformationRelation<Surface> {
+class InsertMarkedPointOnEdgeDeformationRelation : public DeformationRelation<Surface> {
   using T = typename Surface::Coordinate;
 
  public:
-  // The deformation that inserts a marked point in the interior of a face. The
-  // marked point is then attached to three half edges.
-  InsertMarkedDeformationRelation(const Surface& domain, const Surface& codomain, const Vertex& inserted);
-
-  // The deformation that inserts a marked point in the interior of a half edge
-  // `split`.  The marked point is then attached to four half edges, two of
-  // them sum as `split = a + b`.
-  InsertMarkedDeformationRelation(const Surface& domain, const Surface& codomain, const Vertex& inserted, HalfEdge split, HalfEdge a, HalfEdge b);
+  InsertMarkedPointOnEdgeDeformationRelation(const Surface& domain, const Surface& codomain, const Vertex& inserted, HalfEdge split, HalfEdge a, HalfEdge b);
 
   std::optional<Path<Surface>> operator()(const Path<Surface>&) const override;
   Point<Surface> operator()(const Point<Surface>&) const override;
@@ -50,16 +47,15 @@ class InsertMarkedDeformationRelation : public DeformationRelation<Surface> {
 
   bool trivial() const override;
 
-  // Whether the vertex was inserted in the interior of a face.
-  // Otherwise, it was inserted in the interior of an edge.
-  bool face() const;
-
   // Return the inserted vertex as an element of the domain.
   Point<Surface> point() const;
 
   std::ostream& operator>>(std::ostream&) const override;
 
   Vertex inserted;
+  HalfEdge split;
+  HalfEdge a;
+  HalfEdge b;
 };
 
 }  // namespace flatsurf

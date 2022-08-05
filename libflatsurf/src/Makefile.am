@@ -38,7 +38,8 @@ libflatsurf_la_SOURCES =                                            \
 	half_edge_set_iterator.cc                                   \
 	indexed_set.cc                                              \
 	indexed_set_iterator.cc                                     \
-	insert_marked_deformation_relation.cc                       \
+	insert_marked_point_on_edge_deformation_relation.cc         \
+	insert_marked_point_in_face_deformation_relation.cc         \
 	interval_exchange_transformation.cc                         \
 	lengths.cc                                                  \
 	linear_deformation_relation.cc                              \
@@ -167,7 +168,8 @@ noinst_HEADERS =                                                    \
 	impl/indexed_map.hpp                                        \
 	impl/indexed_set.hpp                                        \
 	impl/indexed_set_iterator.hpp                               \
-	impl/insert_marked_deformation_relation.hpp                 \
+	impl/insert_marked_point_on_edge_deformation_relation.hpp   \
+	impl/insert_marked_point_in_face_deformation_relation.hpp   \
 	impl/interval_exchange_transformation.impl.hpp              \
 	impl/lengths.hpp                                            \
 	impl/linear_deformation_relation.hpp                        \

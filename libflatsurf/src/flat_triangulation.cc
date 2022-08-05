@@ -59,7 +59,8 @@
 #include "impl/flat_triangulation_combinatorial.impl.hpp"
 #include "impl/flip_deformation_relation.hpp"
 #include "impl/generic_retriangulation_deformation_relation.hpp"
-#include "impl/insert_marked_deformation_relation.hpp"
+#include "impl/insert_marked_point_in_face_deformation_relation.hpp"
+#include "impl/insert_marked_point_on_edge_deformation_relation.hpp"
 #include "impl/linear_deformation_relation.hpp"
 #include "impl/quadratic_polynomial.hpp"
 #include "impl/retriangulation_deformation_relation.hpp"
@@ -593,7 +594,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &nextT
       return deformation.codomain().fromHalfEdge(e);
     });
 
-    return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<InsertMarkedDeformationRelation<FlatTriangulation>>(deformation.codomain(), codomain, Vertex::source(a, codomain))) * deformation;
+    return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<InsertMarkedPointInFaceDeformationRelation<FlatTriangulation>>(deformation.codomain(), codomain, Vertex::source(a, codomain))) * deformation;
   } else {
     // After the flips we did, vector is collinear with the half edge nextTo (but shorter.)
 
@@ -621,9 +622,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &nextT
       return deformation.codomain().fromHalfEdge(e);
     });
 
-    nextTo = deformation.codomain().previousAtVertex(nextTo);
-
-    return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<InsertMarkedDeformationRelation<FlatTriangulation>>(deformation.codomain(), codomain, Vertex::source(a, codomain), nextTo, -a, c)) * deformation;
+    return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<InsertMarkedPointOnEdgeDeformationRelation<FlatTriangulation>>(deformation.codomain(), codomain, Vertex::source(a, codomain), nextTo, -a, c)) * deformation;
   }
 }
 
