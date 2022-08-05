@@ -29,6 +29,7 @@
 
 namespace flatsurf {
 
+// A notion of equality of surfaces.
 template <typename Surface>
 class Equivalence {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type parameter must not have modifiers such as const");
@@ -37,7 +38,19 @@ class Equivalence {
   template <typename T>
   Equivalence(T&& impl) : self(impl) {}
 
+  // Return the combinatorial equivalence of surfaces.
+  // Two surfaces are combinatorially equivalent if their combinatorial
+  // structure is equal modulo relabeling of half edges, i.e., after relabeling
+  // they have the same triples of half edges describing their faces.
   static Equivalence combinatorial();
+
+  // Return the combinatorial equivalence of surfaces on marked edges.
+  // The edges singled out by the predicate must be such that the graph they
+  // form is connected and has no cut-edges. In other words, the surface is
+  // such that we can walk the boundaries of the (not necessarily triangular)
+  // faces.
+  // Two surfaces are then equivalent if after relabeling they have the same
+  // sequence of half edges along their faces.
   static Equivalence combinatorial(std::function<bool(const Surface&, Edge)>);
 
   template <typename S>
@@ -52,12 +65,14 @@ class Equivalence {
 template <typename Surface>
 struct ImplementationOf<Equivalence<Surface>> {
   virtual ~ImplementationOf();
-  virtual std::tuple<std::any, std::size_t> code(const Surface&) = 0;
+
+  virtual EquivalenceClassCode code(const Surface&) = 0;
   virtual Iterable<Deformation<Surface>> automorphisms() = 0;
   virtual void normalize(Surface&) = 0;
-  virtual void equal(const ImplementationOf&) = 0;
+  virtual bool equal(const ImplementationOf&) = 0;
   virtual std::string toString() = 0;
 };
 
 }
+
 #endif

@@ -21,6 +21,8 @@
 
 namespace flatsurf {
 
+// TODO: Implement an iterator facade? In particular, we want to compute the
+// length of iterator - iterator to count automorphisms modulo equivalence.
 template <typename T>
 class Iterator {
  public:

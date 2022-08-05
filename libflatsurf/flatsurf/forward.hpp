@@ -73,6 +73,8 @@ class Equivalence;
 template <typename Surface>
 class EquivalenceClass;
 
+struct EquivalenceClassCode;
+
 template <typename T>
 class FlatTriangulation;
 
