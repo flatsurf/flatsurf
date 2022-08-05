@@ -201,18 +201,17 @@ ImplementationOf<Point<Surface>>::ImplementationOf(const Surface& surface, HalfE
   const auto C = -surface.fromHalfEdge(surface.previousInFace(face));
 
   // Solve the linear system
-  // / xB yB \ / b \   / x \
+  // / xB xC \ / b \   / x \
   // |       | |   | = |   |
-  // \ xC yC / \ c /   \ y /
+  // \ yB yC / \ c /   \ y /
   // to write (x, y) barycentric in terms of (A, B, C).
 
   const T det = B.x() * C.y() - C.x() * B.y();
   LIBFLATSURF_ASSERT(det, "triangules describing the faces must be degenerate");
 
-  b = C.y() * x - B.y() * y; // divided by det
-  c = - C.x() * x + B.x() * y; // divided by det
+  b = C.y() * x - C.x() * y; // divided by det
+  c = - B.y() * x + B.x() * y; // divided by det
   a = det - b - c; // divided by det
-
 
   LIBFLATSURF_CHECK_ARGUMENT(a >= 0 && b >= 0 && c >= 0, "Point (" << x << ", " << y << ") not in face " << face);
 }
