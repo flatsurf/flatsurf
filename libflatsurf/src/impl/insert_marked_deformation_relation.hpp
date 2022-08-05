@@ -29,6 +29,8 @@ namespace flatsurf {
 
 template <typename Surface>
 class InsertMarkedDeformationRelation : public DeformationRelation<Surface> {
+  using T = typename Surface::Coordinate;
+
  public:
   // The deformation that inserts a marked point in the interior of a face. The
   // marked point is then attached to three half edges.
@@ -47,6 +49,13 @@ class InsertMarkedDeformationRelation : public DeformationRelation<Surface> {
   std::unique_ptr<DeformationRelation<Surface>> section() const override;
 
   bool trivial() const override;
+
+  // Whether the vertex was inserted in the interior of a face.
+  // Otherwise, it was inserted in the interior of an edge.
+  bool face() const;
+
+  // Return the inserted vertex as an element of the domain.
+  Point<Surface> point() const;
 
   std::ostream& operator>>(std::ostream&) const override;
 

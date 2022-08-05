@@ -91,17 +91,33 @@ TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[flat_triangulation][ins
     if (point.vertex()) {
       REQUIRE_THROWS(surface->insert(point));
     } else {
-      const auto insertion = surface->insert(point);
+      const auto insertion = [&]() -> std::optional<Deformation<FlatTriangulation<T>>> {
+        try {
+          return surface->insert(point);
+        } catch (...) {
+          if (std::is_same_v<T, long long> ||
+              std::is_same_v<T, mpz_class> ||
+              std::is_same_v<T, exactreal::Element<exactreal::IntegerRing>> ||
+              std::is_same_v<T, exactreal::Element<exactreal::RationalField>> ||
+              std::is_same_v<T, exactreal::Element<exactreal::NumberField>>)
+            // When not in a field, insertion might not be possible if the
+            // point has no coordinates in the base ring.
+            return std::nullopt;
 
-      REQUIRE(insertion.domain() == *surface);
-      CAPTURE(insertion.codomain());
+          throw;
+        }
+      }();
+      if (insertion) {
+        REQUIRE(insertion->domain() == *surface);
+        CAPTURE(insertion->codomain());
 
-      const auto image = insertion(point);
-      CAPTURE(image);
-      REQUIRE(image.vertex());
+        const auto image = insertion->operator()(point);
+        CAPTURE(image);
+        REQUIRE(image.vertex());
 
-      const auto preimage = insertion.section()(image);
-      REQUIRE(preimage == point);
+        const auto preimage = insertion->section()(image);
+        REQUIRE(preimage == point);
+      }
     }
   }
 

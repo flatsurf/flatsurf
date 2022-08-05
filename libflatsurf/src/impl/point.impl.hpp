@@ -33,13 +33,14 @@ class ImplementationOf<Point<Surface>> {
 
  public:
   ImplementationOf(const Surface&, HalfEdge face, T a, T b, T c);
+  ImplementationOf(const Surface&, HalfEdge face, const T& x, const T& y);
 
   void normalize();
 
   // Return barycentric coordinates of this point with respect to the ``face``.
   std::array<T, 3> rotated(HalfEdge face) const;
 
-  // Describe this point in barycentric coordinates based at ``face`` (port of
+  // Describe this point in barycentric coordinates based at ``face`` (part of
   // normalize.)
   void rotate(HalfEdge face);
 

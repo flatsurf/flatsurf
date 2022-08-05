@@ -49,6 +49,10 @@ class Point : Serializable<Point<Surface>>,
   Point(const Surface&, HalfEdge face, const T& a, const T& b, const T& c);
   Point(const Surface&, HalfEdge face, const std::array<T, 3>&);
 
+  // The point in the face next to the half edge ``face`` with Cartesian
+  // coordinates (x, y) relative to the source vertex of ``face``.
+  Point(const Surface&, HalfEdge face, const Vector<T>& xy);
+
   // Return whether this point is the same as ``other``.
   // Points that were defined with coordinates on different faces get correctly
   // identified by this method if they are on a shared edge or vertex of the

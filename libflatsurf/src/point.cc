@@ -65,6 +65,11 @@ Point<Surface>::Point(const Surface& surface, HalfEdge face, const T& a, const T
 }
 
 template <typename Surface>
+Point<Surface>::Point(const Surface& surface, HalfEdge face, const Vector<T>& xy) : self(spimpl::make_impl<ImplementationOf<Point>>(surface, face, xy.x(), xy.y())) {
+  self->normalize();
+}
+
+template <typename Surface>
 Point<Surface>::Point(const Surface& surface, HalfEdge face, const std::array<T, 3>& coordinates) : Point(surface, face, std::move(coordinates[0]), std::move(coordinates[1]), std::move(coordinates[2])) {
 }
 
@@ -188,6 +193,26 @@ Vector<typename Surface::Coordinate> Point<Surface>::vector(HalfEdge origin) con
 
 template <typename Surface>
 ImplementationOf<Point<Surface>>::ImplementationOf(const Surface& surface, HalfEdge face, T a, T b, T c) : surface(surface), face(face), a(std::move(a)), b(std::move(b)), c(std::move(c)) {
+}
+
+template <typename Surface>
+ImplementationOf<Point<Surface>>::ImplementationOf(const Surface& surface, HalfEdge face, const T& x, const T& y) : surface(surface), face(face), a(), b(), c() {
+  const auto B = surface.fromHalfEdge(face);
+  const auto C = -surface.fromHalfEdge(surface.previousInFace(face));
+
+  // Solve the linear system
+  // / xB yB \ / b \   / x \
+  // |       | |   | = |   |
+  // \ xC yC / \ c /   \ y /
+  // to write (x, y) barycentric in terms of (A, B, C).
+
+  const T det = B.x() * C.y() - C.x() * B.y();
+  b = C.y() * x - B.y() * y; // divided by det
+  c = - C.x() * x + B.x() * y; // divided by det
+  a = det - b - c; // divided by det
+
+
+  LIBFLATSURF_CHECK_ARGUMENT(a >= 0 && b >= 0 && c >= 0, "Point (" << x << ", " << y << ") not in face " << face);
 }
 
 template <typename Surface>
