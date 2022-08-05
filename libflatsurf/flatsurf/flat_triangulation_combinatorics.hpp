@@ -31,7 +31,7 @@ namespace flatsurf {
 // A base class for all types representing triangulated translation surfaces.
 template <typename Surface>
 class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulationCombinatorial> {
-  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
+  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type parameter must not have modifiers such as const");
 
  protected:
   template <typename... Args>

@@ -42,7 +42,7 @@ template <class T>
 class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulation<T>>,
                           Serializable<FlatTriangulation<T>>,
                           boost::equality_comparable<FlatTriangulation<T>> {
-  static_assert(std::is_same_v<T, std::decay_t<T>>, "type must not have modifiers such as const");
+  static_assert(std::is_same_v<T, std::decay_t<T>>, "type parameter must not have modifiers such as const");
 
  public:
   using Coordinate = T;

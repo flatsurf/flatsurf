@@ -28,7 +28,7 @@ namespace flatsurf {
 // An equivalence class of surfaces modulo a notion of equality.
 template <typename Surface>
 class EquivalenceClass : boost::equality_comparable<EquivalenceClass<Surface>> {
-  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
+  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type parameter must not have modifiers such as const");
 
  public:
   EquivalenceClass(const Surface&, const Equivalence<Surface>&);

@@ -31,7 +31,7 @@ namespace flatsurf {
 
 template <typename Surface>
 class Equivalence {
-  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
+  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type parameter must not have modifiers such as const");
 
  public:
   template <typename T>

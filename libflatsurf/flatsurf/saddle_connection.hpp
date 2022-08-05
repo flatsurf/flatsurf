@@ -37,7 +37,7 @@ template <typename Surface>
 class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
                          boost::equality_comparable<SaddleConnection<Surface>>,
                          boost::less_than_comparable<SaddleConnection<Surface>, Bound> {
-  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
+  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type parameter must not have modifiers such as const");
 
   using T = typename Surface::Coordinate;
 

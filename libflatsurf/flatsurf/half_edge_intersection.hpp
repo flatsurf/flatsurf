@@ -31,7 +31,7 @@ namespace flatsurf {
 /// The intersection of a saddle connection and a half edge.
 template <typename Surface>
 class HalfEdgeIntersection : boost::less_than_comparable<HalfEdgeIntersection<Surface>> {
-  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
+  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type parameter must not have modifiers such as const");
 
   using T = typename Surface::Coordinate;
 
