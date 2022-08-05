@@ -4,6 +4,16 @@ intervalxt Change Log
 
 .. current developments
 
+v3.11.2
+====================
+
+**Fixed:**
+
+* Made operators `<=`, `>`, `>=`, `!=` of `Bound` visible to Python code.
+* Prominently link to sage-flatsurf in the README, so people do not try to install libflatsurf to get "flatsurf".
+
+
+
 v3.11.1
 ====================
 
