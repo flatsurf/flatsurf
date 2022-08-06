@@ -28,6 +28,7 @@
 #include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/half_edge_set_iterator.hpp"
 #include "impl/point.impl.hpp"
+#include "impl/generic_retriangulation_deformation_relation.hpp"
 #include "util/assert.ipp"
 
 namespace flatsurf {
@@ -89,7 +90,9 @@ std::unique_ptr<DeformationRelation<Surface>> InsertMarkedPointInFaceDeformation
 
 template <typename Surface>
 std::unique_ptr<DeformationRelation<Surface>> InsertMarkedPointInFaceDeformationRelation<Surface>::section() const {
-  throw std::logic_error("not implemented: cannot compute section of an insertion of a marked point");
+  // There is no specialized EraseMarkedPointDeformation implemented yet, so we use a generic RetriangulationDeformationRelation instead.
+  // All the half edges that exist in the domain are unchanged.
+  return std::make_unique<GenericRetriangulationDeformationRelation<Surface>>(this->codomain, this->domain, HalfEdge(1), HalfEdge(1));
 }
 
 template <typename Surface>
@@ -99,10 +102,11 @@ bool InsertMarkedPointInFaceDeformationRelation<Surface>::trivial() const {
 
 template <typename Surface>
 Point<Surface> InsertMarkedPointInFaceDeformationRelation<Surface>::point() const {
-  // The vertex V was inserted into the face (A, B, C).
-  // It's coordinates are the Cartesian coordinates of the half edge (A, V).
+  // A vertex V was inserted into a face (A, B, C) in the domain.
+  // It's coordinates are the Cartesian coordinates of the half edge (A, V) in
+  // the codomain.
   const auto AV = *inserted.incoming().begin();
-  const auto AB = this->codomain->previousInFace(-AV);
+  const auto AB = this->codomain->previousAtVertex(AV);
   return Point{*this->domain, AB, this->codomain->fromHalfEdge(AV)};
 }
 

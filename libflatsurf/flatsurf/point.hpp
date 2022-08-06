@@ -33,7 +33,8 @@ namespace flatsurf {
 // A point on a surface.
 template <typename Surface>
 class Point : Serializable<Point<Surface>>,
-              boost::equality_comparable<Point<Surface>> {
+              boost::equality_comparable<Point<Surface>>,
+              boost::additive<Point<Surface>, Vector<typename Surface::Coordinate>> {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
 
   using T = typename Surface::Coordinate;
@@ -51,7 +52,18 @@ class Point : Serializable<Point<Surface>>,
 
   // The point in the face next to the half edge ``face`` with Cartesian
   // coordinates (x, y) relative to the source vertex of ``face``.
+  // If the coordinates are not within the face, the resulting point is the
+  // endpoint of the segment given by (x, y) starting from the source vertex of
+  // ``face``.
   Point(const Surface&, HalfEdge face, const Vector<T>& xy);
+
+  // Shift the point by ``delta``.
+  // The base point must be a marked point, i.e., with total angle 2π.
+  // The resulting point might be in a different face. It is obtained by
+  // shooting a ray with slope ``delta`` and then going to ``delta`` on that
+  // ray.
+  Point& operator+=(const Vector<T>& delta);
+  Point& operator-=(const Vector<T>& delta);
 
   // Return whether this point is the same as ``other``.
   // Points that were defined with coordinates on different faces get correctly
@@ -90,6 +102,7 @@ class Point : Serializable<Point<Surface>>,
   std::array<T, 3> coordinates(HalfEdge face) const;
 
   // Return the vector starting at the source of origin that ends at this point.
+  // The point must be in the face which origin is delimiting.
   Vector<T> vector(HalfEdge origin) const;
 
   template <typename S>

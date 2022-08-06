@@ -31,6 +31,10 @@ namespace flatsurf {
 // The deformation that inserts a marked point in the interior of a half edge
 // `split`.  The marked point is then attached to four half edges, two of them
 // sum as `split = a + b`.
+// Note that ``GenericRetriangulationDeformationRelation`` generalizes this
+// deformation. We could always use
+// ``GenericRetriangulationDeformationRelation`` instead but hopefully this
+// implementation is more efficient.
 template <typename Surface>
 class InsertMarkedPointOnEdgeDeformationRelation : public DeformationRelation<Surface> {
   using T = typename Surface::Coordinate;

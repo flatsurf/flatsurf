@@ -28,6 +28,8 @@
 #include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/half_edge_set_iterator.hpp"
 #include "../flatsurf/vector.hpp"
+#include "../flatsurf/saddle_connections.hpp"
+#include "../flatsurf/saddle_connections_iterator.hpp"
 #include "util/assert.ipp"
 #include "util/hash.ipp"
 #include "impl/point.impl.hpp"
@@ -65,7 +67,7 @@ Point<Surface>::Point(const Surface& surface, HalfEdge face, const T& a, const T
 }
 
 template <typename Surface>
-Point<Surface>::Point(const Surface& surface, HalfEdge face, const Vector<T>& xy) : self(spimpl::make_impl<ImplementationOf<Point>>(surface, face, xy.x(), xy.y())) {
+Point<Surface>::Point(const Surface& surface, HalfEdge face, const Vector<T>& xy) : self(spimpl::make_impl<ImplementationOf<Point>>(surface, face, xy)) {
   self->normalize();
 }
 
@@ -105,6 +107,33 @@ std::array<typename Surface::Coordinate, 3> Point<Surface>::coordinates(HalfEdge
 template <typename Surface>
 const Surface& Point<Surface>::surface() const {
   return *self->surface;
+}
+
+template <typename Surface>
+Point<Surface>& Point<Surface>::operator+=(const Vector<T>& delta) {
+  LIBFLATSURF_CHECK_ARGUMENT(self->surface->angle(*this) == 1, "can only translate a marked point");
+
+  // Ensure that a delta move can be performed in the currently used
+  // representation of this point.
+  if (vertex()) {
+    LIBFLATSURF_ASSERT(!self->b && !self->c, "incorrect normalization for barycentric coordinates of point at vertex");
+    while(!self->surface->inSector(self->face, delta))
+      self->face = self->surface->nextAtVertex(self->face);
+  } else if (edge()) {
+    LIBFLATSURF_ASSERT(!self->c, "incorrect normalization for barycentric coordinates of point on edge");
+    if (!self->surface->inSector(self->face, delta)) {
+      self->face = -self->face;
+      std::swap(self->a, self->b);
+    }
+  }
+
+  self->operator+=(delta);
+  return *this;
+}
+
+template <typename Surface>
+Point<Surface>& Point<Surface>::operator-=(const Vector<T>& delta) {
+  return *this += -delta;
 }
 
 template <typename Surface>
@@ -176,44 +205,17 @@ bool Point<Surface>::at(const Vertex& vertex) const {
 template <typename Surface>
 Vector<typename Surface::Coordinate> Point<Surface>::vector(HalfEdge origin) const {
   auto [a, b, c] = this->coordinates(origin);
-
-  const auto AC = -this->surface().fromHalfEdge(this->surface().previousInFace(origin));
-  const auto BC = this->surface().fromHalfEdge(origin);
-
-  const T abc = a + b + c;
-
-  if (!LinearDeformationRelation<Surface>::truediv(c, abc))
-    throw std::invalid_argument("cannot insert point since its Cartesian coordinates are not in the base ring");
-
-  if (!LinearDeformationRelation<Surface>::truediv(b, abc))
-    throw std::invalid_argument("cannot insert point since its Cartesian coordinates are not in the base ring");
-
-  return c * AC + b * BC;
+  return ImplementationOf<Point>{*self->surface, origin, a, b, c}.cartesian();
 }
 
 template <typename Surface>
 ImplementationOf<Point<Surface>>::ImplementationOf(const Surface& surface, HalfEdge face, T a, T b, T c) : surface(surface), face(face), a(std::move(a)), b(std::move(b)), c(std::move(c)) {
+  LIBFLATSURF_ASSERT_ARGUMENT(face.edge().index() < surface.size(), "no such face in surface")
 }
 
 template <typename Surface>
-ImplementationOf<Point<Surface>>::ImplementationOf(const Surface& surface, HalfEdge face, const T& x, const T& y) : surface(surface), face(face), a(), b(), c() {
-  const auto B = surface.fromHalfEdge(face);
-  const auto C = -surface.fromHalfEdge(surface.previousInFace(face));
-
-  // Solve the linear system
-  // / xB xC \ / b \   / x \
-  // |       | |   | = |   |
-  // \ yB yC / \ c /   \ y /
-  // to write (x, y) barycentric in terms of (A, B, C).
-
-  const T det = B.x() * C.y() - C.x() * B.y();
-  LIBFLATSURF_ASSERT(det, "triangules describing the faces must be degenerate");
-
-  b = C.y() * x - C.x() * y; // divided by det
-  c = - B.y() * x + B.x() * y; // divided by det
-  a = det - b - c; // divided by det
-
-  LIBFLATSURF_CHECK_ARGUMENT(a >= 0 && b >= 0 && c >= 0, "Point (" << x << ", " << y << ") not in face " << face);
+ImplementationOf<Point<Surface>>::ImplementationOf(const Surface& surface, HalfEdge face, const Vector<T>& xy) : ImplementationOf(surface, face, T(1), T(), T()) {
+  *this += xy;
 }
 
 template <typename Surface>
@@ -295,9 +297,9 @@ std::array<typename Surface::Coordinate, 3> ImplementationOf<Point<Surface>>::cr
   // since we want to avoid divisions, we are going to collect the divisors
   // into the λ.)
   // To determine a_c and b_c we solve the system:
-  // / B_x A_x \  / b_c \   / C_x \
-  // |         |  |     | = |     |
-  // \ B_y A_y /  \ a_c /   \ C_y /
+  // ⎡ B_x A_x ⎤ ⎛ b_c ⎞   ⎛ C_x ⎞
+  // ⎢         ⎥ ⎜     ⎟ = ⎜     ⎟
+  // ⎣ B_y A_y ⎦ ⎝ a_c ⎠   ⎝ C_y ⎠
   const auto A = -surface->fromHalfEdge(surface->nextInFace(-face));
   const auto B = surface->fromHalfEdge(surface->previousInFace(-face));
   const auto C = B + surface->fromHalfEdge(surface->nextInFace(face));
@@ -317,6 +319,102 @@ std::array<typename Surface::Coordinate, 3> ImplementationOf<Point<Surface>>::cr
     det * a + c * λa_c,
     c * d_c,
   };
+}
+
+template <typename Surface>
+Vector<typename Surface::Coordinate> ImplementationOf<Point<Surface>>::cartesian() const {
+  const auto AC = -surface->fromHalfEdge(surface->previousInFace(face));
+  const auto BC = surface->fromHalfEdge(face);
+
+  const T abc = a + b + c;
+
+  T β = this->b;
+  T γ = this->c;
+
+  LIBFLATSURF_ASSERT(abc, "invalid point with barycentric coordinates [" << a << ", " << b << ", " << c << "]");
+
+  if (!LinearDeformationRelation<Surface>::truediv(γ, abc))
+    throw std::invalid_argument("Cartesian coordinates of point are not in the base ring");
+
+  if (!LinearDeformationRelation<Surface>::truediv(β, abc))
+    throw std::invalid_argument("Cartesian coordinates of point are not in the base ring");
+
+  return γ * AC + β * BC;
+}
+
+template <typename Surface>
+ImplementationOf<Point<Surface>>& ImplementationOf<Point<Surface>>::operator+=(const Vector<T>& Δ) {
+  const auto xy0 = cartesian();
+
+  const auto A = Vertex::source(face, *surface);
+  const auto AB = surface->fromHalfEdge(face);
+  const auto AC = -surface->fromHalfEdge(surface->previousInFace(face));
+
+  const auto xy = xy0 + Δ;
+
+  // Things are easy if the point remains inside the same face and Δ does not
+  // cross any half edges. We first try to see if that's the case and solve for
+  // that case.
+  {
+    // Solve the linear system
+    // ⎡ xAB xAC ⎤ ⎛ b ⎞   ⎛ x ⎞
+    // ⎢         ⎥ ⎜   ⎟ = ⎜   ⎟
+    // ⎣ yAB yAC ⎦ ⎝ c ⎠   ⎝ y ⎠
+    // to write (x + x0, y + y0) barycentric in terms of (A, B, C).
+
+    const T det = AB.x() * AC.y() - AC.x() * AB.y();
+    LIBFLATSURF_ASSERT(det, "triangules describing the faces must be degenerate");
+
+    const T b = AC.y() * xy.x() - AC.x() * xy.y(); // divided by det
+    const T c = - AB.y() * xy.x() + AB.x() * xy.y(); // divided by det
+    const T a = det - b - c; // divided by det
+
+    if (a >= 0 && b >= 0 && c >= 0) {
+      this->a = a;
+      this->b = b;
+      this->c = c;
+      normalize();
+      return *this;
+    }
+  }
+
+  // The point is not inside this face anymore so we need to cross some half edges.
+  // Things are getting complicated now. In particular because we do not want
+  // to perform divisions which are needed to compute the intersection of a ray
+  // and a triangle.
+
+  // We first reduce to the case that our point is actually a vertex of the triangulation:
+  if (c) {
+    LIBFLATSURF_ASSERT(a && b, "barycentric coordinates of point not normalized");
+
+    // This point is in the interior of a face. We insert a vertex for the
+    // point, solve in the modified surface and then pull the result back.
+    // TODO
+    throw std::logic_error("point in face");
+  }
+
+  if (b) {
+    LIBFLATSURF_ASSERT(a, "barycentric coordinates of point not normalized");
+
+    // This point is in the interior of an edge. We insert a vertex for the
+    // point, solve in the modified surface and then pull the result back.
+    // TODO
+    throw std::logic_error("point on edge");
+  }
+
+  // We can now assume that this point is a vertex of the triangulation. We use
+  // the fast search for saddle connections to figure out in which face our
+  // point ends up eventually.
+  LIBFLATSURF_ASSERT(surface->inSector(face, Δ), "can only move vertex point in direction contained in selected face");
+
+  const auto connections = surface->connections().source(A).sector(face);
+
+  auto it = connections.begin();
+  while (true) {
+    // TODO
+    break;
+  }
+  throw std::logic_error("point at vertex");
 }
 
 template <typename Surface>
@@ -387,8 +485,8 @@ size_t std::hash<::flatsurf::Point<Surface>>::operator()(const ::flatsurf::Point
   const auto boundary = point.surface().face(face);
 
   if (a == max && b == max && c == max) {
-    const ::flatsurf::HalfEdge face = *std::min_element(boundary.begin(), boundary.end(), [](const auto& e, const auto& f) { return e.index() < f.index(); });
-    return ::flatsurf::hash_combine(face, point.surface().nextInFace(face));
+    const ::flatsurf::HalfEdge f = *std::min_element(boundary.begin(), boundary.end(), [](const auto& e, const auto& f) { return e.index() < f.index(); });
+    return ::flatsurf::hash_combine(f, point.surface().nextInFace(f));
   } else if (a == max && b == max)
     return ::flatsurf::hash_combine(face, quot(c, max));
   else if (a == max && c == max)

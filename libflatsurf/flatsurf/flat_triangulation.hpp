@@ -135,6 +135,9 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
 
   const ::flatsurf::Vector<exactreal::Arb> &fromHalfEdgeApproximate(HalfEdge) const;
 
+  // Return whether the surfaces are indistinguishable, i.e.,
+  // each half edge has a corresponding half edge with the same label whose
+  // face is made up of equally labeled half edges with the same vectors.
   bool operator==(const FlatTriangulation<T> &) const;
 
   template <typename W>

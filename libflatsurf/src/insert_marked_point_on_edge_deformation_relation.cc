@@ -28,6 +28,7 @@
 #include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/half_edge_set_iterator.hpp"
 #include "../flatsurf/vector.hpp"
+#include "impl/generic_retriangulation_deformation_relation.hpp"
 #include "impl/point.impl.hpp"
 #include "util/assert.ipp"
 
@@ -42,7 +43,7 @@ InsertMarkedPointOnEdgeDeformationRelation<Surface>::InsertMarkedPointOnEdgeDefo
 }
 
 template <typename Surface>
-std::optional<Path<Surface>> InsertMarkedPointOnEdgeDeformationRelation<Surface>::operator()(const Path<Surface>& path) const {
+std::optional<Path<Surface>> InsertMarkedPointOnEdgeDeformationRelation<Surface>::operator()(const Path<Surface>&) const {
   throw std::logic_error("not implemented: cannot map paths when a vertex was inserted in the interior of an existing edge");
 }
 
@@ -113,7 +114,8 @@ std::unique_ptr<DeformationRelation<Surface>> InsertMarkedPointOnEdgeDeformation
 
 template <typename Surface>
 std::unique_ptr<DeformationRelation<Surface>> InsertMarkedPointOnEdgeDeformationRelation<Surface>::section() const {
-  throw std::logic_error("not implemented: cannot compute section of an insertion of a marked point");
+  // There is no specialized EraseMarkedPointDeformation implemented yet, so we use a generic RetriangulationDeformationRelation instead.
+  return std::make_unique<GenericRetriangulationDeformationRelation<Surface>>(this->codomain, this->domain, this->codomain->nextAtVertex(a), this->domain->nextAtVertex(split));
 }
 
 template <typename Surface>

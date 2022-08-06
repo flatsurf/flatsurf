@@ -32,13 +32,14 @@ TEMPLATE_TEST_CASE("Coordinates of Points", "[point]", (long long), (mpq_class),
   using T = TestType;
 
   const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(*surface);
 
   const auto face = GENERATE_COPY(halfEdges(surface));
 
   const auto point = GENERATE_COPY(points(surface, face));
   CAPTURE(point);
 
-  SECTION("Point Coordinates Corresponding to Position in Face") {
+  SECTION("Barycentric Point Coordinates Corresponding to Position in Face") {
     const auto [a, b, c] = point.coordinates(point.face());
     REQUIRE(a >= 0);
     REQUIRE(b >= 0);
@@ -55,7 +56,7 @@ TEMPLATE_TEST_CASE("Coordinates of Points", "[point]", (long long), (mpq_class),
     REQUIRE((positives <= 2) == edge.has_value());
   }
 
-  SECTION("Point Coordinates Roundtrip") {
+  SECTION("Barycentric Point Coordinates Roundtrip") {
     for (const auto face_ : surface->face(face)) {
       CAPTURE(face_);
       const auto coordinates_ = point.coordinates(face_);
@@ -66,12 +67,41 @@ TEMPLATE_TEST_CASE("Coordinates of Points", "[point]", (long long), (mpq_class),
       REQUIRE(point == point_);
     }
   }
+
+  SECTION("Cartesian Point Coordinates Roundtrip") {
+    for (const auto face_ : surface->face(face)) {
+      CAPTURE(face_);
+      const auto coordinates_ = [&]() -> std::optional<Vector<T>> {
+        try {
+          return point.vector(face_);
+        } catch (...) {
+          if (std::is_same_v<T, long long> ||
+              std::is_same_v<T, mpz_class> ||
+              std::is_same_v<T, exactreal::Element<exactreal::IntegerRing>> ||
+              std::is_same_v<T, exactreal::Element<exactreal::RationalField>> ||
+              std::is_same_v<T, exactreal::Element<exactreal::NumberField>>)
+            // When not in a field, cartesian coordinates might not be in the base ring.
+            return std::nullopt;
+
+          throw;
+        }
+      }();
+      if (coordinates_) {
+        CAPTURE(*coordinates_);
+        const auto point_ = Point(*surface, face_, *coordinates_);
+        CAPTURE(point_);
+
+        REQUIRE(point == point_);
+      }
+    }
+  }
 }
 
 TEMPLATE_TEST_CASE("Predicates in/at/on of Points", "[point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
   const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(*surface);
 
   const auto face = GENERATE_COPY(halfEdges(surface));
 
@@ -104,6 +134,7 @@ TEMPLATE_TEST_CASE("Equality of Points", "[point]", (long long), (mpq_class), (r
   using Surface = FlatTriangulation<T>;
 
   const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(*surface);
 
   const auto face = GENERATE_COPY(halfEdges(surface));
 

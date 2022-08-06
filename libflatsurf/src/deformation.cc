@@ -98,6 +98,7 @@ std::optional<Path<Surface>> Deformation<Surface>::operator()(const Path<Surface
 
 template <typename Surface>
 Point<Surface> Deformation<Surface>::operator()(const Point<Surface>& point) const {
+  LIBFLATSURF_CHECK_ARGUMENT(point.surface() == domain(), "point must be in the domain of the deformation");
   return self->relation->operator()(point);
 }
 

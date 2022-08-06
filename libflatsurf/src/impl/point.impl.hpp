@@ -33,7 +33,7 @@ class ImplementationOf<Point<Surface>> {
 
  public:
   ImplementationOf(const Surface&, HalfEdge face, T a, T b, T c);
-  ImplementationOf(const Surface&, HalfEdge face, const T& x, const T& y);
+  ImplementationOf(const Surface&, HalfEdge face, const Vector<T>& xy);
 
   void normalize();
 
@@ -46,6 +46,14 @@ class ImplementationOf<Point<Surface>> {
 
   // Return barycentric coordinates with respect to the opposite face.
   std::array<T, 3> crossed() const;
+
+  // Return Cartesian coordinates for this point with respect to the source of its ``face``.
+  Vector<T> cartesian() const;
+
+  // Move this point by xy in Cartesian coordinates.
+  // The point might not be a marked point. The movement is performed with
+  // respect to the face which is selected by its current ``face``.
+  ImplementationOf& operator+=(const Vector<T>& xy);
 
   ReadOnly<Surface> surface;
   HalfEdge face;

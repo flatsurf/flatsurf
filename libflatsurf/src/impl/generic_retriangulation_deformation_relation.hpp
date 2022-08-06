@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2021-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,6 +32,17 @@ namespace flatsurf {
 
 /// A deformation describing the relation between two surfaces, `domain` and
 /// `codomain`, that are identical up to retriangulation and marked points.
+/// There are specialized versions of this deformation relation, namely
+/// ``RetriangulationDeformationRelation``,
+/// ``InsertMarkedPointInFaceDeformationRelation``,
+/// ``InsertMarkedPointInFaceDeformationRelation``. In principal, this
+/// deformation could be built as a composition of these and their sections.
+/// However, we sometimes create deformation through intermediate shifts which
+/// have no effect on the final deformation. These shifts are necessary to
+/// construct the codomain but they are not part of the resulting deformation,
+/// i.e., points should not be mapped through these shifts. Therefore, we need
+/// this deformation relation as a composition of other deformations while
+/// ignoring certain parts of the composed deformation.
 template <typename Surface>
 class GenericRetriangulationDeformationRelation : public RetriangulationDeformationRelation<Surface> {
   using T = typename Surface::Coordinate;

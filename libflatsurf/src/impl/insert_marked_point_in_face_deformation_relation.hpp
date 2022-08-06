@@ -29,6 +29,10 @@ namespace flatsurf {
 
 // The deformation that inserts a marked point in the interior of a face. The
 // marked point is then attached to three half edges.
+// Note that ``GenericRetriangulationDeformationRelation`` generalizes this
+// deformation. We could always use
+// ``GenericRetriangulationDeformationRelation`` instead but hopefully this
+// implementation is more efficient.
 template <typename Surface>
 class InsertMarkedPointInFaceDeformationRelation : public DeformationRelation<Surface> {
   using T = typename Surface::Coordinate;
