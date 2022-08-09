@@ -33,7 +33,6 @@
 #include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/chain.impl.hpp"
 #include "impl/chain_iterator.impl.hpp"
-#include "util/assert.ipp"
 #include "util/hash.ipp"
 
 namespace flatsurf {

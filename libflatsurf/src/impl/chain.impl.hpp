@@ -29,7 +29,6 @@
 #include "../../flatsurf/edge_map.hpp"
 #include "../../flatsurf/vector.hpp"
 #include "chain_vector.hpp"
-#include "flat_triangulation.impl.hpp"
 #include "read_only.hpp"
 
 namespace flatsurf {

@@ -25,7 +25,6 @@
 #include "../../flatsurf/bound.hpp"
 #include "../../flatsurf/saddle_connections.hpp"
 #include "../../flatsurf/vector.hpp"
-#include "flat_triangulation.impl.hpp"
 #include "read_only.hpp"
 
 namespace flatsurf {

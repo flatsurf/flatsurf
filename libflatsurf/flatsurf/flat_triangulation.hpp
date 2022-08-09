@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2021 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@
 
 namespace flatsurf {
 
-// A triangulated translation surface. For most purposes this is the central
+// A triangulated half-dilation surface. For most purposes this is the central
 // object of the flatsurf library.
 template <class T>
 class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulation<T>>,
@@ -48,8 +48,23 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
   using Coordinate = T;
 
   FlatTriangulation() noexcept;
+
+  // Create a surface with the given combinatorics and assign the vectors to the half edges,
+  // one vector per half edge in the order 1, 2, ..., n, -1, -2, ..., -n.
+  // Optionally, only the vectors for the positive half edges 1, ..., n can be
+  // given. The vectors for the negative half edges are then taken to be their
+  // negatives, i.e., a translation surface is produced from the data.
   FlatTriangulation(FlatTriangulationCombinatorial &&, const std::vector<Vector<T>> &vectors);
+
   FlatTriangulation(FlatTriangulationCombinatorial &&, const std::function<Vector<T>(HalfEdge)> &vectors);
+
+  bool translation_surface() const;
+
+  bool half_translation_surface() const;
+
+  bool dilation_surface() const;
+
+  bool half_dilation_surface() const;
 
   // Create an independent clone of this triangulation that is built from the
   // same data. There is no copy-constructor since it is too likely that this

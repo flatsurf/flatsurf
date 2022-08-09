@@ -58,7 +58,10 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::tuple<std::st
     GOLDEN_L,
     _1072221,
     _12345034015233,
-    LAST = _12345034015233,
+    HALF_TRANSLATION_SPHERE,
+    DILATION_TORUS,
+    HALF_DILATION_SPHERE,
+    LAST = HALF_DILATION_SPHERE,
   };
 
   Surface current;
@@ -206,6 +209,18 @@ class SurfaceGenerator : public Catch::Generators::IGenerator<std::tuple<std::st
           value = make12345034015233<R2>();
         } else
           value = nullptr;
+        return;
+      case Surface::HALF_TRANSLATION_SPHERE:
+        name = "HalfTranslationSphere";
+        value = makeHalfTranslationSphere<R2>();
+        return;
+      case Surface::DILATION_TORUS:
+        name = "DilationTorus";
+        value = makeDilationTorus<R2>();
+        return;
+      case Surface::HALF_DILATION_SPHERE:
+        name = "HalfDilationSphere";
+        value = makeHalfDilationSphere<R2>();
         return;
       default:
         throw std::logic_error("unknown Surface type");

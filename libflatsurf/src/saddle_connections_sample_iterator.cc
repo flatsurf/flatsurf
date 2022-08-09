@@ -25,6 +25,7 @@
 #include "../flatsurf/saddle_connections_sample.hpp"
 #include "impl/saddle_connections_sample.impl.hpp"
 #include "impl/saddle_connections_sample_iterator.impl.hpp"
+#include "util/assert.ipp"
 
 namespace flatsurf {
 
