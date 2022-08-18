@@ -108,6 +108,7 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
       std::function<bool(const T &, const T &, const T &, const T &)> = [](const T &a, const T &b, const T &c, const T &d) { return a == 1 && b == 0 && c == 0 && d == 1; },
       std::function<bool(HalfEdge, HalfEdge)> = [](HalfEdge, HalfEdge) { return true; }) const;
 
+  // Return the vector corresponding to a shortest edge in this surface.
   Vector<T> shortest() const;
 
   // Return the shortest vector relative to this direction which is not orthogonal to it.
