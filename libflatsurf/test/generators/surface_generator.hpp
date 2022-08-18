@@ -116,7 +116,7 @@ struct NamedSurface {
 
   friend
   std::ostream& operator<<(std::ostream& os, const NamedSurface& surface) {
-    return os << surface.name;
+    return os << surface.name << ": " << *surface;
   }
 
   const FlatTriangulation<T>* operator->() const { return surface.get(); }

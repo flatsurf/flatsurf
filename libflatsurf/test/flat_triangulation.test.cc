@@ -452,7 +452,7 @@ TEMPLATE_TEST_CASE("Compute Total Angle at a Point", "[flat_triangulation][angle
 
     SECTION("Total Angle at Vertices") {
       for (auto vertex : surface->vertices())
-        REQUIRE(surface->angle(vertex) >= 0);
+        REQUIRE(surface->angle(vertex) >= 1);
     }
 
     SECTION("Total Angle at General Points") {
@@ -461,8 +461,8 @@ TEMPLATE_TEST_CASE("Compute Total Angle at a Point", "[flat_triangulation][angle
       CAPTURE(point);
 
       int angle = surface->angle(point);
-      REQUIRE(angle >= 0);
-      REQUIRE(((point.vertex()) || angle == 0));
+      REQUIRE(angle >= 1);
+      REQUIRE(((point.vertex()) || angle == 1));
     }
   }
 }

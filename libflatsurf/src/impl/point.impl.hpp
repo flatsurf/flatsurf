@@ -55,6 +55,11 @@ class ImplementationOf<Point<Surface>> {
   // respect to the face which is selected by its current ``face``.
   ImplementationOf& operator+=(const Vector<T>& xy);
 
+  // Return barycentric coordinates of the point xy in face.
+  // The returned coordinates are not normalized, in particular, they might not
+  // be all non-negative if the point is not in the face.
+  static std::array<T, 3> barycentric(const Surface&, HalfEdge face, const Vector<T>& xy);
+
   ReadOnly<Surface> surface;
   HalfEdge face;
   T a, b, c;

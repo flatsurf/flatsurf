@@ -875,7 +875,7 @@ int FlatTriangulation<T>::angle(const Point<FlatTriangulation> &point) const {
   const auto vertex = point.vertex();
 
   if (!vertex)
-    return 0;
+    return 1;
 
   return angle(*vertex);
 }

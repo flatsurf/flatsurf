@@ -22,14 +22,17 @@
 
 #include "../flatsurf/point.hpp"
 #include "../flatsurf/ccw.hpp"
+#include "../flatsurf/chain.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/vertex.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/half_edge_set_iterator.hpp"
 #include "../flatsurf/vector.hpp"
+#include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
+#include "../flatsurf/orientation.hpp"
 #include "util/assert.ipp"
 #include "util/hash.ipp"
 #include "impl/point.impl.hpp"
@@ -346,28 +349,13 @@ template <typename Surface>
 ImplementationOf<Point<Surface>>& ImplementationOf<Point<Surface>>::operator+=(const Vector<T>& Δ) {
   const auto xy0 = cartesian();
 
-  const auto A = Vertex::source(face, *surface);
-  const auto AB = surface->fromHalfEdge(face);
-  const auto AC = -surface->fromHalfEdge(surface->previousInFace(face));
-
   const auto xy = xy0 + Δ;
 
   // Things are easy if the point remains inside the same face and Δ does not
   // cross any half edges. We first try to see if that's the case and solve for
   // that case.
   {
-    // Solve the linear system
-    // ⎡ xAB xAC ⎤ ⎛ b ⎞   ⎛ x ⎞
-    // ⎢         ⎥ ⎜   ⎟ = ⎜   ⎟
-    // ⎣ yAB yAC ⎦ ⎝ c ⎠   ⎝ y ⎠
-    // to write (x + x0, y + y0) barycentric in terms of (A, B, C).
-
-    const T det = AB.x() * AC.y() - AC.x() * AB.y();
-    LIBFLATSURF_ASSERT(det, "triangules describing the faces must be degenerate");
-
-    const T b = AC.y() * xy.x() - AC.x() * xy.y(); // divided by det
-    const T c = - AB.y() * xy.x() + AB.x() * xy.y(); // divided by det
-    const T a = det - b - c; // divided by det
+    const auto [a, b, c] = barycentric(*surface, face, xy);
 
     if (a >= 0 && b >= 0 && c >= 0) {
       this->a = a;
@@ -390,7 +378,7 @@ ImplementationOf<Point<Surface>>& ImplementationOf<Point<Surface>>::operator+=(c
     // This point is in the interior of a face. We insert a vertex for the
     // point, solve in the modified surface and then pull the result back.
     // TODO
-    throw std::logic_error("point in face");
+    throw std::logic_error("not implemented: point in face");
   }
 
   if (b) {
@@ -399,7 +387,7 @@ ImplementationOf<Point<Surface>>& ImplementationOf<Point<Surface>>::operator+=(c
     // This point is in the interior of an edge. We insert a vertex for the
     // point, solve in the modified surface and then pull the result back.
     // TODO
-    throw std::logic_error("point on edge");
+    throw std::logic_error("not implemented: point on edge");
   }
 
   // We can now assume that this point is a vertex of the triangulation. We use
@@ -407,14 +395,75 @@ ImplementationOf<Point<Surface>>& ImplementationOf<Point<Surface>>::operator+=(c
   // point ends up eventually.
   LIBFLATSURF_ASSERT(surface->inSector(face, Δ), "can only move vertex point in direction contained in selected face");
 
-  const auto connections = surface->connections().source(A).sector(face);
+  const auto connections = surface->connections().sector(face);
 
   auto it = connections.begin();
+
   while (true) {
-    // TODO
-    break;
+    const auto intersection = it.incrementWithIntersections();
+    if (intersection) {
+      // The search is crossing an edge. We determine whether our point is in
+      // the face on the other side of the edge.
+      const auto [chain, cross] = *intersection;
+
+      const auto face = surface->nextInFace(-cross);
+      const auto [a, b, c] = barycentric(*surface, face, Δ - chain);
+
+      if (a >= 0 && b >= 0 && c >= 0) {
+        this->a = a;
+        this->b = b;
+        this->c = c;
+        this->face = face;
+        normalize();
+        return *this;
+      }
+    } else {
+      // We found a saddle connection in the search. It cannot be the final
+      // point since we would have detected this when crossing into this face.
+      // So, we only prune one branch of the search tree.
+      const auto ccw = Δ.ccw(*it);
+
+      if (ccw == CCW::COLLINEAR) {
+        LIBFLATSURF_ASSERT(Δ != *it, "Found saddle connection after shifting point by Δ=" << Δ << " however, that vertex should have been detected when crossing the previous half edge");
+        LIBFLATSURF_ASSERT(Δ.orientation(Δ - *it) == ORIENTATION::SAME, "Found saddle connection beyond Δ=" << Δ << " however, we should have found that Δ exists as an interior point in that face when crossing the previous half edge");
+
+        const auto marked = Point(*surface, Vertex::source(it->target(), *surface));
+
+        LIBFLATSURF_CHECK_ARGUMENT(surface->angle(marked) == 1, "Cannot translate point over a vertex with angle >2π");
+
+        // Shift the point across this marked point.
+        *this = *marked.self;
+        const auto δ = Δ - *it;
+        while(!surface->inSector(this->face, δ))
+          this->face = surface->nextAtVertex(this->face);
+        return *this += δ;
+      }
+      
+      it.skipSector(Δ.ccw(*it)); 
+    }
   }
-  throw std::logic_error("point at vertex");
+}
+
+template <typename Surface>
+std::array<typename Surface::Coordinate, 3> ImplementationOf<Point<Surface>>::barycentric(const Surface& surface, HalfEdge face, const Vector<T>& xy) {
+  const auto A = Vertex::source(face, surface);
+  const auto AB = surface.fromHalfEdge(face);
+  const auto AC = -surface.fromHalfEdge(surface.previousInFace(face));
+
+  // Solve the linear system
+  // ⎡ xAB xAC ⎤ ⎛ b ⎞   ⎛ x ⎞
+  // ⎢         ⎥ ⎜   ⎟ = ⎜   ⎟
+  // ⎣ yAB yAC ⎦ ⎝ c ⎠   ⎝ y ⎠
+  // to write (x + x0, y + y0) barycentric in terms of (A, B, C).
+
+  const T det = AB.x() * AC.y() - AC.x() * AB.y();
+  LIBFLATSURF_ASSERT(det, "triangles describing the faces must not be degenerate");
+
+  const T b = AC.y() * xy.x() - AC.x() * xy.y(); // divided by det
+  const T c = - AB.y() * xy.x() + AB.x() * xy.y(); // divided by det
+  const T a = det - b - c; // divided by det
+
+  return {a, b, c};
 }
 
 template <typename Surface>
