@@ -36,6 +36,7 @@ TEMPLATE_TEST_CASE("Angle between Saddle Connections", "[saddle_connection][angl
   using Surface = FlatTriangulation<T>;
 
   const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
 
   const auto connection = GENERATE_REF(saddleConnections(surface));
   CAPTURE(connection);
@@ -97,6 +98,7 @@ TEMPLATE_TEST_CASE("Saddle Connection Constructors", "[saddle_connection]", (lon
   using Surface = FlatTriangulation<T>;
 
   const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
 
   const auto connection = GENERATE_REF(saddleConnections(surface));
   CAPTURE(connection);

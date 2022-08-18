@@ -26,6 +26,7 @@
 #include "../../flatsurf/point.hpp"
 #include "../../flatsurf/half_edge.hpp"
 #include "../../flatsurf/vertex.hpp"
+#include "surface_generator.hpp"
 #include "../external/catch2/single_include/catch2/catch.hpp"
 
 namespace flatsurf::test {
@@ -78,7 +79,7 @@ class PointGenerator : public Catch::Generators::IGenerator<Point<FlatTriangulat
 };
 
 template <typename T>
-Catch::Generators::GeneratorWrapper<Point<FlatTriangulation<T>>> points(std::shared_ptr<const FlatTriangulation<T>> surface, const HalfEdge face) {
+Catch::Generators::GeneratorWrapper<Point<FlatTriangulation<T>>> points(NamedSurface<T> surface, const HalfEdge face) {
   return Catch::Generators::GeneratorWrapper<Point<FlatTriangulation<T>>>(std::unique_ptr<Catch::Generators::IGenerator<Point<FlatTriangulation<T>>>>(new PointGenerator<T>(surface, face)));
 }
 

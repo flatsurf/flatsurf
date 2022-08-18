@@ -38,6 +38,7 @@ TEMPLATE_TEST_CASE("Deformations", "[deformation]", (long long), (mpq_class), (r
   using T = TestType;
 
   const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
 
   SECTION("Deformations can be Copied and Moved") {
     auto trivial = Deformation(*surface);
@@ -71,6 +72,8 @@ TEMPLATE_TEST_CASE("Mapping Points Across Deformations", "[deformation][point]",
   using T = TestType;
 
   const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
   const auto deformation = GENERATE_COPY(deformations(surface));
 
   SECTION("Map Random Points") {
@@ -94,6 +97,8 @@ TEMPLATE_TEST_CASE("Mapping Paths Across Deformation", "[deformation][path]", (l
   using T = TestType;
 
   const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
   const auto deformation = GENERATE_COPY(deformations(surface));
 
   SECTION("Map Random Paths") {

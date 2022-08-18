@@ -39,6 +39,7 @@ TEMPLATE_TEST_CASE("Access intervalxt object underlying an Interval Exchange Tra
   using T = TestType;
 
   const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
 
   SECTION("Construct the IET for the direction (0, 1)") {
     const auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), Vector<T>{0, 1});

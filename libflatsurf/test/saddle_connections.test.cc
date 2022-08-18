@@ -173,6 +173,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Surface", "[saddle_connections]", (l
   using T = TestType;
 
   const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
 
   SECTION("Connections In Sectors") {
     // Unfortunately, these tests take a long time (one minute in late 2020) so

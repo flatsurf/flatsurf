@@ -83,7 +83,8 @@ TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[flat_triangulation][ins
 
   SECTION("Insert into a Surface") {
     auto surface = GENERATE_SURFACES(T);
-    CAPTURE(*surface);
+    CAPTURE(surface);
+
     auto face = GENERATE_COPY(halfEdges(surface));
     auto point = GENERATE_COPY(points(surface, face));
     CAPTURE(point);
@@ -249,6 +250,8 @@ TEMPLATE_TEST_CASE("Delaunay Triangulation", "[flat_triangulation][delaunay]", (
   using T = TestType;
 
   const auto surface_ = GENERATE_SURFACES(T);
+  CAPTURE(surface_);
+
   auto surface = surface_->clone();
 
   surface.delaunay();
@@ -295,6 +298,7 @@ TEMPLATE_TEST_CASE("Eliminate Marked Points", "[flat_triangulation][eliminate_ma
   using Surface = FlatTriangulation<T>;
 
   const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
 
   const auto simplified = surface->eliminateMarkedPoints();
 
@@ -349,6 +353,8 @@ TEMPLATE_TEST_CASE("Detect Isomorphic Surfaces", "[flat_triangulation][isomorphi
   using Transformation = std::tuple<T, T, T, T>;
 
   const auto surface_ = GENERATE_SURFACES(T);
+  CAPTURE(surface_);
+
   auto surface = surface_->clone();
 
   const int delaunay = GENERATE(values({0, 1}));
@@ -442,6 +448,7 @@ TEMPLATE_TEST_CASE("Compute Total Angle at a Point", "[flat_triangulation][angle
 
   SECTION("Total Angle of Other Surfaces") {
     const auto surface = GENERATE_SURFACES(T);
+    CAPTURE(surface);
 
     SECTION("Total Angle at Vertices") {
       for (auto vertex : surface->vertices())

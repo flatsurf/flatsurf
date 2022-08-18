@@ -2,7 +2,7 @@
  *  This file is part of flatsurf.
  *
  *        Copyright (C)      2019 Vincent Delecroix
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -107,10 +107,11 @@ TEMPLATE_TEST_CASE("Serialization of a Chain", "[cereal]", (long long), (mpz_cla
 }
 
 TEMPLATE_TEST_CASE("Serialization of a SaddleConnection", "[cereal]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
-  using R2 = Vector<TestType>;
+  using T = TestType;
+  using R2 = Vector<T>;
   auto square = makeSquare<R2>();
 
-  const auto saddleConnection = GENERATE_COPY(saddleConnections<TestType>(square));
+  const auto saddleConnection = GENERATE_COPY(saddleConnections<T>(square));
   testRoundtrip(saddleConnection);
 }
 

@@ -68,6 +68,7 @@ TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (long long), (m
   using T = TestType;
 
   const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
 
   // The limit 6 here is somewhat low. Unfortunately, these tests take some
   // time already (45 seconds in early 2021.)

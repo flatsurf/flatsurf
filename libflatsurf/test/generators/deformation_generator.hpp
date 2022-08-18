@@ -21,6 +21,7 @@
 #define LIBFLATSURF_TEST_GENERATORS_DEFORMATION_GENERATORS_HPP
 
 #include "../../flatsurf/deformation.hpp"
+#include "surface_generator.hpp"
 
 #include "../external/catch2/single_include/catch2/catch.hpp"
 
@@ -67,7 +68,7 @@ class DeformationGenerator : public Catch::Generators::IGenerator<Deformation<Fl
 };
 
 template <typename T>
-Catch::Generators::GeneratorWrapper<Deformation<FlatTriangulation<T>>> deformations(std::shared_ptr<const FlatTriangulation<T>> surface) {
+Catch::Generators::GeneratorWrapper<Deformation<FlatTriangulation<T>>> deformations(const NamedSurface<T> surface) {
   return Catch::Generators::GeneratorWrapper<Deformation<FlatTriangulation<T>>>(std::unique_ptr<Catch::Generators::IGenerator<Deformation<FlatTriangulation<T>>>>(new DeformationGenerator<T>(surface)));
 }
 

@@ -29,6 +29,7 @@
 #include "../../flatsurf/saddle_connections_by_length.hpp"
 #include "../../flatsurf/saddle_connections_by_length_iterator.hpp"
 #include "../../flatsurf/saddle_connections_iterator.hpp"
+#include "surface_generator.hpp"
 #include "../external/catch2/single_include/catch2/catch.hpp"
 
 namespace flatsurf::test {
@@ -71,7 +72,7 @@ class SaddleConnectionGenerator : public Catch::Generators::IGenerator<SaddleCon
 };
 
 template <typename T>
-Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>> saddleConnections(std::shared_ptr<const FlatTriangulation<T>> surface, Bound bound) {
+Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>> saddleConnections(const NamedSurface<T>& surface, Bound bound) {
   return Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>>(std::unique_ptr<Catch::Generators::IGenerator<SaddleConnection<FlatTriangulation<T>>>>(new SaddleConnectionGenerator<T, SaddleConnection<FlatTriangulation<T>>>(surface->connections().bound(bound))));
 }
 
@@ -81,7 +82,7 @@ Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>> sadd
 // returning the next one so we get a good sample of very short saddle
 // connections, coming from actual edges of the surface and longer connections.
 template <typename T>
-Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>> saddleConnections(std::shared_ptr<const FlatTriangulation<T>> surface, int count = -1, int skip = -1) {
+Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>> saddleConnections(const NamedSurface<T>& surface, int count = -1, int skip = -1) {
   if (count == -1)
     count = static_cast<int>(surface->size());
   if (skip == -1)
@@ -91,7 +92,7 @@ Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>> sadd
 }
 
 template <typename T>
-Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>> saddleConnections(std::shared_ptr<const FlatTriangulation<T>> surface, const Vertex& source, int count = -1, int skip = -1) {
+Catch::Generators::GeneratorWrapper<SaddleConnection<FlatTriangulation<T>>> saddleConnections(const NamedSurface<T>& surface, const Vertex& source, int count = -1, int skip = -1) {
   if (count == -1)
     count = static_cast<int>(surface->size());
   if (skip == -1)
