@@ -32,6 +32,68 @@
 
 namespace flatsurf::test {
 
+TEMPLATE_TEST_CASE("Flowing Points", "[point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
+  const auto face = GENERATE_COPY(halfEdges(surface));
+
+  SECTION("Flow from Marked Vertices") {
+    const Point point{*surface, face, T(1), T(), T()};
+
+    if (surface->angle(point) == 1) {
+      SECTION("Flow to Another Vertex") {
+        REQUIRE(point + surface->fromHalfEdge(face) == Point{*surface, face, T(), T(1), T()});
+      }
+
+      if constexpr (hasFractions<T>) {
+        SECTION("Flow to an Edge") {
+          const auto f = surface->fromHalfEdge(face);
+          const auto g = surface->fromHalfEdge(surface->nextAtVertex(face));
+          REQUIRE(point + f / 2 == Point{*surface, face, T(1), T(1), T()});
+          REQUIRE(point + (f / 2 + g / 2) == Point{*surface, face, T(), T(1), T(1)});
+          REQUIRE(point + f / 2 + g / 2 == Point{*surface, face, T(), T(1), T(1)});
+        }
+      }
+    }
+  }
+
+  SECTION("Flow from an Edge") {
+    const Point point{*surface, face, T(1), T(1), T()};
+
+    if constexpr (hasFractions<T>) {
+      SECTION("Flow to a Vertex") {
+        // TODO
+      }
+
+      SECTION("Flow to an Edge") {
+        // TODO
+      }
+    }
+  }
+
+  SECTION("Flow Randomly") {
+    const auto point = GENERATE_COPY(points(surface, face));
+    CAPTURE(point);
+
+    if constexpr (hasFractions<T>) {
+      // We flow by some arbitrary amount from a point.
+      // There is no reason why that flow should be possible in general since
+      // we might hit a non-marked vertex on the path. But this is not
+      // happening in the surfaces we are testing for.
+      if (surface->angle(point) == 1) {
+        const auto flow = 7 * surface->fromHalfEdge(face) / 3 + 19 * surface->fromHalfEdge(surface->nextAtVertex(face)) / 5;
+        const auto q = point + flow;
+        if (surface->angle(q) == 1) {
+          REQUIRE(q - flow == point);
+        }
+      }
+    }
+  }
+}
+
 TEMPLATE_TEST_CASE("Creating Points", "[point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
@@ -56,8 +118,10 @@ TEMPLATE_TEST_CASE("Creating Points", "[point]", (long long), (mpq_class), (renf
 
   SECTION("Points from Flow") {
     if constexpr (hasFractions<T>) {
-      // We flow by some arbitrary amount from the starting point.
-      // There is no reason why that flow should be possible in general since we might hit a non-marked vertex on the path. But this is not happening in the surfaces we are testing for.
+      // We flow by some arbitrary amount from a vertex.
+      // There is no reason why that flow should be possible in general since
+      // we might hit a non-marked vertex on the path. But this is not
+      // happening in the surfaces we are testing for.
       const auto flow = 7 * surface->fromHalfEdge(face) / 3 + 19 * surface->fromHalfEdge(surface->nextAtVertex(face)) / 5;
       CAPTURE(flow);
 

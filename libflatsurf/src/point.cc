@@ -353,7 +353,7 @@ ImplementationOf<Point<Surface>>& ImplementationOf<Point<Surface>>::operator+=(c
 
   // Things are easy if the point remains inside the same face and Δ does not
   // cross any half edges. We first try to see if that's the case and solve for
-  // that case.
+  // this case.
   {
     const auto [a, b, c] = barycentric(*surface, face, xy);
 
