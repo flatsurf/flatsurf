@@ -126,11 +126,49 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
   // Return the total angle at this point as a multiple of 2π.
   int angle(const Point<FlatTriangulation>&) const;
 
-  // Return whether the vector is in the sector counterclockwise next to the
-  // half edge (including the half edge but not including the following half
-  // edge.)
+  // Return whether this direction is in the sector counterclockwise next to
+  // the half edge (including the half edge but not including the following
+  // half edge.)
   bool inSector(HalfEdge, const Vector<T> &) const;
-  bool inSector(HalfEdge, const Vertical<FlatTriangulation<T>> &) const;
+
+  // Return whether this direction is in the half plane defined by the half
+  // edge, i.e., the angle with the half edge is strictly less than π/2.
+  bool inHalfPlane(HalfEdge, const Vector<T> &) const;
+
+  // Return whether this direction is in the plane defined by the half edge,
+  // i.e., the direction and the half edge are not opposite.
+  bool inPlane(HalfEdge, const Vector<T> &) const;
+
+  // Return the sector containing this direction in the plane defined by the
+  // given half edge. I.e., consider a vector in the given direction that
+  // starts at the source of the given half edge and has an angle strictly less
+  // than π with the provided half edge; return the half edge that describes
+  // the sector this direction lives in, i.e., the direction is collinear or
+  // counterclockwise with that half edge but clockwise from the following half
+  // edge.
+  HalfEdge sector(HalfEdge, const Vector<T> &) const;
+
+  // Return the first sector containing the direction found by walking the
+  // sectors in direction ``ccw``.
+  // More precisely, if the direction coincides with the half edge direction,
+  // return the half edge, i.e., the initial sector, unless ``exclude`` is set.
+  // Otherwise, if walking ounterclockwise and the initial sector contains the
+  // direction, it is returned.
+  // If walking clockwise, walk at least one step, i.e., if the initial sector
+  // contains the direction in it interior, it is ignored.
+  // We cannot walk in "collinear" direction.
+  HalfEdge sector(HalfEdge, CCW ccw, const Vector<T>& direction, bool exclude=false) const;
+
+  // Return the first sector containing ``direction`` walking in direction
+  // ``ccw`` from ``start`` (in sector ``sector``.)
+  // If ``start`` and ``direction`` are equal, return ``sector``, unless
+  // ``exclude`` is set.
+  HalfEdge sector(HalfEdge sector, const Vector<T>& start, CCW ccw, const Vector<T>& direction, bool exclude=false) const;
+
+  // Return the sector containing this direction in the half plane defined by
+  // the vertical which has an angle strictly less than π with the provided
+  // half edge.
+  HalfEdge sector(HalfEdge, const Vertical<FlatTriangulation>&, const Vector<T>&) const;
 
   const Vector<T> &fromHalfEdge(HalfEdge) const;
 

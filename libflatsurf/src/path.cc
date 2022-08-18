@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020-2021 Julian Rüth
+ *        Copyright (C) 2020-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -222,8 +222,8 @@ Path<Surface> tightenClockwise(const SaddleConnection<Surface>& a, const SaddleC
     const auto chain = j->chain() - i->chain();
     const auto vector = static_cast<const Vector<typename Surface::Coordinate>&>(chain);
     path.push_back(SaddleConnection<Surface>(surface,
-        ImplementationOf<SaddleConnection<Surface>>::turnCWToDirection(surface, i->target(), vector),
-        ImplementationOf<SaddleConnection<Surface>>::turnCCWToDirection(surface, j->target(), -vector),
+        surface.sector(i->target(), CCW::CLOCKWISE, vector),
+        surface.sector(j->target(), CCW::COUNTERCLOCKWISE, -vector),
         chain));
   }
 

@@ -729,8 +729,93 @@ bool FlatTriangulation<T>::inSector(const HalfEdge sector, const Vector<T> &vect
 }
 
 template <typename T>
-bool FlatTriangulation<T>::inSector(const HalfEdge sector, const Vertical<FlatTriangulation<T>> &vector) const {
-  return inSector(sector, vector.vertical());
+bool FlatTriangulation<T>::inHalfPlane(const HalfEdge side, const Vector<T> &vector) const {
+  return fromHalfEdge(side).orientation(vector) == ORIENTATION::SAME;
+}
+
+template <typename T>
+bool FlatTriangulation<T>::inPlane(const HalfEdge plane, const Vector<T> &direction) const {
+  return direction.ccw(fromHalfEdge(plane)) != CCW::COLLINEAR || direction.orientation(fromHalfEdge(plane)) != ORIENTATION::OPPOSITE;
+}
+
+template <typename T>
+HalfEdge FlatTriangulation<T>::sector(HalfEdge plane, const Vector<T>& direction) const {
+  LIBFLATSURF_CHECK_ARGUMENT(direction.ccw(fromHalfEdge(plane)) != CCW::COLLINEAR || direction.orientation(fromHalfEdge(plane)) != ORIENTATION::OPPOSITE, "vector must not be opposite to the HalfEdge defining the plane");
+
+  if (fromHalfEdge(plane).ccw(direction) == CCW::CLOCKWISE) {
+    while (fromHalfEdge(plane).ccw(direction) == CCW::CLOCKWISE)
+      plane = this->previousAtVertex(plane);
+  } else if (fromHalfEdge(plane).ccw(direction) == CCW::COUNTERCLOCKWISE) {
+    while (fromHalfEdge(plane).ccw(direction) != CCW::CLOCKWISE)
+      plane = this->nextAtVertex(plane);
+    plane = this->previousAtVertex(plane);
+  }
+
+  return plane;
+}
+
+template <typename T>
+HalfEdge FlatTriangulation<T>::sector(HalfEdge plane, CCW ccw, const Vector<T>& direction, bool exclude) const {
+  LIBFLATSURF_CHECK_ARGUMENT(ccw != CCW::COLLINEAR, "cannot rotate in collinear direction");
+
+  if (fromHalfEdge(plane).ccw(direction) == CCW::COLLINEAR && fromHalfEdge(plane).orientation(direction) == ORIENTATION::SAME) {
+    if (!exclude)
+      return plane;
+
+    plane = ccw == CCW::CLOCKWISE ? this->previousAtVertex(plane) : this->nextAtVertex(plane);
+  }
+
+  if (ccw == CCW::COUNTERCLOCKWISE) {
+    while (fromHalfEdge(plane).ccw(direction) == CCW::CLOCKWISE)
+      plane = this->nextAtVertex(plane);
+    while (fromHalfEdge(plane).ccw(direction) != CCW::CLOCKWISE)
+      plane = this->nextAtVertex(plane);
+    plane = this->previousAtVertex(plane);
+  } else {
+    plane = this->nextAtVertex(plane);
+    while (fromHalfEdge(plane).ccw(direction) != CCW::CLOCKWISE)
+      plane = this->previousAtVertex(plane);
+    while (fromHalfEdge(plane).ccw(direction) == CCW::CLOCKWISE)
+      plane = this->previousAtVertex(plane);
+  }
+
+  return plane;
+}
+
+template <typename T>
+HalfEdge FlatTriangulation<T>::sector(HalfEdge plane, const Vector<T>& start, CCW ccw, const Vector<T>& direction, bool exclude) const {
+  LIBFLATSURF_CHECK_ARGUMENT(ccw != CCW::COLLINEAR, "cannot rotate in collinear direction");
+  LIBFLATSURF_CHECK_ARGUMENT(inSector(plane, start), "start direction must be in the start sector");
+
+  if (inSector(plane, direction)) {
+    if (start.ccw(direction) == CCW::COLLINEAR)
+      if (!exclude)
+        return plane;
+    if (start.ccw(direction) == ccw)
+      return plane;
+  }
+
+  if (ccw == CCW::CLOCKWISE)
+    plane = this->nextAtVertex(plane);
+
+  return sector(plane, ccw, direction, ccw == CCW::CLOCKWISE);
+}
+
+template <typename T>
+HalfEdge FlatTriangulation<T>::sector(HalfEdge plane, const Vertical<FlatTriangulation<T>>& vertical, const Vector<T>& direction) const {
+  LIBFLATSURF_CHECK_ARGUMENT(inHalfPlane(plane, vertical), "vertical and half edge defining half plane must enclose an angle <π");
+  LIBFLATSURF_CHECK_ARGUMENT(direction.orientation(vertical) == ORIENTATION::SAME, "direction must be in the same half plane as the vertical");
+
+  // Both plane and direction enclose less than a π angle with vertical. We
+  // move plane clockwise to where the half plane starts and then swipe
+  // counterclockwise until we find the sector containing direction.
+  while(inHalfPlane(plane, vertical))
+    plane = this->previousAtVertex(plane);
+
+  while(!inSector(plane, direction))
+    plane = this->nextAtVertex(plane);
+
+  return plane;
 }
 
 template <typename T>
@@ -763,7 +848,6 @@ int FlatTriangulation<T>::angle(const Vertex &vertex) const {
   HalfEdge current = first;
   do {
     const HalfEdge next = this->nextAtVertex(current);
-
     if (fromHalfEdge(current).x() >= 0 && fromHalfEdge(next).x() < 0)
       angle++;
 
