@@ -755,50 +755,61 @@ HalfEdge FlatTriangulation<T>::sector(HalfEdge plane, const Vector<T>& direction
 }
 
 template <typename T>
-HalfEdge FlatTriangulation<T>::sector(HalfEdge plane, CCW ccw, const Vector<T>& direction, bool exclude) const {
+HalfEdge FlatTriangulation<T>::sector(HalfEdge start, CCW ccw, const Vector<T>& direction, bool exclude) const {
   LIBFLATSURF_CHECK_ARGUMENT(ccw != CCW::COLLINEAR, "cannot rotate in collinear direction");
 
-  if (fromHalfEdge(plane).ccw(direction) == CCW::COLLINEAR && fromHalfEdge(plane).orientation(direction) == ORIENTATION::SAME) {
+  if (fromHalfEdge(start).ccw(direction) == CCW::COLLINEAR && fromHalfEdge(start).orientation(direction) == ORIENTATION::SAME) {
     if (!exclude)
-      return plane;
+      return start;
 
-    plane = ccw == CCW::CLOCKWISE ? this->previousAtVertex(plane) : this->nextAtVertex(plane);
+    start = ccw == CCW::CLOCKWISE ? this->previousAtVertex(start) : this->nextAtVertex(start);
   }
+
+  // We now turn start in direction ccw until we find a sector containing
+  // direction, i.e.,
+  // while (!inSector(start, direction)) start = previous/nextAtVertex(start);
+  // However, each such iteration uses two CCW computations. The below only
+  // uses a single CCW computation.
 
   if (ccw == CCW::COUNTERCLOCKWISE) {
-    while (fromHalfEdge(plane).ccw(direction) == CCW::CLOCKWISE)
-      plane = this->nextAtVertex(plane);
-    while (fromHalfEdge(plane).ccw(direction) != CCW::CLOCKWISE)
-      plane = this->nextAtVertex(plane);
-    plane = this->previousAtVertex(plane);
+    while (fromHalfEdge(start).ccw(direction) == CCW::CLOCKWISE)
+      start = this->nextAtVertex(start);
+    while (fromHalfEdge(start).ccw(direction) != CCW::CLOCKWISE)
+      start = this->nextAtVertex(start);
+    start = this->previousAtVertex(start);
   } else {
-    plane = this->nextAtVertex(plane);
-    while (fromHalfEdge(plane).ccw(direction) != CCW::CLOCKWISE)
-      plane = this->previousAtVertex(plane);
-    while (fromHalfEdge(plane).ccw(direction) == CCW::CLOCKWISE)
-      plane = this->previousAtVertex(plane);
+    start = this->nextAtVertex(start);
+    while (fromHalfEdge(start).ccw(direction) != CCW::CLOCKWISE)
+      start = this->previousAtVertex(start);
+    while (fromHalfEdge(start).ccw(direction) == CCW::CLOCKWISE)
+      start = this->previousAtVertex(start);
   }
 
-  return plane;
+  return start;
 }
 
 template <typename T>
-HalfEdge FlatTriangulation<T>::sector(HalfEdge plane, const Vector<T>& start, CCW ccw, const Vector<T>& direction, bool exclude) const {
+HalfEdge FlatTriangulation<T>::sector(HalfEdge sector, const Vector<T>& start, CCW ccw, const Vector<T>& direction, bool exclude) const {
   LIBFLATSURF_CHECK_ARGUMENT(ccw != CCW::COLLINEAR, "cannot rotate in collinear direction");
-  LIBFLATSURF_CHECK_ARGUMENT(inSector(plane, start), "start direction must be in the start sector");
+  LIBFLATSURF_CHECK_ARGUMENT(inSector(sector, start), "start direction must be in the start sector");
 
-  if (inSector(plane, direction)) {
+  if (inSector(sector, direction)) {
     if (start.ccw(direction) == CCW::COLLINEAR)
+      // start and direction are equal as directions; we are done unless we
+      // explicitly want to exclude the start direction.
       if (!exclude)
-        return plane;
+        return sector;
     if (start.ccw(direction) == ccw)
-      return plane;
+      // direction is in the starting sector on the correct side of the
+      // starting vector; no need to walk, the initial sector is the correct
+      // one.
+      return sector;
   }
 
-  if (ccw == CCW::CLOCKWISE)
-    plane = this->nextAtVertex(plane);
+  if (ccw == CCW::COUNTERCLOCKWISE)
+    sector = this->nextAtVertex(sector);
 
-  return sector(plane, ccw, direction, ccw == CCW::CLOCKWISE);
+  return this->sector(sector, ccw, direction, ccw == CCW::CLOCKWISE);
 }
 
 template <typename T>
