@@ -96,6 +96,8 @@ TEMPLATE_TEST_CASE("Flowing Points", "[point]", (long long), (mpq_class), (renf_
       // happening in the surfaces we are testing for.
       if (surface->angle(point) == 1) {
         const auto flow = 7 * surface->fromHalfEdge(face) / 3 + 19 * surface->fromHalfEdge(surface->nextAtVertex(face)) / 5;
+        CAPTURE(flow);
+
         const auto q = point + flow;
         if (surface->angle(q) == 1) {
           REQUIRE(q - flow == point);
@@ -197,10 +199,8 @@ TEMPLATE_TEST_CASE("Coordinates of Points", "[point]", (long long), (mpq_class),
         } catch (...) {
           if (std::is_same_v<T, long long> ||
               std::is_same_v<T, mpz_class> ||
-              std::is_same_v<T, exactreal::Element<exactreal::IntegerRing>> ||
-              std::is_same_v<T, exactreal::Element<exactreal::RationalField>> ||
-              std::is_same_v<T, exactreal::Element<exactreal::NumberField>>)
-            // When not in a field, cartesian coordinates might not be in the base ring.
+              std::is_same_v<T, exactreal::Element<exactreal::IntegerRing>>)
+            // Without division, cartesian coordinates might not be in the base ring.
             return std::nullopt;
 
           throw;

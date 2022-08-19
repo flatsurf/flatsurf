@@ -19,6 +19,8 @@
 
 #include <ostream>
 #include <stdexcept>
+#include <fmt/format.h>
+#include <fmt/ostream.h>
 
 #include "../flatsurf/point.hpp"
 #include "../flatsurf/ccw.hpp"
@@ -337,13 +339,18 @@ Vector<typename Surface::Coordinate> ImplementationOf<Point<Surface>>::cartesian
 
   LIBFLATSURF_ASSERT(abc, "invalid point with barycentric coordinates [" << a << ", " << b << ", " << c << "]");
 
-  if (!LinearDeformationRelation<Surface>::truediv(γ, abc))
-    throw std::invalid_argument("Cartesian coordinates of point are not in the base ring");
+  const auto xy = γ * AC + β * BC;
 
-  if (!LinearDeformationRelation<Surface>::truediv(β, abc))
-    throw std::invalid_argument("Cartesian coordinates of point are not in the base ring");
+  T x = xy.x();
+  T y = xy.y();
 
-  return γ * AC + β * BC;
+  if (!LinearDeformationRelation<Surface>::truediv(x, abc))
+    throw std::invalid_argument(fmt::format("Cartesian coordinates of point are not in the base ring. Cannot divide {} by {}", x, abc));
+
+  if (!LinearDeformationRelation<Surface>::truediv(y, abc))
+    throw std::invalid_argument(fmt::format("Cartesian coordinates of point are not in the base ring. Cannot divide {} by {}", y, abc));
+
+  return Vector{x, y};
 }
 
 template <typename Surface>
@@ -372,7 +379,7 @@ ImplementationOf<Point<Surface>>& ImplementationOf<Point<Surface>>::operator+=(c
     } else {
       // Point is at a vertex. If the given face is not good, we refuse to make
       // a choice here (we could if the point is marked.)
-      LIBFLATSURF_CHECK_ARGUMENT(surface->inSector(this->face, Δ), "Point must be represented with respect to a face that contains the translation vector Δ");
+      LIBFLATSURF_CHECK_ARGUMENT(surface->fromHalfEdge(this->face).ccw(Δ) != CCW::CLOCKWISE && surface->fromHalfEdge(surface->nextAtVertex(this->face)).ccw(Δ) != CCW::COUNTERCLOCKWISE, "Point must be represented with respect to a face that contains the translation vector Δ");
     }
 
     const auto xy0 = cartesian();
@@ -402,7 +409,8 @@ ImplementationOf<Point<Surface>>& ImplementationOf<Point<Surface>>::operator+=(c
     // pull the result back.
     const auto p = Point{*surface, face, a ,b, c};
     const auto insertion = surface->insert(p);
-    return *this = *insertion.section()(insertion(p) + Δ).self;
+    const auto shifted = insertion(p) + Δ;
+    return *this = *insertion.section()(shifted).self;
   }
 
   // We can now assume that this point is a vertex of the triangulation. We use
