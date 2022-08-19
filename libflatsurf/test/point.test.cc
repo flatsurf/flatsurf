@@ -65,11 +65,22 @@ TEMPLATE_TEST_CASE("Flowing Points", "[point]", (long long), (mpq_class), (renf_
 
     if constexpr (hasFractions<T>) {
       SECTION("Flow to a Vertex") {
-        // TODO
+        auto f = surface->fromHalfEdge(face);
+        auto g = surface->fromHalfEdge(surface->nextInFace(face));
+        REQUIRE(point + f / 2 == Point{*surface, face, T(), T(1), T()});
+        REQUIRE(point - f / 2 == Point{*surface, face, T(1), T(), T()});
+        REQUIRE(point + (f / 2 + g) == Point{*surface, face, T(), T(), T(1)});
+        if (surface->angle(Vertex::target(face, *surface)) == 1)
+          REQUIRE(point + f / 2 + g == Point{*surface, face, T(), T(), T(1)});
       }
 
       SECTION("Flow to an Edge") {
-        // TODO
+        auto f = surface->fromHalfEdge(face);
+        auto g = surface->fromHalfEdge(surface->nextInFace(face));
+        REQUIRE(point + f / 4 == Point{*surface, face, T(1), T(3), T()});
+        REQUIRE(point + (f / 2 + g / 2) == Point{*surface, face, T(), T(1), T(1)});
+        if (surface->angle(Vertex::target(face, *surface)) == 1)
+          REQUIRE(point + f / 2 + g / 2 == Point{*surface, face, T(), T(1), T(1)});
       }
     }
   }

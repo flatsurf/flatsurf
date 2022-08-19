@@ -23,6 +23,7 @@
 #include "../flatsurf/point.hpp"
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/chain.hpp"
+#include "../flatsurf/deformation.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/vertex.hpp"
 #include "../flatsurf/half_edge.hpp"
@@ -347,14 +348,37 @@ Vector<typename Surface::Coordinate> ImplementationOf<Point<Surface>>::cartesian
 
 template <typename Surface>
 ImplementationOf<Point<Surface>>& ImplementationOf<Point<Surface>>::operator+=(const Vector<T>& Δ) {
-  const auto xy0 = cartesian();
-
-  const auto xy = xy0 + Δ;
+  if (c)
+    LIBFLATSURF_ASSERT(a && b, "barycentric coordinates of point not normalized");
+  if (b)
+    LIBFLATSURF_ASSERT(a, "barycentric coordinates of point not normalized");
 
   // Things are easy if the point remains inside the same face and Δ does not
   // cross any half edges. We first try to see if that's the case and solve for
   // this case.
   {
+    // Represent the point with respect to a face so that Δ points into the face.
+    if (c) {
+      // Point is inside a face, all half edges surrounding that face are
+      // equally well suited.
+      ;
+    } else if (b) {
+      // Point is on the interior of an edge, chose either half edge to make
+      // Δ point into the face. The resulting point is still normalized.
+      if (surface->fromHalfEdge(face).ccw(Δ) == CCW::CLOCKWISE) {
+        std::swap(a, b);
+        face = -face;
+      }
+    } else {
+      // Point is at a vertex. If the given face is not good, we refuse to make
+      // a choice here (we could if the point is marked.)
+      LIBFLATSURF_CHECK_ARGUMENT(surface->inSector(this->face, Δ), "Point must be represented with respect to a face that contains the translation vector Δ");
+    }
+
+    const auto xy0 = cartesian();
+
+    const auto xy = xy0 + Δ;
+
     const auto [a, b, c] = barycentric(*surface, face, xy);
 
     if (a >= 0 && b >= 0 && c >= 0) {
@@ -372,22 +396,13 @@ ImplementationOf<Point<Surface>>& ImplementationOf<Point<Surface>>::operator+=(c
   // and a triangle.
 
   // We first reduce to the case that our point is actually a vertex of the triangulation:
-  if (c) {
-    LIBFLATSURF_ASSERT(a && b, "barycentric coordinates of point not normalized");
-
-    // This point is in the interior of a face. We insert a vertex for the
-    // point, solve in the modified surface and then pull the result back.
-    // TODO
-    throw std::logic_error("not implemented: point in face");
-  }
-
-  if (b) {
-    LIBFLATSURF_ASSERT(a, "barycentric coordinates of point not normalized");
-
-    // This point is in the interior of an edge. We insert a vertex for the
-    // point, solve in the modified surface and then pull the result back.
-    // TODO
-    throw std::logic_error("not implemented: point on edge");
+  if (c || b) {
+    // This point is in the interior of a face or in the interior of an edge.
+    // We insert a vertex for the point, solve in the modified surface and then
+    // pull the result back.
+    const auto p = Point{*surface, face, a ,b, c};
+    const auto insertion = surface->insert(p);
+    return *this = *insertion.section()(insertion(p) + Δ).self;
   }
 
   // We can now assume that this point is a vertex of the triangulation. We use
