@@ -61,6 +61,9 @@ class VectorExact : public VectorBase<Vector>,
   Coordinate x() const;
   Coordinate y() const;
 
+  // Return the result of applying this matrix from the left.
+  Vector applyMatrix(const T& a, const T& b, const T& c, const T& d) const;
+
   // Return twice the area of the polygon described by the (counter-clockwise) perimeter.
   static T area(const std::vector<Vector> &perimeter);
 

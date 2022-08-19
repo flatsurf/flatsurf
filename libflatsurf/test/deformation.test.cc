@@ -160,6 +160,17 @@ TEMPLATE_TEST_CASE("Deform a Flat Triangulation", "[flat_triangulation][deformat
       REQUIRE(image.has_value());
     }
   }
+
+  SECTION("Scale an L") {
+    auto scaled = surface->applyMatrix(T(2), T(), T(), T(2));
+
+    REQUIRE(scaled.codomain() != *surface);
+
+    if constexpr (hasFractions<T>) {
+      auto unscaled = scaled.codomain().applyMatrix(T(1)/2, T(), T(), T(1)/2);
+      REQUIRE(unscaled.codomain() == *surface);
+    }
+  }
 }
 
 }  // namespace flatsurf::test

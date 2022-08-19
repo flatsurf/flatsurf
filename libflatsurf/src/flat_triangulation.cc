@@ -714,6 +714,29 @@ FlatTriangulation<T> FlatTriangulation<T>::scale(const mpz_class &scalar) const 
 }
 
 template <typename T>
+Deformation<FlatTriangulation<T>> FlatTriangulation<T>::applyMatrix(const T& a, const T& b, const T& c, const T& d) const {
+  LIBFLATSURF_CHECK_ARGUMENT(a * d - b * c != 0, "matrix must have non-zero determinant");
+
+  if (this->hasBoundary())
+    throw std::logic_error("not implemented: cannot transform surface with boundary yet");
+
+  FlatTriangulationCombinatorial combinatorial = [&]() {
+    if (a*d - b*c < 0)
+      return FlatTriangulationCombinatorial{~self->vertices};
+    return this->combinatorial().clone();
+  }();
+
+  const FlatTriangulation codomain{std::move(combinatorial), [&](HalfEdge halfEdge) {
+    return this->fromHalfEdge(halfEdge).applyMatrix(a, b, c, d);
+  }};
+
+  return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<LinearDeformationRelation<FlatTriangulation>>(
+    *this,
+    codomain,
+    a, b, c, d));
+}
+
+template <typename T>
 bool FlatTriangulation<T>::convex(HalfEdge e, bool strict) const {
   if (strict)
     return fromHalfEdge(this->previousAtVertex(e)).ccw(fromHalfEdge(this->nextAtVertex(e))) == CCW::COUNTERCLOCKWISE &&

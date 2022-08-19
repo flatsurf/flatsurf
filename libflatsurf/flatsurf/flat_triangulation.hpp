@@ -53,7 +53,7 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
 
   // Create an independent clone of this triangulation that is built from the
   // same data. There is no copy-constructor since it is too likely that this
-  // is would not update the associated HalfEdgeMaps in the way that the caller
+  // would not update the associated HalfEdgeMaps in the way that the caller
   // expects.
   FlatTriangulation<T> clone() const;
 
@@ -79,7 +79,12 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
 
   // Create an independent clone of this triangulation with all vectors scaled
   // by c.
+  [[deprecated("use applyMatrix instead")]]
   FlatTriangulation<T> scale(const mpz_class &c) const;
+
+  // Create an independent clone of this triangulation with all vectors
+  // transformed by this 2×2.
+  Deformation<FlatTriangulation<T>> applyMatrix(const T& a, const T& b, const T& c, const T& d) const;
 
   // Create an independent clone of this triangulation with an edded boundary
   // at the half edge e by removing the identification of the two corresponding

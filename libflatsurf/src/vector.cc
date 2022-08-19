@@ -510,6 +510,16 @@ detail::VectorExact<Vector, T>::operator bool() const {
 }
 
 template <typename Vector, typename T>
+Vector detail::VectorExact<Vector, T>::applyMatrix(const T& a, const T& b, const T& c, const T& d) const {
+  const Vector& self = static_cast<const Vector&>(*this);
+
+  return Vector{
+    a * self.self->x + b * self.self->y,
+    c * self.self->x + d * self.self->y,
+  };
+}
+
+template <typename Vector, typename T>
 bool detail::VectorExact<Vector, T>::inSector(const Vector& begin, const Vector& end) const {
   const Vector& self = static_cast<const Vector&>(*this);
 
