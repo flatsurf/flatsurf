@@ -186,7 +186,10 @@ std::optional<Path<Surface>> GenericRetriangulationDeformationRelation<Surface>:
   Path<Surface> image;
   Vector<T> vector_;
   while (true) {
-    const auto search = SaddleConnection<Surface>::counterclockwise(*this->codomain, SaddleConnection<Surface>(*this->codomain, *source_), Vertical<Surface>(*this->codomain, vector));
+    const auto search = SaddleConnection<Surface>::inSector(
+      this->codomain,
+      this->codomain->sector(*source_, this->codomain->fromHalfEdge(*source_), CCW::COUNTERCLOCKWISE, vector),
+      vector);
 
     vector_ += search;
     image += search;

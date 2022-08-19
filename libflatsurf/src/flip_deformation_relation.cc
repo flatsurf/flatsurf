@@ -52,7 +52,11 @@ std::optional<Path<Surface>> FlipDeformationRelation<Surface>::operator()(const 
     if (target == flip || target == -flip)
       target = this->domain->previousAtVertex(target);
 
-    path_.push_back(SaddleConnection<Surface>::counterclockwise(this->codomain, source, target, segment));
+    path_.push_back(SaddleConnection<Surface>(
+      this->codomain,
+      this->codomain->sector(source, CCW::COUNTERCLOCKWISE, segment),
+      this->codomain->sector(target, CCW::COUNTERCLOCKWISE, -segment),
+      segment));
   }
   return path_;
 }

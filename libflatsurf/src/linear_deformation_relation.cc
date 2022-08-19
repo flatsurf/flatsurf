@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2021-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #include <boost/type_traits/is_detected.hpp>
 #include <ostream>
 
+#include "../flatsurf/ccw.hpp"
 #include "../flatsurf/chain.hpp"
 #include "../flatsurf/deformation.hpp"
 #include "../flatsurf/edge.hpp"
@@ -85,7 +86,12 @@ std::optional<Path<Surface>> LinearDeformationRelation<Surface>::operator()(cons
       target = this->domain->nextAtVertex(target);
     }
 
-    path_.push_back(SaddleConnection<Surface>::counterclockwise(*this->codomain, source, target, chain));
+    path_.push_back(
+      SaddleConnection(
+        *this->codomain,
+        this->codomain->sector(source, CCW::COUNTERCLOCKWISE, chain),
+        this->codomain->sector(target, CCW::COUNTERCLOCKWISE, -chain),
+        chain));
   }
 
   return path_;
@@ -93,6 +99,7 @@ std::optional<Path<Surface>> LinearDeformationRelation<Surface>::operator()(cons
 
 template <typename Surface>
 Point<Surface> LinearDeformationRelation<Surface>::operator()(const Point<Surface>&) const {
+  // TODO
   throw std::logic_error("not implemented: cannot map points with this linear deformation yet");
 }
 
