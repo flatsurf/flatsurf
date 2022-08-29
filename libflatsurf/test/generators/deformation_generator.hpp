@@ -58,7 +58,7 @@ class DeformationGenerator : public Catch::Generators::IGenerator<Deformation<Fl
 
     {
       // A linear deformation
-      deformations.push_back(domain.applyMatrix(1, 2, 3, 4));
+      deformations.push_back(domain.applyMatrix(T(1), T(2), T(3), T(4)));
     }
 
     current = deformations.begin();

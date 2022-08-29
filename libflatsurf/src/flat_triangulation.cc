@@ -63,7 +63,6 @@
 #include "impl/insert_marked_point_on_edge_deformation_relation.hpp"
 #include "impl/linear_deformation_relation.hpp"
 #include "impl/quadratic_polynomial.hpp"
-#include "impl/retriangulation_deformation_relation.hpp"
 #include "impl/shift_deformation_relation.hpp"
 #include "impl/slit_deformation_relation.hpp"
 #include "util/assert.ipp"

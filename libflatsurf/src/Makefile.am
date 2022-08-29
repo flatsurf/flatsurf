@@ -50,7 +50,6 @@ libflatsurf_la_SOURCES =                                            \
 	point.cc                                                    \
 	quadratic_polynomial.cc                                     \
 	read_only.cc                                                \
-	retriangulation_deformation_relation.cc                     \
 	saddle_connection.cc                                        \
 	saddle_connections.cc                                       \
 	saddle_connections_by_length.cc                             \
@@ -179,7 +178,6 @@ noinst_HEADERS =                                                    \
 	impl/point.impl.hpp                                         \
 	impl/quadratic_polynomial.hpp                               \
 	impl/read_only.hpp                                          \
-	impl/retriangulation_deformation_relation.hpp               \
 	impl/saddle_connection.impl.hpp                             \
 	impl/saddle_connections.impl.hpp                            \
 	impl/saddle_connections_by_length.impl.hpp                  \

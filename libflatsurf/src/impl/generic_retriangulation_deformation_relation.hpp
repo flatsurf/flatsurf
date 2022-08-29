@@ -26,7 +26,7 @@
 #include <vector>
 
 #include "../../flatsurf/saddle_connection.hpp"
-#include "retriangulation_deformation_relation.hpp"
+#include "deformation_relation.hpp"
 
 namespace flatsurf {
 
@@ -44,7 +44,7 @@ namespace flatsurf {
 /// this deformation relation as a composition of other deformations while
 /// ignoring certain parts of the composed deformation.
 template <typename Surface>
-class GenericRetriangulationDeformationRelation : public RetriangulationDeformationRelation<Surface> {
+class GenericRetriangulationDeformationRelation : public DeformationRelation<Surface> {
   using T = typename Surface::Coordinate;
 
  public:

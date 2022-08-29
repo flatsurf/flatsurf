@@ -37,7 +37,7 @@ namespace flatsurf {
 
 template <typename Surface>
 FlipDeformationRelation<Surface>::FlipDeformationRelation(const Surface& domain, const Surface& codomain, HalfEdge flip) :
-  RetriangulationDeformationRelation<Surface>(domain, codomain), flip(flip) {
+  DeformationRelation<Surface>(domain, codomain), flip(flip) {
 }
 
 template <typename Surface>

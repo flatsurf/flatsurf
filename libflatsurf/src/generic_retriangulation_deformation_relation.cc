@@ -49,7 +49,7 @@ GenericRetriangulationDeformationRelation<Surface>::GenericRetriangulationDeform
 
 template <typename Surface>
 GenericRetriangulationDeformationRelation<Surface>::GenericRetriangulationDeformationRelation(const Surface& domain, const Surface& codomain, Path<Surface> preimage, Path<Surface> image) :
-  RetriangulationDeformationRelation<Surface>(domain, codomain), preimage(std::move(preimage)), image(std::move(image)) {
+  DeformationRelation<Surface>(domain, codomain), preimage(std::move(preimage)), image(std::move(image)) {
   LIBFLATSURF_ASSERT(this->preimage.begin() != this->preimage.end(), "preimage must be a non-trivial path");
   LIBFLATSURF_ASSERT(this->preimage.begin()->surface() == *this->domain, "preimage must live in the domain");
   LIBFLATSURF_ASSERT(rx::zip(this->preimage, this->preimage | rx::skip_n(1)) | rx::all_of([&](const auto& connections) {

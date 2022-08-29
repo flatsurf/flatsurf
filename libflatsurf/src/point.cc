@@ -20,13 +20,13 @@
 #include <ostream>
 #include <stdexcept>
 #include <fmt/format.h>
-#include <fmt/ostream.h>
 
 #include "../flatsurf/point.hpp"
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/chain.hpp"
 #include "../flatsurf/deformation.hpp"
 #include "../flatsurf/edge.hpp"
+#include "../flatsurf/fmt.hpp"
 #include "../flatsurf/vertex.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_set.hpp"
@@ -38,6 +38,7 @@
 #include "../flatsurf/orientation.hpp"
 #include "util/assert.ipp"
 #include "util/hash.ipp"
+#include "util/streamed.ipp"
 #include "impl/point.impl.hpp"
 #include "impl/linear_deformation_relation.hpp"
 
@@ -345,10 +346,10 @@ Vector<typename Surface::Coordinate> ImplementationOf<Point<Surface>>::cartesian
   T y = xy.y();
 
   if (!LinearDeformationRelation<Surface>::truediv(x, abc))
-    throw std::invalid_argument(fmt::format("Cartesian coordinates of point are not in the base ring. Cannot divide {} by {}", x, abc));
+    throw std::invalid_argument(fmt::format("Cartesian coordinates of point are not in the base ring. Cannot divide {} by {}", streamed(x), streamed(abc)));
 
   if (!LinearDeformationRelation<Surface>::truediv(y, abc))
-    throw std::invalid_argument(fmt::format("Cartesian coordinates of point are not in the base ring. Cannot divide {} by {}", y, abc));
+    throw std::invalid_argument(fmt::format("Cartesian coordinates of point are not in the base ring. Cannot divide {} by {}", streamed(y), streamed(abc)));
 
   return Vector{x, y};
 }

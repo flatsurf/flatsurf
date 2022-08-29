@@ -44,7 +44,6 @@ InsertMarkedPointOnEdgeDeformationRelation<Surface>::InsertMarkedPointOnEdgeDefo
 
 template <typename Surface>
 std::optional<Path<Surface>> InsertMarkedPointOnEdgeDeformationRelation<Surface>::operator()(const Path<Surface>&) const {
-  // TODO
   throw std::logic_error("not implemented: cannot map paths when a vertex was inserted in the interior of an existing edge");
 }
 

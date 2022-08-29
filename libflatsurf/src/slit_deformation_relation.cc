@@ -33,13 +33,12 @@ SlitDeformationRelation<Surface>::SlitDeformationRelation(const Surface& domain,
 
 template <typename Surface>
 std::optional<Path<Surface>> SlitDeformationRelation<Surface>::operator()(const Path<Surface>&) const {
-  throw std::logic_error("not implemented: cannot map a path when a slit has been inserted.");
+  throw std::logic_error("not implemented: cannot map a path when a slit has been inserted");
 }
 
 template <typename Surface>
 Point<Surface> SlitDeformationRelation<Surface>::operator()(const Point<Surface>&) const {
-  // TODO
-  throw std::logic_error("not implemented: cannot map points with this slit deformation yet");
+  throw std::logic_error("not implemented: cannot map points when a slit has been inserted");
 }
 
 template <typename Surface>
