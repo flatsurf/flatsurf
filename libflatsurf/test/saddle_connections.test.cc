@@ -2,7 +2,7 @@
  *  This file is part of flatsurf.
  *
  *        Copyright (C) 2019 Vincent Delecroix
- *        Copyright (C) 2019-2021 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
  *********************************************************************/
 
 #include <fmt/format.h>
-#include <fmt/ostream.h>
 
 #include <algorithm>
 #include <exact-real/element.hpp>
@@ -31,6 +30,7 @@
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/deformation.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
+#include "../flatsurf/fmt.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_intersection.hpp"
 #include "../flatsurf/orientation.hpp"

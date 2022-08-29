@@ -19,7 +19,6 @@
  *********************************************************************/
 
 #include <fmt/format.h>
-#include <fmt/ostream.h>
 
 #include <e-antic/renfxx_fwd.hpp>
 #include <exact-real/element.hpp>
@@ -31,6 +30,7 @@
 #include "../flatsurf/deformation.hpp"
 #include "../flatsurf/delaunay.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
+#include "../flatsurf/fmt.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/half_edge_set.hpp"

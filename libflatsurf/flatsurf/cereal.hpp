@@ -2,7 +2,7 @@
  *  This file is part of flatsurf.
  *
  *        Copyright (C) 2019 Vincent Delecroix
- *        Copyright (C) 2019-2021 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,9 +21,6 @@
 #ifndef LIBFLATSURF_CEREAL_HPP
 #define LIBFLATSURF_CEREAL_HPP
 
-#include <fmt/format.h>
-#include <fmt/ostream.h>
-
 #include <cereal/types/memory.hpp>
 #include <cereal/types/unordered_map.hpp>
 #include <cereal/types/utility.hpp>
@@ -36,7 +33,6 @@
 #include "edge.hpp"
 #include "flat_triangulation.hpp"
 #include "flat_triangulation_combinatorial.hpp"
-#include "forward.hpp"
 #include "half_edge.hpp"
 #include "half_edge_set.hpp"
 #include "half_edge_set_iterator.hpp"
@@ -276,8 +272,11 @@ struct Serialization<Chain<Surface>> {
     archive(cereal::make_nvp("surface", self.surface()));
 
     std::vector<std::string> coefficients;
-    for (auto edge : self.surface().edges())
-      coefficients.push_back(fmt::format("{}", self[edge]));
+    for (auto edge : self.surface().edges()) {
+      std::ostringstream ss;
+      ss << self[edge];
+      coefficients.push_back(ss.str());
+    }
     archive(cereal::make_nvp("coefficients", coefficients));
   }
 

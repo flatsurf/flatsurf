@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@
 #include "impl/chain_iterator.impl.hpp"
 #include "util/assert.ipp"
 #include "util/hash.ipp"
+#include "util/streamed.ipp"
 
 namespace flatsurf {
 
@@ -193,7 +194,7 @@ ChainIterator<Surface> Chain<Surface>::end() const {
 
 template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const Chain<Surface>& chain) {
-  return os << fmt::format("[{}]", fmt::join(chain | rx::transform([](const auto& entry) { return fmt::format("{}: {}", entry.first, *entry.second); }) | rx::to_vector(), ", "));
+  return os << fmt::format("[{}]", fmt::join(chain | rx::transform([](const auto& entry) { return fmt::format("{}: {}", entry.first, streamed(*entry.second)); }) | rx::to_vector(), ", "));
 }
 
 template <typename Surface>
