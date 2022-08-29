@@ -195,6 +195,7 @@ noinst_HEADERS =                                                    \
 	util/hash.ipp                                               \
 	util/instance_of.ipp                                        \
 	util/instantiate.ipp                                        \
+	util/streamed.ipp                                           \
 	util/union_find.ipp
 
 libflatsurf_la_LDFLAGS = -version-info $(libflatsurf_version_info)
