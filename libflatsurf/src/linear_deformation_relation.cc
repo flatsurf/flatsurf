@@ -98,9 +98,9 @@ std::optional<Path<Surface>> LinearDeformationRelation<Surface>::operator()(cons
 }
 
 template <typename Surface>
-Point<Surface> LinearDeformationRelation<Surface>::operator()(const Point<Surface>&) const {
-  // TODO
-  throw std::logic_error("not implemented: cannot map points with this linear deformation yet");
+Point<Surface> LinearDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
+  const HalfEdge face = point.face();
+  return Point{*this->codomain, face, point.coordinates(face)};
 }
 
 template <typename Surface>

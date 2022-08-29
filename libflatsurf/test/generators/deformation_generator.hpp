@@ -38,20 +38,28 @@ class DeformationGenerator : public Catch::Generators::IGenerator<Deformation<Fl
 
  public:
   DeformationGenerator(std::shared_ptr<const FlatTriangulation<T>> surface) : surface(surface), current(deformations.end()) {
-    // A sequence of flips
     auto domain = surface->clone();
-    auto deformed = domain.clone();
-    auto track = Tracked(deformed, Deformation(*surface));
 
-    for (auto edge : deformed.edges()) {
-      if (deformed.convex(edge.positive(), true))
-        deformed.flip(edge.positive());
+    {
+      // A sequence of flips
+      auto deformed = domain.clone();
+      auto track = Tracked(deformed, Deformation(*surface));
+
+      for (auto edge : deformed.edges()) {
+        if (deformed.convex(edge.positive(), true))
+          deformed.flip(edge.positive());
+      }
+      deformations.push_back(*track);
+
+      // Lengthen the sequence by Delaunay triangulating
+      deformed.delaunay();
+      deformations.push_back(*track);
     }
-    deformations.push_back(*track);
 
-    // Lengthen the sequence by Delaunay triangulating
-    deformed.delaunay();
-    deformations.push_back(*track);
+    {
+      // A linear deformation
+      deformations.push_back(domain.applyMatrix(1, 2, 3, 4));
+    }
 
     current = deformations.begin();
   }
