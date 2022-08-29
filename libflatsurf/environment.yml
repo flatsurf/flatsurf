@@ -12,7 +12,7 @@ dependencies:
   - coreutils
   - cxx-compiler
   - libeantic>=1.0.0,<2
-  - fmt=8
+  - fmt=9
   - gmp=6
   - gmpxxll>=1.0.0,<2
   - libexactreal>=2.2.1,<3
