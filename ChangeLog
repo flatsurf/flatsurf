@@ -4,6 +4,15 @@ intervalxt Change Log
 
 .. current developments
 
+v3.11.3
+====================
+
+**Fixed:**
+
+* Added support for fmt library version 9.
+
+
+
 v3.11.2
 ====================
 
