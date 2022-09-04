@@ -1,8 +1,8 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Vincent Delecroix
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C)      2020 Vincent Delecroix
+ *        Copyright (C) 2020-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -122,6 +122,14 @@ TEMPLATE_TEST_CASE("Exact Vectors", "[vector]", (long long), (mpz_class), (mpq_c
     const V v{2, 3};
 
     REQUIRE(2 * v == T(2) * v);
+  }
+
+  SECTION("Apply a Matrix") {
+    const V v{2, 3};
+
+    REQUIRE(v.applyMatrix(T(1), T(), T(), T(1)) == v);
+    REQUIRE(v.applyMatrix(T(2), T(), T(), T(2)) == 2*v);
+    REQUIRE(v.applyMatrix(T(1), T(2), T(1), T(1)).applyMatrix(T(-1), T(2), T(1), T(-1)) == v);
   }
 }
 
