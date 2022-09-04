@@ -70,6 +70,7 @@ TEMPLATE_TEST_CASE("Deformations", "[deformation]", (long long), (mpq_class), (r
 
 TEMPLATE_TEST_CASE("Mapping Points Across Deformations", "[deformation][point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
+  using Surface = FlatTriangulation<T>;
 
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
@@ -84,12 +85,22 @@ TEMPLATE_TEST_CASE("Mapping Points Across Deformations", "[deformation][point]",
     const auto image = deformation(point);
     CAPTURE(image);
 
-    const auto preimage = deformation.section()(image);
-    CAPTURE(preimage);
+    const auto section = [&]() -> std::optional<Deformation<Surface>> {
+      try {
+        return deformation.section();
+      } catch(const std::logic_error&) {
+        return std::nullopt;
+      }
+    }();
 
-    REQUIRE(preimage.surface() == point.surface());
+    if (section) {
+      const auto preimage = (*section)(image);
+      CAPTURE(preimage);
 
-    REQUIRE(preimage == point);
+      REQUIRE(preimage.surface() == point.surface());
+
+      REQUIRE(preimage == point);
+    }
   }
 }
 
