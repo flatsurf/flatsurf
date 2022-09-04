@@ -63,7 +63,7 @@ std::unique_ptr<DeformationRelation<Surface>> LinearDeformationRelation<Surface>
 
   const T det = a * d - b * c;
 
-  if (!truediv(aa, det) || !truediv(bb, det) || !truediv(cc, det) || !truediv(dd, det)) throw std::logic_error("Linear transformation is not invertible over the base ring.");
+  if (!truediv(aa, det) || !truediv(bb, det) || !truediv(cc, det) || !truediv(dd, det)) throw std::logic_error("not implemented: linear transformation is not invertible over the base ring");
 
   return std::unique_ptr<DeformationRelation<Surface>>(new LinearDeformationRelation(this->codomain, this->domain, aa, bb, cc, dd));
 }
