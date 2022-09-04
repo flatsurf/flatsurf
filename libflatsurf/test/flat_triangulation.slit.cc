@@ -51,53 +51,52 @@
 
 namespace flatsurf::test {
 
-TEMPLATE_TEST_CASE("Compute Total Angle at a Point", "[flat_triangulation][angle]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[flat_triangulation][insert][slit]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
-  using R2 = Vector<eantic::renf_elem_class>;
+  using R2 = Vector<T>;
 
-  SECTION("A Square Has No Singularities") {
-    const auto square = makeSquare<R2>();
-    for (auto vertex : square->vertices()) {
-      REQUIRE(square->angle(vertex) == 1);
-    }
-  }
-
-  if constexpr (hasNumberFieldElements<T>) {
-    SECTION("The Unfolding of the (1, 2, 3) Triangle Has No Singularities") {
-      const auto _123 = make123<R2>();
-      for (auto vertex : _123->vertices()) {
-        REQUIRE(_123->angle(vertex) == 1);
-      }
-    }
-  }
-
-  SECTION("The L Has A Single Singularity") {
-    const auto L = makeL<R2>();
-    REQUIRE(L->vertices().size() == 1);
-    for (auto vertex : L->vertices()) {
-      REQUIRE(L->angle(vertex) == 3);
-    }
-  }
-
-  SECTION("Total Angle of Other Surfaces") {
-    const auto surface = GENERATE_SURFACES(T);
+  SECTION("Slit at Many Places in the First Sector") {
+    auto unscaled = GENERATE(values({makeSquare<R2>(), makeL<R2>()}));
+    auto surface = unscaled->scale(3);
     CAPTURE(surface);
 
-    SECTION("Total Angle at Vertices") {
-      for (auto vertex : surface->vertices())
-        REQUIRE(surface->angle(vertex) >= 1);
-    }
+    auto x = GENERATE(range(1, 32));
+    auto y = GENERATE(range(1, 32));
 
-    SECTION("Total Angle at General Points") {
-      const auto face = GENERATE_COPY(halfEdges(surface));
-      const auto point = GENERATE_COPY(points(surface, face));
-      CAPTURE(point);
+    if (x > y) {
+      bool crossesSingularity = false;
+      int xx = x / std::gcd(x, y);
+      int yy = y / std::gcd(x, y);
+      for (int n = 1; xx * n <= x; n++) {
+        if (xx * n % 3 == 0 && yy * n % 3 == 0)
+          crossesSingularity = true;
+      }
 
-      int angle = surface->angle(point);
-      REQUIRE(angle >= 1);
-      REQUIRE(((point.vertex()) || angle == 1));
+      if (!crossesSingularity) {
+        R2 v = R2(x, y);
+        HalfEdge e(1);
+
+        DYNAMIC_SECTION("Insert a Vertex at " << v << " next to " << e) {
+          auto surf = surface.insertAt(e, v).codomain().clone();
+
+          CAPTURE(e);
+          CAPTURE(surf);
+
+          SECTION("The Surface has Changed in the Right Way") {
+            REQUIRE(surface != surf);
+            REQUIRE(surf.fromHalfEdge(surf.nextAtVertex(e)) == v);
+          }
+
+          SECTION("Slot Introduces a Boundary") {
+            surf = surf.slit(surf.nextAtVertex(e)).codomain().clone();
+
+            REQUIRE(surf.boundary(surf.nextAtVertex(e)));
+          }
+        }
+      }
     }
   }
 }
 
 }  // namespace flatsurf::test
+

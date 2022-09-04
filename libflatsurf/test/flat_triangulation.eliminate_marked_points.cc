@@ -51,53 +51,60 @@
 
 namespace flatsurf::test {
 
-TEMPLATE_TEST_CASE("Compute Total Angle at a Point", "[flat_triangulation][angle]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Eliminate Marked Points", "[flat_triangulation][eliminate_marked_points]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
-  using R2 = Vector<eantic::renf_elem_class>;
+  using Surface = FlatTriangulation<T>;
 
-  SECTION("A Square Has No Singularities") {
-    const auto square = makeSquare<R2>();
-    for (auto vertex : square->vertices()) {
-      REQUIRE(square->angle(vertex) == 1);
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
+  const auto simplified = surface->eliminateMarkedPoints();
+
+  CAPTURE(simplified);
+
+  const auto unmarkedPoints = [](const auto& surface) {
+    return surface.vertices() | rx::filter([&](const auto& vertex) { return surface.angle(vertex) != 1; }) | rx::to_vector();
+  };
+
+  const auto markedPoints = [](const auto& surface) {
+    return surface.codomain().vertices() | rx::filter([&](const auto& vertex) { return surface.codomain().angle(vertex) == 1; }) | rx::to_vector();
+  };
+
+  if (unmarkedPoints(*surface).size()) {
+    REQUIRE(markedPoints(simplified).size() == 0);
+  } else {
+    REQUIRE(markedPoints(simplified).size() == 1);
+    REQUIRE(unmarkedPoints(simplified.codomain()).size() == 0);
+  }
+
+  REQUIRE(surface->area() == simplified.codomain().area());
+
+  for (const auto preimage : surface->halfEdges()) {
+    if (surface->angle(Vertex::source(preimage, *surface)) != 1 && surface->angle(Vertex::target(preimage, *surface)) != 1) {
+      REQUIRE(simplified(SaddleConnection<Surface>(*surface, preimage)).has_value());
+      REQUIRE(simplified(SaddleConnection<Surface>(*surface, preimage))->begin()->vector() == surface->fromHalfEdge(preimage));
     }
   }
 
-  if constexpr (hasNumberFieldElements<T>) {
-    SECTION("The Unfolding of the (1, 2, 3) Triangle Has No Singularities") {
-      const auto _123 = make123<R2>();
-      for (auto vertex : _123->vertices()) {
-        REQUIRE(_123->angle(vertex) == 1);
-      }
-    }
-  }
+  const auto section = simplified.section();
+  CAPTURE(section);
 
-  SECTION("The L Has A Single Singularity") {
-    const auto L = makeL<R2>();
-    REQUIRE(L->vertices().size() == 1);
-    for (auto vertex : L->vertices()) {
-      REQUIRE(L->angle(vertex) == 3);
-    }
-  }
+  for (const auto image : section.domain().halfEdges()) {
+    CAPTURE(image);
 
-  SECTION("Total Angle of Other Surfaces") {
-    const auto surface = GENERATE_SURFACES(T);
-    CAPTURE(surface);
+    const auto preimage = section(SaddleConnection<Surface>(section.domain(), image));
 
-    SECTION("Total Angle at Vertices") {
-      for (auto vertex : surface->vertices())
-        REQUIRE(surface->angle(vertex) >= 1);
-    }
+    REQUIRE(preimage);
 
-    SECTION("Total Angle at General Points") {
-      const auto face = GENERATE_COPY(halfEdges(surface));
-      const auto point = GENERATE_COPY(points(surface, face));
-      CAPTURE(point);
+    CAPTURE(*preimage);
 
-      int angle = surface->angle(point);
-      REQUIRE(angle >= 1);
-      REQUIRE(((point.vertex()) || angle == 1));
-    }
+    Vector<T> vector;
+    for (const auto& connection : *preimage)
+      vector += connection;
+
+    REQUIRE(vector == section.domain().fromHalfEdge(image));
   }
 }
 
 }  // namespace flatsurf::test
+

@@ -101,3 +101,4 @@ TEMPLATE_TEST_CASE("Compute Total Angle at a Point", "[flat_triangulation][angle
 }
 
 }  // namespace flatsurf::test
+

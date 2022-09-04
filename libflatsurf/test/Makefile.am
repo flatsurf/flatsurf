@@ -1,26 +1,32 @@
-check_PROGRAMS =                        \
-  approximation.test                    \
-  bound.test                            \
-  cereal.test                           \
-  chain.test                            \
-  contour_decomposition.test            \
-  deformation.test                      \
-  edge.test                             \
-  flat_triangulation.test               \
-  flat_triangulation_collapsed.test     \
-  flat_triangulation_combinatorial.test \
-  flow_decomposition.test               \
-  half_edge.test                        \
-  interval_exchange_tranformation.test  \
-  parabolic.test                        \
-  path.test                             \
-  permutation.test                      \
-  point.test                            \
-  quadratic_polynomial.test             \
-  saddle_connections.test               \
-  saddle_connection.test                \
-  vector.test                           \
-  vector_exactreal.test                 \
+check_PROGRAMS =                             \
+  approximation.test                         \
+  bound.test                                 \
+  cereal.test                                \
+  chain.test                                 \
+  contour_decomposition.test                 \
+  deformation.test                           \
+  edge.test                                  \
+  flat_triangulation.angle                   \
+  flat_triangulation.delaunay                \
+  flat_triangulation.eliminate_marked_points \
+  flat_triangulation.flip                    \
+  flat_triangulation.insert                  \
+  flat_triangulation.isomorphism             \
+  flat_triangulation.slit                    \
+  flat_triangulation_collapsed.test          \
+  flat_triangulation_combinatorial.test      \
+  flow_decomposition.test                    \
+  half_edge.test                             \
+  interval_exchange_tranformation.test       \
+  parabolic.test                             \
+  path.test                                  \
+  permutation.test                           \
+  point.test                                 \
+  quadratic_polynomial.test                  \
+  saddle_connections.test                    \
+  saddle_connection.test                     \
+  vector.test                                \
+  vector_exactreal.test                      \
   vertex.test
 
 TESTS = $(check_PROGRAMS)
@@ -31,6 +37,13 @@ cereal_test_SOURCES = cereal.test.cc cereal.helpers.hpp main.cc
 chain_test_SOURCES = chain.test.cc main.cc
 contour_decomposition_test_SOURCES = contour_decomposition.test.cc main.cc
 deformation_test_SOURCES = deformation.test.cc main.cc
+flat_triangulation_angle_SOURCES = flat_triangulation.angle.cc main.cc
+flat_triangulation_delaunay_SOURCES = flat_triangulation.delaunay.cc main.cc
+flat_triangulation_eliminate_marked_points_SOURCES = flat_triangulation.eliminate_marked_points.cc main.cc
+flat_triangulation_flip_SOURCES = flat_triangulation.flip.cc main.cc
+flat_triangulation_insert_SOURCES = flat_triangulation.insert.cc main.cc
+flat_triangulation_isomorphism_SOURCES = flat_triangulation.isomorphism.cc main.cc
+flat_triangulation_slit_SOURCES = flat_triangulation.slit.cc main.cc
 flat_triangulation_test_SOURCES = flat_triangulation.test.cc main.cc
 flat_triangulation_collapsed_test_SOURCES = flat_triangulation_collapsed.test.cc main.cc
 flat_triangulation_combinatorial_test_SOURCES = flat_triangulation_combinatorial.test.cc main.cc
