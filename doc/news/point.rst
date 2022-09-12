@@ -1,6 +1,7 @@
 **Added:**
 
 * Added scalar multiplication of exact vectors with elements of underlying ring.
+* Added `Vector::applyMatrix(a, b, c, d)` and `FlatTriangulation::applyMatrix(a, b, c, d)`.
 * Added `Point` for points on a flat triangulation.
 * Added mapping of `Point` under a `Deformation`.
 * Added `FlatTriangulation::angle` for `Point`.

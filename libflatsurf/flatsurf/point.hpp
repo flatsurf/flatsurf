@@ -58,10 +58,9 @@ class Point : Serializable<Point<Surface>>,
   Point(const Surface&, HalfEdge face, const Vector<T>& xy);
 
   // Shift the point by ``delta``.
-  // The base point must be a marked point, i.e., with total angle 2π.
-  // The resulting point might be in a different face. It is obtained by
-  // shooting a ray with slope ``delta`` and then going to ``delta`` on that
-  // ray.
+  // The base point must be a marked point, i.e., with total angle 2π. The
+  // resulting point might be in a different face. It is obtained by following
+  // the ray with slope ``delta``.
   Point& operator+=(const Vector<T>& delta);
   Point& operator-=(const Vector<T>& delta);
 
