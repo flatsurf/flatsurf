@@ -6,6 +6,7 @@ main_SOURCES = main.cc approximation.test.cc bound.test.cc cereal.test.cc chain.
 
 noinst_HEADERS =                                 \
   surfaces.hpp                                   \
+  cereal.helpers.hpp                             \
   generators/point_generator.hpp                 \
   generators/combinatorial_surface_generator.hpp \
   generators/deformation_generator.hpp           \
