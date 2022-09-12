@@ -6,7 +6,10 @@
 * Added `FlatTriangulation::angle` for `Point`.
 * Added `FlatTriangulationCombinatorics::face(HalfEdge)` to get the other half edges of a face without having to manually call `previousInFace`/`nextInFace`.
 
+**Fixed:**
+
+* Fixed incorrect channels for binder setup.
+
 **Performance:**
 
 * Improved performance of tests.
-
