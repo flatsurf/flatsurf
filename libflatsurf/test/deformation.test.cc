@@ -34,7 +34,7 @@
 
 namespace flatsurf::test {
 
-TEMPLATE_TEST_CASE("Deformations", "[deformation]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Deformations", "[Deformation]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
   const auto surface = GENERATE_SURFACES(T);
@@ -68,7 +68,7 @@ TEMPLATE_TEST_CASE("Deformations", "[deformation]", (long long), (mpq_class), (r
   }
 }
 
-TEMPLATE_TEST_CASE("Mapping Points Across Deformations", "[deformation][point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Mapping Points Across Deformations", "[Deformation][operator()]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using Surface = FlatTriangulation<T>;
 
@@ -104,7 +104,7 @@ TEMPLATE_TEST_CASE("Mapping Points Across Deformations", "[deformation][point]",
   }
 }
 
-TEMPLATE_TEST_CASE("Mapping Paths Across Deformation", "[deformation][path]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Mapping Paths Across Deformation", "[Deformation][operator()]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using Surface = FlatTriangulation<T>;
 
@@ -142,7 +142,7 @@ TEMPLATE_TEST_CASE("Mapping Paths Across Deformation", "[deformation][path]", (l
   }
 }
 
-TEMPLATE_TEST_CASE("Deform a Flat Triangulation", "[flat_triangulation][deformation]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Deform a Flat Triangulation", "[Deformation]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using R2 = Vector<T>;
 

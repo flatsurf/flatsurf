@@ -49,7 +49,7 @@
 
 namespace flatsurf::test {
 
-TEMPLATE_TEST_CASE("Saddle Connections on a Torus", "[saddle_connections]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Saddle Connections on a Torus", "[SaddleConnections]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
   using R2 = Vector<TestType>;
   auto square = makeSquare<R2>();
   CAPTURE(square);
@@ -115,7 +115,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Torus", "[saddle_connections]", (lon
   }
 }
 
-TEMPLATE_TEST_CASE("Saddle Connections on a Square With Boundary", "[saddle_connections]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Saddle Connections on a Square With Boundary", "[SaddleConnections]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
   using R2 = Vector<TestType>;
   auto square = makeSquareWithBoundary<R2>();
   CAPTURE(square);
@@ -138,7 +138,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Square With Boundary", "[saddle_conn
   }
 }
 
-TEMPLATE_TEST_CASE("Saddle Connections on an L with an Added Slit", "[saddle_connections][slit]", (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Saddle Connections on an L with an Added Slit", "[SaddleConnections]", (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using R2 = Vector<TestType>;
   auto L = makeL<R2>();
 
@@ -155,7 +155,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on an L with an Added Slit", "[saddle_con
   (void)std::distance(begin(connections), end(connections));
 }
 
-TEMPLATE_TEST_CASE("Saddle Connections on a Hexagon", "[saddle_connections]", (renf_elem_class), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Saddle Connections on a Hexagon", "[SaddleConnections]", (renf_elem_class), (exactreal::Element<exactreal::NumberField>)) {
   using R2 = Vector<TestType>;
   auto hexagon = makeHexagon<R2>();
   CAPTURE(*hexagon);
@@ -169,7 +169,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Hexagon", "[saddle_connections]", (r
   REQUIRE(count == required);
 }
 
-TEMPLATE_TEST_CASE("Saddle Connections on a Surface", "[saddle_connections]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Saddle Connections on a Surface", "[SaddleConnections]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
   const auto surface = GENERATE_SURFACES(T);

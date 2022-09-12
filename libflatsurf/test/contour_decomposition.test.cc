@@ -45,7 +45,7 @@ namespace flatsurf::test {
 
 using namespace flatsurf;
 
-TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimeter]") {
+TEST_CASE("Perimeter of Contour Decomposition", "[ContourDecomposition][perimeter]") {
   SECTION("A Trivial Case") {
     using T = long long;
     using R2 = Vector<T>;
@@ -95,7 +95,7 @@ TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimet
   };
 }
 
-TEMPLATE_TEST_CASE("Connections and IET from Contour Decomposition", "[contour_decomposition][iet]", (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Connections and IET from Contour Decomposition", "[ContourDecomposition][iet]", (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
   const auto surface = GENERATE_SURFACES(T);

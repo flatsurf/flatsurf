@@ -25,13 +25,13 @@
 #include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/half_edge_set_iterator.hpp"
 #include "../flatsurf/vertical.hpp"
-#include "external/catch2/single_include/catch2/catch.hpp"
+#include "cereal.helpers.hpp"
 #include "generators/saddle_connection_generator.hpp"
 #include "generators/surface_generator.hpp"
 
 namespace flatsurf::test {
 
-TEMPLATE_TEST_CASE("Angle between Saddle Connections", "[saddle_connection][angle]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Angle between Saddle Connections", "[SaddleConnection][angle]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using Surface = FlatTriangulation<T>;
 
@@ -93,7 +93,7 @@ TEMPLATE_TEST_CASE("Angle between Saddle Connections", "[saddle_connection][angl
   }
 }
 
-TEMPLATE_TEST_CASE("Saddle Connection Constructors", "[saddle_connection]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Saddle Connection Constructors", "[SaddleConnection][constructor]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using Surface = FlatTriangulation<T>;
 
@@ -129,6 +129,15 @@ TEMPLATE_TEST_CASE("Saddle Connection Constructors", "[saddle_connection]", (lon
     }
   }
 
+}
+
+TEMPLATE_TEST_CASE("Serialization of a SaddleConnection", "[SaddleConnection][save][load]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+  using R2 = Vector<T>;
+  auto square = makeSquare<R2>();
+
+  const auto saddleConnection = GENERATE_COPY(saddleConnections<T>(square));
+  testRoundtrip(saddleConnection);
 }
 
 }  // namespace flatsurf::test

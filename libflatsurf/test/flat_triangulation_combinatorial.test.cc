@@ -27,13 +27,13 @@
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/vertex.hpp"
-#include "external/catch2/single_include/catch2/catch.hpp"
+#include "cereal.helpers.hpp"
 #include "generators/combinatorial_surface_generator.hpp"
 #include "generators/half_edge_generator.hpp"
 
 namespace flatsurf::test {
 
-TEST_CASE("Flat Triangulation Comparisons", "[flat_triangulation_combinatorial][operator==]") {
+TEST_CASE("Flat Triangulation Comparisons", "[FlatTriangulationCombinatorial][operator==]") {
   const auto surface = GENERATE(makeSurfaceCombinatorial());
   CAPTURE(*surface);
 
@@ -41,7 +41,7 @@ TEST_CASE("Flat Triangulation Comparisons", "[flat_triangulation_combinatorial][
   REQUIRE(*surface != *makeSquareWithBoundaryCombinatorial());
 }
 
-TEST_CASE("Flat Triangulation Edges", "[flat_triangulation_combinatorial][edges]") {
+TEST_CASE("Flat Triangulation Edges", "[FlatTriangulationCombinatorial][edges]") {
   const auto surface = GENERATE(makeSurfaceCombinatorial());
   CAPTURE(*surface);
 
@@ -53,7 +53,7 @@ TEST_CASE("Flat Triangulation Edges", "[flat_triangulation_combinatorial][edges]
   REQUIRE(std::is_sorted(begin(edges), end(edges), [](const auto& lhs, const auto& rhs) { return lhs.index() < rhs.index(); }));
 }
 
-TEST_CASE("Flat Triangulation Half Edges", "[flat_triangulation_combinatorial][half_edges]") {
+TEST_CASE("Flat Triangulation Half Edges", "[FlatTriangulationCombinatorial][halfEdges]") {
   const auto surface = GENERATE(makeSurfaceCombinatorial());
   CAPTURE(*surface);
 
@@ -63,7 +63,7 @@ TEST_CASE("Flat Triangulation Half Edges", "[flat_triangulation_combinatorial][h
   REQUIRE(std::is_sorted(begin(halfEdges), end(halfEdges), [](const auto& lhs, const auto& rhs) { return lhs.index() < rhs.index(); }));
 }
 
-TEST_CASE("Flat Triangulation Faces", "[flat_triangulation_combinatorial][face]") {
+TEST_CASE("Flat Triangulation Faces", "[FlatTriangulationCombinatorial][face]") {
   const auto surface = GENERATE(makeSurfaceCombinatorial());
   CAPTURE(*surface);
 
@@ -75,7 +75,7 @@ TEST_CASE("Flat Triangulation Faces", "[flat_triangulation_combinatorial][face]"
   REQUIRE(std::find(begin(face), end(face), surface->previousInFace(halfEdge)) != face.end());
 }
 
-TEST_CASE("Flat Triangulation Vertices", "[flat_triangulation_combinatorial][vertices]") {
+TEST_CASE("Flat Triangulation Vertices", "[FlatTriangulationCombinatorial][vertices]") {
   const auto surface = GENERATE(makeSurfaceCombinatorial());
   CAPTURE(*surface);
 
@@ -94,7 +94,7 @@ TEST_CASE("Flat Triangulation Vertices", "[flat_triangulation_combinatorial][ver
   }
 }
 
-TEST_CASE("Flat Triangulation Insertions", "[flat_triangulation_combinatorial][insert]") {
+TEST_CASE("Flat Triangulation Insertions", "[FlatTriangulationCombinatorial][insert]") {
   const auto surface = GENERATE(makeSurfaceCombinatorial());
   CAPTURE(*surface);
 
@@ -114,6 +114,12 @@ TEST_CASE("Flat Triangulation Insertions", "[flat_triangulation_combinatorial][i
       REQUIRE(inserted.nextAtVertex(inserted.nextAtVertex(inserted.nextAtVertex(a))) == a);
     }
   }
+}
+
+TEST_CASE("Serialization of a FlatTriangulationCombinatorial", "[FlatTriangulationCombinatorial][save][load]") {
+  auto square = makeSquareCombinatorial();
+
+  testRoundtrip(*square);
 }
 
 }  // namespace flatsurf::test

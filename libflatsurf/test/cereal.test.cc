@@ -21,108 +21,10 @@
 #include "../flatsurf/cereal.hpp"
 #include "../flatsurf/vertical.hpp"
 #include "cereal.helpers.hpp"
-#include "external/catch2/single_include/catch2/catch.hpp"
 #include "external/cereal/include/cereal/archives/json.hpp"
 #include "generators/saddle_connection_generator.hpp"
 #include "surfaces.hpp"
 
 namespace flatsurf::test {
-
-template <typename T>
-static void testRoundtrip(const T& x) {
-  using cereal::JSONInputArchive;
-  using cereal::JSONOutputArchive;
-
-  CAPTURE(printer<T>::toString(x));
-
-  std::stringstream s;
-
-  {
-    JSONOutputArchive archive(s);
-    archive(cereal::make_nvp("test", x));
-  }
-
-  INFO("Serialized to " << s.str());
-
-  auto y = factory<T>::make();
-
-  {
-    JSONInputArchive archive(s);
-    archive(cereal::make_nvp("test", *y));
-  }
-
-  CAPTURE(printer<T>::toString(*y));
-
-  REQUIRE(comparer<T>::eq(x, *y));
-}
-
-TEST_CASE("Serialization of a HalfEdge", "[cereal]") {
-  testRoundtrip(HalfEdge(1337));
-}
-
-TEST_CASE("Serialization of an Edge", "[cereal]") {
-  testRoundtrip(Edge(1337));
-}
-
-TEST_CASE("Serialization of a Vertex", "[cereal]") {
-  auto square = makeSquare<Vector<long long>>();
-  testRoundtrip(square->vertices()[0]);
-}
-
-TEMPLATE_TEST_CASE("Serialization of a Vector", "[cereal]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
-  using R2 = Vector<TestType>;
-  auto square = makeSquare<R2>();
-
-  for (auto halfEdge : square->halfEdges()) {
-    testRoundtrip(square->fromHalfEdge(halfEdge));
-    testRoundtrip(square->fromHalfEdgeApproximate(HalfEdge(1)));
-  }
-}
-
-TEST_CASE("Serialization of a FlatTriangulationCombinatorial", "[cereal]") {
-  auto square = makeSquareCombinatorial();
-
-  testRoundtrip(*square);
-}
-
-TEMPLATE_TEST_CASE("Serialization of a FlatTriangulation", "[cereal]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
-  using R2 = Vector<TestType>;
-  auto square = makeSquare<R2>();
-
-  testRoundtrip(*square);
-}
-
-TEMPLATE_TEST_CASE("Serialization of a Vertical", "[cereal]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
-  using R2 = Vector<TestType>;
-  auto square = makeSquare<R2>();
-
-  testRoundtrip(Vertical(*square, square->fromHalfEdge(HalfEdge(1))));
-}
-
-TEMPLATE_TEST_CASE("Serialization of a Chain", "[cereal]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
-  using R2 = Vector<TestType>;
-  auto square = makeSquare<R2>();
-
-  testRoundtrip(Chain(*square, HalfEdge(1)));
-}
-
-TEMPLATE_TEST_CASE("Serialization of a SaddleConnection", "[cereal]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
-  using T = TestType;
-  using R2 = Vector<T>;
-  auto square = makeSquare<R2>();
-
-  const auto saddleConnection = GENERATE_COPY(saddleConnections<T>(square));
-  testRoundtrip(saddleConnection);
-}
-
-TEST_CASE("Serialization of a Bound", "[cereal]") {
-  testRoundtrip(Bound(13, 37));
-}
-
-TEST_CASE("Serialization of a Permutation", "[cereal]") {
-  Permutation<HalfEdge> p({{HalfEdge(1), HalfEdge(2), HalfEdge(-1)}, {HalfEdge(-2)}});
-
-  testRoundtrip(p);
-}
 
 }  // namespace flatsurf::test

@@ -31,20 +31,4 @@
 
 namespace flatsurf::test {
 
-TEMPLATE_TEST_CASE("Vector<exactreal::Element<...>>", "[vector_exact_real]", (exactreal::IntegerRing), (exactreal::RationalField), (exactreal::NumberField)) {
-  using exactreal::Element;
-  using exactreal::Module;
-  using exactreal::RealNumber;
-
-  using V = Vector<Element<TestType>>;
-
-  auto m = Module<TestType>::make({RealNumber::rational(1), RealNumber::random()});
-
-  auto v = V(3, 4);
-
-  REQUIRE(!(v < Bound(5, 0)));
-  REQUIRE(!(v > Bound(5, 0)));
-  REQUIRE(v < Bound(6, 0));
-}
-
 }  // namespace flatsurf::test

@@ -35,7 +35,7 @@
 
 namespace flatsurf::test {
 
-TEMPLATE_TEST_CASE("Access intervalxt object underlying an Interval Exchange Transformation", "[interval_exchange_transformation]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Access intervalxt object underlying an Interval Exchange Transformation", "[IntervalExchangeTransformation]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
   const auto surface = GENERATE_SURFACES(T);

@@ -34,12 +34,12 @@
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
 #include "../flatsurf/vector.hpp"
-#include "external/catch2/single_include/catch2/catch.hpp"
+#include "cereal.helpers.hpp"
 #include "surfaces.hpp"
 
 namespace flatsurf::test {
 
-TEMPLATE_TEST_CASE("Vector Slopes", "[vector]", (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Vector Slopes", "[Vector][CompareSlope]", (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using V = Vector<T>;
 
@@ -77,7 +77,7 @@ TEMPLATE_TEST_CASE("Vector Slopes", "[vector]", (long long), (mpz_class), (mpq_c
   }
 }
 
-TEMPLATE_TEST_CASE("Vector Sector Containment", "[vector][inSector]", (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Vector Sector Containment", "[Vector][inSector]", (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using V = Vector<T>;
 
@@ -97,7 +97,7 @@ TEMPLATE_TEST_CASE("Vector Sector Containment", "[vector][inSector]", (long long
   }
 }
 
-TEMPLATE_TEST_CASE("Exact Vectors", "[vector]", (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Exact Vectors", "[Vector][constructor][ccw][bool][operator*][applyMatrix]", (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using V = Vector<T>;
 
@@ -133,7 +133,7 @@ TEMPLATE_TEST_CASE("Exact Vectors", "[vector]", (long long), (mpz_class), (mpq_c
   }
 }
 
-TEMPLATE_TEST_CASE("Inexact Vectors", "[vector]", (exactreal::Arb)) {
+TEMPLATE_TEST_CASE("Inexact Vectors", "[Vector][constructor][bool]", (exactreal::Arb)) {
   using T = TestType;
   using V = Vector<T>;
 
@@ -149,6 +149,32 @@ TEMPLATE_TEST_CASE("Inexact Vectors", "[vector]", (exactreal::Arb)) {
     REQUIRE(static_cast<std::optional<bool>>(V(ball, 1)) == true);
     REQUIRE(static_cast<std::optional<bool>>(V(0, ball)) == std::nullopt);
     REQUIRE(static_cast<std::optional<bool>>(V(1, ball)) == true);
+  }
+}
+
+TEMPLATE_TEST_CASE("Vector<exactreal::Element<...>>", "[Vector]", (exactreal::IntegerRing), (exactreal::RationalField), (exactreal::NumberField)) {
+  using exactreal::Element;
+  using exactreal::Module;
+  using exactreal::RealNumber;
+
+  using V = Vector<Element<TestType>>;
+
+  auto m = Module<TestType>::make({RealNumber::rational(1), RealNumber::random()});
+
+  auto v = V(3, 4);
+
+  REQUIRE(!(v < Bound(5, 0)));
+  REQUIRE(!(v > Bound(5, 0)));
+  REQUIRE(v < Bound(6, 0));
+}
+
+TEMPLATE_TEST_CASE("Serialization of a Vector", "[Vector][save][load]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using R2 = Vector<TestType>;
+  auto square = makeSquare<R2>();
+
+  for (auto halfEdge : square->halfEdges()) {
+    testRoundtrip(square->fromHalfEdge(halfEdge));
+    testRoundtrip(square->fromHalfEdgeApproximate(HalfEdge(1)));
   }
 }
 
