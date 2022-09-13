@@ -32,7 +32,7 @@
 
 namespace flatsurf::test {
 
-TEMPLATE_TEST_CASE("Creating Points", "[Point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Creating Points", "[Point][constructor]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
   const auto surface = GENERATE_SURFACES(T);
@@ -75,7 +75,7 @@ TEMPLATE_TEST_CASE("Creating Points", "[Point]", (long long), (mpq_class), (renf
   }
 }
 
-TEMPLATE_TEST_CASE("Flowing Points", "[Point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Flowing Points", "[Point][operator+=][operator-=]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
   const auto surface = GENERATE_SURFACES(T);
@@ -150,7 +150,7 @@ TEMPLATE_TEST_CASE("Flowing Points", "[Point]", (long long), (mpq_class), (renf_
   }
 }
 
-TEMPLATE_TEST_CASE("Coordinates of Points", "[Point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Coordinates of Points", "[Point][coordinates][vertex][edge][face][vector]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
   const auto surface = GENERATE_SURFACES(T);
@@ -217,7 +217,7 @@ TEMPLATE_TEST_CASE("Coordinates of Points", "[Point]", (long long), (mpq_class),
   }
 }
 
-TEMPLATE_TEST_CASE("Predicates in/at/on of Points", "[Point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Predicates in/at/on of Points", "[Point][in][at][on])", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
   const auto surface = GENERATE_SURFACES(T);
@@ -249,7 +249,7 @@ TEMPLATE_TEST_CASE("Predicates in/at/on of Points", "[Point]", (long long), (mpq
   }
 }
 
-TEMPLATE_TEST_CASE("Equality of Points", "[Point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Equality of Points", "[Point][operator==][hash]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using Surface = FlatTriangulation<T>;
 
@@ -296,7 +296,7 @@ TEMPLATE_TEST_CASE("Equality of Points", "[Point]", (long long), (mpq_class), (r
   }
 }
 
-TEMPLATE_TEST_CASE("Points Remember the Surface they are Defined On", "[Point]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Points Remember the Surface they are Defined On", "[Point][surface]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
   const auto surface = GENERATE_SURFACES(T);
