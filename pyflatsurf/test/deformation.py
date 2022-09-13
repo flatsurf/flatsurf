@@ -119,7 +119,9 @@ def test_deformation_point():
         q = deformation(p)
 
         assert q.surface() == codomain
-        assert q.coordinates() == p.coordinates()
+
+        face = q.face()
+        assert q.coordinates(face) == p.coordinates(face)
 
 
 def test_deformation_L():
