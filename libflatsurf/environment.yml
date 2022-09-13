@@ -3,7 +3,6 @@
 # conda env create -f environment.yml
 name: libflatsurf-build
 channels:
-  - flatsurf
   - conda-forge
   - defaults
 dependencies:
@@ -20,5 +19,6 @@ dependencies:
   - libintervalxt>=3.0.2,<4
   - libtool
   - make
+  - parallel
   # valgrind is only needed for make check-valgrind
   # - valgrind

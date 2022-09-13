@@ -2,8 +2,8 @@
 # pyflatsurf/libflatsurf installed. It is used for our demo binders.
 name: binder
 channels:
-  - flatsurf
   - conda-forge
+  - defaults
 dependencies:
   - libflatsurf>=3.0.0
   - notebook

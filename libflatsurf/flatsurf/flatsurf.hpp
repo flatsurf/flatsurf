@@ -64,6 +64,7 @@
 #include "path.hpp"
 #include "path_iterator.hpp"
 #include "permutation.hpp"
+#include "point.hpp"
 #include "saddle_connection.hpp"
 #include "saddle_connections.hpp"
 #include "saddle_connections_by_length.hpp"

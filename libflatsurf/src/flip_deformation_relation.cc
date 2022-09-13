@@ -1,7 +1,8 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2021-2022 Julian Rüth
+ *        Copyright (C)      2022 Sam Freedman
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,14 +24,20 @@
 
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/path.hpp"
+#include "../flatsurf/point.hpp"
+#include "impl/point.impl.hpp"
+#include "../flatsurf/edge.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/vector.hpp"
+#include "../flatsurf/vertex.hpp"
+#include "../flatsurf/ccw.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
 FlipDeformationRelation<Surface>::FlipDeformationRelation(const Surface& domain, const Surface& codomain, HalfEdge flip) :
-  RetriangulationDeformationRelation<Surface>(domain, codomain), flip(flip) {
+  DeformationRelation<Surface>(domain, codomain), flip(flip) {
 }
 
 template <typename Surface>
@@ -45,9 +52,49 @@ std::optional<Path<Surface>> FlipDeformationRelation<Surface>::operator()(const 
     if (target == flip || target == -flip)
       target = this->domain->previousAtVertex(target);
 
-    path_.push_back(SaddleConnection<Surface>::counterclockwise(this->codomain, source, target, segment));
+    path_.push_back(SaddleConnection<Surface>(
+      this->codomain,
+      this->codomain->sector(source, CCW::COUNTERCLOCKWISE, segment),
+      this->codomain->sector(target, CCW::COUNTERCLOCKWISE, -segment),
+      segment));
   }
   return path_;
+}
+
+template <typename Surface>
+Point<Surface> FlipDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
+  if (!point.in(flip) && !point.in(-flip)) {
+    // The coordinates remain valid after the flip since the face still exists afterwards.
+    const auto face = point.face();
+    return Point(*this->codomain, face, point.coordinates(face));
+  } else {
+    const HalfEdge AB = point.in(flip) ? flip : -flip;
+
+    // Rewrite the coordinates with respect to a face in the codomain, i.e.,
+    // the surface after the flip.
+
+    // Consider the following picture:
+    //
+    // A - C
+    // | \ |
+    // D - B
+    //
+    // We now rewrite the barycentric coordinates from the system ABC to the system ADC.
+    // Our point is P = (μa*A + μb*B + μc*C) / μ with μ = μa + μb + μc.
+    const auto [μa, μb, μc] = point.coordinates(AB);
+
+    // Write B in the system ADC as B = (νd*D + νc*C + νa*A) / ν with ν = νd + νc + νa.
+    const auto BC = this->domain->nextInFace(AB);
+    const auto CD = this->codomain->nextInFace(BC);
+    const auto [νd, νc, νa] = ImplementationOf<Point<Surface>>{*this->codomain, CD, T(), T(), T(1)}.crossed();
+    const T ν = νd + νc + νa;
+
+    // Write the point in the system ADC.
+    const auto Q = ImplementationOf<Point<Surface>>{*this->codomain, -CD, μb * νd, ν * μc + μb * νc, ν * μa + μb * νa};
+
+    // Express the point in the system ADC or DCB so that all coordinates are non-negative.
+    return (Q.a < 0 || Q.b < 0 || Q.c < 0) ? Point{*this->codomain, CD, Q.crossed()} : Point{*this->codomain, -CD, Q.rotated(-CD)};
+  }
 }
 
 template <typename Surface>

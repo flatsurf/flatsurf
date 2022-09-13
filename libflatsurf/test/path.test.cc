@@ -27,14 +27,14 @@
 #include "../flatsurf/saddle_connections_sample_iterator.hpp"
 #include "external/catch2/single_include/catch2/catch.hpp"
 #include "generators/half_edge_generator.hpp"
-#include "generators/saddle_connections_generator.hpp"
+#include "generators/saddle_connection_generator.hpp"
 #include "generators/surface_generator.hpp"
 
 namespace flatsurf::test {
 
 using namespace flatsurf;
 
-TEMPLATE_TEST_CASE("Nullhomotopic Paths", "[path]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Nullhomotopic Paths", "[Path]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
   SECTION("Trivial Paths can be Tigthened") {
     using T = TestType;
     using Surface = FlatTriangulation<T>;
@@ -46,9 +46,8 @@ TEMPLATE_TEST_CASE("Nullhomotopic Paths", "[path]", (long long), (mpq_class), (r
     using T = TestType;
     using Surface = FlatTriangulation<T>;
 
-    const auto [name, surface_] = GENERATE(makeSurface<T>());
-    const auto surface = *surface_;
-    CAPTURE(*name, *surface);
+    const auto surface = GENERATE_SURFACES(T);
+    CAPTURE(surface);
 
     const auto connection = GENERATE_REF(saddleConnections(surface));
     CAPTURE(connection);
@@ -63,9 +62,8 @@ TEMPLATE_TEST_CASE("Nullhomotopic Paths", "[path]", (long long), (mpq_class), (r
     using T = TestType;
     using Surface = FlatTriangulation<T>;
 
-    const auto [name, surface_] = GENERATE(makeSurface<T>());
-    const auto surface = *surface_;
-    CAPTURE(*name, *surface);
+    const auto surface = GENERATE_SURFACES(T);
+    CAPTURE(surface);
 
     auto face = GENERATE_COPY(halfEdges(surface));
     CAPTURE(face);
@@ -80,14 +78,13 @@ TEMPLATE_TEST_CASE("Nullhomotopic Paths", "[path]", (long long), (mpq_class), (r
   }
 }
 
-TEMPLATE_TEST_CASE("Short Paths", "[path]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Short Paths", "[Path]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
   SECTION("Tightening a Path Along two Edges of a Face") {
     using T = TestType;
     using Surface = FlatTriangulation<T>;
 
-    const auto [name, surface_] = GENERATE(makeSurface<T>());
-    const auto surface = *surface_;
-    CAPTURE(*name, *surface);
+    const auto surface = GENERATE_SURFACES(T);
+    CAPTURE(surface);
 
     auto face = GENERATE_COPY(halfEdges(surface));
     CAPTURE(face);
@@ -102,14 +99,13 @@ TEMPLATE_TEST_CASE("Short Paths", "[path]", (long long), (mpq_class), (renf_elem
   }
 }
 
-TEMPLATE_TEST_CASE("Random Paths", "[path]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Random Paths", "[Path]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
   SECTION("Tightening a Random Path") {
     using T = TestType;
     using Surface = FlatTriangulation<T>;
 
-    const auto [name, surface_] = GENERATE(makeSurface<T>());
-    const auto surface = *surface_;
-    CAPTURE(*name, *surface);
+    const auto surface = GENERATE_SURFACES(T);
+    CAPTURE(surface);
 
     const auto initial = GENERATE_COPY(take(8, halfEdges(surface)));
     CAPTURE(initial);

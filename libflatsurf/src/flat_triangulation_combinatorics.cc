@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -124,6 +124,11 @@ FlatTriangulationCombinatorial FlatTriangulationCombinatorics<Surface>::insertAt
   return ImplementationOf<FlatTriangulationCombinatorial>::make(
       Permutation<HalfEdge>(cycles),
       self->faces.domain() | rx::filter([&](auto& edge) { return this->boundary(edge); }) | rx::to_vector());
+}
+
+template <typename Surface>
+std::array<HalfEdge, 3> FlatTriangulationCombinatorics<Surface>::face(HalfEdge face) const {
+  return {face, nextInFace(face), previousInFace(face)};
 }
 
 template <typename Surface>

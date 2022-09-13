@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2021-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,26 +17,33 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_IMPL_LINEAR_DEFORMATION_RELATION_HPP
-#define LIBFLATSURF_IMPL_LINEAR_DEFORMATION_RELATION_HPP
+#ifndef LIBFLATSURF_IMPL_INSERT_MARKED_POINT_ON_EDGE_DEFORMATION_RELATION_HPP
+#define LIBFLATSURF_IMPL_INSERT_MARKED_POINT_ON_EDGE_DEFORMATION_RELATION_HPP
 
 #include <iosfwd>
 
+#include "../../flatsurf/vertex.hpp"
+#include "../../flatsurf/half_edge.hpp"
 #include "deformation_relation.hpp"
 
 namespace flatsurf {
 
+// The deformation that inserts a marked point in the interior of a half edge
+// `split`.  The marked point is then attached to four half edges, two of them
+// sum as `split = a + b`.
+// Note that ``GenericRetriangulationDeformationRelation`` generalizes this
+// deformation. We could always use
+// ``GenericRetriangulationDeformationRelation`` instead but hopefully this
+// implementation is more efficient.
 template <typename Surface>
-class LinearDeformationRelation : public DeformationRelation<Surface> {
+class InsertMarkedPointOnEdgeDeformationRelation : public DeformationRelation<Surface> {
   using T = typename Surface::Coordinate;
 
  public:
-  LinearDeformationRelation(const Surface& domain, const Surface& codomain, const T& a, const T& b, const T& c, const T& d);
+  InsertMarkedPointOnEdgeDeformationRelation(const Surface& domain, const Surface& codomain, const Vertex& inserted, HalfEdge split, HalfEdge a, HalfEdge b);
 
   std::optional<Path<Surface>> operator()(const Path<Surface>&) const override;
   Point<Surface> operator()(const Point<Surface>&) const override;
-
-  static bool truediv(T& lhs, const T& rhs);
 
   std::unique_ptr<DeformationRelation<Surface>> clone() const override;
 
@@ -44,9 +51,15 @@ class LinearDeformationRelation : public DeformationRelation<Surface> {
 
   bool trivial() const override;
 
-  std::ostream& operator>>(std::ostream& os) const override;
+  // Return the inserted vertex as an element of the domain.
+  Point<Surface> point() const;
 
-  T a, b, c, d;
+  std::ostream& operator>>(std::ostream&) const override;
+
+  Vertex inserted;
+  HalfEdge split;
+  HalfEdge a;
+  HalfEdge b;
 };
 
 }  // namespace flatsurf

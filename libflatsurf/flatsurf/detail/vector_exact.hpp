@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -50,6 +50,9 @@ class VectorExact : public VectorBase<Vector>,
   bool operator==(const Vector &) const;
   explicit operator bool() const;
 
+  Vector& operator*=(const T&);
+  using VectorBase<Vector>::operator*=;
+
   // Return whether this vector is contained in the sector described by
   // inclusive and exclusive in counter-clockwise order. If inclusive and
   // exclusive are collinear, the sector consists of that single ray.
@@ -57,6 +60,9 @@ class VectorExact : public VectorBase<Vector>,
 
   Coordinate x() const;
   Coordinate y() const;
+
+  // Return the result of applying this matrix from the left.
+  Vector applyMatrix(const T& a, const T& b, const T& c, const T& d) const;
 
   // Return twice the area of the polygon described by the (counter-clockwise) perimeter.
   static T area(const std::vector<Vector> &perimeter);

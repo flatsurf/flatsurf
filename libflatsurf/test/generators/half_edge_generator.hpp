@@ -1,8 +1,8 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Vincent Delecroix
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C)      2020 Vincent Delecroix
+ *        Copyright (C) 2020-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,15 +31,14 @@
 
 namespace flatsurf::test {
 
-template <typename T>
 class HalfEdgeGenerator : public Catch::Generators::IGenerator<HalfEdge> {
   std::vector<HalfEdge> halfEdges;
   typename std::vector<HalfEdge>::const_iterator current;
 
  public:
-  HalfEdgeGenerator(std::shared_ptr<FlatTriangulation<T>> surface) :
-    halfEdges(surface->halfEdges()),
-    current(begin(halfEdges)) {}
+  HalfEdgeGenerator(std::vector<HalfEdge> halfEdges) :
+    halfEdges(halfEdges),
+    current(begin(this->halfEdges)) {}
 
   const HalfEdge& get() const override {
     return *current;
@@ -52,9 +51,9 @@ class HalfEdgeGenerator : public Catch::Generators::IGenerator<HalfEdge> {
   }
 };
 
-template <typename T>
-Catch::Generators::GeneratorWrapper<HalfEdge> halfEdges(std::shared_ptr<FlatTriangulation<T>> surface) {
-  return Catch::Generators::GeneratorWrapper<HalfEdge>(std::unique_ptr<Catch::Generators::IGenerator<HalfEdge>>(new HalfEdgeGenerator<T>(surface)));
+template <typename Surface>
+Catch::Generators::GeneratorWrapper<HalfEdge> halfEdges(const Surface& surface) {
+  return Catch::Generators::GeneratorWrapper<HalfEdge>(std::unique_ptr<Catch::Generators::IGenerator<HalfEdge>>(new HalfEdgeGenerator(surface->halfEdges())));
 }
 
 }  // namespace flatsurf::test

@@ -103,6 +103,27 @@ def test_deformation_square(capsys):
     shift = lambda e: vector(-23, 0) if e in [Edge(4), Edge(5), Edge(6)] else vector(0, -47) if e in [Edge(7), Edge(8), Edge(9)] else vector(0, 0)
     square + [shift(e) for e in square.edges()]
 
+def test_deformation_point():
+    # Test that points can be mapped through deformations.
+    for coefficients in ['long long', 'mpz_class', 'mpq_class', 'eantic::renf_elem_class', 'exactreal::Element<exactreal::IntegerRing>', 'exactreal::Element<exactreal::RationalField>', 'exactreal::Element<exactreal::NumberField>']:
+        import cppyy
+        T = getattr(cppyy.gbl, coefficients)
+
+        domain = surfaces.square(flatsurf.Vector[coefficients])
+        deformation = domain.applyMatrix(T(2), T(0), T(0), T(2))
+        codomain = deformation.codomain()
+
+        Surface = type(domain)
+        p = flatsurf.Point[Surface](domain, flatsurf.HalfEdge(1), T(1), T(1), T(0))
+
+        q = deformation(p)
+
+        assert q.surface() == codomain
+
+        face = q.face()
+        assert q.coordinates(face) == p.coordinates(face)
+
+
 def test_deformation_L():
     vector = flatsurf.Vector['mpq_class']
 

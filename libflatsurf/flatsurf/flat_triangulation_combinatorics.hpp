@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2021 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -83,7 +83,13 @@ class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulat
   const std::vector<HalfEdge> &halfEdges() const;
   const std::vector<Vertex> &vertices() const;
 
+  /// Return the three half edges that delimit this face, i.e., the argument
+  /// and the one that is `nextInFace` and the one that is `previousInFace`.
+  std::array<HalfEdge, 3> face(HalfEdge) const;
+
   // Return the triples of half edges of each face in counterclockwise order.
+  // The return type of this method is somewhat unfortunate, see
+  // https://github.com/flatsurf/flatsurf/issues/307.
   std::vector<std::tuple<HalfEdge, HalfEdge, HalfEdge>> faces() const;
 
   // Return the outgoing half edges from this vertex in order.

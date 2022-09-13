@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2021-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/path.hpp"
+#include "../flatsurf/point.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "impl/composite_deformation_relation.hpp"
@@ -93,6 +94,12 @@ std::optional<HalfEdge> Deformation<Surface>::operator()(HalfEdge he) const {
 template <typename Surface>
 std::optional<Path<Surface>> Deformation<Surface>::operator()(const Path<Surface>& path) const {
   return self->relation->operator()(path);
+}
+
+template <typename Surface>
+Point<Surface> Deformation<Surface>::operator()(const Point<Surface>& point) const {
+  LIBFLATSURF_CHECK_ARGUMENT(point.surface() == domain(), "point must be in the domain of the deformation");
+  return self->relation->operator()(point);
 }
 
 template <typename Surface>

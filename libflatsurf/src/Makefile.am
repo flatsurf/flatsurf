@@ -38,7 +38,8 @@ libflatsurf_la_SOURCES =                                            \
 	half_edge_set_iterator.cc                                   \
 	indexed_set.cc                                              \
 	indexed_set_iterator.cc                                     \
-	insert_marked_deformation_relation.cc                       \
+	insert_marked_point_on_edge_deformation_relation.cc         \
+	insert_marked_point_in_face_deformation_relation.cc         \
 	interval_exchange_transformation.cc                         \
 	lengths.cc                                                  \
 	linear_deformation_relation.cc                              \
@@ -46,9 +47,9 @@ libflatsurf_la_SOURCES =                                            \
 	path.cc                                                     \
 	path_iterator.cc                                            \
 	permutation.cc                                              \
+	point.cc                                                    \
 	quadratic_polynomial.cc                                     \
 	read_only.cc                                                \
-	retriangulation_deformation_relation.cc                     \
 	saddle_connection.cc                                        \
 	saddle_connections.cc                                       \
 	saddle_connections_by_length.cc                             \
@@ -112,6 +113,7 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/path.hpp                                        \
 	../flatsurf/path_iterator.hpp                               \
 	../flatsurf/permutation.hpp                                 \
+	../flatsurf/point.hpp                                       \
 	../flatsurf/saddle_connection.hpp                           \
 	../flatsurf/saddle_connections.hpp                          \
 	../flatsurf/saddle_connections_by_length.hpp                \
@@ -165,16 +167,17 @@ noinst_HEADERS =                                                    \
 	impl/indexed_map.hpp                                        \
 	impl/indexed_set.hpp                                        \
 	impl/indexed_set_iterator.hpp                               \
-	impl/insert_marked_deformation_relation.hpp                 \
+	impl/insert_marked_point_on_edge_deformation_relation.hpp   \
+	impl/insert_marked_point_in_face_deformation_relation.hpp   \
 	impl/interval_exchange_transformation.impl.hpp              \
 	impl/lengths.hpp                                            \
 	impl/linear_deformation_relation.hpp                        \
 	impl/managed_movable.impl.hpp                               \
 	impl/path.impl.hpp                                          \
 	impl/path_iterator.impl.hpp                                 \
+	impl/point.impl.hpp                                         \
 	impl/quadratic_polynomial.hpp                               \
 	impl/read_only.hpp                                          \
-	impl/retriangulation_deformation_relation.hpp               \
 	impl/saddle_connection.impl.hpp                             \
 	impl/saddle_connections.impl.hpp                            \
 	impl/saddle_connections_by_length.impl.hpp                  \
