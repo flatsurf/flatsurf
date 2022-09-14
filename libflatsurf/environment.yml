@@ -11,7 +11,7 @@ dependencies:
   - boost-cpp
   - coreutils
   - cxx-compiler
-  - libeantic>=1.0.0,<2
+  - libeantic>=1.2.2,<2
   - fmt=9
   - gmp=6
   - gmpxxll>=1.0.0,<2
