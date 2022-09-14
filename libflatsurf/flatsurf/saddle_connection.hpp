@@ -95,9 +95,11 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
 
   const Vector<T> &vector() const;
   const Chain<Surface> &chain() const;
+  const Segment<Surface> &segment() const;
 
   operator const Vector<T> &() const;
   operator const Chain<Surface> &() const;
+  operator const Segment<Surface> &() const;
 
   // The saddle connection is leaving from the vertex at the source of source.
   // It is leaving in a direction that is contained in the sector next to
@@ -107,6 +109,12 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   // Symmetrical to source(), the connection is such that -vector() is in the
   // sector counterclockwise next to target() inclusive.
   HalfEdge target() const;
+
+  // Return the vertex at which this saddle connection starts.
+  Vertex start() const;
+
+  // Return the vertex at which this saddle connection ends.
+  Vertex end() const;
 
   const Surface &surface() const;
 

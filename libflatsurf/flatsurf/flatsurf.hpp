@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -72,6 +72,8 @@
 #include "saddle_connections_iterator.hpp"
 #include "saddle_connections_sample.hpp"
 #include "saddle_connections_sample_iterator.hpp"
+#include "segment.hpp"
+#include "segment_iterator.hpp"
 #include "serializable.hpp"
 #include "tracked.hpp"
 #include "vector.hpp"

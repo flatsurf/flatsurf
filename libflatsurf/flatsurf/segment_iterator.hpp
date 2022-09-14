@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020-2022 Julian Rüth
+ *        Copyright (C) 2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_PATH_ITERATOR_HPP
-#define LIBFLATSURF_PATH_ITERATOR_HPP
+#ifndef LIBFLATSURF_SEGMENT_ITERATOR_HPP
+#define LIBFLATSURF_SEGMENT_ITERATOR_HPP
 
 #include <boost/iterator/iterator_categories.hpp>
 #include <boost/iterator/iterator_facade.hpp>
@@ -28,30 +28,27 @@
 
 namespace flatsurf {
 
-// Iterates over a path in a surface, i.e., over a connected sequence of saddle connections.
+// Iterates over a path in a surface, i.e., over a connected sequence of segments.
 template <typename Surface>
-class [[deprecated("use SegmentIterator instead")]] PathIterator : public boost::iterator_facade<PathIterator<Surface>, const SaddleConnection<Surface>&, boost::forward_traversal_tag> {
+class SegmentIterator : public boost::iterator_facade<PathIterator<Surface>, const Segment<Surface>&, boost::forward_traversal_tag> {
   template <typename... Args>
-  PathIterator(PrivateConstructor, Args&&...);
+  SegmentIterator(PrivateConstructor, Args&&...);
 
  public:
-  using value_type = SaddleConnection<Surface>;
+  using value_type = Segment<Surface>;
 
   void increment();
   const value_type& dereference() const;
-  bool equal(const PathIterator& other) const;
-
-  operator const SegmentIterator<Surface>() const;
-  operator SegmentIterator<Surface>();
+  bool equal(const SegmentIterator& other) const;
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const PathIterator<S>&);
 
  private:
-  Copyable<PathIterator> self;
+  Copyable<SegmentIterator> self;
 
   friend Path<Surface>;
-  friend ImplementationOf<PathIterator>;
+  friend ImplementationOf<SegmentIterator>;
 };
 
 }  // namespace flatsurf
