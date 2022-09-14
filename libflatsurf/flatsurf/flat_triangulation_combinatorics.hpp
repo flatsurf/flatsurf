@@ -23,6 +23,7 @@
 #include <boost/operators.hpp>
 #include <iosfwd>
 #include <vector>
+#include <array>
 
 #include "managed_movable.hpp"
 
