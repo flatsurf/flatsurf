@@ -24,6 +24,7 @@
 #include <boost/operators.hpp>
 #include <optional>
 #include <iosfwd>
+#include <array>
 
 #include "copyable.hpp"
 #include "serializable.hpp"
