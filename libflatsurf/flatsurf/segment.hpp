@@ -43,10 +43,10 @@ class Segment : public Serializable<Segment<Surface>>,
   Segment(const Point<Surface>& start, HalfEdge source, const Point<Surface>& end, HalfEdge target, const Vector<T>&);
 
   // Return the starting point of this segment.
-  Point<Surface> start() const;
+  const Point<Surface>& start() const;
 
   // Return the end point of this segment.
-  Point<Surface> end() const;
+  const Point<Surface>& end() const;
 
   // Return a half edge such that its face contains start() and the initial
   // part of the vector() to end().
