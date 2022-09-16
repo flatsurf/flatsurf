@@ -51,7 +51,7 @@ class SegmentGenerator : public Catch::Generators::IGenerator<Segment<FlatTriang
 
   Segment<FlatTriangulation<T>> make(SEGMENT kind) {
     switch (kind) {
-      case SEGMENT::VERTEX_TO_EDGE_ALONG_EDGE:
+      case SEGMENT::VERTEX_TO_VERTEX_ALONG_EDGE:
       case SEGMENT::VERTEX_TO_EDGE_ALONG_EDGE:
       case SEGMENT::EDGE_TO_EDGE_ALONG_EDGE:
       case SEGMENT::EDGE_TO_FACE:
@@ -63,7 +63,7 @@ class SegmentGenerator : public Catch::Generators::IGenerator<Segment<FlatTriang
   }
 
  public:
-  SegmentGenerator(std::shared_ptr<const FlatTriangulation<T>> surface, HalfEdge face) : surface(surface), face(face), state(SEGMENT::SOURCE), current(make(state)) {
+  SegmentGenerator(std::shared_ptr<const FlatTriangulation<T>> surface, HalfEdge face) : surface(surface), face(face), state(SEGMENT::VERTEX_TO_EDGE_ALONG_EDGE), current(make(state)) {
   }
 
   const Segment<FlatTriangulation<T>>& get() const override {
