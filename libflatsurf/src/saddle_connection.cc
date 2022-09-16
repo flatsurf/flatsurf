@@ -42,9 +42,6 @@
 
 namespace flatsurf {
 
-using std::begin;
-using std::end;
-
 namespace {
 
 // Return the angle turning from sourceVector next to source to targetVector next target.
@@ -139,9 +136,9 @@ SaddleConnection<Surface> SaddleConnection<Surface>::inSector(const Surface& sur
                                 .sector(source)
                                 .sector(vector, vector);
 
-  const auto ret = begin(construction);
+  const auto ret = std::begin(construction);
 
-  LIBFLATSURF_CHECK_ARGUMENT(ret != end(construction), "No connection with vector " << vector << " in sector starting at " << source << " in " << surface);
+  LIBFLATSURF_CHECK_ARGUMENT(ret != std::end(construction), "No connection with vector " << vector << " in sector starting at " << source << " in " << surface);
 
   return *ret;
 }
@@ -155,7 +152,7 @@ SaddleConnection<Surface> SaddleConnection<Surface>::inSector(const Surface& sur
                                 .sector(source)
                                 .sector(direction, direction);
 
-  const auto ret = begin(construction);
+  const auto ret = std::begin(construction);
 
   return *ret;
 }

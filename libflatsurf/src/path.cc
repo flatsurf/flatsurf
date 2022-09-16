@@ -237,21 +237,21 @@ Path<Surface>::Path() noexcept :
   self(spimpl::make_impl<ImplementationOf<Path>>()) {}
 
 template <typename Surface>
-Path<Surface>::Path(const Segment& path) :
+Path<Surface>::Path(const SaddleConnection<Surface>& path) :
   Path(std::vector{path}) {}
 
 template <typename Surface>
-Path<Surface>::Path(const std::vector<Segment>& path) :
+Path<Surface>::Path(const std::vector<SaddleConnection<Surface>>& path) :
   self(spimpl::make_impl<ImplementationOf<Path>>(path)) {}
 
 template <typename Surface>
-Path<Surface>::operator const std::vector<Segment> &() const {
+Path<Surface>::operator const std::vector<SaddleConnection<Surface>> &() const {
   return self->path;
 }
 
 template <typename Surface>
 Path<Surface> Path<Surface>::operator-() const {
-  std::vector<Segment> reversed;
+  std::vector<SaddleConnection<Surface>> reversed;
   for (auto p = rbegin(self->path); p != rend(self->path); p++)
     reversed.push_back(-*p);
   return reversed;
@@ -271,7 +271,7 @@ bool Path<Surface>::closed() const {
 template <typename Surface>
 bool Path<Surface>::simple() const {
   using std::begin, std::end;
-  std::unordered_set<Segment> segments(begin(self->path), end(self->path));
+  std::unordered_set<SaddleConnection<Surface>> segments(begin(self->path), end(self->path));
   return segments.size() == self->path.size();
 }
 
@@ -291,13 +291,13 @@ size_t Path<Surface>::size() const {
 }
 
 template <typename Surface>
-void Path<Surface>::push_front(const Segment& segment) {
+void Path<Surface>::push_front(const SaddleConnection<Surface>& segment) {
   LIBFLATSURF_ASSERT(empty() || ImplementationOf<Path>::connected(segment, *begin()), "Path must be connected but " << segment << " does not precede " << *begin());
   self->path.insert(std::begin(self->path), segment);
 }
 
 template <typename Surface>
-void Path<Surface>::push_back(const Segment& segment) {
+void Path<Surface>::push_back(const SaddleConnection<Surface>& segment) {
   LIBFLATSURF_ASSERT(empty() || ImplementationOf<Path>::connected(*self->path.rbegin(), segment), "Path must be connected but " << *self->path.rbegin() << " does not precede " << segment);
   self->path.push_back(segment);
 }
@@ -445,7 +445,7 @@ ImplementationOf<Path<Surface>>::ImplementationOf() :
   path() {}
 
 template <typename Surface>
-ImplementationOf<Path<Surface>>::ImplementationOf(const std::vector<Segment>& path) {
+ImplementationOf<Path<Surface>>::ImplementationOf(const std::vector<SaddleConnection<Surface>>& path) {
   for (auto segment = begin(path); segment != end(path); segment++) {
     LIBFLATSURF_ASSERT(segment + 1 == end(path) || connected(*segment, *(segment + 1)), "Path must be connected but " << *segment << " does not precede " << *(segment + 1) << " either because they are connected to different vertices or because the turn from " << -*segment << " to " << *(segment + 1) << " is not turning clockwise in the range (0, 2π]");
     this->path.push_back(*segment);
@@ -453,7 +453,7 @@ ImplementationOf<Path<Surface>>::ImplementationOf(const std::vector<Segment>& pa
 }
 
 template <typename Surface>
-bool ImplementationOf<Path<Surface>>::connected(const Segment& from, const Segment& to) {
+bool ImplementationOf<Path<Surface>>::connected(const SaddleConnection<Surface>& from, const SaddleConnection<Surface>& to) {
   return Vertex::source(from.target(), from.surface()) == Vertex::source(to.source(), to.surface());
 }
 }  // namespace flatsurf
