@@ -138,7 +138,6 @@ TEMPLATE_TEST_CASE("Segments know whether they are a Saddle Connection", "[Segme
 
 TEMPLATE_TEST_CASE("Segments can be Reversed", "[Segment][operator-]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
-  using Surface = FlatTriangulation<T>;
 
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
@@ -176,7 +175,6 @@ TEMPLATE_TEST_CASE("Segments can be Compared", "[Segment][operator==][hash]", (l
 
 TEMPLATE_TEST_CASE("Segments Remember the Surface they are Defined On", "[Segment][surface]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
-  using Surface = FlatTriangulation<T>;
 
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
