@@ -98,7 +98,6 @@ TEMPLATE_TEST_CASE("Creating Segments", "[Segment][constructor]", (long long), (
 
 TEMPLATE_TEST_CASE("Defining Data of a Segment", "[Segment][start][end][source][target][vector]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
-  using Surface = FlatTriangulation<T>;
 
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
