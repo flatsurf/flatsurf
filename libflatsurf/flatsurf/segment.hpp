@@ -39,7 +39,9 @@ class Segment : public Serializable<Segment<Surface>>,
   using T = typename Surface::Coordinate;
 
  public:
+  Segment(const Point<Surface>& start, const Vector<T>&);
   Segment(const Point<Surface>& start, const Point<Surface>& end, const Vector<T>&);
+  Segment(const Point<Surface>& start, HalfEdge source, const Vector<T>&);
   Segment(const Point<Surface>& start, HalfEdge source, const Point<Surface>& end, HalfEdge target, const Vector<T>&);
 
   // Return the starting point of this segment.
@@ -56,10 +58,11 @@ class Segment : public Serializable<Segment<Surface>>,
   // the vector() from start().
   HalfEdge target() const;
 
+  // Return the surface this segment is defined on.
+  const FlatTriangulation<T>& surface() const;
+
   // Return the vector end - start describing this segment.
   const Vector<T>& vector() const;
-
-  operator const Vector<T>&() const;
 
   // Return the saddle connection this segment represents, if any.
   std::optional<SaddleConnection<Surface>> saddleConnection() const;
@@ -76,9 +79,6 @@ class Segment : public Serializable<Segment<Surface>>,
 
   friend ImplementationOf<Segment>;
 };
-
-template <typename Surface, typename... T>
-Segment(const Surface &, T &&...) -> Segment<Surface>;
 
 }
 
