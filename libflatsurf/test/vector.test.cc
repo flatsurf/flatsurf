@@ -97,7 +97,7 @@ TEMPLATE_TEST_CASE("Vector Sector Containment", "[Vector][inSector]", (long long
   }
 }
 
-TEMPLATE_TEST_CASE("Exact Vectors", "[Vector][constructor][ccw][bool][operator*][applyMatrix]", (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Exact Vectors", "[Vector][constructor][ccw][bool][operator*][applyMatrix][parallel]", (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using V = Vector<T>;
 
@@ -130,6 +130,15 @@ TEMPLATE_TEST_CASE("Exact Vectors", "[Vector][constructor][ccw][bool][operator*]
     REQUIRE(v.applyMatrix(T(1), T(), T(), T(1)) == v);
     REQUIRE(v.applyMatrix(T(2), T(), T(), T(2)) == 2*v);
     REQUIRE(v.applyMatrix(T(1), T(2), T(1), T(1)).applyMatrix(T(-1), T(2), T(1), T(-1)) == v);
+  }
+
+  SECTION("Check parallity") {
+    REQUIRE(V{2, 3}.parallel(V{2, 3}));
+    REQUIRE(V{2, 3}.parallel(V{4, 6}));
+    REQUIRE(!V{2, 3}.parallel(V{3, 6}));
+    REQUIRE(!V{2, 3}.parallel(V{-2, -3}));
+    REQUIRE(!V{2, 3}.parallel(V{-2, 3}));
+    REQUIRE(!V{2, 3}.parallel(V{0, 0}));
   }
 }
 

@@ -40,6 +40,9 @@ class VectorExact : public VectorBase<Vector>,
 
   CCW ccw(const Vector &) const;
   ORIENTATION orientation(const Vector &) const;
+  // Return whether this vector is parallel to the given vector, i.e., whether
+  // the vectors are collinear and euqally oriented.
+  bool parallel(const Vector&) const;
   bool insideCircumcircle(std::initializer_list<Vector>) const;
 
   // Return the scalar product with the argument
