@@ -292,6 +292,16 @@ SaddleConnection<Surface>::operator const Vector<typename Surface::Coordinate> &
 }
 
 template <typename Surface>
+const Segment<Surface>& SaddleConnection<Surface>::segment() const {
+  throw std::logic_error("not implemented: SaddleConnection::segment()");
+}
+
+template <typename Surface>
+SaddleConnection<Surface>::operator const Segment<Surface> &() const {
+  return segment();
+}
+
+template <typename Surface>
 const Chain<Surface>& SaddleConnection<Surface>::chain() const {
   return self->chain;
 }
