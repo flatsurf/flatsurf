@@ -20,10 +20,15 @@
 #include "../flatsurf/segment.hpp"
 
 #include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/vertex.hpp"
+#include "../flatsurf/edge.hpp"
+#include "../flatsurf/ccw.hpp"
 
 #include "impl/segment.impl.hpp"
 
 #include "util/instantiate.ipp"
+#include "util/assert.ipp"
+#include "util/hash.ipp"
 
 namespace flatsurf {
 
@@ -42,8 +47,14 @@ Segment<Surface>::Segment(const Point<Surface>& start, HalfEdge source, const Ve
 }
 
 template <typename Surface>
-Segment<Surface>::Segment(const Point<Surface>& start, HalfEdge source, const Point<Surface>& end, HalfEdge target, const Vector<T>&) {
-  throw std::logic_error("not implemented: Segment()");
+Segment<Surface>::Segment(const Point<Surface>& start, HalfEdge source, const Point<Surface>& end, HalfEdge target, const Vector<T>& vector) :
+  self(spimpl::make_impl<ImplementationOf<Segment>>(source, start, target, end, vector)) {
+  LIBFLATSURF_CHECK_ARGUMENT(&start.surface() == &end.surface(), "start and end must be defined on the same surface");
+  LIBFLATSURF_CHECK_ARGUMENT(start.in(source), "start point of segment must be in source face");
+  LIBFLATSURF_CHECK_ARGUMENT(end.in(target), "end point of segment must be in target face");
+  LIBFLATSURF_CHECK_ARGUMENT(vector, "vector defining segment must not be trivial");
+
+  self->normalize();
 }
 
 template <typename Surface>
@@ -94,6 +105,46 @@ bool Segment<Surface>::operator==(const Segment<Surface>&) const {
 template <typename Surface>
 std::ostream &operator<<(std::ostream &, const Segment<Surface> &) {
   throw std::logic_error("not implemented: Segment::end()");
+}
+
+template <typename Surface>
+ImplementationOf<Segment<Surface>>::ImplementationOf(HalfEdge source, const Point<Surface>& start, HalfEdge target, const Point<Surface>& end, const Vector<T>& vector) : surface(start.surface()), source(source), start(start), target(target), end(end), vector(vector) {}
+
+template <typename Surface>
+void ImplementationOf<Segment<Surface>>::normalize() {
+  const auto normalizeSourceAtVertex = [](const auto& surface, auto& source, const auto& vector) {
+    while(true) {
+      if (surface.inSector(source, vector))
+        break;
+      if (surface.fromHalfEdge(surface.nextAtVertex(source)).parallel(vector)) {
+        source = surface.nextAtVertex(source);
+        break;
+      }
+
+      source = surface.nextInFace(source);
+    }
+  };
+
+  const auto normalizeSourceAtEdge = [](const auto& surface, auto& source, const auto& vector) {
+    if (surface.fromHalfEdge(source).ccw(vector) == CCW::COUNTERCLOCKWISE || surface.fromHalfEdge(source).parallel(vector))
+      return;
+
+    source = -source;
+  };
+
+  if (start.vertex())
+    normalizeSourceAtVertex(*surface, source, vector);
+  else if (start.edge())
+    normalizeSourceAtEdge(*surface, source, vector);
+  else
+    source = start.face();
+
+  if (end.vertex())
+    normalizeSourceAtVertex(*surface, target, -vector);
+  else if (end.edge())
+    normalizeSourceAtEdge(*surface, target, -vector);
+  else
+    target = end.face();
 }
 
 }

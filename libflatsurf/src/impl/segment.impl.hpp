@@ -22,6 +22,12 @@
 
 #include "../../flatsurf/path.hpp"
 
+#include "../../flatsurf/half_edge.hpp"
+#include "../../flatsurf/point.hpp"
+#include "../../flatsurf/vector.hpp"
+
+#include "read_only.hpp"
+
 namespace flatsurf {
 
 template <typename Surface>
@@ -29,6 +35,20 @@ class ImplementationOf<Segment<Surface>> {
   using T = typename Surface::Coordinate;
 
  public:
+  ImplementationOf(HalfEdge source, const Point<Surface>& start, HalfEdge target, const Point<Surface>& end, const Vector<T>& vector);
+
+  // Normalize source & target so that they are compatible with SaddleConnection source & target.
+  void normalize();
+
+  ReadOnly<Surface> surface;
+
+  HalfEdge source;
+  Point<Surface> start;
+
+  HalfEdge target;
+  Point<Surface> end;
+
+  Vector<T> vector;
 };
 
 }  // namespace flatsurf
