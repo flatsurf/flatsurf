@@ -155,7 +155,8 @@ using namespace flatsurf;
 
 template <typename Surface>
 size_t hash<Segment<Surface>>::operator()(const Segment<Surface>& self) const {
-  throw std::logic_error("not implemented: hash of Segment");
+  // We do not hash source & target because they are not unique for segments starting in the interior of a face.
+  return ::flatsurf::hash_combine(self.start(), self.end(), self.vector());
 }
 
 }  // namespace std
