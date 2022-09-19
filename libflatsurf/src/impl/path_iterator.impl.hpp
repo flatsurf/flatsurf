@@ -20,6 +20,8 @@
 #ifndef LIBFLATSURF_PATH_ITERATOR_IMPL_HPP
 #define LIBFLATSURF_PATH_ITERATOR_IMPL_HPP
 
+#include <vector>
+
 #include "../../flatsurf/path_iterator.hpp"
 
 namespace flatsurf {
