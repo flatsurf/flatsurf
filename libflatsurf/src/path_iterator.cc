@@ -22,6 +22,7 @@
 #include <ostream>
 
 #include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/segment_iterator.hpp"
 #include "impl/path.impl.hpp"
 #include "impl/path_iterator.impl.hpp"
 #include "util/assert.ipp"
@@ -56,6 +57,16 @@ bool PathIterator<Surface>::equal(const PathIterator& other) const {
     return self->turn;
   }
   return self->position == other.self->position;
+}
+
+template <typename Surface>
+PathIterator<Surface>::operator const SegmentIterator<Surface>() const {
+  throw std::logic_error("not implemented: cast to SegmentIterator");
+}
+
+template <typename Surface>
+PathIterator<Surface>::operator SegmentIterator<Surface>() {
+  throw std::logic_error("not implemented: cast to SegmentIterator");
 }
 
 template <typename Surface>

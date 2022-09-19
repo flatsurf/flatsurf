@@ -30,7 +30,7 @@ namespace flatsurf {
 
 // Iterates over a path in a surface, i.e., over a connected sequence of segments.
 template <typename Surface>
-class SegmentIterator : public boost::iterator_facade<PathIterator<Surface>, const Segment<Surface>&, boost::forward_traversal_tag> {
+class SegmentIterator : public boost::iterator_facade<SegmentIterator<Surface>, const Segment<Surface>&, boost::forward_traversal_tag> {
   template <typename... Args>
   SegmentIterator(PrivateConstructor, Args&&...);
 
@@ -42,7 +42,7 @@ class SegmentIterator : public boost::iterator_facade<PathIterator<Surface>, con
   bool equal(const SegmentIterator& other) const;
 
   template <typename S>
-  friend std::ostream& operator<<(std::ostream&, const PathIterator<S>&);
+  friend std::ostream& operator<<(std::ostream&, const SegmentIterator<S>&);
 
  private:
   Copyable<SegmentIterator> self;
