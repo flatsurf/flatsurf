@@ -22,6 +22,7 @@
 #include <ostream>
 
 #include "../flatsurf/saddle_connection.hpp"
+#include "impl/path.impl.hpp"
 #include "impl/segment.impl.hpp"
 #include "impl/segment_iterator.impl.hpp"
 #include "util/assert.ipp"
@@ -30,17 +31,32 @@ namespace flatsurf {
 
 template <typename Surface>
 void SegmentIterator<Surface>::increment() {
-  throw std::logic_error("not implemented: SegmentIterator::increment");
+  LIBFLATSURF_ASSERT(!self->parent->empty(), "cannot increment iterator into empty path");
+  LIBFLATSURF_ASSERT(!self->end, "cannot increment end() iterator")
+  self->position++;
+  if (self->position == end(self->parent->self->path)) {
+    self->position = begin(self->parent->self->path);
+    self->turn++;
+  }
 }
 
 template <typename Surface>
 const Segment<Surface>& SegmentIterator<Surface>::dereference() const {
-  throw std::logic_error("not implemented: SegmentIterator::dereference");
+  LIBFLATSURF_ASSERT(!self->parent->empty(), "cannot dereference iterator into empty path");
+  LIBFLATSURF_ASSERT(!self->end, "cannot dereference end() iterator");
+  LIBFLATSURF_ASSERT(self->position != end(self->parent->self->path), "iterator in impossible end state");
+  return *self->position;
 }
 
 template <typename Surface>
 bool SegmentIterator<Surface>::equal(const SegmentIterator& other) const {
-  throw std::logic_error("not implemented: SegmentIterator::equal");
+  if (self->end) {
+    return other.self->end || other.self->turn;
+  }
+  if (other.self->end) {
+    return self->turn;
+  }
+  return self->position == other.self->position;
 }
 
 template <typename Surface>
@@ -52,7 +68,10 @@ template <typename Surface>
 ImplementationOf<SegmentIterator<Surface>>::ImplementationOf(const Path<Surface>* parent, const Position& position) :
   parent(parent),
   position(position) {
-  throw std::logic_error("not implemented: SegmentIterator::ImplementationOf()");
+  if (position == std::end(parent->self->path)) {
+    this->end = true;
+    this->position = begin(parent->self->path);
+  }
 }
 }  // namespace flatsurf
 

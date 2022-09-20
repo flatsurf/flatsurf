@@ -17,33 +17,4 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_SEGMENT_ITERATOR_IMPL_HPP
-#define LIBFLATSURF_SEGMENT_ITERATOR_IMPL_HPP
-
-#include <vector>
-
-#include "../../flatsurf/segment_iterator.hpp"
-
-namespace flatsurf {
-
-template <typename Surface>
-class ImplementationOf<SegmentIterator<Surface>> {
-  using Position = typename std::vector<Segment<Surface>>::const_iterator;
-
- public:
-  ImplementationOf(const Path<Surface>* parent, const Position&);
-
-  const Path<Surface>* parent;
-  Position position;
-  int turn = 0;
-  bool end = false;
-};
-
-template <typename Surface>
-template <typename... Args>
-SegmentIterator<Surface>::SegmentIterator(PrivateConstructor, Args&&... args) :
-  self(spimpl::make_impl<ImplementationOf<SegmentIterator>>(std::forward<Args>(args)...)) {}
-
-}  // namespace flatsurf
-
-#endif
+#include "external/catch2/single_include/catch2/catch.hpp"

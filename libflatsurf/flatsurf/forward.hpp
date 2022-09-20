@@ -135,6 +135,9 @@ struct PrivateConstructor {};
 struct ProtectedConstructor {};
 
 template <typename Surface>
+class Ray;
+
+template <typename Surface>
 class SaddleConnection;
 
 template <typename Surface>

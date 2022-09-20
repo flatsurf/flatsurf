@@ -31,7 +31,7 @@
 
 namespace flatsurf {
 
-// A vertical direction on a translation surface.
+// A (vertical) direction on a translation surface.
 template <typename Surface>
 class Vertical : Serializable<Vertical<Surface>>,
                  boost::equality_comparable<Vertical<Surface>> {

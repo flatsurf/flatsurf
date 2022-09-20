@@ -17,33 +17,35 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_SEGMENT_ITERATOR_IMPL_HPP
-#define LIBFLATSURF_SEGMENT_ITERATOR_IMPL_HPP
+#ifndef LIBFLATSURF_RAY_IMPL_HPP
+#define LIBFLATSURF_RAY_IMPL_HPP
 
-#include <vector>
+#include "../../flatsurf/ray.hpp"
 
-#include "../../flatsurf/segment_iterator.hpp"
+#include "../../flatsurf/point.hpp"
+#include "../../flatsurf/half_edge.hpp"
+
+#include "read_only.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-class ImplementationOf<SegmentIterator<Surface>> {
-  using Position = typename std::vector<Segment<Surface>>::const_iterator;
+class ImplementationOf<Ray<Surface>> {
+  using T = typename Surface::Coordinate;
 
  public:
-  ImplementationOf(const Path<Surface>* parent, const Position&);
+  ImplementationOf(const Point<Surface>& start, HalfEdge source, const Vector<T>&);
 
-  const Path<Surface>* parent;
-  Position position;
-  int turn = 0;
-  bool end = false;
+  ReadOnly<Surface> surface;
+
+  HalfEdge source;
+  Point<Surface> start;
+
+  Vector<T> vector;
 };
-
-template <typename Surface>
-template <typename... Args>
-SegmentIterator<Surface>::SegmentIterator(PrivateConstructor, Args&&... args) :
-  self(spimpl::make_impl<ImplementationOf<SegmentIterator>>(std::forward<Args>(args)...)) {}
 
 }  // namespace flatsurf
 
 #endif
+
+

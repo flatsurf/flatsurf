@@ -22,20 +22,30 @@
 
 #include "../../flatsurf/path.hpp"
 
+#include "../../flatsurf/segment.hpp"
+
 namespace flatsurf {
 
 template <typename Surface>
 class ImplementationOf<Path<Surface>> {
   using T = typename Surface::Coordinate;
-  using Segment = SaddleConnection<Surface>;
 
  public:
   ImplementationOf();
-  ImplementationOf(const std::vector<Segment>&);
+  ImplementationOf(const std::vector<Segment<Surface>>&);
 
-  std::vector<Segment> path = {};
+  std::vector<Segment<Surface>> path = {};
 
-  static bool connected(const Segment&, const Segment&);
+  // These methods can be removed once Path::begin() and Path::end() have been
+  // changed to return a SegmentIterator.
+  SegmentIterator<Surface> begin();
+  SegmentIterator<Surface> end();
+
+  // This cache exists to make the cast to vector<SaddleConnection>& work. It
+  // can be removed once that cast operator has been dropped.
+  mutable std::optional<std::vector<SaddleConnection<Surface>>> pathAsSaddleConnections = std::nullopt;
+
+  static bool connected(const Segment<Surface>&, const Segment<Surface>&);
 };
 
 }  // namespace flatsurf

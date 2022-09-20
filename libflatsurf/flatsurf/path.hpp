@@ -117,7 +117,9 @@ class Path : public Serializable<Path<Surface>>,
 
   friend ImplementationOf<Path>;
   friend iterator;
+  friend SegmentIterator<Surface>;
   friend ImplementationOf<iterator>;
+  friend ImplementationOf<SegmentIterator<Surface>>;
 };
 
 template <typename Surface>

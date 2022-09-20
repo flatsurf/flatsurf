@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2020-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -45,7 +45,17 @@ const SaddleConnection<Surface>& PathIterator<Surface>::dereference() const {
   LIBFLATSURF_ASSERT(!self->parent->empty(), "cannot dereference iterator into empty path");
   LIBFLATSURF_ASSERT(!self->end, "cannot dereference end() iterator");
   LIBFLATSURF_ASSERT(self->position != end(self->parent->self->path), "iterator in impossible end state");
-  return *self->position;
+
+  auto saddleConnection = self->position->saddleConnection();
+  LIBFLATSURF_CHECK(saddleConnection, "cannot access this segment of path as a saddle connection");
+  
+  const size_t index = self->position - std::begin(self->parent->self->path);
+  if (index >= self->keepAlive.size())
+    self->keepAlive.resize(index + 1);
+
+  self->keepAlive[index] = std::move(saddleConnection);
+
+  return *self->keepAlive[index];
 }
 
 template <typename Surface>
@@ -83,6 +93,7 @@ ImplementationOf<PathIterator<Surface>>::ImplementationOf(const Path<Surface>* p
     this->position = begin(parent->self->path);
   }
 }
+
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker

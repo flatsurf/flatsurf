@@ -21,6 +21,7 @@
 #define LIBFLATSURF_PATH_ITERATOR_IMPL_HPP
 
 #include <vector>
+#include <optional>
 
 #include "../../flatsurf/path_iterator.hpp"
 
@@ -28,12 +29,13 @@ namespace flatsurf {
 
 template <typename Surface>
 class ImplementationOf<PathIterator<Surface>> {
-  using Position = typename std::vector<SaddleConnection<Surface>>::const_iterator;
+  using Position = typename std::vector<Segment<Surface>>::const_iterator;
 
  public:
   ImplementationOf(const Path<Surface>* parent, const Position&);
 
   const Path<Surface>* parent;
+  mutable std::vector<std::optional<SaddleConnection<Surface>>> keepAlive;
   Position position;
   int turn = 0;
   bool end = false;

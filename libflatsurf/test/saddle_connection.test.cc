@@ -22,6 +22,7 @@
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/segment.hpp"
 #include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/half_edge_set_iterator.hpp"
 #include "../flatsurf/vertical.hpp"
@@ -129,6 +130,22 @@ TEMPLATE_TEST_CASE("Saddle Connection Constructors", "[SaddleConnection][constru
     }
   }
 
+}
+
+TEMPLATE_TEST_CASE("Convert a SaddleConnection to a Segment", "[SaddleConnection][segment]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+  using Surface = FlatTriangulation<T>;
+
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
+  const auto connection = GENERATE_REF(saddleConnections(surface));
+  CAPTURE(connection);
+
+  const Segment<Surface> segment = connection;
+  CAPTURE(segment);
+
+  REQUIRE(segment.saddleConnection() == connection);
 }
 
 TEMPLATE_TEST_CASE("Serialization of a SaddleConnection", "[SaddleConnection][save][load]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {

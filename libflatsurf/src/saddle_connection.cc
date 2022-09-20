@@ -28,10 +28,12 @@
 #include "../flatsurf/half_edge_intersection.hpp"
 #include "../flatsurf/half_edge_map.hpp"
 #include "../flatsurf/orientation.hpp"
+#include "../flatsurf/point.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_by_length.hpp"
 #include "../flatsurf/saddle_connections_by_length_iterator.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
+#include "../flatsurf/segment.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertex.hpp"
 #include "../flatsurf/vertical.hpp"
@@ -292,12 +294,17 @@ SaddleConnection<Surface>::operator const Vector<typename Surface::Coordinate> &
 }
 
 template <typename Surface>
-const Segment<Surface>& SaddleConnection<Surface>::segment() const {
-  throw std::logic_error("not implemented: SaddleConnection::segment()");
+Segment<Surface> SaddleConnection<Surface>::segment() const {
+  return Segment(
+      Point<Surface>{*self->surface, Vertex::source(self->source, *self->surface)},
+      self->source,
+      Point<Surface>{*self->surface, Vertex::source(self->target, *self->surface)},
+      self->target,
+      *this);
 }
 
 template <typename Surface>
-SaddleConnection<Surface>::operator const Segment<Surface> &() const {
+SaddleConnection<Surface>::operator Segment<Surface>() const {
   return segment();
 }
 

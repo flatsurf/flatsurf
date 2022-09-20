@@ -95,11 +95,11 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
 
   const Vector<T> &vector() const;
   const Chain<Surface> &chain() const;
-  const Segment<Surface> &segment() const;
+  Segment<Surface> segment() const;
 
   operator const Vector<T> &() const;
   operator const Chain<Surface> &() const;
-  operator const Segment<Surface> &() const;
+  operator Segment<Surface>() const;
 
   // The saddle connection is leaving from the vertex at the source of source.
   // It is leaving in a direction that is contained in the sector next to
@@ -129,23 +129,31 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   // Return the turns between saddle connections.
   // If the angle between this saddle connection and the argument is α going
   // in counter-clockwise direction, returns ⌊α/2π⌋.
+  [[deprecated("use ray().angle() instead")]]
   int angle(const SaddleConnection<Surface> &) const;
 
+  [[deprecated("use ray().angle() instead")]]
   int angle(HalfEdge source, const Vector<T> &vector) const;
 
   // Return the turn direction between saddle connections.
   // Returns whether it is shorter to turn in counterclockwise or
   // clockwise direction. Returns COLLINEAR if both are the same.
+  [[deprecated("use ray().ccw() instead")]]
   CCW ccw(const SaddleConnection<Surface> &) const;
 
   // Return the turn direction to the vector next to source.
   // Returns whether it is shorter to turn in counterclockwise or
   // clockwise direction. Returns COLLINEAR if both are the same.
+  [[deprecated("use ray().ccw() instead")]]
   CCW ccw(HalfEdge source, const Vector<T> &vector) const;
+
+  operator Ray<Surface>() const;
+
+  Ray<Surface> ray() const;
 
   SaddleConnection<Surface> operator-() const;
 
-  bool operator==(const SaddleConnection<Surface> &) const;
+  bool operator==(const SaddleConnection&) const;
 
   bool operator>(const Bound) const;
   bool operator<(const Bound) const;

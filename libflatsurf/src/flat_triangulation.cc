@@ -858,10 +858,7 @@ SaddleConnections<FlatTriangulation<T>> FlatTriangulation<T>::connections() cons
 
 template <typename T>
 bool FlatTriangulation<T>::operator==(const FlatTriangulation<T> &rhs) const {
-  if (this == &rhs)
-    return true;
-
-  if (this->self.state == rhs.self.state)
+  if (ImplementationOf<FlatTriangulation>::identical(*this, rhs))
     return true;
 
   if (static_cast<const FlatTriangulationCombinatorial &>(*this) != static_cast<const FlatTriangulationCombinatorial &>(rhs))
@@ -1166,6 +1163,17 @@ void ImplementationOf<FlatTriangulation<T>>::check() {
     LIBFLATSURF_CHECK_ARGUMENT(self.fromHalfEdge(edge).ccw(self.fromHalfEdge(next)) != CCW::COLLINEAR, "face at " << edge << " has vanishing area in " << self);
     LIBFLATSURF_CHECK_ARGUMENT(self.fromHalfEdge(edge).ccw(self.fromHalfEdge(next)) == CCW::COUNTERCLOCKWISE, "face at " << edge << " is not oriented correctly in " << self);
   }
+}
+
+template <typename T>
+bool ImplementationOf<FlatTriangulation<T>>::identical(const FlatTriangulation<T>& lhs, const FlatTriangulation<T>& rhs) {
+  if (&lhs == &rhs)
+    return true;
+
+  if (lhs.self.state == rhs.self.state)
+    return true;
+
+  return false;
 }
 
 template <typename T>

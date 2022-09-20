@@ -36,6 +36,10 @@
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
 #include "../flatsurf/orientation.hpp"
+#include "../flatsurf/path.hpp"
+#include "../flatsurf/path_iterator.hpp"
+#include "../flatsurf/segment.hpp"
+#include "../flatsurf/segment_iterator.hpp"
 #include "util/assert.ipp"
 #include "util/hash.ipp"
 #include "util/streamed.ipp"
@@ -118,23 +122,12 @@ const Surface& Point<Surface>::surface() const {
 
 template <typename Surface>
 Point<Surface>& Point<Surface>::operator+=(const Vector<T>& delta) {
+  if (!delta)
+    return *this;
+
   LIBFLATSURF_CHECK_ARGUMENT(self->surface->angle(*this) == 1, "can only translate a marked point");
 
-  // Ensure that a delta move can be performed in the currently used
-  // representation of this point.
-  if (vertex()) {
-    LIBFLATSURF_ASSERT(!self->b && !self->c, "incorrect normalization for barycentric coordinates of point at vertex");
-    while(!self->surface->inSector(self->face, delta))
-      self->face = self->surface->nextAtVertex(self->face);
-  } else if (edge()) {
-    LIBFLATSURF_ASSERT(!self->c, "incorrect normalization for barycentric coordinates of point on edge");
-    if (!self->surface->inSector(self->face, delta)) {
-      self->face = -self->face;
-      std::swap(self->a, self->b);
-    }
-  }
-
-  self->operator+=(delta);
+  ImplementationOf<Point>::translate(*this, delta);
   return *this;
 }
 
@@ -222,7 +215,7 @@ ImplementationOf<Point<Surface>>::ImplementationOf(const Surface& surface, HalfE
 
 template <typename Surface>
 ImplementationOf<Point<Surface>>::ImplementationOf(const Surface& surface, HalfEdge face, const Vector<T>& xy) : ImplementationOf(surface, face, T(1), T(), T()) {
-  *this += xy;
+  this->translate(xy);
 }
 
 template <typename Surface>
@@ -355,7 +348,7 @@ Vector<typename Surface::Coordinate> ImplementationOf<Point<Surface>>::cartesian
 }
 
 template <typename Surface>
-ImplementationOf<Point<Surface>>& ImplementationOf<Point<Surface>>::operator+=(const Vector<T>& Δ) {
+HalfEdge ImplementationOf<Point<Surface>>::translate(const Vector<T>& Δ) {
   if (c)
     LIBFLATSURF_ASSERT(a && b, "barycentric coordinates of point not normalized");
   if (b)
@@ -394,7 +387,7 @@ ImplementationOf<Point<Surface>>& ImplementationOf<Point<Surface>>::operator+=(c
       this->b = b;
       this->c = c;
       normalize();
-      return *this;
+      return face;
     }
   }
 
@@ -410,8 +403,30 @@ ImplementationOf<Point<Surface>>& ImplementationOf<Point<Surface>>::operator+=(c
     // pull the result back.
     const auto p = Point{*surface, face, a ,b, c};
     const auto insertion = surface->insert(p);
-    const auto shifted = insertion(p) + Δ;
-    return *this = *insertion.section()(shifted).self;
+    auto shifted = insertion(p);
+    const auto target = translate(shifted, Δ);
+    *this = *insertion.section()(shifted).self;
+
+    if (c)
+      // The shifted point is in the interior of a face, any half edge adjacent
+      // to that face will do to describe -Δ from here.
+      return face;
+
+    if (b)
+      // The shifted point is on an edge. We might have to flip the defining
+      // edge to make sense of -Δ here.
+      return surface->fromHalfEdge(face).ccw(-Δ) == CCW::CLOCKWISE ? -face : face;
+
+    // The shifted point is at a vertex. We only know from where Δ hit that
+    // shifted point on a surface with an additional marked point so we need to
+    // reconstruct from where Δ comes on the surface without that point.
+    const auto preimage = insertion.section()(SaddleConnection(insertion.domain(), target).segment());
+
+    LIBFLATSURF_ASSERT(preimage, "preimage of a half edge after insertion of a marked point must exist; it's either a saddle connection or a segment");
+    LIBFLATSURF_ASSERT(preimage->size() == 1, "preimage of a half edge after insertion of a marked point must be a single segment or a single saddle connection");
+
+    SegmentIterator<Surface> segment = preimage->begin();
+    return segment->source();
   }
 
   // We can now assume that this point is a vertex of the triangulation. We use
@@ -439,7 +454,7 @@ ImplementationOf<Point<Surface>>& ImplementationOf<Point<Surface>>::operator+=(c
         this->c = c;
         this->face = face;
         normalize();
-        return *this;
+        return face;
       }
     } else {
       // We found a saddle connection in the search. It cannot be the final
@@ -460,12 +475,31 @@ ImplementationOf<Point<Surface>>& ImplementationOf<Point<Surface>>::operator+=(c
         const auto δ = Δ - *it;
         while(!surface->inSector(this->face, δ))
           this->face = surface->nextAtVertex(this->face);
-        return *this += δ;
+        return translate(δ);
       }
       
       it.skipSector(Δ.ccw(*it)); 
     }
   }
+}
+
+template <typename Surface>
+HalfEdge ImplementationOf<Point<Surface>>::translate(Point& p, const Vector<T>& Δ) {
+  // Ensure that a delta move can be performed in the currently used
+  // representation of this point.
+  if (p.vertex()) {
+    LIBFLATSURF_ASSERT(!p.self->b && !p.self->c, "incorrect normalization for barycentric coordinates of point at vertex");
+    while(!p.self->surface->inSector(p.self->face, Δ))
+      p.self->face = p.self->surface->nextAtVertex(p.self->face);
+  } else if (p.edge()) {
+    LIBFLATSURF_ASSERT(!p.self->c, "incorrect normalization for barycentric coordinates of point on edge");
+    if (!p.self->surface->inSector(p.self->face, Δ)) {
+      p.self->face = -p.self->face;
+      std::swap(p.self->a, p.self->b);
+    }
+  }
+
+  return p.self->translate(Δ);
 }
 
 template <typename Surface>

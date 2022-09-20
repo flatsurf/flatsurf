@@ -67,9 +67,13 @@ class Segment : public Serializable<Segment<Surface>>,
   // Return the saddle connection this segment represents, if any.
   std::optional<SaddleConnection<Surface>> saddleConnection() const;
 
-  Segment<Surface> operator-() const;
+  operator Ray<Surface>() const;
 
-  bool operator==(const Segment<Surface>&) const;
+  Ray<Surface> ray() const;
+
+  Segment operator-() const;
+
+  bool operator==(const Segment&) const;
 
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const Segment<S> &);
@@ -79,6 +83,9 @@ class Segment : public Serializable<Segment<Surface>>,
 
   friend ImplementationOf<Segment>;
 };
+
+template <typename Surface, typename... T>
+Segment(const Point<Surface>&, T &&...) -> Segment<Surface>;
 
 }
 

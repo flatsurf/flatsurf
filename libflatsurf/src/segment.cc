@@ -22,9 +22,14 @@
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vertex.hpp"
 #include "../flatsurf/edge.hpp"
+#include "../flatsurf/half_edge_set.hpp"
+#include "../flatsurf/half_edge_set_iterator.hpp"
 #include "../flatsurf/ccw.hpp"
+#include "../flatsurf/ray.hpp"
 
 #include "impl/segment.impl.hpp"
+#include "impl/point.impl.hpp"
+#include "impl/flat_triangulation.impl.hpp"
 
 #include "util/instantiate.ipp"
 #include "util/assert.ipp"
@@ -32,24 +37,70 @@
 
 namespace flatsurf {
 
+namespace {
+
+// Return a source half edge which can be used to describe vector emenating from p.
 template <typename Surface>
-Segment<Surface>::Segment(const Point<Surface>& start, const Vector<T>&) {
-  throw std::logic_error("not implemented: Segment()");
+HalfEdge sector(const Point<Surface>& p, const Vector<typename Surface::Coordinate>& vector) {
+  if (p.vertex()) {
+    const auto& surface = p.surface();
+
+    for (const auto outgoing : p.vertex()->outgoing())
+      if (surface.inSector(outgoing, vector))
+        return outgoing;
+
+    LIBFLATSURF_ASSERT(false, "no sector surrounding " << p << " contains " << vector);
+  }
+  return p.face();
+}
+
 }
 
 template <typename Surface>
-Segment<Surface>::Segment(const Point<Surface>& start, const Point<Surface>& end, const Vector<T>&) {
+Segment<Surface>::Segment(const Point<Surface>& start, const Vector<T>& vector) {
+  LIBFLATSURF_CHECK_ARGUMENT(start.surface().angle(start) == 1, "cannot create Segment from starting point and vector since starting point is a singularity");
+
+  *this = Segment{start, sector(start, vector), vector};
 }
 
 template <typename Surface>
-Segment<Surface>::Segment(const Point<Surface>& start, HalfEdge source, const Vector<T>&) {
-  throw std::logic_error("not implemented: Segment()");
+Segment<Surface>::Segment(const Point<Surface>& start, const Point<Surface>& end, const Vector<T>& vector) {
+  LIBFLATSURF_CHECK_ARGUMENT(ImplementationOf<Surface>::identical(start.surface(), end.surface()), "start and end must be defined on the same surface");
+
+  if (start.surface().angle(start) > 1) {
+    LIBFLATSURF_CHECK_ARGUMENT(!end.vertex() || end.surface().angle(end) == 1, "cannot create Segment from points and vector if both points are singularities");
+
+    // When the starting point of the segment is a singularity we find out what
+    // the source half edge is by retracing -segment (which might be slow.)
+    Segment s{end, start, -vector};
+    s = -s;
+
+    *this = std::move(s);
+    return;
+  }
+
+  if (end.surface().angle(end) > 1) {
+    // Since the endpoint of the segment is a singularity, we need to
+    // retrace the segment in the surface (which might be very slow.)
+    *this = Segment{start, sector(start, vector), vector};
+    return;
+  }
+
+  *this = Segment{start, sector(start, vector), end, sector(end, -vector), vector};
+}
+
+template <typename Surface>
+Segment<Surface>::Segment(const Point<Surface>& start, HalfEdge source, const Vector<T>& vector) {
+  Point<Surface> end = start;
+  const HalfEdge target = ImplementationOf<Point<Surface>>::translate(end, vector);
+  
+  *this = Segment{start, source, end, target, vector};
 }
 
 template <typename Surface>
 Segment<Surface>::Segment(const Point<Surface>& start, HalfEdge source, const Point<Surface>& end, HalfEdge target, const Vector<T>& vector) :
   self(spimpl::make_impl<ImplementationOf<Segment>>(source, start, target, end, vector)) {
-  LIBFLATSURF_CHECK_ARGUMENT(&start.surface() == &end.surface(), "start and end must be defined on the same surface");
+  LIBFLATSURF_CHECK_ARGUMENT(ImplementationOf<Surface>::identical(start.surface(), end.surface()), "start and end must be defined on the same surface");
   LIBFLATSURF_CHECK_ARGUMENT(start.in(source), "start point of segment must be in source face");
   LIBFLATSURF_CHECK_ARGUMENT(end.in(target), "end point of segment must be in target face");
   LIBFLATSURF_CHECK_ARGUMENT(vector, "vector defining segment must not be trivial");
@@ -90,6 +141,16 @@ const Vector<typename Surface::Coordinate>& Segment<Surface>::vector() const {
 template <typename Surface>
 std::optional<SaddleConnection<Surface>> Segment<Surface>::saddleConnection() const {
   throw std::logic_error("not implemented: Segment::saddleConnection()");
+}
+
+template <typename Surface>
+Segment<Surface>::operator Ray<Surface>() const {
+  throw std::logic_error("not implemented: Segment::operator Ray()");
+}
+
+template <typename Surface>
+Ray<Surface> Segment<Surface>::ray() const {
+  throw std::logic_error("not implemented: Segment::ray()");
 }
 
 template <typename Surface>
