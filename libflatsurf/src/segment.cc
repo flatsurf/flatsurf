@@ -167,8 +167,28 @@ bool Segment<Surface>::operator==(const Segment<Surface>&) const {
 }
 
 template <typename Surface>
-std::ostream &operator<<(std::ostream &, const Segment<Surface> &) {
-  throw std::logic_error("not implemented: Segment::end()");
+std::ostream &operator<<(std::ostream& os, const Segment<Surface>& self) {
+  const auto saddleConnection = self.saddleConnection();
+  if (saddleConnection)
+    return os << *saddleConnection;
+
+  os << "Segment(";
+
+  if (self.start().vertex())
+    os << self.source();
+  else
+    os << self.start();
+
+  os << ", ";
+
+  if (self.end().vertex())
+    os << self.target();
+  else
+    os << self.end();
+
+  os << ", ";
+
+  return os << self.vector() << ")";
 }
 
 template <typename Surface>
