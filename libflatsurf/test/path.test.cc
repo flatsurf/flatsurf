@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2021-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 #include "generators/half_edge_generator.hpp"
 #include "generators/saddle_connection_generator.hpp"
 #include "generators/surface_generator.hpp"
+#include "generators/segment_generator.hpp"
 
 namespace flatsurf::test {
 
@@ -42,13 +43,13 @@ TEMPLATE_TEST_CASE("Nullhomotopic Paths", "[Path]", (long long), (mpq_class), (r
     REQUIRE(Path<Surface>().tighten() == Path<Surface>());
   }
 
+  using T = TestType;
+  using Surface = FlatTriangulation<T>;
+
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
   SECTION("Joining a Saddle Connection and its Negative, is Trivial") {
-    using T = TestType;
-    using Surface = FlatTriangulation<T>;
-
-    const auto surface = GENERATE_SURFACES(T);
-    CAPTURE(surface);
-
     const auto connection = GENERATE_REF(saddleConnections(surface));
     CAPTURE(connection);
 
@@ -58,14 +59,20 @@ TEMPLATE_TEST_CASE("Nullhomotopic Paths", "[Path]", (long long), (mpq_class), (r
     REQUIRE(path.tighten() == Path<Surface>());
   }
 
+  SECTION("Joining a Segment and its Negative is Trivial") {
+    const auto face = GENERATE_COPY(halfEdges(surface));
+    CAPTURE(face);
+
+    const auto segment = GENERATE_COPY(segments(surface, face));
+
+    const auto path = Path(std::vector{segment, -segment});
+    CAPTURE(path);
+
+    REQUIRE(path.tighten() == Path<Surface>());
+  }
+
   SECTION("Tigthening a Path Walking around a Face") {
-    using T = TestType;
-    using Surface = FlatTriangulation<T>;
-
-    const auto surface = GENERATE_SURFACES(T);
-    CAPTURE(surface);
-
-    auto face = GENERATE_COPY(halfEdges(surface));
+    const auto face = GENERATE_COPY(halfEdges(surface));
     CAPTURE(face);
 
     const auto path = Path(std::vector{
@@ -79,14 +86,14 @@ TEMPLATE_TEST_CASE("Nullhomotopic Paths", "[Path]", (long long), (mpq_class), (r
 }
 
 TEMPLATE_TEST_CASE("Short Paths", "[Path]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+  using Surface = FlatTriangulation<T>;
+
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
   SECTION("Tightening a Path Along two Edges of a Face") {
-    using T = TestType;
-    using Surface = FlatTriangulation<T>;
-
-    const auto surface = GENERATE_SURFACES(T);
-    CAPTURE(surface);
-
-    auto face = GENERATE_COPY(halfEdges(surface));
+    const auto face = GENERATE_COPY(halfEdges(surface));
     CAPTURE(face);
 
     const auto path = Path(std::vector{
@@ -97,16 +104,29 @@ TEMPLATE_TEST_CASE("Short Paths", "[Path]", (long long), (mpq_class), (renf_elem
 
     REQUIRE(path.tighten() == Path<Surface>(-SaddleConnection<Surface>(*surface, surface->previousInFace(face))));
   }
+
+  SECTION("A Single Segment cannot Tighten Further") {
+    const auto face = GENERATE_COPY(halfEdges(surface));
+    CAPTURE(face);
+
+    const auto segment = GENERATE_COPY(segments(surface, face));
+    CAPTURE(segment);
+
+    const auto path = Path(segment);
+    CAPTURE(path);
+
+    REQUIRE(path.tighten() == path);
+  }
 }
 
 TEMPLATE_TEST_CASE("Random Paths", "[Path]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
-  SECTION("Tightening a Random Path") {
-    using T = TestType;
-    using Surface = FlatTriangulation<T>;
+  using T = TestType;
+  using Surface = FlatTriangulation<T>;
 
-    const auto surface = GENERATE_SURFACES(T);
-    CAPTURE(surface);
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
 
+  SECTION("Tightening a Random Path of Saddle Connections") {
     const auto initial = GENERATE_COPY(take(8, halfEdges(surface)));
     CAPTURE(initial);
 
@@ -130,6 +150,10 @@ TEMPLATE_TEST_CASE("Random Paths", "[Path]", (long long), (mpq_class), (renf_ele
     const auto tightened = path.tighten();
     REQUIRE(tightened.tighten() == tightened);
     REQUIRE((path + (-path)).tighten() == Path<Surface>());
+  }
+
+  SECTION("Tightening a Random Path of Segments") {
+    // TODO
   }
 }
 

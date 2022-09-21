@@ -295,12 +295,16 @@ SaddleConnection<Surface>::operator const Vector<typename Surface::Coordinate> &
 
 template <typename Surface>
 Segment<Surface> SaddleConnection<Surface>::segment() const {
-  return Segment(
+  const auto segment = Segment(
       Point<Surface>{*self->surface, Vertex::source(self->source, *self->surface)},
       self->source,
       Point<Surface>{*self->surface, Vertex::source(self->target, *self->surface)},
       self->target,
       *this);
+
+  LIBFLATSURF_ASSERT(segment.source() == self->source && segment.target() == self->target, "conversion from SaddleConnection to Segment produced incompatible source & target half edges");
+
+  return segment;
 }
 
 template <typename Surface>

@@ -84,7 +84,7 @@ void ImplementationOf<ContourDecomposition<Surface>>::check(const std::vector<Pa
         connections[connection]++;
 
     for (auto& connection : connections)
-      LIBFLATSURF_CHECK(connections[-connection.first] == 1, "Each connection must show up exactly once with each sign in the perimiters of the components but " << connection.first << " does show up " << connections[-connection.first] + connection.second << " times.");
+      LIBFLATSURF_CHECK(connections[-connection.first] == 1, "Each connection must show up exactly once with each sign in the perimeters of the components but the negative of " << connection.first << ", " << -connection.first << ", shows up " << connections[-connection.first] << " times in " << fmt::format("[{}]", fmt::join(decomposition, ", ")));
   }
 
   // The total angle at each vertex has not changed

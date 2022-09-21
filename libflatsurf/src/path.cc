@@ -249,24 +249,15 @@ Path<Surface>::Path(const SaddleConnection<Surface>& path) :
 
 template <typename Surface>
 Path<Surface>::Path(const std::vector<SaddleConnection<Surface>>& path) :
-  self(spimpl::make_impl<ImplementationOf<Path>>([&]() {
-    std::vector<Segment<Surface>> segments;
-
-    for (const auto& segment : path)
-      segments.push_back(segment);
-
-    return segments;
-  }())) {}
+  Path(path | rx::transform([](const auto& saddleConnection) { return saddleConnection.segment(); }) | rx::to_vector()) {}
 
 template <typename Surface>
-Path<Surface>::Path(const Segment<Surface>&) {
-  throw std::logic_error("not implemented: Path(Segment)");
-}
+Path<Surface>::Path(const Segment<Surface>& segment) :
+  Path(std::vector{segment}) {}
 
 template <typename Surface>
-Path<Surface>::Path(const std::vector<Segment<Surface>>&) {
-  throw std::logic_error("not implemented: Path(vector<Segment>)");
-}
+Path<Surface>::Path(const std::vector<Segment<Surface>>& segments) :
+  self(spimpl::make_impl<ImplementationOf<Path>>(segments)) {}
 
 template <typename Surface>
 Path<Surface>::operator const std::vector<SaddleConnection<Surface>> &() const {

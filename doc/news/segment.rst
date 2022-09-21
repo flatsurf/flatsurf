@@ -6,6 +6,9 @@
 
 * Added `Segment` generalizing `SaddleConnection`.
 
+* Added possibility to create `Path` from `Segment` or a sequence of `Segment`
+  (before paths could only be built from saddle connections.)
+
 **Changed:**
 
 * <news item>
