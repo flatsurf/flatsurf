@@ -64,6 +64,11 @@ mpz_class Chain<Surface>::operator[](const HalfEdge& halfEdge) const {
 }
 
 template <typename Surface>
+const Vector<typename Surface::Coordinate>& Chain<Surface>::vector() const {
+  return *self;
+}
+
+template <typename Surface>
 Chain<Surface>::operator const Vector<T> &() const {
   return *self;
 }

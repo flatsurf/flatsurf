@@ -9,6 +9,8 @@
 * Added possibility to create `Path` from `Segment` or a sequence of `Segment`
   (before paths could only be built from saddle connections.)
 
+# Added `Chain::vector()` method to make it easier to cast a chain to vector in Python.
+
 **Changed:**
 
 * <news item>
