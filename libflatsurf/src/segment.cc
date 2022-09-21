@@ -140,7 +140,10 @@ const Vector<typename Surface::Coordinate>& Segment<Surface>::vector() const {
 
 template <typename Surface>
 std::optional<SaddleConnection<Surface>> Segment<Surface>::saddleConnection() const {
-  throw std::logic_error("not implemented: Segment::saddleConnection()");
+  if (start().vertex() && end().vertex())
+    return SaddleConnection<Surface>::inSector(*self->surface, self->source, self->vector);
+
+  return std::nullopt;
 }
 
 template <typename Surface>
