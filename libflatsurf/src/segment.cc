@@ -110,22 +110,22 @@ Segment<Surface>::Segment(const Point<Surface>& start, HalfEdge source, const Po
 
 template <typename Surface>
 const Point<Surface>& Segment<Surface>::start() const {
-  throw std::logic_error("not implemented: Segment::start()");
+  return self->start;
 }
 
 template <typename Surface>
 const Point<Surface>& Segment<Surface>::end() const {
-  throw std::logic_error("not implemented: Segment::end()");
+  return self->end;
 }
 
 template <typename Surface>
 HalfEdge Segment<Surface>::source() const {
-  throw std::logic_error("not implemented: Segment::source()");
+  return self->source;
 }
 
 template <typename Surface>
 HalfEdge Segment<Surface>::target() const {
-  throw std::logic_error("not implemented: Segment::target()");
+  return self->target;
 }
 
 template <typename Surface>
