@@ -181,23 +181,21 @@ std::ostream &operator<<(std::ostream& os, const Segment<Surface>& self) {
   if (saddleConnection)
     return os << *saddleConnection;
 
-  os << "Segment(";
+  os << self.vector() << " from ";
 
   if (self.start().vertex())
     os << self.source();
   else
     os << self.start();
 
-  os << ", ";
+  os << " to ";
 
   if (self.end().vertex())
     os << self.target();
   else
     os << self.end();
 
-  os << ", ";
-
-  return os << self.vector() << ")";
+  return os;
 }
 
 template <typename Surface>
