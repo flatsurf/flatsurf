@@ -29,10 +29,11 @@
 #include "cereal.helpers.hpp"
 #include "generators/saddle_connection_generator.hpp"
 #include "generators/surface_generator.hpp"
+#include "generators/half_edge_generator.hpp"
 
 namespace flatsurf::test {
 
-TEMPLATE_TEST_CASE("Angle between Saddle Connections", "[SaddleConnection][angle]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Angle between Saddle Connections", "[SaddleConnection][angle]", (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using Surface = FlatTriangulation<T>;
 
@@ -94,7 +95,44 @@ TEMPLATE_TEST_CASE("Angle between Saddle Connections", "[SaddleConnection][angle
   }
 }
 
-TEMPLATE_TEST_CASE("Saddle Connection Constructors", "[SaddleConnection][constructor]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Saddle Connection Equality & Hashing", "[SaddleConnection][operator==][hash]", (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+  using Surface = FlatTriangulation<T>;
+
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
+  const auto hash = std::hash<SaddleConnection<Surface>>{};
+
+  SECTION("Equal Saddle Connection Built from Different Chains are Equal") {
+    const auto face = GENERATE_COPY(halfEdges(surface));
+    CAPTURE(face);
+
+    const auto a = Chain{*surface, -face};
+    const auto b = Chain{*surface, surface->nextInFace(face)} + Chain{*surface, surface->previousInFace(face)};
+
+    // These chains are different, however, they can define the same saddle connection.
+    REQUIRE(a != b);
+
+    REQUIRE(SaddleConnection{*surface, -face, face, a} == SaddleConnection{*surface, -face, face, b});
+    REQUIRE(hash(SaddleConnection{*surface, -face, face, a}) == hash(SaddleConnection{*surface, -face, face, b}));
+  }
+
+  SECTION("Equality & Hashing of Random Saddle Connections") {
+    const auto connection = GENERATE_REF(saddleConnections(surface));
+    CAPTURE(connection);
+
+    REQUIRE(connection == connection);
+    REQUIRE(hash(connection) == hash(connection));
+
+    REQUIRE(connection != -connection);
+
+    // Verify that our hash function is good enough to separate such trivial differences.
+    REQUIRE(hash(connection) != hash(-connection));
+  }
+}
+
+TEMPLATE_TEST_CASE("Saddle Connection Constructors", "[SaddleConnection][constructor]", (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using Surface = FlatTriangulation<T>;
 
@@ -132,7 +170,7 @@ TEMPLATE_TEST_CASE("Saddle Connection Constructors", "[SaddleConnection][constru
 
 }
 
-TEMPLATE_TEST_CASE("Convert a SaddleConnection to a Segment", "[SaddleConnection][segment]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Convert a SaddleConnection to a Segment", "[SaddleConnection][segment]", (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using Surface = FlatTriangulation<T>;
 
@@ -148,7 +186,7 @@ TEMPLATE_TEST_CASE("Convert a SaddleConnection to a Segment", "[SaddleConnection
   REQUIRE(segment.saddleConnection() == connection);
 }
 
-TEMPLATE_TEST_CASE("Serialization of a SaddleConnection", "[SaddleConnection][save][load]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Serialization of a SaddleConnection", "[SaddleConnection][save][load]", (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using R2 = Vector<T>;
   auto square = makeSquare<R2>();

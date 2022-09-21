@@ -25,6 +25,7 @@
 
 **Fixed:**
 
+* Fixed hashing of `SaddleConnection`. Before, two saddle connections with different underlying representations as chains that represented the same vector were considered different from each other.
 * <news item>
 
 **Performance:**

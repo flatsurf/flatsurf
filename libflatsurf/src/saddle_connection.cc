@@ -362,7 +362,7 @@ using namespace flatsurf;
 
 template <typename Surface>
 size_t hash<SaddleConnection<Surface>>::operator()(const SaddleConnection<Surface>& self) const {
-  return hash_combine(self.source(), self.target(), self.chain());
+  return hash_combine(self.source(), self.target(), self.chain().vector());
 }
 
 }  // namespace std
