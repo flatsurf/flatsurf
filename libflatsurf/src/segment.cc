@@ -130,12 +130,12 @@ HalfEdge Segment<Surface>::target() const {
 
 template <typename Surface>
 const FlatTriangulation<typename Surface::Coordinate>& Segment<Surface>::surface() const {
-  throw std::logic_error("not implemented: Segment::surface()");
+  return *self->surface;
 }
 
 template <typename Surface>
 const Vector<typename Surface::Coordinate>& Segment<Surface>::vector() const {
-  throw std::logic_error("not implemented: Segment::vector()");
+  return self->vector;
 }
 
 template <typename Surface>
