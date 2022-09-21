@@ -162,8 +162,17 @@ Segment<Surface> Segment<Surface>::operator-() const {
 }
 
 template <typename Surface>
-bool Segment<Surface>::operator==(const Segment<Surface>&) const {
-  throw std::logic_error("not implemented: Segment::end()");
+bool Segment<Surface>::operator==(const Segment<Surface>& other) const {
+  if (surface() != other.surface() || start() != other.start() || end() != other.end() || vector() != other.vector())
+    return false;
+
+  if (start().vertex() && source() != other.source())
+    return false;
+
+  if (end().vertex() && target() != other.target())
+    return false;
+
+  return true;
 }
 
 template <typename Surface>
