@@ -22,6 +22,7 @@
 #include "../flatsurf/segment.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vertex.hpp"
+#include "../flatsurf/ray.hpp"
 #include "generators/surface_generator.hpp"
 #include "generators/half_edge_generator.hpp"
 #include "generators/segment_generator.hpp"
@@ -185,6 +186,24 @@ TEMPLATE_TEST_CASE("Segments Remember the Surface they are Defined On", "[Segmen
   CAPTURE(segment);
 
   REQUIRE(segment.surface() == *surface);
+}
+
+TEMPLATE_TEST_CASE("Segments Define a Direction", "[Segment][ray]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
+  const auto face = GENERATE_COPY(halfEdges(surface));
+
+  const auto segment = GENERATE_COPY(segments(surface, face));
+
+  CAPTURE(segment);
+
+  const auto ray = segment.ray();
+
+  REQUIRE(ray.start() == segment.start());
+  REQUIRE(ray.vector().parallel(segment.vector()));
 }
 
 }

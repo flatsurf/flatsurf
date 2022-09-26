@@ -148,12 +148,12 @@ std::optional<SaddleConnection<Surface>> Segment<Surface>::saddleConnection() co
 
 template <typename Surface>
 Segment<Surface>::operator Ray<Surface>() const {
-  throw std::logic_error("not implemented: Segment::operator Ray()");
+  return Ray{self->start, self->source, self->vector};
 }
 
 template <typename Surface>
 Ray<Surface> Segment<Surface>::ray() const {
-  throw std::logic_error("not implemented: Segment::ray()");
+  return *this;
 }
 
 template <typename Surface>
