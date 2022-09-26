@@ -36,10 +36,13 @@ class ImplementationOf<Ray<Surface>> {
  public:
   ImplementationOf(const Point<Surface>& start, HalfEdge source, const Vector<T>&);
 
-  ReadOnly<Surface> surface;
+  static HalfEdge normalizeSource(const Point<Surface>& start, HalfEdge source, const Vector<T>& vector);
 
-  HalfEdge source;
+  // Normalize source so that it is compatible with SaddleConnection source.
+  void normalize();
+
   Point<Surface> start;
+  HalfEdge source;
 
   Vector<T> vector;
 };

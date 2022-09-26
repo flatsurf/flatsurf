@@ -21,33 +21,63 @@
 
 #include "impl/ray.impl.hpp"
 
+#include "../flatsurf/ccw.hpp"
+#include "../flatsurf/edge.hpp"
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/half_edge_set.hpp"
+#include "../flatsurf/half_edge_set_iterator.hpp"
 #include "../flatsurf/point.hpp"
-#include "../flatsurf/vector.hpp"
-#include "../flatsurf/segment.hpp"
 #include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/segment.hpp"
+#include "../flatsurf/vector.hpp"
+#include "../flatsurf/vertex.hpp"
 #include "../flatsurf/vertical.hpp"
 
+#include "util/assert.ipp"
+
 namespace flatsurf {
+
+namespace {
+
+// Return a source half edge which can be used to describe vector emenating from p.
 template <typename Surface>
-Ray<Surface>::Ray(const Point<Surface>&, const Vector<T>&) {
-  throw std::logic_error("not implemented: Ray()");
+HalfEdge sector(const Point<Surface>& p, const Vector<typename Surface::Coordinate>& vector) {
+  if (p.vertex()) {
+    const auto& surface = p.surface();
+
+    for (const auto outgoing : p.vertex()->outgoing())
+      if (surface.inSector(outgoing, vector))
+        return outgoing;
+
+    LIBFLATSURF_ASSERT(false, "no sector surrounding " << p << " contains " << vector);
+  }
+  return p.face();
+}
+
 }
 
 template <typename Surface>
-Ray<Surface>::Ray(const Point<Surface>&, HalfEdge source, const Vector<T>&) {
-  throw std::logic_error("not implemented: Ray()");
+Ray<Surface>::Ray(const Point<Surface>& start, const Vector<T>& vector) {
+  LIBFLATSURF_CHECK_ARGUMENT(start.surface().angle(start) == 1, "cannot create Ray from starting point and vector since starting point is a singularity");
+
+  *this = Ray{start, sector(start, vector), vector};
 }
 
 template <typename Surface>
-Ray<Surface>::Ray(const Surface&, HalfEdge source, const Vector<T>&) {
-  throw std::logic_error("not implemented: Ray()");
+Ray<Surface>::Ray(const Point<Surface>& start, HalfEdge source, const Vector<T>& vector) :
+  self(spimpl::make_impl<ImplementationOf<Ray>>(start, source, vector)) {
+  LIBFLATSURF_CHECK_ARGUMENT(start.in(source), "start point of ray must be in source face");
+
+  self->normalize();
 }
 
 template <typename Surface>
-Ray<Surface>::Ray(const Surface&, HalfEdge) {
-  throw std::logic_error("not implemented: Ray()");
-}
+Ray<Surface>::Ray(const Surface& surface, HalfEdge source, const Vector<T>& vector) :
+  Ray(Point<Surface>{surface, Vertex::source(source, surface)}, source, vector) {}
+
+template <typename Surface>
+Ray<Surface>::Ray(const Surface& surface, HalfEdge vector) :
+  Ray(surface, vector, surface.fromHalfEdge(vector)) {}
 
 template <typename Surface>
 const Point<Surface>& Ray<Surface>::start() const {
@@ -102,6 +132,49 @@ const Surface& Ray<Surface>::surface() const {
 template <typename Surface>
 Segment<Surface> Ray<Surface>::segment(const Point<Surface>& end) const {
   throw std::logic_error("not implemented: segment()");
+}
+
+template <typename Surface>
+ImplementationOf<Ray<Surface>>::ImplementationOf(const Point<Surface>& start, HalfEdge source, const Vector<T>& vector) :
+  start(start),
+  source(source),
+  vector(vector) {}
+
+template <typename Surface>
+void ImplementationOf<Ray<Surface>>::normalize() {
+  source = normalizeSource(start, source, vector);
+}
+
+template <typename Surface>
+HalfEdge ImplementationOf<Ray<Surface>>::normalizeSource(const Point<Surface>& start, HalfEdge source, const Vector<T>& vector) {
+  const auto normalizeSourceAtVertex = [](const auto& surface, auto& source, const auto& vector) {
+    while(true) {
+      if (surface.inSector(source, vector))
+        break;
+      if (surface.fromHalfEdge(surface.nextAtVertex(source)).parallel(vector)) {
+        source = surface.nextAtVertex(source);
+        break;
+      }
+
+      source = surface.nextInFace(source);
+    }
+  };
+
+  const auto normalizeSourceAtEdge = [](const auto& surface, auto& source, const auto& vector) {
+    if (surface.fromHalfEdge(source).ccw(vector) == CCW::COUNTERCLOCKWISE || surface.fromHalfEdge(source).parallel(vector))
+      return;
+
+    source = -source;
+  };
+
+  if (start.vertex())
+    normalizeSourceAtVertex(start.surface(), source, vector);
+  else if (start.edge())
+    normalizeSourceAtEdge(start.surface(), source, vector);
+  else
+    source = start.face();
+
+  return source;
 }
 
 template <typename Surface>

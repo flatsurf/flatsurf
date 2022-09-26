@@ -18,3 +18,38 @@
  *********************************************************************/
 
 #include "external/catch2/single_include/catch2/catch.hpp"
+
+#include "../flatsurf/ray.hpp"
+#include "generators/surface_generator.hpp"
+#include "generators/half_edge_generator.hpp"
+#include "generators/point_generator.hpp"
+
+namespace flatsurf::test {
+
+TEMPLATE_TEST_CASE("Creating Rays", "[Ray][constructor]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+  using Surface = FlatTriangulation<T>;
+
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
+  const auto face = GENERATE_COPY(halfEdges(surface));
+
+  SECTION("Ray Starting at a Point") {
+    const auto start = GENERATE_COPY(points(surface, face));
+    CAPTURE(start);
+
+    const auto ray = Ray{start, face, surface->fromHalfEdge(face)};
+
+    if (surface->angle(start) == 1) {
+      REQUIRE(ray == Ray{start, surface->fromHalfEdge(face)});
+    } else {
+      REQUIRE_THROWS(Ray{start, surface->fromHalfEdge(face)});
+    }
+
+    REQUIRE(ray == Ray{*surface, face, surface->fromHalfEdge(face)});
+    REQUIRE(ray == Ray{*surface, face});
+  }
+}
+
+}

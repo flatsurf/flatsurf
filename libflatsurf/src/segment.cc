@@ -22,13 +22,12 @@
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vertex.hpp"
 #include "../flatsurf/edge.hpp"
-#include "../flatsurf/half_edge_set.hpp"
-#include "../flatsurf/half_edge_set_iterator.hpp"
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/ray.hpp"
 
 #include "impl/segment.impl.hpp"
 #include "impl/point.impl.hpp"
+#include "impl/ray.impl.hpp"
 #include "impl/flat_triangulation.impl.hpp"
 
 #include "util/instantiate.ipp"
@@ -37,30 +36,11 @@
 
 namespace flatsurf {
 
-namespace {
-
-// Return a source half edge which can be used to describe vector emenating from p.
-template <typename Surface>
-HalfEdge sector(const Point<Surface>& p, const Vector<typename Surface::Coordinate>& vector) {
-  if (p.vertex()) {
-    const auto& surface = p.surface();
-
-    for (const auto outgoing : p.vertex()->outgoing())
-      if (surface.inSector(outgoing, vector))
-        return outgoing;
-
-    LIBFLATSURF_ASSERT(false, "no sector surrounding " << p << " contains " << vector);
-  }
-  return p.face();
-}
-
-}
-
 template <typename Surface>
 Segment<Surface>::Segment(const Point<Surface>& start, const Vector<T>& vector) {
   LIBFLATSURF_CHECK_ARGUMENT(start.surface().angle(start) == 1, "cannot create Segment from starting point and vector since starting point is a singularity");
 
-  *this = Segment{start, sector(start, vector), vector};
+  *this = Segment{start, Ray{start, vector}.source(), vector};
 }
 
 template <typename Surface>
@@ -82,11 +62,11 @@ Segment<Surface>::Segment(const Point<Surface>& start, const Point<Surface>& end
   if (end.surface().angle(end) > 1) {
     // Since the endpoint of the segment is a singularity, we need to
     // retrace the segment in the surface (which might be very slow.)
-    *this = Segment{start, sector(start, vector), vector};
+    *this = Segment{start, Ray{start, vector}.source(), vector};
     return;
   }
 
-  *this = Segment{start, sector(start, vector), end, sector(end, -vector), vector};
+  *this = Segment{start, Ray{start, vector}.source(), end, Ray{end, -vector}.source(), vector};
 }
 
 template <typename Surface>
@@ -203,39 +183,8 @@ ImplementationOf<Segment<Surface>>::ImplementationOf(HalfEdge source, const Poin
 
 template <typename Surface>
 void ImplementationOf<Segment<Surface>>::normalize() {
-  const auto normalizeSourceAtVertex = [](const auto& surface, auto& source, const auto& vector) {
-    while(true) {
-      if (surface.inSector(source, vector))
-        break;
-      if (surface.fromHalfEdge(surface.nextAtVertex(source)).parallel(vector)) {
-        source = surface.nextAtVertex(source);
-        break;
-      }
-
-      source = surface.nextInFace(source);
-    }
-  };
-
-  const auto normalizeSourceAtEdge = [](const auto& surface, auto& source, const auto& vector) {
-    if (surface.fromHalfEdge(source).ccw(vector) == CCW::COUNTERCLOCKWISE || surface.fromHalfEdge(source).parallel(vector))
-      return;
-
-    source = -source;
-  };
-
-  if (start.vertex())
-    normalizeSourceAtVertex(*surface, source, vector);
-  else if (start.edge())
-    normalizeSourceAtEdge(*surface, source, vector);
-  else
-    source = start.face();
-
-  if (end.vertex())
-    normalizeSourceAtVertex(*surface, target, -vector);
-  else if (end.edge())
-    normalizeSourceAtEdge(*surface, target, -vector);
-  else
-    target = end.face();
+  source = ImplementationOf<Ray<Surface>>::normalizeSource(start, source, vector);
+  target = ImplementationOf<Ray<Surface>>::normalizeSource(end, target, -vector);
 }
 
 }
