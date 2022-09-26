@@ -158,7 +158,7 @@ Ray<Surface> Segment<Surface>::ray() const {
 
 template <typename Surface>
 Segment<Surface> Segment<Surface>::operator-() const {
-  throw std::logic_error("not implemented: Segment::operator-()");
+  return Segment{self->end, self->target, self->start, self->source, -self->vector};
 }
 
 template <typename Surface>
