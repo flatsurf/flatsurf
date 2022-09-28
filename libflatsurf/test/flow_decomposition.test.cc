@@ -1,8 +1,8 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Vincent Delecroix
- *        Copyright (C) 2019-2021 Julian Rüth
+ *        Copyright (C)      2019 Vincent Delecroix
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -42,13 +42,9 @@
 #include "generators/vertical_generator.hpp"
 #include "surfaces.hpp"
 
-using eantic::renf_elem_class;
-
 namespace flatsurf::test {
 
-using namespace flatsurf;
-
-TEST_CASE("Flow Decompositions Over Number Fields", "[flow_decomposition]") {
+TEST_CASE("Flow Decompositions Over Number Fields", "[FlowDecomposition]") {
   using T = renf_elem_class;
 
   SECTION("A Complicated Direction For A Veech Cathedral") {
@@ -68,143 +64,278 @@ TEST_CASE("Flow Decompositions Over Number Fields", "[flow_decomposition]") {
   }
 }
 
-TEMPLATE_TEST_CASE("Flow Decomposition", "[flow_decomposition]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Flow Decomposition", "[FlowDecomposition]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
-  const auto [name, surface_] = GENERATE(makeSurface<T>());
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
 
-  const auto surface = *surface_;
+  // The limit 6 here is somewhat low. Unfortunately, these tests take some
+  // time already (45 seconds in early 2021.)
+  const auto vertical = GENERATE_COPY(verticals<T>(surface, 6));
+  CAPTURE(vertical);
 
-  GIVEN("The surface " << *name << ", i.e., " << *surface) {
-    // The limit 6 here is somewhat low. Unfortunately, these tests take some
-    // time already (45 seconds in early 2021.)
-    const auto vertical = GENERATE_COPY(verticals<T>(surface, 6));
+  SECTION("The flow decomposition in that direction can be computed") {
+    auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), vertical);
 
-    AND_GIVEN("A direction of a Saddle Connection " << vertical) {
-      THEN("The flow decomposition in that direction can be computed") {
-        auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), vertical);
+    const auto area = [](const auto& components) {
+      return components | rx::transform([](const auto& component) { return component.area(); }) | rx::sum();
+    };
 
-        const auto area = [](const auto& components) {
-          return components | rx::transform([](const auto& component) { return component.area(); }) | rx::sum();
-        };
+    CAPTURE(flowDecomposition);
+    REQUIRE(area(flowDecomposition.components()) == surface->area());
 
-        CAPTURE(flowDecomposition);
-        REQUIRE(area(flowDecomposition.components()) == surface->area());
+    REQUIRE(flowDecomposition.decompose());
 
-        REQUIRE(flowDecomposition.decompose());
+    CAPTURE(flowDecomposition);
+    REQUIRE(area(flowDecomposition.components()) == surface->area());
 
-        CAPTURE(flowDecomposition);
-        REQUIRE(area(flowDecomposition.components()) == surface->area());
-
-        AND_THEN("The Area of the Cylinders is Consistent with Their Width & Height (modulo some scaling)") {
-          for (const auto& component : flowDecomposition.components()) {
-            if (component.cylinder()) {
-              REQUIRE(component.holonomy() == std::vector{component.circumferenceHolonomy()});
-              REQUIRE(2 * component.width() * component.height() == component.vertical().vertical() * component.vertical().vertical() * component.area());
-            }
-          }
-        }
-
-        AND_THEN("Each of its components can be triangulated") {
-          const auto triangulations = flowDecomposition.components() | rx::transform([](const auto& component) { return component.triangulation(); }) | rx::to_vector();
-          REQUIRE((triangulations | rx::transform([](const auto& component) { return component.triangulation().area(); }) | rx::sum()) == surface->area());
-          REQUIRE(flowDecomposition.triangulation().area() == surface->area());
-        }
-
-        AND_THEN("Each component's bottom contour goes to the right") {
-          for (const auto& component : flowDecomposition.components()) {
-            for (const auto& bottom : component.bottom()) {
-              CAPTURE(bottom);
-              REQUIRE(!bottom.top());
-              REQUIRE(vertical.ccw(bottom.saddleConnection()) != CCW::COUNTERCLOCKWISE);
-            }
-            REQUIRE(vertical.ccw(begin(component.bottom())->saddleConnection()) == CCW::CLOCKWISE);
-            REQUIRE(vertical.ccw(rbegin(component.bottom())->saddleConnection()) == CCW::CLOCKWISE);
-          }
-        }
-
-        AND_THEN("Each component's right contour goes to the top") {
-          for (const auto& component : flowDecomposition.components()) {
-            for (const auto& right : component.right()) {
-              CAPTURE(right);
-              REQUIRE(right.parallel());
-              REQUIRE(vertical.ccw(right.saddleConnection()) == CCW::COLLINEAR);
-              REQUIRE(vertical.orientation(right.saddleConnection()) == ORIENTATION::SAME);
-            }
-          }
-        }
-
-        AND_THEN("Each component's top contour goes to the left") {
-          for (const auto& component : flowDecomposition.components()) {
-            for (const auto& top : component.top()) {
-              CAPTURE(top);
-              REQUIRE(!top.bottom());
-              REQUIRE(vertical.ccw(top.saddleConnection()) != CCW::CLOCKWISE);
-            }
-            REQUIRE(vertical.ccw(begin(component.top())->saddleConnection()) == CCW::COUNTERCLOCKWISE);
-            REQUIRE(vertical.ccw(rbegin(component.top())->saddleConnection()) == CCW::COUNTERCLOCKWISE);
-          }
-        }
-
-        AND_THEN("Each component's left contour goes to the bottom") {
-          for (const auto& component : flowDecomposition.components()) {
-            for (const auto& left : component.left()) {
-              CAPTURE(left);
-              REQUIRE(left.antiparallel());
-              REQUIRE(vertical.ccw(left.saddleConnection()) == CCW::COLLINEAR);
-              REQUIRE(vertical.orientation(left.saddleConnection()) == ORIENTATION::OPPOSITE);
-            }
-          }
-        }
-
-        AND_THEN("Each component's perimeter is made up of bottom + right + top + left") {
-          for (const auto& component : flowDecomposition.components()) {
-            auto perimeter = component.perimeter();
-            for (const auto bottom : component.bottom()) {
-              REQUIRE(*begin(perimeter) == bottom);
-              perimeter.pop_front();
-            }
-            for (const auto right : component.right()) {
-              REQUIRE(*begin(perimeter) == right);
-              perimeter.pop_front();
-            }
-            for (const auto top : component.top()) {
-              REQUIRE(*begin(perimeter) == top);
-              perimeter.pop_front();
-            }
-            for (const auto left : component.left()) {
-              REQUIRE(*begin(perimeter) == left);
-              perimeter.pop_front();
-            }
-            REQUIRE(perimeter.size() == 0);
-          }
-        }
-
-        AND_THEN("The Boundary Connections Are Consistent") {
-          const bool single = flowDecomposition.components().size() == 1;
-
-          for (const auto& component : flowDecomposition.components()) {
-            auto perimeter = component.perimeter();
-            for (const auto& connection : perimeter) {
-              if (single)
-                REQUIRE(!connection.boundary());
-              REQUIRE(connection.boundary() == (-connection).boundary());
-            }
-
-            if (!single)
-              REQUIRE((perimeter | rx::any_of([](const auto& connection) { return connection.boundary(); })));
-          }
-        }
-
-        AND_THEN("Each Component knows about the Decomposition that Created it") {
-          for (const auto& component : flowDecomposition.components())
-            REQUIRE(component.decomposition() == flowDecomposition);
-
-          for (auto& component : flowDecomposition.components())
-            REQUIRE(component.decomposition() == flowDecomposition);
+    SECTION("The Area of the Cylinders is Consistent with Their Width & Height (modulo some scaling)") {
+      for (const auto& component : flowDecomposition.components()) {
+        if (component.cylinder()) {
+          REQUIRE(component.holonomy() == std::vector{component.circumferenceHolonomy()});
+          REQUIRE(2 * component.width() * component.height() == component.vertical().vertical() * component.vertical().vertical() * component.area());
         }
       }
     }
+
+    SECTION("Each of its components can be triangulated") {
+      const auto triangulations = flowDecomposition.components() | rx::transform([](const auto& component) { return component.triangulation(); }) | rx::to_vector();
+      REQUIRE((triangulations | rx::transform([](const auto& component) { return component.triangulation().area(); }) | rx::sum()) == surface->area());
+      REQUIRE(flowDecomposition.triangulation().area() == surface->area());
+    }
+
+    SECTION("Each component's bottom contour goes to the right") {
+      for (const auto& component : flowDecomposition.components()) {
+        for (const auto& bottom : component.bottom()) {
+          CAPTURE(bottom);
+          REQUIRE(!bottom.top());
+          REQUIRE(vertical.ccw(bottom.saddleConnection()) != CCW::COUNTERCLOCKWISE);
+        }
+        REQUIRE(vertical.ccw(begin(component.bottom())->saddleConnection()) == CCW::CLOCKWISE);
+        REQUIRE(vertical.ccw(rbegin(component.bottom())->saddleConnection()) == CCW::CLOCKWISE);
+      }
+    }
+
+    SECTION("Each component's right contour goes to the top") {
+      for (const auto& component : flowDecomposition.components()) {
+        for (const auto& right : component.right()) {
+          CAPTURE(right);
+          REQUIRE(right.parallel());
+          REQUIRE(vertical.ccw(right.saddleConnection()) == CCW::COLLINEAR);
+          REQUIRE(vertical.orientation(right.saddleConnection()) == ORIENTATION::SAME);
+        }
+      }
+    }
+
+    SECTION("Each component's top contour goes to the left") {
+      for (const auto& component : flowDecomposition.components()) {
+        for (const auto& top : component.top()) {
+          CAPTURE(top);
+          REQUIRE(!top.bottom());
+          REQUIRE(vertical.ccw(top.saddleConnection()) != CCW::CLOCKWISE);
+        }
+        REQUIRE(vertical.ccw(begin(component.top())->saddleConnection()) == CCW::COUNTERCLOCKWISE);
+        REQUIRE(vertical.ccw(rbegin(component.top())->saddleConnection()) == CCW::COUNTERCLOCKWISE);
+      }
+    }
+
+    SECTION("Each component's left contour goes to the bottom") {
+      for (const auto& component : flowDecomposition.components()) {
+        for (const auto& left : component.left()) {
+          CAPTURE(left);
+          REQUIRE(left.antiparallel());
+          REQUIRE(vertical.ccw(left.saddleConnection()) == CCW::COLLINEAR);
+          REQUIRE(vertical.orientation(left.saddleConnection()) == ORIENTATION::OPPOSITE);
+        }
+      }
+    }
+
+    SECTION("Each component's perimeter is made up of bottom + right + top + left") {
+      for (const auto& component : flowDecomposition.components()) {
+        auto perimeter = component.perimeter();
+        for (const auto bottom : component.bottom()) {
+          REQUIRE(*begin(perimeter) == bottom);
+          perimeter.pop_front();
+        }
+        for (const auto right : component.right()) {
+          REQUIRE(*begin(perimeter) == right);
+          perimeter.pop_front();
+        }
+        for (const auto top : component.top()) {
+          REQUIRE(*begin(perimeter) == top);
+          perimeter.pop_front();
+        }
+        for (const auto left : component.left()) {
+          REQUIRE(*begin(perimeter) == left);
+          perimeter.pop_front();
+        }
+        REQUIRE(perimeter.size() == 0);
+      }
+    }
+
+    SECTION("The Boundary Connections Are Consistent") {
+      const bool single = flowDecomposition.components().size() == 1;
+
+      for (const auto& component : flowDecomposition.components()) {
+        auto perimeter = component.perimeter();
+        for (const auto& connection : perimeter) {
+          if (single)
+            REQUIRE(!connection.boundary());
+          REQUIRE(connection.boundary() == (-connection).boundary());
+        }
+
+        if (!single)
+          REQUIRE((perimeter | rx::any_of([](const auto& connection) { return connection.boundary(); })));
+      }
+    }
+
+    SECTION("Each Component knows about the Decomposition that Created it") {
+      for (const auto& component : flowDecomposition.components())
+        REQUIRE(component.decomposition() == flowDecomposition);
+
+      for (auto& component : flowDecomposition.components())
+        REQUIRE(component.decomposition() == flowDecomposition);
+    }
+  }
+}
+
+TEST_CASE("Parabolic", "[FlowDecomposition][parabolic]") {
+  SECTION("L with sqrt(3) horizontal") {
+    using T = renf_elem_class;
+    using R2 = Vector<T>;
+    auto surface = makeLParabolicNonParabolic<R2>();
+    CAPTURE(*surface);
+
+    const auto direction = Vector<T>(1, 0);
+    auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), direction);
+    CAPTURE(flowDecomposition);
+
+    REQUIRE(flowDecomposition.decompose());
+
+    REQUIRE(flowDecomposition.completelyPeriodic() == boost::logic::tribool(true));
+    REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(true));
+  }
+
+  SECTION("L with sqrt(3) vertical") {
+    using T = renf_elem_class;
+    using R2 = Vector<T>;
+    auto surface = makeLParabolicNonParabolic<R2>();
+    CAPTURE(*surface);
+
+    const auto direction = Vector<T>(0, 1);
+    auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), direction);
+    CAPTURE(flowDecomposition);
+
+    REQUIRE(flowDecomposition.decompose());
+
+    REQUIRE(flowDecomposition.completelyPeriodic() == boost::logic::tribool(true));
+    REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(false));
+  }
+
+  SECTION("L with sqrt(3) diagonal") {
+    using T = renf_elem_class;
+    using R2 = Vector<T>;
+    auto surface = makeLParabolicNonParabolic<R2>();
+    CAPTURE(*surface);
+
+    const auto direction = Vector<T>(1, 1);
+    auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), direction);
+    CAPTURE(flowDecomposition);
+
+    REQUIRE(flowDecomposition.decompose());
+
+    REQUIRE(flowDecomposition.completelyPeriodic() == boost::logic::tribool(true));
+    REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(false));
+  }
+
+  SECTION("(2,3,5) triangle in (1, 0)") {
+    using T = renf_elem_class;
+    using R2 = Vector<T>;
+    auto surface = make235<R2>();
+    CAPTURE(*surface);
+    CAPTURE(surface->area());
+
+    const auto direction = Vector<T>(1, 0);
+    auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), direction);
+    CAPTURE(flowDecomposition);
+
+    REQUIRE(flowDecomposition.decompose());
+
+    REQUIRE(flowDecomposition.completelyPeriodic() == boost::logic::tribool(true));
+    REQUIRE(flowDecomposition.components().size() == 4);
+    REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(true));
+  }
+
+  SECTION("(2,3,5) triangle in (0, 1)") {
+    using T = renf_elem_class;
+    using R2 = Vector<T>;
+    auto surface = make235<R2>();
+    CAPTURE(*surface);
+
+    const auto direction = Vector<T>(0, 1);
+    auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), direction);
+    CAPTURE(flowDecomposition);
+
+    REQUIRE(flowDecomposition.decompose());
+
+    REQUIRE(flowDecomposition.completelyPeriodic() == boost::logic::tribool(true));
+    REQUIRE(flowDecomposition.components().size() == 6);
+    REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(false));
+  }
+
+  SECTION("(2,3,5) triangle in (2c^2 - 1, -c^3 + 4c)") {
+    using T = renf_elem_class;
+    using R2 = Vector<T>;
+    auto surface = make235<R2>();
+    CAPTURE(*surface);
+
+    auto c = Q->gen();
+    const auto direction = Vector(2 * c * c - 1, -c * c * c + 4 * c);
+    auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), direction);
+    CAPTURE(flowDecomposition);
+
+    REQUIRE(flowDecomposition.decompose());
+
+    REQUIRE(flowDecomposition.completelyPeriodic() == boost::logic::tribool(true));
+    REQUIRE(flowDecomposition.components().size() == 4);
+    REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(true));
+  }
+
+  SECTION("(2,3,5) triangle in (c^2 - 5, c)") {
+    using T = renf_elem_class;
+    using R2 = Vector<T>;
+    auto surface = make235<R2>();
+    CAPTURE(*surface);
+
+    auto c = Q->gen();
+    const auto direction = Vector<T>(c * c - 5, c);
+    auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), direction);
+    CAPTURE(flowDecomposition);
+
+    REQUIRE(flowDecomposition.decompose());
+
+    REQUIRE(flowDecomposition.completelyPeriodic() == boost::logic::tribool(true));
+    REQUIRE(flowDecomposition.components().size() == 6);
+    REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(false));
+  }
+
+  SECTION("(2,3,5) triangle in (-5, -c^3 + 2c)") {
+    using T = renf_elem_class;
+    using R2 = Vector<T>;
+    auto surface = make235<R2>();
+    CAPTURE(*surface);
+
+    auto c = Q->gen();
+    const auto direction = Vector<T>(-5, -c * c * c + 2 * c);
+    auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), direction);
+    CAPTURE(flowDecomposition);
+
+    REQUIRE(flowDecomposition.decompose());
+
+    REQUIRE(flowDecomposition.completelyPeriodic() == boost::logic::tribool(true));
+    REQUIRE(flowDecomposition.components().size() == 6);
+    REQUIRE(flowDecomposition.parabolic() == boost::logic::tribool(false));
   }
 }
 

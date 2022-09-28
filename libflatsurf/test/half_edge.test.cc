@@ -19,11 +19,11 @@
  *********************************************************************/
 
 #include "../flatsurf/half_edge.hpp"
-#include "external/catch2/single_include/catch2/catch.hpp"
+#include "cereal.helpers.hpp"
 
 namespace flatsurf::test {
 
-TEST_CASE("HalfEdge Basics", "[half_edge]") {
+TEST_CASE("HalfEdge Basics", "[HalfEdge][constructor][operator==][fromIndex][operator-]") {
   const int id = GENERATE(range(-1024, 1024));
 
   if (id == 0) return;
@@ -36,6 +36,10 @@ TEST_CASE("HalfEdge Basics", "[half_edge]") {
   REQUIRE(e.id() == id);
   REQUIRE((-e).id() == -e.id());
   REQUIRE(HalfEdge::fromIndex(e.index()) == e);
+}
+
+TEST_CASE("Serialization of a HalfEdge", "[HalFEdge][load_minimal][save_minimal]") {
+  testRoundtrip(HalfEdge(1337));
 }
 
 }  // namespace flatsurf::test

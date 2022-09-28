@@ -4,6 +4,48 @@ intervalxt Change Log
 
 .. current developments
 
+v3.12.0
+====================
+
+**Added:**
+
+* Added scalar multiplication of exact vectors with elements of underlying ring.
+* Added `Vector::applyMatrix(a, b, c, d)` and `FlatTriangulation::applyMatrix(a, b, c, d)`.
+* Added predicates `FlatTriangulation::inHalfPlane()` and `FlatTriangulation::inPlane()`.
+* Added various flavours of `FlatTriangulation::sector()` to generalize saddle
+  connections factory functions that have been deprecated.
+* Added `Point` for points on a flat triangulation.
+* Added mapping of `Point` under a `Deformation`.
+* Added `FlatTriangulation::angle` for `Point`.
+* Added `FlatTriangulationCombinatorics::face(HalfEdge)` to get the other half edges of a face without having to manually call `previousInFace`/`nextInFace`.
+
+**Deprecated:**
+
+* Deprecated factory functions `SaddleConnection::inHalfPlane()`,
+  `SaddleConnection::inPlane()`, `SaddleConnection::alongVertical()`,
+  `SaddleConnection::clockwise()`, `SaddleConnection::counterclockwise()`. The
+  functionality is now essentially in `FlatTriangulation::sector()`.
+
+**Fixed:**
+
+* Fixed incorrect channels for binder setup.
+* Fixed formatting of the flatsurf zenodo page in case somebody wants to cite flatsurf directly.
+
+**Performance:**
+
+* Improved performance of tests.
+
+
+
+v3.11.3
+====================
+
+**Fixed:**
+
+* Added support for fmt library version 9.
+
+
+
 v3.11.2
 ====================
 

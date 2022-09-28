@@ -3,7 +3,7 @@
 #  This file is part of flatsurf.
 #
 #        Copyright (C) 2019-2022 Julian Rüth
-#        Copyright (C) 2020 Vincent Delecroix
+#        Copyright (C)      2020 Vincent Delecroix
 #
 #  Flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ from .pythonization import enable_iterable
 
 from cppyythonizations.pickling.cereal import enable_cereal
 from cppyythonizations.util import filtered, add_method, wrap_method
-from cppyythonizations.operators.arithmetic import enable_arithmetic
+from cppyythonizations.operators.arithmetic import enable_arithmetic, enable_addable, enable_subtractable
 from cppyythonizations.operators.order import enable_total_order
 from cppyythonizations.printing import enable_pretty_printing, enable_list_printing
 
@@ -46,6 +46,9 @@ if os.environ.get('PYFLATSURF_CYSIGNALS', True):
 
 cppyy.py.add_pythonization(enable_iterable, "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("Vector<.*>"))(enable_arithmetic), "flatsurf")
+
+cppyy.py.add_pythonization(filtered(re.compile("Point<.*>"))(enable_addable), "flatsurf")
+cppyy.py.add_pythonization(filtered(re.compile("Point<.*>"))(enable_subtractable), "flatsurf")
 cppyy.py.add_pythonization(filtered("Bound")(enable_total_order), "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("Vector<.*>"))(add_method("__str__")(lambda self: "(" + str(self.x()) + ", " + str(self.y()) + ")")), "flatsurf")
 cppyy.py.add_pythonization(enable_pretty_printing, "flatsurf")

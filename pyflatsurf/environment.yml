@@ -4,13 +4,12 @@
 # conda env update -n pyflatsurf-build -f environment.yml
 name: pyflatsurf-build
 channels:
-  - flatsurf
   - conda-forge
   - defaults
 dependencies:
   - automake
   - cppyy
-  - cppyythonizations
+  - cppyythonizations >=1.2.2,<2
   - gmpxxyy
   - ipywidgets
   - libtool

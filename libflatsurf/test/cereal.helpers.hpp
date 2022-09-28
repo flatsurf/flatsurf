@@ -1,8 +1,8 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Vincent Delecroix
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C)      2019 Vincent Delecroix
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,7 +28,10 @@
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/vertex.hpp"
-#include "./surfaces.hpp"
+#include "../flatsurf/cereal.hpp"
+#include "surfaces.hpp"
+#include "external/cereal/include/cereal/archives/json.hpp"
+#include "external/catch2/single_include/catch2/catch.hpp"
 
 namespace flatsurf::test {
 
@@ -127,6 +130,35 @@ struct comparer<flatsurf::Vertical<Surface>> {
     return x.surface() == y.surface() && x.vertical() == y.vertical();
   }
 };
+
+template <typename T>
+static void testRoundtrip(const T& x) {
+  using cereal::JSONInputArchive;
+  using cereal::JSONOutputArchive;
+
+  CAPTURE(printer<T>::toString(x));
+
+  std::stringstream s;
+
+  {
+    JSONOutputArchive archive(s);
+    archive(cereal::make_nvp("test", x));
+  }
+
+  INFO("Serialized to " << s.str());
+
+  auto y = factory<T>::make();
+
+  {
+    JSONInputArchive archive(s);
+    archive(cereal::make_nvp("test", *y));
+  }
+
+  CAPTURE(printer<T>::toString(*y));
+
+  REQUIRE(comparer<T>::eq(x, *y));
+}
+
 
 }  // namespace flatsurf::test
 

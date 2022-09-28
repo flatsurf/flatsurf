@@ -1,7 +1,8 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2021-2022 Julian Rüth
+ *        Copyright (C)      2022 Sam Freedman
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -57,6 +58,9 @@ class Deformation {
   // Return nothing if there is no such image, e.g., because the deformation is
   // not [total]().
   std::optional<Path<Surface>> operator()(const Path<Surface>&) const;
+
+  // Return the image of the point under this deformation.
+  Point<Surface> operator()(const Point<Surface>&) const;
 
   // Return the result of the deformation.
   [[deprecated("Use codomain().clone() instead.")]] Surface surface();

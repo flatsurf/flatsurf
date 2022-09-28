@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2021-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #include "impl/generic_retriangulation_deformation_relation.hpp"
 
 #include <ostream>
+#include <unordered_set>
 
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
@@ -27,6 +28,7 @@
 #include "../flatsurf/half_edge_set_iterator.hpp"
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/path.hpp"
+#include "../flatsurf/point.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_by_length.hpp"
@@ -47,7 +49,7 @@ GenericRetriangulationDeformationRelation<Surface>::GenericRetriangulationDeform
 
 template <typename Surface>
 GenericRetriangulationDeformationRelation<Surface>::GenericRetriangulationDeformationRelation(const Surface& domain, const Surface& codomain, Path<Surface> preimage, Path<Surface> image) :
-  RetriangulationDeformationRelation<Surface>(domain, codomain), preimage(std::move(preimage)), image(std::move(image)) {
+  DeformationRelation<Surface>(domain, codomain), preimage(std::move(preimage)), image(std::move(image)) {
   LIBFLATSURF_ASSERT(this->preimage.begin() != this->preimage.end(), "preimage must be a non-trivial path");
   LIBFLATSURF_ASSERT(this->preimage.begin()->surface() == *this->domain, "preimage must live in the domain");
   LIBFLATSURF_ASSERT(rx::zip(this->preimage, this->preimage | rx::skip_n(1)) | rx::all_of([&](const auto& connections) {
@@ -105,6 +107,70 @@ std::optional<Path<Surface>> GenericRetriangulationDeformationRelation<Surface>:
 }
 
 template <typename Surface>
+Point<Surface> GenericRetriangulationDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
+  if (point.vertex()) {
+    const auto A = *point.vertex();
+
+    // We walk the domain surface trying to find a path to a vertex that
+    // survived the deformation.
+    std::unordered_set<Vertex> seen;
+
+    const std::function<std::optional<Point<Surface>>(std::optional<HalfEdge>)> walk = [&](std::optional<HalfEdge> step) -> std::optional<Point<Surface>> {
+      auto B = step ? Vertex::target(*step, *this->domain) : A;
+
+      if (seen.find(B) != seen.end())
+        return std::nullopt;
+
+      seen.insert(B);
+
+      if (!step) {
+        const auto relation = this->relation(B);
+        if (relation)
+          // This vertex still exists in the codomain.
+          return Point{*this->codomain, relation->second.source(), T(1), T(), T()};
+      } else {
+        const auto source = this->source(-*step, this->domain->fromHalfEdge(-*step));
+        if (source)
+          // This vertex still exists in the codomain.
+          return Point{*this->codomain, *source, this->domain->fromHalfEdge(-*step)};
+      }
+
+      LIBFLATSURF_ASSERT(this->domain->angle(B) == 1, "vertex that disappears in a retriangulation must have been a marked point");
+
+      // Walk recursively from the vertex.
+      for (const auto next : B.outgoing()) {
+        auto image = walk(next);
+        if (image) {
+          if (step)
+            *image -= this->domain->fromHalfEdge(*step);
+          return *image;
+        }
+      }
+
+      return std::nullopt;
+    };
+
+    const auto image = walk(std::nullopt);
+
+    LIBFLATSURF_ASSERT(image, "vertex is not connected to anything that exists in the codomain after deformation");
+
+    return *image;
+  } else {
+    const HalfEdge face = point.face();
+    const Vector<T> toPoint = point.vector(face);
+    const auto source = this->source(face, toPoint);
+    const auto base = Vertex::source(face, *this->domain);
+
+    if (source)
+      return Point{*this->codomain, *source, toPoint};
+
+    LIBFLATSURF_ASSERT(this->domain->angle(base) == 1, "vertex that disappears in a retriangulation must have been a marked point");
+
+    return this->operator()(Point{*this->domain, base}) + toPoint;
+  }
+}
+
+template <typename Surface>
 std::optional<Path<Surface>> GenericRetriangulationDeformationRelation<Surface>::operator()(HalfEdge source, HalfEdge target, const Vector<T>& vector) const {
   auto source_ = this->source(source, vector);
   if (!source_)
@@ -120,7 +186,10 @@ std::optional<Path<Surface>> GenericRetriangulationDeformationRelation<Surface>:
   Path<Surface> image;
   Vector<T> vector_;
   while (true) {
-    const auto search = SaddleConnection<Surface>::counterclockwise(*this->codomain, SaddleConnection<Surface>(*this->codomain, *source_), Vertical<Surface>(*this->codomain, vector));
+    const auto search = SaddleConnection<Surface>::inSector(
+      this->codomain,
+      this->codomain->sector(*source_, this->codomain->fromHalfEdge(*source_), CCW::COUNTERCLOCKWISE, vector),
+      vector);
 
     vector_ += search;
     image += search;

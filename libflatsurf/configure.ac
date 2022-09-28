@@ -2,17 +2,18 @@ dnl Process this file with autoconf to produce a configure script.
 
 dnl We need at least autoconf 2.69 for this configure.ac to work.
 AC_PREREQ([2.69])
-AC_INIT([libflatsurf], [3.11.2], [julian.rueth@fsfe.org])
+AC_INIT([libflatsurf], [3.12.0], [julian.rueth@fsfe.org])
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([.])
-AM_INIT_AUTOMAKE([1.14.1 tar-pax subdir-objects foreign])
+dnl Request tests to run serially since parallel takes care of actually running tests in parallel in libflatsurf.test.sh
+AM_INIT_AUTOMAKE([1.14.1 tar-pax subdir-objects foreign serial-tests])
 
 dnl Version number of the library c:r:a.
 dnl Set to c+1:0:0 on a non-backwards-compatible change.
 dnl Set to c+1:0:a+1 on a backwards-compatible change.
 dnl Set to c:r+1:a if the interface is unchanged.
-AC_SUBST([libflatsurf_version_info], [17:2:10])
+AC_SUBST([libflatsurf_version_info], [18:0:11])
 
 AC_CANONICAL_HOST
 
@@ -42,7 +43,9 @@ AC_CHECK_HEADERS([boost/type_traits.hpp], , AC_MSG_ERROR([boost headers not foun
 AC_CHECK_HEADERS([fmt/format.h], , AC_MSG_ERROR([fmt headers not found]))
 AX_CXX_CHECK_LIB([fmt], [fmt::v6::getpagesize()], , [
   AX_CXX_CHECK_LIB([fmt], [fmt::v7::getpagesize()], , [
-    AX_CXX_CHECK_LIB([fmt], [fmt::v8::report_system_error(int code=0, const char* message=nullptr)], , [AC_MSG_ERROR([fmt library not found])], [-lfmt])
+    AX_CXX_CHECK_LIB([fmt], [fmt::v8::report_system_error(int code=0, const char* message=nullptr)], , [
+      AX_CXX_CHECK_LIB([fmt], [fmt::v9::report_system_error(int code=0, const char* message=nullptr)], , [AC_MSG_ERROR([fmt library not found])], [-lfmt])
+    ], [-lfmt])
   ], [-lfmt])
 ], [-lfmt])
 

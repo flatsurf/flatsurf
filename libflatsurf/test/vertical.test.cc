@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,21 +17,17 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "impl/retriangulation_deformation_relation.hpp"
+#include "../flatsurf/vertical.hpp"
 
-#include "../flatsurf/flat_triangulation.hpp"
-#include "../flatsurf/path.hpp"
+#include "cereal.helpers.hpp"
 
-namespace flatsurf {
+namespace flatsurf::test {
 
-template <typename Surface>
-std::optional<Path<Surface>> RetriangulationDeformationRelation<Surface>::operator()(const Path<Surface>&) const {
-  throw std::logic_error("not implemented: cannot compute image of a path when a generic retriangulation happened");
+TEMPLATE_TEST_CASE("Serialization of a Vertical", "[Vertical][load][save]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using R2 = Vector<TestType>;
+  auto square = makeSquare<R2>();
+
+  testRoundtrip(Vertical(*square, square->fromHalfEdge(HalfEdge(1))));
 }
 
-}  // namespace flatsurf
-
-// Instantiations of templates so implementations are generated for the linker
-#include "util/instantiate.ipp"
-
-LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_STATIC), RetriangulationDeformationRelation, LIBFLATSURF_FLAT_TRIANGULATION_TYPES)
+}

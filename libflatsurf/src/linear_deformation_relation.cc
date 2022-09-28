@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2021-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,12 +22,14 @@
 #include <boost/type_traits/is_detected.hpp>
 #include <ostream>
 
+#include "../flatsurf/ccw.hpp"
 #include "../flatsurf/chain.hpp"
 #include "../flatsurf/deformation.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/path.hpp"
+#include "../flatsurf/point.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vector.hpp"
@@ -61,7 +63,7 @@ std::unique_ptr<DeformationRelation<Surface>> LinearDeformationRelation<Surface>
 
   const T det = a * d - b * c;
 
-  if (!truediv(aa, det) || !truediv(bb, det) || !truediv(cc, det) || !truediv(dd, det)) throw std::logic_error("Linear transformation is not invertible over the base ring.");
+  if (!truediv(aa, det) || !truediv(bb, det) || !truediv(cc, det) || !truediv(dd, det)) throw std::logic_error("not implemented: linear transformation is not invertible over the base ring");
 
   return std::unique_ptr<DeformationRelation<Surface>>(new LinearDeformationRelation(this->codomain, this->domain, aa, bb, cc, dd));
 }
@@ -84,10 +86,21 @@ std::optional<Path<Surface>> LinearDeformationRelation<Surface>::operator()(cons
       target = this->domain->nextAtVertex(target);
     }
 
-    path_.push_back(SaddleConnection<Surface>::counterclockwise(*this->codomain, source, target, chain));
+    path_.push_back(
+      SaddleConnection(
+        *this->codomain,
+        this->codomain->sector(source, CCW::COUNTERCLOCKWISE, chain),
+        this->codomain->sector(target, CCW::COUNTERCLOCKWISE, -chain),
+        chain));
   }
 
   return path_;
+}
+
+template <typename Surface>
+Point<Surface> LinearDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
+  const HalfEdge face = point.face();
+  return Point{*this->codomain, face, point.coordinates(face)};
 }
 
 template <typename Surface>

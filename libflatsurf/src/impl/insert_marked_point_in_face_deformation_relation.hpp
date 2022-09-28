@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2021-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_IMPL_INSERT_MARKED_DEFORMATION_RELATION_HPP
-#define LIBFLATSURF_IMPL_INSERT_MARKED_DEFORMATION_RELATION_HPP
+#ifndef LIBFLATSURF_IMPL_INSERT_MARKED_POINT_IN_FACE_DEFORMATION_RELATION_HPP
+#define LIBFLATSURF_IMPL_INSERT_MARKED_POINT_IN_FACE_DEFORMATION_RELATION_HPP
 
 #include <iosfwd>
 
@@ -27,25 +27,30 @@
 
 namespace flatsurf {
 
+// The deformation that inserts a marked point in the interior of a face. The
+// marked point is then attached to three half edges.
+// Note that ``GenericRetriangulationDeformationRelation`` generalizes this
+// deformation. We could always use
+// ``GenericRetriangulationDeformationRelation`` instead but hopefully this
+// implementation is more efficient.
 template <typename Surface>
-class InsertMarkedDeformationRelation : public DeformationRelation<Surface> {
- public:
-  // The deformation that inserts a marked point in the interior of a face. The
-  // marked point is then attached to three half edges.
-  InsertMarkedDeformationRelation(const Surface& domain, const Surface& codomain, const Vertex& inserted);
+class InsertMarkedPointInFaceDeformationRelation : public DeformationRelation<Surface> {
+  using T = typename Surface::Coordinate;
 
-  // The deformation that inserts a marked point in the interior of a half edge
-  // `split`.  The marked point is then attached to four half edges, two of
-  // them sum as `split = a + b`.
-  InsertMarkedDeformationRelation(const Surface& domain, const Surface& codomain, const Vertex& inserted, HalfEdge split, HalfEdge a, HalfEdge b);
+ public:
+  InsertMarkedPointInFaceDeformationRelation(const Surface& domain, const Surface& codomain, const Vertex& inserted);
 
   std::optional<Path<Surface>> operator()(const Path<Surface>&) const override;
+  Point<Surface> operator()(const Point<Surface>&) const override;
 
   std::unique_ptr<DeformationRelation<Surface>> clone() const override;
 
   std::unique_ptr<DeformationRelation<Surface>> section() const override;
 
   bool trivial() const override;
+
+  // Return the inserted vertex as an element of the domain.
+  Point<Surface> point() const;
 
   std::ostream& operator>>(std::ostream&) const override;
 

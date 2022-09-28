@@ -32,6 +32,7 @@ class CompositeDeformationRelation : public DeformationRelation<Surface> {
   CompositeDeformationRelation(const DeformationRelation<Surface>& lhs, const DeformationRelation<Surface>& rhs);
 
   std::optional<Path<Surface>> operator()(const Path<Surface>&) const override;
+  Point<Surface> operator()(const Point<Surface>&) const override;
 
   std::unique_ptr<DeformationRelation<Surface>> clone() const override;
 

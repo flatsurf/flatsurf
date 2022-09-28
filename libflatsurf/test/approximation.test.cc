@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2020-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 
 namespace flatsurf::test {
 
-TEMPLATE_TEST_CASE("Approximation", "[arb]", LIBFLATSURF_TEST_REAL_TYPES) {
+TEMPLATE_TEST_CASE("Approximation", "[Approximation][arb]", LIBFLATSURF_TEST_REAL_TYPES) {
   using T = TestType;
   using Arb = exactreal::Arb;
   using Arf = exactreal::Arf;

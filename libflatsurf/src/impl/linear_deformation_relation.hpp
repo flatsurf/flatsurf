@@ -34,6 +34,7 @@ class LinearDeformationRelation : public DeformationRelation<Surface> {
   LinearDeformationRelation(const Surface& domain, const Surface& codomain, const T& a, const T& b, const T& c, const T& d);
 
   std::optional<Path<Surface>> operator()(const Path<Surface>&) const override;
+  Point<Surface> operator()(const Point<Surface>&) const override;
 
   static bool truediv(T& lhs, const T& rhs);
 

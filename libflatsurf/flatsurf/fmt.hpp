@@ -43,7 +43,7 @@ struct GenericFormatter {
   constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
 
   template <typename FormatContext>
-  auto format(const T& value, FormatContext& ctx) {
+  auto format(const T& value, FormatContext& ctx) const {
     std::ostringstream ss;
     ss << value;
     return fmt::format_to(ctx.out(), "{}", ss.str());

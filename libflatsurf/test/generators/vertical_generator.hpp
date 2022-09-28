@@ -96,7 +96,7 @@ class VerticalGenerator : public Catch::Generators::IGenerator<Vector<T>> {
 // good sample of verticals coming from very short saddle connections, coming
 // from actual edges of the surface and longer connections.
 template <typename T>
-Catch::Generators::GeneratorWrapper<Vector<T>> verticals(std::shared_ptr<FlatTriangulation<T>> surface, int count = -1, int skip = -1) {
+Catch::Generators::GeneratorWrapper<Vector<T>> verticals(std::shared_ptr<const FlatTriangulation<T>> surface, int count = -1, int skip = -1) {
   if (count == -1)
     count = static_cast<int>(surface->size());
   if (skip == -1)
