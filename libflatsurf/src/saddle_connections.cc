@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -155,6 +155,11 @@ SaddleConnections<Surface> SaddleConnections<Surface>::sector(const SaddleConnec
 
   ret.self->sectors = sectors;
   return ret;
+}
+
+template <typename Surface>
+SaddleConnections<Surface> SaddleConnections<Surface>::sector(const Ray<Surface>& sectorBegin, const Ray<Surface>& sectorEnd) const {
+  throw std::logic_error("not implemented: sector(Ray, Ray)");
 }
 
 template <typename Surface>

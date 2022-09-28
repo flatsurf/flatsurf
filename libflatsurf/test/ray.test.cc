@@ -157,4 +157,8 @@ TEMPLATE_TEST_CASE("Rays can be Compared", "[Ray][operator==][hash]", (long long
   REQUIRE(hash(ray) != hash(perpendicular));
 }
 
+TEMPLATE_TEST_CASE("Serialization of Rays", "[Ray][save][load]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  // TODO
+}
+
 }

@@ -282,6 +282,11 @@ SaddleConnection<Surface>::operator const Chain<Surface> &() const {
 }
 
 template <typename Surface>
+SaddleConnection<Surface>::operator Ray<Surface>() const {
+  throw std::logic_error("not implemented: SaddleConnection::operator Ray");
+}
+
+template <typename Surface>
 bool SaddleConnection<Surface>::operator>(const Bound bound) const {
   return vector() > bound;
 }

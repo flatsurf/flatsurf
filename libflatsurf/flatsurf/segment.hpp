@@ -67,6 +67,10 @@ class Segment : public Serializable<Segment<Surface>>,
   // Return the saddle connection this segment represents, if any.
   std::optional<SaddleConnection<Surface>> saddleConnection() const;
 
+  // Return whether this segment does overlap with itself, i.e., it contains an
+  // interval more than once.
+  bool overlapping() const;
+
   operator Ray<Surface>() const;
 
   Ray<Surface> ray() const;

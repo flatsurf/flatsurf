@@ -206,4 +206,12 @@ TEMPLATE_TEST_CASE("Segments Define a Direction", "[Segment][ray]", (long long),
   REQUIRE(ray.vector().parallel(segment.vector()));
 }
 
+TEMPLATE_TEST_CASE("Segments can Self-Overlap", "[Segment][overlapping]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  // TODO
+}
+
+TEMPLATE_TEST_CASE("Serialization of Segments", "[Segment][save][load]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  // TODO
+}
+
 }

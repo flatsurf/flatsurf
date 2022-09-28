@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2020-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -86,6 +86,11 @@ SaddleConnectionsByLength<Surface> SaddleConnectionsByLength<Surface>::sector(Ha
 
 template <typename Surface>
 SaddleConnectionsByLength<Surface> SaddleConnectionsByLength<Surface>::sector(const SaddleConnection<Surface>& sectorBegin, const SaddleConnection<Surface>& sectorEnd) const {
+  return this->byAngle().sector(sectorBegin, sectorEnd).byLength();
+}
+
+template <typename Surface>
+SaddleConnectionsByLength<Surface> SaddleConnectionsByLength<Surface>::sector(const Ray<Surface>& sectorBegin, const Ray<Surface>& sectorEnd) const {
   return this->byAngle().sector(sectorBegin, sectorEnd).byLength();
 }
 
