@@ -186,6 +186,19 @@ TEMPLATE_TEST_CASE("Convert a SaddleConnection to a Segment", "[SaddleConnection
   REQUIRE(segment.saddleConnection() == connection);
 }
 
+TEMPLATE_TEST_CASE("Endpoints of a SaddleConnection", "[SaddleConnection][start][end]", (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
+  const auto connection = GENERATE_REF(saddleConnections(surface));
+  CAPTURE(connection);
+
+  REQUIRE(connection.start() == (-connection).end());
+  REQUIRE(connection.end() == (-connection).start());
+}
+
 TEMPLATE_TEST_CASE("Serialization of a SaddleConnection", "[SaddleConnection][save][load]", (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using R2 = Vector<T>;

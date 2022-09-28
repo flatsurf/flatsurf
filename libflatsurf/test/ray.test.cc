@@ -20,15 +20,19 @@
 #include "external/catch2/single_include/catch2/catch.hpp"
 
 #include "../flatsurf/ray.hpp"
+
+#include "../flatsurf/ccw.hpp"
+
 #include "generators/surface_generator.hpp"
 #include "generators/half_edge_generator.hpp"
 #include "generators/point_generator.hpp"
+#include "generators/ray_generator.hpp"
+#include "generators/saddle_connection_generator.hpp"
 
 namespace flatsurf::test {
 
 TEMPLATE_TEST_CASE("Creating Rays", "[Ray][constructor]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
-  using Surface = FlatTriangulation<T>;
 
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
@@ -50,6 +54,49 @@ TEMPLATE_TEST_CASE("Creating Rays", "[Ray][constructor]", (long long), (mpq_clas
     REQUIRE(ray == Ray{*surface, face, surface->fromHalfEdge(face)});
     REQUIRE(ray == Ray{*surface, face});
   }
+}
+
+TEMPLATE_TEST_CASE("Turning Sense of Rays", "[Ray][ccw]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
+  const auto face = GENERATE_COPY(halfEdges(surface));
+
+  const auto ray = GENERATE_COPY(rays(surface, face));
+
+  SECTION("A Ray is Collinear to Itself and its Negative") {
+    REQUIRE(ray.ccw(ray) == CCW::COLLINEAR);
+
+    if (surface->angle(ray.start()) == 1)
+      REQUIRE(ray.ccw(Ray{ray.start(), -ray.vector()}) == CCW::COLLINEAR);
+  }
+
+  SECTION("Turning is Consistent") {
+    const auto s = GENERATE_COPY(rays(surface, face));
+
+    if (ray.start() == s.start())
+      REQUIRE(ray.ccw(s) == -s.ccw(ray));
+  }
+}
+
+TEMPLATE_TEST_CASE("Rays are Compatible with Saddle Connections", "[Ray][saddleConnection][source][vector][start]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
+  const auto saddleConnection = GENERATE_COPY(saddleConnections(surface));
+  CAPTURE(saddleConnection);
+
+  const auto ray = saddleConnection.ray(); 
+  CAPTURE(ray);
+
+  REQUIRE(ray.saddleConnection() == saddleConnection);
+  REQUIRE(ray.source() == saddleConnection.source());
+  REQUIRE(ray.vector().ccw(saddleConnection.vector()) == CCW::COLLINEAR);
+  REQUIRE(ray.start() == Point{*surface, saddleConnection.start()});
 }
 
 }

@@ -54,7 +54,43 @@ HalfEdge sector(const Point<Surface>& p, const Vector<typename Surface::Coordina
   return p.face();
 }
 
+// Return the angle turning from sourceVector next to source to targetVector next target.
+// Namely, if the angle is α to turn in counterclockwise direction, return α/π⌋.
+template <typename Surface>
+int angle(const Surface& surface, HalfEdge source, const Vector<typename Surface::Coordinate>& sourceVector, HalfEdge target, const Vector<typename Surface::Coordinate>& targetVector) {
+  LIBFLATSURF_CHECK_ARGUMENT(Vertex::source(source, surface) == Vertex::source(target, surface), "Cannot determine angle between vector starting at " << source << " and a vector starting at " << target << " since they do not start at the same vertex.");
+
+  using T = typename Surface::Coordinate;
+
+  HalfEdge sector = source;
+  Vector<T> turned = sourceVector;
+
+  int angle = 0;
+
+  CCW sgn = CCW::COUNTERCLOCKWISE;
+
+  while (sector != target || turned.ccw(targetVector) != CCW::COLLINEAR) {
+    if (sector == target && turned.ccw(targetVector) != CCW::CLOCKWISE) {
+      turned = targetVector;
+    } else {
+      sector = surface.nextAtVertex(sector);
+      turned = surface.fromHalfEdge(sector);
+    }
+
+    const auto ccw = sourceVector.ccw(turned);
+
+    if (ccw == CCW::COLLINEAR || ccw != sgn) {
+      angle++;
+      sgn = -sgn;
+    }
+  }
+
+  LIBFLATSURF_ASSERT(angle < 2 * surface.angle(Vertex::source(source, surface)), "Turn angle must be smaller than the full vertex angle but the turn from " << source << ", " << sourceVector << " to " << target << ", " << targetVector << " in " << surface << " is " << angle << "/2");
+
+  return angle;
 }
+
+}  // namespace
 
 template <typename Surface>
 Ray<Surface>::Ray(const Point<Surface>& start, const Vector<T>& vector) {
@@ -81,42 +117,69 @@ Ray<Surface>::Ray(const Surface& surface, HalfEdge vector) :
 
 template <typename Surface>
 const Point<Surface>& Ray<Surface>::start() const {
-  throw std::logic_error("not implemented: start()");
+  return self->start;
 }
 
 template <typename Surface>
 HalfEdge Ray<Surface>::source() const {
-  throw std::logic_error("not implemented: source()");
+  return self->source;
 }
 
 template <typename Surface>
 Ray<Surface>::operator const Vector<T> &() const {
-  throw std::logic_error("not implemented: operator Vector()");
+  return self->vector;
 }
 
 template <typename Surface>
 const Vector<typename Surface::Coordinate>& Ray<Surface>::vector() const {
-  throw std::logic_error("not implemented: vector()");
+  return self->vector;
 }
 
 template <typename Surface>
 Ray<Surface>::operator Vertical<Surface>() const {
-  throw std::logic_error("not implemented: operator Vertical()");
+  return Vertical{this->surface(), this->vector()};
 }
 
 template <typename Surface>
 SaddleConnection<Surface> Ray<Surface>::saddleConnection() const {
-  throw std::logic_error("not implemented: saddleConnection()");
+  return SaddleConnection<Surface>::inSector(this->surface(), self->source, *this);
 }
 
 template <typename Surface>
-int Ray<Surface>::angle(const Ray&) const {
-  throw std::logic_error("not implemented: angle()");
+int Ray<Surface>::angle(const Ray& other) const {
+  return flatsurf::angle(this->surface(), this->source(), this->vector(), other.source(), other.vector()) / 2;
 }
 
 template <typename Surface>
-CCW Ray<Surface>::ccw(const Ray&) const {
-  throw std::logic_error("not implemented: ccw()");
+CCW Ray<Surface>::ccw(const Ray& other) const {
+  LIBFLATSURF_CHECK_ARGUMENT(start() == other.start(), "can only compute ccw() for rays starting from the same point");
+
+  const int angle = flatsurf::angle(this->surface(), this->source(), this->vector(), other.source(), other.vector());
+
+  if (angle == 0) {
+    // The angle between the rays is in [0, π).
+    const auto ccw = this->vector().ccw(other.vector());
+    LIBFLATSURF_ASSERT(ccw == CCW::COLLINEAR || ccw == CCW::COUNTERCLOCKWISE, "rays that enclose an angle <π must be collinear or counterclockwise");
+    return ccw;
+  }
+
+  const int totalAngle = this->surface().angle(Vertex::source(this->source(), this->surface()));
+
+  // Let k·2π be the total angle at the vertex.
+
+  if (angle < totalAngle)
+    // The angle between the rays is less than k·π.
+    return CCW::COUNTERCLOCKWISE;
+  
+  if (angle > totalAngle)
+    // The angle between the rays is more than k·π.
+    return CCW::CLOCKWISE;
+
+  // The angle between the rays is in [k·π, (k + 1)·π). If it's exactly k·π, then the rays are collinear.
+  if (this->vector().ccw(other.vector()) == CCW::COLLINEAR)
+    return CCW::COLLINEAR;
+
+  return CCW::CLOCKWISE;
 }
 
 template <typename Surface>
@@ -126,11 +189,11 @@ bool Ray<Surface>::operator==(const Ray&) const {
 
 template <typename Surface>
 const Surface& Ray<Surface>::surface() const {
-  throw std::logic_error("not implemented: surface()");
+  return self->start.surface();
 }
 
 template <typename Surface>
-Segment<Surface> Ray<Surface>::segment(const Point<Surface>& end) const {
+Segment<Surface> Ray<Surface>::segment(const Point<Surface>&) const {
   throw std::logic_error("not implemented: segment()");
 }
 
@@ -189,7 +252,7 @@ namespace std {
 using namespace flatsurf;
 
 template <typename Surface>
-size_t hash<Ray<Surface>>::operator()(const Ray<Surface>& self) const {
+size_t hash<Ray<Surface>>::operator()(const Ray<Surface>&) const {
   throw std::logic_error("not implemented: hashing of rays");
 }
 
