@@ -37,7 +37,7 @@ struct EquivalenceClassCode {
   virtual size_t hash() const = 0;
 
   // Return whether two codes describe the same equivalence class.
-  virtual bool equal(EquivalenceClassCode&) const = 0;
+  virtual bool equal(const EquivalenceClassCode&) const = 0;
 
   friend
   bool operator==(const EquivalenceClassCode& lhs, const EquivalenceClassCode& rhs);

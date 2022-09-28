@@ -22,6 +22,7 @@ libflatsurf_la_SOURCES =                                            \
 	edge_set_iterator.cc                                        \
 	equivalence.cc                                              \
 	equivalence_class.cc                                        \
+	equivalence_class_code.cc                                   \
 	flat_triangulation.cc                                       \
 	flat_triangulation_collapsed.cc                             \
 	flat_triangulation_combinatorial.cc                         \
@@ -90,6 +91,7 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/edge_set.hpp                                    \
 	../flatsurf/edge_set_iterator.hpp                           \
 	../flatsurf/equivalence_class.hpp                           \
+	../flatsurf/equivalence_class_code.hpp                      \
 	../flatsurf/flat_triangulation.hpp                          \
 	../flatsurf/flat_triangulation_collapsed.hpp                \
 	../flatsurf/flat_triangulation_combinatorial.hpp            \
