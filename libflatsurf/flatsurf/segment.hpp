@@ -87,6 +87,9 @@ class Segment : public Serializable<Segment<Surface>>,
 template <typename Surface, typename... T>
 Segment(const Point<Surface>&, T &&...) -> Segment<Surface>;
 
+template <typename Surface, typename... T>
+Segment(const Surface&, T &&...) -> Segment<Surface>;
+
 }
 
 namespace std {
