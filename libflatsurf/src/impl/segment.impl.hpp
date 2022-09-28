@@ -40,6 +40,13 @@ class ImplementationOf<Segment<Surface>> {
   // Normalize source & target so that they are compatible with SaddleConnection source & target.
   void normalize();
 
+  // TODO: We need a more effecient handling of segments coming from
+  // SaddleConnections so we can efficiently convert to SaddleConnection for a
+  // path that was originally created from SaddleConnections e.g., for the
+  // paths that come out of flow decomposition.
+  // mutable std::optional<SaddleConnection> is probably the best that is filled on demand.
+  // This way we also get rid of the keep-alive in PathIterator.
+
   ReadOnly<Surface> surface;
 
   HalfEdge source;
