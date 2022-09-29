@@ -22,6 +22,7 @@
 
 #include <boost/operators.hpp>
 #include <iosfwd>
+#include <optional>
 #include <vector>
 
 #include "copyable.hpp"
@@ -88,6 +89,11 @@ class Path : public Serializable<Path<Surface>>,
   // Return the inverse path, i.e., the path obtained by walking the reversed
   // connections in reverse order.
   Path operator-() const;
+
+  // Return a single segment that is equivalent to this path.
+  // Return nullopt if this path is not made up of segments that join up to a
+  // single segment.
+  std::optional<Segment<Surface>> segment() const;
 
   void push_front(const Segment<Surface>&);
   void push_back(const Segment<Surface>&);

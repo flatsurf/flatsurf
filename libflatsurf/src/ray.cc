@@ -22,12 +22,14 @@
 #include "impl/ray.impl.hpp"
 
 #include "../flatsurf/ccw.hpp"
+#include "../flatsurf/deformation.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/half_edge_set_iterator.hpp"
 #include "../flatsurf/point.hpp"
 #include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/path.hpp"
 #include "../flatsurf/segment.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertex.hpp"
@@ -193,8 +195,37 @@ const Surface& Ray<Surface>::surface() const {
 }
 
 template <typename Surface>
-Segment<Surface> Ray<Surface>::segment(const Point<Surface>&) const {
-  throw std::logic_error("not implemented: segment()");
+Segment<Surface> Ray<Surface>::segment(const Point<Surface>& end) const {
+  const auto segmentAfterInsertion = [&](const auto& insertion) {
+    const auto segment = insertion(*this).segment(insertion(end));
+
+    const auto preimage = insertion.section()(Path{segment});
+
+    LIBFLATSURF_ASSERT(preimage, "preimage of a segment after insertion of a point must exist");
+
+    const auto simplified = preimage->segment();
+
+    LIBFLATSURF_ASSERT(simplified, "preimage of segment after insertion must be a segment");
+
+    return *simplified;
+  };
+
+  if (!start().vertex())
+    return segmentAfterInsertion(surface().insert(start()));
+
+  if (!end.vertex())
+    return segmentAfterInsertion(surface().insert(end));
+
+  Path<Surface> segment;
+
+  do {
+    const auto partial = SaddleConnection<Surface>::inSector(surface(), source(), *this).segment();
+    segment.push_back(partial);
+    if (partial.end() == end)
+      return *segment.segment();
+
+    LIBFLATSURF_CHECK_ARGUMENT(surface().angle(partial.end()) == 1, "endpoint not reachable along this ray");
+  }while(true);
 }
 
 template <typename Surface>

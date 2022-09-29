@@ -71,7 +71,7 @@ class Segment : public Serializable<Segment<Surface>>,
   // interval more than once.
   bool overlapping() const;
 
-  operator Ray<Surface>() const;
+  explicit operator Ray<Surface>() const;
 
   Ray<Surface> ray() const;
 

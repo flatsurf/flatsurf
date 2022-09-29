@@ -42,6 +42,7 @@ class InsertMarkedPointInFaceDeformationRelation : public DeformationRelation<Su
 
   std::optional<Path<Surface>> operator()(const Path<Surface>&) const override;
   Point<Surface> operator()(const Point<Surface>&) const override;
+  Ray<Surface> operator()(const Ray<Surface>&) const override;
 
   std::unique_ptr<DeformationRelation<Surface>> clone() const override;
 

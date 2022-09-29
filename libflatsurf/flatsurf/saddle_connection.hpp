@@ -147,7 +147,7 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   [[deprecated("use ray().ccw() instead")]]
   CCW ccw(HalfEdge source, const Vector<T> &vector) const;
 
-  operator Ray<Surface>() const;
+  explicit operator Ray<Surface>() const;
 
   Ray<Surface> ray() const;
 

@@ -29,6 +29,7 @@
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/point.hpp"
+#include "../flatsurf/ray.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_by_length.hpp"
@@ -168,6 +169,11 @@ Point<Surface> GenericRetriangulationDeformationRelation<Surface>::operator()(co
 
     return this->operator()(Point{*this->domain, base}) + toPoint;
   }
+}
+
+template <typename Surface>
+Ray<Surface> GenericRetriangulationDeformationRelation<Surface>::operator()(const Ray<Surface>& ray) const {
+  throw std::logic_error("not implemented: GenericRetriangulationDeformationRelation::operator()(Ray)");
 }
 
 template <typename Surface>

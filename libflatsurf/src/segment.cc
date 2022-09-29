@@ -133,12 +133,12 @@ std::optional<SaddleConnection<Surface>> Segment<Surface>::saddleConnection() co
 
 template <typename Surface>
 Segment<Surface>::operator Ray<Surface>() const {
-  return Ray{self->start, self->source, self->vector};
+  return ray();
 }
 
 template <typename Surface>
 Ray<Surface> Segment<Surface>::ray() const {
-  return *this;
+  return Ray{self->start, self->source, self->vector};
 }
 
 template <typename Surface>

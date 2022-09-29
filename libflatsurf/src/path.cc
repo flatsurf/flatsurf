@@ -56,7 +56,10 @@ struct RayOrdering {
   RayOrdering(Ray<Surface> b) :
     b(std::move(b)) {}
 
-  bool operator()(const Ray<Surface>& x, const Ray<Surface>& y) {
+  bool operator()(const Segment<Surface>& x_, const Segment<Surface>& y_) {
+    const auto x = x_.ray();
+    const auto y = y_.ray();
+
     if (x == y)
       return false;
 
@@ -116,7 +119,7 @@ struct RayOrdering {
             LIBFLATSURF_UNREACHABLE("Impossible configuration of saddle connections.");
         }
       case CCW::CLOCKWISE:
-        return !this->operator()(y, x);
+        return !this->operator()(y_, x_);
       case CCW::COLLINEAR:
         switch (b.ccw(x)) {
           case CCW::COUNTERCLOCKWISE:
@@ -151,7 +154,7 @@ Path<Surface> tightenClockwise(const Segment<Surface>& a, const Segment<Surface>
 
   const auto& surface = a.surface();
 
-  LIBFLATSURF_ASSERT((-a).ray().ccw(b) == CCW::CLOCKWISE, "Can only tighten clockwise vertices but we are not turning clockwise from " << -a << " to " << b);
+  LIBFLATSURF_ASSERT((-a).ray().ccw(b.ray()) == CCW::CLOCKWISE, "Can only tighten clockwise vertices but we are not turning clockwise from " << -a << " to " << b);
 
   if (!b.start().vertex()) {
     // Reduce to the case that the segments meet at a marked vertex.
@@ -182,10 +185,10 @@ Path<Surface> tightenClockwise(const Segment<Surface>& a, const Segment<Surface>
   auto connections = SaddleConnections<Surface>{surface}.sector(b.ray(), (-a).ray()).bound(std::max(Bound::upper(b.vector()), Bound::upper(a.vector())));
 
   for (auto connection = std::begin(connections); connection != std::end(connections); ++connection) {
-    if (connection->ray().ccw(b) == CCW::COLLINEAR)
+    if (connection->ray().ccw(b.ray()) == CCW::COLLINEAR)
       continue;
 
-    const auto insertBefore = std::lower_bound(std::begin(rays), std::end(rays), *connection, RayOrdering<Surface>{b});
+    const auto insertBefore = std::lower_bound(std::begin(rays), std::end(rays), *connection, RayOrdering<Surface>{b.ray()});
     LIBFLATSURF_ASSERT(insertBefore != end(rays) && insertBefore != begin(rays), "Connection " << *connection << " must be in the range (" << b << ", " << -a << "] since we have chosen the search sector that way.");
 
     LIBFLATSURF_ASSERT(*connection != *insertBefore, "Connections must not contain duplicates except for the inclusive sector end but " << *connection << " is not equal to " << b);
@@ -331,6 +334,11 @@ size_t Path<Surface>::size() const {
 }
 
 template <typename Surface>
+std::optional<Segment<Surface>> Path<Surface>::segment() const {
+  throw std::logic_error("not implemented: Path::segment()");
+}
+
+template <typename Surface>
 void Path<Surface>::push_front(const SaddleConnection<Surface>& segment) {
   LIBFLATSURF_ASSERT(empty() || ImplementationOf<Path>::connected(segment, *begin()), "Path must be connected but " << segment << " does not precede " << *begin());
   self->path.insert(std::begin(self->path), segment);
@@ -342,6 +350,16 @@ void Path<Surface>::push_back(const SaddleConnection<Surface>& segment) {
   LIBFLATSURF_ASSERT(empty() || ImplementationOf<Path>::connected(*self->path.rbegin(), segment), "Path must be connected but " << *self->path.rbegin() << " does not precede " << segment);
   self->path.push_back(segment);
   self->pathAsSaddleConnections = std::nullopt;
+}
+
+template <typename Surface>
+void Path<Surface>::push_front(const Segment<Surface>& segment) {
+  throw std::logic_error("not implemented: Path::push_front()");
+}
+
+template <typename Surface>
+void Path<Surface>::push_back(const Segment<Surface>& segment) {
+  throw std::logic_error("not implemented: Path::push_back()");
 }
 
 template <typename Surface>
@@ -465,9 +483,9 @@ Path<Surface> Path<Surface>::tighten() const {
     } else {
       // Try to replace the subpath a → b with a tightening starting a a's
       // source vertex and ending at b's target vertex.
-      const CCW ccw = (-*a).ray().ccw(*b);
-      if (ccw == (-a->vector()).ccw(b->vector()) && ((ccw == CCW::COUNTERCLOCKWISE && (-*a).ray().angle(*b) == 0) ||
-                                                        (ccw == CCW::CLOCKWISE && (*b).ray().angle(-*a) == 0))) {
+      const CCW ccw = (-*a).ray().ccw(b->ray());
+      if (ccw == (-a->vector()).ccw(b->vector()) && ((ccw == CCW::COUNTERCLOCKWISE && (-*a).ray().angle(b->ray()) == 0) ||
+                                                        (ccw == CCW::CLOCKWISE && (*b).ray().angle((-*a).ray()) == 0))) {
         // The angle enclosed where a and b meet is less than π so the path can be tightened.
         if (ccw == CCW::CLOCKWISE)
           a = replace(a, path, tightenClockwise(*a, *b));
