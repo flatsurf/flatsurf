@@ -197,7 +197,6 @@ TEMPLATE_TEST_CASE("Segments Define a Direction", "[Segment][ray]", (long long),
   const auto face = GENERATE_COPY(halfEdges(surface));
 
   const auto segment = GENERATE_COPY(segments(surface, face));
-
   CAPTURE(segment);
 
   const auto ray = segment.ray();
@@ -207,7 +206,27 @@ TEMPLATE_TEST_CASE("Segments Define a Direction", "[Segment][ray]", (long long),
 }
 
 TEMPLATE_TEST_CASE("Segments can Self-Overlap", "[Segment][overlapping]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
-  // TODO
+  using T = TestType;
+  using Surface = FlatTriangulation<T>;
+
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
+  const auto face = GENERATE_COPY(halfEdges(surface));
+
+  if constexpr (!hasFractions<T>) {
+    const auto segment = GENERATE_COPY(segments(surface, face));
+    CAPTURE(segment);
+
+    const auto shorter = Segment<Surface>{segment.start(), segment.source(), segment.vector() / 2};
+
+    if (!segment.overlapping())
+      REQUIRE(!shorter.overlapping());
+
+    if (segment.start().vertex() && segment.end().vertex() && surface->angle(segment.start()) == 1 && surface->angle(segment.end()) == 1) {
+      REQUIRE(Segment{segment.start(), segment.source(), segment.end(), segment.target(), segment.vector() * 2}.overlapping());
+    }
+  }
 }
 
 TEMPLATE_TEST_CASE("Serialization of Segments", "[Segment][save][load]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {

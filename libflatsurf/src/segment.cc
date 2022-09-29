@@ -120,7 +120,7 @@ const Vector<typename Surface::Coordinate>& Segment<Surface>::vector() const {
 
 template <typename Surface>
 bool Segment<Surface>::overlapping() const {
-  throw std::logic_error("not implemented: Segment::overlapping()");
+  return static_cast<Ray<Surface>>(*this).segment(end()) != *this;
 }
 
 template <typename Surface>

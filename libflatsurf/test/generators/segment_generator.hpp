@@ -38,13 +38,14 @@ class SegmentGenerator : public Catch::Generators::IGenerator<Segment<FlatTriang
 
   enum class SEGMENT {
     VERTEX_TO_VERTEX_ALONG_EDGE = 0,
+    VERTEX_TO_VERTEX_ALONG_EDGE_OVERLAPPING = 1,
     // Everything from here requires division by integers.
-    VERTEX_TO_EDGE_ALONG_EDGE = 1,
-    EDGE_TO_EDGE_ALONG_EDGE = 2,
-    EDGE_TO_FACE = 3,
-    FACE_TO_FACE = 4,
-    FACE_TO_FACE_ACROSS_EDGE = 5,
-    LAST = 5,
+    VERTEX_TO_EDGE_ALONG_EDGE = 2,
+    EDGE_TO_EDGE_ALONG_EDGE = 3,
+    EDGE_TO_FACE = 4,
+    FACE_TO_FACE = 5,
+    FACE_TO_FACE_ACROSS_EDGE = 6,
+    LAST = 6,
   } state;
   
   Segment<FlatTriangulation<T>> current;
@@ -52,6 +53,7 @@ class SegmentGenerator : public Catch::Generators::IGenerator<Segment<FlatTriang
   Segment<FlatTriangulation<T>> make(SEGMENT kind) {
     switch (kind) {
       case SEGMENT::VERTEX_TO_VERTEX_ALONG_EDGE:
+      case SEGMENT::VERTEX_TO_VERTEX_ALONG_EDGE_OVERLAPPING:
       case SEGMENT::VERTEX_TO_EDGE_ALONG_EDGE:
       case SEGMENT::EDGE_TO_EDGE_ALONG_EDGE:
       case SEGMENT::EDGE_TO_FACE:
