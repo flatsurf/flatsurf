@@ -51,6 +51,8 @@ class Path : public Serializable<Path<Surface>>,
 
   operator const std::vector<Segment<Surface>> &() const;
 
+  // Return whether two paths are indistinguishable, i.e., they are made up of
+  // the same sequence of segments.
   bool operator==(const Path&) const;
 
   // Return whether the path is cyclic, i.e., the last element joins up with the first.

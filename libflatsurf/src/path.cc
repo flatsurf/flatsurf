@@ -340,26 +340,26 @@ std::optional<Segment<Surface>> Path<Surface>::segment() const {
 
 template <typename Surface>
 void Path<Surface>::push_front(const SaddleConnection<Surface>& segment) {
+  push_front(segment.segment());
+}
+
+template <typename Surface>
+void Path<Surface>::push_back(const SaddleConnection<Surface>& segment) {
+  push_back(segment.segment());
+}
+
+template <typename Surface>
+void Path<Surface>::push_front(const Segment<Surface>& segment) {
   LIBFLATSURF_ASSERT(empty() || ImplementationOf<Path>::connected(segment, *begin()), "Path must be connected but " << segment << " does not precede " << *begin());
   self->path.insert(std::begin(self->path), segment);
   self->pathAsSaddleConnections = std::nullopt;
 }
 
 template <typename Surface>
-void Path<Surface>::push_back(const SaddleConnection<Surface>& segment) {
+void Path<Surface>::push_back(const Segment<Surface>& segment) {
   LIBFLATSURF_ASSERT(empty() || ImplementationOf<Path>::connected(*self->path.rbegin(), segment), "Path must be connected but " << *self->path.rbegin() << " does not precede " << segment);
   self->path.push_back(segment);
   self->pathAsSaddleConnections = std::nullopt;
-}
-
-template <typename Surface>
-void Path<Surface>::push_front(const Segment<Surface>& segment) {
-  throw std::logic_error("not implemented: Path::push_front()");
-}
-
-template <typename Surface>
-void Path<Surface>::push_back(const Segment<Surface>& segment) {
-  throw std::logic_error("not implemented: Path::push_back()");
 }
 
 template <typename Surface>
