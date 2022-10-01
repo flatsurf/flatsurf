@@ -35,7 +35,7 @@ namespace flatsurf::test {
 
 using namespace flatsurf;
 
-TEMPLATE_TEST_CASE("Nullhomotopic Paths", "[Path]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Nullhomotopic Paths", "[Path]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   SECTION("Trivial Paths can be Tigthened") {
     using T = TestType;
     using Surface = FlatTriangulation<T>;
@@ -85,7 +85,7 @@ TEMPLATE_TEST_CASE("Nullhomotopic Paths", "[Path]", (long long), (mpq_class), (r
   }
 }
 
-TEMPLATE_TEST_CASE("Short Paths", "[Path]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Short Paths", "[Path]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using Surface = FlatTriangulation<T>;
 
@@ -119,7 +119,7 @@ TEMPLATE_TEST_CASE("Short Paths", "[Path]", (long long), (mpq_class), (renf_elem
   }
 }
 
-TEMPLATE_TEST_CASE("Random Paths", "[Path]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Random Paths", "[Path]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using Surface = FlatTriangulation<T>;
 
