@@ -19,6 +19,7 @@
 
 #include <exact-real/element.hpp>
 
+#include "../flatsurf/ccw.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
@@ -34,6 +35,55 @@
 namespace flatsurf::test {
 
 using namespace flatsurf;
+
+TEMPLATE_TEST_CASE("Simplify Paths to Segments", "[Path][segment]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+  using Surface = FlatTriangulation<T>;
+
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
+  SECTION("A Trivial Path is not a Segment") {
+    const Path<Surface> path = {};
+
+    REQUIRE(!path.segment());
+  }
+
+  SECTION("A Path Consisting of a Single Segment") {
+    const auto face = GENERATE_COPY(halfEdges(surface));
+
+    const auto segment = GENERATE_COPY(segments(surface, face));
+
+    const Path<Surface> path = {segment};
+
+    REQUIRE(path.segment() == segment);
+  }
+
+  SECTION("A Path Consisting of Collinear Segments") {
+    const auto face = GENERATE_COPY(halfEdges(surface));
+
+    const auto segment = GENERATE_COPY(segments(surface, face));
+    CAPTURE(segment);
+
+    if constexpr (hasFractions<T>) {
+      const auto continuation = Segment{segment.end(), surface->sector(segment.target(), segment.vector(), CCW::CLOCKWISE, -segment.vector()), segment.vector() / 1024};
+
+      const Path<Surface> path = std::vector{segment, continuation};
+      CAPTURE(path);
+
+      const auto single = path.segment();
+
+      if (surface->angle(segment.end()) == 1) {
+        REQUIRE(single);
+        REQUIRE(single->vector() == segment.vector() + continuation.vector());
+        REQUIRE(single->source() == segment.source());
+        REQUIRE(single->start() == segment.start());
+      } else {
+        REQUIRE(!single);
+      }
+    }
+  }
+}
 
 TEMPLATE_TEST_CASE("Nullhomotopic Paths", "[Path]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   SECTION("Trivial Paths can be Tigthened") {

@@ -335,7 +335,25 @@ size_t Path<Surface>::size() const {
 
 template <typename Surface>
 std::optional<Segment<Surface>> Path<Surface>::segment() const {
-  throw std::logic_error("not implemented: Path::segment()");
+  if (self->path.size() == 0)
+    return std::nullopt;
+
+  if (self->path.size() == 1)
+    return *std::begin(self->path);
+
+  for (auto segment = std::begin(self->path); segment + 1 != std::end(self->path); ++segment) {
+    if (segment->surface().angle(segment->end()) != 1)
+      return std::nullopt;
+    if (!segment->vector().parallel((segment + 1)->vector()))
+      return std::nullopt;
+  }
+
+  Vector<T> sum;
+
+  for (const auto segment : self->path)
+    sum += segment.vector();
+
+  return Segment{std::begin(self->path)->start(), std::begin(self->path)->source(), std::rbegin(self->path)->end(), std::rbegin(self->path)->target(), sum};
 }
 
 template <typename Surface>
