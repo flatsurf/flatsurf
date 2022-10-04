@@ -174,7 +174,7 @@ Path<Surface> tightenClockwise(const Segment<Surface>& a, const Segment<Surface>
 
   // The list of points that are on the convex path.
   // We store these points as segments starting at the point where
-  // a and b meet. Going in counterclockwise direction.
+  // a and b meet. Going in *counterclockwise* direction.
   // Due to the enumeration order of these segments, this list
   // might eventualy contain points that are not on the convex hull. These
   // are then filtered out later.
@@ -237,15 +237,19 @@ Path<Surface> tightenClockwise(const Segment<Surface>& a, const Segment<Surface>
     hull.push_back(ray);
   }
 
-  // Build an actual path from the rays that survived the convex hull algorithm.
+  // Build an actual path refining -b → -a from the rays that survived the convex hull algorithm.
   std::vector<Segment<Surface>> path;
 
   for (auto j = ++begin(hull); j != end(hull); ++j) {
+    // Create a segment for each consecutive pair of points (p, q).
+    // The points are given as the endpoints of segments (i, j) starting at point where a and b meet.
     auto i = j;
     --i;
 
     const auto vector = static_cast<const Vector<typename Surface::Coordinate>&>(j->vector() - i->vector());
-    path.push_back(Segment<Surface>{i->start(), j->start(), vector});
+    const auto source = surface.sector(i->target(), CCW::CLOCKWISE, vector);
+    const auto target = surface.sector(j->target(), CCW::COUNTERCLOCKWISE, -vector);
+    path.push_back(Segment<Surface>{i->end(), source, j->end(), target, vector});
   }
 
   return -Path<Surface>{path};
