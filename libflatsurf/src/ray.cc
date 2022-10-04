@@ -185,8 +185,8 @@ CCW Ray<Surface>::ccw(const Ray& other) const {
 }
 
 template <typename Surface>
-bool Ray<Surface>::operator==(const Ray&) const {
-  throw std::logic_error("not implemented: operator==()");
+bool Ray<Surface>::operator==(const Ray& other) const {
+  return source() == other.source() && start() == other.start() && vector().ccw(other.vector()) == CCW::COLLINEAR;
 }
 
 template <typename Surface>
