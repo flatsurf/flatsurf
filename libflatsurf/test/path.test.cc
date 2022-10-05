@@ -100,45 +100,47 @@ TEMPLATE_TEST_CASE("Nullhomotopic Paths", "[Path]", (long long), (mpz_class), (m
     REQUIRE(Path<Surface>().tighten() == Path<Surface>());
   }
 
-  using T = TestType;
-  using Surface = FlatTriangulation<T>;
+  SECTION("Nullhomotopic Paths on a Surface") {
+    using T = TestType;
+    using Surface = FlatTriangulation<T>;
 
-  const auto surface = GENERATE_SURFACES(T);
-  CAPTURE(surface);
+    const auto surface = GENERATE_SURFACES(T);
+    CAPTURE(surface);
 
-  SECTION("Joining a Saddle Connection and its Negative, is Trivial") {
-    const auto connection = GENERATE_REF(saddleConnections(surface));
-    CAPTURE(connection);
+    SECTION("Joining a Saddle Connection and its Negative, is Trivial") {
+      const auto connection = GENERATE_REF(saddleConnections(surface));
+      CAPTURE(connection);
 
-    const auto path = Path(std::vector{connection, -connection});
-    CAPTURE(path);
+      const auto path = Path(std::vector{connection, -connection});
+      CAPTURE(path);
 
-    REQUIRE(path.tighten() == Path<Surface>());
-  }
+      REQUIRE(path.tighten() == Path<Surface>());
+    }
 
-  SECTION("Joining a Segment and its Negative is Trivial") {
-    const auto face = GENERATE_COPY(halfEdges(surface));
-    CAPTURE(face);
+    SECTION("Joining a Segment and its Negative is Trivial") {
+      const auto face = GENERATE_COPY(halfEdges(surface));
+      CAPTURE(face);
 
-    const auto segment = GENERATE_COPY(segments(surface, face));
+      const auto segment = GENERATE_COPY(segments(surface, face));
 
-    const auto path = Path(std::vector{segment, -segment});
-    CAPTURE(path);
+      const auto path = Path(std::vector{segment, -segment});
+      CAPTURE(path);
 
-    REQUIRE(path.tighten() == Path<Surface>());
-  }
+      REQUIRE(path.tighten() == Path<Surface>());
+    }
 
-  SECTION("Tigthening a Path Walking around a Face") {
-    const auto face = GENERATE_COPY(halfEdges(surface));
-    CAPTURE(face);
+    SECTION("Tigthening a Path Walking around a Face") {
+      const auto face = GENERATE_COPY(halfEdges(surface));
+      CAPTURE(face);
 
-    const auto path = Path(std::vector{
-        SaddleConnection{*surface, face},
-        SaddleConnection{*surface, surface->nextInFace(face)},
-        SaddleConnection{*surface, surface->previousInFace(face)}});
-    CAPTURE(path);
+      const auto path = Path(std::vector{
+          SaddleConnection{*surface, face},
+          SaddleConnection{*surface, surface->nextInFace(face)},
+          SaddleConnection{*surface, surface->previousInFace(face)}});
+      CAPTURE(path);
 
-    REQUIRE(path.tighten() == Path<Surface>());
+      REQUIRE(path.tighten() == Path<Surface>());
+    }
   }
 }
 
