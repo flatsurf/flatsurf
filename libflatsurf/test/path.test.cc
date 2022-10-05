@@ -51,8 +51,10 @@ TEMPLATE_TEST_CASE("Simplify Paths to Segments", "[Path][segment]", (long long),
 
   SECTION("A Path Consisting of a Single Segment") {
     const auto face = GENERATE_COPY(halfEdges(surface));
+    CAPTURE(face);
 
     const auto segment = GENERATE_COPY(segments(surface, face));
+    CAPTURE(segment);
 
     const Path<Surface> path = {segment};
 

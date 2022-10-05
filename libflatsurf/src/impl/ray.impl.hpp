@@ -36,10 +36,8 @@ class ImplementationOf<Ray<Surface>> {
  public:
   ImplementationOf(const Point<Surface>& start, HalfEdge source, const Vector<T>&);
 
+  // Return the source of this ray, see Ray::source().
   static HalfEdge normalizeSource(const Point<Surface>& start, HalfEdge source, const Vector<T>& vector);
-
-  // Normalize source so that it is compatible with SaddleConnection source.
-  void normalize();
 
   Point<Surface> start;
   HalfEdge source;

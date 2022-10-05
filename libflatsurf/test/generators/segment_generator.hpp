@@ -81,7 +81,7 @@ class SegmentGenerator : public Catch::Generators::IGenerator<Segment<FlatTriang
           if constexpr (!hasFractions<T>)
             return std::nullopt;
           const auto p = surface->fromHalfEdge(face) / 2;
-          const auto v = surface->fromHalfEdge(surface->nextAtVertex(face)) / 2;
+          const auto v = -surface->fromHalfEdge(face) / 4 + surface->fromHalfEdge(surface->nextAtVertex(face)) / 4;
           return Segment<FlatTriangulation<T>>(
               Point(*surface, face, p),
               v);
@@ -90,15 +90,15 @@ class SegmentGenerator : public Catch::Generators::IGenerator<Segment<FlatTriang
         {
           if constexpr (!hasFractions<T>)
             return std::nullopt;
-          const auto v = surface->fromHalfEdge(face) / 4 + surface->fromHalfEdge(surface->nextAtVertex(face)) / 4;
+          const auto v = surface->fromHalfEdge(face) / 8 + surface->fromHalfEdge(surface->nextAtVertex(face)) / 8;
           return Segment<FlatTriangulation<T>>(Point(*surface, face, v), v);
         }
       case SEGMENT::FACE_TO_FACE_ACROSS_EDGE:
         {
           if constexpr (!hasFractions<T>)
             return std::nullopt;
-          const auto p = surface->fromHalfEdge(face) / 2 + surface->fromHalfEdge(surface->nextAtVertex(face)) / 2;
-          const auto q = surface->fromHalfEdge(face) / 2 + surface->fromHalfEdge(surface->previousAtVertex(face)) / 2;
+          const auto p = surface->fromHalfEdge(face) / 4 + surface->fromHalfEdge(surface->nextAtVertex(face)) / 4;
+          const auto q = surface->fromHalfEdge(face) / 4 + surface->fromHalfEdge(surface->previousAtVertex(face)) / 4;
           return Segment<FlatTriangulation<T>>(Point(*surface, face, p), -p + q);
         }
       default:

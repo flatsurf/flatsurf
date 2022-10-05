@@ -23,7 +23,9 @@
 #include "../flatsurf/vertex.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/ccw.hpp"
+#include "../flatsurf/orientation.hpp"
 #include "../flatsurf/ray.hpp"
+#include "../flatsurf/vertical.hpp"
 
 #include "impl/segment.impl.hpp"
 #include "impl/point.impl.hpp"
@@ -40,7 +42,12 @@ template <typename Surface>
 Segment<Surface>::Segment(const Point<Surface>& start, const Vector<T>& vector) {
   LIBFLATSURF_CHECK_ARGUMENT(start.surface().angle(start) == 1, "cannot create Segment from starting point and vector since starting point is a singularity");
 
-  *this = Segment{start, Ray{start, vector}.source(), vector};
+  HalfEdge source = start.face();
+
+  Point<Surface> end = start;
+  const HalfEdge target = start.vertex() ? ImplementationOf<Point<Surface>>::translate(end, source, vector) : ImplementationOf<Point<Surface>>::translate(end, vector);
+  
+  *this = Segment{start, source, end, target, vector};
 }
 
 template <typename Surface>
@@ -71,10 +78,20 @@ Segment<Surface>::Segment(const Point<Surface>& start, const Point<Surface>& end
 
 template <typename Surface>
 Segment<Surface>::Segment(const Point<Surface>& start, HalfEdge source, const Vector<T>& vector) {
-  Point<Surface> end = start;
-  const HalfEdge target = ImplementationOf<Point<Surface>>::translate(end, vector);
-  
-  *this = Segment{start, source, end, target, vector};
+  LIBFLATSURF_CHECK_ARGUMENT(start.in(source), "start point of segment must be in source face");
+
+  if (!start.vertex()) {
+    // Source can be ignored if the starting point is not a vertex.
+    *this = Segment{start, vector};
+  } else {
+    LIBFLATSURF_CHECK_ARGUMENT(start.surface().inSector(source, vector), "vector defining translation of segment must be in the source sector but " << vector << " is not in " << source << " of " << start.surface() << " for translation of vertex " << start);
+
+    Point<Surface> end = start;
+    const HalfEdge target = ImplementationOf<Point<Surface>>::translate(end, source, vector);
+    
+    *this = Segment{start, source, end, target, vector};
+  }
+
 }
 
 template <typename Surface>
@@ -125,10 +142,23 @@ bool Segment<Surface>::overlapping() const {
 
 template <typename Surface>
 std::optional<SaddleConnection<Surface>> Segment<Surface>::saddleConnection() const {
-  if (start().vertex() && end().vertex())
-    return SaddleConnection<Surface>::inSector(*self->surface, self->source, self->vector);
+  if (!start().vertex())
+    return std::nullopt;
 
-  return std::nullopt;
+  if (!end().vertex())
+    return std::nullopt;
+
+  const auto saddleConnection = SaddleConnection<Surface>::inSector(*self->surface, self->source, Vertical(*self->surface, self->vector));
+
+  if (saddleConnection.vector() != self->vector) {
+    // There is a shorter saddle connection in this direction. The segment crosses a marked point.
+    LIBFLATSURF_ASSERT(self->vector.orientation(self->vector - saddleConnection.vector()) == ORIENTATION::SAME, "segment from " << self->start << " ends after " << self->vector << " at vertex " << self->end << " but we only found a longer saddle connection " << saddleConnection << " in the same direction");
+    LIBFLATSURF_ASSERT(self->surface->angle(saddleConnection.end()) == 1, "segment cannot pass through non-marked point but " << saddleConnection.end() << " which is on the segment is a singularity");
+
+    return std::nullopt;
+  }
+
+  return saddleConnection;
 }
 
 template <typename Surface>

@@ -67,6 +67,12 @@ class ImplementationOf<Point<Surface>> {
   // essentially equivalent to Segment(p, xy).target().
   static HalfEdge translate(Point& p, const Vector<T>& xy);
 
+  // Move this point by xy in Cartesian coordinates with respect to the face at face.
+  // Note: This method is not exposed to the user because of the somewhat
+  // confusing interface. The functionality is available though, it's
+  // essentially equivalent to Segment(p, face, xy).target().
+  static HalfEdge translate(Point& p, HalfEdge source, const Vector<T>& xy);
+
   // Return barycentric coordinates of the point xy in face.
   // The returned coordinates are not normalized, in particular, they might not
   // be all non-negative if the point is not in the face.

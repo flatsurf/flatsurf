@@ -45,6 +45,15 @@ class Ray : Serializable<Ray<Surface>>,
 
   const Point<Surface>& start() const;
 
+  // Return a source half edge for this ray.
+  // This is only really meaningful if start() is a vertex. In that case it
+  // returns one of the outgoing half edges of the vertex such that the
+  // vector() is inSector().
+  // If start() is on an edge, returns the half edge corresponding to the face
+  // into which the vector points (if parallel to the edge, then the half edge
+  // that is parallel to the vector.)
+  // If start() is in a face, returns a half edge such that vector or -vector
+  // is inSector of that half edge.
   HalfEdge source() const;
 
   // Return a vector pointing in the direction of this ray.

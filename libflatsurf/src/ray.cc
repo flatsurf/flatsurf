@@ -106,7 +106,7 @@ Ray<Surface>::Ray(const Point<Surface>& start, HalfEdge source, const Vector<T>&
   self(spimpl::make_impl<ImplementationOf<Ray>>(start, source, vector)) {
   LIBFLATSURF_CHECK_ARGUMENT(start.in(source), "start point of ray must be in source face");
 
-  self->normalize();
+  self->source = ImplementationOf<Ray>::normalizeSource(self->start, self->source, self->vector);
 }
 
 template <typename Surface>
@@ -186,7 +186,7 @@ CCW Ray<Surface>::ccw(const Ray& other) const {
 
 template <typename Surface>
 bool Ray<Surface>::operator==(const Ray& other) const {
-  return source() == other.source() && start() == other.start() && vector().ccw(other.vector()) == CCW::COLLINEAR;
+  return start() == other.start() && (!start().vertex() || source() == other.source()) && vector().ccw(other.vector()) == CCW::COLLINEAR;
 }
 
 template <typename Surface>
@@ -235,11 +235,6 @@ ImplementationOf<Ray<Surface>>::ImplementationOf(const Point<Surface>& start, Ha
   vector(vector) {}
 
 template <typename Surface>
-void ImplementationOf<Ray<Surface>>::normalize() {
-  source = normalizeSource(start, source, vector);
-}
-
-template <typename Surface>
 HalfEdge ImplementationOf<Ray<Surface>>::normalizeSource(const Point<Surface>& start, HalfEdge source, const Vector<T>& vector) {
   const auto normalizeSourceAtVertex = [](const auto& surface, auto& source, const auto& vector) {
     while(true) {
@@ -250,7 +245,7 @@ HalfEdge ImplementationOf<Ray<Surface>>::normalizeSource(const Point<Surface>& s
         break;
       }
 
-      source = surface.nextInFace(source);
+      source = surface.nextAtVertex(source);
     }
   };
 
@@ -261,12 +256,17 @@ HalfEdge ImplementationOf<Ray<Surface>>::normalizeSource(const Point<Surface>& s
     source = -source;
   };
 
+  const auto normalizeSourceInFace = [](const auto& surface, auto& source, const auto& vector) {
+    while (!surface.inSector(source, vector) && !surface.inSector(source, -vector))
+      source = surface.nextInFace(source);
+  };
+
   if (start.vertex())
     normalizeSourceAtVertex(start.surface(), source, vector);
   else if (start.edge())
     normalizeSourceAtEdge(start.surface(), source, vector);
   else
-    source = start.face();
+    normalizeSourceInFace(start.surface(), source, vector);
 
   return source;
 }

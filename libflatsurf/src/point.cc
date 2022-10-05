@@ -503,6 +503,23 @@ HalfEdge ImplementationOf<Point<Surface>>::translate(Point& p, const Vector<T>& 
 }
 
 template <typename Surface>
+HalfEdge ImplementationOf<Point<Surface>>::translate(Point& p, HalfEdge face, const Vector<T>& Δ) {
+  LIBFLATSURF_CHECK_ARGUMENT(p.in(face), "can only translate point with respect to a half edge defining its face");
+  LIBFLATSURF_CHECK_ARGUMENT(p.surface().inSector(face, Δ), "translation must be in given sector but " << Δ << " is not in " << face);
+  LIBFLATSURF_CHECK_ARGUMENT(p.vertex(), "translation of a point with a specific face only necessary for vertices but trying to translate " << p << " by " << Δ << " with respect to face " << face);
+  LIBFLATSURF_CHECK_ARGUMENT(p.vertex() == Vertex::source(face, p.surface()), "cannot translate point with respect to half edge not adjacent to it");
+
+  // Since this is a vertex, its barycentric coordinates are (1, 0, 0). We can
+  // safely shift this to any other half edge starting at this vertex.
+  p.self->face = face;
+
+  const auto target = p.self->translate(Δ);
+  p.self->normalize();
+
+  return target;
+}
+
+template <typename Surface>
 std::array<typename Surface::Coordinate, 3> ImplementationOf<Point<Surface>>::barycentric(const Surface& surface, HalfEdge face, const Vector<T>& xy) {
   const auto A = Vertex::source(face, surface);
   const auto AB = surface.fromHalfEdge(face);
