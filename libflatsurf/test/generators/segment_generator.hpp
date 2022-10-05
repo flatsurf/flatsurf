@@ -26,6 +26,7 @@
 #include "../../flatsurf/segment.hpp"
 #include "../../flatsurf/point.hpp"
 #include "../../flatsurf/half_edge.hpp"
+#include "../../flatsurf/vertex.hpp"
 #include "surface_generator.hpp"
 #include "../external/catch2/single_include/catch2/catch.hpp"
 
@@ -50,22 +51,63 @@ class SegmentGenerator : public Catch::Generators::IGenerator<Segment<FlatTriang
   
   Segment<FlatTriangulation<T>> current;
 
-  Segment<FlatTriangulation<T>> make(SEGMENT kind) {
+  std::optional<Segment<FlatTriangulation<T>>> make(SEGMENT kind) {
     switch (kind) {
       case SEGMENT::VERTEX_TO_VERTEX_ALONG_EDGE:
+        return SaddleConnection<FlatTriangulation<T>>(*surface, face).segment();
       case SEGMENT::VERTEX_TO_VERTEX_ALONG_EDGE_OVERLAPPING:
+        if (surface->angle(Vertex::target(face, *surface)) != 0)
+          return std::nullopt;
+        return Segment<FlatTriangulation<T>>(
+            Point(*surface, Vertex::source(face, *surface)),
+            face,
+            2 * surface->fromHalfEdge(face));
       case SEGMENT::VERTEX_TO_EDGE_ALONG_EDGE:
+        if constexpr (!hasFractions<T>)
+          return std::nullopt;
+        return Segment<FlatTriangulation<T>>(
+            Point(*surface, Vertex::source(face, *surface)),
+            face,
+            surface->fromHalfEdge(face) / 2);
       case SEGMENT::EDGE_TO_EDGE_ALONG_EDGE:
+        {
+          if constexpr (!hasFractions<T>)
+            return std::nullopt;
+          const auto v = surface->fromHalfEdge(face) / 4;
+          return Segment<FlatTriangulation<T>>(Point(*surface, face, v), v);
+        }
       case SEGMENT::EDGE_TO_FACE:
+        {
+          if constexpr (!hasFractions<T>)
+            return std::nullopt;
+          const auto p = surface->fromHalfEdge(face) / 2;
+          const auto v = surface->fromHalfEdge(surface->nextAtVertex(face)) / 2;
+          return Segment<FlatTriangulation<T>>(
+              Point(*surface, face, p),
+              v);
+        }
       case SEGMENT::FACE_TO_FACE:
+        {
+          if constexpr (!hasFractions<T>)
+            return std::nullopt;
+          const auto v = surface->fromHalfEdge(face) / 4 + surface->fromHalfEdge(surface->nextAtVertex(face)) / 4;
+          return Segment<FlatTriangulation<T>>(Point(*surface, face, v), v);
+        }
       case SEGMENT::FACE_TO_FACE_ACROSS_EDGE:
+        {
+          if constexpr (!hasFractions<T>)
+            return std::nullopt;
+          const auto p = surface->fromHalfEdge(face) / 2 + surface->fromHalfEdge(surface->nextAtVertex(face)) / 2;
+          const auto q = surface->fromHalfEdge(face) / 2 + surface->fromHalfEdge(surface->previousAtVertex(face)) / 2;
+          return Segment<FlatTriangulation<T>>(Point(*surface, face, p), -p + q);
+        }
       default:
         throw std::logic_error("not implemented: SegmentGenerator::make()");
     }
   }
 
  public:
-  SegmentGenerator(std::shared_ptr<const FlatTriangulation<T>> surface, HalfEdge face) : surface(surface), face(face), state(SEGMENT::VERTEX_TO_EDGE_ALONG_EDGE), current(make(state)) {
+  SegmentGenerator(std::shared_ptr<const FlatTriangulation<T>> surface, HalfEdge face) : surface(surface), face(face), state(SEGMENT::VERTEX_TO_VERTEX_ALONG_EDGE), current(*make(state)) {
   }
 
   const Segment<FlatTriangulation<T>>& get() const override {
@@ -73,18 +115,17 @@ class SegmentGenerator : public Catch::Generators::IGenerator<Segment<FlatTriang
   }
 
   bool next() override {
-    if constexpr (!hasFractions<T>)
-      // Only the first segment can be created without using any division.
-      state = SEGMENT::LAST;
+    while(state != SEGMENT::LAST) {
+      state = static_cast<SEGMENT>(static_cast<int>(state) + 1);
 
-    if (state == SEGMENT::LAST)
-      return false;
+      const auto segment = make(state);
+      if (segment) {
+        current = *segment;
+        return true;
+      }
+    }
 
-    state = static_cast<SEGMENT>(static_cast<int>(state) + 1);
-
-    current = make(state);
-
-    return true;
+    return false;
   }
 };
 
