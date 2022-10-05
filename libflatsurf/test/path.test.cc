@@ -66,7 +66,14 @@ TEMPLATE_TEST_CASE("Simplify Paths to Segments", "[Path][segment]", (long long),
     CAPTURE(segment);
 
     if constexpr (hasFractions<T>) {
-      const auto continuation = Segment{segment.end(), surface->sector(segment.target(), segment.vector(), CCW::CLOCKWISE, -segment.vector()), segment.vector() / 1024};
+      const auto continuation = segment.end().vertex() ?
+        Segment{
+          segment.end(),
+          surface->sector(segment.target(), -segment.vector(), CCW::CLOCKWISE, segment.vector()),
+          segment.vector() / 1024} :
+        Segment{
+          segment.end(),
+          segment.vector() / 1024};
 
       const Path<Surface> path = std::vector{segment, continuation};
       CAPTURE(path);
