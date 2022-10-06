@@ -7,13 +7,14 @@ main_SOURCES = main.cc approximation.test.cc bound.test.cc chain.test.cc contour
 noinst_HEADERS =                                 \
   surfaces.hpp                                   \
   cereal.helpers.hpp                             \
-  generators/point_generator.hpp                 \
   generators/combinatorial_surface_generator.hpp \
   generators/deformation_generator.hpp           \
   generators/half_edge_generator.hpp             \
+  generators/point_generator.hpp                 \
   generators/ray_generator.hpp                   \
   generators/real_generator.hpp                  \
   generators/saddle_connection_generator.hpp     \
+  generators/segment_generator.hpp               \
   generators/surface_generator.hpp               \
   generators/vertical_generator.hpp
 
