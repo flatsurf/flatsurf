@@ -272,8 +272,14 @@ HalfEdge ImplementationOf<Ray<Surface>>::normalizeSource(const Point<Surface>& s
 }
 
 template <typename Surface>
-std::ostream &operator<<(std::ostream &, const Ray<Surface> &) {
-  throw std::logic_error("not implemented: printing of rays");
+std::ostream &operator<<(std::ostream& os, const Ray<Surface>& self) {
+  if (self.start().vertex()) {
+    if (self.surface().fromHalfEdge(self.source()).parallel(self.vector()))
+      return os << self.source();
+    return os << self.vector() << " from " << self.source();
+  }
+
+  return os << self.vector() << " from " << self.start();
 }
 
 }
