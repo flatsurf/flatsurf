@@ -420,7 +420,7 @@ HalfEdge ImplementationOf<Point<Surface>>::translate(const Vector<T>& Δ) {
     // The shifted point is at a vertex. We only know from where Δ hit that
     // shifted point on a surface with an additional marked point so we need to
     // reconstruct from where Δ comes on the surface without that point.
-    const auto preimage = insertion.section()(SaddleConnection(insertion.domain(), target).segment());
+    const auto preimage = insertion.section()(SaddleConnection(insertion.codomain(), target).segment());
 
     LIBFLATSURF_ASSERT(preimage, "preimage of a half edge after insertion of a marked point must exist; it's either a saddle connection or a segment");
     LIBFLATSURF_ASSERT(preimage->size() == 1, "preimage of a half edge after insertion of a marked point must be a single segment or a single saddle connection");
