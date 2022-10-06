@@ -156,6 +156,11 @@ template <typename Surface>
 CCW Ray<Surface>::ccw(const Ray& other) const {
   LIBFLATSURF_CHECK_ARGUMENT(start() == other.start(), "can only compute ccw() for rays starting from the same point");
 
+  const int totalAngle = this->surface().angle(start());
+
+  if (totalAngle == 1)
+    return this->vector().ccw(other.vector());
+
   const int angle = flatsurf::angle(this->surface(), this->source(), this->vector(), other.source(), other.vector());
 
   if (angle == 0) {
@@ -164,8 +169,6 @@ CCW Ray<Surface>::ccw(const Ray& other) const {
     LIBFLATSURF_ASSERT(ccw == CCW::COLLINEAR || ccw == CCW::COUNTERCLOCKWISE, "rays that enclose an angle <π must be collinear or counterclockwise");
     return ccw;
   }
-
-  const int totalAngle = this->surface().angle(Vertex::source(this->source(), this->surface()));
 
   // Let k·2π be the total angle at the vertex.
 

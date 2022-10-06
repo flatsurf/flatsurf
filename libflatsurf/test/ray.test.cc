@@ -68,6 +68,7 @@ TEMPLATE_TEST_CASE("Turning Sense of Rays", "[Ray][ccw]", (long long), (mpq_clas
   const auto face = GENERATE_COPY(halfEdges(surface));
 
   const auto ray = GENERATE_COPY(rays(surface, face));
+  CAPTURE(ray);
 
   SECTION("A Ray is Collinear to Itself and its Negative") {
     REQUIRE(ray.ccw(ray) == CCW::COLLINEAR);
@@ -77,10 +78,11 @@ TEMPLATE_TEST_CASE("Turning Sense of Rays", "[Ray][ccw]", (long long), (mpq_clas
   }
 
   SECTION("Turning is Consistent") {
-    const auto s = GENERATE_COPY(rays(surface, face));
+    const auto ray2 = GENERATE_COPY(rays(surface, face));
+    CAPTURE(ray2);
 
-    if (ray.start() == s.start())
-      REQUIRE(ray.ccw(s) == -s.ccw(ray));
+    if (ray.start() == ray2.start())
+      REQUIRE(ray.ccw(ray2) == -ray2.ccw(ray));
   }
 }
 
