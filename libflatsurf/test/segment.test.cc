@@ -114,7 +114,9 @@ TEMPLATE_TEST_CASE("Defining Data of a Segment", "[Segment][start][end][source][
   REQUIRE_NOTHROW(segment.start().coordinates(segment.source()));
   REQUIRE_NOTHROW(segment.end().coordinates(segment.target()));
 
-  REQUIRE(segment.end() == Point(*surface, segment.source(), segment.vector()));
+  if (segment.start().vertex()) {
+    REQUIRE(segment.end() == Point(*surface, segment.source(), segment.vector()));
+  }
 }
 
 TEMPLATE_TEST_CASE("Segments know whether they are a Saddle Connection", "[Segment][saddleConnection]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {

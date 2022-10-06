@@ -99,6 +99,7 @@ class SegmentGenerator : public Catch::Generators::IGenerator<Segment<FlatTriang
             return std::nullopt;
           const auto p = surface->fromHalfEdge(face) / 3 + surface->fromHalfEdge(surface->nextAtVertex(face)) / 6;
           const auto q = surface->fromHalfEdge(face) / 6 + surface->fromHalfEdge(surface->previousAtVertex(face)) / 3;
+          // This could fail if face is not convex. If this happens for one of the surfaces, then we need to adapt this one.
           return Segment<FlatTriangulation<T>>(Point(*surface, face, p), -p + q);
         }
       default:
