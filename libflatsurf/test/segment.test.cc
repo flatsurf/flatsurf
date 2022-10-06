@@ -64,7 +64,7 @@ TEMPLATE_TEST_CASE("Creating Segments", "[Segment][constructor]", (long long), (
 
       SECTION("Segment Ending in a Face") {
         const Point end{*surface, face, T(1), T(1), T(1)};
-        const auto vector = surface->fromHalfEdge(face) / 4 + surface->fromHalfEdge(surface->previousAtVertex(face)) / 4;
+        const auto vector = surface->fromHalfEdge(face) / 3 + surface->fromHalfEdge(surface->nextAtVertex(face)) / 3;
 
         const Segment<Surface> s{start, face, vector};
         const Segment<Surface> t{start, face, end, face, vector};
