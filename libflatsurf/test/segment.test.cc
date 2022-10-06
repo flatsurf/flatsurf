@@ -77,15 +77,17 @@ TEMPLATE_TEST_CASE("Creating Segments", "[Segment][constructor]", (long long), (
   SECTION("Segment Starting in a Face") {
     const Point start{*surface, face, T(1), T(1), T(1)};
 
-    if constexpr (hasFractions<T>) {
-      SECTION("Segment ending in another Face") {
-        const Point end{*surface, -face, T(1), T(1), T(1)};
-        const auto vector = surface->fromHalfEdge(surface->previousAtVertex(face)) / 3 - surface->fromHalfEdge(surface->nextAtVertex(face)) / 3;
+    if (surface->convex(face)) {
+      if constexpr (hasFractions<T>) {
+        SECTION("Segment ending in another Face") {
+          const Point end{*surface, -face, T(1), T(1), T(1)};
+          const auto vector = surface->fromHalfEdge(surface->previousAtVertex(face)) / 3 - surface->fromHalfEdge(surface->nextAtVertex(face)) / 3;
 
-        const Segment<Surface> s{start, end, vector};
-        const Segment<Surface> t{start, vector};
+          const Segment<Surface> s{start, end, vector};
+          const Segment<Surface> t{start, vector};
 
-        REQUIRE(s == t);
+          REQUIRE(s == t);
+        }
       }
     }
   }
