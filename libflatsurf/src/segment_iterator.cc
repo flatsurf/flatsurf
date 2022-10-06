@@ -73,6 +73,11 @@ ImplementationOf<SegmentIterator<Surface>>::ImplementationOf(const Path<Surface>
     this->position = begin(parent->self->path);
   }
 }
+
+template <typename Surface>
+SegmentIterator<Surface> ImplementationOf<SegmentIterator<Surface>>::make(const Path<Surface>& parent, const Position& position) {
+  return SegmentIterator<Surface>{PrivateConstructor{}, &parent, position};
+}
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker

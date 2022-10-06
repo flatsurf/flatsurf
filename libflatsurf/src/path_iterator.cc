@@ -25,6 +25,7 @@
 #include "../flatsurf/segment_iterator.hpp"
 #include "impl/path.impl.hpp"
 #include "impl/path_iterator.impl.hpp"
+#include "impl/segment_iterator.impl.hpp"
 #include "util/assert.ipp"
 
 namespace flatsurf {
@@ -71,12 +72,12 @@ bool PathIterator<Surface>::equal(const PathIterator& other) const {
 
 template <typename Surface>
 PathIterator<Surface>::operator const SegmentIterator<Surface>() const {
-  throw std::logic_error("not implemented: cast to SegmentIterator");
+  return ImplementationOf<SegmentIterator<Surface>>::make(*self->parent, self->position);
 }
 
 template <typename Surface>
 PathIterator<Surface>::operator SegmentIterator<Surface>() {
-  throw std::logic_error("not implemented: cast to SegmentIterator");
+  return ImplementationOf<SegmentIterator<Surface>>::make(*self->parent, self->position);
 }
 
 template <typename Surface>

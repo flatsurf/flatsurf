@@ -33,6 +33,8 @@ class ImplementationOf<SegmentIterator<Surface>> {
  public:
   ImplementationOf(const Path<Surface>* parent, const Position&);
 
+  static SegmentIterator<Surface> make(const Path<Surface>& parent, const Position&);
+
   const Path<Surface>* parent;
   Position position;
   int turn = 0;
