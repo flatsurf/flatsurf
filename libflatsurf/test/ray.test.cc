@@ -52,8 +52,10 @@ TEMPLATE_TEST_CASE("Creating Rays", "[Ray][constructor]", (long long), (mpq_clas
       REQUIRE_THROWS(Ray{start, surface->fromHalfEdge(face)});
     }
 
-    REQUIRE(ray == Ray{*surface, face, surface->fromHalfEdge(face)});
-    REQUIRE(ray == Ray{*surface, face});
+    if (ray.start().vertex()) {
+      REQUIRE(ray == Ray{*surface, face, surface->fromHalfEdge(face)});
+      REQUIRE(ray == Ray{*surface, face});
+    }
   }
 }
 
@@ -149,6 +151,10 @@ TEMPLATE_TEST_CASE("Rays can be Compared", "[Ray][operator==][hash]", (long long
   REQUIRE(ray == ray);
   REQUIRE(ray == ray2);
   REQUIRE(ray != perpendicular);
+
+  if (surface->angle(ray.start()) == 1) {
+    REQUIRE(ray != Ray{ray.start(), -ray.vector()});
+  }
 
   const auto hash = std::hash<Ray<Surface>>{};
   REQUIRE(hash(ray) == hash(ray2));

@@ -186,7 +186,7 @@ CCW Ray<Surface>::ccw(const Ray& other) const {
 
 template <typename Surface>
 bool Ray<Surface>::operator==(const Ray& other) const {
-  return start() == other.start() && (!start().vertex() || source() == other.source()) && vector().ccw(other.vector()) == CCW::COLLINEAR;
+  return start() == other.start() && (!start().vertex() || source() == other.source()) && vector().parallel(other.vector());
 }
 
 template <typename Surface>
