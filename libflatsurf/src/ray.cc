@@ -287,17 +287,6 @@ std::ostream &operator<<(std::ostream& os, const Ray<Surface>& self) {
 
 }
 
-namespace std {
-
-using namespace flatsurf;
-
-template <typename Surface>
-size_t hash<Ray<Surface>>::operator()(const Ray<Surface>&) const {
-  throw std::logic_error("not implemented: hashing of rays");
-}
-
-}
-
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"
 

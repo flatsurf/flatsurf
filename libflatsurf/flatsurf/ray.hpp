@@ -103,12 +103,5 @@ Ray(const Point<Surface>&, Args &&...) -> Ray<Surface>;
 
 }  // namespace flatsurf
 
-namespace std {
-
-template <typename Surface>
-struct hash<::flatsurf::Ray<Surface>> { size_t operator()(const ::flatsurf::Ray<Surface> &) const; };
-
-}  // namespace std
-
 #endif
 

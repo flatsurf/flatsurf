@@ -134,7 +134,7 @@ TEMPLATE_TEST_CASE("A Ray can be used to Define a Segment", "[Ray][segment]", (l
 }
 
 
-TEMPLATE_TEST_CASE("Rays can be Compared", "[Ray][operator==][hash]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Rays can be Compared", "[Ray][operator==]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using Surface = FlatTriangulation<T>;
 
@@ -157,12 +157,6 @@ TEMPLATE_TEST_CASE("Rays can be Compared", "[Ray][operator==][hash]", (long long
   if (surface->angle(ray.start()) == 1) {
     REQUIRE(ray != Ray{ray.start(), -ray.vector()});
   }
-
-  const auto hash = std::hash<Ray<Surface>>{};
-  REQUIRE(hash(ray) == hash(ray2));
-
-  // Check that the hash function can distinguish such evidently different rays.
-  REQUIRE(hash(ray) != hash(perpendicular));
 }
 
 TEMPLATE_TEST_CASE("Serialization of Rays", "[Ray][save][load]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
