@@ -422,7 +422,7 @@ HalfEdge ImplementationOf<Point<Surface>>::translate(const Vector<T>& Δ) {
     // reconstruct from where Δ comes on the surface without that point.
     const auto preimage = insertion.section()(SaddleConnection(insertion.codomain(), target).segment());
 
-    LIBFLATSURF_ASSERT(preimage, "preimage of a half edge after insertion of a marked point must exist; it's either a saddle connection or a segment");
+    LIBFLATSURF_ASSERT(preimage, "preimage of a half edge after insertion of a marked point must exist; it's either a saddle connection or a segment. But " << target << " has no preimage with respect to " << insertion);
     LIBFLATSURF_ASSERT(preimage->size() == 1, "preimage of a half edge after insertion of a marked point must be a single segment or a single saddle connection");
 
     SegmentIterator<Surface> segment = preimage->begin();
