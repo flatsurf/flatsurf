@@ -80,6 +80,8 @@ std::optional<Path<Surface>> GenericRetriangulationDeformationRelation<Surface>:
 
   Path<Surface> pending = path;
 
+  TODO: Adapt to path not being a sequence of saddle connections.
+  TODO: Is this directly tested?
   const HalfEdge source = pending.begin()->source();
   HalfEdge target = pending.begin()->target();
   auto vector = pending.begin()->vector();
