@@ -35,6 +35,7 @@
 #include "../flatsurf/saddle_connections_by_length.hpp"
 #include "../flatsurf/saddle_connections_by_length_iterator.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
+#include "../flatsurf/segment.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertex.hpp"
 #include "../flatsurf/vertical.hpp"
@@ -45,7 +46,7 @@ namespace flatsurf {
 
 template <typename Surface>
 GenericRetriangulationDeformationRelation<Surface>::GenericRetriangulationDeformationRelation(const Surface& domain, const Surface& codomain, HalfEdge preimage, HalfEdge image) :
-  GenericRetriangulationDeformationRelation<Surface>(domain, codomain, Path{SaddleConnection<Surface>(domain, preimage)}, Path{SaddleConnection<Surface>(codomain, image)}) {
+  GenericRetriangulationDeformationRelation<Surface>(domain, codomain, Path{SaddleConnection<Surface>(domain, preimage).segment()}, Path{SaddleConnection<Surface>(codomain, image).segment()}) {
 }
 
 template <typename Surface>
