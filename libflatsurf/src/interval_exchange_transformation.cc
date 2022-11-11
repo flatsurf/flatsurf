@@ -214,7 +214,7 @@ ImplementationOf<IntervalExchangeTransformation<Surface>>::ImplementationOf(cons
 
   const auto connected = [&](const std::vector<HalfEdge>& contour) {
     for (auto it = contour.begin(); it != contour.end() - 1; it++)
-      if (Vertex::target(*it, surface) != Vertex::source(*(it + 1), surface)) return false;
+      if (Vertex::target(surface, *it) != Vertex::source(surface, *(it + 1))) return false;
     return true;
   };
 

@@ -37,7 +37,9 @@ TEST_CASE("Vertices And Modifications of Surfaces", "[Vertex][flip][source][targ
 
       hexagon->flip(flip);
 
-      REQUIRE(Vertex::source(fixed.positive(), *hexagon) != Vertex::target(fixed.positive(), *hexagon));
+      REQUIRE(Vertex::source(*hexagon, fixed.positive()) == Vertex::source(fixed.positive(), *hexagon));
+      REQUIRE(Vertex::target(*hexagon, fixed.positive()) == Vertex::target(fixed.positive(), *hexagon));
+      REQUIRE(Vertex::source(*hexagon, fixed.positive()) != Vertex::target(*hexagon, fixed.positive()));
       REQUIRE(hexagon->vertices().size() == 2);
     }
   }

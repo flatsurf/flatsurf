@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -36,8 +36,13 @@ class Vertex : Serializable<Vertex>,
   Vertex(PrivateConstructor, Args &&...);
 
  public:
-  static const Vertex &source(const HalfEdge &, const FlatTriangulationCombinatorial &);
-  static const Vertex &target(const HalfEdge &, const FlatTriangulationCombinatorial &);
+  static const Vertex &source(const FlatTriangulationCombinatorial &, const HalfEdge &);
+  static const Vertex &target(const FlatTriangulationCombinatorial &, const HalfEdge &);
+
+  [[deprecated("Pass the surface as the first argument to Vertex::source() instead")]]
+  static const Vertex &source(const HalfEdge&, const FlatTriangulationCombinatorial &);
+  [[deprecated("Pass the surface as the first argument to Vertex::target() instead")]]
+  static const Vertex &target(const HalfEdge&, const FlatTriangulationCombinatorial &);
 
   HalfEdgeSet outgoing() const;
   HalfEdgeSet incoming() const;
