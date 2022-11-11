@@ -2,7 +2,7 @@
  *  This file is part of flatsurf.
  *
  *        Copyright (C) 2019-2020 Vincent Delecroix
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ void VertexAtTarget(State& state) {
   HalfEdge e(1);
 
   for (auto _ : state) {
-    DoNotOptimize(Vertex::target(e, *surface));
+    DoNotOptimize(Vertex::target(*surface, e));
   }
 }
 BENCHMARK(VertexAtTarget);
@@ -45,7 +45,7 @@ void VertexAtSource(State& state) {
   HalfEdge e(1);
 
   for (auto _ : state) {
-    DoNotOptimize(Vertex::source(e, *surface));
+    DoNotOptimize(Vertex::source(*surface, e));
   }
 }
 BENCHMARK(VertexAtSource);

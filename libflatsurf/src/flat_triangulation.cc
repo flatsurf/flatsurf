@@ -327,11 +327,11 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
       // └ b ┴ a ┘
       // There are two vertices in this surface and both are marked. However, ┬
       // is connected to all edges whereas ┴ is not.
-      if (collapse && vertex.outgoing().size() > Vertex::source(*collapse, *this).outgoing().size())
+      if (collapse && vertex.outgoing().size() > Vertex::source(*this, *collapse).outgoing().size())
         continue;
 
       for (const auto &outgoing : this->atVertex(vertex)) {
-        const auto neighbour = Vertex::target(outgoing, *this);
+        const auto neighbour = Vertex::target(*this, outgoing);
         if (neighbour != vertex) {
           if (collapse && (fromHalfEdge(*collapse) * fromHalfEdge(*collapse)) < fromHalfEdge(outgoing) * fromHalfEdge(outgoing))
             continue;
@@ -344,14 +344,14 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
   if (!collapse)
     return Deformation(*this);
 
-  const auto marked = Vertex::source(*collapse, *this);
+  const auto marked = Vertex::source(*this, *collapse);
 
   const auto delta = OddHalfEdgeMap<Vector<T>>(*this, [&](const HalfEdge he) {
-    if (Vertex::source(he, *this) == marked && Vertex::target(he, *this) == marked)
+    if (Vertex::source(*this, he) == marked && Vertex::target(*this, he) == marked)
       return Vector<T>();
-    if (Vertex::source(he, *this) == marked)
+    if (Vertex::source(*this, he) == marked)
       return -fromHalfEdge(*collapse);
-    if (Vertex::target(he, *this) == marked)
+    if (Vertex::target(*this, he) == marked)
       return fromHalfEdge(*collapse);
 
     return Vector<T>();
@@ -369,7 +369,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
   // since one of their endpoints has disappeared. However, they might show up
   // in the preimage if two collinear half edges met at the marked point.
   for (auto preimage : this->halfEdges()) {
-    if (Vertex::source(preimage, *this) == marked || Vertex::target(preimage, *this) == marked)
+    if (Vertex::source(*this, preimage) == marked || Vertex::target(*this, preimage) == marked)
       continue;
 
     const auto image = shift(SaddleConnection<FlatTriangulation>(*this, preimage));
@@ -392,7 +392,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
         LIBFLATSURF_ASSERT(preimage, "Half edge " << image << " in surface " << elimination.codomain() << " which was created from " << *this << " by removing a marked point could not be pulled back to the original surface.");
         LIBFLATSURF_ASSERT(preimage->size(), "Half edge " << image << " in surface " << elimination.codomain() << " which was created from " << *this << " by removing a marked point pulled back to a trivial connection.");
 
-        LIBFLATSURF_ASSERT(elimination.codomain().angle(Vertex::source(image, elimination.codomain())) == this->angle(Vertex::source(preimage->begin()->source(), *this)), "Total angle at vertex changed. " << image << " in " << elimination.codomain() << " pulls back to [" << *preimage->begin() << ", ...] in " << *this << " but the the total turns at the source of the former is " << elimination.codomain().angle(Vertex::source(image, elimination.codomain())) << " and the total turn at the source of the latter is " << this->angle(Vertex::source(preimage->begin()->source(), *this)));
+        LIBFLATSURF_ASSERT(elimination.codomain().angle(Vertex::source(elimination.codomain(), image)) == this->angle(Vertex::source(*this, preimage->begin()->source())), "Total angle at vertex changed. " << image << " in " << elimination.codomain() << " pulls back to [" << *preimage->begin() << ", ...] in " << *this << " but the the total turns at the source of the former is " << elimination.codomain().angle(Vertex::source(elimination.codomain(), image)) << " and the total turn at the source of the latter is " << this->angle(Vertex::source(*this, preimage->begin()->source())));
 
         Vector<T> vector;
         for (const auto &segment : *preimage)
@@ -593,7 +593,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &nextT
       return deformation.codomain().fromHalfEdge(e);
     });
 
-    return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<InsertMarkedPointInFaceDeformationRelation<FlatTriangulation>>(deformation.codomain(), codomain, Vertex::source(a, codomain))) * deformation;
+    return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<InsertMarkedPointInFaceDeformationRelation<FlatTriangulation>>(deformation.codomain(), codomain, Vertex::source(codomain, a))) * deformation;
   } else {
     // After the flips we did, vector is collinear with the half edge nextTo (but shorter.)
 
@@ -625,7 +625,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &nextT
 
     nextTo = deformation.codomain().previousAtVertex(nextTo);
 
-    return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<InsertMarkedPointOnEdgeDeformationRelation<FlatTriangulation>>(deformation.codomain(), codomain, Vertex::source(a, codomain), split, -a, c)) * deformation;
+    return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<InsertMarkedPointOnEdgeDeformationRelation<FlatTriangulation>>(deformation.codomain(), codomain, Vertex::source(codomain, a), split, -a, c)) * deformation;
   }
 }
 

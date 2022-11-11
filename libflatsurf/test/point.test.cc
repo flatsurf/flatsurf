@@ -42,7 +42,7 @@ TEMPLATE_TEST_CASE("Creating Points", "[Point][constructor]", (long long), (mpq_
   CAPTURE(face);
 
   SECTION("Points from Vertices") {
-    const auto p = Point(*surface, Vertex::source(face, *surface));
+    const auto p = Point(*surface, Vertex::source(*surface, face));
 
     REQUIRE(p == Point(*surface, face, T(1), T(), T()));
   }
@@ -69,7 +69,7 @@ TEMPLATE_TEST_CASE("Creating Points", "[Point][constructor]", (long long), (mpq_
       if (surface->angle(p) == 1) {
         const auto q = p - flow;
 
-        REQUIRE(q == Point(*surface, Vertex::source(face, *surface)));
+        REQUIRE(q == Point(*surface, Vertex::source(*surface, face)));
       }
     }
   }
@@ -113,7 +113,7 @@ TEMPLATE_TEST_CASE("Flowing Points", "[Point][operator+=][operator-=]", (long lo
         REQUIRE(point + f / 2 == Point{*surface, face, T(), T(1), T()});
         REQUIRE(point - f / 2 == Point{*surface, face, T(1), T(), T()});
         REQUIRE(point + (f / 2 + g) == Point{*surface, face, T(), T(), T(1)});
-        if (surface->angle(Vertex::target(face, *surface)) == 1)
+        if (surface->angle(Vertex::target(*surface, face)) == 1)
           REQUIRE(point + f / 2 + g == Point{*surface, face, T(), T(), T(1)});
       }
 
@@ -122,7 +122,7 @@ TEMPLATE_TEST_CASE("Flowing Points", "[Point][operator+=][operator-=]", (long lo
         auto g = surface->fromHalfEdge(surface->nextInFace(face));
         REQUIRE(point + f / 4 == Point{*surface, face, T(1), T(3), T()});
         REQUIRE(point + (f / 2 + g / 2) == Point{*surface, face, T(), T(1), T(1)});
-        if (surface->angle(Vertex::target(face, *surface)) == 1)
+        if (surface->angle(Vertex::target(*surface, face)) == 1)
           REQUIRE(point + f / 2 + g / 2 == Point{*surface, face, T(), T(1), T(1)});
       }
     }

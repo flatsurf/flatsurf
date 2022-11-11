@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -168,7 +168,7 @@ Path<FlatTriangulation<typename Surface::Coordinate>> ImplementationOf<ContourCo
     turn = surface.turn(surface.nextInFace(from.self->halfEdge), to.self->halfEdge);
   } else if (from.bottom() && to.top()) {
     // The last connection on the bottom of the contour and the first on the top of the contour.
-    LIBFLATSURF_ASSERT(Vertex::target(from.self->halfEdge, surface) == Vertex::source(to.self->halfEdge, surface), "final connections must point to the same vertex but " << from.self->halfEdge << " and " << to.self->halfEdge << " do not");
+    LIBFLATSURF_ASSERT(Vertex::target(surface, from.self->halfEdge) == Vertex::source(surface, to.self->halfEdge), "final connections must point to the same vertex but " << from.self->halfEdge << " and " << to.self->halfEdge << " do not");
     turn = surface.cross(surface.nextInFace(from.self->halfEdge));
     turn.splice(end(turn), surface.turn(surface.previousAtVertex(surface.nextInFace(from.self->halfEdge)), surface.nextInFace(-to.self->halfEdge)));
   } else if (from.top() && to.top()) {
@@ -180,7 +180,7 @@ Path<FlatTriangulation<typename Surface::Coordinate>> ImplementationOf<ContourCo
   } else {
     // The last connection on the top of the contour and the first on the bottom of the contour.
     LIBFLATSURF_ASSERT(from.top() && to.bottom(), "inconsistent top() / bottom()");
-    LIBFLATSURF_ASSERT(Vertex::target(from.self->halfEdge, surface) == Vertex::source(to.self->halfEdge, surface), "initial connections must start at the same vertex but " << from << " and " << to << " do not");
+    LIBFLATSURF_ASSERT(Vertex::target(surface, from.self->halfEdge) == Vertex::source(surface, to.self->halfEdge), "initial connections must start at the same vertex but " << from << " and " << to << " do not");
     turn = surface.cross(-from.self->halfEdge);
     turn.splice(end(turn), surface.turn(surface.previousAtVertex(-from.self->halfEdge), to.self->halfEdge));
   }
