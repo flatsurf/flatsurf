@@ -17,8 +17,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_TEST_GENERATORS_DEFORMATION_GENERATORS_HPP
-#define LIBFLATSURF_TEST_GENERATORS_DEFORMATION_GENERATORS_HPP
+#ifndef LIBFLATSURF_TEST_GENERATORS_DEFORMATION_GENERATOR_HPP
+#define LIBFLATSURF_TEST_GENERATORS_DEFORMATION_GENERATOR_HPP
 
 #include "../../flatsurf/deformation.hpp"
 #include "surface_generator.hpp"
