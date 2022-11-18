@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -42,12 +42,20 @@ bool Vertex::operator==(const Vertex& rhs) const {
   return *begin(self->sources) == *begin(rhs.self->sources);
 }
 
-const Vertex& Vertex::source(const HalfEdge& e, const FlatTriangulationCombinatorial& surface) {
+const Vertex& Vertex::source(const FlatTriangulationCombinatorial& surface, const HalfEdge& e) {
   return *std::find_if(begin(surface.vertices()), end(surface.vertices()), [&](const auto& v) { return v.self->sources.contains(e); });
 }
 
+const Vertex& Vertex::target(const FlatTriangulationCombinatorial& surface, const HalfEdge& e) {
+  return Vertex::source(surface, -e);
+}
+
+const Vertex& Vertex::source(const HalfEdge& e, const FlatTriangulationCombinatorial& surface) {
+  return source(surface, e);
+}
+
 const Vertex& Vertex::target(const HalfEdge& e, const FlatTriangulationCombinatorial& surface) {
-  return Vertex::source(-e, surface);
+  return target(surface, e);
 }
 
 HalfEdgeSet Vertex::outgoing() const {
