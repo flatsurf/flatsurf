@@ -25,6 +25,11 @@
 namespace flatsurf {
 
 template <typename Surface>
+Equivalence<Surface> Equivalence<Surface>::combinatorial(std::function<bool(const Surface&, Edge)> predicate) {
+  throw std::logic_error("not implemented: Equivalence::combinatorial()");
+}
+
+template <typename Surface>
 std::ostream& operator<<(std::ostream&, const Equivalence<Surface>& surface) {
   throw std::logic_error("not implemented: operator<< for Equivalence");
 }
