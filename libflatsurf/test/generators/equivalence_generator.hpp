@@ -44,11 +44,19 @@ class EquivalenceGenerator : public Catch::Generators::IGenerator<Equivalence<Fl
 
   Equivalence<FlatTriangulation<T>> current;
 
- public:
-  EquivalenceGenerator(std::shared_ptr<const FlatTriangulation<T>> surface) : surface(surface), state(EQUIVALENCE::COMBINATORIAL), current(make(state)) {
+  Equivalence<FlatTriangulation<T>> make(EQUIVALENCE kind) {
+    switch (kind) {
+      case EQUIVALENCE::COMBINATORIAL:
+        return Equivalence<FlatTriangulation<T>>::combinatorial();
+      default:
+        throw std::logic_error("not implemented: EquivalenceGenerator::make()");
+    }
   }
 
-  const Point<FlatTriangulation<T>>& get() const override {
+ public:
+  EquivalenceGenerator(std::shared_ptr<const FlatTriangulation<T>> surface) : surface(surface), state(EQUIVALENCE::COMBINATORIAL), current(make(state)) {}
+
+  const Equivalence<FlatTriangulation<T>>& get() const override {
     return current;
   }
 
@@ -66,7 +74,7 @@ class EquivalenceGenerator : public Catch::Generators::IGenerator<Equivalence<Fl
 
 template <typename T>
 Catch::Generators::GeneratorWrapper<Equivalence<FlatTriangulation<T>>> points(NamedSurface<T> surface) {
-  return Catch::Generators::GeneratorWrapper<Equivalence<FlatTriangulation<T>>>(std::unique_ptr<Catch::Generators::IGenerator<Point<FlatTriangulation<T>>>>(new EquivalenceGenerator<T>(surface)));
+  return Catch::Generators::GeneratorWrapper<Equivalence<FlatTriangulation<T>>>(std::unique_ptr<Catch::Generators::IGenerator<Equivalence<FlatTriangulation<T>>>>(new EquivalenceGenerator<T>(surface)));
 }
 
 }
