@@ -2,7 +2,7 @@ check_PROGRAMS = main
 
 TESTS = libflatsurf.test.sh
 
-main_SOURCES = main.cc approximation.test.cc bound.test.cc chain.test.cc contour_decomposition.test.cc deformation.test.cc edge.test.cc flat_triangulation.test.cc flat_triangulation_collapsed.test.cc flat_triangulation_combinatorial.test.cc flow_decomposition.test.cc half_edge.test.cc interval_exchange_transformation.test.cc path.test.cc permutation.test.cc point.test.cc quadratic_polynomial.test.cc saddle_connections.test.cc saddle_connection.test.cc vector_longlong.test.cc vector.test.cc vertex.test.cc vertical.test.cc
+main_SOURCES = main.cc approximation.test.cc bound.test.cc chain.test.cc contour_decomposition.test.cc deformation.test.cc edge.test.cc equivalence.test.cc flat_triangulation.test.cc flat_triangulation_collapsed.test.cc flat_triangulation_combinatorial.test.cc flow_decomposition.test.cc half_edge.test.cc interval_exchange_transformation.test.cc path.test.cc permutation.test.cc point.test.cc quadratic_polynomial.test.cc saddle_connections.test.cc saddle_connection.test.cc vector_longlong.test.cc vector.test.cc vertex.test.cc vertical.test.cc
 
 noinst_HEADERS =                                 \
   surfaces.hpp                                   \
