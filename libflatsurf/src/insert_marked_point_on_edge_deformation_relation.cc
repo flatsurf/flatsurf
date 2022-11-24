@@ -39,8 +39,8 @@ template <typename Surface>
 InsertMarkedPointOnEdgeDeformationRelation<Surface>::InsertMarkedPointOnEdgeDeformationRelation(const Surface& domain, const Surface& codomain, const Vertex& inserted, HalfEdge split, HalfEdge a, HalfEdge b) :
   DeformationRelation<Surface>(domain, codomain), inserted(inserted), split(split), a(a), b(b) {
   LIBFLATSURF_ASSERT_ARGUMENT(codomain.fromHalfEdge(a) + codomain.fromHalfEdge(b) == domain.fromHalfEdge(split), "inserted vertex does not divide split half edge since " << split << " != " << a << " + " << b << " since " << domain.fromHalfEdge(split) << " != " << codomain.fromHalfEdge(a) << " + " << codomain.fromHalfEdge(b));
-  LIBFLATSURF_ASSERT_ARGUMENT(Vertex::target(a, codomain) == inserted, "Inserted vertex not at the end of HalfEdge " << a);
-  LIBFLATSURF_ASSERT_ARGUMENT(Vertex::source(b, codomain) == inserted, "Inserted vertex not at the start of HalfEdge " << b);
+  LIBFLATSURF_ASSERT_ARGUMENT(Vertex::target(codomain, a) == inserted, "Inserted vertex not at the end of HalfEdge " << a);
+  LIBFLATSURF_ASSERT_ARGUMENT(Vertex::source(codomain, b) == inserted, "Inserted vertex not at the start of HalfEdge " << b);
 }
 
 template <typename Surface>
