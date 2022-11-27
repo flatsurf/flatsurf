@@ -29,7 +29,7 @@ TEMPLATE_TEST_CASE("Equality of Equivalence Classes is Consistent", "[Equivalenc
   using T = TestType;
 
   const auto surface = GENERATE_SURFACES(T);
-  const auto equivalence = GENERATE_COPY(points(surface));
+  const auto equivalence = GENERATE_COPY(equivalences(surface));
 
   const auto equivalence_class = EquivalenceClass(*surface, equivalence);
 

@@ -73,7 +73,7 @@ class EquivalenceGenerator : public Catch::Generators::IGenerator<Equivalence<Fl
 };
 
 template <typename T>
-Catch::Generators::GeneratorWrapper<Equivalence<FlatTriangulation<T>>> points(NamedSurface<T> surface) {
+Catch::Generators::GeneratorWrapper<Equivalence<FlatTriangulation<T>>> equivalences(NamedSurface<T> surface) {
   return Catch::Generators::GeneratorWrapper<Equivalence<FlatTriangulation<T>>>(std::unique_ptr<Catch::Generators::IGenerator<Equivalence<FlatTriangulation<T>>>>(new EquivalenceGenerator<T>(surface)));
 }
 

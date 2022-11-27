@@ -24,8 +24,9 @@
 #include <tuple>
 #include <any>
 #include <functional>
+#include <memory>
 
-#include "copyable.hpp"
+#include "shared.hpp"
 
 namespace flatsurf {
 
@@ -36,8 +37,7 @@ class Equivalence {
   using T = typename Surface::Coordinate;
 
  public:
-  template <typename I>
-  Equivalence(I&& impl) : self(impl) {}
+  Equivalence(std::shared_ptr<ImplementationOf<Equivalence>>);
 
   // Return the combinatorial equivalence of surfaces on marked edges.
   // The edges singled out by the predicate must be such that the graph they
@@ -106,20 +106,21 @@ class Equivalence {
   friend std::ostream &operator<<(std::ostream &, const Equivalence<S> &);
 
  private:
-  Copyable<Equivalence> self;
+  Shared<Equivalence> self;
 
   friend ImplementationOf<Equivalence>;
+  friend ImplementationOf<EquivalenceClass<Surface>>;
 };
 
 template <typename Surface>
 struct ImplementationOf<Equivalence<Surface>> {
   virtual ~ImplementationOf();
 
-  virtual EquivalenceClassCode code(const Surface&) = 0;
-  virtual Iterable<Deformation<Surface>> automorphisms() = 0;
-  virtual void normalize(Surface&) = 0;
-  virtual bool equal(const ImplementationOf&) = 0;
-  virtual std::string toString() = 0;
+  virtual std::unique_ptr<EquivalenceClassCode> code(const Surface&) const = 0;
+  virtual Iterable<Deformation<Surface>> automorphisms() const = 0;
+  virtual void normalize(Surface&) const = 0;
+  virtual bool equal(const ImplementationOf&) const = 0;
+  virtual std::string toString() const = 0;
 };
 
 }

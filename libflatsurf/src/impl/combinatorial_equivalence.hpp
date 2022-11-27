@@ -17,25 +17,23 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_EQUIVALENCE_CLASS_IMPL_HPP
-#define LIBFLATSURF_EQUIVALENCE_CLASS_IMPL_HPP
-
-#include "../../flatsurf/equivalence_class.hpp"
 #include "../../flatsurf/equivalence.hpp"
-#include "../../flatsurf/equivalence_class_code.hpp"
 
-#include "read_only.hpp"
+#ifndef LIBFLATSURF_COMBINATORIAL_EQUIVALENCE_HPP
+#define LIBFLATSURF_COMBINATORIAL_EQUIVALENCE_HPP
 
 namespace flatsurf {
 
 template <typename Surface>
-class ImplementationOf<EquivalenceClass<Surface>> {
- public:
-  ImplementationOf(const Surface& surface, const Equivalence<Surface>& equivalence);
+struct CombinatorialEquivalence : ImplementationOf<Equivalence<Surface>> {
+  std::unique_ptr<EquivalenceClassCode> code(const Surface&) const override;
+  Iterable<Deformation<Surface>> automorphisms() const override;
+  void normalize(Surface&) const override;
+  bool equal(const ImplementationOf<Equivalence<Surface>>&) const override;
+  std::string toString() const override;
 
-  ReadOnly<Surface> surface;
-  Equivalence<Surface> equivalence;
-  std::shared_ptr<EquivalenceClassCode> code;
+  template <typename S>
+  friend std::ostream& operator<<(std::ostream&, const CombinatorialEquivalence<S>&);
 };
 
 }

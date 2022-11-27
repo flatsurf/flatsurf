@@ -20,10 +20,26 @@
 #include <ostream>
 
 #include "../flatsurf/equivalence_class.hpp"
+#include "../flatsurf/equivalence_class_code.hpp"
 
 #include "impl/equivalence_class.impl.hpp"
 
 namespace flatsurf {
+
+template <typename Surface>
+EquivalenceClass<Surface>::EquivalenceClass(const Surface& surface, const Equivalence<Surface>& equivalence) : self(spimpl::make_impl<ImplementationOf<EquivalenceClass>>(surface, equivalence)) {}
+
+template <typename Surface>
+bool EquivalenceClass<Surface>::operator==(const EquivalenceClass<Surface>& other) const {
+  // TODO: Check that the equivalence is compatible.
+  return self->code == other.self->code;
+}
+
+template <typename Surface>
+ImplementationOf<EquivalenceClass<Surface>>::ImplementationOf(const Surface& surface, const Equivalence<Surface>& equivalence) :
+  surface(surface),
+  equivalence(equivalence),
+  code(equivalence.self->code(surface)) {}
 
 template <typename Surface>
 std::ostream& operator<<(std::ostream&, const EquivalenceClass<Surface>& surface) {

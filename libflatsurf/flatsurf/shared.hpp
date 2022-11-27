@@ -17,27 +17,21 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_EQUIVALENCE_CLASS_IMPL_HPP
-#define LIBFLATSURF_EQUIVALENCE_CLASS_IMPL_HPP
+#ifndef LIBFLATSURF_SHARED_HPP
+#define LIBFLATSURF_SHARED_HPP
 
-#include "../../flatsurf/equivalence_class.hpp"
-#include "../../flatsurf/equivalence.hpp"
-#include "../../flatsurf/equivalence_class_code.hpp"
+#include <memory>
 
-#include "read_only.hpp"
+#include "forward.hpp"
 
 namespace flatsurf {
 
-template <typename Surface>
-class ImplementationOf<EquivalenceClass<Surface>> {
- public:
-  ImplementationOf(const Surface& surface, const Equivalence<Surface>& equivalence);
+// A pointer-to-implementation (pimpl) for types that have shared pointer
+// semantics. We use this for immutable polymorphic types.
+template <typename T>
+using Shared = std::shared_ptr<ImplementationOf<T>>;
 
-  ReadOnly<Surface> surface;
-  Equivalence<Surface> equivalence;
-  std::shared_ptr<EquivalenceClassCode> code;
-};
-
-}
+}  // namespace flatsurf
 
 #endif
+

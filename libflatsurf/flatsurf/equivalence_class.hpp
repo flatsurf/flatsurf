@@ -41,8 +41,7 @@ class EquivalenceClass : boost::equality_comparable<EquivalenceClass<Surface>> {
   const Surface& representative() const;
 
   // Return whether two equivalence classes are equal.
-  template <typename S>
-  friend bool operator==(const EquivalenceClass<S>&, const EquivalenceClass<S>&);
+  bool operator==(const EquivalenceClass<Surface>&) const;
 
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const EquivalenceClass<S> &);

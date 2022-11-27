@@ -21,13 +21,46 @@
 #include <stdexcept>
 
 #include "../flatsurf/equivalence.hpp"
+#include "../flatsurf/edge.hpp"
+#include "impl/combinatorial_equivalence.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
+Equivalence<Surface>::Equivalence(std::shared_ptr<ImplementationOf<Equivalence>> impl) : self(impl) {}
+
+template <typename Surface>
 Equivalence<Surface> Equivalence<Surface>::combinatorial(std::function<bool(const Surface&, Edge)> predicate) {
-  throw std::logic_error("not implemented: Equivalence::combinatorial()");
+  return Equivalence(std::make_unique<CombinatorialEquivalence<Surface>>());
 }
+
+template <typename Surface>
+Equivalence<Surface> Equivalence<Surface>::unlabeled(std::function<bool(const Surface&, Edge)> predicate) {
+  throw std::logic_error("not implemented: Equivalence::unlabeled()");
+}
+
+template <typename Surface>
+Equivalence<Surface> Equivalence<Surface>::rotational(std::function<bool(const Surface&, Edge)> predicate) {
+  throw std::logic_error("not implemented: Equivalence::rotational()");
+}
+
+template <typename Surface>
+Equivalence<Surface> Equivalence<Surface>::areaPreserving(bool oriented, std::function<bool(const Surface&, Edge)> predicate) {
+  throw std::logic_error("not implemented: Equivalence::areaPreserving()");
+}
+
+template <typename Surface>
+bool Equivalence<Surface>::all(const Surface&, Edge) {
+  return true;
+}
+
+template <typename Surface>
+bool Equivalence<Surface>::delaunayCell(const Surface&, Edge) {
+  throw std::logic_error("not implemented: Equivalence::delaunayEdge()");
+}
+
+template <typename Surface>
+ImplementationOf<Equivalence<Surface>>::~ImplementationOf() {}
 
 template <typename Surface>
 std::ostream& operator<<(std::ostream&, const Equivalence<Surface>& surface) {

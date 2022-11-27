@@ -9,6 +9,7 @@ libflatsurf_la_SOURCES =                                            \
 	chain_iterator.cc                                           \
 	chain_vector.cc                                             \
 	collapsed_half_edge.cc                                      \
+	combinatorial_equivalence.cc                                \
 	composite_deformation_relation.cc                           \
 	contour_component.cc                                        \
 	contour_component_state.cc                                  \
@@ -153,6 +154,7 @@ noinst_HEADERS =                                                    \
 	impl/edge_map.impl.hpp                                      \
 	impl/edge_set.impl.hpp                                      \
 	impl/edge_set_iterator.impl.hpp                             \
+	impl/combinatorial_equivalence.hpp                          \
 	impl/flat_triangulation_collapsed.impl.hpp                  \
 	impl/flat_triangulation_combinatorial.impl.hpp              \
 	impl/flat_triangulation_combinatorics.impl.hpp              \
