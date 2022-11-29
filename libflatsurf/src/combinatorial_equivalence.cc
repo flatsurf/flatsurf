@@ -93,7 +93,14 @@ std::unique_ptr<EquivalenceClassCode> CombinatorialEquivalence<Surface>::code(co
         if (pos == start)
           break;
 
-        word.push_back(label(surface, pos));
+        const int label = this->label(surface, pos);
+
+        if (label > 0 && label < labels.size() - 2)
+          // We found a positive label that was not freshly assigned. We have
+          // processed this face before.
+          return {};
+
+        word.push_back(label);
       }
 
       return word;
@@ -103,16 +110,27 @@ std::unique_ptr<EquivalenceClassCode> CombinatorialEquivalence<Surface>::code(co
       if (halfEdge == labeled.at(0))
         return 0;
 
-      LIBFLATSURF_ASSERT(labels.find(halfEdge) == std::end(labels), "We found a known label " << labels[halfEdge] << " for half edge " << halfEdge << " when starting our walk at half edge " << labeled.at(0) << " on " << surface);
-      
-      if (labels.find(-halfEdge) != std::end(labels))
-        // We have seen this edge before.
-        return -labels[-halfEdge];
+      {
+        const auto& label = labels.find(halfEdge);
+
+        if (label != std::end(labels))
+          // We have seen this edge before.
+          return label->second;
+      }
+
+      {
+        const auto& label = labels.find(-halfEdge);
+
+        if (label != std::end(labels))
+            // We have seen this edge before.
+            return -label->second;
+      }
 
       // We have never seen this edge before. Label it.
       const int label = static_cast<int>(labels.size());
       labels[halfEdge] = label;
       labeled.push_back(halfEdge);
+
       return label;
     }
   };
