@@ -17,9 +17,13 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <string>
+
 #include "../flatsurf/equivalence_class_code.hpp"
 
 namespace flatsurf {
+
+EquivalenceClassCode::~EquivalenceClassCode() {}
 
 bool operator==(const EquivalenceClassCode& lhs, const EquivalenceClassCode& rhs) {
   return lhs.equal(rhs);
@@ -27,6 +31,10 @@ bool operator==(const EquivalenceClassCode& lhs, const EquivalenceClassCode& rhs
 
 bool operator!=(const EquivalenceClassCode& lhs, const EquivalenceClassCode& rhs) {
   return !(lhs == rhs);
+}
+
+std::ostream& operator<<(std::ostream& os, const EquivalenceClassCode& code) {
+  return os << code.toString();
 }
 
 }

@@ -28,6 +28,7 @@ TEMPLATE_TEST_CASE("Combinatorial Equivalence of Surfaces", "[Equivalence][combi
   using T = TestType;
 
   const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
 
   SECTION("A Surface is Combinatorially Equivalent to Itself") {
     const auto equivalence = Equivalence<FlatTriangulation<T>>::combinatorial();

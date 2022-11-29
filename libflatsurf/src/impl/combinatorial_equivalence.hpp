@@ -17,7 +17,9 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+
 #include "../../flatsurf/equivalence.hpp"
+#include "../../flatsurf/equivalence_class_code.hpp"
 
 #ifndef LIBFLATSURF_COMBINATORIAL_EQUIVALENCE_HPP
 #define LIBFLATSURF_COMBINATORIAL_EQUIVALENCE_HPP
@@ -26,6 +28,23 @@ namespace flatsurf {
 
 template <typename Surface>
 struct CombinatorialEquivalence : ImplementationOf<Equivalence<Surface>> {
+  using Code = std::vector<std::vector<int>>;
+
+  struct CombinatorialEquivalenceClassCode : public EquivalenceClassCode {
+    explicit CombinatorialEquivalenceClassCode(Code code);
+
+    size_t hash() const override;
+    bool equal(const EquivalenceClassCode&) const override;
+    std::string toString() const override;
+
+   private:
+    Code code;
+  };
+
+  using Predicate = std::function<bool(const Surface&, Edge)>;
+
+  CombinatorialEquivalence(Predicate predicate): predicate(predicate) {}
+
   std::unique_ptr<EquivalenceClassCode> code(const Surface&) const override;
   Iterable<Deformation<Surface>> automorphisms() const override;
   void normalize(Surface&) const override;
@@ -34,6 +53,9 @@ struct CombinatorialEquivalence : ImplementationOf<Equivalence<Surface>> {
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const CombinatorialEquivalence<S>&);
+
+ private:
+  Predicate predicate;
 };
 
 }

@@ -31,7 +31,7 @@ Equivalence<Surface>::Equivalence(std::shared_ptr<ImplementationOf<Equivalence>>
 
 template <typename Surface>
 Equivalence<Surface> Equivalence<Surface>::combinatorial(std::function<bool(const Surface&, Edge)> predicate) {
-  return Equivalence(std::make_unique<CombinatorialEquivalence<Surface>>());
+  return Equivalence(std::make_unique<CombinatorialEquivalence<Surface>>(predicate));
 }
 
 template <typename Surface>

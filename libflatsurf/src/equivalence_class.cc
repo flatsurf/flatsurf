@@ -32,7 +32,13 @@ EquivalenceClass<Surface>::EquivalenceClass(const Surface& surface, const Equiva
 template <typename Surface>
 bool EquivalenceClass<Surface>::operator==(const EquivalenceClass<Surface>& other) const {
   // TODO: Check that the equivalence is compatible.
-  return self->code == other.self->code;
+  return *self->code == *other.self->code;
+}
+
+template <typename Surface>
+const Surface& EquivalenceClass<Surface>::representative() const {
+  // TODO: Canonicalize
+  return self->surface;
 }
 
 template <typename Surface>
@@ -42,8 +48,8 @@ ImplementationOf<EquivalenceClass<Surface>>::ImplementationOf(const Surface& sur
   code(equivalence.self->code(surface)) {}
 
 template <typename Surface>
-std::ostream& operator<<(std::ostream&, const EquivalenceClass<Surface>& surface) {
-  throw std::logic_error("not implemented: operator<< for EquivalenceClass");
+std::ostream& operator<<(std::ostream& os, const EquivalenceClass<Surface>& clazz) {
+  return os << "[" << clazz.representative() << "](" << *clazz.self->code << ")";
 }
 
 }

@@ -39,11 +39,17 @@ struct EquivalenceClassCode {
   // Return whether two codes describe the same equivalence class.
   virtual bool equal(const EquivalenceClassCode&) const = 0;
 
+  // Return a printable representation of this code.
+  virtual std::string toString() const = 0;
+
   friend
   bool operator==(const EquivalenceClassCode& lhs, const EquivalenceClassCode& rhs);
 
   friend
   bool operator!=(const EquivalenceClassCode& lhs, const EquivalenceClassCode& rhs);
+
+  friend
+  std::ostream& operator<<(std::ostream&, const EquivalenceClassCode& code);
 };
 
 }
