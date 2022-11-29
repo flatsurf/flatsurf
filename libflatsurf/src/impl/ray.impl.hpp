@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,36 +17,36 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_IMPL_SLIT_DEFORMATION_RELATION_HPP
-#define LIBFLATSURF_IMPL_SLIT_DEFORMATION_RELATION_HPP
+#ifndef LIBFLATSURF_RAY_IMPL_HPP
+#define LIBFLATSURF_RAY_IMPL_HPP
 
-#include <iosfwd>
+#include "../../flatsurf/ray.hpp"
 
+#include "../../flatsurf/point.hpp"
 #include "../../flatsurf/half_edge.hpp"
-#include "deformation_relation.hpp"
+
+#include "read_only.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-class SlitDeformationRelation : public DeformationRelation<Surface> {
+class ImplementationOf<Ray<Surface>> {
+  using T = typename Surface::Coordinate;
+
  public:
-  // Create a deformation that adds/removes a slit to `domain` resulting in
-  // `codomain`.
-  SlitDeformationRelation(const Surface& domain, const Surface& codomain);
+  ImplementationOf(const Point<Surface>& start, HalfEdge source, const Vector<T>&);
 
-  std::optional<Path<Surface>> operator()(const Path<Surface>&) const override;
-  Point<Surface> operator()(const Point<Surface>&) const override;
-  Ray<Surface> operator()(const Ray<Surface>&) const override;
+  // Return the source of this ray, see Ray::source().
+  static HalfEdge normalizeSource(const Point<Surface>& start, HalfEdge source, const Vector<T>& vector);
 
-  std::unique_ptr<DeformationRelation<Surface>> clone() const override;
+  Point<Surface> start;
+  HalfEdge source;
 
-  std::unique_ptr<DeformationRelation<Surface>> section() const override;
-
-  bool trivial() const override;
-
-  std::ostream& operator>>(std::ostream&) const override;
+  Vector<T> vector;
 };
 
 }  // namespace flatsurf
 
 #endif
+
+

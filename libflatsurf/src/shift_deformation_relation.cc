@@ -25,6 +25,7 @@
 #include "../flatsurf/odd_half_edge_map.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/point.hpp"
+#include "../flatsurf/ray.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vector.hpp"
@@ -94,6 +95,11 @@ Point<Surface> ShiftDeformationRelation<Surface>::operator()(const Point<Surface
   // define the image of the point to be the same point in barycentric
   // coordinates. But what should the image be for general shifts?
   throw std::logic_error("not implemented: cannot map points through a shift deformation yet");
+}
+
+template <typename Surface>
+Ray<Surface> ShiftDeformationRelation<Surface>::operator()(const Ray<Surface>&) const {
+  throw std::logic_error("not implemented: cannot map rays through a shift deformation yet");
 }
 
 template <typename Surface>

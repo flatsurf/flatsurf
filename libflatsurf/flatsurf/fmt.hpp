@@ -108,5 +108,11 @@ template <typename Surface>
 struct fmt::formatter<::flatsurf::Path<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::Path<Surface>> {};
 template <typename Surface>
 struct fmt::formatter<::flatsurf::PathIterator<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::PathIterator<Surface>> {};
+template <typename Surface>
+struct fmt::formatter<::flatsurf::Ray<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::Ray<Surface>> {};
+template <typename Surface>
+struct fmt::formatter<::flatsurf::Segment<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::Segment<Surface>> {};
+template <typename Surface>
+struct fmt::formatter<::flatsurf::SegmentIterator<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::SegmentIterator<Surface>> {};
 
 #endif

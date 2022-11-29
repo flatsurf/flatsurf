@@ -53,7 +53,25 @@ class ImplementationOf<Point<Surface>> {
   // Move this point by xy in Cartesian coordinates.
   // The point might not be a marked point. The movement is performed with
   // respect to the face which is selected by its current ``face``.
-  ImplementationOf& operator+=(const Vector<T>& xy);
+  // Returns a half edge such that shifting the resulting point back by -xy
+  // with respect to that half edge produces the original point.
+  // Or equivalently, returns a face which contains the initial part of -xy
+  // pointing to the original point.
+  HalfEdge translate(const Vector<T>& xy);
+
+  // Move this point by xy in Cartesian coordinates.
+  // Unlike the above, this normalizes the face first, i.e., the point must be
+  // marked.
+  // Note: This method is not exposed to the user because of the somewhat
+  // confusing interface. The functionality is available though, it's
+  // essentially equivalent to Segment(p, xy).target().
+  static HalfEdge translate(Point& p, const Vector<T>& xy);
+
+  // Move this point by xy in Cartesian coordinates with respect to the face at face.
+  // Note: This method is not exposed to the user because of the somewhat
+  // confusing interface. The functionality is available though, it's
+  // essentially equivalent to Segment(p, face, xy).target().
+  static HalfEdge translate(Point& p, HalfEdge source, const Vector<T>& xy);
 
   // Return barycentric coordinates of the point xy in face.
   // The returned coordinates are not normalized, in particular, they might not

@@ -63,7 +63,12 @@ class SaddleConnections {
 
   // Return only the saddle connections starting at source of sectorBegin that
   // lie in sector between sectorBegin (inclusive) and sectorEnd (exclusive.)
+  [[deprecated("use sector(Ray, Ray) instead")]]
   SaddleConnections<Surface> sector(const SaddleConnection<Surface> &sectorBegin, const SaddleConnection<Surface> &sectorEnd) const;
+
+  // Return only the saddle connections starting at source of sectorBegin that
+  // lie in sector between sectorBegin (inclusive) and sectorEnd (exclusive.)
+  SaddleConnections<Surface> sector(const Ray<Surface> &sectorBegin, const Ray<Surface> &sectorEnd) const;
 
   // Return only the saddle connections whose directions lies in sector between
   // sectorBegin (inclusive) and sectorEnd (exclusive.)

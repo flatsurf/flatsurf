@@ -24,6 +24,7 @@
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/point.hpp"
+#include "../flatsurf/ray.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/half_edge_set.hpp"
 #include "../flatsurf/half_edge_set_iterator.hpp"
@@ -105,6 +106,11 @@ Point<Surface> InsertMarkedPointOnEdgeDeformationRelation<Surface>::operator()(c
   }
 
   LIBFLATSURF_UNREACHABLE("Point " << point << " had no non-negative barycentric coordinates in any of the faces adjacent to " << VC); 
+}
+
+template <typename Surface>
+Ray<Surface> InsertMarkedPointOnEdgeDeformationRelation<Surface>::operator()(const Ray<Surface>& ray) const {
+  throw std::logic_error("not implemented: InsertMarkedPointOnEdgeDeformationRelation::operator()(Ray)");
 }
 
 template <typename Surface>

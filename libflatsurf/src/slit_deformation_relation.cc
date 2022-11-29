@@ -24,6 +24,7 @@
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/point.hpp"
+#include "../flatsurf/ray.hpp"
 
 namespace flatsurf {
 
@@ -39,6 +40,11 @@ std::optional<Path<Surface>> SlitDeformationRelation<Surface>::operator()(const 
 template <typename Surface>
 Point<Surface> SlitDeformationRelation<Surface>::operator()(const Point<Surface>&) const {
   throw std::logic_error("not implemented: cannot map points when a slit has been inserted");
+}
+
+template <typename Surface>
+Ray<Surface> SlitDeformationRelation<Surface>::operator()(const Ray<Surface>&) const {
+  throw std::logic_error("not implemented: cannot map rays when a slit has been inserted");
 }
 
 template <typename Surface>

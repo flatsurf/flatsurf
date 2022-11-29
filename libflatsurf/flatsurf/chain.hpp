@@ -48,6 +48,8 @@ class Chain : public Serializable<Chain<Surface>>,
   explicit Chain(const Surface&);
   Chain(const Surface&, HalfEdge);
 
+  const Vector<T>& vector() const;
+
   operator const Vector<T> &() const;
   operator const Vector<exactreal::Arb> &() const;
 

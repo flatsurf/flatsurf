@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,34 +17,38 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_IMPL_SLIT_DEFORMATION_RELATION_HPP
-#define LIBFLATSURF_IMPL_SLIT_DEFORMATION_RELATION_HPP
+#ifndef LIBFLATSURF_SEGMENT_ITERATOR_HPP
+#define LIBFLATSURF_SEGMENT_ITERATOR_HPP
 
+#include <boost/iterator/iterator_categories.hpp>
+#include <boost/iterator/iterator_facade.hpp>
 #include <iosfwd>
 
-#include "../../flatsurf/half_edge.hpp"
-#include "deformation_relation.hpp"
+#include "copyable.hpp"
 
 namespace flatsurf {
 
+// Iterates over a path in a surface, i.e., over a connected sequence of segments.
 template <typename Surface>
-class SlitDeformationRelation : public DeformationRelation<Surface> {
+class SegmentIterator : public boost::iterator_facade<SegmentIterator<Surface>, const Segment<Surface>&, boost::forward_traversal_tag> {
+  template <typename... Args>
+  SegmentIterator(PrivateConstructor, Args&&...);
+
  public:
-  // Create a deformation that adds/removes a slit to `domain` resulting in
-  // `codomain`.
-  SlitDeformationRelation(const Surface& domain, const Surface& codomain);
+  using value_type = Segment<Surface>;
 
-  std::optional<Path<Surface>> operator()(const Path<Surface>&) const override;
-  Point<Surface> operator()(const Point<Surface>&) const override;
-  Ray<Surface> operator()(const Ray<Surface>&) const override;
+  void increment();
+  const value_type& dereference() const;
+  bool equal(const SegmentIterator& other) const;
 
-  std::unique_ptr<DeformationRelation<Surface>> clone() const override;
+  template <typename S>
+  friend std::ostream& operator<<(std::ostream&, const SegmentIterator<S>&);
 
-  std::unique_ptr<DeformationRelation<Surface>> section() const override;
+ private:
+  Copyable<SegmentIterator> self;
 
-  bool trivial() const override;
-
-  std::ostream& operator>>(std::ostream&) const override;
+  friend Path<Surface>;
+  friend ImplementationOf<SegmentIterator>;
 };
 
 }  // namespace flatsurf

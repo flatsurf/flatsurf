@@ -29,11 +29,13 @@
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/point.hpp"
+#include "../flatsurf/ray.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_by_length.hpp"
 #include "../flatsurf/saddle_connections_by_length_iterator.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
+#include "../flatsurf/segment.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertex.hpp"
 #include "../flatsurf/vertical.hpp"
@@ -44,7 +46,7 @@ namespace flatsurf {
 
 template <typename Surface>
 GenericRetriangulationDeformationRelation<Surface>::GenericRetriangulationDeformationRelation(const Surface& domain, const Surface& codomain, HalfEdge preimage, HalfEdge image) :
-  GenericRetriangulationDeformationRelation<Surface>(domain, codomain, Path{SaddleConnection<Surface>(domain, preimage)}, Path{SaddleConnection<Surface>(codomain, image)}) {
+  GenericRetriangulationDeformationRelation<Surface>(domain, codomain, Path{SaddleConnection<Surface>(domain, preimage).segment()}, Path{SaddleConnection<Surface>(codomain, image).segment()}) {
 }
 
 template <typename Surface>
@@ -78,6 +80,8 @@ std::optional<Path<Surface>> GenericRetriangulationDeformationRelation<Surface>:
 
   Path<Surface> pending = path;
 
+  TODO: Adapt to path not being a sequence of saddle connections.
+  TODO: Is this directly tested?
   const HalfEdge source = pending.begin()->source();
   HalfEdge target = pending.begin()->target();
   auto vector = pending.begin()->vector();
@@ -168,6 +172,11 @@ Point<Surface> GenericRetriangulationDeformationRelation<Surface>::operator()(co
 
     return this->operator()(Point{*this->domain, base}) + toPoint;
   }
+}
+
+template <typename Surface>
+Ray<Surface> GenericRetriangulationDeformationRelation<Surface>::operator()(const Ray<Surface>& ray) const {
+  throw std::logic_error("not implemented: GenericRetriangulationDeformationRelation::operator()(Ray)");
 }
 
 template <typename Surface>

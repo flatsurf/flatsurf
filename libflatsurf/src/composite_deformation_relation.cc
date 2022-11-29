@@ -24,6 +24,7 @@
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/point.hpp"
+#include "../flatsurf/ray.hpp"
 #include "impl/deformation.impl.hpp"
 
 namespace flatsurf {
@@ -43,6 +44,11 @@ std::optional<Path<Surface>> CompositeDeformationRelation<Surface>::operator()(c
 template <typename Surface>
 Point<Surface> CompositeDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
   return lhs->operator()(rhs->operator()(point));
+}
+
+template <typename Surface>
+Ray<Surface> CompositeDeformationRelation<Surface>::operator()(const Ray<Surface>& ray) const {
+  return lhs->operator()(rhs->operator()(ray));
 }
 
 template <typename Surface>

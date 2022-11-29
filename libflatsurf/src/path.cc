@@ -24,15 +24,20 @@
 #include <algorithm>
 #include <ostream>
 #include <unordered_set>
+#include <vector>
 
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/chain.hpp"
+#include "../flatsurf/deformation.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/path_iterator.hpp"
+#include "../flatsurf/point.hpp"
+#include "../flatsurf/ray.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
+#include "../flatsurf/segment_iterator.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertex.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
@@ -45,13 +50,16 @@ namespace flatsurf {
 
 namespace {
 
-// Orders saddle connections around a vertex in counter clockwise order starting from a base connection b.
+// Orders rays around a vertex in counterclockwise order starting from a base ray b.
 template <typename Surface>
-struct SaddleConnectionOrdering {
-  SaddleConnectionOrdering(SaddleConnection<Surface> b) :
+struct RayOrdering {
+  RayOrdering(Ray<Surface> b) :
     b(std::move(b)) {}
 
-  bool operator()(const SaddleConnection<Surface>& x, const SaddleConnection<Surface>& y) {
+  bool operator()(const Segment<Surface>& x_, const Segment<Surface>& y_) {
+    const auto x = x_.ray();
+    const auto y = y_.ray();
+
     if (x == y)
       return false;
 
@@ -111,7 +119,7 @@ struct SaddleConnectionOrdering {
             LIBFLATSURF_UNREACHABLE("Impossible configuration of saddle connections.");
         }
       case CCW::CLOCKWISE:
-        return !this->operator()(y, x);
+        return !this->operator()(y_, x_);
       case CCW::COLLINEAR:
         switch (b.ccw(x)) {
           case CCW::COUNTERCLOCKWISE:
@@ -134,36 +142,53 @@ struct SaddleConnectionOrdering {
   }
 
  private:
-  SaddleConnection<Surface> b;
+  Ray<Surface> b;
 };
 
 // Return a maximally convex path that refines the path a → b which is turning clockwise.
 template <typename Surface>
-Path<Surface> tightenClockwise(const SaddleConnection<Surface>& a, const SaddleConnection<Surface>& b) {
+Path<Surface> tightenClockwise(const Segment<Surface>& a, const Segment<Surface>& b) {
+  if (a.overlapping() || b.overlapping())
+    // We'd need to chop the segment into smaller bits before we can tighten it.
+    throw std::logic_error("not implemented: tightening not implemented for self-overlapping segments");
+
   const auto& surface = a.surface();
 
-  LIBFLATSURF_ASSERT((-a).ccw(b) == CCW::CLOCKWISE, "Can only tighten clockwise vertices but we are not turning clockwise from " << -a << " to " << b);
+  LIBFLATSURF_ASSERT((-a).ray().ccw(b.ray()) == CCW::CLOCKWISE, "Can only tighten clockwise vertices but we are not turning clockwise from " << -a << " to " << b);
+
+  if (!b.start().vertex()) {
+    // Reduce to the case that the segments meet at a marked vertex.
+    const auto insertion = surface.insert(b.start());
+    const auto aa = static_cast<const std::vector<Segment<Surface>>&>(*insertion(a));
+    const auto bb = static_cast<const std::vector<Segment<Surface>>&>(*insertion(b));
+
+    LIBFLATSURF_ASSERT(aa.size() == 1 && bb.size() == 1, "non-overlapping segments must remain segments after insertion of a marked vertex");
+
+    const auto tightened = tightenClockwise(*std::begin(aa), *std::begin(bb));
+    const auto preimage = insertion.section()(tightened);
+
+    LIBFLATSURF_ASSERT(preimage, "tightened path must pull back to surface without marked vertex");
+
+    return *preimage;
+  }
 
   // The list of points that are on the convex path.
-  // We store these points as saddle connections starting at the point where
-  // a and b meet. Going in counterclockwise direction.
-  // Due to the enumeration order of these saddle connections, this list
+  // We store these points as segments starting at the point where
+  // a and b meet. Going in *counterclockwise* direction.
+  // Due to the enumeration order of these segments, this list
   // might eventualy contain points that are not on the convex hull. These
   // are then filtered out later.
   auto rays = std::list{b, -a};
 
-  // All the end points of segments on the convex path must come from saddle
-  // connections that start at the point where a and b meet.
-  auto connections = SaddleConnections<Surface>{surface}.sector(b, -a).bound(std::max(Bound::upper(b.vector()), Bound::upper(a.vector())));
+  // All the end points of segments on the convex path must come from segments
+  // that start at the point where and and b meet and end at a vertex.
+  auto connections = SaddleConnections<Surface>{surface}.sector(b.ray(), (-a).ray()).bound(std::max(Bound::upper(b.vector()), Bound::upper(a.vector())));
 
-  using std::begin;
-  using std::end;
-
-  for (auto connection = begin(connections); connection != end(connections); ++connection) {
-    if (*connection == b)
+  for (auto connection = std::begin(connections); connection != std::end(connections); ++connection) {
+    if (connection->ray().ccw(b.ray()) == CCW::COLLINEAR)
       continue;
 
-    const auto insertBefore = std::lower_bound(begin(rays), end(rays), *connection, SaddleConnectionOrdering<Surface>{b});
+    const auto insertBefore = std::lower_bound(std::begin(rays), std::end(rays), *connection, RayOrdering<Surface>{b.ray()});
     LIBFLATSURF_ASSERT(insertBefore != end(rays) && insertBefore != begin(rays), "Connection " << *connection << " must be in the range (" << b << ", " << -a << "] since we have chosen the search sector that way.");
 
     LIBFLATSURF_ASSERT(*connection != *insertBefore, "Connections must not contain duplicates except for the inclusive sector end but " << *connection << " is not equal to " << b);
@@ -200,7 +225,7 @@ Path<Surface> tightenClockwise(const SaddleConnection<Surface>& a, const SaddleC
   // The order in which saddle connections are enumerated by the saddle
   // conections iterator, might lead to some points actually not on the
   // convex hull. We filter them out with the customary monotone chain algorithm.
-  std::vector<SaddleConnection<Surface>> hull;
+  std::vector<Segment<Surface>> hull;
   for (auto ray : rays) {
     while (hull.size() >= 2) {
       const auto previous = hull.rbegin()->vector() - (++hull.rbegin())->vector();
@@ -212,19 +237,19 @@ Path<Surface> tightenClockwise(const SaddleConnection<Surface>& a, const SaddleC
     hull.push_back(ray);
   }
 
-  // Build an actual path from the rays that survived the convex hull algorithm.
-  std::vector<SaddleConnection<Surface>> path;
+  // Build an actual path refining -b → -a from the rays that survived the convex hull algorithm.
+  std::vector<Segment<Surface>> path;
 
   for (auto j = ++begin(hull); j != end(hull); ++j) {
+    // Create a segment for each consecutive pair of points (p, q).
+    // The points are given as the endpoints of segments (i, j) starting at point where a and b meet.
     auto i = j;
     --i;
 
-    const auto chain = j->chain() - i->chain();
-    const auto vector = static_cast<const Vector<typename Surface::Coordinate>&>(chain);
-    path.push_back(SaddleConnection<Surface>(surface,
-        surface.sector(i->target(), CCW::CLOCKWISE, vector),
-        surface.sector(j->target(), CCW::COUNTERCLOCKWISE, -vector),
-        chain));
+    const auto vector = static_cast<const Vector<typename Surface::Coordinate>&>(j->vector() - i->vector());
+    const auto source = surface.sector(i->target(), CCW::CLOCKWISE, vector);
+    const auto target = surface.sector(j->target(), CCW::COUNTERCLOCKWISE, -vector);
+    path.push_back(Segment<Surface>{i->end(), source, j->end(), target, vector});
   }
 
   return -Path<Surface>{path};
@@ -237,21 +262,42 @@ Path<Surface>::Path() noexcept :
   self(spimpl::make_impl<ImplementationOf<Path>>()) {}
 
 template <typename Surface>
-Path<Surface>::Path(const Segment& path) :
-  Path(std::vector{path}) {}
+Path<Surface>::Path(const SaddleConnection<Surface>& path) :
+  Path(path.segment()) {}
 
 template <typename Surface>
-Path<Surface>::Path(const std::vector<Segment>& path) :
-  self(spimpl::make_impl<ImplementationOf<Path>>(path)) {}
+Path<Surface>::Path(const std::vector<SaddleConnection<Surface>>& path) :
+  Path(path | rx::transform([](const auto& saddleConnection) { return saddleConnection.segment(); }) | rx::to_vector()) {}
 
 template <typename Surface>
-Path<Surface>::operator const std::vector<Segment> &() const {
-  return self->path;
+Path<Surface>::Path(const Segment<Surface>& segment) :
+  Path(std::vector{segment}) {}
+
+template <typename Surface>
+Path<Surface>::Path(const std::vector<Segment<Surface>>& segments) :
+  self(spimpl::make_impl<ImplementationOf<Path>>(segments)) {}
+
+template <typename Surface>
+Path<Surface>::operator const std::vector<Segment<Surface>> &() const {
+  throw std::logic_error("not implemented: operator vector<Segment>");
+}
+
+template <typename Surface>
+Path<Surface>::operator const std::vector<SaddleConnection<Surface>> &() const {
+  if (!self->pathAsSaddleConnections) {
+    self->pathAsSaddleConnections = std::vector<SaddleConnection<Surface>>{};
+    for (const auto& segment : self->path) {
+      auto saddleConnection = segment.saddleConnection();
+      LIBFLATSURF_CHECK(saddleConnection, "cannot convert this path to a sequence of saddle connections since not all its segments are saddle connections");
+      self->pathAsSaddleConnections->push_back(std::move(*saddleConnection));
+    }
+  }
+  return *self->pathAsSaddleConnections;
 }
 
 template <typename Surface>
 Path<Surface> Path<Surface>::operator-() const {
-  std::vector<Segment> reversed;
+  std::vector<Segment<Surface>> reversed;
   for (auto p = rbegin(self->path); p != rend(self->path); p++)
     reversed.push_back(-*p);
   return reversed;
@@ -271,7 +317,8 @@ bool Path<Surface>::closed() const {
 template <typename Surface>
 bool Path<Surface>::simple() const {
   using std::begin, std::end;
-  std::unordered_set<Segment> segments(begin(self->path), end(self->path));
+  // TODO: Need to simplify collinear segments here.
+  std::unordered_set<Segment<Surface>> segments(begin(self->path), end(self->path));
   return segments.size() == self->path.size();
 }
 
@@ -291,21 +338,58 @@ size_t Path<Surface>::size() const {
 }
 
 template <typename Surface>
-void Path<Surface>::push_front(const Segment& segment) {
-  LIBFLATSURF_ASSERT(empty() || ImplementationOf<Path>::connected(segment, *begin()), "Path must be connected but " << segment << " does not precede " << *begin());
-  self->path.insert(std::begin(self->path), segment);
+std::optional<Segment<Surface>> Path<Surface>::segment() const {
+  if (self->path.size() == 0)
+    return std::nullopt;
+
+  if (self->path.size() == 1)
+    return *std::begin(self->path);
+
+  for (auto segment = std::begin(self->path); segment + 1 != std::end(self->path); ++segment) {
+    if (segment->surface().angle(segment->end()) != 1)
+      return std::nullopt;
+    if (!segment->vector().parallel((segment + 1)->vector()))
+      return std::nullopt;
+  }
+
+  Vector<T> sum;
+
+  for (const auto segment : self->path)
+    sum += segment.vector();
+
+  return Segment{std::begin(self->path)->start(), std::begin(self->path)->source(), std::rbegin(self->path)->end(), std::rbegin(self->path)->target(), sum};
 }
 
 template <typename Surface>
-void Path<Surface>::push_back(const Segment& segment) {
+void Path<Surface>::push_front(const SaddleConnection<Surface>& segment) {
+  push_front(segment.segment());
+}
+
+template <typename Surface>
+void Path<Surface>::push_back(const SaddleConnection<Surface>& segment) {
+  push_back(segment.segment());
+}
+
+template <typename Surface>
+void Path<Surface>::push_front(const Segment<Surface>& segment) {
+  LIBFLATSURF_ASSERT(empty() || ImplementationOf<Path>::connected(segment, *begin()), "Path must be connected but " << segment << " does not precede " << *begin());
+  self->path.insert(std::begin(self->path), segment);
+  self->pathAsSaddleConnections = std::nullopt;
+}
+
+template <typename Surface>
+void Path<Surface>::push_back(const Segment<Surface>& segment) {
   LIBFLATSURF_ASSERT(empty() || ImplementationOf<Path>::connected(*self->path.rbegin(), segment), "Path must be connected but " << *self->path.rbegin() << " does not precede " << segment);
   self->path.push_back(segment);
+  self->pathAsSaddleConnections = std::nullopt;
 }
 
 template <typename Surface>
 Path<Surface>& Path<Surface>::operator+=(const Path& other) {
+  // TODO: Iterate over segments, not over SaddleConnections.
   for (auto& segment : other)
     push_back(segment);
+  self->pathAsSaddleConnections = std::nullopt;
   return *this;
 }
 
@@ -318,11 +402,13 @@ Path<Surface> Path<Surface>::operator+(const Path& other) const {
 template <typename Surface>
 void Path<Surface>::pop_back() {
   self->path.pop_back();
+  self->pathAsSaddleConnections = std::nullopt;
 }
 
 template <typename Surface>
 void Path<Surface>::pop_front() {
   self->path.erase(self->path.begin());
+  self->pathAsSaddleConnections = std::nullopt;
 }
 
 template <typename Surface>
@@ -340,6 +426,9 @@ void Path<Surface>::splice(const PathIterator<Surface>& pos, Path& other) {
   });
 
   other.self->path.clear();
+
+  other.self->pathAsSaddleConnections = std::nullopt;
+  self->pathAsSaddleConnections = std::nullopt;
 }
 
 template <typename Surface>
@@ -366,7 +455,7 @@ PathIterator<Surface> Path<Surface>::end() const {
 
 template <typename Surface>
 Path<Surface> Path<Surface>::tighten() const {
-  std::list<SaddleConnection<Surface>> path;
+  std::list<Segment<Surface>> path;
 
   for (const auto& connection : self->path)
     path.push_back(connection);
@@ -416,9 +505,9 @@ Path<Surface> Path<Surface>::tighten() const {
     } else {
       // Try to replace the subpath a → b with a tightening starting a a's
       // source vertex and ending at b's target vertex.
-      const CCW ccw = (-*a).ccw(*b);
-      if (ccw == (-a->vector()).ccw(b->vector()) && ((ccw == CCW::COUNTERCLOCKWISE && (-*a).angle(*b) == 0) ||
-                                                        (ccw == CCW::CLOCKWISE && (*b).angle(-*a) == 0))) {
+      const CCW ccw = (-*a).ray().ccw(b->ray());
+      if (ccw == (-a->vector()).ccw(b->vector()) && ((ccw == CCW::COUNTERCLOCKWISE && (-*a).ray().angle(b->ray()) == 0) ||
+                                                        (ccw == CCW::CLOCKWISE && (*b).ray().angle((-*a).ray()) == 0))) {
         // The angle enclosed where a and b meet is less than π so the path can be tightened.
         if (ccw == CCW::CLOCKWISE)
           a = replace(a, path, tightenClockwise(*a, *b));
@@ -432,7 +521,7 @@ Path<Surface> Path<Surface>::tighten() const {
     ++a;
   }
 
-  return std::vector<SaddleConnection<Surface>>{path.begin(), path.end()};
+  return std::vector<Segment<Surface>>{path.begin(), path.end()};
 }
 
 template <typename Surface>
@@ -445,16 +534,17 @@ ImplementationOf<Path<Surface>>::ImplementationOf() :
   path() {}
 
 template <typename Surface>
-ImplementationOf<Path<Surface>>::ImplementationOf(const std::vector<Segment>& path) {
-  for (auto segment = begin(path); segment != end(path); segment++) {
-    LIBFLATSURF_ASSERT(segment + 1 == end(path) || connected(*segment, *(segment + 1)), "Path must be connected but " << *segment << " does not precede " << *(segment + 1) << " either because they are connected to different vertices or because the turn from " << -*segment << " to " << *(segment + 1) << " is not turning clockwise in the range (0, 2π]");
+ImplementationOf<Path<Surface>>::ImplementationOf(const std::vector<Segment<Surface>>& path) {
+  for (auto segment = std::begin(path); segment != std::end(path); segment++) {
+    LIBFLATSURF_ASSERT(segment + 1 == std::end(path) || connected(*segment, *(segment + 1)), "Path must be connected but " << *segment << " does not precede " << *(segment + 1) << " either because they are connected to different points or because the turn from " << -*segment << " to " << *(segment + 1) << " is not turning clockwise in the range (0, 2π]");
     this->path.push_back(*segment);
   }
 }
 
 template <typename Surface>
-bool ImplementationOf<Path<Surface>>::connected(const Segment& from, const Segment& to) {
-  return Vertex::source(from.target(), from.surface()) == Vertex::source(to.source(), to.surface());
+bool ImplementationOf<Path<Surface>>::connected(const Segment<Surface>& from, const Segment<Surface>& to) {
+  // TODO: Shouldn't we also check that the turn angle here is small?
+  return from.end() == to.start();
 }
 }  // namespace flatsurf
 

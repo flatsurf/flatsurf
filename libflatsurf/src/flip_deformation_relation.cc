@@ -25,6 +25,7 @@
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/point.hpp"
+#include "../flatsurf/ray.hpp"
 #include "impl/point.impl.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/path_iterator.hpp"
@@ -95,6 +96,11 @@ Point<Surface> FlipDeformationRelation<Surface>::operator()(const Point<Surface>
     // Express the point in the system ADC or DCB so that all coordinates are non-negative.
     return (Q.a < 0 || Q.b < 0 || Q.c < 0) ? Point{*this->codomain, CD, Q.crossed()} : Point{*this->codomain, -CD, Q.rotated(-CD)};
   }
+}
+
+template <typename Surface>
+Ray<Surface> FlipDeformationRelation<Surface>::operator()(const Ray<Surface>& ray) const {
+  throw std::logic_error("not implemented: FlipDeformationRelation::operator()(Ray)");
 }
 
 template <typename Surface>

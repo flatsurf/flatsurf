@@ -28,10 +28,13 @@
 #include "../flatsurf/half_edge_intersection.hpp"
 #include "../flatsurf/half_edge_map.hpp"
 #include "../flatsurf/orientation.hpp"
+#include "../flatsurf/point.hpp"
+#include "../flatsurf/ray.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_by_length.hpp"
 #include "../flatsurf/saddle_connections_by_length_iterator.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
+#include "../flatsurf/segment.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertex.hpp"
 #include "../flatsurf/vertical.hpp"
@@ -41,49 +44,6 @@
 #include "util/hash.ipp"
 
 namespace flatsurf {
-
-using std::begin;
-using std::end;
-
-namespace {
-
-// Return the angle turning from sourceVector next to source to targetVector next target.
-// Namely, if the angle is α to turn in counterclockwise direction, return ⌊α/π⌋.
-template <typename Surface>
-int angle(const Surface& surface, HalfEdge source, const Vector<typename Surface::Coordinate>& sourceVector, HalfEdge target, const Vector<typename Surface::Coordinate>& targetVector) {
-  LIBFLATSURF_CHECK_ARGUMENT(Vertex::source(source, surface) == Vertex::source(target, surface), "Cannot determine angle between vector starting at " << source << " and a vector starting at " << target << " since they do not start at the same vertex.");
-
-  using T = typename Surface::Coordinate;
-
-  HalfEdge sector = source;
-  Vector<T> turned = sourceVector;
-
-  int angle = 0;
-
-  CCW sgn = CCW::COUNTERCLOCKWISE;
-
-  while (sector != target || turned.ccw(targetVector) != CCW::COLLINEAR) {
-    if (sector == target && turned.ccw(targetVector) != CCW::CLOCKWISE) {
-      turned = targetVector;
-    } else {
-      sector = surface.nextAtVertex(sector);
-      turned = surface.fromHalfEdge(sector);
-    }
-
-    const auto ccw = sourceVector.ccw(turned);
-
-    if (ccw == CCW::COLLINEAR || ccw != sgn) {
-      angle++;
-      sgn = -sgn;
-    }
-  }
-
-  LIBFLATSURF_ASSERT(angle < 2 * surface.angle(Vertex::source(source, surface)), "Turn angle must be smaller than the full vertex angle but the turn from " << source << ", " << sourceVector << " to " << target << ", " << targetVector << " in " << surface << " is " << angle << "/2");
-
-  return angle;
-}
-
-}  // namespace
 
 template <typename Surface>
 SaddleConnection<Surface>::SaddleConnection(const Surface& surface, HalfEdge e) :
@@ -121,8 +81,23 @@ HalfEdge SaddleConnection<Surface>::target() const {
 }
 
 template <typename Surface>
+Vertex SaddleConnection<Surface>::start() const {
+  return Vertex::source(self->source, *self->surface);
+}
+
+template <typename Surface>
+Vertex SaddleConnection<Surface>::end() const {
+  return Vertex::source(self->target, *self->surface);
+}
+
+template <typename Surface>
 const Surface& SaddleConnection<Surface>::surface() const {
   return self->surface;
+}
+
+template <typename Surface>
+Ray<Surface> SaddleConnection<Surface>::ray() const {
+  return Ray<Surface>(self->surface, self->source, *this);
 }
 
 template <typename Surface>
@@ -139,9 +114,9 @@ SaddleConnection<Surface> SaddleConnection<Surface>::inSector(const Surface& sur
                                 .sector(source)
                                 .sector(vector, vector);
 
-  const auto ret = begin(construction);
+  const auto ret = std::begin(construction);
 
-  LIBFLATSURF_CHECK_ARGUMENT(ret != end(construction), "No connection with vector " << vector << " in sector starting at " << source << " in " << surface);
+  LIBFLATSURF_CHECK_ARGUMENT(ret != std::end(construction), "No connection with vector " << vector << " in sector starting at " << source << " in " << surface);
 
   return *ret;
 }
@@ -155,7 +130,7 @@ SaddleConnection<Surface> SaddleConnection<Surface>::inSector(const Surface& sur
                                 .sector(source)
                                 .sector(direction, direction);
 
-  const auto ret = begin(construction);
+  const auto ret = std::begin(construction);
 
   return *ret;
 }
@@ -208,7 +183,7 @@ SaddleConnection<Surface> SaddleConnection<Surface>::alongVertical(const Surface
 
 template <typename Surface>
 int SaddleConnection<Surface>::angle(HalfEdge source, const Vector<T>& vector) const {
-  return flatsurf::angle(this->surface(), this->source(), this->vector(), source, vector) / 2;
+  return ray().angle(Ray{surface(), source, vector});
 }
 
 template <typename Surface>
@@ -220,24 +195,7 @@ int SaddleConnection<Surface>::angle(const SaddleConnection<Surface>& rhs) const
 
 template <typename Surface>
 CCW SaddleConnection<Surface>::ccw(HalfEdge source, const Vector<T>& vector) const {
-  const int angle = flatsurf::angle(this->surface(), this->source(), this->vector(), source, vector);
-
-  if (angle == 0) {
-    if (source == this->source() && vector.ccw(this->vector()) == CCW::COLLINEAR)
-      return CCW::COLLINEAR;
-    else
-      return CCW::COUNTERCLOCKWISE;
-  }
-
-  const int totalAngle = this->surface().angle(Vertex::source(source, this->surface()));
-
-  if (angle == totalAngle && vector.ccw(this->vector()) == CCW::COLLINEAR)
-    return CCW::COLLINEAR;
-
-  if (angle < totalAngle)
-    return CCW::COUNTERCLOCKWISE;
-  else
-    return CCW::CLOCKWISE;
+  return ray().ccw(Ray{*self->surface, source, vector});
 }
 
 template <typename Surface>
@@ -295,6 +253,25 @@ SaddleConnection<Surface>::operator const Vector<typename Surface::Coordinate> &
 }
 
 template <typename Surface>
+Segment<Surface> SaddleConnection<Surface>::segment() const {
+  const auto segment = Segment(
+      Point<Surface>{*self->surface, Vertex::source(self->source, *self->surface)},
+      self->source,
+      Point<Surface>{*self->surface, Vertex::source(self->target, *self->surface)},
+      self->target,
+      *this);
+
+  LIBFLATSURF_ASSERT(segment.source() == self->source && segment.target() == self->target, "conversion from SaddleConnection to Segment produced incompatible source & target half edges");
+
+  return segment;
+}
+
+template <typename Surface>
+SaddleConnection<Surface>::operator Segment<Surface>() const {
+  return segment();
+}
+
+template <typename Surface>
 const Chain<Surface>& SaddleConnection<Surface>::chain() const {
   return self->chain;
 }
@@ -302,6 +279,11 @@ const Chain<Surface>& SaddleConnection<Surface>::chain() const {
 template <typename Surface>
 SaddleConnection<Surface>::operator const Chain<Surface> &() const {
   return chain();
+}
+
+template <typename Surface>
+SaddleConnection<Surface>::operator Ray<Surface>() const {
+  throw std::logic_error("not implemented: SaddleConnection::operator Ray");
 }
 
 template <typename Surface>
@@ -344,7 +326,7 @@ using namespace flatsurf;
 
 template <typename Surface>
 size_t hash<SaddleConnection<Surface>>::operator()(const SaddleConnection<Surface>& self) const {
-  return hash_combine(self.source(), self.target(), self.chain());
+  return hash_combine(self.source(), self.target(), self.chain().vector());
 }
 
 }  // namespace std

@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2021-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@ class DeformationRelation {
 
   virtual std::optional<Path<Surface>> operator()(const Path<Surface>&) const = 0;
   virtual Point<Surface> operator()(const Point<Surface>&) const = 0;
+  virtual Ray<Surface> operator()(const Ray<Surface>&) const = 0;
 
   virtual bool trivial() const;
 

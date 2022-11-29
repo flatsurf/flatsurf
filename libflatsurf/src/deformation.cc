@@ -23,6 +23,7 @@
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/point.hpp"
+#include "../flatsurf/ray.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "impl/composite_deformation_relation.hpp"
@@ -100,6 +101,12 @@ template <typename Surface>
 Point<Surface> Deformation<Surface>::operator()(const Point<Surface>& point) const {
   LIBFLATSURF_CHECK_ARGUMENT(point.surface() == domain(), "point must be in the domain of the deformation");
   return self->relation->operator()(point);
+}
+
+template <typename Surface>
+Ray<Surface> Deformation<Surface>::operator()(const Ray<Surface>& ray) const {
+  LIBFLATSURF_CHECK_ARGUMENT(ray.surface() == domain(), "ray must be in the domain of the deformation");
+  return self->relation->operator()(ray);
 }
 
 template <typename Surface>

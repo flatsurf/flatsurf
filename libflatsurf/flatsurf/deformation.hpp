@@ -62,6 +62,9 @@ class Deformation {
   // Return the image of the point under this deformation.
   Point<Surface> operator()(const Point<Surface>&) const;
 
+  // Return the image of this ray under the deformation.
+  Ray<Surface> operator()(const Ray<Surface>&) const;
+
   // Return the result of the deformation.
   [[deprecated("Use codomain().clone() instead.")]] Surface surface();
 

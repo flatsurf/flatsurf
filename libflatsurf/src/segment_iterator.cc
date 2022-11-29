@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020-2022 Julian Rüth
+ *        Copyright (C) 2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,21 +17,20 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "../flatsurf/path_iterator.hpp"
+#include "../flatsurf/segment_iterator.hpp"
 
 #include <ostream>
 
 #include "../flatsurf/saddle_connection.hpp"
-#include "../flatsurf/segment_iterator.hpp"
 #include "impl/path.impl.hpp"
-#include "impl/path_iterator.impl.hpp"
+#include "impl/segment.impl.hpp"
 #include "impl/segment_iterator.impl.hpp"
 #include "util/assert.ipp"
 
 namespace flatsurf {
 
 template <typename Surface>
-void PathIterator<Surface>::increment() {
+void SegmentIterator<Surface>::increment() {
   LIBFLATSURF_ASSERT(!self->parent->empty(), "cannot increment iterator into empty path");
   LIBFLATSURF_ASSERT(!self->end, "cannot increment end() iterator")
   self->position++;
@@ -42,25 +41,15 @@ void PathIterator<Surface>::increment() {
 }
 
 template <typename Surface>
-const SaddleConnection<Surface>& PathIterator<Surface>::dereference() const {
+const Segment<Surface>& SegmentIterator<Surface>::dereference() const {
   LIBFLATSURF_ASSERT(!self->parent->empty(), "cannot dereference iterator into empty path");
   LIBFLATSURF_ASSERT(!self->end, "cannot dereference end() iterator");
   LIBFLATSURF_ASSERT(self->position != end(self->parent->self->path), "iterator in impossible end state");
-
-  auto saddleConnection = self->position->saddleConnection();
-  LIBFLATSURF_CHECK(saddleConnection, "cannot access this segment of path as a saddle connection");
-  
-  const size_t index = self->position - std::begin(self->parent->self->path);
-  if (index >= self->keepAlive.size())
-    self->keepAlive.resize(index + 1);
-
-  self->keepAlive[index] = std::move(saddleConnection);
-
-  return *self->keepAlive[index];
+  return *self->position;
 }
 
 template <typename Surface>
-bool PathIterator<Surface>::equal(const PathIterator& other) const {
+bool SegmentIterator<Surface>::equal(const SegmentIterator& other) const {
   if (self->end) {
     return other.self->end || other.self->turn;
   }
@@ -71,22 +60,12 @@ bool PathIterator<Surface>::equal(const PathIterator& other) const {
 }
 
 template <typename Surface>
-PathIterator<Surface>::operator const SegmentIterator<Surface>() const {
-  return ImplementationOf<SegmentIterator<Surface>>::make(*self->parent, self->position);
+std::ostream& operator<<(std::ostream& os, const SegmentIterator<Surface>&) {
+  return os << "SegmentIterator()";
 }
 
 template <typename Surface>
-PathIterator<Surface>::operator SegmentIterator<Surface>() {
-  return ImplementationOf<SegmentIterator<Surface>>::make(*self->parent, self->position);
-}
-
-template <typename Surface>
-std::ostream& operator<<(std::ostream& os, const PathIterator<Surface>&) {
-  return os << "PathIterator()";
-}
-
-template <typename Surface>
-ImplementationOf<PathIterator<Surface>>::ImplementationOf(const Path<Surface>* parent, const Position& position) :
+ImplementationOf<SegmentIterator<Surface>>::ImplementationOf(const Path<Surface>* parent, const Position& position) :
   parent(parent),
   position(position) {
   if (position == std::end(parent->self->path)) {
@@ -95,9 +74,14 @@ ImplementationOf<PathIterator<Surface>>::ImplementationOf(const Path<Surface>* p
   }
 }
 
+template <typename Surface>
+SegmentIterator<Surface> ImplementationOf<SegmentIterator<Surface>>::make(const Path<Surface>& parent, const Position& position) {
+  return SegmentIterator<Surface>{PrivateConstructor{}, &parent, position};
+}
 }  // namespace flatsurf
 
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"
 
-LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), PathIterator, LIBFLATSURF_FLAT_TRIANGULATION_TYPES)
+LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), SegmentIterator, LIBFLATSURF_FLAT_TRIANGULATION_TYPES)
+

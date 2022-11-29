@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/orientation.hpp"
+#include "../flatsurf/ray.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections_by_length.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
@@ -115,6 +116,11 @@ SaddleConnections<Surface> SaddleConnections<Surface>::sector(const Vector<T>& s
 
 template <typename Surface>
 SaddleConnections<Surface> SaddleConnections<Surface>::sector(const SaddleConnection<Surface>& sectorBegin, const SaddleConnection<Surface>& sectorEnd) const {
+  return sector(sectorBegin.ray(), sectorEnd.ray());
+}
+
+template <typename Surface>
+SaddleConnections<Surface> SaddleConnections<Surface>::sector(const Ray<Surface>& sectorBegin, const Ray<Surface>& sectorEnd) const {
   auto ret = (*this)
                  .source(Vertex::source(sectorBegin.source(), surface()))
                  .source(Vertex::source(sectorEnd.source(), surface()));
@@ -123,7 +129,7 @@ SaddleConnections<Surface> SaddleConnections<Surface>::sector(const SaddleConnec
   for (const auto& sector : ret.self->sectors) {
     if (sectorBegin.source() == sectorEnd.source()) {
       if (sector.source == sectorBegin.source())
-        for (const auto& refined : sector.refine(surface(), sectorBegin, sectorEnd))
+        for (const auto& refined : sector.refine(surface(), sectorBegin.vector(), sectorEnd.vector()))
           sectors.push_back(refined);
       else {
         if (sectorBegin.vector().ccw(sectorEnd.vector()) == CCW::CLOCKWISE)
@@ -131,16 +137,16 @@ SaddleConnections<Surface> SaddleConnections<Surface>::sector(const SaddleConnec
       }
     } else {
       if (sector.source == sectorBegin.source()) {
-        for (const auto& refined : sector.refine(surface(), sectorBegin, surface().fromHalfEdge(surface().nextAtVertex(sector.source))))
+        for (const auto& refined : sector.refine(surface(), sectorBegin.vector(), surface().fromHalfEdge(surface().nextAtVertex(sector.source))))
           sectors.push_back(refined);
       } else if (sector.source == sectorEnd.source()) {
-        if (surface().fromHalfEdge(sector.source).ccw(sectorEnd) == CCW::COLLINEAR)
+        if (surface().fromHalfEdge(sector.source).ccw(sectorEnd.vector()) == CCW::COLLINEAR)
           // We must not call refine in this case as that method considers the
           // boundaries inclusive if they coincide. However, the end boundary
           // is exclusive here.
           ;
         else
-          for (const auto& refined : sector.refine(surface(), surface().fromHalfEdge(sector.source), sectorEnd))
+          for (const auto& refined : sector.refine(surface(), surface().fromHalfEdge(sector.source), sectorEnd.vector()))
             sectors.push_back(refined);
       } else {
         for (HalfEdge walk = sector.source; walk != sectorBegin.source(); walk = surface().nextAtVertex(walk)) {

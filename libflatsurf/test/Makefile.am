@@ -2,17 +2,19 @@ check_PROGRAMS = main
 
 TESTS = libflatsurf.test.sh
 
-main_SOURCES = main.cc approximation.test.cc bound.test.cc chain.test.cc contour_decomposition.test.cc deformation.test.cc edge.test.cc flat_triangulation.test.cc flat_triangulation_collapsed.test.cc flat_triangulation_combinatorial.test.cc flow_decomposition.test.cc half_edge.test.cc interval_exchange_transformation.test.cc path.test.cc permutation.test.cc point.test.cc quadratic_polynomial.test.cc saddle_connections.test.cc saddle_connection.test.cc vector_longlong.test.cc vector.test.cc vertex.test.cc vertical.test.cc
+main_SOURCES = main.cc approximation.test.cc bound.test.cc chain.test.cc contour_decomposition.test.cc deformation.test.cc edge.test.cc flat_triangulation.test.cc flat_triangulation_collapsed.test.cc flat_triangulation_combinatorial.test.cc flow_decomposition.test.cc half_edge.test.cc interval_exchange_transformation.test.cc path.test.cc permutation.test.cc point.test.cc quadratic_polynomial.test.cc ray.test.cc saddle_connections.test.cc saddle_connection.test.cc segment.test.cc vector_longlong.test.cc vector.test.cc vertex.test.cc vertical.test.cc
 
 noinst_HEADERS =                                 \
   surfaces.hpp                                   \
   cereal.helpers.hpp                             \
-  generators/point_generator.hpp                 \
   generators/combinatorial_surface_generator.hpp \
   generators/deformation_generator.hpp           \
   generators/half_edge_generator.hpp             \
+  generators/point_generator.hpp                 \
+  generators/ray_generator.hpp                   \
   generators/real_generator.hpp                  \
   generators/saddle_connection_generator.hpp     \
+  generators/segment_generator.hpp               \
   generators/surface_generator.hpp               \
   generators/vertical_generator.hpp
 

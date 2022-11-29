@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021-2022 Julian Rüth
+ *        Copyright (C) 2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,37 +17,34 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_IMPL_FLIP_DEFORMATION_RELATION_HPP
-#define LIBFLATSURF_IMPL_FLIP_DEFORMATION_RELATION_HPP
+#ifndef LIBFLATSURF_SEGMENT_ITERATOR_IMPL_HPP
+#define LIBFLATSURF_SEGMENT_ITERATOR_IMPL_HPP
 
-#include <iosfwd>
+#include <vector>
 
-#include "../../flatsurf/half_edge.hpp"
-#include "deformation_relation.hpp"
+#include "../../flatsurf/segment_iterator.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-class FlipDeformationRelation : public DeformationRelation<Surface> {
-  using T = typename Surface::Coordinate;
+class ImplementationOf<SegmentIterator<Surface>> {
+  using Position = typename std::vector<Segment<Surface>>::const_iterator;
 
  public:
-  FlipDeformationRelation(const Surface& domain, const Surface& codomain, HalfEdge flip);
+  ImplementationOf(const Path<Surface>* parent, const Position&);
 
-  std::optional<Path<Surface>> operator()(const Path<Surface>&) const override;
-  Point<Surface> operator()(const Point<Surface>&) const override;
-  Ray<Surface> operator()(const Ray<Surface>&) const override;
+  static SegmentIterator<Surface> make(const Path<Surface>& parent, const Position&);
 
-  std::unique_ptr<DeformationRelation<Surface>> clone() const override;
-
-  std::unique_ptr<DeformationRelation<Surface>> section() const override;
-
-  bool trivial() const override;
-
-  std::ostream& operator>>(std::ostream& os) const override;
-
-  HalfEdge flip;
+  const Path<Surface>* parent;
+  Position position;
+  int turn = 0;
+  bool end = false;
 };
+
+template <typename Surface>
+template <typename... Args>
+SegmentIterator<Surface>::SegmentIterator(PrivateConstructor, Args&&... args) :
+  self(spimpl::make_impl<ImplementationOf<SegmentIterator>>(std::forward<Args>(args)...)) {}
 
 }  // namespace flatsurf
 

@@ -47,6 +47,12 @@ class ImplementationOf<FlatTriangulation<T>> : protected ImplementationOf<Manage
 
   std::string yaml() const;
 
+  // Return whether lhs is backed by exactly the same surface (memory) than rhs.
+  // Note that this is different than &rhs == &rhs since multiple
+  // FlatTriangulation instances can be backed by the same backing storage
+  // since they are ManagedMovable.
+  static bool identical(const FlatTriangulation<T>& lhs, const FlatTriangulation<T>& rhs);
+
   const Tracked<OddHalfEdgeMap<Vector<T>>> vectors;
   // A cache of approximations for improved performance
   const Tracked<OddHalfEdgeMap<Vector<exactreal::Arb>>> approximations;

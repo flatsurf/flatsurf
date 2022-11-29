@@ -30,6 +30,7 @@
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/point.hpp"
+#include "../flatsurf/ray.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vector.hpp"
@@ -101,6 +102,11 @@ template <typename Surface>
 Point<Surface> LinearDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
   const HalfEdge face = point.face();
   return Point{*this->codomain, face, point.coordinates(face)};
+}
+
+template <typename Surface>
+Ray<Surface> LinearDeformationRelation<Surface>::operator()(const Ray<Surface>& ray) const {
+  throw std::logic_error("not implemented: LinearDeformationRelation::operator()(Ray)");
 }
 
 template <typename Surface>

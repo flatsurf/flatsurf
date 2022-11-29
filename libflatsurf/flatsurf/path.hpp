@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2021-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 
 #include <boost/operators.hpp>
 #include <iosfwd>
+#include <optional>
 #include <vector>
 
 #include "copyable.hpp"
@@ -29,29 +30,40 @@
 
 namespace flatsurf {
 
-// A connected list of SaddleConnections in a Surface.
+// A connected list of Segments in a Surface.
 template <typename Surface>
 class Path : public Serializable<Path<Surface>>,
              boost::equality_comparable<Path<Surface>> {
-  using Segment = SaddleConnection<Surface>;
   using T = typename Surface::Coordinate;
 
  public:
   Path() noexcept;
-  Path(const Segment&);
-  Path(const std::vector<Segment>&);
+  Path(const Segment<Surface>&);
+  Path(const std::vector<Segment<Surface>>&);
 
-  operator const std::vector<Segment> &() const;
+  [[deprecated("crete a path from the .segment() of a saddle connection instead")]]
+  Path(const SaddleConnection<Surface>&);
+  [[deprecated("crete a path from the sequence of .segment() of a saddle connections instead")]]
+  Path(const std::vector<SaddleConnection<Surface>>&);
 
+  [[deprecated("a path cannot always be converted to a sequence of saddle connections; convert to a vector of segments instead")]]
+  operator const std::vector<SaddleConnection<Surface>> &() const;
+
+  operator const std::vector<Segment<Surface>> &() const;
+
+  // Return whether two paths are indistinguishable, i.e., they are made up of
+  // the same sequence of segments.
   bool operator==(const Path&) const;
 
   // Return whether the path is cyclic, i.e., the last element joins up with the first.
   bool closed() const;
 
   // Return whether there are no segments showing up more than once.
+  // TODO: We need to consider partial segments here.
   bool simple() const;
 
   // Return whether there are no segments followed by their negatives.
+  // TODO: We need to consider partial segments here.
   bool reduced() const;
 
   // Return whether the two paths are equivalent in homotopy.
@@ -80,8 +92,18 @@ class Path : public Serializable<Path<Surface>>,
   // connections in reverse order.
   Path operator-() const;
 
-  void push_front(const Segment&);
-  void push_back(const Segment&);
+  // Return a single segment that is equivalent to this path.
+  // Return nullopt if this path is not made up of segments that join up to a
+  // single segment.
+  std::optional<Segment<Surface>> segment() const;
+
+  void push_front(const Segment<Surface>&);
+  void push_back(const Segment<Surface>&);
+
+  [[deprecated("push the saddle connection's .segment() instead")]]
+  void push_front(const SaddleConnection<Surface>&);
+  [[deprecated("push the saddle connection's .segment() instead")]]
+  void push_back(const SaddleConnection<Surface>&);
 
   void pop_front();
   void pop_back();
@@ -103,7 +125,9 @@ class Path : public Serializable<Path<Surface>>,
 
   friend ImplementationOf<Path>;
   friend iterator;
+  friend SegmentIterator<Surface>;
   friend ImplementationOf<iterator>;
+  friend ImplementationOf<SegmentIterator<Surface>>;
 };
 
 template <typename Surface>
@@ -113,4 +137,5 @@ template <typename Surface>
 Path(const SaddleConnection<Surface>&) -> Path<Surface>;
 
 }  // namespace flatsurf
+
 #endif

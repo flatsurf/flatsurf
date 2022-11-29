@@ -34,6 +34,7 @@
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_intersection.hpp"
 #include "../flatsurf/orientation.hpp"
+#include "../flatsurf/ray.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_by_length.hpp"
@@ -64,6 +65,14 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Torus", "[SaddleConnections]", (long
 
   SECTION("The Same With SaddleConnections as Sector Boundaries") {
     const auto connections = square->connections().bound(2).sector(SaddleConnection(*square, HalfEdge(1)), SaddleConnection(*square, square->nextAtVertex(HalfEdge(1))));
+    auto search = begin(connections);
+
+    REQUIRE(fmt::format("{}", *search) == "1");
+    REQUIRE(++search == end(connections));
+  }
+
+  SECTION("The Same With Rays as Sector Boundaries") {
+    const auto connections = square->connections().bound(2).sector(Ray(*square, HalfEdge(1)), Ray(*square, square->nextAtVertex(HalfEdge(1))));
     auto search = begin(connections);
 
     REQUIRE(fmt::format("{}", *search) == "1");

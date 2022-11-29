@@ -49,6 +49,7 @@ libflatsurf_la_SOURCES =                                            \
 	permutation.cc                                              \
 	point.cc                                                    \
 	quadratic_polynomial.cc                                     \
+	ray.cc                                                      \
 	read_only.cc                                                \
 	saddle_connection.cc                                        \
 	saddle_connections.cc                                       \
@@ -57,6 +58,8 @@ libflatsurf_la_SOURCES =                                            \
 	saddle_connections_iterator.cc                              \
 	saddle_connections_sample.cc                                \
 	saddle_connections_sample_iterator.cc                       \
+	segment.cc                                                  \
+	segment_iterator.cc                                         \
 	shift_deformation_relation.cc                               \
 	slit_deformation_relation.cc                                \
 	tracked.cc                                                  \
@@ -114,6 +117,7 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/path_iterator.hpp                               \
 	../flatsurf/permutation.hpp                                 \
 	../flatsurf/point.hpp                                       \
+	../flatsurf/ray.hpp                                         \
 	../flatsurf/saddle_connection.hpp                           \
 	../flatsurf/saddle_connections.hpp                          \
 	../flatsurf/saddle_connections_by_length.hpp                \
@@ -121,6 +125,8 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/saddle_connections_by_length_iterator.hpp       \
 	../flatsurf/saddle_connections_sample.hpp                   \
 	../flatsurf/saddle_connections_sample_iterator.hpp          \
+	../flatsurf/segment.hpp                                     \
+	../flatsurf/segment_iterator.hpp                            \
 	../flatsurf/serializable.hpp                                \
 	../flatsurf/tracked.hpp                                     \
 	../flatsurf/vector.hpp                                      \
@@ -177,6 +183,7 @@ noinst_HEADERS =                                                    \
 	impl/path_iterator.impl.hpp                                 \
 	impl/point.impl.hpp                                         \
 	impl/quadratic_polynomial.hpp                               \
+	impl/ray.impl.hpp                                           \
 	impl/read_only.hpp                                          \
 	impl/saddle_connection.impl.hpp                             \
 	impl/saddle_connections.impl.hpp                            \
@@ -185,6 +192,8 @@ noinst_HEADERS =                                                    \
 	impl/saddle_connections_by_length_iterator.impl.hpp         \
 	impl/saddle_connections_sample.impl.hpp                     \
 	impl/saddle_connections_sample_iterator.impl.hpp            \
+	impl/segment.impl.hpp                                       \
+	impl/segment_iterator.impl.hpp                              \
 	impl/shift_deformation_relation.hpp                         \
 	impl/slit_deformation_relation.hpp                          \
 	impl/tracked.impl.hpp                                       \

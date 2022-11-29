@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2020-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ namespace flatsurf {
 
 // Iterates over a path in a surface, i.e., over a connected sequence of saddle connections.
 template <typename Surface>
-class PathIterator : public boost::iterator_facade<PathIterator<Surface>, const SaddleConnection<Surface>&, boost::forward_traversal_tag> {
+class [[deprecated("use SegmentIterator instead")]] PathIterator : public boost::iterator_facade<PathIterator<Surface>, const SaddleConnection<Surface>&, boost::forward_traversal_tag> {
   template <typename... Args>
   PathIterator(PrivateConstructor, Args&&...);
 
@@ -40,6 +40,9 @@ class PathIterator : public boost::iterator_facade<PathIterator<Surface>, const 
   void increment();
   const value_type& dereference() const;
   bool equal(const PathIterator& other) const;
+
+  operator const SegmentIterator<Surface>() const;
+  operator SegmentIterator<Surface>();
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const PathIterator<S>&);

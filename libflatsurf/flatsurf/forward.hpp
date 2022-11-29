@@ -135,6 +135,9 @@ struct PrivateConstructor {};
 struct ProtectedConstructor {};
 
 template <typename Surface>
+class Ray;
+
+template <typename Surface>
 class SaddleConnection;
 
 template <typename Surface>
@@ -154,6 +157,12 @@ class SaddleConnectionsSample;
 
 template <typename Surface>
 class SaddleConnectionsSampleIterator;
+
+template <typename Surface>
+class Segment;
+
+template <typename Surface>
+class SegmentIterator;
 
 template <typename T>
 class Serializable;
