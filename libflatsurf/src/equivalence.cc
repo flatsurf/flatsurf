@@ -36,7 +36,11 @@ Equivalence<Surface> Equivalence<Surface>::combinatorial(std::function<bool(cons
 
 template <typename Surface>
 Equivalence<Surface> Equivalence<Surface>::unlabeled(std::function<bool(const Surface&, Edge)> predicate) {
-  throw std::logic_error("not implemented: Equivalence::unlabeled()");
+  static const auto normalization = std::function([](const Surface&, HalfEdge, HalfEdge) -> std::tuple<T, T, T, T> {
+    return {T(1), T(), T(), T(1)};
+  });
+
+  return linear(true, normalization, predicate);
 }
 
 template <typename Surface>
@@ -47,6 +51,11 @@ Equivalence<Surface> Equivalence<Surface>::rotational(std::function<bool(const S
 template <typename Surface>
 Equivalence<Surface> Equivalence<Surface>::areaPreserving(bool oriented, std::function<bool(const Surface&, Edge)> predicate) {
   throw std::logic_error("not implemented: Equivalence::areaPreserving()");
+}
+
+template <typename Surface>
+Equivalence<Surface> Equivalence<Surface>::linear(bool oriented, std::function<std::tuple<T, T, T, T>(const Surface&, HalfEdge, HalfEdge)> normalization, std::function<bool(const Surface&, Edge)>) {
+  throw std::logic_error("not implemented: Equivalence::linear()");
 }
 
 template <typename Surface>
