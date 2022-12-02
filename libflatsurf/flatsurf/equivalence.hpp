@@ -35,6 +35,7 @@ template <typename Surface>
 class Equivalence {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type parameter must not have modifiers such as const");
   using T = typename Surface::Coordinate;
+  using Matrix = std::tuple<T, T, T, T>;
 
  public:
   Equivalence(std::shared_ptr<ImplementationOf<Equivalence>>);
@@ -91,10 +92,10 @@ class Equivalence {
   // oriented is not set, then transformation with negative determinant are
   // also considered, i.e., the half edges presented to the normalization are
   // also clockwise consecutive at a vertex.
-  static Equivalence linear(bool oriented = true, std::function<std::tuple<T, T, T, T>(const Surface&, HalfEdge, HalfEdge)> normalization = orthonormalization, std::function<bool(const Surface&, Edge)> = all);
+  static Equivalence linear(bool oriented = true, std::function<Matrix(const Surface&, HalfEdge, HalfEdge)> normalization = orthonormalization, std::function<bool(const Surface&, Edge)> = all);
 
   // Return a matrix [[a, b], [c, d]] that turns the half edges into (1, 0) and (0, 1), respectively.
-  static std::tuple<T, T, T, T> orthonormalization(const Surface&, HalfEdge, HalfEdge);
+  static Matrix orthonormalization(const Surface&, HalfEdge, HalfEdge);
 
   // Return true for any input.
   static bool all(const Surface&, Edge);

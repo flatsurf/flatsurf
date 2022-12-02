@@ -23,6 +23,7 @@
 #include "../flatsurf/equivalence.hpp"
 #include "../flatsurf/edge.hpp"
 #include "impl/combinatorial_equivalence.hpp"
+#include "impl/linear_equivalence.hpp"
 
 namespace flatsurf {
 
@@ -54,8 +55,8 @@ Equivalence<Surface> Equivalence<Surface>::areaPreserving(bool oriented, std::fu
 }
 
 template <typename Surface>
-Equivalence<Surface> Equivalence<Surface>::linear(bool oriented, std::function<std::tuple<T, T, T, T>(const Surface&, HalfEdge, HalfEdge)> normalization, std::function<bool(const Surface&, Edge)>) {
-  throw std::logic_error("not implemented: Equivalence::linear()");
+Equivalence<Surface> Equivalence<Surface>::linear(bool oriented, std::function<Matrix(const Surface&, HalfEdge, HalfEdge)> normalization, std::function<bool(const Surface&, Edge)> predicate) {
+  return Equivalence(std::make_unique<LinearEquivalence<Surface>>(oriented, normalization, predicate));
 }
 
 template <typename Surface>
@@ -66,6 +67,11 @@ bool Equivalence<Surface>::all(const Surface&, Edge) {
 template <typename Surface>
 bool Equivalence<Surface>::delaunayCell(const Surface&, Edge) {
   throw std::logic_error("not implemented: Equivalence::delaunayEdge()");
+}
+
+template <typename Surface>
+typename Equivalence<Surface>::Matrix Equivalence<Surface>::orthonormalization(const Surface&, HalfEdge, HalfEdge) {
+  throw std::logic_error("not implemented: orthonormalization");
 }
 
 template <typename Surface>

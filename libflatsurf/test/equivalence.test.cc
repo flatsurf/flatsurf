@@ -138,4 +138,52 @@ TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo Labels", "[Equivalence][unlab
   }
 }
 
+TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo GL2", "[Equivalence][linear]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+  using Surface = FlatTriangulation<T>;
+
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
+  SECTION("A Surface is Equivalent to Itself") {
+    const auto equivalence = Equivalence<Surface>::linear();
+
+    REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(*surface, equivalence));
+  }
+
+  SECTION("Equivalence modulo Flipping an Edge") {
+    const auto halfEdge = GENERATE_COPY(halfEdges(surface));
+
+    // Don't test for each edge twice.
+    if (halfEdge == halfEdge.edge().positive()) {
+      if (surface->convex(halfEdge, true)) {
+        auto flipped = surface->clone();
+        flipped.flip(halfEdge);
+        CAPTURE(flipped);
+
+        const auto equivalence = Equivalence<Surface>::linear(true, [](const Surface&, HalfEdge, HalfEdge) { return std::tuple{T(1), T(), T(), T(1)}; }, [&](const Surface&, const Edge edge) { return edge != halfEdge; });
+
+        // If we ignore the flipped edge, the surfaces must be indistinguishable.
+        REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(flipped, equivalence));
+      }
+    }
+  }
+
+  SECTION("Equivalence modulo Linear Deformation With Positive Determinant") {
+    const auto equivalence = Equivalence<Surface>::linear();
+
+    const auto deformation = surface->applyMatrix(T(2), T(1), T(7), T(6));
+
+    REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(deformation.codomain(), equivalence));
+  }
+
+  SECTION("Equivalence modulo Linear Deformation With Negative Determinant") {
+    const auto equivalence = Equivalence<Surface>::linear(false);
+
+    const auto deformation = surface->applyMatrix(T(1), T(3), T(3), T(7));
+
+    REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(deformation.codomain(), equivalence));
+  }
+}
+
 }

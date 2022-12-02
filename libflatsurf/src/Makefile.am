@@ -47,6 +47,7 @@ libflatsurf_la_SOURCES =                                            \
 	interval_exchange_transformation.cc                         \
 	lengths.cc                                                  \
 	linear_deformation_relation.cc                              \
+	linear_equivalence.cc                                       \
 	orientation.cc                                              \
 	path.cc                                                     \
 	path_iterator.cc                                            \
@@ -143,6 +144,7 @@ noinst_HEADERS =                                                    \
 	impl/chain_iterator.impl.hpp                                \
 	impl/chain_vector.hpp                                       \
 	impl/collapsed_half_edge.hpp                                \
+	impl/combinatorial_equivalence.hpp                          \
 	impl/composite_deformation_relation.hpp                     \
 	impl/contour_component.impl.hpp                             \
 	impl/contour_component_state.hpp                            \
@@ -154,7 +156,6 @@ noinst_HEADERS =                                                    \
 	impl/edge_map.impl.hpp                                      \
 	impl/edge_set.impl.hpp                                      \
 	impl/edge_set_iterator.impl.hpp                             \
-	impl/combinatorial_equivalence.hpp                          \
 	impl/flat_triangulation_collapsed.impl.hpp                  \
 	impl/flat_triangulation_combinatorial.impl.hpp              \
 	impl/flat_triangulation_combinatorics.impl.hpp              \
@@ -178,6 +179,7 @@ noinst_HEADERS =                                                    \
 	impl/insert_marked_point_in_face_deformation_relation.hpp   \
 	impl/interval_exchange_transformation.impl.hpp              \
 	impl/lengths.hpp                                            \
+	impl/linear_equivalence.hpp                                 \
 	impl/linear_deformation_relation.hpp                        \
 	impl/managed_movable.impl.hpp                               \
 	impl/path.impl.hpp                                          \
