@@ -21,7 +21,7 @@
 
 #include <functional>
 
-#include "forward.hpp"
+#include "../../flatsurf/forward.hpp"
 
 
 namespace flatsurf {
@@ -61,3 +61,4 @@ struct std::hash<::flatsurf::EquivalenceClassCode> {
 };
 
 #endif
+

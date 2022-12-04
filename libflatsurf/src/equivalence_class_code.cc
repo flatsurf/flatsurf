@@ -19,7 +19,7 @@
 
 #include <string>
 
-#include "../flatsurf/equivalence_class_code.hpp"
+#include "impl/equivalence_class_code.hpp"
 
 namespace flatsurf {
 

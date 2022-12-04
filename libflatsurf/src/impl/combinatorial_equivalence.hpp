@@ -21,8 +21,8 @@
 #include <unordered_map>
 
 #include "../../flatsurf/half_edge.hpp"
-#include "../../flatsurf/equivalence.hpp"
-#include "../../flatsurf/equivalence_class_code.hpp"
+#include "equivalence_class_code.hpp"
+#include "equivalence.impl.hpp"
 
 #ifndef LIBFLATSURF_COMBINATORIAL_EQUIVALENCE_HPP
 #define LIBFLATSURF_COMBINATORIAL_EQUIVALENCE_HPP
@@ -43,6 +43,8 @@ struct CombinatorialEquivalence : ImplementationOf<Equivalence<Surface>> {
     static void append(Code&, const Word&);
 
     static int cmp(const std::optional<Word>&, const std::optional<Word>&);
+
+    static std::unique_ptr<EquivalenceClassCode> code(Code code);
 
     std::optional<Word> walk();
 
@@ -77,6 +79,8 @@ struct CombinatorialEquivalence : ImplementationOf<Equivalence<Surface>> {
   };
 
   CombinatorialEquivalence(Predicate predicate);
+
+  std::vector<CombinatorialWalker> seedWalkers(const Surface&) const;
 
   std::unique_ptr<EquivalenceClassCode> code(const Surface&) const override;
   Iterable<Deformation<Surface>> automorphisms() const override;

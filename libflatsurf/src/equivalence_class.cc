@@ -20,7 +20,8 @@
 #include <ostream>
 
 #include "../flatsurf/equivalence_class.hpp"
-#include "../flatsurf/equivalence_class_code.hpp"
+#include "impl/equivalence_class_code.hpp"
+#include "impl/equivalence.impl.hpp"
 
 #include "impl/equivalence_class.impl.hpp"
 

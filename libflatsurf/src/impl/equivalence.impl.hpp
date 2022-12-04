@@ -17,26 +17,31 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_EQUIVALENCE_CLASS_IMPL_HPP
-#define LIBFLATSURF_EQUIVALENCE_CLASS_IMPL_HPP
+#ifndef LIBFLATSURF_EQUIVALENCE_IMPL_HPP
+#define LIBFLATSURF_EQUIVALENCE_IMPL_HPP
 
-#include "../../flatsurf/equivalence_class.hpp"
 #include "../../flatsurf/equivalence.hpp"
-#include "equivalence_class_code.hpp"
-
-#include "read_only.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-class ImplementationOf<EquivalenceClass<Surface>> {
- public:
-  ImplementationOf(const Surface& surface, const Equivalence<Surface>& equivalence);
+struct ImplementationOf<Equivalence<Surface>> {
+  virtual ~ImplementationOf();
 
-  ReadOnly<Surface> surface;
-  Equivalence<Surface> equivalence;
-  std::shared_ptr<EquivalenceClassCode> code;
+  virtual std::unique_ptr<EquivalenceClassCode> code(const Surface&) const = 0;
+  virtual Iterable<Deformation<Surface>> automorphisms() const = 0;
+  virtual void normalize(Surface&) const = 0;
+  virtual bool equal(const ImplementationOf&) const = 0;
+  virtual std::string toString() const = 0;
+
+  template <typename Walker>
+  std::unique_ptr<EquivalenceClassCode> code(const std::vector<Walker>& walkers) const;
 };
+
+template <typename Surface>
+template <typename... Args>
+Equivalence<Surface>::Equivalence(PrivateConstructor, Args&&... args) :
+  self(args...) {}
 
 }
 

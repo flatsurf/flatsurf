@@ -93,7 +93,6 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/edge_set.hpp                                    \
 	../flatsurf/edge_set_iterator.hpp                           \
 	../flatsurf/equivalence_class.hpp                           \
-	../flatsurf/equivalence_class_code.hpp                      \
 	../flatsurf/flat_triangulation.hpp                          \
 	../flatsurf/flat_triangulation_collapsed.hpp                \
 	../flatsurf/flat_triangulation_combinatorial.hpp            \
@@ -156,6 +155,8 @@ noinst_HEADERS =                                                    \
 	impl/edge_map.impl.hpp                                      \
 	impl/edge_set.impl.hpp                                      \
 	impl/edge_set_iterator.impl.hpp                             \
+	impl/equivalence.impl.hpp                                   \
+	impl/equivalence_class_code.hpp                             \
 	impl/flat_triangulation_collapsed.impl.hpp                  \
 	impl/flat_triangulation_combinatorial.impl.hpp              \
 	impl/flat_triangulation_combinatorics.impl.hpp              \

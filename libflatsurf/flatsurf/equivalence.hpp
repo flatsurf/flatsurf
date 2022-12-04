@@ -37,9 +37,12 @@ class Equivalence {
   using T = typename Surface::Coordinate;
   using Matrix = std::tuple<T, T, T, T>;
 
- public:
-  Equivalence(std::shared_ptr<ImplementationOf<Equivalence>>);
+  // Equivalences cannot be created directly.
+  // Use the static members to create equivalences.
+  template <typename... Args>
+  Equivalence(PrivateConstructor, Args&&... args);
 
+ public:
   // Return the combinatorial equivalence of surfaces on marked edges.
   // The edges singled out by the predicate must be such that the graph they
   // form is connected and has no cut-edges. In other words, the surface is
@@ -111,17 +114,6 @@ class Equivalence {
 
   friend ImplementationOf<Equivalence>;
   friend ImplementationOf<EquivalenceClass<Surface>>;
-};
-
-template <typename Surface>
-struct ImplementationOf<Equivalence<Surface>> {
-  virtual ~ImplementationOf();
-
-  virtual std::unique_ptr<EquivalenceClassCode> code(const Surface&) const = 0;
-  virtual Iterable<Deformation<Surface>> automorphisms() const = 0;
-  virtual void normalize(Surface&) const = 0;
-  virtual bool equal(const ImplementationOf&) const = 0;
-  virtual std::string toString() const = 0;
 };
 
 }

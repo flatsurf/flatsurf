@@ -19,7 +19,7 @@
 
 
 #include "../../flatsurf/equivalence.hpp"
-#include "../../flatsurf/equivalence_class_code.hpp"
+#include "equivalence_class_code.hpp"
 #include "combinatorial_equivalence.hpp"
 
 #ifndef LIBFLATSURF_LINEAR_EQUIVALENCE_HPP
@@ -33,6 +33,9 @@ struct LinearEquivalence : ImplementationOf<Equivalence<Surface>> {
 
   using CombinatorialCode = typename CombinatorialEquivalence<Surface>::Code;
   using Code = std::tuple<CombinatorialCode, std::vector<Vector<T>>>;
+
+  struct LinearWalker {
+  };
 
   struct LinearEquivalenceClassCode : public EquivalenceClassCode {
     explicit LinearEquivalenceClassCode(Code code);
@@ -49,6 +52,8 @@ struct LinearEquivalence : ImplementationOf<Equivalence<Surface>> {
   using Normalization = std::function<std::tuple<T, T, T, T>(const Surface&, HalfEdge, HalfEdge)>;
 
   LinearEquivalence(bool oriented, Normalization normalization, Predicate predicate): oriented(oriented), normalization(normalization), predicate(predicate) {}
+
+  std::vector<LinearWalker> seedWalkers(const Surface&) const;
 
   std::unique_ptr<EquivalenceClassCode> code(const Surface&) const override;
   Iterable<Deformation<Surface>> automorphisms() const override;
