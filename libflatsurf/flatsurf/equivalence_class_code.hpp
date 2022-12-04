@@ -28,8 +28,9 @@ namespace flatsurf {
 
 // A hashable code for the equivalence class of a surface. Two surfaces are in
 // the same equivalence class iff they have the same code.
-// Instances of this are created by ImplementationOf<Equivalence>. It is
-// otherwise an implementation detail and not exposed to the user.
+// Instances of this are created by ImplementationOf<Equivalence>::code() and
+// consumed by EquivalenceClass. It is otherwise an implementation detail and
+// not exposed to the user.
 struct EquivalenceClassCode {
   virtual ~EquivalenceClassCode();
 
