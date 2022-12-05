@@ -22,9 +22,9 @@
 #include <fmt/ranges.h>
 
 #include "impl/linear_equivalence.hpp"
+#include "impl/linear_equivalence_walker.hpp"
 
 #include "impl/equivalence_class_code.hpp"
-#include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/iterable.hpp"
 #include "../flatsurf/fmt.hpp"
@@ -54,46 +54,21 @@ std::string LinearEquivalence<Surface>::toString() const {
 }
 
 template <typename Surface>
-LinearEquivalence<Surface>::LinearEquivalenceClassCode::LinearEquivalenceClassCode(Code code) : code(std::move(code)) {}
-
-template <typename Surface>
 std::unique_ptr<EquivalenceClassCode> LinearEquivalence<Surface>::code(const Surface& surface) const {
-  return ImplementationOf<Equivalence<Surface>>::code(seedWalkers(surface));
-}
+  std::vector<LinearEquivalenceWalker<Surface>> walkers;
 
-template <typename Surface>
-std::vector<typename LinearEquivalence<Surface>::LinearWalker> LinearEquivalence<Surface>::seedWalkers(const Surface& surface) const {
-  throw std::logic_error("not implemented: seedWalkers()");
-}
+  for (const auto start : surface.halfEdges()) {
+    if (!predicate(surface, start))
+      continue;
 
-template <typename Surface>
-size_t LinearEquivalence<Surface>::LinearEquivalenceClassCode::hash() const {
-  const auto& combinatorial = std::get<0>(code);
 
-  size_t hash = combinatorial.size();
-  for (const auto& word: combinatorial)
-    for (const auto& character: word)
-      hash = hash_combine(hash, character);
+    walkers.push_back({&surface, start, &predicate, normalization(surface, start, surface.nextAtVertex(start))});
 
-  const auto& geometric = std::get<1>(code);
-  for (const auto& vector : geometric)
-    hash = hash_combine(hash, std::hash<Vector<T>>{}(vector));
+    if (!oriented)
+      walkers.push_back({&surface, start, &predicate, normalization(surface, start, surface.previousAtVertex(start))});
+  }
 
-  return hash;
-}
-
-template <typename Surface>
-bool LinearEquivalence<Surface>::LinearEquivalenceClassCode::equal(const EquivalenceClassCode& rhs) const {
-  const LinearEquivalenceClassCode* other = dynamic_cast<const LinearEquivalenceClassCode*>(&rhs);
-  if (other == nullptr)
-    return false;
-
-  return code == other->code;
-}
-
-template <typename Surface>
-std::string LinearEquivalence<Surface>::LinearEquivalenceClassCode::toString() const {
-  return fmt::format("({}, {})", std::get<0>(code), std::get<1>(code));
+  return LinearEquivalenceWalker<Surface>::word(std::move(walkers));
 }
 
 template <typename Surface>

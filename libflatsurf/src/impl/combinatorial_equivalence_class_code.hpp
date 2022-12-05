@@ -17,37 +17,24 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_COMBINATORIAL_EQUIVALENCE_HPP
-#define LIBFLATSURF_COMBINATORIAL_EQUIVALENCE_HPP
+#ifndef LIBFLATSURF_COMBINATORIAL_EQUIVALENCE_CLASS_CODE_HPP
+#define LIBFLATSURF_COMBINATORIAL_EQUIVALENCE_CLASS_CODE_HPP
 
-#include <optional>
-
-#include "../../flatsurf/half_edge.hpp"
 #include "equivalence_class_code.hpp"
-#include "equivalence.impl.hpp"
 
 namespace flatsurf {
 
-template <typename Surface>
-struct CombinatorialEquivalenceWalker;
+struct CombinatorialEquivalenceClassCode : public EquivalenceClassCode {
+  using Word = std::vector<std::vector<int>>;
 
-template <typename Surface>
-struct CombinatorialEquivalence : ImplementationOf<Equivalence<Surface>> {
-  using Predicate = std::function<bool(const Surface&, Edge)>;
+  explicit CombinatorialEquivalenceClassCode(Word word);
 
-  CombinatorialEquivalence(Predicate predicate);
-
-  std::unique_ptr<EquivalenceClassCode> code(const Surface&) const override;
-  Iterable<Deformation<Surface>> automorphisms() const override;
-  void normalize(Surface&) const override;
-  bool equal(const ImplementationOf<Equivalence<Surface>>&) const override;
+  size_t hash() const override;
+  bool equal(const EquivalenceClassCode&) const override;
   std::string toString() const override;
 
-  template <typename S>
-  friend std::ostream& operator<<(std::ostream&, const CombinatorialEquivalence<S>&);
-
  private:
-  Predicate predicate;
+  Word word;
 };
 
 }

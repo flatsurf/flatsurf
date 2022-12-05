@@ -10,6 +10,8 @@ libflatsurf_la_SOURCES =                                            \
 	chain_vector.cc                                             \
 	collapsed_half_edge.cc                                      \
 	combinatorial_equivalence.cc                                \
+	combinatorial_equivalence_class_code.cc                     \
+	combinatorial_equivalence_walker.cc                         \
 	composite_deformation_relation.cc                           \
 	contour_component.cc                                        \
 	contour_component_state.cc                                  \
@@ -48,6 +50,8 @@ libflatsurf_la_SOURCES =                                            \
 	lengths.cc                                                  \
 	linear_deformation_relation.cc                              \
 	linear_equivalence.cc                                       \
+	linear_equivalence_class_code.cc                            \
+	linear_equivalence_walker.cc                                \
 	orientation.cc                                              \
 	path.cc                                                     \
 	path_iterator.cc                                            \

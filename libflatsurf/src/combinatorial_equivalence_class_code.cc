@@ -17,30 +17,35 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_EQUIVALENCE_IMPL_HPP
-#define LIBFLATSURF_EQUIVALENCE_IMPL_HPP
+#include <fmt/format.h>
+#include <fmt/ranges.h>
 
-#include "../../flatsurf/equivalence.hpp"
+#include "impl/combinatorial_equivalence_class_code.hpp"
+
+#include "util/hash.ipp"
 
 namespace flatsurf {
 
-template <typename Surface>
-struct ImplementationOf<Equivalence<Surface>> {
-  virtual ~ImplementationOf();
+CombinatorialEquivalenceClassCode::CombinatorialEquivalenceClassCode(Word word) : word(std::move(word)) {}
 
-  virtual std::unique_ptr<EquivalenceClassCode> code(const Surface&) const = 0;
-  virtual Iterable<Deformation<Surface>> automorphisms() const = 0;
-  virtual void normalize(Surface&) const = 0;
-  virtual bool equal(const ImplementationOf&) const = 0;
-  virtual std::string toString() const = 0;
-
-};
-
-template <typename Surface>
-template <typename... Args>
-Equivalence<Surface>::Equivalence(PrivateConstructor, Args&&... args) :
-  self(args...) {}
-
+size_t CombinatorialEquivalenceClassCode::hash() const {
+  size_t hash = word.size();
+  for (const auto& character: word)
+    for (const auto& stroke: character)
+      hash = hash_combine(hash, stroke);
+  return hash;
 }
 
-#endif
+bool CombinatorialEquivalenceClassCode::equal(const EquivalenceClassCode& rhs) const {
+  const CombinatorialEquivalenceClassCode* other = dynamic_cast<const CombinatorialEquivalenceClassCode*>(&rhs);
+  if (other == nullptr)
+    return false;
+
+  return word == other->word;
+}
+
+std::string CombinatorialEquivalenceClassCode::toString() const {
+  return fmt::format("{}", word);
+}
+
+}
