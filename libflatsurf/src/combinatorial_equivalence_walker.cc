@@ -63,10 +63,13 @@ std::optional<typename CombinatorialEquivalenceWalker<Surface>::Character> Combi
 
     const int label = this->label(*this->surface, pos);
 
-    if (label > 0 && label < labels.size() - 2)
-      // We found a positive label that was not freshly assigned. We have
-      // processed this face before.
-      return {};
+    if (label > 0 && label < this->steps)
+      // We processed this face before.
+      return Character{};
+
+    if (label < 0 && -label < this->steps - 1)
+      // We processed this face before.
+      return Character{};
 
     character.push_back(label);
   }
@@ -75,20 +78,11 @@ std::optional<typename CombinatorialEquivalenceWalker<Surface>::Character> Combi
 }
 
 template <typename Surface>
-int CombinatorialEquivalenceWalker<Surface>::cmp(const std::optional<Character>& lhs, const std::optional<Character>& rhs) {
-  if (!lhs.has_value()) {
-    if (!rhs.has_value())
-      return 0;
-    return 1;
-  }
-
-  if (!rhs.has_value())
-    return -1;
-
-  if (*lhs < *rhs)
+int CombinatorialEquivalenceWalker<Surface>::cmp(const Character& lhs, const Character& rhs) {
+  if (lhs < rhs)
     return -1;
   
-  if (*lhs > *rhs)
+  if (lhs > rhs)
     return 1;
   
   return 0;

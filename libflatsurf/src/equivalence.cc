@@ -22,6 +22,8 @@
 
 #include "../flatsurf/equivalence.hpp"
 #include "../flatsurf/edge.hpp"
+#include "../flatsurf/delaunay.hpp"
+#include "../flatsurf/vector.hpp"
 #include "impl/combinatorial_equivalence.hpp"
 #include "impl/linear_equivalence.hpp"
 #include "util/assert.ipp"
@@ -63,13 +65,36 @@ bool Equivalence<Surface>::all(const Surface&, Edge) {
 }
 
 template <typename Surface>
-bool Equivalence<Surface>::delaunayCell(const Surface&, Edge) {
-  throw std::logic_error("not implemented: Equivalence::delaunayEdge()");
+bool Equivalence<Surface>::delaunayCell(const Surface& surface, Edge edge) {
+  return surface.delaunay(edge) != DELAUNAY::AMBIGUOUS; 
 }
 
 template <typename Surface>
-typename Equivalence<Surface>::Matrix Equivalence<Surface>::orthonormalization(const Surface&, HalfEdge, HalfEdge) {
-  throw std::logic_error("not implemented: orthonormalization");
+typename Equivalence<Surface>::Matrix Equivalence<Surface>::orthonormalization(const Surface& surface, HalfEdge a, HalfEdge b) {
+  const auto v = surface.fromHalfEdge(a);
+  const auto w = surface.fromHalfEdge(b);
+
+  const T det = v.x() * w.y() - v.y() * w.x();
+
+  LIBFLATSURF_ASSERT(det, "orthonormalization was presented with collinear edges " << a << " and " << b);
+
+  const auto div = [](const auto& numerator, const auto& denominator) {
+    if constexpr (std::is_same_v<T, exactreal::Element<exactreal::IntegerRing>> || std::is_same_v<T, exactreal::Element<exactreal::RationalField>> || std::is_same_v<T, exactreal::Element<exactreal::NumberField>>) {
+      const auto maybe = numerator.truediv(denominator);
+      if (!maybe)
+        throw std::logic_error("orthonormalization is not possible in this ring");
+
+      return *maybe;
+    } else {
+      const T quot = numerator / denominator;
+      if (quot * denominator != numerator)
+        throw std::logic_error("orthonormalization is not possible in this ring");
+
+      return quot;
+    }
+  };
+
+  return {div(w.y(), det), div(-w.x(), det), div(-v.y(), det), div(v.x(), det)};
 }
 
 template <typename Surface>

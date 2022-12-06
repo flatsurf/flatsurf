@@ -17,16 +17,57 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <unordered_map>
+
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 
 #include "impl/combinatorial_equivalence_class_code.hpp"
 
 #include "util/hash.ipp"
+#include "util/assert.ipp"
 
 namespace flatsurf {
 
-CombinatorialEquivalenceClassCode::CombinatorialEquivalenceClassCode(Word word) : word(std::move(word)) {}
+CombinatorialEquivalenceClassCode::CombinatorialEquivalenceClassCode(Word word) : word(std::move(word)) {
+  LIBFLATSURF_ASSERT(([&]() {
+    const auto& word = this->word;
+
+    int min = 0;
+    int max = 0;
+
+    std::unordered_map<int, int> labels;
+
+    for (int c = 0; c < word.size(); c++) {
+      const auto& character = word[c];
+
+      if (character.size() == 0)
+        continue;
+
+      min = std::min(min, -c);
+      labels[c] += 2;  
+        
+      for (const auto& label: character) {
+        if (label < 0) {
+          min = std::min(min, label);
+          labels[-label] += 2;
+        } else {
+          max = std::max(max, label);
+          labels[label] += 1;
+        }
+      }
+    }
+
+    if (max != -min)
+      return false;
+
+    for (int label = 0; label <= max; label++)
+      if (labels[label] != 3)
+        return false;
+
+    return true;
+  }()), "malformed combinatorial code word describing equivalence class, each nonzero label must show up exactly once with each sign: " << *this);
+}
 
 size_t CombinatorialEquivalenceClassCode::hash() const {
   size_t hash = word.size();

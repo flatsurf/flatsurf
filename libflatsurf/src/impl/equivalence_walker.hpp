@@ -83,7 +83,7 @@ struct EquivalenceWalker {
         if (!character.has_value())
           continue;
 
-        switch (Walker::cmp(character, minimalCharacter)) {
+        switch (cmp(character, minimalCharacter)) {
           case -1:
             minimalCharacter = character;
             stillMinimalWalkers = {walker};
@@ -115,8 +115,21 @@ struct EquivalenceWalker {
     return std::make_unique<typename Walker::Code>(word);
   }
 
+  template <typename Character>
+  static int cmp(const std::optional<Character>& lhs, const std::optional<Character>& rhs) {
+    if (!lhs.has_value()) {
+      if (!rhs.has_value())
+        return 0;
+      return 1;
+    }
+
+    if (!rhs.has_value())
+      return -1;
+
+    return Walker::cmp(*lhs, *rhs);
+  }
+
  protected:
-  int steps = 0;
   const Surface* surface;
 };
 

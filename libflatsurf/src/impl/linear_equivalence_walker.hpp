@@ -20,31 +20,39 @@
 #ifndef LIBFLATSURF_LINEAR_EQUIVALENCE_WALKER_HPP
 #define LIBFLATSURF_LINEAR_EQUIVALENCE_WALKER_HPP
 
+#include <unordered_set>
+
+#include "../../flatsurf/edge.hpp"
+
 #include "equivalence_walker.hpp"
 #include "linear_equivalence_class_code.hpp"
+#include "combinatorial_equivalence_walker.hpp"
 #include "linear_equivalence.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
 struct LinearEquivalenceWalker : EquivalenceWalker<Surface, LinearEquivalenceWalker<Surface>> {
-  using Character = std::vector<int>;
+  using T = typename Surface::Coordinate;
+  using Character = std::tuple<std::vector<int>, Vector<T>>;
   using Word = typename LinearEquivalenceClassCode<Surface>::Word;
   using Predicate = typename LinearEquivalence<Surface>::Predicate;
-  using Normalization = typename LinearEquivalence<Surface>::Matrix;
+  using NormalizationMatrix = typename LinearEquivalence<Surface>::Matrix;
   using Code = LinearEquivalenceClassCode<Surface>;
 
-  LinearEquivalenceWalker(const Surface* surface, HalfEdge start, const Predicate* predicate, const Normalization& normalization);
+  LinearEquivalenceWalker(const Surface* surface, HalfEdge start, const Predicate* predicate, const NormalizationMatrix& normalization);
 
   static void append(Word&, const Character&);
 
-  static int cmp(const std::optional<Character>&, const std::optional<Character>&);
+  static int cmp(const Character&, const Character&);
 
   std::optional<Character> step();
 
   int label(const Surface& surface, const HalfEdge halfEdge);
 
-  const Predicate* predicate;
+  CombinatorialEquivalenceWalker<Surface> combinatorialWalker;
+
+  NormalizationMatrix normalization;
 };
 
 }

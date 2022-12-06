@@ -50,7 +50,7 @@ ImplementationOf<EquivalenceClass<Surface>>::ImplementationOf(const Surface& sur
 
 template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const EquivalenceClass<Surface>& clazz) {
-  return os << "[" << clazz.representative() << "](" << *clazz.self->code << ")";
+  return os << "[" << clazz.representative() << "] identified by (" << *clazz.self->code << ")";
 }
 
 }

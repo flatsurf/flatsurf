@@ -18,29 +18,64 @@
  *********************************************************************/
 
 #include "../flatsurf/half_edge.hpp"
+#include "../flatsurf/edge.hpp"
 
 #include "impl/linear_equivalence_walker.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-LinearEquivalenceWalker<Surface>::LinearEquivalenceWalker(const Surface* surface, HalfEdge start, const Predicate* predicate, const Normalization& normalization): EquivalenceWalker<Surface, LinearEquivalenceWalker>(surface) {
-  throw std::logic_error("not implemented: LinearEquivalenceWalker()");
+LinearEquivalenceWalker<Surface>::LinearEquivalenceWalker(const Surface* surface, HalfEdge start, const Predicate* predicate, const NormalizationMatrix& normalization):
+  EquivalenceWalker<Surface, LinearEquivalenceWalker>(surface),
+  combinatorialWalker(surface, start, predicate),
+  normalization(normalization)
+  {}
+
+template <typename Surface>
+void LinearEquivalenceWalker<Surface>::append(Word& word, const Character& character) {
+  std::get<0>(word).push_back(std::get<0>(character));
+  std::get<1>(word).push_back(std::get<1>(character));
 }
 
 template <typename Surface>
-void LinearEquivalenceWalker<Surface>::append(Word&, const Character&) {
-  throw std::logic_error("not implemented: LinearEquivalenceWalker::append()");
-}
+int LinearEquivalenceWalker<Surface>::cmp(const Character& lhs, const Character& rhs) {
 
-template <typename Surface>
-int LinearEquivalenceWalker<Surface>::cmp(const std::optional<Character>&, const std::optional<Character>&) {
-  throw std::logic_error("not implemented: LinearEquivalenceWalker::cmp()");
+  int cmp = CombinatorialEquivalenceWalker<Surface>::cmp(std::get<0>(lhs), std::get<0>(rhs));
+
+  if (cmp != 0)
+    return cmp;
+
+  const auto& lvector = std::get<1>(lhs);
+  const auto& rvector = std::get<1>(rhs);
+
+  if (lvector.x() < rvector.x())
+    return -1;
+  if (lvector.x() > rvector.x())
+    return 1;
+
+  if (lvector.y() < rvector.y())
+    return -1;
+  if (lvector.y() > rvector.y())
+    return 1;
+
+  return 0;
 }
 
 template <typename Surface>
 std::optional<typename LinearEquivalenceWalker<Surface>::Character> LinearEquivalenceWalker<Surface>::step() {
-  throw std::logic_error("not implemented: LinearEquivalenceWalker::step()");
+  const auto combinatorial = combinatorialWalker.step();
+
+  if (!combinatorial)
+    return std::nullopt;
+
+  const HalfEdge crossed = combinatorialWalker.labeled[combinatorialWalker.steps-1];
+  const auto normalized = this->surface->fromHalfEdge(crossed).applyMatrix(
+    std::get<0>(this->normalization),
+    std::get<1>(this->normalization),
+    std::get<2>(this->normalization),
+    std::get<3>(this->normalization));
+
+  return std::tuple{*combinatorial, normalized};
 }
 
 }

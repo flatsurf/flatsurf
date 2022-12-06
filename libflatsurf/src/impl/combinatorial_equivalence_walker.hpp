@@ -41,7 +41,7 @@ struct CombinatorialEquivalenceWalker : EquivalenceWalker<Surface, Combinatorial
 
   static void append(Word&, const Character&);
 
-  static int cmp(const std::optional<Character>&, const std::optional<Character>&);
+  static int cmp(const Character&, const Character&);
 
   std::optional<Character> step();
 
@@ -60,6 +60,8 @@ struct CombinatorialEquivalenceWalker : EquivalenceWalker<Surface, Combinatorial
   std::vector<HalfEdge> labeled;
 
   const Predicate* predicate;
+
+  int steps = 0;
 };
 
 }
