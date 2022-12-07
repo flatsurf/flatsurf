@@ -21,6 +21,7 @@
 
 #include "impl/combinatorial_equivalence.hpp"
 
+#include "../flatsurf/deformation.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/iterable.hpp"
 #include "impl/equivalence_class_code.hpp"
@@ -31,7 +32,9 @@
 namespace flatsurf {
 
 template <typename Surface>
-CombinatorialEquivalence<Surface>::CombinatorialEquivalence(Predicate predicate): predicate(predicate) {}
+CombinatorialEquivalence<Surface>::CombinatorialEquivalence(bool oriented, Predicate predicate):
+  oriented(oriented),
+  predicate(predicate) {}
 
 template <typename Surface>
 Iterable<Deformation<Surface>> CombinatorialEquivalence<Surface>::automorphisms() const {
@@ -61,7 +64,10 @@ std::unique_ptr<EquivalenceClassCode> CombinatorialEquivalence<Surface>::code(co
     if (!predicate(surface, start))
       continue;
 
-    walkers.push_back({&surface, start, &predicate});
+    walkers.push_back({&surface, start, 1, &predicate});
+
+    if (!oriented)
+      walkers.push_back({&surface, start, -1, &predicate});
   }
 
   return CombinatorialEquivalenceWalker<Surface>::word(std::move(walkers));

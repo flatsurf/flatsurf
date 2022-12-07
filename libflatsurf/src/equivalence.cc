@@ -31,8 +31,8 @@
 namespace flatsurf {
 
 template <typename Surface>
-Equivalence<Surface> Equivalence<Surface>::combinatorial(std::function<bool(const Surface&, Edge)> predicate) {
-  return Equivalence(PrivateConstructor{}, std::make_shared<CombinatorialEquivalence<Surface>>(predicate));
+Equivalence<Surface> Equivalence<Surface>::combinatorial(bool oriented, std::function<bool(const Surface&, Edge)> predicate) {
+  return Equivalence(PrivateConstructor{}, std::make_shared<CombinatorialEquivalence<Surface>>(oriented, predicate));
 }
 
 template <typename Surface>

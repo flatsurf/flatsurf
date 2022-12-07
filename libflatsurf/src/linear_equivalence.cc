@@ -34,6 +34,12 @@
 namespace flatsurf {
 
 template <typename Surface>
+LinearEquivalence<Surface>::LinearEquivalence(bool oriented, Normalization normalization, Predicate predicate) :
+  oriented(oriented),
+  normalization(normalization),
+  predicate(predicate) {}
+
+template <typename Surface>
 Iterable<Deformation<Surface>> LinearEquivalence<Surface>::automorphisms() const {
   throw std::logic_error("not implemented: LinearEquivalence::automorphisms()");
 }
@@ -62,10 +68,17 @@ std::unique_ptr<EquivalenceClassCode> LinearEquivalence<Surface>::code(const Sur
       continue;
 
 
-    walkers.push_back({&surface, start, &predicate, normalization(surface, start, surface.nextAtVertex(start))});
+    {
+      const auto normalizationMatrix = normalization(surface, start, surface.nextAtVertex(start));
+      LIBFLATSURF_ASSERT(std::get<0>(normalizationMatrix) * std::get<3>(normalizationMatrix) - std::get<1>(normalizationMatrix) * std::get<2>(normalizationMatrix) > 0, "normalization must preserve orientation");
+      walkers.push_back({&surface, start, &predicate, normalizationMatrix});
+    }
 
-    if (!oriented)
-      walkers.push_back({&surface, start, &predicate, normalization(surface, start, surface.previousAtVertex(start))});
+    if (!oriented) {
+      const auto normalizationMatrix = normalization(surface, start, surface.previousAtVertex(start));
+      LIBFLATSURF_ASSERT(std::get<0>(normalizationMatrix) * std::get<3>(normalizationMatrix) - std::get<1>(normalizationMatrix) * std::get<2>(normalizationMatrix) < 0, "normalization must not preserve orientation");
+      walkers.push_back({&surface, start, &predicate, normalizationMatrix});
+    }
   }
 
   return LinearEquivalenceWalker<Surface>::word(std::move(walkers));

@@ -40,7 +40,7 @@ struct LinearEquivalence : ImplementationOf<Equivalence<Surface>> {
 
   using Normalization = std::function<Matrix(const Surface&, HalfEdge, HalfEdge)>;
 
-  LinearEquivalence(bool oriented, Normalization normalization, Predicate predicate): oriented(oriented), normalization(normalization), predicate(predicate) {}
+  LinearEquivalence(bool oriented, Normalization normalization, Predicate predicate);
 
   std::unique_ptr<EquivalenceClassCode> code(const Surface&) const override;
   Iterable<Deformation<Surface>> automorphisms() const override;
@@ -60,4 +60,3 @@ struct LinearEquivalence : ImplementationOf<Equivalence<Surface>> {
 }
 
 #endif
-

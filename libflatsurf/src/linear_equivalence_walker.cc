@@ -27,7 +27,7 @@ namespace flatsurf {
 template <typename Surface>
 LinearEquivalenceWalker<Surface>::LinearEquivalenceWalker(const Surface* surface, HalfEdge start, const Predicate* predicate, const NormalizationMatrix& normalization):
   EquivalenceWalker<Surface, LinearEquivalenceWalker>(surface),
-  combinatorialWalker(surface, start, predicate),
+  combinatorialWalker(surface, start, std::get<0>(normalization) * std::get<3>(normalization) - std::get<1>(normalization) * std::get<2>(normalization) > 0 ? 1 : -1, predicate),
   normalization(normalization)
   {}
 

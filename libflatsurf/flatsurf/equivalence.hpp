@@ -50,7 +50,10 @@ class Equivalence {
   // faces; the default is to pick all edges.
   // Two surfaces are then equivalent if after relabeling they have the same
   // sequence of half edges along their faces.
-  static Equivalence combinatorial(std::function<bool(const Surface&, Edge)> = all);
+  // If oriented is False, then the relabeling may be such that it reverses the
+  // order of half edges around vertices everywhere.
+  // TODO: Rename oriented to orientationPreserving.
+  static Equivalence combinatorial(bool oriented = true, std::function<bool(const Surface&, Edge)> = all);
 
   // Return the equivalence of surfaces modulo labeling on marked edges.
   // The edges singled out by the predicate must be such that the graph they

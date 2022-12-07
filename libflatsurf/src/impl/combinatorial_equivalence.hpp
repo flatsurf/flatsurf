@@ -33,9 +33,10 @@ struct CombinatorialEquivalenceWalker;
 
 template <typename Surface>
 struct CombinatorialEquivalence : ImplementationOf<Equivalence<Surface>> {
+  using T = typename Surface::Coordinate;
   using Predicate = std::function<bool(const Surface&, Edge)>;
 
-  CombinatorialEquivalence(Predicate predicate);
+  CombinatorialEquivalence(bool oriented, Predicate predicate);
 
   std::unique_ptr<EquivalenceClassCode> code(const Surface&) const override;
   Iterable<Deformation<Surface>> automorphisms() const override;
@@ -47,6 +48,7 @@ struct CombinatorialEquivalence : ImplementationOf<Equivalence<Surface>> {
   friend std::ostream& operator<<(std::ostream&, const CombinatorialEquivalence<S>&);
 
  private:
+  bool oriented;
   Predicate predicate;
 };
 

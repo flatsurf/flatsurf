@@ -37,7 +37,7 @@ struct CombinatorialEquivalenceWalker : EquivalenceWalker<Surface, Combinatorial
   using Predicate = typename CombinatorialEquivalence<Surface>::Predicate;
   using Code = CombinatorialEquivalenceClassCode;
 
-  CombinatorialEquivalenceWalker(const Surface* surface, HalfEdge start, const Predicate* predicate);
+  CombinatorialEquivalenceWalker(const Surface* surface, HalfEdge start, int orientation, const Predicate* predicate);
 
   static void append(Word&, const Character&);
 
@@ -58,6 +58,8 @@ struct CombinatorialEquivalenceWalker : EquivalenceWalker<Surface, Combinatorial
   // The set of labeled half edges in the order they were encountered.
   // Essentially, this is the inverse mapping of labels.
   std::vector<HalfEdge> labeled;
+
+  int orientation;
 
   const Predicate* predicate;
 

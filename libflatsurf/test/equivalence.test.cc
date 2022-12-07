@@ -51,7 +51,7 @@ TEMPLATE_TEST_CASE("Combinatorial Equivalence of Surfaces", "[Equivalence][combi
         flipped.flip(halfEdge);
         CAPTURE(flipped);
 
-        const auto equivalence = Equivalence<Surface>::combinatorial([&](const Surface&, const Edge edge) { return edge != halfEdge; });
+        const auto equivalence = Equivalence<Surface>::combinatorial(true, [&](const Surface&, const Edge edge) { return edge != halfEdge; });
 
         // If we ignore the flipped edge, the surfaces must be indistinguishable.
         REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(flipped, equivalence));
@@ -59,12 +59,19 @@ TEMPLATE_TEST_CASE("Combinatorial Equivalence of Surfaces", "[Equivalence][combi
     }
   }
 
-  SECTION("Equivalence modulo Linear Deformation") {
+  SECTION("Equivalence modulo Linear Deformation of Positive Determinant") {
     const auto equivalence = Equivalence<Surface>::combinatorial();
 
     // Linear Deformation do not change the combinatorial structure (if their
     // determinant is positive.)
     REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(surface->applyMatrix(T(2), T(1), T(3), T(4)).codomain(), equivalence));
+  }
+
+  SECTION("Equivalence modulo Linear Deformation of Negative Determinant") {
+    const auto equivalence = Equivalence<Surface>::combinatorial(false);
+
+    // If the determinant is negative, we can ask for equivalence modulo orientation.
+    REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(surface->applyMatrix(T(1), T(3), T(3), T(7)).codomain(), equivalence));
   }
 
   if constexpr (hasFractions<T>) {
@@ -80,7 +87,7 @@ TEMPLATE_TEST_CASE("Combinatorial Equivalence of Surfaces", "[Equivalence][combi
       }
 
       SECTION("Inserting a Point does not Change the Combinatorial Structure away from that Point") {
-        const auto equivalence = Equivalence<Surface>::combinatorial([&](const Surface&, const Edge edge) {
+        const auto equivalence = Equivalence<Surface>::combinatorial(true, [&](const Surface&, const Edge edge) {
           return edge.index() < surface->size();
         });
 
@@ -133,12 +140,18 @@ TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo Labels", "[Equivalence][unlab
     REQUIRE(rotated.isomorphism(*surface, ISOMORPHISM::FACES).has_value() == (EquivalenceClass(*surface, equivalence) == EquivalenceClass(rotated, equivalence)));
 
     // Rotating by π might leave us with the same surface modulo labeling; in particular, if we ignore edges in the interior of Delaunay cells.
+    auto rotatedDelaunay = rotated.clone();
+    rotatedDelaunay.delaunay();
+
+    auto surfaceDelaunay = surface->clone();
+    surfaceDelaunay.delaunay();
+
     const auto delaunayEquivalence = Equivalence<Surface>::unlabeled(Equivalence<Surface>::delaunayCell);
-    REQUIRE(rotated.isomorphism(*surface, ISOMORPHISM::DELAUNAY_CELLS).has_value() == (EquivalenceClass(*surface, delaunayEquivalence) == EquivalenceClass(rotated, delaunayEquivalence)));
+    REQUIRE(rotatedDelaunay.isomorphism(surfaceDelaunay, ISOMORPHISM::DELAUNAY_CELLS).has_value() == (EquivalenceClass(surfaceDelaunay, delaunayEquivalence) == EquivalenceClass(rotatedDelaunay, delaunayEquivalence)));
   }
 }
 
-TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo GL2", "[Equivalence][linear]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo GL2", "[Equivalence][linear]", (mpq_class), (renf_elem_class)) {
   using T = TestType;
   using Surface = FlatTriangulation<T>;
 

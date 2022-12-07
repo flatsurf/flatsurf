@@ -25,9 +25,11 @@
 namespace flatsurf {
 
 template <typename Surface>
-CombinatorialEquivalenceWalker<Surface>::CombinatorialEquivalenceWalker(const Surface* surface, HalfEdge start, const Predicate* predicate):
+CombinatorialEquivalenceWalker<Surface>::CombinatorialEquivalenceWalker(const Surface* surface, HalfEdge start, int orientation, const Predicate* predicate):
   EquivalenceWalker<Surface, CombinatorialEquivalenceWalker>(surface),
+  orientation(orientation),
   predicate(predicate) {
+  LIBFLATSURF_ASSERT(orientation == -1 || orientation == 1, "orientation must be -1 or 1 but was " << orientation);
   labels[-start] = 0;
   labeled.push_back(-start);
 }
@@ -45,7 +47,7 @@ std::optional<typename CombinatorialEquivalenceWalker<Surface>::Character> Combi
 
   if (labels.find(start) != std::end(labels))
     // We have processed this face before. This creates an empty word.
-    return character;
+    return Character{};
 
   // Build the word by walking the face of start.
   HalfEdge pos = start;
@@ -53,10 +55,14 @@ std::optional<typename CombinatorialEquivalenceWalker<Surface>::Character> Combi
   while (true) {
     LIBFLATSURF_ASSERT((*predicate)(*this->surface, pos), "Cannot record an edge that has been filtered out by the equivalence predicate.");
 
-    pos = this->surface->nextInFace(pos);
+    // When the orientation is reversed, the vertex permutation is replaced with its inverse,
+    // so previousAtVertex is replaced with nextAtVertex. The replacement for
+    // nextInFace is more complicated, using the fact that nextInFace(he) =
+    // -nextAtVertex(-nextAtVertex() in a triangulated surface.
+    pos = orientation > 0 ? this->surface->nextInFace(pos) : (-this->surface->previousAtVertex(-this->surface->previousAtVertex(pos)));
 
     while (!(*predicate)(*this->surface, pos))
-      pos = this->surface->previousAtVertex(pos);
+      pos = orientation > 0 ? this->surface->previousAtVertex(pos) : this->surface->nextAtVertex(pos);
 
     if (pos == start)
       break;
@@ -94,12 +100,12 @@ void CombinatorialEquivalenceWalker<Surface>::append(Word& word, const Character
 }
 
 template <typename Surface>
-int CombinatorialEquivalenceWalker<Surface>::label(const Surface& surface, const HalfEdge halfEdge) {
+int CombinatorialEquivalenceWalker<Surface>::label(const Surface&, const HalfEdge halfEdge) {
   if (halfEdge == labeled.at(0))
     return 0;
 
   {
-    const auto& label = labels.find(halfEdge);
+    const auto label = labels.find(halfEdge);
 
     if (label != std::end(labels))
       // We have seen this edge before.
@@ -107,7 +113,7 @@ int CombinatorialEquivalenceWalker<Surface>::label(const Surface& surface, const
   }
 
   {
-    const auto& label = labels.find(-halfEdge);
+    const auto label = labels.find(-halfEdge);
 
     if (label != std::end(labels))
         // We have seen this edge before.
