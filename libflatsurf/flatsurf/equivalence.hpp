@@ -73,8 +73,11 @@ class Equivalence : boost::equality_comparable<Equivalence<Surface>> {
   // such that we can walk the boundaries of the (not necessarily triangular)
   // faces; the default is to pick all edges.
   // Two surfaces are then equivalent if the half edges can be relabeled such
-  // that the selected faces are identical module a fixed rotation.
-  static Equivalence rotational(std::function<bool(const Surface&, Edge)> = nullptr);
+  // that the selected faces are identical module a fixed element of the
+  // special orthogonal group.
+  // If oriented is False, then we also allow transformations of negative
+  // determinant; the default is to only allow rotations.
+  static Equivalence orthogonal(bool oriented = true, std::function<bool(const Surface&, Edge)> = nullptr);
 
   // Return the SL2 equivalence of surfaces on marked edges.
   // The edges singled out by the predicate must be such that the graph they

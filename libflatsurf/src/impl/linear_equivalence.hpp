@@ -21,6 +21,8 @@
 #ifndef LIBFLATSURF_LINEAR_EQUIVALENCE_HPP
 #define LIBFLATSURF_LINEAR_EQUIVALENCE_HPP
 
+#include <variant>
+
 #include "../../flatsurf/equivalence.hpp"
 
 #include "equivalence_class_code.hpp"
@@ -38,7 +40,14 @@ struct LinearEquivalence : ImplementationOf<Equivalence<Surface>> {
   using Predicate = std::function<bool(const Surface&, Edge)>;
   using Matrix = std::tuple<T, T, T, T>;
 
-  using Normalization = std::function<Matrix(const Surface&, HalfEdge, HalfEdge)>;
+  enum class GROUP {
+    TRIVIAL,  // unlabeled()
+    O,  // orthogonal()
+    SL,  // areaPreserving()
+    GL, // linear()
+  };
+
+  using Normalization = std::variant<GROUP, std::function<Matrix(const Surface&, HalfEdge, HalfEdge)>>;
 
   LinearEquivalence(bool oriented, Normalization normalization, Predicate predicate);
 
@@ -47,6 +56,11 @@ struct LinearEquivalence : ImplementationOf<Equivalence<Surface>> {
   void normalize(Surface&) const override;
   bool equal(const ImplementationOf<Equivalence<Surface>>&) const override;
   std::string toString() const override;
+
+  Matrix normalize(const Surface&, HalfEdge, HalfEdge) const;
+  static Matrix rotate(const Surface&, HalfEdge, HalfEdge);  // implements orthogonal()
+  static Matrix orthogonalize(const Surface&, HalfEdge, HalfEdge);  // implements areaPreserving()
+  static Matrix orthonormalize(const Surface&, HalfEdge, HalfEdge);  // implements linear()
 
   template <typename S>
   friend std::ostream& operator<<(std::ostream&, const LinearEquivalence<S>&);

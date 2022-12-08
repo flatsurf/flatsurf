@@ -19,8 +19,6 @@
 
 #include <stdexcept>
 
-#include "impl/combinatorial_equivalence.hpp"
-
 #include "../flatsurf/deformation.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/iterable.hpp"
@@ -61,7 +59,10 @@ bool CombinatorialEquivalence<Surface>::equal(const ImplementationOf<Equivalence
 
 template <typename Surface>
 std::string CombinatorialEquivalence<Surface>::toString() const {
-  throw std::logic_error("not implemented: CombinatorialEquivalence::toString()");
+  if (predicate != nullptr)
+    return oriented ? "Orientation Preserving Combinatorial Equivalence" : "Combinatorial Equivalence";
+
+  return oriented ? "Orientation Preserving Combinatorial Equivalence" : "Combinatorial Equivalence";
 }
 
 template <typename Surface>

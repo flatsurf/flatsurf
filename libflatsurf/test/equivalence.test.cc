@@ -38,6 +38,8 @@ TEMPLATE_TEST_CASE("Combinatorial Equivalence of Surfaces", "[Equivalence][combi
   
   SECTION("Combinatorial Equivalence is Equal to Itself") {
     REQUIRE(Equivalence<Surface>::combinatorial() == Equivalence<Surface>::combinatorial());
+    REQUIRE(Equivalence<Surface>::combinatorial(false) == Equivalence<Surface>::combinatorial(false));
+    REQUIRE(Equivalence<Surface>::combinatorial() != Equivalence<Surface>::combinatorial(false));
   }
 
   SECTION("A Surface is Combinatorially Equivalent to Itself") {
@@ -109,6 +111,10 @@ TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo Labels", "[Equivalence][unlab
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
 
+  SECTION("Unlabeled Equivalence is Equal to Itself") {
+    REQUIRE(Equivalence<Surface>::unlabeled() == Equivalence<Surface>::unlabeled());
+  }
+
   SECTION("A Surface is Equivalent to Itself") {
     const auto equivalence = Equivalence<Surface>::unlabeled();
 
@@ -164,6 +170,12 @@ TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo GL2", "[Equivalence][linear]"
 
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
+
+  SECTION("Linear Equivalence is Equal to Itself") {
+    REQUIRE(Equivalence<Surface>::linear() == Equivalence<Surface>::linear());
+    REQUIRE(Equivalence<Surface>::linear(false) == Equivalence<Surface>::linear(false));
+    REQUIRE(Equivalence<Surface>::linear() != Equivalence<Surface>::linear(false));
+  }
 
   SECTION("A Surface is Equivalent to Itself") {
     const auto equivalence = Equivalence<Surface>::linear();
