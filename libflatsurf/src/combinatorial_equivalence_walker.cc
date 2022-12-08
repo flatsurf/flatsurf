@@ -53,7 +53,7 @@ std::optional<typename CombinatorialEquivalenceWalker<Surface>::Character> Combi
   HalfEdge pos = start;
 
   while (true) {
-    LIBFLATSURF_ASSERT((*predicate)(*this->surface, pos), "Cannot record an edge that has been filtered out by the equivalence predicate.");
+    LIBFLATSURF_ASSERT(*predicate == nullptr || (*predicate)(*this->surface, pos), "Cannot record an edge that has been filtered out by the equivalence predicate.");
 
     // When the orientation is reversed, the vertex permutation is replaced with its inverse,
     // so previousAtVertex is replaced with nextAtVertex. The replacement for
@@ -61,7 +61,7 @@ std::optional<typename CombinatorialEquivalenceWalker<Surface>::Character> Combi
     // -nextAtVertex(-nextAtVertex() in a triangulated surface.
     pos = orientation > 0 ? this->surface->nextInFace(pos) : (-this->surface->previousAtVertex(-this->surface->previousAtVertex(pos)));
 
-    while (!(*predicate)(*this->surface, pos))
+    while (*predicate != nullptr && !(*predicate)(*this->surface, pos))
       pos = orientation > 0 ? this->surface->previousAtVertex(pos) : this->surface->nextAtVertex(pos);
 
     if (pos == start)

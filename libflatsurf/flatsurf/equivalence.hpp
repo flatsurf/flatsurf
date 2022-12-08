@@ -53,8 +53,9 @@ class Equivalence : boost::equality_comparable<Equivalence<Surface>> {
   // Two surfaces are then equivalent if after relabeling they have the same
   // sequence of half edges along their faces.
   // If oriented is False, then the relabeling may be such that it reverses the
-  // order of half edges around vertices everywhere.
-  static Equivalence combinatorial(bool oriented = true, std::function<bool(const Surface&, Edge)> = all);
+  // order of half edges around vertices everywhere. The default is to only
+  // consider relabelings that preserve orientation.
+  static Equivalence combinatorial(bool oriented = true, std::function<bool(const Surface&, Edge)> = nullptr);
 
   // Return the equivalence of surfaces modulo labeling on marked edges.
   // The edges singled out by the predicate must be such that the graph they
@@ -64,7 +65,7 @@ class Equivalence : boost::equality_comparable<Equivalence<Surface>> {
   // Two surfaces are then equivalent if half edges can be relabeled such that
   // the selected faces are identical, i.e., they are combinatorially
   // equivalent and also assign the same vector to each half edge label.
-  static Equivalence unlabeled(std::function<bool(const Surface&, Edge)> = all);
+  static Equivalence unlabeled(std::function<bool(const Surface&, Edge)> = nullptr);
 
   // Return the rotational equivalence of surfaces on marked edges.
   // The edges singled out by the predicate must be such that the graph they
@@ -73,7 +74,7 @@ class Equivalence : boost::equality_comparable<Equivalence<Surface>> {
   // faces; the default is to pick all edges.
   // Two surfaces are then equivalent if the half edges can be relabeled such
   // that the selected faces are identical module a fixed rotation.
-  static Equivalence rotational(std::function<bool(const Surface&, Edge)> = all);
+  static Equivalence rotational(std::function<bool(const Surface&, Edge)> = nullptr);
 
   // Return the SL2 equivalence of surfaces on marked edges.
   // The edges singled out by the predicate must be such that the graph they
@@ -83,7 +84,7 @@ class Equivalence : boost::equality_comparable<Equivalence<Surface>> {
   // Two surfaces are then equivalent if the half edges can be relabeled such
   // that the selected faces are identical module a fixed transformation in
   // SL2(R) or SL2±(R) if oriented is not set.
-  static Equivalence areaPreserving(bool oriented = true, std::function<bool(const Surface&, Edge)> = all);
+  static Equivalence areaPreserving(bool oriented = true, std::function<bool(const Surface&, Edge)> = nullptr);
 
   // Return the GL2 equivalence of surfaces on marked edges.
   // The edges singled out by the predicate must be such that the graph they
@@ -95,25 +96,16 @@ class Equivalence : boost::equality_comparable<Equivalence<Surface>> {
   // Candidates for that transformation are produced by the provided
   // normalization. Namely, given two half edges that are counterclockwise
   // consecutive at a vertex, the normalization produces a linear
-  // transformation that brings these half edges into a normal form. If
-  // oriented is not set, then transformation with negative determinant are
+  // transformation that brings these half edges into a normal form. The
+  // default is to make the edges orthonormal.
+  // If oriented is False, then transformation with negative determinant are
   // also considered, i.e., the half edges presented to the normalization are
   // also clockwise consecutive at a vertex.
-  static Equivalence linear(bool oriented = true, std::function<Matrix(const Surface&, HalfEdge, HalfEdge)> normalization = orthonormalization, std::function<bool(const Surface&, Edge)> = all);
-
-  // Return a matrix [[a, b], [c, d]] that turns the half edges into (1, 0) and (0, 1), respectively.
-  static Matrix orthonormalization(const Surface&, HalfEdge, HalfEdge);
-
-  // Return true for any input.
-  static bool all(const Surface&, Edge);
-
-  // Return true iff the edge forms the boundary of a Delaunay cell.
-  static bool delaunayCell(const Surface&, Edge);
+  static Equivalence linear(bool oriented = true, std::function<Matrix(const Surface&, HalfEdge, HalfEdge)> normalization = nullptr, std::function<bool(const Surface&, Edge)> = nullptr);
 
   // Return whether these notions of equivalence are identical.
   // Note that equivalences that were created with a custom predicate or other
-  // callable will compare the address of that callable since they can
-  // naturally not compare the actual notion of that callable.
+  // callable will be compared by their memory address.
   bool operator==(const Equivalence& other) const;
 
   template <typename S>

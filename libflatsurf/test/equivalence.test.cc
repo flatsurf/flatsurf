@@ -17,6 +17,7 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include "../flatsurf/delaunay.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/equivalence.hpp"
 #include "../flatsurf/equivalence_class.hpp"
@@ -150,7 +151,9 @@ TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo Labels", "[Equivalence][unlab
     auto surfaceDelaunay = surface->clone();
     surfaceDelaunay.delaunay();
 
-    const auto delaunayEquivalence = Equivalence<Surface>::unlabeled(Equivalence<Surface>::delaunayCell);
+    const auto delaunayEquivalence = Equivalence<Surface>::unlabeled([](const Surface& surface, Edge e) -> bool {
+      return surface.delaunay(e) != DELAUNAY::AMBIGUOUS;
+    });
     REQUIRE(rotatedDelaunay.isomorphism(surfaceDelaunay, ISOMORPHISM::DELAUNAY_CELLS).has_value() == (EquivalenceClass(surfaceDelaunay, delaunayEquivalence) == EquivalenceClass(rotatedDelaunay, delaunayEquivalence)));
   }
 }

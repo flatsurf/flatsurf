@@ -53,7 +53,10 @@ bool CombinatorialEquivalence<Surface>::equal(const ImplementationOf<Equivalence
   if (other == nullptr)
     return false;
 
-  return oriented == other->oriented && &predicate == &other->predicate;
+  if (this == other)
+    return true;
+
+  return oriented == other->oriented && (predicate == nullptr) == (other->predicate == nullptr);
 }
 
 template <typename Surface>
@@ -66,7 +69,7 @@ std::unique_ptr<EquivalenceClassCode> CombinatorialEquivalence<Surface>::code(co
   std::vector<CombinatorialEquivalenceWalker<Surface>> walkers;
 
   for (const auto start : surface.halfEdges()) {
-    if (!predicate(surface, start))
+    if (predicate != nullptr && !predicate(surface, start))
       continue;
 
     walkers.push_back({&surface, start, 1, &predicate});

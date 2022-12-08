@@ -20,6 +20,7 @@
 #include <stdexcept>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
+#include <exact-real/forward.hpp>
 
 #include "impl/linear_equivalence.hpp"
 #include "impl/linear_equivalence_walker.hpp"
@@ -56,7 +57,10 @@ bool LinearEquivalence<Surface>::equal(const ImplementationOf<Equivalence<Surfac
   if (other == nullptr)
     return false;
 
-  return oriented == other->oriented && &normalization == &other->normalization && &predicate == &other->predicate;
+  if (this == other)
+    return true;
+
+  return oriented == other->oriented && (normalization == nullptr) == (other->normalization == nullptr) && (predicate == nullptr) == (other->predicate == nullptr);
 }
 
 template <typename Surface>
@@ -68,10 +72,38 @@ template <typename Surface>
 std::unique_ptr<EquivalenceClassCode> LinearEquivalence<Surface>::code(const Surface& surface) const {
   std::vector<LinearEquivalenceWalker<Surface>> walkers;
 
-  for (const auto start : surface.halfEdges()) {
-    if (!predicate(surface, start))
-      continue;
+  const auto orthonormalization = [](const Surface& surface, HalfEdge a, HalfEdge b) -> Matrix {
+    const auto v = surface.fromHalfEdge(a);
+    const auto w = surface.fromHalfEdge(b);
 
+    const T det = v.x() * w.y() - v.y() * w.x();
+
+    LIBFLATSURF_ASSERT(det, "orthonormalization was presented with collinear edges " << a << " and " << b);
+
+    const auto div = [](const auto& numerator, const auto& denominator) {
+      if constexpr (std::is_same_v<T, exactreal::Element<exactreal::IntegerRing>> || std::is_same_v<T, exactreal::Element<exactreal::RationalField>> || std::is_same_v<T, exactreal::Element<exactreal::NumberField>>) {
+        const auto maybe = numerator.truediv(denominator);
+        if (!maybe)
+          throw std::logic_error("orthonormalization is not possible in this ring");
+
+        return *maybe;
+      } else {
+        const T quot = numerator / denominator;
+        if (quot * denominator != numerator)
+          throw std::logic_error("orthonormalization is not possible in this ring");
+
+        return quot;
+      }
+    };
+
+    return {div(w.y(), det), div(-w.x(), det), div(-v.y(), det), div(v.x(), det)};
+  };
+
+  Normalization normalization = this->normalization == nullptr ? orthonormalization : this->normalization;
+
+  for (const auto start : surface.halfEdges()) {
+    if (predicate != nullptr && !predicate(surface, start))
+      continue;
 
     {
       const auto normalizationMatrix = normalization(surface, start, surface.nextAtVertex(start));
