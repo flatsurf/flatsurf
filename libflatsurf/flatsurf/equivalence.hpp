@@ -52,7 +52,6 @@ class Equivalence {
   // sequence of half edges along their faces.
   // If oriented is False, then the relabeling may be such that it reverses the
   // order of half edges around vertices everywhere.
-  // TODO: Rename oriented to orientationPreserving.
   static Equivalence combinatorial(bool oriented = true, std::function<bool(const Surface&, Edge)> = all);
 
   // Return the equivalence of surfaces modulo labeling on marked edges.
