@@ -34,6 +34,10 @@ TEMPLATE_TEST_CASE("Combinatorial Equivalence of Surfaces", "[Equivalence][combi
 
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
+  
+  SECTION("Combinatorial Equivalence is Equal to Itself") {
+    REQUIRE(Equivalence<Surface>::combinatorial() == Equivalence<Surface>::combinatorial());
+  }
 
   SECTION("A Surface is Combinatorially Equivalent to Itself") {
     const auto equivalence = Equivalence<Surface>::combinatorial();

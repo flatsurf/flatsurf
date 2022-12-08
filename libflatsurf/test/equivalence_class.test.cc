@@ -27,31 +27,42 @@ namespace flatsurf::test {
 
 TEMPLATE_TEST_CASE("Equality of Equivalence Classes is Consistent", "[EquivalenceClass][operator==]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
+  using Surface = FlatTriangulation<T>;
 
   const auto surface = GENERATE_SURFACES(T);
   const auto equivalence = GENERATE_COPY(equivalences(surface));
 
-  const auto equivalence_class = EquivalenceClass(*surface, equivalence);
+  const auto equivalenceClass = EquivalenceClass(*surface, equivalence);
 
   SECTION("Equality is Reflexive") {
-    REQUIRE(equivalence_class == equivalence_class);
+    REQUIRE(equivalenceClass == equivalenceClass);
   }
 
   SECTION("Equality is Symmetric") {
     const auto other = GENERATE_SURFACES(T);
-    const auto other_class = EquivalenceClass(*other, equivalence);
+    const auto otherClass = EquivalenceClass(*other, equivalence);
 
-    REQUIRE((equivalence_class == other_class) == (other_class == equivalence_class));
+    REQUIRE((equivalenceClass == otherClass) == (otherClass == equivalenceClass));
 
-    if (equivalence_class == other_class) {
+    if (equivalenceClass == otherClass) {
       SECTION("Equality is Transitive") {
         const auto third = GENERATE_SURFACES(T);
-        const auto third_class = EquivalenceClass(*third, equivalence);
+        const auto thirdClass = EquivalenceClass(*third, equivalence);
 
-        if (other_class == third_class)
-          REQUIRE(equivalence_class == third_class);
+        if (otherClass == thirdClass)
+          REQUIRE(equivalenceClass == thirdClass);
       }
     }
+  }
+
+  SECTION("Equality Depends on the Notion of Equivalence") {
+    // This custom equivalence, though it has the same implementation as
+    // Equivalence::combinatorial(), is different from any other equivalence so
+    // it's classes will be distinct from previously created classes.
+    const auto anotherEquivalence = Equivalence<Surface>::combinatorial(true, [](const Surface&, Edge) { return true; });
+
+    REQUIRE(EquivalenceClass(*surface, anotherEquivalence) != equivalenceClass);
+    REQUIRE(EquivalenceClass(*surface, anotherEquivalence) == EquivalenceClass(*surface, anotherEquivalence));
   }
 }
 

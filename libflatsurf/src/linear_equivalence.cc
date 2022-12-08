@@ -50,8 +50,13 @@ void LinearEquivalence<Surface>::normalize(Surface&) const {
 }
 
 template <typename Surface>
-bool LinearEquivalence<Surface>::equal(const ImplementationOf<Equivalence<Surface>>&) const {
-  throw std::logic_error("not implemented: LinearEquivalence::equal()");
+bool LinearEquivalence<Surface>::equal(const ImplementationOf<Equivalence<Surface>>& o) const {
+  const auto* other = dynamic_cast<const LinearEquivalence*>(&o);
+
+  if (other == nullptr)
+    return false;
+
+  return oriented == other->oriented && &normalization == &other->normalization && &predicate == &other->predicate;
 }
 
 template <typename Surface>

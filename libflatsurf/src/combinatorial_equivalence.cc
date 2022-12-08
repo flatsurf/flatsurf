@@ -47,8 +47,13 @@ void CombinatorialEquivalence<Surface>::normalize(Surface&) const {
 }
 
 template <typename Surface>
-bool CombinatorialEquivalence<Surface>::equal(const ImplementationOf<Equivalence<Surface>>&) const {
-  throw std::logic_error("not implemented: CombinatorialEquivalence::equal()");
+bool CombinatorialEquivalence<Surface>::equal(const ImplementationOf<Equivalence<Surface>>& o) const {
+  const auto* other = dynamic_cast<const CombinatorialEquivalence*>(&o);
+
+  if (other == nullptr)
+    return false;
+
+  return oriented == other->oriented && &predicate == &other->predicate;
 }
 
 template <typename Surface>

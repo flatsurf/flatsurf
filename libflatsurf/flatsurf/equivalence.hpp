@@ -19,6 +19,8 @@
 #ifndef LIBFLATSURF_EQUIVALENCE_HPP
 #define LIBFLATSURF_EQUIVALENCE_HPP
 
+#include <boost/operators.hpp>
+
 #include <type_traits>
 
 #include <tuple>
@@ -32,7 +34,7 @@ namespace flatsurf {
 
 // A notion of equality of surfaces.
 template <typename Surface>
-class Equivalence {
+class Equivalence : boost::equality_comparable<Equivalence<Surface>> {
   static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type parameter must not have modifiers such as const");
   using T = typename Surface::Coordinate;
   using Matrix = std::tuple<T, T, T, T>;
@@ -107,6 +109,12 @@ class Equivalence {
 
   // Return true iff the edge forms the boundary of a Delaunay cell.
   static bool delaunayCell(const Surface&, Edge);
+
+  // Return whether these notions of equivalence are identical.
+  // Note that equivalences that were created with a custom predicate or other
+  // callable will compare the address of that callable since they can
+  // naturally not compare the actual notion of that callable.
+  bool operator==(const Equivalence& other) const;
 
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const Equivalence<S> &);

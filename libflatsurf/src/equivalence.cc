@@ -98,6 +98,11 @@ typename Equivalence<Surface>::Matrix Equivalence<Surface>::orthonormalization(c
 }
 
 template <typename Surface>
+bool Equivalence<Surface>::operator==(const Equivalence<Surface>& other) const {
+  return self->equal(*other.self);
+}
+
+template <typename Surface>
 ImplementationOf<Equivalence<Surface>>::~ImplementationOf() {}
 
 template <typename Surface>
