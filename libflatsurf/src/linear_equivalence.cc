@@ -29,10 +29,32 @@
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/iterable.hpp"
 #include "../flatsurf/fmt.hpp"
+#include "../flatsurf/ccw.hpp"
 #include "util/assert.ipp"
 #include "util/hash.ipp"
 
 namespace flatsurf {
+
+namespace {
+
+template <typename T>
+T div(const T& numerator, const T& denominator) {
+  if constexpr (std::is_same_v<T, exactreal::Element<exactreal::IntegerRing>> || std::is_same_v<T, exactreal::Element<exactreal::RationalField>> || std::is_same_v<T, exactreal::Element<exactreal::NumberField>>) {
+    const auto maybe = numerator.truediv(denominator);
+    if (!maybe)
+      throw std::logic_error("normalization is not possible in this ring");
+
+    return *maybe;
+  } else {
+    const T quot = numerator / denominator;
+    if (quot * denominator != numerator)
+      throw std::logic_error("normalization is not possible in this ring");
+
+    return quot;
+  }
+}
+
+}
 
 template <typename Surface>
 LinearEquivalence<Surface>::LinearEquivalence(bool oriented, Normalization normalization, Predicate predicate) :
@@ -126,29 +148,56 @@ std::unique_ptr<EquivalenceClassCode> LinearEquivalence<Surface>::code(const Sur
 }
 
 template <typename Surface>
-typename LinearEquivalence<Surface>::Matrix LinearEquivalence<Surface>::normalize(const Surface& surface, HalfEdge a, HalfEdge b) const {
+typename LinearEquivalence<Surface>::Matrix LinearEquivalence<Surface>::normalize(const Surface& surface, HalfEdge e, HalfEdge f) const {
   if (std::holds_alternative<GROUP>(this->normalization)) {
     switch(std::get<GROUP>(this->normalization)) {
       case GROUP::TRIVIAL:
         return {T(1), T(), T(), T(1)};
       case GROUP::GL:
-        return orthonormalize(surface, a, b);
+        return orthonormalize(surface, e, f);
+      case GROUP::SL:
+        return orthogonalize(surface, e, f);
+      case GROUP::O:
+        return rotate(surface, e, f);
       default:
         throw std::logic_error("not implemented: normalization with this linear subgroup not implemented");
     }
   }
 
-  return std::get<std::function<Matrix(const Surface&, HalfEdge, HalfEdge)>>(this->normalization)(surface, a, b);
+  return std::get<std::function<Matrix(const Surface&, HalfEdge, HalfEdge)>>(this->normalization)(surface, e, f);
 }
 
 template <typename Surface>
-typename LinearEquivalence<Surface>::Matrix LinearEquivalence<Surface>::rotate(const Surface& surface, HalfEdge a, HalfEdge b) {
-  throw std::logic_error("not implemented: rotate()");
+typename LinearEquivalence<Surface>::Matrix LinearEquivalence<Surface>::rotate(const Surface& surface, HalfEdge e, HalfEdge f) {
+  const auto v = surface.fromHalfEdge(e);
+  const auto w = surface.fromHalfEdge(f);
+
+  // We would like to determine the rotation matrix that maps (x, y) to (1, 0).
+  // However, to compute this matrix, we'd have to take square roots which
+  // might not exist in the base ring.
+
+  // Instead, we use the matrix [[x, y], [-y, x]] that takes (x, y) to (x^2 + y^2, 0).
+  // That matrix is a scalar multiple of the rotation matrix.
+
+  if (v.ccw(surface.fromHalfEdge(f)) == CCW::COUNTERCLOCKWISE)
+    return { v.x(), v.y(), -v.y(), v.x() };
+  else
+    return { v.x(), v.y(), v.y(), -v.x() };
 }
 
 template <typename Surface>
-typename LinearEquivalence<Surface>::Matrix LinearEquivalence<Surface>::orthogonalize(const Surface& surface, HalfEdge a, HalfEdge b) {
-  throw std::logic_error("not implemented: orthogonalize()");
+typename LinearEquivalence<Surface>::Matrix LinearEquivalence<Surface>::orthogonalize(const Surface& surface, HalfEdge e, HalfEdge f) {
+  // We determine the matrix in SL2± that maps e to (1, 0) and f to some (0, y),
+  // to do this we determine the matrix that maps to (1, 0) and (0, 1) and the
+  // scale the second row.
+  const auto [a, b, c, d] = orthonormalize(surface, e,  f);
+
+  T det = a*d - b*c;
+
+  if (det < 0)
+    det = -det;
+
+  return { a, b, div(c, det), div(d, det) };
 }
 
 template <typename Surface>
@@ -160,23 +209,7 @@ typename LinearEquivalence<Surface>::Matrix LinearEquivalence<Surface>::orthonor
 
   LIBFLATSURF_ASSERT(det, "normalization was presented with collinear edges " << a << " and " << b);
 
-  const auto div = [](const auto& numerator, const auto& denominator) {
-    if constexpr (std::is_same_v<T, exactreal::Element<exactreal::IntegerRing>> || std::is_same_v<T, exactreal::Element<exactreal::RationalField>> || std::is_same_v<T, exactreal::Element<exactreal::NumberField>>) {
-      const auto maybe = numerator.truediv(denominator);
-      if (!maybe)
-        throw std::logic_error("normalization is not possible in this ring");
-
-      return *maybe;
-    } else {
-      const T quot = numerator / denominator;
-      if (quot * denominator != numerator)
-        throw std::logic_error("normalization is not possible in this ring");
-
-      return quot;
-    }
-  };
-
-  return {div(w.y(), det), div(-w.x(), det), div(-v.y(), det), div(v.x(), det)};
+  return {div<T>(w.y(), det), div<T>(-w.x(), det), div<T>(-v.y(), det), div<T>(v.x(), det)};
 }
 
 template <typename Surface>
