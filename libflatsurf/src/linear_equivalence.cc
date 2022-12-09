@@ -132,15 +132,36 @@ std::unique_ptr<EquivalenceClassCode> LinearEquivalence<Surface>::code(const Sur
       continue;
 
     {
-      const auto normalizationMatrix = normalize(surface, start, surface.nextAtVertex(start));
-      LIBFLATSURF_ASSERT(std::get<0>(normalizationMatrix) * std::get<3>(normalizationMatrix) - std::get<1>(normalizationMatrix) * std::get<2>(normalizationMatrix) > 0, "normalization must preserve orientation");
-      walkers.push_back({&surface, start, &predicate, normalizationMatrix});
+      HalfEdge next = start;
+      while (true) {
+        next = surface.nextAtVertex(next);
+
+        LIBFLATSURF_ASSERT_ARGUMENT(next != start, "edge graph singled out by predicate must not contain cut edges such as leafs");
+
+        if (predicate == nullptr || predicate(surface, next)) {
+          const auto normalizationMatrix = normalize(surface, start, next);
+          LIBFLATSURF_ASSERT(std::get<0>(normalizationMatrix) * std::get<3>(normalizationMatrix) - std::get<1>(normalizationMatrix) * std::get<2>(normalizationMatrix) > 0, "normalization must preserve orientation");
+          walkers.push_back({&surface, start, &predicate, normalizationMatrix});
+          break;
+        }
+      }
     }
 
     if (!oriented) {
-      const auto normalizationMatrix = normalize(surface, start, surface.previousAtVertex(start));
-      LIBFLATSURF_ASSERT(std::get<0>(normalizationMatrix) * std::get<3>(normalizationMatrix) - std::get<1>(normalizationMatrix) * std::get<2>(normalizationMatrix) < 0, "normalization must not preserve orientation");
-      walkers.push_back({&surface, start, &predicate, normalizationMatrix});
+      HalfEdge next = start;
+
+      while (true) {
+        next = surface.previousAtVertex(next);
+
+        LIBFLATSURF_ASSERT_ARGUMENT(next != start, "edge graph singled out by predicate must not contain cut edges such as leafs");
+
+        if (predicate == nullptr || predicate(surface, next)) {
+          const auto normalizationMatrix = normalize(surface, start, surface.previousAtVertex(start));
+          LIBFLATSURF_ASSERT(std::get<0>(normalizationMatrix) * std::get<3>(normalizationMatrix) - std::get<1>(normalizationMatrix) * std::get<2>(normalizationMatrix) < 0, "normalization must not preserve orientation");
+          walkers.push_back({&surface, start, &predicate, normalizationMatrix});
+          break;
+        }
+      }
     }
   }
 
