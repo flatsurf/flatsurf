@@ -21,6 +21,8 @@
 
 #include <functional>
 
+#include <boost/operators.hpp>
+
 #include "../../flatsurf/forward.hpp"
 
 
@@ -31,7 +33,7 @@ namespace flatsurf {
 // Instances of this are created by ImplementationOf<Equivalence>::code() and
 // consumed by EquivalenceClass. It is otherwise an implementation detail and
 // not exposed to the user.
-struct EquivalenceClassCode {
+struct EquivalenceClassCode : boost::equality_comparable<EquivalenceClassCode> {
   virtual ~EquivalenceClassCode();
 
   // Return a hash value for this code.
@@ -45,9 +47,6 @@ struct EquivalenceClassCode {
 
   friend
   bool operator==(const EquivalenceClassCode& lhs, const EquivalenceClassCode& rhs);
-
-  friend
-  bool operator!=(const EquivalenceClassCode& lhs, const EquivalenceClassCode& rhs);
 
   friend
   std::ostream& operator<<(std::ostream&, const EquivalenceClassCode& code);

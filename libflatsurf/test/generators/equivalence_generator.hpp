@@ -37,24 +37,38 @@ class EquivalenceGenerator : public Catch::Generators::IGenerator<Equivalence<Fl
   std::shared_ptr<const FlatTriangulation<T>> surface;
 
   enum class EQUIVALENCE {
-    COMBINATORIAL = 0,
-    // TODO: Add more.
-    LAST = 0,
+    COMBINATORIAL_PRESERVE_ORIENTATION = 0,
+    COMBINATORIAL_WITHOUT_ORIENTATION = 1,
+    UNLABELED = 2,
+    ORTHOGONAL = 3,
+    AREA_PRESERVING = 4,
+    LINEAR = 5,
+    LAST = 5,
   } state;
 
   Equivalence<FlatTriangulation<T>> current;
 
   Equivalence<FlatTriangulation<T>> make(EQUIVALENCE kind) {
     switch (kind) {
-      case EQUIVALENCE::COMBINATORIAL:
-        return Equivalence<FlatTriangulation<T>>::combinatorial();
+      case EQUIVALENCE::COMBINATORIAL_PRESERVE_ORIENTATION:
+        return Equivalence<FlatTriangulation<T>>::combinatorial(true);
+      case EQUIVALENCE::COMBINATORIAL_WITHOUT_ORIENTATION:
+        return Equivalence<FlatTriangulation<T>>::combinatorial(false);
+      case EQUIVALENCE::UNLABELED:
+        return Equivalence<FlatTriangulation<T>>::unlabeled();
+      case EQUIVALENCE::ORTHOGONAL:
+        return Equivalence<FlatTriangulation<T>>::orthogonal();
+      case EQUIVALENCE::AREA_PRESERVING:
+        return Equivalence<FlatTriangulation<T>>::areaPreserving();
+      case EQUIVALENCE::LINEAR:
+        return Equivalence<FlatTriangulation<T>>::linear();
       default:
         throw std::logic_error("not implemented: EquivalenceGenerator::make()");
     }
   }
 
  public:
-  EquivalenceGenerator(std::shared_ptr<const FlatTriangulation<T>> surface) : surface(surface), state(EQUIVALENCE::COMBINATORIAL), current(make(state)) {}
+  EquivalenceGenerator(std::shared_ptr<const FlatTriangulation<T>> surface) : surface(surface), state(EQUIVALENCE::COMBINATORIAL_PRESERVE_ORIENTATION), current(make(state)) {}
 
   const Equivalence<FlatTriangulation<T>>& get() const override {
     return current;
@@ -65,6 +79,11 @@ class EquivalenceGenerator : public Catch::Generators::IGenerator<Equivalence<Fl
       return false;
 
     state = static_cast<EQUIVALENCE>(static_cast<int>(state) + 1);
+
+    if (!isField<T>) {
+      if (state == EQUIVALENCE::ORTHOGONAL || state == EQUIVALENCE::AREA_PRESERVING || state == EQUIVALENCE::LINEAR)
+        return next();
+    }
 
     current = make(state);
 

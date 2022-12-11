@@ -30,39 +30,53 @@ TEMPLATE_TEST_CASE("Equality of Equivalence Classes is Consistent", "[Equivalenc
   using Surface = FlatTriangulation<T>;
 
   const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
   const auto equivalence = GENERATE_COPY(equivalences(surface));
+  CAPTURE(equivalence);
 
   const auto equivalenceClass = EquivalenceClass(*surface, equivalence);
+  CAPTURE(equivalenceClass);
 
   SECTION("Equality is Reflexive") {
     REQUIRE(equivalenceClass == equivalenceClass);
   }
 
-  SECTION("Equality is Symmetric") {
-    const auto other = GENERATE_SURFACES(T);
-    const auto otherClass = EquivalenceClass(*other, equivalence);
+  // We cannot compare equivalence classes of surfaces defined over different
+  // (exact-real) number fields. This is a limitation in exact-real and e-antic, see
+  // https://github.com/flatsurf/exact-real/issues/166 and
+  // https://github.com/flatsurf/e-antic/issues/254
+  if constexpr (!hasNumberFieldElements<T>) {
+    SECTION("Equality is Symmetric") {
+      const auto other = GENERATE_SURFACES(T);
+      const auto otherClass = EquivalenceClass(*other, equivalence);
+      CAPTURE(other);
+      CAPTURE(otherClass);
 
-    REQUIRE((equivalenceClass == otherClass) == (otherClass == equivalenceClass));
+      REQUIRE((equivalenceClass == otherClass) == (otherClass == equivalenceClass));
 
-    if (equivalenceClass == otherClass) {
-      SECTION("Equality is Transitive") {
-        const auto third = GENERATE_SURFACES(T);
-        const auto thirdClass = EquivalenceClass(*third, equivalence);
+      if (equivalenceClass == otherClass) {
+        SECTION("Equality is Transitive") {
+          const auto third = GENERATE_SURFACES(T);
+          const auto thirdClass = EquivalenceClass(*third, equivalence);
+          CAPTURE(third);
+          CAPTURE(thirdClass);
 
-        if (otherClass == thirdClass)
-          REQUIRE(equivalenceClass == thirdClass);
+          if (otherClass == thirdClass)
+            REQUIRE(equivalenceClass == thirdClass);
+        }
       }
     }
-  }
 
-  SECTION("Equality Depends on the Notion of Equivalence") {
-    // This custom equivalence, though it has the same implementation as
-    // Equivalence::combinatorial(), is different from any other equivalence so
-    // it's classes will be distinct from previously created classes.
-    const auto anotherEquivalence = Equivalence<Surface>::combinatorial(true, [](const Surface&, Edge) { return true; });
+    SECTION("Equality Depends on the Notion of Equivalence") {
+      // This custom equivalence, though it has the same implementation as
+      // Equivalence::combinatorial(), is different from any other equivalence so
+      // it's classes will be distinct from previously created classes.
+      const auto anotherEquivalence = Equivalence<Surface>::combinatorial(true, [](const Surface&, Edge) { return true; });
 
-    REQUIRE(EquivalenceClass(*surface, anotherEquivalence) != equivalenceClass);
-    REQUIRE(EquivalenceClass(*surface, anotherEquivalence) == EquivalenceClass(*surface, anotherEquivalence));
+      REQUIRE(EquivalenceClass(*surface, anotherEquivalence) != equivalenceClass);
+      REQUIRE(EquivalenceClass(*surface, anotherEquivalence) == EquivalenceClass(*surface, anotherEquivalence));
+    }
   }
 }
 

@@ -29,10 +29,6 @@ bool operator==(const EquivalenceClassCode& lhs, const EquivalenceClassCode& rhs
   return lhs.equal(rhs);
 }
 
-bool operator!=(const EquivalenceClassCode& lhs, const EquivalenceClassCode& rhs) {
-  return !(lhs == rhs);
-}
-
 std::ostream& operator<<(std::ostream& os, const EquivalenceClassCode& code) {
   return os << code.toString();
 }
