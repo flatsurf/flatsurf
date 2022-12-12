@@ -27,9 +27,9 @@
 
 #include "impl/equivalence_class_code.hpp"
 #include "../flatsurf/edge.hpp"
-#include "../flatsurf/iterable.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/ccw.hpp"
+#include "../flatsurf/deformation.hpp"
 #include "util/assert.ipp"
 #include "util/hash.ipp"
 
@@ -63,12 +63,12 @@ LinearEquivalence<Surface>::LinearEquivalence(bool oriented, Normalization norma
   predicate(predicate) {}
 
 template <typename Surface>
-Iterable<Deformation<Surface>> LinearEquivalence<Surface>::automorphisms() const {
+std::vector<Deformation<Surface>> LinearEquivalence<Surface>::automorphisms(const Surface&) const {
   throw std::logic_error("not implemented: LinearEquivalence::automorphisms()");
 }
 
 template <typename Surface>
-void LinearEquivalence<Surface>::normalize(Surface&) const {
+Deformation<Surface> LinearEquivalence<Surface>::normalize(const Surface&) const {
   throw std::logic_error("not implemented: LinearEquivalence::normalize()");
 }
 

@@ -29,8 +29,9 @@ struct ImplementationOf<Equivalence<Surface>> {
   virtual ~ImplementationOf();
 
   virtual std::unique_ptr<EquivalenceClassCode> code(const Surface&) const = 0;
-  virtual std::vector<Deformation<Surface>> automorphisms() const = 0;
-  virtual void normalize(Surface&) const = 0;
+  virtual std::vector<Deformation<Surface>> automorphisms(const Surface&) const = 0;
+  virtual std::vector<Deformation<Surface>> isomorphisms(const Surface& domain, const Surface& codomain) const;
+  virtual Deformation<Surface> normalize(const Surface&) const = 0;
   virtual bool equal(const ImplementationOf&) const = 0;
   virtual std::string toString() const = 0;
 

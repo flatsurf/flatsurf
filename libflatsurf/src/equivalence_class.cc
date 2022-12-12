@@ -36,6 +36,11 @@ bool EquivalenceClass<Surface>::operator==(const EquivalenceClass<Surface>& othe
 }
 
 template <typename Surface>
+size_t EquivalenceClass<Surface>::automorphisms() const {
+  throw std::logic_error("not implemented: automorphisms()");
+}
+
+template <typename Surface>
 const Surface& EquivalenceClass<Surface>::representative() const {
   // TODO: Canonicalize
   return self->surface;

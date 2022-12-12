@@ -33,9 +33,8 @@ class EquivalenceClass : boost::equality_comparable<EquivalenceClass<Surface>> {
  public:
   EquivalenceClass(const Surface&, const Equivalence<Surface>&);
 
-  // Return the number of isomorphisms from an element of this equivalence
-  // class to an element of the given equivalence class.
-  size_t isomorphisms(const EquivalenceClass&) const;
+  // Return the number of automorphisms of the elements of this equivalence class.
+  size_t automorphisms() const;
 
   // Return a (possibly canonical) representative of this equivalence class.
   const Surface& representative() const;

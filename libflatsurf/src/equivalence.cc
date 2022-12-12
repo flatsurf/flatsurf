@@ -66,12 +66,27 @@ Equivalence<Surface> Equivalence<Surface>::linear(bool oriented, std::function<M
 }
 
 template <typename Surface>
+bool Equivalence<Surface>::isomorphic(const Surface&, const Surface&) const {
+  throw std::logic_error("not implemented: isomorphic()");
+}
+
+template <typename Surface>
+std::vector<Deformation<Surface>> Equivalence<Surface>::isomorphisms(const Surface&, const Surface&) const {
+  throw std::logic_error("not implemented: isomorphisms()");
+}
+
+template <typename Surface>
 bool Equivalence<Surface>::operator==(const Equivalence<Surface>& other) const {
   return self->equal(*other.self);
 }
 
 template <typename Surface>
 ImplementationOf<Equivalence<Surface>>::~ImplementationOf() {}
+
+template <typename Surface>
+std::vector<Deformation<Surface>> ImplementationOf<Equivalence<Surface>>::isomorphisms(const Surface&, const Surface&) const {
+  throw std::logic_error("not implemented: isomorphisms()");
+}
 
 template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const Equivalence<Surface>& equivalence) {

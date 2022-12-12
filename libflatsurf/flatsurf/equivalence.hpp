@@ -106,6 +106,14 @@ class Equivalence : boost::equality_comparable<Equivalence<Surface>> {
   // also clockwise consecutive at a vertex.
   static Equivalence linear(bool oriented = true, std::function<Matrix(const Surface&, HalfEdge, HalfEdge)> normalization = nullptr, std::function<bool(const Surface&, Edge)> = nullptr);
 
+  // Return whether two surfaces are isomorphic under this equivalence, i.e.,
+  // whether they are in the same EquivalenceClass.
+  bool isomorphic(const Surface&, const Surface&) const;
+
+  // Return the isomorphisms from domain to codomain with respect to this
+  // notion of equivalence.
+  std::vector<Deformation<Surface>> isomorphisms(const Surface& domain, const Surface& codomain) const;
+
   // Return whether these notions of equivalence are identical.
   // Note that equivalences that were created with a custom predicate or other
   // callable will be compared by their memory address.

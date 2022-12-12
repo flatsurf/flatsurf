@@ -34,12 +34,12 @@ CombinatorialEquivalence<Surface>::CombinatorialEquivalence(bool oriented, Predi
   predicate(predicate) {}
 
 template <typename Surface>
-std::vector<Deformation<Surface>> CombinatorialEquivalence<Surface>::automorphisms() const {
+std::vector<Deformation<Surface>> CombinatorialEquivalence<Surface>::automorphisms(const Surface&) const {
   throw std::logic_error("not implemented: CombinatorialEquivalence::automorphisms()");
 }
 
 template <typename Surface>
-void CombinatorialEquivalence<Surface>::normalize(Surface&) const {
+Deformation<Surface> CombinatorialEquivalence<Surface>::normalize(const Surface&) const {
   throw std::logic_error("not implemented: CombinatorialEquivalence::normalize()");
 }
 
