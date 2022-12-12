@@ -82,8 +82,8 @@ std::unique_ptr<EquivalenceClassCode> CombinatorialEquivalence<Surface>::code(co
 }
 
 template <typename Surface>
-std::ostream& operator<<(std::ostream&, const CombinatorialEquivalence<Surface>&) {
-  throw std::logic_error("not implemented: CombinatorialEquivalence ostream operator<<");
+std::ostream& operator<<(std::ostream& os, const CombinatorialEquivalence<Surface>& self) {
+  return os << self.toString();
 }
 
 }
