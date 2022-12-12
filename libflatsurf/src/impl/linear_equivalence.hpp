@@ -52,7 +52,7 @@ struct LinearEquivalence : ImplementationOf<Equivalence<Surface>> {
   LinearEquivalence(bool oriented, Normalization normalization, Predicate predicate);
 
   std::unique_ptr<EquivalenceClassCode> code(const Surface&) const override;
-  Iterable<Deformation<Surface>> automorphisms() const override;
+  std::vector<Deformation<Surface>> automorphisms() const override;
   void normalize(Surface&) const override;
   bool equal(const ImplementationOf<Equivalence<Surface>>&) const override;
   std::string toString() const override;

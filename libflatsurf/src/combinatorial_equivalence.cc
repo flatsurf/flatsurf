@@ -21,7 +21,6 @@
 
 #include "../flatsurf/deformation.hpp"
 #include "../flatsurf/edge.hpp"
-#include "../flatsurf/iterable.hpp"
 #include "impl/equivalence_class_code.hpp"
 #include "impl/combinatorial_equivalence_walker.hpp"
 #include "util/assert.ipp"
@@ -35,7 +34,7 @@ CombinatorialEquivalence<Surface>::CombinatorialEquivalence(bool oriented, Predi
   predicate(predicate) {}
 
 template <typename Surface>
-Iterable<Deformation<Surface>> CombinatorialEquivalence<Surface>::automorphisms() const {
+std::vector<Deformation<Surface>> CombinatorialEquivalence<Surface>::automorphisms() const {
   throw std::logic_error("not implemented: CombinatorialEquivalence::automorphisms()");
 }
 

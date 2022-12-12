@@ -113,12 +113,6 @@ class ImplementationOf;
 template <typename Surface>
 class IntervalExchangeTransformation;
 
-template <typename T>
-class Iterable;
-
-template <typename T>
-class Iterator;
-
 enum class ISOMORPHISM;
 
 template <typename T>
