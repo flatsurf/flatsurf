@@ -34,6 +34,7 @@ template <typename Surface, typename Walker>
 struct EquivalenceWalker {
   EquivalenceWalker(const Surface* surface): surface(surface) {}
 
+  // TODO: Document me.
   static std::tuple<std::unique_ptr<EquivalenceClassCode>, std::vector<Deformation<Surface>>> word(std::vector<Walker>&& walkers) {
     // We describe the process for combinatorial equivalence; the general
     // algorithm is described below.
@@ -120,6 +121,7 @@ struct EquivalenceWalker {
     return std::tuple{std::make_unique<typename Walker::Code>(word), deformations};
   }
 
+  // TODO: Document me.
   template <typename Character>
   static int cmp(const std::optional<Character>& lhs, const std::optional<Character>& rhs) {
     if (!lhs.has_value()) {

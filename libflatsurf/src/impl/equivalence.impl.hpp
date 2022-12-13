@@ -28,10 +28,15 @@ template <typename Surface>
 struct ImplementationOf<Equivalence<Surface>> {
   virtual ~ImplementationOf();
 
+  // TODO: Document me.
   virtual std::tuple<std::unique_ptr<EquivalenceClassCode>, std::vector<Deformation<Surface>>> code(const Surface&) const = 0;
+  // TODO: Document me.
   virtual std::vector<Deformation<Surface>> automorphisms(const Surface&) const = 0;
+  // TODO: Document me.
   virtual std::vector<Deformation<Surface>> isomorphisms(const Surface& domain, const Surface& codomain) const;
+  // TODO: Document me.
   virtual bool equal(const ImplementationOf&) const = 0;
+  // TODO: Document me.
   virtual std::string toString() const = 0;
 
 };
