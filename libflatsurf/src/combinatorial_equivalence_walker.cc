@@ -128,6 +128,12 @@ int CombinatorialEquivalenceWalker<Surface>::label(const Surface&, const HalfEdg
   return label;
 }
 
+template <typename Surface>
+Deformation<Surface> CombinatorialEquivalenceWalker<Surface>::deformation() const {
+  // TODO: Implement me.
+  throw std::logic_error("not implemented: deformation()");
+}
+
 }
 
 

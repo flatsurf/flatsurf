@@ -23,6 +23,7 @@
 #include <unordered_set>
 
 #include "../../flatsurf/edge.hpp"
+#include "../../flatsurf/deformation.hpp"
 
 #include "equivalence_walker.hpp"
 #include "linear_equivalence_class_code.hpp"
@@ -49,6 +50,8 @@ struct LinearEquivalenceWalker : EquivalenceWalker<Surface, LinearEquivalenceWal
   std::optional<Character> step();
 
   int label(const Surface& surface, const HalfEdge halfEdge);
+
+  Deformation<Surface> deformation() const;
 
   CombinatorialEquivalenceWalker<Surface> combinatorialWalker;
 

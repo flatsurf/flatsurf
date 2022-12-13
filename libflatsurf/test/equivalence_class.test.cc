@@ -80,4 +80,22 @@ TEMPLATE_TEST_CASE("Equality of Equivalence Classes is Consistent", "[Equivalenc
   }
 }
 
+TEMPLATE_TEST_CASE("Representative of Equivalence Classes", "[EquivalenceClass][representative]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
+  const auto equivalence = GENERATE_COPY(equivalences(surface));
+  CAPTURE(equivalence);
+
+  const auto equivalenceClass = EquivalenceClass(*surface, equivalence);
+  CAPTURE(equivalenceClass);
+
+  const auto& representative = equivalenceClass.representative();
+  CAPTURE(representative);
+  
+  REQUIRE(EquivalenceClass(representative, equivalence) == equivalenceClass);
+}
+
 }

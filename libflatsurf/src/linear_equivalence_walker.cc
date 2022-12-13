@@ -78,6 +78,12 @@ std::optional<typename LinearEquivalenceWalker<Surface>::Character> LinearEquiva
   return std::tuple{*combinatorial, normalized};
 }
 
+template <typename Surface>
+Deformation<Surface> LinearEquivalenceWalker<Surface>::deformation() const {
+  // TODO: Implement me.
+  throw std::logic_error("not implemented: deformation()");
+}
+
 }
 
 

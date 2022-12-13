@@ -23,6 +23,7 @@
 #include <unordered_map>
 
 #include "../../flatsurf/half_edge.hpp"
+#include "../../flatsurf/deformation.hpp"
 
 #include "equivalence_walker.hpp"
 #include "combinatorial_equivalence_class_code.hpp"
@@ -46,6 +47,8 @@ struct CombinatorialEquivalenceWalker : EquivalenceWalker<Surface, Combinatorial
   std::optional<Character> step();
 
   int label(const Surface& surface, const HalfEdge halfEdge);
+
+  Deformation<Surface> deformation() const;
 
   // Map half edges to 0, 1, 2, … as we encounter them when walking the
   // surface. By construction this will only contain a single signed half

@@ -20,6 +20,7 @@
 #include <ostream>
 
 #include "../flatsurf/equivalence_class.hpp"
+#include "../flatsurf/deformation.hpp"
 #include "impl/equivalence_class_code.hpp"
 #include "impl/equivalence.impl.hpp"
 
@@ -51,7 +52,7 @@ template <typename Surface>
 ImplementationOf<EquivalenceClass<Surface>>::ImplementationOf(const Surface& surface, const Equivalence<Surface>& equivalence) :
   surface(surface),
   equivalence(equivalence),
-  code(equivalence.self->code(surface)) {}
+  code(std::get<0>(equivalence.self->code(surface))) {}
 
 template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const EquivalenceClass<Surface>& clazz) {
