@@ -67,11 +67,13 @@ Equivalence<Surface> Equivalence<Surface>::linear(bool oriented, std::function<M
 
 template <typename Surface>
 bool Equivalence<Surface>::isomorphic(const Surface&, const Surface&) const {
+  // TODO: Implement me.
   throw std::logic_error("not implemented: isomorphic()");
 }
 
 template <typename Surface>
 std::vector<Deformation<Surface>> Equivalence<Surface>::isomorphisms(const Surface&, const Surface&) const {
+  // TODO: Implement me.
   throw std::logic_error("not implemented: isomorphisms()");
 }
 
@@ -85,6 +87,7 @@ ImplementationOf<Equivalence<Surface>>::~ImplementationOf() {}
 
 template <typename Surface>
 std::vector<Deformation<Surface>> ImplementationOf<Equivalence<Surface>>::isomorphisms(const Surface&, const Surface&) const {
+  // TODO: Implement me.
   throw std::logic_error("not implemented: isomorphisms()");
 }
 

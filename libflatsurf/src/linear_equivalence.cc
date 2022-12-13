@@ -64,11 +64,13 @@ LinearEquivalence<Surface>::LinearEquivalence(bool oriented, Normalization norma
 
 template <typename Surface>
 std::vector<Deformation<Surface>> LinearEquivalence<Surface>::automorphisms(const Surface&) const {
+  // TODO: Implement me
   throw std::logic_error("not implemented: LinearEquivalence::automorphisms()");
 }
 
 template <typename Surface>
 Deformation<Surface> LinearEquivalence<Surface>::normalize(const Surface&) const {
+  // TODO: Implement me
   throw std::logic_error("not implemented: LinearEquivalence::normalize()");
 }
 

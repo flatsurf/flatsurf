@@ -37,6 +37,7 @@ bool EquivalenceClass<Surface>::operator==(const EquivalenceClass<Surface>& othe
 
 template <typename Surface>
 size_t EquivalenceClass<Surface>::automorphisms() const {
+  // TODO: Implement me.
   throw std::logic_error("not implemented: automorphisms()");
 }
 
