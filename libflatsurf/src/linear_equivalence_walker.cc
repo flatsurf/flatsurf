@@ -25,10 +25,10 @@
 namespace flatsurf {
 
 template <typename Surface>
-LinearEquivalenceWalker<Surface>::LinearEquivalenceWalker(const Surface* surface, HalfEdge start, const Predicate* predicate, const NormalizationMatrix& normalization):
+LinearEquivalenceWalker<Surface>::LinearEquivalenceWalker(const Surface* surface, HalfEdge start, const Predicate* predicate, const NormalizationMatrix& normalizationMatrix):
   EquivalenceWalker<Surface, LinearEquivalenceWalker>(surface),
-  combinatorialWalker(surface, start, std::get<0>(normalization) * std::get<3>(normalization) - std::get<1>(normalization) * std::get<2>(normalization) > 0 ? 1 : -1, predicate),
-  normalization(normalization)
+  combinatorialWalker(surface, start, std::get<0>(normalizationMatrix) * std::get<3>(normalizationMatrix) - std::get<1>(normalizationMatrix) * std::get<2>(normalizationMatrix) > 0 ? 1 : -1, predicate),
+  normalizationMatrix(normalizationMatrix)
   {}
 
 template <typename Surface>
@@ -70,18 +70,23 @@ std::optional<typename LinearEquivalenceWalker<Surface>::Character> LinearEquiva
 
   const HalfEdge crossed = combinatorialWalker.labeled[combinatorialWalker.steps-1];
   const auto normalized = this->surface->fromHalfEdge(crossed).applyMatrix(
-    std::get<0>(this->normalization),
-    std::get<1>(this->normalization),
-    std::get<2>(this->normalization),
-    std::get<3>(this->normalization));
+    std::get<0>(this->normalizationMatrix),
+    std::get<1>(this->normalizationMatrix),
+    std::get<2>(this->normalizationMatrix),
+    std::get<3>(this->normalizationMatrix));
 
   return std::tuple{*combinatorial, normalized};
 }
 
 template <typename Surface>
-Deformation<Surface> LinearEquivalenceWalker<Surface>::deformation() const {
+Deformation<Surface> LinearEquivalenceWalker<Surface>::deformation(const Surface& codomain) const {
   // TODO: Implement me.
   throw std::logic_error("not implemented: deformation()");
+}
+
+template <typename Surface>
+Surface LinearEquivalenceWalker<Surface>::normalization() const {
+  throw std::logic_error("not implemented: normalization()");
 }
 
 }

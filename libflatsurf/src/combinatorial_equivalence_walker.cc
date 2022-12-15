@@ -19,8 +19,11 @@
 
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/edge.hpp"
+#include "../flatsurf/odd_half_edge_map.hpp"
 
 #include "impl/combinatorial_equivalence_walker.hpp"
+#include "impl/combinatorial_deformation_relation.hpp"
+#include "impl/deformation.impl.hpp"
 
 namespace flatsurf {
 
@@ -129,9 +132,35 @@ int CombinatorialEquivalenceWalker<Surface>::label(const Surface&, const HalfEdg
 }
 
 template <typename Surface>
-Deformation<Surface> CombinatorialEquivalenceWalker<Surface>::deformation() const {
-  // TODO: Implement me.
-  throw std::logic_error("not implemented: deformation()");
+Surface CombinatorialEquivalenceWalker<Surface>::normalization() const {
+  return this->surface->relabel(relabeling()).codomain().clone();
+}
+
+template <typename Surface>
+Deformation<Surface> CombinatorialEquivalenceWalker<Surface>::deformation(const Surface& normalization) const {
+  return ImplementationOf<Deformation<Surface>>::make(std::make_unique<CombinatorialDeformationRelation<Surface>>(*this->surface, normalization, relabeling()));
+}
+
+template <typename Surface>
+Permutation<HalfEdge> CombinatorialEquivalenceWalker<Surface>::relabeling() const {
+  std::vector<std::pair<HalfEdge, HalfEdge>> permutation;
+
+  for (const HalfEdge preimage: this->surface->halfEdges()) {
+    auto image = labels.find(preimage);
+
+    if (image != std::end(labels)) {
+      permutation.push_back({preimage, image->second + 1});
+      continue;
+    }
+
+    image = labels.find(-preimage);
+
+    LIBFLATSURF_ASSERT(image != std::end(labels), "Cannot create combinatorial deformation from incomplete combinatorial walker.");
+
+    permutation.push_back({preimage, -image->second-1});
+  }
+
+  return Permutation(permutation);
 }
 
 }

@@ -41,6 +41,7 @@
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
+#include "../flatsurf/odd_half_edge_map.hpp"
 #include "../src/external/rx-ranges/include/rx/ranges.hpp"
 #include "cereal.helpers.hpp"
 #include "generators/half_edge_generator.hpp"
@@ -469,6 +470,29 @@ TEMPLATE_TEST_CASE("Insert a slit into a Flat Triangulation", "[FlatTriangulatio
         }
       }
     }
+  }
+}
+
+TEMPLATE_TEST_CASE("Relabel half edges of a Flat Triangulation", "[FlatTriangulation][relabel]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+
+  const auto surface = GENERATE_SURFACES(T);
+
+  SECTION("Swap half edge 1 and its Negative") {
+    std::unordered_map<HalfEdge, HalfEdge> swap;
+    for (const auto halfEdge : surface->halfEdges())
+      swap[halfEdge] = halfEdge;
+
+    swap[HalfEdge(1)] == HalfEdge(-1);
+    swap[HalfEdge(-1)] == HalfEdge(1);
+
+    const auto swapped = surface->relabel(Permutation<HalfEdge>(swap));
+
+    REQUIRE(*surface != swapped.codomain());
+
+    const auto restored = swapped.codomain().relabel(Permutation<HalfEdge>(swap));
+
+    REQUIRE(*surface == restored.codomain());
   }
 }
 

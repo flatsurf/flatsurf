@@ -113,10 +113,14 @@ struct EquivalenceWalker {
       minimalWalkers = stillMinimalWalkers;
     }
 
+    LIBFLATSURF_ASSERT(!minimalWalkers.empty(), "At least one code must be minimal but all were found to be non-minimial.");
+
+    const Surface normalization = minimalWalkers[0]->normalization();
+
     std::vector<Deformation<Surface>> deformations;
 
     for (const auto& walker : minimalWalkers)
-      deformations.push_back(walker->deformation());
+      deformations.push_back(walker->deformation(normalization));
 
     return std::tuple{std::make_unique<typename Walker::Code>(word), deformations};
   }

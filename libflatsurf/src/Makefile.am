@@ -12,6 +12,7 @@ libflatsurf_la_SOURCES =                                            \
 	combinatorial_equivalence.cc                                \
 	combinatorial_equivalence_class_code.cc                     \
 	combinatorial_equivalence_walker.cc                         \
+	combinatorial_deformation_relation.cc                       \
 	composite_deformation_relation.cc                           \
 	contour_component.cc                                        \
 	contour_component_state.cc                                  \

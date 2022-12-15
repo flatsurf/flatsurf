@@ -51,14 +51,18 @@ struct LinearEquivalenceWalker : EquivalenceWalker<Surface, LinearEquivalenceWal
 
   int label(const Surface& surface, const HalfEdge halfEdge);
 
-  Deformation<Surface> deformation() const;
+  // Return the linear normal form of the surface corresponding to the code
+  // word this walker found.
+  Surface normalization() const;
+
+  // Return the deformation that maps the surface to its normalization.
+  Deformation<Surface> deformation(const Surface& normalization) const;
 
   CombinatorialEquivalenceWalker<Surface> combinatorialWalker;
 
-  NormalizationMatrix normalization;
+  NormalizationMatrix normalizationMatrix;
 };
 
 }
 
 #endif
-

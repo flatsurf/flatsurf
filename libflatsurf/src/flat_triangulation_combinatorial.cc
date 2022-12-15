@@ -123,7 +123,7 @@ ImplementationOf<FlatTriangulationCombinatorial>::ImplementationOf(const Permuta
   // check that faces are triangles
   for (auto edge : faces.domain()) {
     if (faces(edge) != edge) {
-      LIBFLATSURF_CHECK_ARGUMENT(faces(faces(faces(edge))) == edge, "not fully triangulated");
+      LIBFLATSURF_CHECK_ARGUMENT(faces(faces(faces(edge))) == edge, "not fully triangulated at edge " << edge << " in faces " << faces << " coming from vertices " << vertices);
     } else {
       LIBFLATSURF_ASSERT_ARGUMENT(std::find(begin(boundaries), end(boundaries), edge) != end(boundaries), "faces must not be trivial");
     }

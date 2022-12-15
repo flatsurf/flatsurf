@@ -48,7 +48,15 @@ struct CombinatorialEquivalenceWalker : EquivalenceWalker<Surface, Combinatorial
 
   int label(const Surface& surface, const HalfEdge halfEdge);
 
-  Deformation<Surface> deformation() const;
+  // Return the combinatorial normal form of the surface that corresponds to
+  // the code word this walker found.
+  Surface normalization() const;
+
+  // Return the deformation that maps the surface to its normalization.
+  Deformation<Surface> deformation(const Surface& normalization) const;
+
+  // Return the images of the half edges in the normalization.
+  Permutation<HalfEdge> relabeling() const;
 
   // Map half edges to 0, 1, 2, … as we encounter them when walking the
   // surface. By construction this will only contain a single signed half

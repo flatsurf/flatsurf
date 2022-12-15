@@ -54,6 +54,7 @@
 #include "../flatsurf/vertical.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/approximation.hpp"
+#include "impl/combinatorial_deformation_relation.hpp"
 #include "impl/deformation.impl.hpp"
 #include "impl/flat_triangulation.impl.hpp"
 #include "impl/flat_triangulation_combinatorial.impl.hpp"
@@ -655,6 +656,16 @@ void FlatTriangulation<T>::delaunay() {
       }
     }
   } while (!isDelaunay);
+}
+
+template <typename T>
+Deformation<FlatTriangulation<T>> FlatTriangulation<T>::relabel(const Permutation<HalfEdge>& relabeling) const {
+  // Build the combinatorial image (and validate arguments.)
+  auto combinatorial = this->combinatorial().relabel(relabeling);
+
+  FlatTriangulation codomain{std::move(combinatorial), [&](HalfEdge halfEdge) { return this->fromHalfEdge(relabeling(halfEdge)); }};
+
+  return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<CombinatorialDeformationRelation<FlatTriangulation>>(*this, codomain, relabeling));
 }
 
 template <typename T>

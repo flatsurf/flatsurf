@@ -77,6 +77,9 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
   // ``p`` which is not a vertex already.
   Deformation<FlatTriangulation<T>> insert(const Point<FlatTriangulation>& p) const;
 
+  // Create an independent clone of this triangulation with relabeled edges.
+  Deformation<FlatTriangulation<T>> relabel(const Permutation<HalfEdge>&) const;
+
   // Create an independent clone of this triangulation with all vectors scaled
   // by c.
   [[deprecated("use applyMatrix instead")]]

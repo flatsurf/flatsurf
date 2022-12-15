@@ -21,6 +21,8 @@
 #define LIBFLATSURF_TEST_GENERATORS_DEFORMATION_GENERATOR_HPP
 
 #include "../../flatsurf/deformation.hpp"
+#include "../../flatsurf/edge.hpp"
+#include "../../flatsurf/permutation.hpp"
 #include "surface_generator.hpp"
 
 #include "../external/catch2/single_include/catch2/catch.hpp"
@@ -59,6 +61,20 @@ class DeformationGenerator : public Catch::Generators::IGenerator<Deformation<Fl
     {
       // A linear deformation
       deformations.push_back(domain.applyMatrix(T(1), T(2), T(3), T(4)));
+    }
+
+    {
+      // A relabeling
+      std::unordered_map<HalfEdge, HalfEdge> permutation;
+      for (const auto halfEdge : domain.halfEdges())
+        permutation[halfEdge] = halfEdge;
+
+      permutation[1] = -2;
+      permutation[-1] = 2;
+      permutation[2] = -1;
+      permutation[-2] = 1;
+
+      deformations.push_back(domain.relabel(Permutation<HalfEdge>(permutation)));
     }
 
     current = deformations.begin();

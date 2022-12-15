@@ -57,6 +57,9 @@ class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulat
   // half edges there.
   FlatTriangulationCombinatorial slit(HalfEdge e) const;
 
+  // Create an independent clone of this triangulation with relabeled edges.
+  FlatTriangulationCombinatorial relabel(const Permutation<HalfEdge>&) const;
+
   HalfEdge nextAtVertex(HalfEdge e) const;
   HalfEdge previousAtVertex(HalfEdge e) const;
   HalfEdge nextInFace(HalfEdge e) const;
