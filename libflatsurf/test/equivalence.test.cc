@@ -29,249 +29,249 @@
 
 namespace flatsurf::test {
 
-  TEMPLATE_TEST_CASE("Combinatorial Equivalence of Surfaces", "[Equivalence][combinatorial]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
-    using T = TestType;
-    using Surface = FlatTriangulation<T>;
+TEMPLATE_TEST_CASE("Combinatorial Equivalence of Surfaces", "[Equivalence][combinatorial]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+  using Surface = FlatTriangulation<T>;
 
-    const auto surface = GENERATE_SURFACES(T);
-    CAPTURE(surface);
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
 
-    SECTION("Equality of Combinatorial Equivalence") {
-      REQUIRE(Equivalence<Surface>::combinatorial() == Equivalence<Surface>::combinatorial());
-      REQUIRE(Equivalence<Surface>::combinatorial(false) == Equivalence<Surface>::combinatorial(false));
-      REQUIRE(Equivalence<Surface>::combinatorial() != Equivalence<Surface>::combinatorial(false));
-    }
+  SECTION("Equality of Combinatorial Equivalence") {
+    REQUIRE(Equivalence<Surface>::combinatorial() == Equivalence<Surface>::combinatorial());
+    REQUIRE(Equivalence<Surface>::combinatorial(false) == Equivalence<Surface>::combinatorial(false));
+    REQUIRE(Equivalence<Surface>::combinatorial() != Equivalence<Surface>::combinatorial(false));
+  }
 
-    SECTION("A Surface is Combinatorially Equivalent to Itself") {
-      const auto equivalence = Equivalence<Surface>::combinatorial();
+  SECTION("A Surface is Combinatorially Equivalent to Itself") {
+    const auto equivalence = Equivalence<Surface>::combinatorial();
 
-      REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(*surface, equivalence));
-    }
+    REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(*surface, equivalence));
+  }
 
-    SECTION("Equivalence modulo Flipping an Edge") {
-      const auto halfEdge = GENERATE_COPY(halfEdges(surface));
+  SECTION("Equivalence modulo Flipping an Edge") {
+    const auto halfEdge = GENERATE_COPY(halfEdges(surface));
 
-      // Don't test for each edge twice.
-      if (halfEdge == halfEdge.edge().positive()) {
-        if (surface->convex(halfEdge, true)) {
-          auto flipped = surface->clone();
-          flipped.flip(halfEdge);
-          CAPTURE(flipped);
+    // Don't test for each edge twice.
+    if (halfEdge == halfEdge.edge().positive()) {
+      if (surface->convex(halfEdge, true)) {
+        auto flipped = surface->clone();
+        flipped.flip(halfEdge);
+        CAPTURE(flipped);
 
-          const auto equivalence = Equivalence<Surface>::combinatorial(true, [&](const Surface&, const Edge edge) { return edge != halfEdge; });
+        const auto equivalence = Equivalence<Surface>::combinatorial(true, [&](const Surface&, const Edge edge) { return edge != halfEdge; });
 
-          // If we ignore the flipped edge, the surfaces must be indistinguishable.
-          REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(flipped, equivalence));
-        }
-      }
-    }
-
-    SECTION("Equivalence modulo Linear Deformation of Positive Determinant") {
-      const auto equivalence = Equivalence<Surface>::combinatorial();
-
-      // Linear Deformation do not change the combinatorial structure (if their
-      // determinant is positive.)
-      const auto deformed = surface->applyMatrix(T(2), T(1), T(3), T(4));
-      REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(deformed.codomain(), equivalence));
-    }
-
-    SECTION("Equivalence modulo Linear Deformation of Negative Determinant") {
-      const auto equivalence = Equivalence<Surface>::combinatorial(false);
-
-      // If the determinant is negative, we can ask for equivalence modulo orientation.
-      const auto deformed = surface->applyMatrix(T(1), T(3), T(3), T(7));
-      REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(deformed.codomain(), equivalence));
-    }
-
-    if constexpr (hasFractions<T>) {
-      SECTION("Equivalence modulo Insertions") {
-        const Point<Surface> point{*surface, HalfEdge(1), T(1), T(1), T(1)};
-
-        const auto inserted = surface->insert(point);
-
-        SECTION("Inserting a Point Changes the Combinatorial Structure of a Surface") {
-          const auto equivalence = Equivalence<Surface>::combinatorial();
-
-          REQUIRE(EquivalenceClass(*surface, equivalence) != EquivalenceClass(inserted.codomain(), equivalence));
-        }
-
-        SECTION("Inserting a Point does not Change the Combinatorial Structure away from that Point") {
-          const auto equivalence = Equivalence<Surface>::combinatorial(true, [&](const Surface&, const Edge edge) {
-              return edge.index() < surface->size();
-              });
-
-          REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(inserted.codomain(), equivalence));
-        }
+        // If we ignore the flipped edge, the surfaces must be indistinguishable.
+        REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(flipped, equivalence));
       }
     }
   }
 
-  TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo Labels", "[Equivalence][unlabeled]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
-    using T = TestType;
-    using Surface = FlatTriangulation<T>;
+  SECTION("Equivalence modulo Linear Deformation of Positive Determinant") {
+    const auto equivalence = Equivalence<Surface>::combinatorial();
 
-    const auto surface = GENERATE_SURFACES(T);
-    CAPTURE(surface);
+    // Linear Deformation do not change the combinatorial structure (if their
+    // determinant is positive.)
+    const auto deformed = surface->applyMatrix(T(2), T(1), T(3), T(4));
+    REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(deformed.codomain(), equivalence));
+  }
 
-    SECTION("Unlabeled Equivalence is Equal to Itself") {
-      REQUIRE(Equivalence<Surface>::unlabeled() == Equivalence<Surface>::unlabeled());
-    }
+  SECTION("Equivalence modulo Linear Deformation of Negative Determinant") {
+    const auto equivalence = Equivalence<Surface>::combinatorial(false);
 
-    SECTION("A Surface is Equivalent to Itself") {
-      const auto equivalence = Equivalence<Surface>::unlabeled();
+    // If the determinant is negative, we can ask for equivalence modulo orientation.
+    const auto deformed = surface->applyMatrix(T(1), T(3), T(3), T(7));
+    REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(deformed.codomain(), equivalence));
+  }
 
-      REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(*surface, equivalence));
-    }
+  if constexpr (hasFractions<T>) {
+    SECTION("Equivalence modulo Insertions") {
+      const Point<Surface> point{*surface, HalfEdge(1), T(1), T(1), T(1)};
 
-    SECTION("Equivalence modulo Flipping an Edge") {
-      const auto halfEdge = GENERATE_COPY(halfEdges(surface));
+      const auto inserted = surface->insert(point);
 
-      // Don't test for each edge twice.
-      if (halfEdge == halfEdge.edge().positive()) {
-        if (surface->convex(halfEdge, true)) {
-          auto flipped = surface->clone();
-          flipped.flip(halfEdge);
-          CAPTURE(flipped);
+      SECTION("Inserting a Point Changes the Combinatorial Structure of a Surface") {
+        const auto equivalence = Equivalence<Surface>::combinatorial();
 
-          const auto equivalence = Equivalence<Surface>::unlabeled([&](const Surface&, const Edge edge) { return edge != halfEdge; });
+        REQUIRE(EquivalenceClass(*surface, equivalence) != EquivalenceClass(inserted.codomain(), equivalence));
+      }
 
-          // If we ignore the flipped edge, the surfaces must be indistinguishable.
-          REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(flipped, equivalence));
-        }
+      SECTION("Inserting a Point does not Change the Combinatorial Structure away from that Point") {
+        const auto equivalence = Equivalence<Surface>::combinatorial(true, [&](const Surface&, const Edge edge) {
+            return edge.index() < surface->size();
+            });
+
+        REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(inserted.codomain(), equivalence));
       }
     }
+  }
+}
 
-    SECTION("Equivalence modulo Linear Deformation") {
-      const auto equivalence = Equivalence<Surface>::unlabeled();
+TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo Labels", "[Equivalence][unlabeled]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+  using Surface = FlatTriangulation<T>;
 
-      // A linear deformation with non-unit determinant must yield a different equivalence class.
-      REQUIRE(EquivalenceClass(*surface, equivalence) != EquivalenceClass(surface->applyMatrix(T(2), T(1), T(3), T(4)).codomain(), equivalence));
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
 
-      // Rotating by π might leave us with the same surface modulo labeling.
-      const auto rotated = surface->applyMatrix(T(-1), T(), T(), T(-1)).codomain().clone();
+  SECTION("Unlabeled Equivalence is Equal to Itself") {
+    REQUIRE(Equivalence<Surface>::unlabeled() == Equivalence<Surface>::unlabeled());
+  }
 
-      REQUIRE(rotated.isomorphism(*surface, ISOMORPHISM::FACES).has_value() == (EquivalenceClass(*surface, equivalence) == EquivalenceClass(rotated, equivalence)));
+  SECTION("A Surface is Equivalent to Itself") {
+    const auto equivalence = Equivalence<Surface>::unlabeled();
 
-      // Rotating by π might leave us with the same surface modulo labeling; in particular, if we ignore edges in the interior of Delaunay cells.
-      auto rotatedDelaunay = rotated.clone();
-      rotatedDelaunay.delaunay();
+    REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(*surface, equivalence));
+  }
 
-      auto surfaceDelaunay = surface->clone();
-      surfaceDelaunay.delaunay();
+  SECTION("Equivalence modulo Flipping an Edge") {
+    const auto halfEdge = GENERATE_COPY(halfEdges(surface));
 
-      const auto delaunayEquivalence = Equivalence<Surface>::unlabeled([](const Surface& surface, Edge e) -> bool {
-          return surface.delaunay(e) != DELAUNAY::AMBIGUOUS;
-          });
-      REQUIRE(rotatedDelaunay.isomorphism(surfaceDelaunay, ISOMORPHISM::DELAUNAY_CELLS).has_value() == (EquivalenceClass(surfaceDelaunay, delaunayEquivalence) == EquivalenceClass(rotatedDelaunay, delaunayEquivalence)));
+    // Don't test for each edge twice.
+    if (halfEdge == halfEdge.edge().positive()) {
+      if (surface->convex(halfEdge, true)) {
+        auto flipped = surface->clone();
+        flipped.flip(halfEdge);
+        CAPTURE(flipped);
+
+        const auto equivalence = Equivalence<Surface>::unlabeled([&](const Surface&, const Edge edge) { return edge != halfEdge; });
+
+        // If we ignore the flipped edge, the surfaces must be indistinguishable.
+        REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(flipped, equivalence));
+      }
     }
   }
 
-  TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo GL2", "[Equivalence][linear]", (mpq_class), (renf_elem_class)) {
-    using T = TestType;
-    using Surface = FlatTriangulation<T>;
+  SECTION("Equivalence modulo Linear Deformation") {
+    const auto equivalence = Equivalence<Surface>::unlabeled();
 
-    const auto surface = GENERATE_SURFACES(T);
-    CAPTURE(surface);
+    // A linear deformation with non-unit determinant must yield a different equivalence class.
+    REQUIRE(EquivalenceClass(*surface, equivalence) != EquivalenceClass(surface->applyMatrix(T(2), T(1), T(3), T(4)).codomain(), equivalence));
 
-    SECTION("Equality of Linear Equivalences") {
-      REQUIRE(Equivalence<Surface>::linear() == Equivalence<Surface>::linear());
-      REQUIRE(Equivalence<Surface>::linear(false) == Equivalence<Surface>::linear(false));
-      REQUIRE(Equivalence<Surface>::linear() != Equivalence<Surface>::linear(false));
-    }
+    // Rotating by π might leave us with the same surface modulo labeling.
+    const auto rotated = surface->applyMatrix(T(-1), T(), T(), T(-1)).codomain().clone();
 
-    SECTION("A Surface is Equivalent to Itself") {
-      const auto equivalence = Equivalence<Surface>::linear();
+    REQUIRE(rotated.isomorphism(*surface, ISOMORPHISM::FACES).has_value() == (EquivalenceClass(*surface, equivalence) == EquivalenceClass(rotated, equivalence)));
 
-      REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(*surface, equivalence));
-    }
+    // Rotating by π might leave us with the same surface modulo labeling; in particular, if we ignore edges in the interior of Delaunay cells.
+    auto rotatedDelaunay = rotated.clone();
+    rotatedDelaunay.delaunay();
 
-    SECTION("Equivalence modulo Flipping an Edge") {
-      const auto halfEdge = GENERATE_COPY(halfEdges(surface));
+    auto surfaceDelaunay = surface->clone();
+    surfaceDelaunay.delaunay();
 
-      // Don't test for each edge twice.
-      if (halfEdge == halfEdge.edge().positive()) {
-        if (surface->convex(halfEdge, true)) {
-          auto flipped = surface->clone();
-          flipped.flip(halfEdge);
-          CAPTURE(flipped);
+    const auto delaunayEquivalence = Equivalence<Surface>::unlabeled([](const Surface& surface, Edge e) -> bool {
+        return surface.delaunay(e) != DELAUNAY::AMBIGUOUS;
+        });
+    REQUIRE(rotatedDelaunay.isomorphism(surfaceDelaunay, ISOMORPHISM::DELAUNAY_CELLS).has_value() == (EquivalenceClass(surfaceDelaunay, delaunayEquivalence) == EquivalenceClass(rotatedDelaunay, delaunayEquivalence)));
+  }
+}
 
-          const auto equivalence = Equivalence<Surface>::linear(true, [](const Surface&, HalfEdge, HalfEdge) { return std::tuple{T(1), T(), T(), T(1)}; }, [&](const Surface&, const Edge edge) { return edge != halfEdge; });
+TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo GL2", "[Equivalence][linear]", (mpq_class), (renf_elem_class)) {
+  using T = TestType;
+  using Surface = FlatTriangulation<T>;
 
-          // If we ignore the flipped edge, the surfaces must be indistinguishable.
-          REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(flipped, equivalence));
-        }
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
+  SECTION("Equality of Linear Equivalences") {
+    REQUIRE(Equivalence<Surface>::linear() == Equivalence<Surface>::linear());
+    REQUIRE(Equivalence<Surface>::linear(false) == Equivalence<Surface>::linear(false));
+    REQUIRE(Equivalence<Surface>::linear() != Equivalence<Surface>::linear(false));
+  }
+
+  SECTION("A Surface is Equivalent to Itself") {
+    const auto equivalence = Equivalence<Surface>::linear();
+
+    REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(*surface, equivalence));
+  }
+
+  SECTION("Equivalence modulo Flipping an Edge") {
+    const auto halfEdge = GENERATE_COPY(halfEdges(surface));
+
+    // Don't test for each edge twice.
+    if (halfEdge == halfEdge.edge().positive()) {
+      if (surface->convex(halfEdge, true)) {
+        auto flipped = surface->clone();
+        flipped.flip(halfEdge);
+        CAPTURE(flipped);
+
+        const auto equivalence = Equivalence<Surface>::linear(true, [](const Surface&, HalfEdge, HalfEdge) { return std::tuple{T(1), T(), T(), T(1)}; }, [&](const Surface&, const Edge edge) { return edge != halfEdge; });
+
+        // If we ignore the flipped edge, the surfaces must be indistinguishable.
+        REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(flipped, equivalence));
       }
-    }
-
-    SECTION("Equivalence modulo Linear Deformation With Positive Determinant") {
-      const auto equivalence = Equivalence<Surface>::linear();
-
-      const auto deformation = surface->applyMatrix(T(2), T(1), T(7), T(6));
-
-      REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(deformation.codomain(), equivalence));
-    }
-
-    SECTION("Equivalence modulo Linear Deformation With Negative Determinant") {
-      const auto equivalence = Equivalence<Surface>::linear(false);
-
-      const auto deformation = surface->applyMatrix(T(1), T(3), T(3), T(7));
-
-      REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(deformation.codomain(), equivalence));
     }
   }
 
-  TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo O2", "[Equivalence][orthogonal]", (mpq_class), (renf_elem_class)) {
-    using T = TestType;
-    using Surface = FlatTriangulation<T>;
+  SECTION("Equivalence modulo Linear Deformation With Positive Determinant") {
+    const auto equivalence = Equivalence<Surface>::linear();
 
-    const auto surface = GENERATE_SURFACES(T);
-    CAPTURE(surface);
+    const auto deformation = surface->applyMatrix(T(2), T(1), T(7), T(6));
 
-    SECTION("Equality of Orthogonal Equivalences") {
-      REQUIRE(Equivalence<Surface>::orthogonal() == Equivalence<Surface>::orthogonal());
-      REQUIRE(Equivalence<Surface>::orthogonal(false) == Equivalence<Surface>::orthogonal(false));
-      REQUIRE(Equivalence<Surface>::orthogonal() != Equivalence<Surface>::orthogonal(false));
-    }
+    REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(deformation.codomain(), equivalence));
+  }
 
-    SECTION("A Surface is Equivalent to Itself") {
-      const auto equivalence = Equivalence<Surface>::orthogonal();
+  SECTION("Equivalence modulo Linear Deformation With Negative Determinant") {
+    const auto equivalence = Equivalence<Surface>::linear(false);
 
-      REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(*surface, equivalence));
-    }
+    const auto deformation = surface->applyMatrix(T(1), T(3), T(3), T(7));
 
-    SECTION("Equivalence modulo Flipping an Edge") {
-      const auto halfEdge = GENERATE_COPY(halfEdges(surface));
+    REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(deformation.codomain(), equivalence));
+  }
+}
 
-      // Don't test for each edge twice.
-      if (halfEdge == halfEdge.edge().positive()) {
-        if (surface->convex(halfEdge, true)) {
-          auto flipped = surface->clone();
-          flipped.flip(halfEdge);
-          CAPTURE(flipped);
+TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo O2", "[Equivalence][orthogonal]", (mpq_class), (renf_elem_class)) {
+  using T = TestType;
+  using Surface = FlatTriangulation<T>;
 
-          const auto equivalence = Equivalence<Surface>::orthogonal(true, [&](const Surface&, const Edge edge) { return edge != halfEdge; });
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
 
-          // If we ignore the flipped edge, the surfaces must be indistinguishable.
-          REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(flipped, equivalence));
-        }
+  SECTION("Equality of Orthogonal Equivalences") {
+    REQUIRE(Equivalence<Surface>::orthogonal() == Equivalence<Surface>::orthogonal());
+    REQUIRE(Equivalence<Surface>::orthogonal(false) == Equivalence<Surface>::orthogonal(false));
+    REQUIRE(Equivalence<Surface>::orthogonal() != Equivalence<Surface>::orthogonal(false));
+  }
+
+  SECTION("A Surface is Equivalent to Itself") {
+    const auto equivalence = Equivalence<Surface>::orthogonal();
+
+    REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(*surface, equivalence));
+  }
+
+  SECTION("Equivalence modulo Flipping an Edge") {
+    const auto halfEdge = GENERATE_COPY(halfEdges(surface));
+
+    // Don't test for each edge twice.
+    if (halfEdge == halfEdge.edge().positive()) {
+      if (surface->convex(halfEdge, true)) {
+        auto flipped = surface->clone();
+        flipped.flip(halfEdge);
+        CAPTURE(flipped);
+
+        const auto equivalence = Equivalence<Surface>::orthogonal(true, [&](const Surface&, const Edge edge) { return edge != halfEdge; });
+
+        // If we ignore the flipped edge, the surfaces must be indistinguishable.
+        REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(flipped, equivalence));
       }
     }
+  }
 
-    SECTION("Equivalence modulo a Rotation") {
-      const auto equivalence = Equivalence<Surface>::orthogonal();
+  SECTION("Equivalence modulo a Rotation") {
+    const auto equivalence = Equivalence<Surface>::orthogonal();
 
-      const auto deformation = surface->applyMatrix(T(0), T(-1), T(1), T(0));
+    const auto deformation = surface->applyMatrix(T(0), T(-1), T(1), T(0));
 
-      REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(deformation.codomain(), equivalence));
-    }
+    REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(deformation.codomain(), equivalence));
+  }
 
-    SECTION("Equivalence modulo a Flip") {
-      const auto equivalence = Equivalence<Surface>::orthogonal(false);
+  SECTION("Equivalence modulo a Flip") {
+    const auto equivalence = Equivalence<Surface>::orthogonal(false);
 
-      const auto deformation = surface->applyMatrix(T(-1), T(0), T(0), T(1));
+    const auto deformation = surface->applyMatrix(T(-1), T(0), T(0), T(1));
 
-      REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(deformation.codomain(), equivalence));
-    }
+    REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(deformation.codomain(), equivalence));
+  }
 
   SECTION("Non-Equivalence modulo Scaling") {
     const auto equivalence = Equivalence<Surface>::orthogonal(false);
