@@ -71,14 +71,16 @@ namespace flatsurf::test {
 
       // Linear Deformation do not change the combinatorial structure (if their
       // determinant is positive.)
-      REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(surface->applyMatrix(T(2), T(1), T(3), T(4)).codomain(), equivalence));
+      const auto deformed = surface->applyMatrix(T(2), T(1), T(3), T(4));
+      REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(deformed.codomain(), equivalence));
     }
 
     SECTION("Equivalence modulo Linear Deformation of Negative Determinant") {
       const auto equivalence = Equivalence<Surface>::combinatorial(false);
 
       // If the determinant is negative, we can ask for equivalence modulo orientation.
-      REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(surface->applyMatrix(T(1), T(3), T(3), T(7)).codomain(), equivalence));
+      const auto deformed = surface->applyMatrix(T(1), T(3), T(3), T(7));
+      REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(deformed.codomain(), equivalence));
     }
 
     if constexpr (hasFractions<T>) {

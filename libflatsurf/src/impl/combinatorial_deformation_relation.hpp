@@ -27,7 +27,8 @@
 
 namespace flatsurf {
 
-// A deformation between surfaces that are combinatorially equivalent.
+// A deformation between surfaces that are combinatorially equivalent, i.e.,
+// their combinatorial structures are identical up to a change of labels.
 template <typename Surface>
 class CombinatorialDeformationRelation : public DeformationRelation<Surface> {
   using T = typename Surface::Coordinate;

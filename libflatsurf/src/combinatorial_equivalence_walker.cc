@@ -17,6 +17,9 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include  <fmt/format.h>
+
+#include "../flatsurf/fmt.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/odd_half_edge_map.hpp"
@@ -155,7 +158,7 @@ Permutation<HalfEdge> CombinatorialEquivalenceWalker<Surface>::relabeling() cons
 
     image = labels.find(-preimage);
 
-    LIBFLATSURF_ASSERT(image != std::end(labels), "Cannot create combinatorial deformation from incomplete combinatorial walker.");
+    LIBFLATSURF_ASSERT(image != std::end(labels), "Cannot create combinatorial deformation from incomplete combinatorial walker. Neither " << preimage << " nor " << -preimage << " was assigned by this walker for " << *this->surface << " whose mapping is given by " << fmt::format("{}", fmt::join(labeled, ", ")));
 
     permutation.push_back({preimage, -image->second-1});
   }
