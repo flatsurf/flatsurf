@@ -71,8 +71,14 @@ std::optional<Path<Surface>> CombinatorialDeformationRelation<Surface>::operator
 }
 
 template <typename Surface>
-Point<Surface> CombinatorialDeformationRelation<Surface>::operator()(const Point<Surface>&) const {
-  throw std::logic_error("not implemented: mapping points through combinatorial deformations");
+Point<Surface> CombinatorialDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
+  // This does not make a ton of sense but we just map points preserving their
+  // barycentric coordinates.
+  HalfEdge face = point.face();
+  HalfEdge image = mapping(face);
+
+  const auto coordinates = point.coordinates(face);
+  return Point(*this->codomain, image, coordinates[0], coordinates[1], coordinates[2]);
 }
 
 template <typename Surface>
