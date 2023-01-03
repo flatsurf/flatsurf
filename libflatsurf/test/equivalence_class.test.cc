@@ -88,4 +88,19 @@ TEMPLATE_TEST_CASE("Representative of Equivalence Classes", "[EquivalenceClass][
   REQUIRE(EquivalenceClass(representative, equivalence) == equivalenceClass);
 }
 
+
+TEMPLATE_TEST_CASE("Automorphisms of Surfaces", "[EquivalenceClass][automorphisms]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
+  const auto equivalence = GENERATE_COPY(equivalences(surface));
+  CAPTURE(equivalence);
+
+  const auto equivalenceClass = EquivalenceClass(*surface, equivalence);
+  CAPTURE(equivalenceClass);
+
+  REQUIRE(equivalenceClass.automorphisms() >= 1);
+}
 }

@@ -33,7 +33,7 @@ CombinatorialEquivalence<Surface>::CombinatorialEquivalence(bool oriented):
   oriented(oriented) {}
 
 template <typename Surface>
-std::vector<Deformation<Surface>> CombinatorialEquivalence<Surface>::automorphisms(const Surface&) const {
+std::vector<Deformation<Surface>> CombinatorialEquivalence<Surface>::automorphisms(const Surface& surface) const {
   // TODO: Implement me
   throw std::logic_error("not implemented: CombinatorialEquivalence::automorphisms()");
 }

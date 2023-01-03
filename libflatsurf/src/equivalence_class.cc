@@ -38,21 +38,24 @@ bool EquivalenceClass<Surface>::operator==(const EquivalenceClass<Surface>& othe
 
 template <typename Surface>
 size_t EquivalenceClass<Surface>::automorphisms() const {
-  // TODO: Implement me.
-  throw std::logic_error("not implemented: automorphisms()");
+  return self->automorphisms;
 }
 
 template <typename Surface>
 const Surface& EquivalenceClass<Surface>::representative() const {
-  // TODO: Canonicalize
   return self->surface;
 }
 
 template <typename Surface>
 ImplementationOf<EquivalenceClass<Surface>>::ImplementationOf(const Surface& surface, const Equivalence<Surface>& equivalence) :
-  surface(surface),
-  equivalence(equivalence),
-  code(std::get<0>(equivalence.self->code(surface))) {}
+  equivalence(equivalence) {
+
+  auto [code, deformations] = equivalence.self->code(surface);
+
+  this->surface = deformations.at(0).codomain();
+  this->code = std::move(code);
+  this->automorphisms = deformations.size();
+}
 
 template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const EquivalenceClass<Surface>& clazz) {
