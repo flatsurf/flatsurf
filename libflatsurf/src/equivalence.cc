@@ -21,6 +21,7 @@
 #include <stdexcept>
 
 #include "../flatsurf/equivalence.hpp"
+#include "../flatsurf/equivalence_class.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/vector.hpp"
 #include "impl/combinatorial_equivalence.hpp"
@@ -66,9 +67,8 @@ Equivalence<Surface> Equivalence<Surface>::linear(bool oriented, std::function<M
 }
 
 template <typename Surface>
-bool Equivalence<Surface>::isomorphic(const Surface&, const Surface&) const {
-  // TODO: Implement me.
-  throw std::logic_error("not implemented: isomorphic()");
+bool Equivalence<Surface>::isomorphic(const Surface& lhs, const Surface& rhs) const {
+  return EquivalenceClass(lhs, *this) == EquivalenceClass(rhs, *this);
 }
 
 template <typename Surface>

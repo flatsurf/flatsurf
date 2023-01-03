@@ -26,6 +26,7 @@
 #include "../flatsurf/isomorphism.hpp"
 #include "generators/surface_generator.hpp"
 #include "generators/half_edge_generator.hpp"
+#include "generators/equivalence_generator.hpp"
 
 namespace flatsurf::test {
 
@@ -325,6 +326,21 @@ TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo SL2", "[Equivalence][areaPres
     const auto deformation = surface->applyMatrix(T(2), T(0), T(0), T(1));
 
     REQUIRE(EquivalenceClass(*surface, equivalence) != EquivalenceClass(deformation.codomain(), equivalence));
+  }
+}
+
+TEMPLATE_TEST_CASE("Isomorphy of Surfaces", "[Equivalence][isomorphic]", (mpq_class), (renf_elem_class)) {
+  using T = TestType;
+  using Surface = FlatTriangulation<T>;
+
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
+  const auto equivalence = GENERATE_COPY(equivalences(surface));
+  CAPTURE(equivalence);
+
+  SECTION("Surfaces are Isomorphic to Itself") {
+    REQUIRE(equivalence.isomorphic(*surface, *surface));
   }
 }
 
