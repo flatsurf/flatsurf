@@ -17,6 +17,9 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <fmt/format.h>
+#include <fmt/ranges.h>
+
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/point.hpp"
@@ -24,6 +27,7 @@
 #include "../flatsurf/permutation.hpp"
 #include "../flatsurf/chain.hpp"
 #include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/fmt.hpp"
  
 #include "impl/combinatorial_deformation_relation.hpp"
 
@@ -31,24 +35,53 @@
 
 namespace flatsurf {
 
+namespace {
+
+std::string formatMapping(const std::unordered_map<HalfEdge, HalfEdge>& mapping) {
+  return fmt::format("{{{}}}", fmt::join(mapping, ", "));
+}
+
+}
+
 template <typename Surface>
-CombinatorialDeformationRelation<Surface>::CombinatorialDeformationRelation(const Surface& domain, const Surface& codomain, Permutation<HalfEdge> mapping) :
+CombinatorialDeformationRelation<Surface>::CombinatorialDeformationRelation(const Surface& domain, const Surface& codomain, std::unordered_map<HalfEdge, HalfEdge> mapping) :
   DeformationRelation<Surface>(domain, codomain),
   mapping(std::move(mapping)),
   relabeling(true) {
-  LIBFLATSURF_ASSERT(2*domain.size() == this->mapping.size(), "half edge mapping " << this->mapping << " is not compatible with surface " << domain);
+  LIBFLATSURF_ASSERT(2*domain.size() == this->mapping.size(), "half edge mapping " << formatMapping(this->mapping) << " is not compatible with surface " << domain);
 
   for (const Edge edge : domain.edges()) {
     const auto preimage = edge.positive();
-    const auto image = this->mapping(preimage);
+    const auto image = this->mapping.find(preimage);
+    const auto minus_image = this->mapping.find(-preimage);
 
-    LIBFLATSURF_ASSERT(this->mapping(-preimage) == -image, "mapping must preserve edges but " << this->mapping << " does not.");
+    LIBFLATSURF_ASSERT((image == std::end(this->mapping)) == (minus_image == std::end(this->mapping)), "Combinatorial equivalence must be defined on edges but it maps " << preimage << " but does not map " << -preimage);
 
-    if (domain.fromHalfEdge(preimage) != codomain.fromHalfEdge(image)) {
+    if (image == std::end(this->mapping)) {
+      relabeling = false;
+      continue;
+    }
+
+
+    LIBFLATSURF_ASSERT(minus_image->second == -image->second, "mapping must preserve edges but " << formatMapping(this->mapping) << " does not.");
+
+    if (domain.fromHalfEdge(preimage) != codomain.fromHalfEdge(image->second)) {
       relabeling = false;
       break;
     }
   }
+}
+
+template <typename Surface>
+CombinatorialDeformationRelation<Surface>::CombinatorialDeformationRelation(const Surface& domain, const Surface& codomain, const Permutation<HalfEdge>& mapping) :
+  CombinatorialDeformationRelation(domain, codomain, [&](){
+    std::unordered_map<HalfEdge, HalfEdge> map;
+
+    for (const HalfEdge preimage : mapping.domain())
+      map[preimage] = mapping(preimage);
+
+    return map;
+  }()) {
 }
 
 template <typename Surface>
@@ -62,9 +95,9 @@ std::optional<Path<Surface>> CombinatorialDeformationRelation<Surface>::operator
     Chain<Surface> chain(this->codomain);
 
     for (const auto& summand : segment.chain())
-      chain += *summand.second * Chain<Surface>(this->codomain, this->mapping(summand.first.positive()));
+      chain += *summand.second * Chain<Surface>(this->codomain, this->mapping.find(summand.first.positive())->second);
 
-    segment = SaddleConnection(*this->codomain, this->mapping(segment.source()), this->mapping(segment.target()), chain);
+    segment = SaddleConnection(*this->codomain, this->mapping.find(segment.source())->second, this->mapping.find(segment.target())->second, chain);
   }
 
   return Path(segments);
@@ -72,10 +105,11 @@ std::optional<Path<Surface>> CombinatorialDeformationRelation<Surface>::operator
 
 template <typename Surface>
 Point<Surface> CombinatorialDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
-  // This does not make a ton of sense but we just map points preserving their
-  // barycentric coordinates.
+  if (!relabeling)
+    throw std::logic_error("not implemented: mapping points through combinatorial non-trivial deformations");
+
   HalfEdge face = point.face();
-  HalfEdge image = mapping(face);
+  HalfEdge image = mapping.find(face)->second;
 
   const auto coordinates = point.coordinates(face);
   return Point(*this->codomain, image, coordinates[0], coordinates[1], coordinates[2]);
@@ -97,7 +131,7 @@ bool CombinatorialDeformationRelation<Surface>::trivial() const {
     return false;
 
   for (const Edge edge : this->domain->edges())
-    if (mapping(edge.positive()) != edge.positive())
+    if (mapping.find(edge.positive())->second != edge.positive())
       return false;
 
   return true;
@@ -105,7 +139,7 @@ bool CombinatorialDeformationRelation<Surface>::trivial() const {
 
 template <typename Surface>
 std::ostream& CombinatorialDeformationRelation<Surface>::operator>>(std::ostream& os) const {
-  return os << this->domain << " → " << this->codomain << " mapping half edges " << this->mapping;
+  return os << this->domain << " → " << this->codomain << " mapping half edges " << formatMapping(this->mapping);
 }
 
 }

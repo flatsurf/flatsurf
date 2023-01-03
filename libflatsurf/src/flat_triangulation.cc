@@ -663,7 +663,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::relabel(const Permutatio
   // Build the combinatorial image (and validate arguments.)
   auto combinatorial = this->combinatorial().relabel(relabeling);
 
-  FlatTriangulation codomain{std::move(combinatorial), [&](HalfEdge halfEdge) { return this->fromHalfEdge(relabeling(halfEdge)); }};
+  FlatTriangulation codomain{std::move(combinatorial), [&](HalfEdge halfEdge) { return this->fromHalfEdge(relabeling.preimage(halfEdge)); }};
 
   return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<CombinatorialDeformationRelation<FlatTriangulation>>(*this, codomain, relabeling));
 }

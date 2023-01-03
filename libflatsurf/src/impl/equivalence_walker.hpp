@@ -52,11 +52,6 @@ struct EquivalenceWalker {
     // crossing since it just going to be smallest edge label we have seen so
     // far.
 
-    // Note that things get a bit more complicated here because we support that
-    // there is a predicate on the half edges that singles out possibly
-    // non-triangular cells that should be the only relevant data for this notion
-    // of equivalence.
-
     // The procedure for generic code words is similar. We start with some
     // initial "walkers" that emit a code character in each of their steps. We
     // compare these characters and discard any character that is not minimal

@@ -51,6 +51,8 @@ TEMPLATE_TEST_CASE("Combinatorial Equivalence of Surfaces", "[Equivalence][combi
   SECTION("Equivalence modulo Flipping an Edge") {
     const auto halfEdge = GENERATE_COPY(halfEdges(surface));
 
+    const auto equivalence = Equivalence<Surface>::combinatorial(true);
+
     // Don't test for each edge twice.
     if (halfEdge == halfEdge.edge().positive()) {
       if (surface->convex(halfEdge, true)) {
@@ -58,10 +60,9 @@ TEMPLATE_TEST_CASE("Combinatorial Equivalence of Surfaces", "[Equivalence][combi
         flipped.flip(halfEdge);
         CAPTURE(flipped);
 
-        const auto equivalence = Equivalence<Surface>::combinatorial(true, [&](const Surface&, const Edge edge) { return edge != halfEdge; });
-
-        // If we ignore the flipped edge, the surfaces must be indistinguishable.
-        REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(flipped, equivalence));
+        // The surfaces might still be isomorphic combinatorially. In any case,
+        // comparing them should be possible.
+        REQUIRE_NOTHROW(EquivalenceClass(*surface, equivalence) == EquivalenceClass(flipped, equivalence));
       }
     }
   }
@@ -94,14 +95,6 @@ TEMPLATE_TEST_CASE("Combinatorial Equivalence of Surfaces", "[Equivalence][combi
 
         REQUIRE(EquivalenceClass(*surface, equivalence) != EquivalenceClass(inserted.codomain(), equivalence));
       }
-
-      SECTION("Inserting a Point does not Change the Combinatorial Structure away from that Point") {
-        const auto equivalence = Equivalence<Surface>::combinatorial(true, [&](const Surface&, const Edge edge) {
-            return edge.index() < surface->size();
-            });
-
-        REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(inserted.codomain(), equivalence));
-      }
     }
   }
 }
@@ -113,13 +106,13 @@ TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo Labels", "[Equivalence][unlab
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
 
+  const auto equivalence = Equivalence<Surface>::unlabeled();
+
   SECTION("Unlabeled Equivalence is Equal to Itself") {
     REQUIRE(Equivalence<Surface>::unlabeled() == Equivalence<Surface>::unlabeled());
   }
 
   SECTION("A Surface is Equivalent to Itself") {
-    const auto equivalence = Equivalence<Surface>::unlabeled();
-
     REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(*surface, equivalence));
   }
 
@@ -133,10 +126,8 @@ TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo Labels", "[Equivalence][unlab
         flipped.flip(halfEdge);
         CAPTURE(flipped);
 
-        const auto equivalence = Equivalence<Surface>::unlabeled([&](const Surface&, const Edge edge) { return edge != halfEdge; });
-
-        // If we ignore the flipped edge, the surfaces must be indistinguishable.
-        REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(flipped, equivalence));
+        // The surfaces are likely different now. In any case, comparing them should not throw.
+        REQUIRE_NOTHROW(EquivalenceClass(*surface, equivalence) == EquivalenceClass(flipped, equivalence));
       }
     }
   }
@@ -152,17 +143,15 @@ TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo Labels", "[Equivalence][unlab
 
     REQUIRE(rotated.isomorphism(*surface, ISOMORPHISM::FACES).has_value() == (EquivalenceClass(*surface, equivalence) == EquivalenceClass(rotated, equivalence)));
 
-    // Rotating by π might leave us with the same surface modulo labeling; in particular, if we ignore edges in the interior of Delaunay cells.
+    // Rotating by π might leave us with the same surface modulo labeling; in
+    // particular, if we ignore edges in the interior of Delaunay cells.
     auto rotatedDelaunay = rotated.clone();
     rotatedDelaunay.delaunay();
 
     auto surfaceDelaunay = surface->clone();
     surfaceDelaunay.delaunay();
 
-    const auto delaunayEquivalence = Equivalence<Surface>::unlabeled([](const Surface& surface, Edge e) -> bool {
-        return surface.delaunay(e) != DELAUNAY::AMBIGUOUS;
-        });
-    REQUIRE(rotatedDelaunay.isomorphism(surfaceDelaunay, ISOMORPHISM::DELAUNAY_CELLS).has_value() == (EquivalenceClass(surfaceDelaunay, delaunayEquivalence) == EquivalenceClass(rotatedDelaunay, delaunayEquivalence)));
+    REQUIRE_NOTHROW(rotatedDelaunay.isomorphism(surfaceDelaunay, ISOMORPHISM::DELAUNAY_CELLS).has_value() == (EquivalenceClass(surfaceDelaunay, equivalence) == EquivalenceClass(rotatedDelaunay, equivalence)));
   }
 }
 
@@ -173,6 +162,8 @@ TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo GL2", "[Equivalence][linear]"
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
 
+  const auto equivalence = Equivalence<Surface>::linear();
+
   SECTION("Equality of Linear Equivalences") {
     REQUIRE(Equivalence<Surface>::linear() == Equivalence<Surface>::linear());
     REQUIRE(Equivalence<Surface>::linear(false) == Equivalence<Surface>::linear(false));
@@ -180,8 +171,6 @@ TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo GL2", "[Equivalence][linear]"
   }
 
   SECTION("A Surface is Equivalent to Itself") {
-    const auto equivalence = Equivalence<Surface>::linear();
-
     REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(*surface, equivalence));
   }
 
@@ -195,17 +184,14 @@ TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo GL2", "[Equivalence][linear]"
         flipped.flip(halfEdge);
         CAPTURE(flipped);
 
-        const auto equivalence = Equivalence<Surface>::linear(true, [](const Surface&, HalfEdge, HalfEdge) { return std::tuple{T(1), T(), T(), T(1)}; }, [&](const Surface&, const Edge edge) { return edge != halfEdge; });
-
-        // If we ignore the flipped edge, the surfaces must be indistinguishable.
-        REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(flipped, equivalence));
+       // If we ignored the flipped edge, the surfaces would be
+       // indistinguishable. In any case, comparing them should not throw.
+        REQUIRE_NOTHROW(EquivalenceClass(*surface, equivalence) == EquivalenceClass(flipped, equivalence));
       }
     }
   }
 
   SECTION("Equivalence modulo Linear Deformation With Positive Determinant") {
-    const auto equivalence = Equivalence<Surface>::linear();
-
     const auto deformation = surface->applyMatrix(T(2), T(1), T(7), T(6));
 
     REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(deformation.codomain(), equivalence));
@@ -227,6 +213,8 @@ TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo O2", "[Equivalence][orthogona
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
 
+  const auto equivalence = Equivalence<Surface>::orthogonal();
+
   SECTION("Equality of Orthogonal Equivalences") {
     REQUIRE(Equivalence<Surface>::orthogonal() == Equivalence<Surface>::orthogonal());
     REQUIRE(Equivalence<Surface>::orthogonal(false) == Equivalence<Surface>::orthogonal(false));
@@ -234,8 +222,6 @@ TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo O2", "[Equivalence][orthogona
   }
 
   SECTION("A Surface is Equivalent to Itself") {
-    const auto equivalence = Equivalence<Surface>::orthogonal();
-
     REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(*surface, equivalence));
   }
 
@@ -249,10 +235,9 @@ TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo O2", "[Equivalence][orthogona
         flipped.flip(halfEdge);
         CAPTURE(flipped);
 
-        const auto equivalence = Equivalence<Surface>::orthogonal(true, [&](const Surface&, const Edge edge) { return edge != halfEdge; });
-
-        // If we ignore the flipped edge, the surfaces must be indistinguishable.
-        REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(flipped, equivalence));
+        // If we ignored the flipped edge, the surfaces would be
+        // indistinguishable. In any case, comparing them should be supported.
+        REQUIRE_NOTHROW(EquivalenceClass(*surface, equivalence) == EquivalenceClass(flipped, equivalence));
       }
     }
   }
@@ -289,6 +274,8 @@ TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo SL2", "[Equivalence][areaPres
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
 
+  const auto equivalence = Equivalence<Surface>::areaPreserving();
+
   SECTION("Equality of Area-Preserving Equivalences") {
     REQUIRE(Equivalence<Surface>::areaPreserving() == Equivalence<Surface>::areaPreserving());
     REQUIRE(Equivalence<Surface>::areaPreserving(false) == Equivalence<Surface>::areaPreserving(false));
@@ -296,8 +283,6 @@ TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo SL2", "[Equivalence][areaPres
   }
 
   SECTION("A Surface is Equivalent to Itself") {
-    const auto equivalence = Equivalence<Surface>::areaPreserving();
-
     REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(*surface, equivalence));
   }
 
@@ -311,10 +296,9 @@ TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo SL2", "[Equivalence][areaPres
         flipped.flip(halfEdge);
         CAPTURE(flipped);
 
-        const auto equivalence = Equivalence<Surface>::areaPreserving(true, [&](const Surface&, const Edge edge) { return edge != halfEdge; });
-
-        // If we ignore the flipped edge, the surfaces must be indistinguishable.
-        REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(flipped, equivalence));
+        // If we ignored the flipped edge, the surfaces would be
+        // indistinguishable. In any case, comparing them should be supported.
+        REQUIRE_NOTHROW(EquivalenceClass(*surface, equivalence) == EquivalenceClass(flipped, equivalence));
       }
     }
   }

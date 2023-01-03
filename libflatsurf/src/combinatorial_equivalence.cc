@@ -29,9 +29,8 @@
 namespace flatsurf {
 
 template <typename Surface>
-CombinatorialEquivalence<Surface>::CombinatorialEquivalence(bool oriented, Predicate predicate):
-  oriented(oriented),
-  predicate(predicate) {}
+CombinatorialEquivalence<Surface>::CombinatorialEquivalence(bool oriented):
+  oriented(oriented) {}
 
 template <typename Surface>
 std::vector<Deformation<Surface>> CombinatorialEquivalence<Surface>::automorphisms(const Surface&) const {
@@ -49,14 +48,11 @@ bool CombinatorialEquivalence<Surface>::equal(const ImplementationOf<Equivalence
   if (this == other)
     return true;
 
-  return oriented == other->oriented && (predicate == nullptr) == (other->predicate == nullptr);
+  return oriented == other->oriented;
 }
 
 template <typename Surface>
 std::string CombinatorialEquivalence<Surface>::toString() const {
-  if (predicate != nullptr)
-    return oriented ? "Orientation Preserving Combinatorial Equivalence" : "Combinatorial Equivalence";
-
   return oriented ? "Orientation Preserving Combinatorial Equivalence" : "Combinatorial Equivalence";
 }
 
@@ -65,13 +61,10 @@ std::tuple<std::unique_ptr<EquivalenceClassCode>, std::vector<Deformation<Surfac
   std::vector<CombinatorialEquivalenceWalker<Surface>> walkers;
 
   for (const auto start : surface.halfEdges()) {
-    if (predicate != nullptr && !predicate(surface, start))
-      continue;
-
-    walkers.push_back({&surface, start, 1, &predicate});
+    walkers.push_back({&surface, start, 1});
 
     if (!oriented)
-      walkers.push_back({&surface, start, -1, &predicate});
+      walkers.push_back({&surface, start, -1});
   }
 
   return CombinatorialEquivalenceWalker<Surface>::word(std::move(walkers));

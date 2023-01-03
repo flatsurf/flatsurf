@@ -57,10 +57,9 @@ T div(const T& numerator, const T& denominator) {
 }
 
 template <typename Surface>
-LinearEquivalence<Surface>::LinearEquivalence(bool oriented, Normalization normalization, Predicate predicate) :
+LinearEquivalence<Surface>::LinearEquivalence(bool oriented, Normalization normalization):
   oriented(oriented),
-  normalization(normalization),
-  predicate(predicate) {}
+  normalization(normalization) {}
 
 template <typename Surface>
 std::vector<Deformation<Surface>> LinearEquivalence<Surface>::automorphisms(const Surface&) const {
@@ -79,12 +78,6 @@ bool LinearEquivalence<Surface>::equal(const ImplementationOf<Equivalence<Surfac
     return true;
 
   if (oriented != other->oriented)
-    return false;
-
-  if (predicate != nullptr)
-    return false;
-
-  if (other->predicate != nullptr)
     return false;
 
   if (!std::holds_alternative<GROUP>(normalization))
@@ -124,40 +117,20 @@ std::tuple<std::unique_ptr<EquivalenceClassCode>, std::vector<Deformation<Surfac
   std::vector<LinearEquivalenceWalker<Surface>> walkers;
 
   for (const auto start : surface.halfEdges()) {
-    if (predicate != nullptr && !predicate(surface, start))
-      continue;
-
     {
-      HalfEdge next = start;
-      while (true) {
-        next = surface.nextAtVertex(next);
+      HalfEdge next = surface.nextAtVertex(start);
 
-        LIBFLATSURF_ASSERT_ARGUMENT(next != start, "edge graph singled out by predicate must not contain cut edges such as leafs");
-
-        if (predicate == nullptr || predicate(surface, next)) {
-          const auto normalizationMatrix = normalize(surface, start, next);
-          LIBFLATSURF_ASSERT(std::get<0>(normalizationMatrix) * std::get<3>(normalizationMatrix) - std::get<1>(normalizationMatrix) * std::get<2>(normalizationMatrix) > 0, "normalization must preserve orientation");
-          walkers.push_back({&surface, start, &predicate, normalizationMatrix});
-          break;
-        }
-      }
+      const auto normalizationMatrix = normalize(surface, start, next);
+      LIBFLATSURF_ASSERT(std::get<0>(normalizationMatrix) * std::get<3>(normalizationMatrix) - std::get<1>(normalizationMatrix) * std::get<2>(normalizationMatrix) > 0, "normalization must preserve orientation");
+      walkers.push_back({&surface, start, normalizationMatrix});
     }
 
     if (!oriented) {
-      HalfEdge next = start;
+      HalfEdge next = surface.previousAtVertex(start);
 
-      while (true) {
-        next = surface.previousAtVertex(next);
-
-        LIBFLATSURF_ASSERT_ARGUMENT(next != start, "edge graph singled out by predicate must not contain cut edges such as leafs");
-
-        if (predicate == nullptr || predicate(surface, next)) {
-          const auto normalizationMatrix = normalize(surface, start, surface.previousAtVertex(start));
-          LIBFLATSURF_ASSERT(std::get<0>(normalizationMatrix) * std::get<3>(normalizationMatrix) - std::get<1>(normalizationMatrix) * std::get<2>(normalizationMatrix) < 0, "normalization must not preserve orientation");
-          walkers.push_back({&surface, start, &predicate, normalizationMatrix});
-          break;
-        }
-      }
+      const auto normalizationMatrix = normalize(surface, start, surface.previousAtVertex(start));
+      LIBFLATSURF_ASSERT(std::get<0>(normalizationMatrix) * std::get<3>(normalizationMatrix) - std::get<1>(normalizationMatrix) * std::get<2>(normalizationMatrix) < 0, "normalization must not preserve orientation");
+      walkers.push_back({&surface, start, normalizationMatrix});
     }
   }
 

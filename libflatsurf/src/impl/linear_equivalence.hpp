@@ -49,7 +49,7 @@ struct LinearEquivalence : ImplementationOf<Equivalence<Surface>> {
 
   using Normalization = std::variant<GROUP, std::function<Matrix(const Surface&, HalfEdge, HalfEdge)>>;
 
-  LinearEquivalence(bool oriented, Normalization normalization, Predicate predicate);
+  LinearEquivalence(bool oriented, Normalization normalization);
 
   std::tuple<std::unique_ptr<EquivalenceClassCode>, std::vector<Deformation<Surface>>> code(const Surface&) const override;
   std::vector<Deformation<Surface>> automorphisms(const Surface&) const override;
@@ -67,7 +67,6 @@ struct LinearEquivalence : ImplementationOf<Equivalence<Surface>> {
  private:
   bool oriented;
   Normalization normalization;
-  Predicate predicate;
 };
 
 }

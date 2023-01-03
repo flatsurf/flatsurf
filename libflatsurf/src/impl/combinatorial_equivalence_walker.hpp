@@ -33,12 +33,12 @@ namespace flatsurf {
 
 template <typename Surface>
 struct CombinatorialEquivalenceWalker : EquivalenceWalker<Surface, CombinatorialEquivalenceWalker<Surface>> {
+  using T = typename Surface::Coordinate;
   using Character = std::vector<int>;
   using Word = CombinatorialEquivalenceClassCode::Word;
-  using Predicate = typename CombinatorialEquivalence<Surface>::Predicate;
   using Code = CombinatorialEquivalenceClassCode;
 
-  CombinatorialEquivalenceWalker(const Surface* surface, HalfEdge start, int orientation, const Predicate* predicate);
+  CombinatorialEquivalenceWalker(const Surface* surface, HalfEdge start, int orientation);
 
   static void append(Word&, const Character&);
 
@@ -50,17 +50,21 @@ struct CombinatorialEquivalenceWalker : EquivalenceWalker<Surface, Combinatorial
 
   // Return the combinatorial normal form of the surface that corresponds to
   // the code word this walker found.
+  // The vectors underlying this surface are taken from the original surface.
+  // Since the normalization has to be a translation surface currently, there
+  // is not canonical normal form here. (E.g., by making all faces regular
+  // n-gons.)
   Surface normalization() const;
 
   // Return the deformation that maps the surface to its normalization.
   Deformation<Surface> deformation(const Surface& normalization) const;
 
   // Return the images of the half edges in the normalization.
-  Permutation<HalfEdge> relabeling() const;
+  std::unordered_map<HalfEdge, HalfEdge> relabeling() const;
 
   // Map half edges to 0, 1, 2, … as we encounter them when walking the
-  // surface. By construction this will only contain a single signed half
-  // edge for each edge.
+  // surface. By construction this will only contain at most a single signed
+  // half edge for each edge.
   // (Note that we don't use a HalfEdge map since it is allocating a linear
   // amount of memory from the start which would mean that we'd get quadratic
   // runtime by just initializing linearly many runners.)
@@ -71,8 +75,6 @@ struct CombinatorialEquivalenceWalker : EquivalenceWalker<Surface, Combinatorial
   std::vector<HalfEdge> labeled;
 
   int orientation;
-
-  const Predicate* predicate;
 
   int steps = 0;
 };

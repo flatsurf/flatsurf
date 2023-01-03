@@ -29,40 +29,40 @@
 namespace flatsurf {
 
 template <typename Surface>
-Equivalence<Surface> Equivalence<Surface>::combinatorial(bool oriented, std::function<bool(const Surface&, Edge)> predicate) {
-  return Equivalence(PrivateConstructor{}, std::make_shared<CombinatorialEquivalence<Surface>>(oriented, predicate));
+Equivalence<Surface> Equivalence<Surface>::combinatorial(bool oriented) {
+  return Equivalence(PrivateConstructor{}, std::make_shared<CombinatorialEquivalence<Surface>>(oriented));
 }
 
 template <typename Surface>
-Equivalence<Surface> Equivalence<Surface>::unlabeled(std::function<bool(const Surface&, Edge)> predicate) {
+Equivalence<Surface> Equivalence<Surface>::unlabeled() {
   static const auto normalization = std::function([](const Surface&, HalfEdge, HalfEdge) -> std::tuple<T, T, T, T> {
     return {T(1), T(), T(), T(1)};
   });
   using GROUP = typename LinearEquivalence<Surface>::GROUP;
 
-  return Equivalence(PrivateConstructor{}, std::make_shared<LinearEquivalence<Surface>>(true, GROUP::TRIVIAL, predicate));
+  return Equivalence(PrivateConstructor{}, std::make_shared<LinearEquivalence<Surface>>(true, GROUP::TRIVIAL));
 }
 
 template <typename Surface>
-Equivalence<Surface> Equivalence<Surface>::orthogonal(bool oriented, std::function<bool(const Surface&, Edge)> predicate) {
+Equivalence<Surface> Equivalence<Surface>::orthogonal(bool oriented) {
   using GROUP = typename LinearEquivalence<Surface>::GROUP;
 
-  return Equivalence(PrivateConstructor{}, std::make_shared<LinearEquivalence<Surface>>(oriented, GROUP::O, predicate));
+  return Equivalence(PrivateConstructor{}, std::make_shared<LinearEquivalence<Surface>>(oriented, GROUP::O));
 }
 
 template <typename Surface>
-Equivalence<Surface> Equivalence<Surface>::areaPreserving(bool oriented, std::function<bool(const Surface&, Edge)> predicate) {
+Equivalence<Surface> Equivalence<Surface>::areaPreserving(bool oriented) {
   using GROUP = typename LinearEquivalence<Surface>::GROUP;
 
-  return Equivalence(PrivateConstructor{}, std::make_shared<LinearEquivalence<Surface>>(oriented, GROUP::SL, predicate));
+  return Equivalence(PrivateConstructor{}, std::make_shared<LinearEquivalence<Surface>>(oriented, GROUP::SL));
 }
 
 template <typename Surface>
-Equivalence<Surface> Equivalence<Surface>::linear(bool oriented, std::function<Matrix(const Surface&, HalfEdge, HalfEdge)> normalization, std::function<bool(const Surface&, Edge)> predicate) {
+Equivalence<Surface> Equivalence<Surface>::linear(bool oriented, std::function<Matrix(const Surface&, HalfEdge, HalfEdge)> normalization) {
   using Normalization = typename LinearEquivalence<Surface>::Normalization;
   using GROUP = typename LinearEquivalence<Surface>::GROUP;
 
-  return Equivalence(PrivateConstructor{}, std::make_shared<LinearEquivalence<Surface>>(oriented, normalization == nullptr ? static_cast<Normalization>(GROUP::GL) : normalization, predicate));
+  return Equivalence(PrivateConstructor{}, std::make_shared<LinearEquivalence<Surface>>(oriented, normalization == nullptr ? static_cast<Normalization>(GROUP::GL) : normalization));
 }
 
 template <typename Surface>

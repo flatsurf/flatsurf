@@ -67,16 +67,6 @@ TEMPLATE_TEST_CASE("Equality of Equivalence Classes is Consistent", "[Equivalenc
         }
       }
     }
-
-    SECTION("Equality Depends on the Notion of Equivalence") {
-      // This custom equivalence, though it has the same implementation as
-      // Equivalence::combinatorial(), is different from any other equivalence so
-      // it's classes will be distinct from previously created classes.
-      const auto anotherEquivalence = Equivalence<Surface>::combinatorial(true, [](const Surface&, Edge) { return true; });
-
-      REQUIRE(EquivalenceClass(*surface, anotherEquivalence) != equivalenceClass);
-      REQUIRE(EquivalenceClass(*surface, anotherEquivalence) == EquivalenceClass(*surface, anotherEquivalence));
-    }
   }
 }
 

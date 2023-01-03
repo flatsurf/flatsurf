@@ -21,6 +21,7 @@
 #define LIBFLATSURF_IMPL_COMBINATORIAL_DEFORMATION_RELATION_HPP
 
 #include <iosfwd>
+#include <unordered_map>
 
 #include "deformation_relation.hpp"
 #include "../../flatsurf/permutation.hpp"
@@ -29,12 +30,17 @@ namespace flatsurf {
 
 // A deformation between surfaces that are combinatorially equivalent, i.e.,
 // their combinatorial structures are identical up to a change of labels.
+// Note that this relabeling might just be defined on a subset of half edges,
+// e.g., on some (Delaunay) cells of the surface. In that case, the
+// combinatorial structure is identical (modulo relabeling) on that subset and
+// its image.
 template <typename Surface>
 class CombinatorialDeformationRelation : public DeformationRelation<Surface> {
   using T = typename Surface::Coordinate;
 
  public:
-  CombinatorialDeformationRelation(const Surface& domain, const Surface& codomain, Permutation<HalfEdge> mapping);
+  CombinatorialDeformationRelation(const Surface& domain, const Surface& codomain, std::unordered_map<HalfEdge, HalfEdge> mapping);
+  CombinatorialDeformationRelation(const Surface& domain, const Surface& codomain, const Permutation<HalfEdge>& mapping);
 
   std::optional<Path<Surface>> operator()(const Path<Surface>&) const override;
   Point<Surface> operator()(const Point<Surface>&) const override;
@@ -47,7 +53,7 @@ class CombinatorialDeformationRelation : public DeformationRelation<Surface> {
 
   std::ostream& operator>>(std::ostream& os) const override;
 
-  Permutation<HalfEdge> mapping;
+  std::unordered_map<HalfEdge, HalfEdge> mapping;
 
   // Whether the deformation is trivial except for a relabeling of half edges.
   // If this is not the case, this deformation cannot be applied to saddle

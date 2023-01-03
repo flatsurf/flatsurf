@@ -36,7 +36,7 @@ struct CombinatorialEquivalence : ImplementationOf<Equivalence<Surface>> {
   using T = typename Surface::Coordinate;
   using Predicate = std::function<bool(const Surface&, Edge)>;
 
-  CombinatorialEquivalence(bool oriented, Predicate predicate);
+  CombinatorialEquivalence(bool oriented);
 
   std::tuple<std::unique_ptr<EquivalenceClassCode>, std::vector<Deformation<Surface>>> code(const Surface&) const override;
   std::vector<Deformation<Surface>> automorphisms(const Surface&) const override;
@@ -48,7 +48,6 @@ struct CombinatorialEquivalence : ImplementationOf<Equivalence<Surface>> {
 
  private:
   bool oriented;
-  Predicate predicate;
 };
 
 }

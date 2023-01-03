@@ -17,7 +17,10 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include  <fmt/format.h>
+#include <unordered_set>
+
+#include <fmt/format.h>
+#include <fmt/ranges.h>
 
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/half_edge.hpp"
@@ -31,10 +34,9 @@
 namespace flatsurf {
 
 template <typename Surface>
-CombinatorialEquivalenceWalker<Surface>::CombinatorialEquivalenceWalker(const Surface* surface, HalfEdge start, int orientation, const Predicate* predicate):
+CombinatorialEquivalenceWalker<Surface>::CombinatorialEquivalenceWalker(const Surface* surface, HalfEdge start, int orientation):
   EquivalenceWalker<Surface, CombinatorialEquivalenceWalker>(surface),
-  orientation(orientation),
-  predicate(predicate) {
+  orientation(orientation) {
   LIBFLATSURF_ASSERT(orientation == -1 || orientation == 1, "orientation must be -1 or 1 but was " << orientation);
   labels[-start] = 0;
   labeled.push_back(-start);
@@ -59,16 +61,11 @@ std::optional<typename CombinatorialEquivalenceWalker<Surface>::Character> Combi
   HalfEdge pos = start;
 
   while (true) {
-    LIBFLATSURF_ASSERT(*predicate == nullptr || (*predicate)(*this->surface, pos), "Cannot record an edge that has been filtered out by the equivalence predicate.");
-
     // When the orientation is reversed, the vertex permutation is replaced with its inverse,
     // so previousAtVertex is replaced with nextAtVertex. The replacement for
     // nextInFace is more complicated, using the fact that nextInFace(he) =
     // -nextAtVertex(-nextAtVertex() in a triangulated surface.
     pos = orientation > 0 ? this->surface->nextInFace(pos) : (-this->surface->previousAtVertex(-this->surface->previousAtVertex(pos)));
-
-    while (*predicate != nullptr && !(*predicate)(*this->surface, pos))
-      pos = orientation > 0 ? this->surface->previousAtVertex(pos) : this->surface->nextAtVertex(pos);
 
     if (pos == start)
       break;
@@ -136,7 +133,7 @@ int CombinatorialEquivalenceWalker<Surface>::label(const Surface&, const HalfEdg
 
 template <typename Surface>
 Surface CombinatorialEquivalenceWalker<Surface>::normalization() const {
-  return this->surface->relabel(relabeling()).codomain().clone();
+  return this->surface->relabel(Permutation<HalfEdge>(relabeling())).codomain().clone();
 }
 
 template <typename Surface>
@@ -145,25 +142,31 @@ Deformation<Surface> CombinatorialEquivalenceWalker<Surface>::deformation(const 
 }
 
 template <typename Surface>
-Permutation<HalfEdge> CombinatorialEquivalenceWalker<Surface>::relabeling() const {
-  std::vector<std::pair<HalfEdge, HalfEdge>> permutation;
+std::unordered_map<HalfEdge, HalfEdge> CombinatorialEquivalenceWalker<Surface>::relabeling() const {
+  std::unordered_map<HalfEdge, HalfEdge> permutation;
+
+  std::vector<bool> seen(2*this->surface->size());
 
   for (const HalfEdge preimage: this->surface->halfEdges()) {
     auto image = labels.find(preimage);
 
     if (image != std::end(labels)) {
-      permutation.push_back({preimage, image->second + 1});
+      // Note that we need to shift the value since image->second is zero-based.
+      permutation[preimage] = image->second + 1;
       continue;
     }
 
     image = labels.find(-preimage);
 
-    LIBFLATSURF_ASSERT(image != std::end(labels), "Cannot create combinatorial deformation from incomplete combinatorial walker. Neither " << preimage << " nor " << -preimage << " was assigned by this walker for " << *this->surface << " whose mapping is given by " << fmt::format("{}", fmt::join(labeled, ", ")));
+    LIBFLATSURF_ASSERT(image != std::end(labels), "half edge not in any cell");
 
-    permutation.push_back({preimage, -image->second-1});
+    // Note that we need to shift the value since image->second is zero-based.
+    permutation[preimage] = -(image->second + 1);
   }
 
-  return Permutation(permutation);
+  LIBFLATSURF_ASSERT(permutation.size() == 2*this->surface->size(), "relabeling not defined on all half edges of surface");
+
+  return permutation;
 }
 
 }
