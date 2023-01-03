@@ -483,14 +483,17 @@ TEMPLATE_TEST_CASE("Relabel half edges of a Flat Triangulation", "[FlatTriangula
     for (const auto halfEdge : surface->halfEdges())
       swap[halfEdge] = halfEdge;
 
-    swap[HalfEdge(1)] == HalfEdge(-1);
-    swap[HalfEdge(-1)] == HalfEdge(1);
+    swap[HalfEdge(1)] = HalfEdge(-1);
+    swap[HalfEdge(-1)] = HalfEdge(1);
 
-    const auto swapped = surface->relabel(Permutation<HalfEdge>(swap));
+    const Permutation<HalfEdge> permutation{swap};
+    CAPTURE(permutation);
+
+    const auto swapped = surface->relabel(permutation);
 
     REQUIRE(*surface != swapped.codomain());
 
-    const auto restored = swapped.codomain().relabel(Permutation<HalfEdge>(swap));
+    const auto restored = swapped.codomain().relabel(permutation);
 
     REQUIRE(*surface == restored.codomain());
   }

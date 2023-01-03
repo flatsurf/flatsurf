@@ -126,14 +126,17 @@ TEST_CASE("Relabeling Flat Triangulations", "[FlatTriangulationCombinatorial][re
     for (const auto halfEdge : surface->halfEdges())
       swap[halfEdge] = halfEdge;
 
-    swap[HalfEdge(1)] == HalfEdge(-1);
-    swap[HalfEdge(-1)] == HalfEdge(1);
+    swap[HalfEdge(1)] = HalfEdge(-1);
+    swap[HalfEdge(-1)] = HalfEdge(1);
 
-    const auto swapped = surface->relabel(Permutation<HalfEdge>(swap));
+    const Permutation<HalfEdge> permutation{swap};
+    CAPTURE(permutation);
+
+    const auto swapped = surface->relabel(permutation);
 
     REQUIRE(swapped != *surface);
 
-    const auto restored = surface->relabel(Permutation<HalfEdge>(swap));
+    const auto restored = swapped.relabel(permutation);
 
     REQUIRE(restored == *surface);
   }

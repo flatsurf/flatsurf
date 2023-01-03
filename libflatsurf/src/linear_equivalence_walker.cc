@@ -21,6 +21,8 @@
 #include "../flatsurf/edge.hpp"
 
 #include "impl/linear_equivalence_walker.hpp"
+#include "impl/combinatorial_deformation_relation.hpp"
+#include "impl/deformation.impl.hpp"
 
 namespace flatsurf {
 
@@ -79,14 +81,25 @@ std::optional<typename LinearEquivalenceWalker<Surface>::Character> LinearEquiva
 }
 
 template <typename Surface>
-Deformation<Surface> LinearEquivalenceWalker<Surface>::deformation(const Surface& codomain) const {
-  // TODO: Implement me.
-  throw std::logic_error("not implemented: deformation()");
+Deformation<Surface> LinearEquivalenceWalker<Surface>::deformation(const Surface& normalization) const {
+  const auto deformed = this->surface->applyMatrix(
+    std::get<0>(this->normalizationMatrix),
+    std::get<1>(this->normalizationMatrix),
+    std::get<2>(this->normalizationMatrix),
+    std::get<3>(this->normalizationMatrix));
+
+  return ImplementationOf<Deformation<Surface>>::make(std::make_unique<CombinatorialDeformationRelation<Surface>>(deformed.codomain(), normalization, combinatorialWalker.relabeling())) * deformed;
 }
 
 template <typename Surface>
 Surface LinearEquivalenceWalker<Surface>::normalization() const {
-  throw std::logic_error("not implemented: normalization()");
+  const auto combinatorialNormalization = combinatorialWalker.normalization();
+
+  return combinatorialNormalization.applyMatrix(
+    std::get<0>(this->normalizationMatrix),
+    std::get<1>(this->normalizationMatrix),
+    std::get<2>(this->normalizationMatrix),
+    std::get<3>(this->normalizationMatrix)).codomain().clone();
 }
 
 }
