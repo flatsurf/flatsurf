@@ -41,7 +41,7 @@ struct LinearEquivalenceWalker : EquivalenceWalker<Surface, LinearEquivalenceWal
   using NormalizationMatrix = typename LinearEquivalence<Surface>::Matrix;
   using Code = LinearEquivalenceClassCode<Surface>;
 
-  LinearEquivalenceWalker(const Surface* surface, HalfEdge start, const NormalizationMatrix& normalization);
+  LinearEquivalenceWalker(const Surface* surface, HalfEdge start, const NormalizationMatrix& normalization, bool scaling);
 
   static void append(Word&, const Character&);
 
@@ -61,6 +61,7 @@ struct LinearEquivalenceWalker : EquivalenceWalker<Surface, LinearEquivalenceWal
   CombinatorialEquivalenceWalker<Surface> combinatorialWalker;
 
   NormalizationMatrix normalizationMatrix;
+  bool overscaling;
 };
 
 }

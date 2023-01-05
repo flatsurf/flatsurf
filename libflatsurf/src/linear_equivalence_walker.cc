@@ -27,10 +27,11 @@
 namespace flatsurf {
 
 template <typename Surface>
-LinearEquivalenceWalker<Surface>::LinearEquivalenceWalker(const Surface* surface, HalfEdge start, const NormalizationMatrix& normalizationMatrix):
+LinearEquivalenceWalker<Surface>::LinearEquivalenceWalker(const Surface* surface, HalfEdge start, const NormalizationMatrix& normalizationMatrix, bool overscaling):
   EquivalenceWalker<Surface, LinearEquivalenceWalker>(surface),
   combinatorialWalker(surface, start, std::get<0>(normalizationMatrix) * std::get<3>(normalizationMatrix) - std::get<1>(normalizationMatrix) * std::get<2>(normalizationMatrix) > 0 ? 1 : -1),
-  normalizationMatrix(normalizationMatrix)
+  normalizationMatrix(normalizationMatrix),
+  overscaling(overscaling)
   {}
 
 template <typename Surface>
@@ -71,17 +72,36 @@ std::optional<typename LinearEquivalenceWalker<Surface>::Character> LinearEquiva
     return std::nullopt;
 
   const HalfEdge crossed = combinatorialWalker.labeled[combinatorialWalker.steps-1];
-  const auto normalized = this->surface->fromHalfEdge(crossed).applyMatrix(
+  auto normalized = this->surface->fromHalfEdge(crossed).applyMatrix(
     std::get<0>(this->normalizationMatrix),
     std::get<1>(this->normalizationMatrix),
     std::get<2>(this->normalizationMatrix),
     std::get<3>(this->normalizationMatrix));
+
+  if (overscaling && combinatorialWalker.steps == 1) {
+    // If the normalization is not allowed to scale, we encode the absolute
+    // value of the determinant of the normalization to make sure we
+    // distinguish differently scaled surfaces.
+    T det = std::get<0>(this->normalizationMatrix) * std::get<3>(this->normalizationMatrix) - std::get<1>(this->normalizationMatrix) * std::get<2>(this->normalizationMatrix);
+
+    if (det < 0)
+      det = -det;
+
+    if (det != 1) {
+      LIBFLATSURF_ASSERT(normalized.x() == 1 && normalized.y() == 0, "Cannot account for scaling in normalization if the normalization does not send the first vector to (1, 0) but to " << normalized);
+
+      normalized = Vector<T>(det, 0); 
+    }
+  }
 
   return std::tuple{*combinatorial, normalized};
 }
 
 template <typename Surface>
 Deformation<Surface> LinearEquivalenceWalker<Surface>::deformation(const Surface& normalization) const {
+  if (overscaling)
+    return Deformation(*this->surface);
+
   const auto deformed = this->surface->applyMatrix(
     std::get<0>(this->normalizationMatrix),
     std::get<1>(this->normalizationMatrix),
@@ -93,6 +113,11 @@ Deformation<Surface> LinearEquivalenceWalker<Surface>::deformation(const Surface
 
 template <typename Surface>
 Surface LinearEquivalenceWalker<Surface>::normalization() const {
+  // The normalization matrix scales the surfaces in a way that is not
+  // permitted in this equivalence class so we just keep the original surface.
+  if (overscaling)
+    return this->surface->clone();
+
   const auto combinatorialNormalization = combinatorialWalker.normalization();
 
   return combinatorialNormalization.applyMatrix(

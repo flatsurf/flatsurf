@@ -122,7 +122,7 @@ std::tuple<std::unique_ptr<EquivalenceClassCode>, std::vector<Deformation<Surfac
 
       const auto normalizationMatrix = normalize(surface, start, next);
       LIBFLATSURF_ASSERT(std::get<0>(normalizationMatrix) * std::get<3>(normalizationMatrix) - std::get<1>(normalizationMatrix) * std::get<2>(normalizationMatrix) > 0, "normalization must preserve orientation");
-      walkers.push_back({&surface, start, normalizationMatrix});
+      walkers.push_back({&surface, start, normalizationMatrix, overscaling()});
     }
 
     if (!oriented) {
@@ -130,11 +130,25 @@ std::tuple<std::unique_ptr<EquivalenceClassCode>, std::vector<Deformation<Surfac
 
       const auto normalizationMatrix = normalize(surface, start, surface.previousAtVertex(start));
       LIBFLATSURF_ASSERT(std::get<0>(normalizationMatrix) * std::get<3>(normalizationMatrix) - std::get<1>(normalizationMatrix) * std::get<2>(normalizationMatrix) < 0, "normalization must not preserve orientation");
-      walkers.push_back({&surface, start, normalizationMatrix});
+      walkers.push_back({&surface, start, normalizationMatrix, overscaling()});
     }
   }
 
   return LinearEquivalenceWalker<Surface>::word(std::move(walkers));
+}
+
+template <typename Surface>
+bool LinearEquivalence<Surface>::overscaling() const {
+  switch(std::get<GROUP>(this->normalization)) {
+    case GROUP::O:
+      return true;
+    case GROUP::SL:
+    case GROUP::TRIVIAL:
+    case GROUP::GL:
+      return false;
+    default:
+      throw std::logic_error("not implemented: cannot decide whether this transformation is scaling");
+  }
 }
 
 template <typename Surface>
