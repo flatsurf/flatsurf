@@ -38,7 +38,7 @@ struct CombinatorialEquivalenceWalker : EquivalenceWalker<Surface, Combinatorial
   using Word = CombinatorialEquivalenceClassCode::Word;
   using Code = CombinatorialEquivalenceClassCode;
 
-  CombinatorialEquivalenceWalker(const Surface* surface, HalfEdge start, int orientation);
+  CombinatorialEquivalenceWalker(const Surface& surface, HalfEdge start, int orientation);
 
   static void append(Word&, const Character&);
 
@@ -49,7 +49,8 @@ struct CombinatorialEquivalenceWalker : EquivalenceWalker<Surface, Combinatorial
   int label(const Surface& surface, const HalfEdge halfEdge);
 
   // Return the combinatorial normal form of the surface that corresponds to
-  // the code word this walker found.
+  // the code word this walker found, together with the information whether
+  // that surface is a canonical representative for the class.
   // The vectors underlying this surface are taken from the original surface.
   // Since the normalization has to be a translation surface currently, there
   // is not canonical normal form here. (E.g., by making all faces regular

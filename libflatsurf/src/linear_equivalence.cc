@@ -98,8 +98,6 @@ std::string LinearEquivalence<Surface>::toString() const {
     switch(std::get<GROUP>(normalization)) {
       case GROUP::TRIVIAL:
         return "Equivalence Modulo Labels";
-      case GROUP::O:
-        return oriented ? "Equivalence Modulo Rotation" : "Equivalence Modulo O(2)";
       case GROUP::SL:
         return oriented ? "Equivalence Modulo SL(2)" : "Equivalence Module SL±(2)";
       case GROUP::GL:
@@ -113,42 +111,24 @@ std::string LinearEquivalence<Surface>::toString() const {
 }
 
 template <typename Surface>
-std::tuple<std::unique_ptr<EquivalenceClassCode>, std::vector<Deformation<Surface>>> LinearEquivalence<Surface>::code(const Surface& surface) const {
+std::tuple<std::unique_ptr<EquivalenceClassCode>, std::optional<ReadOnly<Surface>>, std::vector<Deformation<Surface>>> LinearEquivalence<Surface>::code(const Surface& surface) const {
   std::vector<LinearEquivalenceWalker<Surface>> walkers;
 
-  for (const auto start : surface.halfEdges()) {
+  for (const auto& start : surface.halfEdges()) {
     {
-      HalfEdge next = surface.nextAtVertex(start);
-
-      const auto normalizationMatrix = normalize(surface, start, next);
+      const auto normalizationMatrix = normalize(surface, start, surface.nextAtVertex(start));
       LIBFLATSURF_ASSERT(std::get<0>(normalizationMatrix) * std::get<3>(normalizationMatrix) - std::get<1>(normalizationMatrix) * std::get<2>(normalizationMatrix) > 0, "normalization must preserve orientation");
-      walkers.push_back({&surface, start, normalizationMatrix, overscaling()});
+      walkers.push_back({surface, start, normalizationMatrix});
     }
 
     if (!oriented) {
-      HalfEdge next = surface.previousAtVertex(start);
-
       const auto normalizationMatrix = normalize(surface, start, surface.previousAtVertex(start));
       LIBFLATSURF_ASSERT(std::get<0>(normalizationMatrix) * std::get<3>(normalizationMatrix) - std::get<1>(normalizationMatrix) * std::get<2>(normalizationMatrix) < 0, "normalization must not preserve orientation");
-      walkers.push_back({&surface, start, normalizationMatrix, overscaling()});
+      walkers.push_back({surface, start, normalizationMatrix});
     }
   }
 
   return LinearEquivalenceWalker<Surface>::word(std::move(walkers));
-}
-
-template <typename Surface>
-bool LinearEquivalence<Surface>::overscaling() const {
-  switch(std::get<GROUP>(this->normalization)) {
-    case GROUP::O:
-      return true;
-    case GROUP::SL:
-    case GROUP::TRIVIAL:
-    case GROUP::GL:
-      return false;
-    default:
-      throw std::logic_error("not implemented: cannot decide whether this transformation is scaling");
-  }
 }
 
 template <typename Surface>
@@ -161,8 +141,6 @@ typename LinearEquivalence<Surface>::Matrix LinearEquivalence<Surface>::normaliz
         return orthonormalize(surface, e, f);
       case GROUP::SL:
         return orthogonalize(surface, e, f);
-      case GROUP::O:
-        return rotate(surface, e, f);
       default:
         throw std::logic_error("not implemented: normalization with this linear subgroup not implemented");
     }
@@ -172,27 +150,9 @@ typename LinearEquivalence<Surface>::Matrix LinearEquivalence<Surface>::normaliz
 }
 
 template <typename Surface>
-typename LinearEquivalence<Surface>::Matrix LinearEquivalence<Surface>::rotate(const Surface& surface, HalfEdge e, HalfEdge f) {
-  const auto v = surface.fromHalfEdge(e);
-  const auto w = surface.fromHalfEdge(f);
-
-  // We would like to determine the rotation matrix that maps (x, y) to (1, 0).
-  // However, to compute this matrix, we'd have to take square roots which
-  // might not exist in the base ring.
-
-  // Instead, we use the matrix [[x, y], [-y, x]] that takes (x, y) to (x^2 + y^2, 0).
-  // That matrix is a scalar multiple of the rotation matrix.
-
-  if (v.ccw(surface.fromHalfEdge(f)) == CCW::COUNTERCLOCKWISE)
-    return { v.x(), v.y(), -v.y(), v.x() };
-  else
-    return { v.x(), v.y(), v.y(), -v.x() };
-}
-
-template <typename Surface>
 typename LinearEquivalence<Surface>::Matrix LinearEquivalence<Surface>::orthogonalize(const Surface& surface, HalfEdge e, HalfEdge f) {
   // We determine the matrix in SL2± that maps e to (1, 0) and f to some (0, y),
-  // to do this we determine the matrix that maps to (1, 0) and (0, 1) and the
+  // to do this we determine the matrix that maps to (1, 0) and (0, 1) and then
   // scale the second row.
   const auto [a, b, c, d] = orthonormalize(surface, e,  f);
 
@@ -213,7 +173,7 @@ typename LinearEquivalence<Surface>::Matrix LinearEquivalence<Surface>::orthonor
 
   LIBFLATSURF_ASSERT(det, "normalization was presented with collinear edges " << a << " and " << b);
 
-  return {div<T>(w.y(), det), div<T>(-w.x(), det), div<T>(-v.y(), det), div<T>(v.x(), det)};
+  return {div<T>(w.y(), det), -div<T>(w.x(), det), -div<T>(v.y(), det), div<T>(v.x(), det)};
 }
 
 template <typename Surface>

@@ -34,7 +34,7 @@
 namespace flatsurf {
 
 template <typename Surface>
-CombinatorialEquivalenceWalker<Surface>::CombinatorialEquivalenceWalker(const Surface* surface, HalfEdge start, int orientation):
+CombinatorialEquivalenceWalker<Surface>::CombinatorialEquivalenceWalker(const Surface& surface, HalfEdge start, int orientation):
   EquivalenceWalker<Surface, CombinatorialEquivalenceWalker>(surface),
   orientation(orientation) {
   LIBFLATSURF_ASSERT(orientation == -1 || orientation == 1, "orientation must be -1 or 1 but was " << orientation);
@@ -147,7 +147,7 @@ std::unordered_map<HalfEdge, HalfEdge> CombinatorialEquivalenceWalker<Surface>::
 
   std::vector<bool> seen(2*this->surface->size());
 
-  for (const HalfEdge preimage: this->surface->halfEdges()) {
+  for (const auto& preimage: this->surface->halfEdges()) {
     auto image = labels.find(preimage);
 
     if (image != std::end(labels)) {

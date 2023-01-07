@@ -27,15 +27,16 @@
 #include "equivalence_class_code.hpp"
 
 #include "../util/assert.ipp"
+#include "read_only.hpp"
 
 namespace flatsurf {
 
 template <typename Surface, typename Walker>
 struct EquivalenceWalker {
-  EquivalenceWalker(const Surface* surface): surface(surface) {}
+  EquivalenceWalker(const Surface& surface): surface(surface) {}
 
   // TODO: Document me.
-  static std::tuple<std::unique_ptr<EquivalenceClassCode>, std::vector<Deformation<Surface>>> word(std::vector<Walker>&& walkers) {
+  static std::tuple<std::unique_ptr<EquivalenceClassCode>, ReadOnly<Surface>, std::vector<Deformation<Surface>>> word(std::vector<Walker>&& walkers) {
     // We describe the process for combinatorial equivalence; the general
     // algorithm is described below.
 
@@ -94,10 +95,9 @@ struct EquivalenceWalker {
           default:
             LIBFLATSURF_UNREACHABLE("cmp() must return -1, 0, or 1");
         }
-
       }
 
-      LIBFLATSURF_ASSERT(stillMinimalWalkers.empty() == !minimalCharacter.has_value(), "when there is a minimal walker it must have produced a new code word and vice versa");
+      LIBFLATSURF_ASSERT(stillMinimalWalkers.empty() == !minimalCharacter.has_value(), "When there is a minimal walker it must have produced a new code word and vice versa");
 
       if (!minimalCharacter.has_value())
         // All walkers are done. Our code is complete.
@@ -110,14 +110,14 @@ struct EquivalenceWalker {
 
     LIBFLATSURF_ASSERT(!minimalWalkers.empty(), "At least one code must be minimal but all were found to be non-minimial.");
 
-    const Surface normalization = minimalWalkers[0]->normalization();
+    ReadOnly<Surface> normalization = minimalWalkers[0]->normalization();
 
     std::vector<Deformation<Surface>> deformations;
 
     for (const auto& walker : minimalWalkers)
       deformations.push_back(walker->deformation(normalization));
 
-    return std::tuple{std::make_unique<typename Walker::Code>(word), deformations};
+    return std::tuple{std::make_unique<typename Walker::Code>(word), normalization, deformations};
   }
 
   // TODO: Document me.
@@ -136,7 +136,7 @@ struct EquivalenceWalker {
   }
 
  protected:
-  const Surface* surface;
+  ReadOnly<Surface> surface;
 };
 
 }

@@ -50,9 +50,9 @@ template <typename Surface>
 ImplementationOf<EquivalenceClass<Surface>>::ImplementationOf(const Surface& surface, const Equivalence<Surface>& equivalence) :
   equivalence(equivalence) {
 
-  auto [code, deformations] = equivalence.self->code(surface);
+  auto [code, normalization, deformations] = equivalence.self->code(surface);
 
-  this->surface = deformations.at(0).codomain();
+  this->surface = *normalization;
   this->code = std::move(code);
   this->automorphisms = deformations.size();
 }

@@ -45,13 +45,6 @@ Equivalence<Surface> Equivalence<Surface>::unlabeled() {
 }
 
 template <typename Surface>
-Equivalence<Surface> Equivalence<Surface>::orthogonal(bool oriented) {
-  using GROUP = typename LinearEquivalence<Surface>::GROUP;
-
-  return Equivalence(PrivateConstructor{}, std::make_shared<LinearEquivalence<Surface>>(oriented, GROUP::O));
-}
-
-template <typename Surface>
 Equivalence<Surface> Equivalence<Surface>::areaPreserving(bool oriented) {
   using GROUP = typename LinearEquivalence<Surface>::GROUP;
 

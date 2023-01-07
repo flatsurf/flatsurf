@@ -41,7 +41,7 @@ struct LinearEquivalenceWalker : EquivalenceWalker<Surface, LinearEquivalenceWal
   using NormalizationMatrix = typename LinearEquivalence<Surface>::Matrix;
   using Code = LinearEquivalenceClassCode<Surface>;
 
-  LinearEquivalenceWalker(const Surface* surface, HalfEdge start, const NormalizationMatrix& normalization, bool scaling);
+  LinearEquivalenceWalker(const Surface& surface, HalfEdge start, const NormalizationMatrix& normalization);
 
   static void append(Word&, const Character&);
 
@@ -52,7 +52,8 @@ struct LinearEquivalenceWalker : EquivalenceWalker<Surface, LinearEquivalenceWal
   int label(const Surface& surface, const HalfEdge halfEdge);
 
   // Return the linear normal form of the surface corresponding to the code
-  // word this walker found.
+  // word this walker found, together with the information whether that surface
+  // is a canonical representative for the class.
   Surface normalization() const;
 
   // Return the deformation that maps the surface to its normalization.
@@ -61,7 +62,6 @@ struct LinearEquivalenceWalker : EquivalenceWalker<Surface, LinearEquivalenceWal
   CombinatorialEquivalenceWalker<Surface> combinatorialWalker;
 
   NormalizationMatrix normalizationMatrix;
-  bool overscaling;
 };
 
 }

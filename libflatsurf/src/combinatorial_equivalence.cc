@@ -33,7 +33,7 @@ CombinatorialEquivalence<Surface>::CombinatorialEquivalence(bool oriented):
   oriented(oriented) {}
 
 template <typename Surface>
-std::vector<Deformation<Surface>> CombinatorialEquivalence<Surface>::automorphisms(const Surface& surface) const {
+std::vector<Deformation<Surface>> CombinatorialEquivalence<Surface>::automorphisms(const Surface&) const {
   // TODO: Implement me
   throw std::logic_error("not implemented: CombinatorialEquivalence::automorphisms()");
 }
@@ -57,14 +57,14 @@ std::string CombinatorialEquivalence<Surface>::toString() const {
 }
 
 template <typename Surface>
-std::tuple<std::unique_ptr<EquivalenceClassCode>, std::vector<Deformation<Surface>>> CombinatorialEquivalence<Surface>::code(const Surface& surface) const {
+std::tuple<std::unique_ptr<EquivalenceClassCode>, std::optional<ReadOnly<Surface>>, std::vector<Deformation<Surface>>> CombinatorialEquivalence<Surface>::code(const Surface& surface) const {
   std::vector<CombinatorialEquivalenceWalker<Surface>> walkers;
 
-  for (const auto start : surface.halfEdges()) {
-    walkers.push_back({&surface, start, 1});
+  for (const auto& start : surface.halfEdges()) {
+    walkers.push_back({surface, start, 1});
 
     if (!oriented)
-      walkers.push_back({&surface, start, -1});
+      walkers.push_back({surface, start, -1});
   }
 
   return CombinatorialEquivalenceWalker<Surface>::word(std::move(walkers));

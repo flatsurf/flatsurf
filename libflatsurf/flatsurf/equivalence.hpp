@@ -59,14 +59,6 @@ class Equivalence : boost::equality_comparable<Equivalence<Surface>> {
   // equivalent and also assign the same vector to each half edge label.
   static Equivalence unlabeled();
 
-  // Return the rotational equivalence of surfaces on marked edges.
-  // Two surfaces are then equivalent if the half edges can be relabeled such
-  // that the selected faces are identical module a fixed element of the
-  // special orthogonal group.
-  // If oriented is False, then we also allow transformations of negative
-  // determinant; the default is to only allow rotations.
-  static Equivalence orthogonal(bool oriented = true);
-
   // Return the SL2 equivalence of surfaces on marked edges.
   // Two surfaces are then equivalent if the half edges can be relabeled such
   // that the selected faces are identical module a fixed transformation in

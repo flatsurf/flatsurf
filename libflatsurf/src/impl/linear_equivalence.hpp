@@ -42,7 +42,6 @@ struct LinearEquivalence : ImplementationOf<Equivalence<Surface>> {
 
   enum class GROUP {
     TRIVIAL,  // unlabeled()
-    O,  // orthogonal()
     SL,  // areaPreserving()
     GL, // linear()
   };
@@ -51,23 +50,13 @@ struct LinearEquivalence : ImplementationOf<Equivalence<Surface>> {
 
   LinearEquivalence(bool oriented, Normalization normalization);
 
-  std::tuple<std::unique_ptr<EquivalenceClassCode>, std::vector<Deformation<Surface>>> code(const Surface&) const override;
+  std::tuple<std::unique_ptr<EquivalenceClassCode>, std::optional<ReadOnly<Surface>>, std::vector<Deformation<Surface>>> code(const Surface&) const override;
   std::vector<Deformation<Surface>> automorphisms(const Surface&) const override;
   bool equal(const ImplementationOf<Equivalence<Surface>>&) const override;
   std::string toString() const override;
 
   Matrix normalize(const Surface&, HalfEdge, HalfEdge) const;
 
-  // Return whether the normalization is scaling though it is not allowed to scale.
-  // Some normalizations (e.g., orthogonal) are not allowed to scale
-  // but still the normalization matrix might perform scaling to work around
-  // missing elements in the base ring. In such cases we use this flag to
-  // distinguish surfaces that are normalized to the same surface but with
-  // different scaling; namely, we add the determinant of the normalization
-  // matrix to the code word for the surface.
-  bool overscaling() const;
-
-  static Matrix rotate(const Surface&, HalfEdge, HalfEdge);  // implements orthogonal()
   static Matrix orthogonalize(const Surface&, HalfEdge, HalfEdge);  // implements areaPreserving()
   static Matrix orthonormalize(const Surface&, HalfEdge, HalfEdge);  // implements linear()
 

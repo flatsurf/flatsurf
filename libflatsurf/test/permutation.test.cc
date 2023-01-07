@@ -38,7 +38,7 @@ TEST_CASE("Permutation", "[Permutation]") {
     }
 
     THEN("Individual Cycles Are Consistent") {
-      for (const auto he : domain) {
+      for (const auto& he : domain) {
         const auto cycle = p.cycle(he);
         REQUIRE(std::find(begin(cycle), end(cycle), he) != end(cycle));
         for (int i = 0; i < cycle.size(); i++) {

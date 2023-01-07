@@ -154,19 +154,19 @@ TEMPLATE_TEST_CASE("Flow Decomposition", "[FlowDecomposition]", (long long), (mp
     SECTION("Each component's perimeter is made up of bottom + right + top + left") {
       for (const auto& component : flowDecomposition.components()) {
         auto perimeter = component.perimeter();
-        for (const auto bottom : component.bottom()) {
+        for (const auto& bottom : component.bottom()) {
           REQUIRE(*begin(perimeter) == bottom);
           perimeter.pop_front();
         }
-        for (const auto right : component.right()) {
+        for (const auto& right : component.right()) {
           REQUIRE(*begin(perimeter) == right);
           perimeter.pop_front();
         }
-        for (const auto top : component.top()) {
+        for (const auto& top : component.top()) {
           REQUIRE(*begin(perimeter) == top);
           perimeter.pop_front();
         }
-        for (const auto left : component.left()) {
+        for (const auto& left : component.left()) {
           REQUIRE(*begin(perimeter) == left);
           perimeter.pop_front();
         }

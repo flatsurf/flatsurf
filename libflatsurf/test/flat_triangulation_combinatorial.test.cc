@@ -123,7 +123,7 @@ TEST_CASE("Relabeling Flat Triangulations", "[FlatTriangulationCombinatorial][re
 
   SECTION("We swap half edge 1 and its Negative") {
     std::unordered_map<HalfEdge, HalfEdge> swap;
-    for (const auto halfEdge : surface->halfEdges())
+    for (const auto& halfEdge : surface->halfEdges())
       swap[halfEdge] = halfEdge;
 
     swap[HalfEdge(1)] = HalfEdge(-1);

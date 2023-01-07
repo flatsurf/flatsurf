@@ -207,67 +207,6 @@ TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo GL2", "[Equivalence][linear]"
   }
 }
 
-TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo O2", "[Equivalence][orthogonal]", (mpq_class), (renf_elem_class)) {
-  using T = TestType;
-  using Surface = FlatTriangulation<T>;
-
-  const auto surface = GENERATE_SURFACES(T);
-  CAPTURE(surface);
-
-  const auto equivalence = Equivalence<Surface>::orthogonal();
-
-  SECTION("Equality of Orthogonal Equivalences") {
-    REQUIRE(Equivalence<Surface>::orthogonal() == Equivalence<Surface>::orthogonal());
-    REQUIRE(Equivalence<Surface>::orthogonal(false) == Equivalence<Surface>::orthogonal(false));
-    REQUIRE(Equivalence<Surface>::orthogonal() != Equivalence<Surface>::orthogonal(false));
-  }
-
-  SECTION("A Surface is Equivalent to Itself") {
-    REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(*surface, equivalence));
-  }
-
-  SECTION("Equivalence modulo Flipping an Edge") {
-    const auto halfEdge = GENERATE_COPY(halfEdges(surface));
-
-    // Don't test for each edge twice.
-    if (halfEdge == halfEdge.edge().positive()) {
-      if (surface->convex(halfEdge, true)) {
-        auto flipped = surface->clone();
-        flipped.flip(halfEdge);
-        CAPTURE(flipped);
-
-        // If we ignored the flipped edge, the surfaces would be
-        // indistinguishable. In any case, comparing them should be supported.
-        REQUIRE_NOTHROW(EquivalenceClass(*surface, equivalence) == EquivalenceClass(flipped, equivalence));
-      }
-    }
-  }
-
-  SECTION("Equivalence modulo a Rotation") {
-    const auto equivalence = Equivalence<Surface>::orthogonal();
-
-    const auto deformation = surface->applyMatrix(T(0), T(-1), T(1), T(0));
-
-    REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(deformation.codomain(), equivalence));
-  }
-
-  SECTION("Equivalence modulo a Flip") {
-    const auto equivalence = Equivalence<Surface>::orthogonal(false);
-
-    const auto deformation = surface->applyMatrix(T(-1), T(0), T(0), T(1));
-
-    REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(deformation.codomain(), equivalence));
-  }
-
-  SECTION("Non-Equivalence modulo Scaling") {
-    const auto equivalence = Equivalence<Surface>::orthogonal(false);
-
-    const auto deformation = surface->applyMatrix(T(2), T(0), T(0), T(1));
-
-    REQUIRE(EquivalenceClass(*surface, equivalence) != EquivalenceClass(deformation.codomain(), equivalence));
-  }
-}
-
 TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo SL2", "[Equivalence][areaPreserving]", (mpq_class), (renf_elem_class)) {
   using T = TestType;
   using Surface = FlatTriangulation<T>;
@@ -331,7 +270,6 @@ TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo SL2", "[Equivalence][areaPres
 
 TEMPLATE_TEST_CASE("Isomorphy of Surfaces", "[Equivalence][isomorphic]", (mpq_class), (renf_elem_class)) {
   using T = TestType;
-  using Surface = FlatTriangulation<T>;
 
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);

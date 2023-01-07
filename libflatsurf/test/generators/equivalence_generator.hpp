@@ -40,10 +40,9 @@ class EquivalenceGenerator : public Catch::Generators::IGenerator<Equivalence<Fl
     COMBINATORIAL_PRESERVE_ORIENTATION = 0,
     COMBINATORIAL_WITHOUT_ORIENTATION = 1,
     UNLABELED = 2,
-    ORTHOGONAL = 3,
-    AREA_PRESERVING = 4,
-    LINEAR = 5,
-    LAST = 5,
+    AREA_PRESERVING = 3,
+    LINEAR = 4,
+    LAST = 4,
   } state;
 
   Equivalence<FlatTriangulation<T>> current;
@@ -56,8 +55,6 @@ class EquivalenceGenerator : public Catch::Generators::IGenerator<Equivalence<Fl
         return Equivalence<FlatTriangulation<T>>::combinatorial(false);
       case EQUIVALENCE::UNLABELED:
         return Equivalence<FlatTriangulation<T>>::unlabeled();
-      case EQUIVALENCE::ORTHOGONAL:
-        return Equivalence<FlatTriangulation<T>>::orthogonal();
       case EQUIVALENCE::AREA_PRESERVING:
         return Equivalence<FlatTriangulation<T>>::areaPreserving();
       case EQUIVALENCE::LINEAR:
@@ -81,7 +78,7 @@ class EquivalenceGenerator : public Catch::Generators::IGenerator<Equivalence<Fl
     state = static_cast<EQUIVALENCE>(static_cast<int>(state) + 1);
 
     if (!isField<T>) {
-      if (state == EQUIVALENCE::ORTHOGONAL || state == EQUIVALENCE::AREA_PRESERVING || state == EQUIVALENCE::LINEAR)
+      if (state == EQUIVALENCE::AREA_PRESERVING || state == EQUIVALENCE::LINEAR)
         return next();
     }
 

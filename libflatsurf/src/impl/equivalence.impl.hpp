@@ -20,7 +20,11 @@
 #ifndef LIBFLATSURF_EQUIVALENCE_IMPL_HPP
 #define LIBFLATSURF_EQUIVALENCE_IMPL_HPP
 
+#include <optional>
+
 #include "../../flatsurf/equivalence.hpp"
+
+#include "read_only.hpp"
 
 namespace flatsurf {
 
@@ -29,7 +33,7 @@ struct ImplementationOf<Equivalence<Surface>> {
   virtual ~ImplementationOf();
 
   // TODO: Document me.
-  virtual std::tuple<std::unique_ptr<EquivalenceClassCode>, std::vector<Deformation<Surface>>> code(const Surface&) const = 0;
+  virtual std::tuple<std::unique_ptr<EquivalenceClassCode>, std::optional<ReadOnly<Surface>>, std::vector<Deformation<Surface>>> code(const Surface&) const = 0;
   // TODO: Document me.
   virtual std::vector<Deformation<Surface>> automorphisms(const Surface&) const = 0;
   // TODO: Document me.
