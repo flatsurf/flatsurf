@@ -33,12 +33,6 @@ CombinatorialEquivalence<Surface>::CombinatorialEquivalence(bool oriented):
   oriented(oriented) {}
 
 template <typename Surface>
-std::vector<Deformation<Surface>> CombinatorialEquivalence<Surface>::automorphisms(const Surface&) const {
-  // TODO: Implement me
-  throw std::logic_error("not implemented: CombinatorialEquivalence::automorphisms()");
-}
-
-template <typename Surface>
 bool CombinatorialEquivalence<Surface>::equal(const ImplementationOf<Equivalence<Surface>>& o) const {
   const auto* other = dynamic_cast<const CombinatorialEquivalence*>(&o);
 
@@ -57,7 +51,7 @@ std::string CombinatorialEquivalence<Surface>::toString() const {
 }
 
 template <typename Surface>
-std::tuple<std::unique_ptr<EquivalenceClassCode>, std::optional<ReadOnly<Surface>>, std::vector<Deformation<Surface>>> CombinatorialEquivalence<Surface>::code(const Surface& surface) const {
+std::tuple<std::unique_ptr<EquivalenceClassCode>, ReadOnly<Surface>, std::vector<Deformation<Surface>>> CombinatorialEquivalence<Surface>::code(const Surface& surface) const {
   std::vector<CombinatorialEquivalenceWalker<Surface>> walkers;
 
   for (const auto& start : surface.halfEdges()) {

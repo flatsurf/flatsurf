@@ -20,12 +20,15 @@
 #include <ostream>
 #include <stdexcept>
 
+#include "../flatsurf/deformation.hpp"
 #include "../flatsurf/equivalence.hpp"
 #include "../flatsurf/equivalence_class.hpp"
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/vector.hpp"
 #include "impl/combinatorial_equivalence.hpp"
 #include "impl/linear_equivalence.hpp"
+
+#include "external/rx-ranges/include/rx/ranges.hpp"
 
 namespace flatsurf {
 
@@ -65,9 +68,8 @@ bool Equivalence<Surface>::isomorphic(const Surface& lhs, const Surface& rhs) co
 }
 
 template <typename Surface>
-std::vector<Deformation<Surface>> Equivalence<Surface>::isomorphisms(const Surface&, const Surface&) const {
-  // TODO: Implement me.
-  throw std::logic_error("not implemented: isomorphisms()");
+std::vector<Deformation<Surface>> Equivalence<Surface>::isomorphisms(const Surface& domain, const Surface& codomain) const {
+  return self->isomorphisms(domain, codomain);
 }
 
 template <typename Surface>
@@ -79,9 +81,22 @@ template <typename Surface>
 ImplementationOf<Equivalence<Surface>>::~ImplementationOf() {}
 
 template <typename Surface>
-std::vector<Deformation<Surface>> ImplementationOf<Equivalence<Surface>>::isomorphisms(const Surface&, const Surface&) const {
-  // TODO: Implement me.
-  throw std::logic_error("not implemented: isomorphisms()");
+std::vector<Deformation<Surface>> ImplementationOf<Equivalence<Surface>>::isomorphisms(const Surface& domain, const Surface& codomain) const {
+  const auto [domainCode, domainNormalization, domainNormalizationMaps] = this->code(domain);
+  const auto [codomainCode, codomainNormalization, codomainNormalizationMaps] = this->code(codomain);
+
+  if (*domainCode != *codomainCode)
+    return {};
+
+  if (domainNormalization != codomainNormalization)
+    throw std::logic_error("not implemented: cannot determine isomorphisms when domain and codomain have different normalizations");
+
+  if (*codomainNormalization == codomain)
+    return domainNormalizationMaps;
+
+  const auto codomainDenormalization = codomainNormalizationMaps.at(0).section();
+
+  return domainNormalizationMaps | rx::transform([&](const auto& deformation) { return codomainDenormalization * deformation; }) | rx::to_vector();
 }
 
 template <typename Surface>

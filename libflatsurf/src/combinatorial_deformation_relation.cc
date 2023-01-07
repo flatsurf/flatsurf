@@ -122,7 +122,12 @@ std::unique_ptr<DeformationRelation<Surface>> CombinatorialDeformationRelation<S
 
 template <typename Surface>
 std::unique_ptr<DeformationRelation<Surface>> CombinatorialDeformationRelation<Surface>::section() const {
-  throw std::logic_error("not implemented: section of combinatorial deformation");
+  std::unordered_map<HalfEdge, HalfEdge> inverse;
+
+  for (const auto [lhs, rhs]: mapping)
+    inverse[rhs] = lhs;
+
+  return std::make_unique<CombinatorialDeformationRelation>(this->codomain, this->domain, inverse);
 }
 
 template <typename Surface>

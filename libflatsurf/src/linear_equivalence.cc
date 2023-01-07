@@ -62,12 +62,6 @@ LinearEquivalence<Surface>::LinearEquivalence(bool oriented, Normalization norma
   normalization(normalization) {}
 
 template <typename Surface>
-std::vector<Deformation<Surface>> LinearEquivalence<Surface>::automorphisms(const Surface&) const {
-  // TODO: Implement me
-  throw std::logic_error("not implemented: LinearEquivalence::automorphisms()");
-}
-
-template <typename Surface>
 bool LinearEquivalence<Surface>::equal(const ImplementationOf<Equivalence<Surface>>& o) const {
   const auto* other = dynamic_cast<const LinearEquivalence*>(&o);
 
@@ -111,7 +105,7 @@ std::string LinearEquivalence<Surface>::toString() const {
 }
 
 template <typename Surface>
-std::tuple<std::unique_ptr<EquivalenceClassCode>, std::optional<ReadOnly<Surface>>, std::vector<Deformation<Surface>>> LinearEquivalence<Surface>::code(const Surface& surface) const {
+std::tuple<std::unique_ptr<EquivalenceClassCode>, ReadOnly<Surface>, std::vector<Deformation<Surface>>> LinearEquivalence<Surface>::code(const Surface& surface) const {
   std::vector<LinearEquivalenceWalker<Surface>> walkers;
 
   for (const auto& start : surface.halfEdges()) {

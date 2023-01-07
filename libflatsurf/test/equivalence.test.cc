@@ -277,8 +277,29 @@ TEMPLATE_TEST_CASE("Isomorphy of Surfaces", "[Equivalence][isomorphic]", (mpq_cl
   const auto equivalence = GENERATE_COPY(equivalences(surface));
   CAPTURE(equivalence);
 
-  SECTION("Surfaces are Isomorphic to Itself") {
+  SECTION("Surfaces are Isomorphic to Themselves") {
     REQUIRE(equivalence.isomorphic(*surface, *surface));
+  }
+}
+
+TEMPLATE_TEST_CASE("Isomorphisms of Surfaces", "[Equivalence][isomorphisms]", (mpq_class), (renf_elem_class)) {
+  using T = TestType;
+
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
+  const auto equivalence = GENERATE_COPY(equivalences(surface));
+  CAPTURE(equivalence);
+
+  SECTION("Surfaces have Isomorphisms to Themselves") {
+    const auto isomorphisms = equivalence.isomorphisms(*surface, *surface);
+    CAPTURE(isomorphisms);
+
+    REQUIRE(!isomorphisms.empty());
+    for (const auto& isomorphism : isomorphisms) {
+      REQUIRE(isomorphism.domain() == *surface);
+      REQUIRE(isomorphism.codomain() == *surface);
+    }
   }
 }
 
