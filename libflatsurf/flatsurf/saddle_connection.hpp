@@ -63,21 +63,21 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   // Return the saddle connection given by the vector in the half plane defined
   // by `vertical` where vertical is taken to have a value strictly less than π
   // with `side`.
-  [[deprecated("use inSector() instead and determine the sector with surface.sector()")]]
+  [[deprecated("Use inSector() instead and determine the sector with surface.sector()")]]
   static SaddleConnection<Surface> inHalfPlane(const Surface &, HalfEdge side, const Vertical<Surface> &, const Vector<T> &);
-  [[deprecated("use inSector() instead and determine the sector with surface.sector()")]]
+  [[deprecated("Use inSector() instead and determine the sector with surface.sector()")]]
   static SaddleConnection<Surface> inPlane(const Surface &, HalfEdge plane, const Vector<T> &);
-  [[deprecated("use inSector() instead and determine the sector with surface.sector()")]]
+  [[deprecated("Use inSector() instead and determine the sector with surface.sector()")]]
   static SaddleConnection<Surface> inPlane(const Surface &, HalfEdge plane, const Vertical<Surface> &direction);
-  [[deprecated("use SaddleConnection() instead and determine source & target with surface.sector()")]]
+  [[deprecated("Use SaddleConnection() instead and determine source & target with surface.sector()")]]
   static SaddleConnection<Surface> inPlane(const Surface &, HalfEdge sourcePlane, HalfEdge targetPlane, const Chain<Surface> &);
 
-  [[deprecated("use inSector() instead and determine the sector with surface.sector()")]]
+  [[deprecated("Use inSector() instead and determine the sector with surface.sector()")]]
   static SaddleConnection<Surface> alongVertical(const Surface &, const Vertical<Surface> &direction, HalfEdge plane);
 
   // Return the saddle connection strictly clockwise from the given saddle
   // connection with the given direction.
-  [[deprecated("use inSector() instead and determine the sector with surface.sector()")]]
+  [[deprecated("Use inSector() instead and determine the sector with surface.sector()")]]
   static SaddleConnection<Surface> clockwise(const SaddleConnection &from, const Vector<T> &);
 
   // Return the saddle connection that starts counterclockwise (or collinear)
@@ -85,12 +85,12 @@ class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
   // in the sector formed with the counterclockwise next half edge after
   // source) and ends counterclockwise (or collinear) from target (but, again,
   // not necessarily in the sector next to target.)
-  [[deprecated("use SaddleConnection() instead and determine the source & target with surface.sector()")]]
+  [[deprecated("Use SaddleConnection() instead and determine the source & target with surface.sector()")]]
   static SaddleConnection<Surface> counterclockwise(const Surface &, HalfEdge source, HalfEdge target, const Chain<Surface> &);
 
   // Return the saddle connection that starts counterclockwise (or collinear)
   // from source and goes in `direction`.
-  [[deprecated("use inSector() instead and determine the sector with surface.sector()")]]
+  [[deprecated("Use inSector() instead and determine the sector with surface.sector()")]]
   static SaddleConnection<Surface> counterclockwise(const Surface &, const SaddleConnection<Surface> &source, const Vertical<Surface> &direction);
 
   const Vector<T> &vector() const;

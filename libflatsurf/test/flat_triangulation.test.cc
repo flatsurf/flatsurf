@@ -29,6 +29,7 @@
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/deformation.hpp"
 #include "../flatsurf/delaunay.hpp"
+#include "../flatsurf/equivalence.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/half_edge.hpp"
@@ -287,6 +288,7 @@ TEMPLATE_TEST_CASE("Flip in a Flat Triangulation", "[FlatTriangulation][flip]", 
 TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[FlatTriangulation][insert]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using R2 = Vector<T>;
+  using Surface = FlatTriangulation<T>;
 
   SECTION("Insert into a Surface") {
     auto surface = GENERATE_SURFACES(T);
@@ -299,7 +301,7 @@ TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[FlatTriangulation][inse
     if (point.vertex()) {
       REQUIRE_THROWS(surface->insert(point));
     } else {
-      const auto insertion = [&]() -> std::optional<Deformation<FlatTriangulation<T>>> {
+      const auto insertion = [&]() -> std::optional<Deformation<Surface>> {
         try {
           return surface->insert(point);
         } catch (...) {
@@ -359,6 +361,7 @@ TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[FlatTriangulation][inse
 TEMPLATE_TEST_CASE("Detect Isomorphic Surfaces", "[FlatTriangulation][isomorphism]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using Transformation = std::tuple<T, T, T, T>;
+  using Surface = FlatTriangulation<T>;
 
   const auto surface_ = GENERATE_SURFACES(T);
   CAPTURE(surface_);
@@ -417,6 +420,17 @@ TEMPLATE_TEST_CASE("Detect Isomorphic Surfaces", "[FlatTriangulation][isomorphis
 
     REQUIRE((*deformation * deformation->section()).trivial());
     REQUIRE((deformation->section() * *deformation).trivial());
+  }
+
+  SECTION("Check Consistency with Equivalence::isomorphisms") {
+    // Equivalences do not support working on subsets of edges (we need to
+    // implement non-triangulated surfaces for this to work first.)
+    if (isomorphism == ISOMORPHISM::FACES) {
+      // GL equivalence is only supported when division is possible.
+      if constexpr (isField<T>) {
+        REQUIRE(Equivalence<Surface>::linear(false).isomorphisms(surface, surface).size() == Equivalence<Surface>::unlabeled().isomorphisms(surface, surface).size() * transformations.size());
+      }
+    }
   }
 
   auto scaled = surface.scale(2);

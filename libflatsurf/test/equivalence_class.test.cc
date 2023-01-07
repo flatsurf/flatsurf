@@ -27,7 +27,6 @@ namespace flatsurf::test {
 
 TEMPLATE_TEST_CASE("Equality of Equivalence Classes is Consistent", "[EquivalenceClass][operator==]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
-  using Surface = FlatTriangulation<T>;
 
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);

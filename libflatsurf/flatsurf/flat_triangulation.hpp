@@ -82,7 +82,7 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
 
   // Create an independent clone of this triangulation with all vectors scaled
   // by c.
-  [[deprecated("use applyMatrix instead")]]
+  [[deprecated("Use applyMatrix instead")]]
   FlatTriangulation<T> scale(const mpz_class &c) const;
 
   // Create an independent clone of this triangulation with all vectors
@@ -110,6 +110,7 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
   // transforming them subject to the same linear transformation (note that
   // that transformation might have negative determinant, i.e., the order of
   // half edges in a face might change under this map.)
+  [[deprecated("Use Equivalence::isomorphisms() instead")]]
   std::optional<Deformation<FlatTriangulation<T>>> isomorphism(
       const FlatTriangulation &,
       ISOMORPHISM kind,
