@@ -28,7 +28,7 @@
 #include <functional>
 #include <memory>
 
-#include "shared.hpp"
+#include "managed_movable.hpp"
 
 namespace flatsurf {
 
@@ -95,7 +95,7 @@ class Equivalence : boost::equality_comparable<Equivalence<Surface>> {
   friend std::ostream &operator<<(std::ostream &, const Equivalence<S> &);
 
  private:
-  Shared<Equivalence> self;
+  ManagedMovable<Equivalence> self;
 
   friend ImplementationOf<Equivalence>;
   friend ImplementationOf<EquivalenceClass<Surface>>;
