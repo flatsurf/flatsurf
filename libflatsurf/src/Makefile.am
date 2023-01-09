@@ -149,7 +149,10 @@ noinst_HEADERS =                                                    \
 	impl/chain_iterator.impl.hpp                                \
 	impl/chain_vector.hpp                                       \
 	impl/collapsed_half_edge.hpp                                \
+	impl/combinatorial_deformation_relation.hpp                 \
 	impl/combinatorial_equivalence.hpp                          \
+	impl/combinatorial_equivalence_class_code.hpp               \
+	impl/combinatorial_equivalence_walker.hpp                   \
 	impl/composite_deformation_relation.hpp                     \
 	impl/contour_component.impl.hpp                             \
 	impl/contour_component_state.hpp                            \
@@ -162,7 +165,9 @@ noinst_HEADERS =                                                    \
 	impl/edge_set.impl.hpp                                      \
 	impl/edge_set_iterator.impl.hpp                             \
 	impl/equivalence.impl.hpp                                   \
+	impl/equivalence_class.impl.hpp                             \
 	impl/equivalence_class_code.hpp                             \
+	impl/equivalence_walker.hpp                                 \
 	impl/flat_triangulation_collapsed.impl.hpp                  \
 	impl/flat_triangulation_combinatorial.impl.hpp              \
 	impl/flat_triangulation_combinatorics.impl.hpp              \
@@ -187,6 +192,8 @@ noinst_HEADERS =                                                    \
 	impl/interval_exchange_transformation.impl.hpp              \
 	impl/lengths.hpp                                            \
 	impl/linear_equivalence.hpp                                 \
+	impl/linear_equivalence_class.hpp                           \
+	impl/linear_equivalence_walker.hpp                          \
 	impl/linear_deformation_relation.hpp                        \
 	impl/managed_movable.impl.hpp                               \
 	impl/path.impl.hpp                                          \
