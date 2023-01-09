@@ -50,7 +50,7 @@ CombinatorialDeformationRelation<Surface>::CombinatorialDeformationRelation(cons
   relabeling(true) {
   LIBFLATSURF_ASSERT(2*domain.size() == this->mapping.size(), "half edge mapping " << formatMapping(this->mapping) << " is not compatible with surface " << domain);
 
-  for (const Edge edge : domain.edges()) {
+  for (const Edge& edge : domain.edges()) {
     const auto preimage = edge.positive();
     const auto image = this->mapping.find(preimage);
     const auto minus_image = this->mapping.find(-preimage);
@@ -77,7 +77,7 @@ CombinatorialDeformationRelation<Surface>::CombinatorialDeformationRelation(cons
   CombinatorialDeformationRelation(domain, codomain, [&](){
     std::unordered_map<HalfEdge, HalfEdge> map;
 
-    for (const HalfEdge preimage : mapping.domain())
+    for (const HalfEdge& preimage : mapping.domain())
       map[preimage] = mapping(preimage);
 
     return map;
@@ -124,7 +124,7 @@ template <typename Surface>
 std::unique_ptr<DeformationRelation<Surface>> CombinatorialDeformationRelation<Surface>::section() const {
   std::unordered_map<HalfEdge, HalfEdge> inverse;
 
-  for (const auto [lhs, rhs]: mapping)
+  for (const auto& [lhs, rhs]: mapping)
     inverse[rhs] = lhs;
 
   return std::make_unique<CombinatorialDeformationRelation>(this->codomain, this->domain, inverse);
