@@ -49,8 +49,7 @@ struct CombinatorialEquivalenceWalker : EquivalenceWalker<Surface, Combinatorial
   int label(const Surface& surface, const HalfEdge halfEdge);
 
   // Return the combinatorial normal form of the surface that corresponds to
-  // the code word this walker found, together with the information whether
-  // that surface is a canonical representative for the class.
+  // the code word this walker found.
   // The vectors underlying this surface are taken from the original surface.
   // Since the normalization has to be a translation surface currently, there
   // is not canonical normal form here. (E.g., by making all faces regular
