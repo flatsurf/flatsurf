@@ -28,7 +28,7 @@
 #include "../flatsurf/chain.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/fmt.hpp"
- 
+
 #include "impl/combinatorial_deformation_relation.hpp"
 
 #include "util/assert.ipp"

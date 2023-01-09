@@ -90,10 +90,10 @@ template <typename Surface>
 int CombinatorialEquivalenceWalker<Surface>::cmp(const Character& lhs, const Character& rhs) {
   if (lhs < rhs)
     return -1;
-  
+
   if (lhs > rhs)
     return 1;
-  
+
   return 0;
 }
 

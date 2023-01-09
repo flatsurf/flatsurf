@@ -83,7 +83,7 @@ TEMPLATE_TEST_CASE("Representative of Equivalence Classes", "[EquivalenceClass][
 
   const auto& representative = equivalenceClass.representative();
   CAPTURE(representative);
-  
+
   REQUIRE(EquivalenceClass(representative, equivalence) == equivalenceClass);
 }
 

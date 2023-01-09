@@ -45,8 +45,8 @@ CombinatorialEquivalenceClassCode::CombinatorialEquivalenceClassCode(Word word) 
         continue;
 
       min = std::min(min, -c);
-      labels[c] += 2;  
-        
+      labels[c] += 2;
+
       for (const auto& label: character) {
         if (label < 0) {
           min = std::min(min, label);
