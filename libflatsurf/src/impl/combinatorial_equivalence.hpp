@@ -29,9 +29,6 @@
 namespace flatsurf {
 
 template <typename Surface>
-struct CombinatorialEquivalenceWalker;
-
-template <typename Surface>
 struct CombinatorialEquivalence : ImplementationOf<Equivalence<Surface>> {
   using T = typename Surface::Coordinate;
   using Predicate = std::function<bool(const Surface&, Edge)>;

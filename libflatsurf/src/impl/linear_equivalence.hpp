@@ -31,9 +31,6 @@
 namespace flatsurf {
 
 template <typename Surface>
-struct LinearEquivalenceWalker;
-
-template <typename Surface>
 struct LinearEquivalence : ImplementationOf<Equivalence<Surface>> {
   using T = typename Surface::Coordinate;
 
