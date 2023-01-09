@@ -135,7 +135,7 @@ bool CombinatorialDeformationRelation<Surface>::trivial() const {
   if (!relabeling)
     return false;
 
-  for (const Edge edge : this->domain->edges())
+  for (const Edge& edge : this->domain->edges())
     if (mapping.find(edge.positive())->second != edge.positive())
       return false;
 
