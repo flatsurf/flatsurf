@@ -73,7 +73,7 @@ class Equivalence : boost::equality_comparable<Equivalence<Surface>> {
   // consecutive at a vertex, the normalization produces a linear
   // transformation that brings these half edges into a normal form. The
   // default is to make the edges orthonormal.
-  // If oriented is False, then transformation with negative determinant are
+  // If oriented is False, then transformations with negative determinant are
   // also considered, i.e., the half edges presented to the normalization are
   // also clockwise consecutive at a vertex.
   static Equivalence linear(bool oriented = true, std::function<Matrix(const Surface&, HalfEdge, HalfEdge)> normalization = nullptr);
