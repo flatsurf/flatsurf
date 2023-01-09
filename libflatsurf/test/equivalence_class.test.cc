@@ -31,7 +31,7 @@ TEMPLATE_TEST_CASE("Equality of Equivalence Classes is Consistent", "[Equivalenc
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
 
-  const auto equivalence = GENERATE_COPY(equivalences(surface));
+  const auto& equivalence = GENERATE_REF(equivalences(surface));
   CAPTURE(equivalence);
 
   const auto equivalenceClass = EquivalenceClass(*surface, equivalence);
@@ -75,7 +75,7 @@ TEMPLATE_TEST_CASE("Representative of Equivalence Classes", "[EquivalenceClass][
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
 
-  const auto equivalence = GENERATE_COPY(equivalences(surface));
+  const auto& equivalence = GENERATE_REF(equivalences(surface));
   CAPTURE(equivalence);
 
   const auto equivalenceClass = EquivalenceClass(*surface, equivalence);
@@ -94,7 +94,7 @@ TEMPLATE_TEST_CASE("Automorphisms of Surfaces", "[EquivalenceClass][automorphism
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
 
-  const auto equivalence = GENERATE_COPY(equivalences(surface));
+  const auto& equivalence = GENERATE_REF(equivalences(surface));
   CAPTURE(equivalence);
 
   const auto equivalenceClass = EquivalenceClass(*surface, equivalence);

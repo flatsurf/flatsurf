@@ -192,7 +192,6 @@ noinst_HEADERS =                                                    \
 	impl/interval_exchange_transformation.impl.hpp              \
 	impl/lengths.hpp                                            \
 	impl/linear_equivalence.hpp                                 \
-	impl/linear_equivalence_class.hpp                           \
 	impl/linear_equivalence_walker.hpp                          \
 	impl/linear_deformation_relation.hpp                        \
 	impl/managed_movable.impl.hpp                               \

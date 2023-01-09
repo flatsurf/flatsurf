@@ -99,6 +99,7 @@ class Equivalence : boost::equality_comparable<Equivalence<Surface>> {
 
   friend ImplementationOf<Equivalence>;
   friend ImplementationOf<EquivalenceClass<Surface>>;
+  friend ImplementationOf<ManagedMovable<Equivalence>>;
 };
 
 }
