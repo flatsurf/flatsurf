@@ -45,7 +45,7 @@ class Equivalence : boost::equality_comparable<Equivalence<Surface>> {
   Equivalence(PrivateConstructor, Args&&... args);
 
  public:
-  // Return the combinatorial equivalence of surfaces on marked edges.
+  // Return the combinatorial equivalence of surfaces.
   // Two surfaces are then equivalent if after relabeling they have the same
   // sequence of half edges along their faces.
   // If oriented is False, then the relabeling may be such that it reverses the
@@ -53,19 +53,19 @@ class Equivalence : boost::equality_comparable<Equivalence<Surface>> {
   // consider relabelings that preserve orientation.
   static Equivalence combinatorial(bool oriented = true);
 
-  // Return the equivalence of surfaces modulo labeling on marked edges.
+  // Return the equivalence of surfaces modulo labeling.
   // Two surfaces are then equivalent if half edges can be relabeled such that
   // the selected faces are identical, i.e., they are combinatorially
   // equivalent and also assign the same vector to each half edge label.
   static Equivalence unlabeled();
 
-  // Return the SL2 equivalence of surfaces on marked edges.
+  // Return the SL2 equivalence of surfaces.
   // Two surfaces are then equivalent if the half edges can be relabeled such
   // that the selected faces are identical module a fixed transformation in
   // SL2(R) or SL2±(R) if oriented is not set.
   static Equivalence areaPreserving(bool oriented = true);
 
-  // Return the GL2 equivalence of surfaces on marked edges.
+  // Return the GL2 equivalence of surfaces.
   // Two surfaces are then equivalent if the half edges can be relabeled such
   // that the selected faces are identical module a fixed transformation.
   // Candidates for that transformation are produced by the provided
