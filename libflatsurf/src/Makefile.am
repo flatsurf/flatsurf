@@ -97,6 +97,7 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/edge_map.hpp                                    \
 	../flatsurf/edge_set.hpp                                    \
 	../flatsurf/edge_set_iterator.hpp                           \
+	../flatsurf/equivalence.hpp                                 \
 	../flatsurf/equivalence_class.hpp                           \
 	../flatsurf/flat_triangulation.hpp                          \
 	../flatsurf/flat_triangulation_collapsed.hpp                \
