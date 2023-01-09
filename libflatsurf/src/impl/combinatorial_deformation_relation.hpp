@@ -30,10 +30,6 @@ namespace flatsurf {
 
 // A deformation between surfaces that are combinatorially equivalent, i.e.,
 // their combinatorial structures are identical up to a change of labels.
-// Note that this relabeling might just be defined on a subset of half edges,
-// e.g., on some (Delaunay) cells of the surface. In that case, the
-// combinatorial structure is identical (modulo relabeling) on that subset and
-// its image.
 template <typename Surface>
 class CombinatorialDeformationRelation : public DeformationRelation<Surface> {
   using T = typename Surface::Coordinate;
