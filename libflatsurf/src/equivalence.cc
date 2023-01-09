@@ -34,7 +34,7 @@ namespace flatsurf {
 
 template <typename Surface>
 Equivalence<Surface> Equivalence<Surface>::combinatorial(bool oriented) {
-  return Equivalence(PrivateConstructor{}, std::make_shared<CombinatorialEquivalence<Surface>>(oriented));
+  return Equivalence(PrivateConstructor{}, std::shared_ptr<ImplementationOf<Equivalence<Surface>>>(new CombinatorialEquivalence<Surface>(oriented)));
 }
 
 template <typename Surface>
@@ -44,14 +44,14 @@ Equivalence<Surface> Equivalence<Surface>::unlabeled() {
   });
   using GROUP = typename LinearEquivalence<Surface>::GROUP;
 
-  return Equivalence(PrivateConstructor{}, std::make_shared<LinearEquivalence<Surface>>(true, GROUP::TRIVIAL));
+  return Equivalence(PrivateConstructor{}, std::shared_ptr<ImplementationOf<Equivalence<Surface>>>(new LinearEquivalence<Surface>(true, GROUP::TRIVIAL)));
 }
 
 template <typename Surface>
 Equivalence<Surface> Equivalence<Surface>::areaPreserving(bool oriented) {
   using GROUP = typename LinearEquivalence<Surface>::GROUP;
 
-  return Equivalence(PrivateConstructor{}, std::make_shared<LinearEquivalence<Surface>>(oriented, GROUP::SL));
+  return Equivalence(PrivateConstructor{}, std::shared_ptr<ImplementationOf<Equivalence<Surface>>>(new LinearEquivalence<Surface>(oriented, GROUP::SL)));
 }
 
 template <typename Surface>
@@ -59,7 +59,7 @@ Equivalence<Surface> Equivalence<Surface>::linear(bool oriented, std::function<M
   using Normalization = typename LinearEquivalence<Surface>::Normalization;
   using GROUP = typename LinearEquivalence<Surface>::GROUP;
 
-  return Equivalence(PrivateConstructor{}, std::make_shared<LinearEquivalence<Surface>>(oriented, normalization == nullptr ? static_cast<Normalization>(GROUP::GL) : normalization));
+  return Equivalence(PrivateConstructor{}, std::shared_ptr<ImplementationOf<Equivalence<Surface>>>(new LinearEquivalence<Surface>(oriented, normalization == nullptr ? static_cast<Normalization>(GROUP::GL) : normalization)));
 }
 
 template <typename Surface>

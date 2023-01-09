@@ -33,7 +33,7 @@ EquivalenceClass<Surface>::EquivalenceClass(const Surface& surface, const Equiva
 
 template <typename Surface>
 bool EquivalenceClass<Surface>::operator==(const EquivalenceClass<Surface>& other) const {
-  return *self->code == *other.self->code && self->equivalence == other.self->equivalence;
+  return *self->code == *other.self->code && *self->equivalence == *other.self->equivalence;
 }
 
 template <typename Surface>

@@ -34,7 +34,7 @@ class ImplementationOf<EquivalenceClass<Surface>> {
   ImplementationOf(const Surface& surface, const Equivalence<Surface>& equivalence);
 
   ReadOnly<Surface> surface;
-  Equivalence<Surface> equivalence;
+  ReadOnly<Equivalence<Surface>> equivalence;
   std::shared_ptr<EquivalenceClassCode> code;
   size_t automorphisms;
 };
