@@ -32,13 +32,20 @@ template <typename Surface>
 struct ImplementationOf<Equivalence<Surface>> {
   virtual ~ImplementationOf();
 
-  // TODO: Document me.
+  // Return a code word that uniquely identifies this surface with respect to
+  // this notion of equivalence.
+  // Also, returns a (possibly canonical) representative of this surface and a
+  // vector of isomorphisms from this surface to the representative.
   virtual std::tuple<std::unique_ptr<EquivalenceClassCode>, ReadOnly<Surface>, std::vector<Deformation<Surface>>> code(const Surface&) const = 0;
-  // TODO: Document me.
+
+  // Return the isomorphisms from ``domain`` to ``codomain`` in this notion of
+  // equivalence.
   virtual std::vector<Deformation<Surface>> isomorphisms(const Surface& domain, const Surface& codomain) const;
-  // TODO: Document me.
-  virtual bool equal(const ImplementationOf&) const = 0;
-  // TODO: Document me.
+
+  // Return whether this notion of equivalence equals ``other``.
+  virtual bool equal(const ImplementationOf& other) const = 0;
+
+  // Return a printable representation of this notion of equivalence.
   virtual std::string toString() const = 0;
 
 };

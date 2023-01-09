@@ -35,7 +35,10 @@ template <typename Surface, typename Walker>
 struct EquivalenceWalker {
   EquivalenceWalker(const Surface& surface): surface(surface) {}
 
-  // TODO: Document me.
+  // Return the minimal code word amongst the code words produced by ``walkers``.
+  // Also returns a (possibly canonical) normalization of the surface worked on
+  // by the ``walkers`` and a vector of isomorphisms to the normalization
+  // corresponding to the minimial code words.
   static std::tuple<std::unique_ptr<EquivalenceClassCode>, ReadOnly<Surface>, std::vector<Deformation<Surface>>> word(std::vector<Walker>&& walkers) {
     // We describe the process for combinatorial equivalence; the general
     // algorithm is described below.
@@ -120,7 +123,8 @@ struct EquivalenceWalker {
     return std::tuple{std::make_unique<typename Walker::Code>(word), normalization, deformations};
   }
 
-  // TODO: Document me.
+  // Compare two code word characters and return -1, 0, 1 depending on how the
+  // characters compare.
   template <typename Character>
   static int cmp(const std::optional<Character>& lhs, const std::optional<Character>& rhs) {
     if (!lhs.has_value()) {
