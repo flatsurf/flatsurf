@@ -84,7 +84,7 @@ FlatTriangulationCombinatorial::FlatTriangulationCombinatorial(const std::vector
       return -halfEdge;
     }) | rx::to_vector();
 
-    for (const auto halfEdge : boundary) {
+    for (const auto& halfEdge : boundary) {
       LIBFLATSURF_ASSERT(vertexPermutation.find(halfEdge) == vertexPermutation.end(), "boundary edge must not be in any face");
       LIBFLATSURF_ASSERT(final.at(halfEdge) == halfEdge, "boundary half edge must be final when walking around ccw a vertex");
       LIBFLATSURF_ASSERT(initial.at(halfEdge) != halfEdge, "boundary half edge must not be initial when walking ccw around a vertex");
