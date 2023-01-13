@@ -138,7 +138,7 @@ Point<Surface> GenericRetriangulationDeformationRelation<Surface>::operator()(co
       LIBFLATSURF_ASSERT(this->domain->angle(B) == 1, "vertex that disappears in a retriangulation must have been a marked point");
 
       // Walk recursively from the vertex.
-      for (const auto next : B.outgoing()) {
+      for (const auto& next : B.outgoing()) {
         auto image = walk(next);
         if (image) {
           if (step)
