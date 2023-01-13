@@ -232,7 +232,7 @@ TEMPLATE_TEST_CASE("Eliminate Marked Points", "[FlatTriangulation][eliminateMark
 
   REQUIRE(surface->area() == simplified.codomain().area());
 
-  for (const auto preimage : surface->halfEdges()) {
+  for (const auto& preimage : surface->halfEdges()) {
     if (surface->angle(Vertex::source(*surface, preimage)) != 1 && surface->angle(Vertex::target(*surface, preimage)) != 1) {
       REQUIRE(simplified(SaddleConnection<Surface>(*surface, preimage)).has_value());
       REQUIRE(simplified(SaddleConnection<Surface>(*surface, preimage))->begin()->vector() == surface->fromHalfEdge(preimage));
@@ -242,7 +242,7 @@ TEMPLATE_TEST_CASE("Eliminate Marked Points", "[FlatTriangulation][eliminateMark
   const auto section = simplified.section();
   CAPTURE(section);
 
-  for (const auto image : section.domain().halfEdges()) {
+  for (const auto& image : section.domain().halfEdges()) {
     CAPTURE(image);
 
     const auto preimage = section(SaddleConnection<Surface>(section.domain(), image));
@@ -494,7 +494,7 @@ TEMPLATE_TEST_CASE("Relabel half edges of a Flat Triangulation", "[FlatTriangula
 
   SECTION("Swap half edge 1 and its Negative") {
     std::unordered_map<HalfEdge, HalfEdge> swap;
-    for (const auto halfEdge : surface->halfEdges())
+    for (const auto& halfEdge : surface->halfEdges())
       swap[halfEdge] = halfEdge;
 
     swap[HalfEdge(1)] = HalfEdge(-1);

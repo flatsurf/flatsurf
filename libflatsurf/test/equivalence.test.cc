@@ -134,8 +134,6 @@ TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo Labels", "[Equivalence][unlab
   }
 
   SECTION("Equivalence modulo Linear Deformation") {
-    const auto equivalence = Equivalence<Surface>::unlabeled();
-
     // A linear deformation with non-unit determinant must yield a different equivalence class.
     REQUIRE(EquivalenceClass(*surface, equivalence) != EquivalenceClass(surface->applyMatrix(T(2), T(1), T(3), T(4)).codomain(), equivalence));
 
@@ -199,11 +197,11 @@ TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo GL2", "[Equivalence][linear]"
   }
 
   SECTION("Equivalence modulo Linear Deformation With Negative Determinant") {
-    const auto equivalence = Equivalence<Surface>::linear(false);
+    const auto unsignedEquivalence = Equivalence<Surface>::linear(false);
 
     const auto deformation = surface->applyMatrix(T(1), T(3), T(3), T(7));
 
-    REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(deformation.codomain(), equivalence));
+    REQUIRE(EquivalenceClass(*surface, unsignedEquivalence) == EquivalenceClass(deformation.codomain(), unsignedEquivalence));
   }
 }
 

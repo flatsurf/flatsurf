@@ -66,7 +66,7 @@ class DeformationGenerator : public Catch::Generators::IGenerator<Deformation<Fl
     {
       // A relabeling
       std::unordered_map<HalfEdge, HalfEdge> permutation;
-      for (const auto halfEdge : domain.halfEdges())
+      for (const auto& halfEdge : domain.halfEdges())
         permutation[halfEdge] = halfEdge;
 
       permutation[1] = -2;
