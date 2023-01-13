@@ -134,7 +134,7 @@ FlatTriangulationCombinatorial FlatTriangulationCombinatorics<Surface>::relabel(
 
   LIBFLATSURF_CHECK_ARGUMENT(2*size() == relabeling.size(), "domain of relabeling " << relabeling << " must be half edges of " << *this);
 
-  for (const auto edge : edges())
+  for (const auto& edge : edges())
     LIBFLATSURF_CHECK_ARGUMENT(relabeling(edge.negative()) == -relabeling(edge.positive()), "relabeling " << relabeling << " does not preserve edges");
 
   return FlatTriangulationCombinatorial(relabeling * this->self->vertices * ~relabeling);
