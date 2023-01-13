@@ -242,27 +242,25 @@ TEMPLATE_TEST_CASE("Equivalence of Surfaces Modulo SL2", "[Equivalence][areaPres
   }
 
   SECTION("Equivalence modulo a Skew") {
-    const auto equivalence = Equivalence<Surface>::areaPreserving();
-
     const auto deformation = surface->applyMatrix(T(2), T(0), T(0), T(1)/2);
 
     REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(deformation.codomain(), equivalence));
   }
 
   SECTION("Equivalence modulo a Flip-Skew") {
-    const auto equivalence = Equivalence<Surface>::areaPreserving(false);
+    const auto unsignedEquivalence = Equivalence<Surface>::areaPreserving(false);
 
     const auto deformation = surface->applyMatrix(T(-2), T(0), T(0), T(1)/2);
 
-    REQUIRE(EquivalenceClass(*surface, equivalence) == EquivalenceClass(deformation.codomain(), equivalence));
+    REQUIRE(EquivalenceClass(*surface, unsignedEquivalence) == EquivalenceClass(deformation.codomain(), unsignedEquivalence));
   }
 
   SECTION("Non-Equivalence modulo Scaling") {
-    const auto equivalence = Equivalence<Surface>::areaPreserving(false);
+    const auto unsignedEquivalence = Equivalence<Surface>::areaPreserving(false);
 
     const auto deformation = surface->applyMatrix(T(2), T(0), T(0), T(1));
 
-    REQUIRE(EquivalenceClass(*surface, equivalence) != EquivalenceClass(deformation.codomain(), equivalence));
+    REQUIRE(EquivalenceClass(*surface, unsignedEquivalence) != EquivalenceClass(deformation.codomain(), unsignedEquivalence));
   }
 }
 
