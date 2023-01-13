@@ -268,9 +268,9 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
     Tracked<HalfEdgeMap<HalfEdge>> preimage(combinatorial, HalfEdgeMap<HalfEdge>(combinatorial, [](HalfEdge he) { return he; }),
         Tracked<HalfEdgeMap<HalfEdge>>::defaultFlip,
         [&](auto &self, const FlatTriangulationCombinatorial &surface, Edge e) {
-          for (const auto he : {e.positive(), e.negative()}) {
-            union_(self[surface.nextInFace(he)], self[-surface.previousInFace(he)]);
-            union_(self[-surface.nextInFace(he)], self[surface.previousInFace(he)]);
+          for (const auto& halfEdge : {e.positive(), e.negative()}) {
+            union_(self[surface.nextInFace(halfEdge)], self[-surface.previousInFace(halfEdge)]);
+            union_(self[-surface.nextInFace(halfEdge)], self[surface.previousInFace(halfEdge)]);
           }
         });
 
@@ -300,7 +300,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
         *this,
         codomain,
         OddHalfEdgeMap<Path<FlatTriangulation>>(*this, [&](HalfEdge he) {
-          for (const HalfEdge image : codomain.halfEdges()) {
+          for (const HalfEdge& image : codomain.halfEdges()) {
             if (find_((*preimage)[image]) == find_(he)) {
               LIBFLATSURF_ASSERT(vectors->get(image) == fromHalfEdge(he) + shift.get(he), "Half edge " << he << " should have been shifted from " << fromHalfEdge(he) << " to " << fromHalfEdge(he) + shift.get(he) << " but instead it became " << image << " which is " << vectors->get(image));
               return Path{SaddleConnection<FlatTriangulation>(codomain, image)};
