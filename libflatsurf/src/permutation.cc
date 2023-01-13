@@ -74,7 +74,7 @@ template <typename T>
 Permutation<T>::Permutation(const std::vector<std::vector<T>> &cycles) :
   Permutation([&]() {
     std::vector<T> data(boost::accumulate(cycles, 0u, [](size_t sum, const auto &cycle) { return sum + cycle.size(); }));
-    for (const auto cycle : cycles) {
+    for (const auto& cycle : cycles) {
       for (auto i = 0u; i < cycle.size(); i++) {
         LIBFLATSURF_ASSERT_ARGUMENT(index(cycle[i]) < data.size(), "cycle contains an element beyond the size of the permutation");
         data[index(cycle[i])] = cycle[(i + 1) % cycle.size()];
