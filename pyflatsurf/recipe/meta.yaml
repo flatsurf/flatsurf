@@ -23,14 +23,14 @@ requirements:
     - python
     - setuptools
     - gmpxxyy >=1.0.1,<2
-    - pyexactreal >=3,<4
+    - pyexactreal >=3.0.1,<4
     - cppyythonizations
     - libflatsurf
   run:
     - python
     - cppyy >=2.1.0,<3
     - cppyythonizations
-    - pyexactreal >=3,<4
+    - pyexactreal >=3.0.1,<4
     - boost-cpp
 
 test:

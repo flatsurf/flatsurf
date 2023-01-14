@@ -20,11 +20,11 @@
     "gmp": [],
     "gmpxxll": [],
     "gmpxxyy": [],
-    "libexactreal>=3": [],
+    "libexactreal>=3.0.1": [],
     "libintervalxt>=3.0.0": [],
     "libtool": [],
     "make": [],
-    "pyexactreal>=3": [],
+    "pyexactreal>=3.0.1": [],
     "setuptools": []
   },
   "conda_channels": ["flatsurf", "conda-forge", "default"],
