@@ -27,6 +27,7 @@
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/vertex.hpp"
+#include "../flatsurf/odd_half_edge_map.hpp"
 #include "cereal.helpers.hpp"
 #include "generators/combinatorial_surface_generator.hpp"
 #include "generators/half_edge_generator.hpp"
@@ -113,6 +114,31 @@ TEST_CASE("Flat Triangulation Insertions", "[FlatTriangulationCombinatorial][ins
       REQUIRE(a != -surface->nextAtVertex(e));
       REQUIRE(inserted.nextAtVertex(inserted.nextAtVertex(inserted.nextAtVertex(a))) == a);
     }
+  }
+}
+
+TEST_CASE("Relabeling Flat Triangulations", "[FlatTriangulationCombinatorial][relabel]") {
+  const auto surface = GENERATE(makeSurfaceCombinatorial());
+  CAPTURE(*surface);
+
+  SECTION("We swap half edge 1 and its Negative") {
+    std::unordered_map<HalfEdge, HalfEdge> swap;
+    for (const auto& halfEdge : surface->halfEdges())
+      swap[halfEdge] = halfEdge;
+
+    swap[HalfEdge(1)] = HalfEdge(-1);
+    swap[HalfEdge(-1)] = HalfEdge(1);
+
+    const Permutation<HalfEdge> permutation{swap};
+    CAPTURE(permutation);
+
+    const auto swapped = surface->relabel(permutation);
+
+    REQUIRE(swapped != *surface);
+
+    const auto restored = swapped.relabel(permutation);
+
+    REQUIRE(restored == *surface);
   }
 }
 

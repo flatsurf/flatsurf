@@ -32,7 +32,7 @@ namespace flatsurf {
 // A base class for all types representing triangulated translation surfaces.
 template <typename Surface>
 class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulationCombinatorial> {
-  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
+  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type parameter must not have modifiers such as const");
 
  protected:
   template <typename... Args>
@@ -56,6 +56,9 @@ class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulat
   // at the half edge e by removing the identification of the two corresponding
   // half edges there.
   FlatTriangulationCombinatorial slit(HalfEdge e) const;
+
+  // Create an independent clone of this triangulation with relabeled edges.
+  FlatTriangulationCombinatorial relabel(const Permutation<HalfEdge>&) const;
 
   HalfEdge nextAtVertex(HalfEdge e) const;
   HalfEdge previousAtVertex(HalfEdge e) const;

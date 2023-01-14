@@ -39,6 +39,8 @@
 #include "edge_map.hpp"
 #include "edge_set.hpp"
 #include "edge_set_iterator.hpp"
+#include "equivalence.hpp"
+#include "equivalence_class.hpp"
 #include "flat_triangulation.hpp"
 #include "flat_triangulation_collapsed.hpp"
 #include "flat_triangulation_combinatorial.hpp"

@@ -29,6 +29,7 @@
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/deformation.hpp"
 #include "../flatsurf/delaunay.hpp"
+#include "../flatsurf/equivalence.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/half_edge.hpp"
@@ -41,6 +42,7 @@
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
+#include "../flatsurf/odd_half_edge_map.hpp"
 #include "../src/external/rx-ranges/include/rx/ranges.hpp"
 #include "cereal.helpers.hpp"
 #include "generators/half_edge_generator.hpp"
@@ -230,7 +232,7 @@ TEMPLATE_TEST_CASE("Eliminate Marked Points", "[FlatTriangulation][eliminateMark
 
   REQUIRE(surface->area() == simplified.codomain().area());
 
-  for (const auto preimage : surface->halfEdges()) {
+  for (const auto& preimage : surface->halfEdges()) {
     if (surface->angle(Vertex::source(*surface, preimage)) != 1 && surface->angle(Vertex::target(*surface, preimage)) != 1) {
       REQUIRE(simplified(SaddleConnection<Surface>(*surface, preimage)).has_value());
       REQUIRE(simplified(SaddleConnection<Surface>(*surface, preimage))->begin()->vector() == surface->fromHalfEdge(preimage));
@@ -240,7 +242,7 @@ TEMPLATE_TEST_CASE("Eliminate Marked Points", "[FlatTriangulation][eliminateMark
   const auto section = simplified.section();
   CAPTURE(section);
 
-  for (const auto image : section.domain().halfEdges()) {
+  for (const auto& image : section.domain().halfEdges()) {
     CAPTURE(image);
 
     const auto preimage = section(SaddleConnection<Surface>(section.domain(), image));
@@ -286,6 +288,7 @@ TEMPLATE_TEST_CASE("Flip in a Flat Triangulation", "[FlatTriangulation][flip]", 
 TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[FlatTriangulation][insert]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using R2 = Vector<T>;
+  using Surface = FlatTriangulation<T>;
 
   SECTION("Insert into a Surface") {
     auto surface = GENERATE_SURFACES(T);
@@ -298,7 +301,7 @@ TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[FlatTriangulation][inse
     if (point.vertex()) {
       REQUIRE_THROWS(surface->insert(point));
     } else {
-      const auto insertion = [&]() -> std::optional<Deformation<FlatTriangulation<T>>> {
+      const auto insertion = [&]() -> std::optional<Deformation<Surface>> {
         try {
           return surface->insert(point);
         } catch (...) {
@@ -358,6 +361,7 @@ TEMPLATE_TEST_CASE("Insert into a Flat Triangulation", "[FlatTriangulation][inse
 TEMPLATE_TEST_CASE("Detect Isomorphic Surfaces", "[FlatTriangulation][isomorphism]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
   using Transformation = std::tuple<T, T, T, T>;
+  using Surface = FlatTriangulation<T>;
 
   const auto surface_ = GENERATE_SURFACES(T);
   CAPTURE(surface_);
@@ -418,6 +422,17 @@ TEMPLATE_TEST_CASE("Detect Isomorphic Surfaces", "[FlatTriangulation][isomorphis
     REQUIRE((deformation->section() * *deformation).trivial());
   }
 
+  SECTION("Check Consistency with Equivalence::isomorphisms") {
+    // Equivalences do not support working on subsets of edges (we need to
+    // implement non-triangulated surfaces for this to work first.)
+    if (isomorphism == ISOMORPHISM::FACES) {
+      // GL equivalence is only supported when division is possible.
+      if constexpr (isField<T>) {
+        REQUIRE(Equivalence<Surface>::linear(false).isomorphisms(surface, surface).size() == Equivalence<Surface>::unlabeled().isomorphisms(surface, surface).size() * transformations.size());
+      }
+    }
+  }
+
   auto scaled = surface.scale(2);
   CAPTURE(scaled);
 
@@ -469,6 +484,32 @@ TEMPLATE_TEST_CASE("Insert a slit into a Flat Triangulation", "[FlatTriangulatio
         }
       }
     }
+  }
+}
+
+TEMPLATE_TEST_CASE("Relabel half edges of a Flat Triangulation", "[FlatTriangulation][relabel]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+
+  const auto surface = GENERATE_SURFACES(T);
+
+  SECTION("Swap half edge 1 and its Negative") {
+    std::unordered_map<HalfEdge, HalfEdge> swap;
+    for (const auto& halfEdge : surface->halfEdges())
+      swap[halfEdge] = halfEdge;
+
+    swap[HalfEdge(1)] = HalfEdge(-1);
+    swap[HalfEdge(-1)] = HalfEdge(1);
+
+    const Permutation<HalfEdge> permutation{swap};
+    CAPTURE(permutation);
+
+    const auto swapped = surface->relabel(permutation);
+
+    REQUIRE(*surface != swapped.codomain());
+
+    const auto restored = swapped.codomain().relabel(permutation);
+
+    REQUIRE(*surface == restored.codomain());
   }
 }
 

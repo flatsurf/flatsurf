@@ -57,7 +57,7 @@ Point<Surface> InsertMarkedPointInFaceDeformationRelation<Surface>::operator()(c
     return point;
   }
 
-  for (const auto AB : {face, this->domain->nextInFace(face), this->domain->previousInFace(face)}) {
+  for (const auto& AB : {face, this->domain->nextInFace(face), this->domain->previousInFace(face)}) {
     // Write the point as ap A + bp B + cp C for a face (A, B, C) that contains
     // the point.
     const auto [ap, bp, cp] = point.coordinates(face);

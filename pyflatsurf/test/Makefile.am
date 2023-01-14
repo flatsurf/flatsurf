@@ -1,13 +1,14 @@
 if HAVE_SAGE
   MAYBE_SAGE = sage-doctest.sh flow_decomposition.py
 endif
-TESTS = bound.py deformation.py flat_triangulation.py half_edge.py point.py saddle_connections.py vector_renf_elem.py vector_gmp.py vertex.py python-doctest.sh $(MAYBE_SAGE)
+TESTS = bound.py deformation.py equivalence_class.py flat_triangulation.py half_edge.py point.py saddle_connections.py vector_renf_elem.py vector_gmp.py vertex.py python-doctest.sh $(MAYBE_SAGE)
 EXTRA_DIST = $(TESTS) surfaces.py
 
 AM_TESTS_ENVIRONMENT = . $(builddir)/test-env.sh;
 
 bound.py: test-env.sh
 half_edge.py: test-env.sh
+equivalence_class.py: test-env.sh surfaces.py
 flat_triangulation.py: test-env.sh surfaces.py
 point.py: test-env.sh surfaces.py
 saddle_connections.py: test-env.sh surfaces.py

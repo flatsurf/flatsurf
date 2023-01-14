@@ -37,7 +37,7 @@ class ContourConnection : boost::equality_comparable<ContourComponent<Surface>> 
   template <typename... Args>
   ContourConnection(PrivateConstructor, Args &&...);
 
-  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
+  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type parameter must not have modifiers such as const");
 
   using T = typename Surface::Coordinate;
   using Path = ::flatsurf::Path<FlatTriangulation<T>>;
