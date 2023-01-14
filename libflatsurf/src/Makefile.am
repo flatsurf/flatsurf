@@ -9,6 +9,10 @@ libflatsurf_la_SOURCES =                                            \
 	chain_iterator.cc                                           \
 	chain_vector.cc                                             \
 	collapsed_half_edge.cc                                      \
+	combinatorial_equivalence.cc                                \
+	combinatorial_equivalence_class_code.cc                     \
+	combinatorial_equivalence_walker.cc                         \
+	combinatorial_deformation_relation.cc                       \
 	composite_deformation_relation.cc                           \
 	contour_component.cc                                        \
 	contour_component_state.cc                                  \
@@ -20,6 +24,9 @@ libflatsurf_la_SOURCES =                                            \
 	edge.cc                                                     \
 	edge_set.cc                                                 \
 	edge_set_iterator.cc                                        \
+	equivalence.cc                                              \
+	equivalence_class.cc                                        \
+	equivalence_class_code.cc                                   \
 	flat_triangulation.cc                                       \
 	flat_triangulation_collapsed.cc                             \
 	flat_triangulation_combinatorial.cc                         \
@@ -43,6 +50,9 @@ libflatsurf_la_SOURCES =                                            \
 	interval_exchange_transformation.cc                         \
 	lengths.cc                                                  \
 	linear_deformation_relation.cc                              \
+	linear_equivalence.cc                                       \
+	linear_equivalence_class_code.cc                            \
+	linear_equivalence_walker.cc                                \
 	orientation.cc                                              \
 	path.cc                                                     \
 	path_iterator.cc                                            \
@@ -87,6 +97,8 @@ nobase_pkginclude_HEADERS =                                         \
 	../flatsurf/edge_map.hpp                                    \
 	../flatsurf/edge_set.hpp                                    \
 	../flatsurf/edge_set_iterator.hpp                           \
+	../flatsurf/equivalence.hpp                                 \
+	../flatsurf/equivalence_class.hpp                           \
 	../flatsurf/flat_triangulation.hpp                          \
 	../flatsurf/flat_triangulation_collapsed.hpp                \
 	../flatsurf/flat_triangulation_combinatorial.hpp            \
@@ -137,6 +149,10 @@ noinst_HEADERS =                                                    \
 	impl/chain_iterator.impl.hpp                                \
 	impl/chain_vector.hpp                                       \
 	impl/collapsed_half_edge.hpp                                \
+	impl/combinatorial_deformation_relation.hpp                 \
+	impl/combinatorial_equivalence.hpp                          \
+	impl/combinatorial_equivalence_class_code.hpp               \
+	impl/combinatorial_equivalence_walker.hpp                   \
 	impl/composite_deformation_relation.hpp                     \
 	impl/contour_component.impl.hpp                             \
 	impl/contour_component_state.hpp                            \
@@ -148,6 +164,10 @@ noinst_HEADERS =                                                    \
 	impl/edge_map.impl.hpp                                      \
 	impl/edge_set.impl.hpp                                      \
 	impl/edge_set_iterator.impl.hpp                             \
+	impl/equivalence.impl.hpp                                   \
+	impl/equivalence_class.impl.hpp                             \
+	impl/equivalence_class_code.hpp                             \
+	impl/equivalence_walker.hpp                                 \
 	impl/flat_triangulation_collapsed.impl.hpp                  \
 	impl/flat_triangulation_combinatorial.impl.hpp              \
 	impl/flat_triangulation_combinatorics.impl.hpp              \
@@ -171,6 +191,9 @@ noinst_HEADERS =                                                    \
 	impl/insert_marked_point_in_face_deformation_relation.hpp   \
 	impl/interval_exchange_transformation.impl.hpp              \
 	impl/lengths.hpp                                            \
+	impl/linear_equivalence.hpp                                 \
+	impl/linear_equivalence_class_code.hpp                      \
+	impl/linear_equivalence_walker.hpp                          \
 	impl/linear_deformation_relation.hpp                        \
 	impl/managed_movable.impl.hpp                               \
 	impl/path.impl.hpp                                          \

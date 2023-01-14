@@ -29,6 +29,8 @@
 
 #include "util/assert.ipp"
 
+#include "external/rx-ranges/include/rx/ranges.hpp"
+
 namespace flatsurf {
 
 namespace {
@@ -62,7 +64,7 @@ template <typename T>
 Permutation<T>::Permutation(const std::vector<T> &permutation) :
   permutation(permutation),
   inverse(permutation) {
-  for (auto &v : permutation)
+  for (const auto &v : permutation)
     inverse[index((*this)(v))] = v;
 
   check(*this);
@@ -72,7 +74,7 @@ template <typename T>
 Permutation<T>::Permutation(const std::vector<std::vector<T>> &cycles) :
   Permutation([&]() {
     std::vector<T> data(boost::accumulate(cycles, 0u, [](size_t sum, const auto &cycle) { return sum + cycle.size(); }));
-    for (const auto cycle : cycles) {
+    for (const auto& cycle : cycles) {
       for (auto i = 0u; i < cycle.size(); i++) {
         LIBFLATSURF_ASSERT_ARGUMENT(index(cycle[i]) < data.size(), "cycle contains an element beyond the size of the permutation");
         data[index(cycle[i])] = cycle[(i + 1) % cycle.size()];
@@ -85,10 +87,12 @@ template <typename T>
 Permutation<T>::Permutation(const std::vector<std::pair<T, T>> &permutation) :
   Permutation([&]() {
     std::vector<T> data(permutation.size());
+
     for (auto ab : permutation) {
-      LIBFLATSURF_ASSERT_ARGUMENT(index(ab.first) < data.size(), "entry of permutation points to an element beoynd the size of the permutation");
+      LIBFLATSURF_ASSERT_ARGUMENT(index(ab.first) < data.size() && index(ab.second) < data.size(), "entry of permutation points to an element beoynd the size of the permutation");
       data[index(ab.first)] = ab.second;
     }
+
     return data;
   }()) {}
 
@@ -96,10 +100,12 @@ template <typename T>
 Permutation<T>::Permutation(const std::unordered_map<T, T> &permutation) :
   Permutation([&]() {
     std::vector<T> data(permutation.size());
+
     for (auto ab : permutation) {
-      LIBFLATSURF_ASSERT_ARGUMENT(index(ab.first) < data.size(), "entry of permutation points to an element beoynd the size of the permutation");
+      LIBFLATSURF_ASSERT_ARGUMENT(index(ab.first) < data.size() && index(ab.second) < data.size(), "entry of permutation points to an element beoynd the size of the permutation");
       data[index(ab.first)] = ab.second;
     }
+
     return data;
   }()) {}
 

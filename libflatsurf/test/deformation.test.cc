@@ -76,6 +76,7 @@ TEMPLATE_TEST_CASE("Mapping Points Across Deformations", "[Deformation][operator
   CAPTURE(surface);
 
   const auto deformation = GENERATE_COPY(deformations(surface));
+  CAPTURE(deformation);
 
   SECTION("Map Random Points") {
     const auto face = GENERATE_COPY(halfEdges(surface));

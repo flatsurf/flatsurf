@@ -87,13 +87,13 @@ std::array<typename Surface::Coordinate, 3> Point<Surface>::coordinates(HalfEdge
   LIBFLATSURF_CHECK_ARGUMENT(in(face), "point has no coordinates in this face");
 
   // If the point is specified with respect to face, return its coordinates as stored.
-  for (const auto side : self->surface->face(face))
+  for (const auto& side : self->surface->face(face))
     if (side == self->face)
       return self->rotated(face);
 
   // If this is a vertex or on an edge of the face, translate the coordinates
   // into ``face``.
-  for (const auto side : self->surface->face(face)) {
+  for (const auto& side : self->surface->face(face)) {
     if (self->face == -side and !self->c)
       return ImplementationOf<Point>{*self->surface, side, self->b, self->a, self->c}.rotated(face);
     if (self->surface->previousInFace(self->face) == -side and !self->b and !self->c)
@@ -104,7 +104,7 @@ std::array<typename Surface::Coordinate, 3> Point<Surface>::coordinates(HalfEdge
 
   LIBFLATSURF_ASSERT(vertex, "point is in this face but not in the interior or on an edge so it must be a vertex");
 
-  for (const auto side : self->surface->face(face))
+  for (const auto& side : self->surface->face(face))
     if (vertex == Vertex::source(side, *self->surface))
       return ImplementationOf<Point>{*self->surface, side, T(1), T(), T()}.rotated(face);
 

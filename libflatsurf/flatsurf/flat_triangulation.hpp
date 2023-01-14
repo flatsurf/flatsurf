@@ -42,7 +42,7 @@ template <class T>
 class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulation<T>>,
                           Serializable<FlatTriangulation<T>>,
                           boost::equality_comparable<FlatTriangulation<T>> {
-  static_assert(std::is_same_v<T, std::decay_t<T>>, "type must not have modifiers such as const");
+  static_assert(std::is_same_v<T, std::decay_t<T>>, "type parameter must not have modifiers such as const");
 
  public:
   using Coordinate = T;
@@ -77,9 +77,12 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
   // ``p`` which is not a vertex already.
   Deformation<FlatTriangulation<T>> insert(const Point<FlatTriangulation>& p) const;
 
+  // Create an independent clone of this triangulation with relabeled edges.
+  Deformation<FlatTriangulation<T>> relabel(const Permutation<HalfEdge>&) const;
+
   // Create an independent clone of this triangulation with all vectors scaled
   // by c.
-  [[deprecated("use applyMatrix instead")]]
+  [[deprecated("Use applyMatrix instead")]]
   FlatTriangulation<T> scale(const mpz_class &c) const;
 
   // Create an independent clone of this triangulation with all vectors
@@ -107,6 +110,7 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
   // transforming them subject to the same linear transformation (note that
   // that transformation might have negative determinant, i.e., the order of
   // half edges in a face might change under this map.)
+  [[deprecated("Use Equivalence::isomorphisms() instead")]]
   std::optional<Deformation<FlatTriangulation<T>>> isomorphism(
       const FlatTriangulation &,
       ISOMORPHISM kind,

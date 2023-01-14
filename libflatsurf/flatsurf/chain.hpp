@@ -40,7 +40,7 @@ class Chain : public Serializable<Chain<Surface>>,
               boost::additive<Chain<Surface>, HalfEdge>,
               boost::additive<Chain<Surface>>,
               boost::multipliable<Chain<Surface>, mpz_class> {
-  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
+  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type parameter must not have modifiers such as const");
 
   using T = typename Surface::Coordinate;
 

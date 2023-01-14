@@ -179,7 +179,7 @@ TEMPLATE_TEST_CASE("Coordinates of Points", "[Point][coordinates][vertex][edge][
   }
 
   SECTION("Barycentric Point Coordinates Roundtrip") {
-    for (const auto face_ : surface->face(face)) {
+    for (const auto& face_ : surface->face(face)) {
       CAPTURE(face_);
       const auto coordinates_ = point.coordinates(face_);
       CAPTURE(coordinates_);
@@ -191,7 +191,7 @@ TEMPLATE_TEST_CASE("Coordinates of Points", "[Point][coordinates][vertex][edge][
   }
 
   SECTION("Cartesian Point Coordinates Roundtrip") {
-    for (const auto face_ : surface->face(face)) {
+    for (const auto& face_ : surface->face(face)) {
       CAPTURE(face_);
       const auto coordinates_ = [&]() -> std::optional<Vector<T>> {
         try {

@@ -241,7 +241,7 @@ ChainVector<Surface, T>::operator const Vector<T> &() const {
 
       Vector<T> exact;
 
-      for (const Edge edge : chain.surface->edges()) {
+      for (const auto& edge : chain.surface->edges()) {
         const auto coefficient = chain[edge.index()];
         if (coefficient)
           exact += **coefficient * static_cast<const Vector<T>&>(chain.surface->fromHalfEdge(edge.positive()));

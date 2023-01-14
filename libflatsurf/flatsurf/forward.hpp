@@ -67,6 +67,14 @@ class EdgeSet;
 
 class EdgeSetIterator;
 
+template <typename Surface>
+class Equivalence;
+
+template <typename Surface>
+class EquivalenceClass;
+
+struct EquivalenceClassCode;
+
 template <typename T>
 class FlatTriangulation;
 

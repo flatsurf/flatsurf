@@ -182,7 +182,7 @@ void ImplementationOf<ContourDecomposition<Surface>>::check(const std::vector<Pa
       } while (connection != component.begin());
     }
 
-    for (const auto vertex : surface.vertices()) {
+    for (const auto& vertex : surface.vertices()) {
       LIBFLATSURF_CHECK(totalAngle[vertex] != 0, "All marked vertices must still be present in decomposition but " << vertex << " was not found anywhere on the perimeters " << fmt::format("[{}]", fmt::join(decomposition, ", ")));
       const auto formatAngle = [](const int angle) {
         if (angle % 2)
