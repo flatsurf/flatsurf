@@ -20,6 +20,8 @@
 #ifndef LIBFLATSURF_COMBINATORIAL_EQUIVALENCE_CLASS_CODE_HPP
 #define LIBFLATSURF_COMBINATORIAL_EQUIVALENCE_CLASS_CODE_HPP
 
+#include <vector>
+
 #include "equivalence_class_code.hpp"
 
 namespace flatsurf {
