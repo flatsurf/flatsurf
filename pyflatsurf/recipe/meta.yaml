@@ -19,6 +19,7 @@ requirements:
     - automake
     - coreutils
     - {{ compiler('cxx') }}
+    - make
   host:
     - python
     - setuptools

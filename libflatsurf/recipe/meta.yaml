@@ -21,6 +21,7 @@ requirements:
     - automake
     - coreutils
     - {{ compiler('cxx') }}
+    - make
   host:
     - arb {{ arb }}
     - boost-cpp {{ boost_cpp }}
