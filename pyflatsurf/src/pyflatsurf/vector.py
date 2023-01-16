@@ -448,8 +448,8 @@ class Vectors(UniqueRepresentation, Parent):
             sage: decomposition = V.decomposition([K.random_element() * R.random_element(), R.random_element(), R.random_element()])
             sage: sorted(decomposition)  # sorted to make output stable for different versions of exact-real term ordering
             [(ℝ(0.621222…), (0, 1, 0)),
-             (ℝ(0.782515…), (..., 0, 0)),
-             (ℝ(0.673083…), (0, 0, 1))]
+             (ℝ(0.673083…), (0, 0, 1)),
+             (ℝ(0.782515…), (..., 0, 0))]
 
         """
         vector = tuple(self._to_coordinate(x) for x in vector)
