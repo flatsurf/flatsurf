@@ -4,6 +4,16 @@ intervalxt Change Log
 
 .. current developments
 
+v3.13.2
+====================
+
+**Fixed:**
+
+* Fixed missing implementation of hashing for `EquivalenceClass`.
+* Fixed equivalence tests in pyflatsurf test suite.
+
+
+
 v3.13.1
 ====================
 
