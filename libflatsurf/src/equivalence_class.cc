@@ -58,13 +58,29 @@ ImplementationOf<EquivalenceClass<Surface>>::ImplementationOf(const Surface& sur
 }
 
 template <typename Surface>
+size_t ImplementationOf<EquivalenceClass<Surface>>::hash(const EquivalenceClass<Surface>& self) {
+  return self.self->code->hash();
+}
+
+template <typename Surface>
 std::ostream& operator<<(std::ostream& os, const EquivalenceClass<Surface>& clazz) {
   return os << "[" << clazz.representative() << "] identified by (" << *clazz.self->code << ")";
 }
 
 }
 
+namespace std {
+
+using namespace flatsurf;
+
+template <typename Surface>
+size_t hash<EquivalenceClass<Surface>>::operator()(const EquivalenceClass<Surface>& self) const {
+  return ImplementationOf<EquivalenceClass<Surface>>::hash(self);
+}
+
+}  // namespace std
+
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"
 
-LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), EquivalenceClass, LIBFLATSURF_FLAT_TRIANGULATION_TYPES)
+LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION)(LIBFLATSURF_INSTANTIATE_HASH), EquivalenceClass, LIBFLATSURF_FLAT_TRIANGULATION_TYPES)

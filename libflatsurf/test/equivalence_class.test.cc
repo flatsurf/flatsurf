@@ -102,4 +102,20 @@ TEMPLATE_TEST_CASE("Automorphisms of Surfaces", "[EquivalenceClass][automorphism
 
   REQUIRE(equivalenceClass.automorphisms() >= 1);
 }
+
+TEMPLATE_TEST_CASE("Equivalence Classes are Hashable", "[EquivalenceClass][hash]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
+  const auto& equivalence = GENERATE_REF(equivalences(surface));
+  CAPTURE(equivalence);
+
+  const auto equivalenceClass = EquivalenceClass(*surface, equivalence);
+  CAPTURE(equivalenceClass);
+
+  REQUIRE(std::hash<EquivalenceClass<FlatTriangulation<T>>>{}(equivalenceClass) == std::hash<EquivalenceClass<FlatTriangulation<T>>>{}(EquivalenceClass(*surface, equivalence)));
+}
+
 }

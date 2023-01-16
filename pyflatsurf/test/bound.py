@@ -36,4 +36,3 @@ def test_bound():
     assert bound1 != bound64
 
 if __name__ == '__main__': sys.exit(pytest.main(sys.argv))
-

@@ -3,7 +3,7 @@
 ######################################################################
 # This file is part of flatsurf.
 #
-#       Copyright (C) 2022 Julian Rüth
+#       Copyright (C) 2022-2023 Julian Rüth
 #
 # flatsurf is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,6 +19,9 @@
 # along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
+import sys
+import pytest
+
 from pyflatsurf import flatsurf
 import surfaces
 
@@ -27,9 +30,14 @@ def test_equivalence_class():
     for coefficients in ['long long', 'mpz_class', 'mpq_class', 'eantic::renf_elem_class', 'exactreal::Element<exactreal::IntegerRing>', 'exactreal::Element<exactreal::RationalField>', 'exactreal::Element<exactreal::NumberField>']:
         square = surfaces.square(flatsurf.Vector[coefficients])
         l = surfaces.L(flatsurf.Vector[coefficients])
-        for equivalence in [flatsurf.Equivalence.combinatorial(), flatsurf.Equivalence.linear()]:
-            a = flatsurf.EquivalenceClass(square, equivalence)
-            b = flatsurf.EquivalenceClass(l, equivalence)
+        S = type(square)
+        for equivalence in [flatsurf.Equivalence[S].combinatorial(), flatsurf.Equivalence[S].linear()]:
+            a = flatsurf.EquivalenceClass[S](square, equivalence)
+            b = flatsurf.EquivalenceClass[S](l, equivalence)
 
             assert a != b
-            assert a == flatsurf.EquivalenceClass(square, equivalence)
+            assert hash(a) != hash(b)
+            assert a == flatsurf.EquivalenceClass[S](square, equivalence)
+            assert hash(a) == hash(flatsurf.EquivalenceClass[S](square, equivalence))
+
+if __name__ == '__main__': sys.exit(pytest.main(sys.argv))
