@@ -36,6 +36,8 @@ def test_equivalence_class():
             b = flatsurf.EquivalenceClass[S](l, equivalence)
 
             assert a != b
+            assert hash(a) != hash(b)
             assert a == flatsurf.EquivalenceClass[S](square, equivalence)
+            assert hash(a) == hash(flatsurf.EquivalenceClass[S](square, equivalence))
 
 if __name__ == '__main__': sys.exit(pytest.main(sys.argv))

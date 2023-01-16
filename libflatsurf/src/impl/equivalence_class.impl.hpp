@@ -37,6 +37,10 @@ class ImplementationOf<EquivalenceClass<Surface>> {
   ReadOnly<Equivalence<Surface>> equivalence;
   std::shared_ptr<EquivalenceClassCode> code;
   size_t automorphisms;
+
+  static size_t hash(const EquivalenceClass<Surface>&);
+
+  friend std::hash<EquivalenceClass<Surface>>;
 };
 
 }
