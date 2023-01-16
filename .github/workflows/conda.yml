@@ -9,12 +9,12 @@ concurrency:
 
 jobs:
   conda-build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v2
       with:
         submodules: recursive
-    - run: docker pull condaforge/linux-anvil-comp7
+    - run: docker pull condaforge/linux-anvil-cos7-x86_64
     - name: Build libflatsurf
       uses: flatsurf/actions/conda-forge-build@main
       with:

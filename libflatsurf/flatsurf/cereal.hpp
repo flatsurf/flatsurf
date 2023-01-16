@@ -176,7 +176,11 @@ template <typename T>
 struct Serialization<ManagedMovable<T>> {
   template <typename Archive>
   static void save(Archive& archive, const T& self, std::function<void(Archive&, const T&)> save) {
+#if CEREAL_VERSION >= 10301
+    uint32_t id = archive.registerSharedPointer(self.self.state);
+#else
     uint32_t id = archive.registerSharedPointer(self.self.state.get());
+#endif
     archive(cereal::make_nvp("shared", id));
 
     if (id & static_cast<unsigned int>(cereal::detail::msb_32bit)) {

@@ -19,18 +19,19 @@ requirements:
     - automake
     - coreutils
     - {{ compiler('cxx') }}
+    - make
   host:
     - python
     - setuptools
     - gmpxxyy >=1.0.1,<2
-    - pyexactreal >=2.2.1,<3
+    - pyexactreal >=3.0.1,<4
     - cppyythonizations
     - libflatsurf
   run:
     - python
     - cppyy >=2.1.0,<3
     - cppyythonizations
-    - pyexactreal >=2.2.1,<3
+    - pyexactreal >=3.0.1,<4
     - boost-cpp
 
 test:
