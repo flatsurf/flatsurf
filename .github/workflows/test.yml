@@ -9,12 +9,16 @@ concurrency:
 
 jobs:
   test-libflatsurf:
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.on }}
     strategy:
       matrix:
-        target:
-          - check
-          - check-valgrind
+        include:
+        - on: ubuntu-22.04
+          target: check
+        - on: ubuntu-22.04
+          target: check-valgrind
+        - on: macos-11
+          target: check
     steps:
       - uses: actions/checkout@v2
         with: { submodules: recursive }
@@ -49,14 +53,16 @@ jobs:
       - uses: flatsurf/actions/show-logs@main
         if: ${{ always() }}
   test-pyflatsurf:
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.on }}
     strategy:
       matrix:
-        python: ["3.6", "3.7", "3.8", "3.9"]
+        on: ["ubuntu-22.04", "macos-11"]
+        python: ["3.6", "3.7", "3.8", "3.9", "3.10"]
         target:
           - check
         include:
-          - python: 3.9
+          - on: ubuntu-22.04
+            python: 3.10
             target: check-valgrind
     steps:
       - uses: actions/checkout@v2
@@ -93,7 +99,7 @@ jobs:
       - uses: flatsurf/actions/show-logs@main
         if: ${{ always() }}
   distcheck:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
         with: { submodules: recursive }
