@@ -80,6 +80,10 @@ jobs:
           mamba env update --quiet -n test -f libflatsurf/environment.yml
           mamba env update --quiet -n test -f pyflatsurf/environment.yml
           conda list
+      - name: silence cppyy startup
+        shell: bash -l {0}
+        run: |
+          python -c 'import cppyy'
       - name: make ${{ matrix.target }}
         shell: bash -l {0}
         run: |
