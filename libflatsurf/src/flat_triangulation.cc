@@ -928,7 +928,7 @@ std::optional<Deformation<FlatTriangulation<T>>> FlatTriangulation<T>::isomorphi
     return kind == ISOMORPHISM::FACES ? false : this->delaunay(he.edge()) == DELAUNAY::AMBIGUOUS;
   };
   const auto ignoreImage = [&](HalfEdge he) {
-    return kind == ISOMORPHISM::FACES ? false : this->delaunay(he.edge()) == DELAUNAY::AMBIGUOUS;
+    return kind == ISOMORPHISM::FACES ? false : other.delaunay(he.edge()) == DELAUNAY::AMBIGUOUS;
   };
 
   if (kind == ISOMORPHISM::DELAUNAY_CELLS) {
@@ -936,10 +936,10 @@ std::optional<Deformation<FlatTriangulation<T>>> FlatTriangulation<T>::isomorphi
     LIBFLATSURF_ASSERT(other.edges() | rx::all_of([&](const auto e) { return other.delaunay(e) != DELAUNAY::NON_DELAUNAY; }), "target surface not Delaunay triangulated");
   }
 
-  // We pick a fixed half edge of this surfaces and try to map it to every
-  // other half edge in the other surface. Taking into account another half
-  // edge in the same face, we get a single possible 2×2 transformation matrix.
-  // (Or rather two possible matrices, if we allow reflections.)
+  // We pick a single "preimage" half edge of this surfaces and try to map it
+  // to every other half edge in the other surface. Taking into account another
+  // half edge in the same face, we get a single possible 2×2 transformation
+  // matrix. (Or rather two possible matrices, if we allow reflections.)
   HalfEdge preimage = [&]() {
     for (HalfEdge he : this->halfEdges())
       if (!ignore(he))
