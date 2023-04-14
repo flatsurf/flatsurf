@@ -41,7 +41,7 @@ class Vector(SageVector):
 
     EXAMPLES::
 
-        sage: from pyflatsurf import flatsurf
+        sage: from pyflatsurf import flatsurf  # random output due to deprecation warnings
         sage: from pyflatsurf.vector import Vectors
 
     A vector with integer coordinates::
