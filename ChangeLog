@@ -4,6 +4,15 @@ intervalxt Change Log
 
 .. current developments
 
+v3.13.3
+====================
+
+**Fixed:**
+
+* Fixed `FlatTriangulation::isomorphism(…, DELAUNAY_CELLS)` which got Delaunay cells wrong in the image of the isomorphism.
+
+
+
 v3.13.2
 ====================
 

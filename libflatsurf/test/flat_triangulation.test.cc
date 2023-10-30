@@ -363,81 +363,101 @@ TEMPLATE_TEST_CASE("Detect Isomorphic Surfaces", "[FlatTriangulation][isomorphis
   using Transformation = std::tuple<T, T, T, T>;
   using Surface = FlatTriangulation<T>;
 
-  const auto surface_ = GENERATE_SURFACES(T);
-  CAPTURE(surface_);
+  SECTION("Generic Tests") {
+    const auto surface_ = GENERATE_SURFACES(T);
+    CAPTURE(surface_);
 
-  auto surface = surface_->clone();
+    auto surface = surface_->clone();
 
-  const int delaunay = GENERATE(values({0, 1}));
-  const auto isomorphism = delaunay ? ISOMORPHISM::DELAUNAY_CELLS : ISOMORPHISM::FACES;
+    const int delaunay = GENERATE(values({0, 1}));
+    const auto isomorphism = delaunay ? ISOMORPHISM::DELAUNAY_CELLS : ISOMORPHISM::FACES;
 
-  CAPTURE(delaunay);
-  if (delaunay)
-    surface.delaunay();
+    CAPTURE(delaunay);
+    if (delaunay)
+      surface.delaunay();
 
-  REQUIRE(surface.isomorphism(surface, isomorphism));
+    REQUIRE(surface.isomorphism(surface, isomorphism));
 
-  std::vector<Transformation> transformations = {Transformation{1, 0, 0, 1}};
+    std::vector<Transformation> transformations = {Transformation{1, 0, 0, 1}};
 
-  Transformation candidate;
-  auto filter = [&](const T& a, const T& b, const T& c, const T& d) {
-    candidate = Transformation{a, b, c, d};
-    return std::find(begin(transformations), end(transformations), candidate) == end(transformations);
-  };
+    Transformation candidate;
+    auto filter = [&](const T& a, const T& b, const T& c, const T& d) {
+      candidate = Transformation{a, b, c, d};
+      return std::find(begin(transformations), end(transformations), candidate) == end(transformations);
+    };
 
-  while (true) {
-    const auto deformation = surface.isomorphism(surface, isomorphism, filter);
+    while (true) {
+      const auto deformation = surface.isomorphism(surface, isomorphism, filter);
 
-    if (!deformation)
-      break;
+      if (!deformation)
+        break;
 
-    const auto [a, b, c, d] = candidate;
-    CAPTURE(a, b, c, d);
+      const auto [a, b, c, d] = candidate;
+      CAPTURE(a, b, c, d);
 
-    REQUIRE((!deformation->trivial() || (a == 1 && b == 0 && c == 0 && d == 1)));
+      REQUIRE((!deformation->trivial() || (a == 1 && b == 0 && c == 0 && d == 1)));
 
-    std::unordered_set<HalfEdge> image;
-    for (const auto& halfEdge : surface.halfEdges()) {
-      CAPTURE(halfEdge);
+      std::unordered_set<HalfEdge> image;
+      for (const auto& halfEdge : surface.halfEdges()) {
+        CAPTURE(halfEdge);
 
-      if (delaunay && surface.delaunay(halfEdge.edge()) == DELAUNAY::AMBIGUOUS)
-        continue;
+        if (delaunay && surface.delaunay(halfEdge.edge()) == DELAUNAY::AMBIGUOUS)
+          continue;
 
-      auto he = (*deformation)(halfEdge);
+        auto he = (*deformation)(halfEdge);
 
-      REQUIRE(he.has_value());
+        REQUIRE(he.has_value());
 
-      image.insert(*he);
+        image.insert(*he);
 
-      const auto v = surface.fromHalfEdge(halfEdge);
-      const auto v_ = deformation->surface().fromHalfEdge(*he);
-      REQUIRE(Vector<T>(v.x() * a + v.y() * b, v.x() * c + v.y() * d) == v_);
+        const auto v = surface.fromHalfEdge(halfEdge);
+        const auto v_ = deformation->surface().fromHalfEdge(*he);
+        REQUIRE(Vector<T>(v.x() * a + v.y() * b, v.x() * c + v.y() * d) == v_);
+      }
+      if (!delaunay)
+        REQUIRE(image.size() == surface.halfEdges().size());
+
+      transformations.push_back(candidate);
+
+      REQUIRE((*deformation * deformation->section()).trivial());
+      REQUIRE((deformation->section() * *deformation).trivial());
     }
-    if (!delaunay)
-      REQUIRE(image.size() == surface.halfEdges().size());
 
-    transformations.push_back(candidate);
-
-    REQUIRE((*deformation * deformation->section()).trivial());
-    REQUIRE((deformation->section() * *deformation).trivial());
-  }
-
-  SECTION("Check Consistency with Equivalence::isomorphisms") {
-    // Equivalences do not support working on subsets of edges (we need to
-    // implement non-triangulated surfaces for this to work first.)
-    if (isomorphism == ISOMORPHISM::FACES) {
-      // GL equivalence is only supported when division is possible.
-      if constexpr (isField<T>) {
-        REQUIRE(Equivalence<Surface>::linear(false).isomorphisms(surface, surface).size() == Equivalence<Surface>::unlabeled().isomorphisms(surface, surface).size() * transformations.size());
+    SECTION("Check Consistency with Equivalence::isomorphisms") {
+      // Equivalences do not support working on subsets of edges (we need to
+      // implement non-triangulated surfaces for this to work first.)
+      if (isomorphism == ISOMORPHISM::FACES) {
+        // GL equivalence is only supported when division is possible.
+        if constexpr (isField<T>) {
+          REQUIRE(Equivalence<Surface>::linear(false).isomorphisms(surface, surface).size() == Equivalence<Surface>::unlabeled().isomorphisms(surface, surface).size() * transformations.size());
+        }
       }
     }
+
+    auto scaled = surface.scale(2);
+    CAPTURE(scaled);
+
+    REQUIRE(!surface.isomorphism(scaled, isomorphism));
+    REQUIRE(surface.isomorphism(scaled, isomorphism, [](const auto&, const auto&, const auto&, const auto&) { return true; }));
   }
 
-  auto scaled = surface.scale(2);
-  CAPTURE(scaled);
+  SECTION("Particular Cases") {
+    using R2 = flatsurf::Vector<T>;
+    SECTION("An Isomorphism Coming from a Veech Group Element") {
+      const auto domain = FlatTriangulation<T>(
+        FlatTriangulationCombinatorial(std::vector<std::vector<int>>{{1, -3, -8, 9, 3, -2, -7, 4, -5, 7, -6, 8, -9, 6, 2, -1, -4, 5}}),
+        vector{R2(0, -1), R2(1, 1), R2(-1, 0), R2(1, 0), R2(-1, -1), R2(1, 0), R2(0, 1), R2(-1, -1), R2(0, 1)});
+      const auto codomain = FlatTriangulation<T>(
+        FlatTriangulationCombinatorial(std::vector<std::vector<int>>{{1, -3, 7, -6, 3, -2, -5, -9, 8, 5, -4, -7, 6, 4, 2, -1, 9, -8}}),
+        vector{R2(0, -1), R2(1, 1), R2(-1, 0), R2(1, 0), R2(0, 1), R2(0, -1), R2(1, 1), R2(1, 1), R2(-1, 0)});
 
-  REQUIRE(!surface.isomorphism(scaled, isomorphism));
-  REQUIRE(surface.isomorphism(scaled, isomorphism, [](const auto&, const auto&, const auto&, const auto&) { return true; }));
+      CAPTURE(domain);
+      CAPTURE(codomain);
+
+      REQUIRE(domain.isomorphism(codomain, ISOMORPHISM::FACES).has_value());
+      REQUIRE(domain.isomorphism(codomain, ISOMORPHISM::DELAUNAY_CELLS).has_value());
+    }
+  }
 }
 
 TEMPLATE_TEST_CASE("Insert a slit into a Flat Triangulation", "[FlatTriangulation][slit]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
