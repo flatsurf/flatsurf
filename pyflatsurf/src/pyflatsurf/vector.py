@@ -445,7 +445,6 @@ class Vectors(UniqueRepresentation, Parent):
 
             sage: R = ExactReals(K)
             sage: V = Vectors(R)
-            sage: c = K.zero()
             sage: decomposition = V.decomposition([K.gen() * R.random_element(), R.random_element(), R.random_element()])
             sage: sorted(decomposition)  # sorted to make output stable for different versions of exact-real term ordering
             [(ℝ(0.621222…), (0, 1, 0)),
