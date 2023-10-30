@@ -57,7 +57,7 @@ jobs:
     strategy:
       matrix:
         on: ["ubuntu-22.04", "macos-11"]
-        python: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+        python: ["3.8", "3.9", "3.10"]
         target:
           - check
         include:
