@@ -5,7 +5,6 @@
 name: pyflatsurf-build
 channels:
   - conda-forge
-  - defaults
 dependencies:
   - automake
   - cppyy

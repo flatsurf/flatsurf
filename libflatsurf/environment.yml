@@ -4,11 +4,10 @@
 name: libflatsurf-build
 channels:
   - conda-forge
-  - defaults
 dependencies:
   - automake
   - benchmark
-  - boost-cpp
+  - boost-cpp=1.78.0
   - coreutils
   - cxx-compiler
   - libeantic>=1.2.2,<2
