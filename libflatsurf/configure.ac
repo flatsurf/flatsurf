@@ -63,8 +63,14 @@ AX_CXX_CHECK_LIB([gmpxx], [std::runtime_error::what () const], , AC_MSG_ERROR([G
 AC_CHECK_HEADERS([gmpxxll/mpz_class.hpp], [ ], [AC_MSG_ERROR([gmpxxll headers not found])])
 
 dnl We use Arb for ball arithmetic in our geometry
-AC_CHECK_LIB([arb], [arb_init], [have_arb=yes], AC_MSG_ERROR([arb library not found]), [-lmpfr])
-AC_CHECK_HEADERS([arb.h], , AC_MSG_ERROR([arb headers not found]))
+AC_CHECK_HEADERS([flint/arb.h], [
+  dnl We are building against FLINT 3 (which ships Arb.)
+  AC_CHECK_LIB([flint], [arb_load_str], , AC_MSG_ERROR([FLINT library >=3 not found]), [-lgmp -lmpfr -lflint])
+], [
+  dnl We are building against FLINT 2 (which does not ship Arb yet.)
+  AC_CHECK_HEADERS([arb.h], , AC_MSG_ERROR([Arb headers not found]))
+  AC_CHECK_LIB([arb], [arb_load_str], , AC_MSG_ERROR([Arb library >=2.17.0 not found]), [-lgmp -lmpfr -lflint])
+])
 
 AC_CHECK_LIB([eantic], [renf_init], [have_eantic=yes], AC_MSG_ERROR([e-antic library not found]), [-lmpfr -lantic])
 AX_CXX_CHECK_LIB([eanticxx], [eantic::renf_elem_class], [have_eanticxx=yes], AC_MSG_ERROR([E-ANTIC library not found]), [-lmpfr -lantic])
