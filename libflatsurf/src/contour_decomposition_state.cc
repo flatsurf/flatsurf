@@ -25,7 +25,6 @@
 #include "../flatsurf/interval_exchange_transformation.hpp"
 #include "../flatsurf/vertical.hpp"
 #include "impl/contour_component.impl.hpp"
-#include "util/assert.ipp"
 
 namespace flatsurf {
 
