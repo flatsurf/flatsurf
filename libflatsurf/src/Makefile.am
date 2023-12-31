@@ -225,8 +225,10 @@ noinst_HEADERS =                                                    \
 	util/union_find.ipp
 
 libflatsurf_la_LDFLAGS = -version-info $(libflatsurf_version_info)
+if HAVE_ARB
 # some of our vectors use arb directly and through exact-real's arb wrappers
 libflatsurf_la_LDFLAGS += -larb
+endif
 # we use exact-real in our vectors
 libflatsurf_la_LDFLAGS += -lexactreal
 # we use e-antic in our vectors
