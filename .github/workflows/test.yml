@@ -65,13 +65,22 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python: ["3.6", "3.7", "3.8", "3.9", "3.10"]
-        # No released SageMath supports FLINT 3 yet. So we only test with FLINT 2.
-        libflint: ["2"]
-        target:
-          - check
         include:
+          # No released SageMath supports FLINT 3 yet. So we only test with FLINT 2.
+          - python: "3.8"
+            libflint: "2"
+            target: check
+          - python: "3.9"
+            libflint: "2"
+            target: check
           - python: "3.10"
+            libflint: "2"
+            target: check
+          - python: "3.11"
+            libflint: "2"
+            target: check
+          - python: "3.11"
+            libflint: "2"
             target: check-valgrind
     steps:
       - uses: actions/checkout@v2
