@@ -107,7 +107,7 @@ jobs:
       - name: install pyflatsurf dependencies
         shell: bash -l {0}
         run: |
-          echo "libflint ==${{ matrix.libflint }}" >> $CONDA_PREFIX/conda-meta/pinned
+          echo "libflint ${{ matrix.libflint }}.*" >> $CONDA_PREFIX/conda-meta/pinned
           mamba env update --quiet -n test -f pyflatsurf/environment.yml
           conda list
       - name: make ${{ matrix.target }}
