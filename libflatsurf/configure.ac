@@ -66,18 +66,20 @@ AC_CHECK_HEADERS([gmpxxll/mpz_class.hpp], [ ], [AC_MSG_ERROR([gmpxxll headers no
 
 dnl We use Arb for ball arithmetic in our geometry
 AC_CHECK_HEADERS([flint/arb.h], [
-  dnl We are building against FLINT 3 (which ships Arb.)
+  dnl We are building against FLINT 3 (which ships Arb & ANTIC)
   have_arb=no
+  have_antic=no
   AC_CHECK_LIB([flint], [arb_load_str], , AC_MSG_ERROR([FLINT library >=3 not found]), [-lgmp -lmpfr -lflint])
 ], [
   dnl We are building against FLINT 2 (which does not ship Arb yet.)
   AC_CHECK_HEADERS([arb.h], , AC_MSG_ERROR([Arb headers not found]))
   AC_CHECK_LIB([arb], [arb_load_str], [have_arb=yes], AC_MSG_ERROR([Arb library >=2.17.0 not found]), [-lgmp -lmpfr -lflint])
 
-  AC_CHECK_LIB([antic], [nf_init], , AC_MSG_ERROR([ANTIC library not found]), [-lmpfr])
+  AC_CHECK_LIB([antic], [nf_init], [have_antic=yes], AC_MSG_ERROR([ANTIC library not found]), [-lmpfr])
 ])
 
 AM_CONDITIONAL([HAVE_ARB], [test "x$have_arb" = "xyes"])
+AM_CONDITIONAL([HAVE_ANTIC], [test "x$have_antic" = "xyes"])
 
 AC_CHECK_LIB([eantic], [renf_init], [have_eantic=yes], AC_MSG_ERROR([e-antic library not found]), [-lmpfr])
 AX_CXX_CHECK_LIB([eanticxx], [eantic::renf_elem_class], [have_eanticxx=yes], AC_MSG_ERROR([e-antic library not found]), [-lmpfr])
