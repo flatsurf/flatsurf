@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2020-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,11 +18,11 @@
  *********************************************************************/
 
 #include "../flatsurf/bound.hpp"
-#include "external/catch2/single_include/catch2/catch.hpp"
+#include "cereal.helpers.hpp"
 
 namespace flatsurf::test {
 
-TEST_CASE("Bound Arithmetic", "[bound]") {
+TEST_CASE("Bound Arithmetic", "[Bound][constructor][operator<][operator>][operator<=][operator>=][operator==]") {
   REQUIRE(Bound() < Bound(1));
 
   SECTION("Multiplication works as expected") {
@@ -41,6 +41,10 @@ TEST_CASE("Bound Arithmetic", "[bound]") {
     REQUIRE(static_cast<bool>(Bound()) == false);
     REQUIRE(static_cast<bool>(Bound(1)) == true);
   }
+}
+
+TEST_CASE("Serialization of a Bound", "[Bound][save][load]") {
+  testRoundtrip(Bound(13, 37));
 }
 
 }  // namespace flatsurf::test

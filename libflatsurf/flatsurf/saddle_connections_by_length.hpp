@@ -32,7 +32,7 @@ namespace flatsurf {
 // ordered by increasing length.
 template <typename Surface>
 class SaddleConnectionsByLength {
-  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
+  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type parameter must not have modifiers such as const");
 
   using T = typename Surface::Coordinate;
 

@@ -30,7 +30,8 @@ from .pythonization import enable_iterable
 
 from cppyythonizations.pickling.cereal import enable_cereal
 from cppyythonizations.util import filtered, add_method, wrap_method
-from cppyythonizations.operators.arithmetic import enable_arithmetic
+from cppyythonizations.operators.arithmetic import enable_arithmetic, enable_addable, enable_subtractable
+from cppyythonizations.operators.order import enable_total_order
 from cppyythonizations.printing import enable_pretty_printing, enable_list_printing
 
 # Importing cysignals after cppyy gives us proper stack traces on segfaults
@@ -45,6 +46,10 @@ if os.environ.get('PYFLATSURF_CYSIGNALS', True):
 
 cppyy.py.add_pythonization(enable_iterable, "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("Vector<.*>"))(enable_arithmetic), "flatsurf")
+
+cppyy.py.add_pythonization(filtered(re.compile("Point<.*>"))(enable_addable), "flatsurf")
+cppyy.py.add_pythonization(filtered(re.compile("Point<.*>"))(enable_subtractable), "flatsurf")
+cppyy.py.add_pythonization(filtered("Bound")(enable_total_order), "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("Vector<.*>"))(add_method("__str__")(lambda self: "(" + str(self.x()) + ", " + str(self.y()) + ")")), "flatsurf")
 cppyy.py.add_pythonization(enable_pretty_printing, "flatsurf")
 cppyy.py.add_pythonization(lambda proxy, name: enable_cereal(proxy, name, ["flatsurf/cereal.hpp"]), "flatsurf")

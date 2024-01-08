@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2021-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,10 +24,12 @@
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/odd_half_edge_map.hpp"
 #include "../flatsurf/path.hpp"
+#include "../flatsurf/point.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/half_edge_intersection.hpp"
+#include "../flatsurf/point.hpp"
 
 #include "util/assert.ipp"
 
@@ -79,6 +81,19 @@ std::optional<Path<Surface>> ShiftDeformationRelation<Surface>::operator()(const
   }
 
   return image;
+}
+
+template <typename Surface>
+Point<Surface> ShiftDeformationRelation<Surface>::operator()(const Point<Surface>&) const {
+  // How would such a mapping work?
+  // We could easily implement this for vertices.
+  // For a point on an edge p=V + λe, we could map the edge and then define its
+  // image to be f(V) + λf(e).
+  // Is there a well-defined notion for points in the interior of a face? If
+  // the shift is small and the face "survives" the deformation, we could
+  // define the image of the point to be the same point in barycentric
+  // coordinates. But what should the image be for general shifts?
+  throw std::logic_error("not implemented: cannot map points through a shift deformation yet");
 }
 
 template <typename Surface>

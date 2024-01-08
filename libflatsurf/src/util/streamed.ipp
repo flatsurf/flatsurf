@@ -1,14 +1,14 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2022 Julian Rüth
  *
- *  Flatsurf is free software: you can redistribute it and/or modify
+ *  flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  Flatsurf is distributed in the hope that it will be useful,
+ *  flatsurf is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
@@ -17,22 +17,24 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_IMPL_RETRIANGULATION_DEFORMATION_RELATION_HPP
-#define LIBFLATSURF_IMPL_RETRIANGULATION_DEFORMATION_RELATION_HPP
+#ifndef LIBFLATSURF_UTIL_STREAMED_IPP
+#define LIBFLATSURF_UTIL_STREAMED_IPP
 
-#include "deformation_relation.hpp"
+#include <fmt/ostream.h>
 
-namespace flatsurf {
+namespace {
 
-template <typename Surface>
-class RetriangulationDeformationRelation : public DeformationRelation<Surface> {
- protected:
-  using DeformationRelation<Surface>::DeformationRelation;
+// Since fmt 9, the ostream operator<< is not used automatically anymore,
+// even if fmt/ostream.h has been included.
+template <typename T>
+auto streamed(const T& x) {
+#if FMT_VERSION >= 90000
+  return fmt::streamed(x);
+#else
+  return x;
+#endif
+}
 
- public:
-  std::optional<Path<Surface>> operator()(const Path<Surface>&) const override;
-};
-
-}  // namespace flatsurf
+}
 
 #endif

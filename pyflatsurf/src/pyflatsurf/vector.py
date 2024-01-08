@@ -6,7 +6,7 @@ Vector wrapper and sage conversion for ``flatsurf.Vector``.
 #  This file is part of flatsurf.
 #
 #        Copyright (C) 2020-2021 Vincent Delecroix
-#                      2020 Julian Rüth
+#        Copyright (C)      2020 Julian Rüth
 #
 #  Flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ class Vector(SageVector):
 
     EXAMPLES::
 
-        sage: from pyflatsurf import flatsurf
+        sage: from pyflatsurf import flatsurf  # random output due to deprecation warnings
         sage: from pyflatsurf.vector import Vectors
 
     A vector with integer coordinates::
@@ -445,15 +445,17 @@ class Vectors(UniqueRepresentation, Parent):
 
             sage: R = ExactReals(K)
             sage: V = Vectors(R)
-            sage: V.decomposition([K.random_element() * R.random_element(), R.random_element(), R.random_element()])
+            sage: decomposition = V.decomposition([K.gen() * R.random_element(), R.random_element(), R.random_element()])
+            sage: sorted(decomposition)  # sorted to make output stable for different versions of exact-real term ordering
             [(ℝ(0.621222…), (0, 1, 0)),
              (ℝ(0.673083…), (0, 0, 1)),
-             (ℝ(0.782515…), (-1/2*a^2 - 4, 0, 0))]
+             (ℝ(0.782515…), (a, 0, 0))]
 
         """
         vector = tuple(self._to_coordinate(x) for x in vector)
 
-        if not any(vector): return []
+        if not any(vector):
+            return []
 
         if base is None:
             base = self._algebraic_ring()
@@ -465,17 +467,17 @@ class Vectors(UniqueRepresentation, Parent):
             return [(self.base_ring().one(), tuple(base(self.base_ring()(x)) for x in vector))]
 
         if isinstance(self.base_ring(), ExactReals):
-           from functools import reduce
-           span = type(vector[0].module()).span
-           module = reduce(lambda x,y: span(x, y.module()), vector, vector[0].module())
+            from functools import reduce
+            span = type(vector[0].module()).span
+            module = reduce(lambda x, y: span(x, y.module()), vector, vector[0].module())
 
-           vector = [entry.promote(module).coefficients() for entry in vector]
-           vector = [[base(Vectors(base).base_ring()(c)) for c in coefficients] for coefficients in vector]
+            vector = [entry.promote(module).coefficients() for entry in vector]
+            vector = [[base(Vectors(base).base_ring()(c)) for c in coefficients] for coefficients in vector]
 
-           V = base**len(vector)
-           return [(self.base_ring()(module.gen(i)), tuple(V(coefficients))) for (i, coefficients) in enumerate(zip(*vector)) if any(coefficients)]
+            V = base**len(vector)
+            return [(self.base_ring()(module.gen(i)), tuple(V(coefficients))) for (i, coefficients) in enumerate(zip(*vector)) if any(coefficients)]
 
-        raise NotImplementedError("cannot decompose vector in %s over %s"%(self, base))
+        raise NotImplementedError("cannot decompose vector in %s over %s" % (self, base))
 
     def _to_coordinate(self, x):
         r"""

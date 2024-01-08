@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 #include <intervalxt/dynamical_decomposition.hpp>
 #include <intervalxt/interval_exchange_transformation.hpp>
 #include <intervalxt/label.hpp>
+#include <intervalxt/fmt.hpp>
 #include <ostream>
 #include <unordered_map>
 
@@ -34,6 +35,7 @@
 #include "../flatsurf/contour_decomposition.hpp"
 #include "../flatsurf/flow_component.hpp"
 #include "../flatsurf/flow_connection.hpp"
+#include "../flatsurf/fmt.hpp"
 #include "../flatsurf/interval_exchange_transformation.hpp"
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/path.hpp"

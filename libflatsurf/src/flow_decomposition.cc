@@ -199,8 +199,8 @@ Edge ImplementationOf<FlowDecomposition<Surface>>::firstInnerEdge(const FlowComp
 template <typename Surface>
 HalfEdge ImplementationOf<FlowDecomposition<Surface>>::halfEdge(const FlowConnection<Surface>& connection) {
   std::unordered_map<FlowConnection<Surface>, HalfEdge> toHalfEdge;
-  for (const auto component : connection.component().decomposition().components()) {
-    for (const auto other : component.perimeter()) {
+  for (const auto& component : connection.component().decomposition().components()) {
+    for (const auto& other : component.perimeter()) {
       if (toHalfEdge.find(other) == toHalfEdge.end()) {
         toHalfEdge[other] = HalfEdge(static_cast<int>(toHalfEdge.size() / 2 + 1));
         toHalfEdge[-other] = -toHalfEdge.at(other);

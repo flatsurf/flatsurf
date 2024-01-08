@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2020-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #ifndef LIBFLATSURF_HALF_EDGE_MAP_HPP
 #define LIBFLATSURF_HALF_EDGE_MAP_HPP
 
+#include <cassert>
 #include <functional>
 #include <optional>
 #include <ostream>

@@ -37,6 +37,7 @@ $ACTIVITIES = [
     'tag',
     'push_tag',
     'ghrelease',
+    'forge',
 ]
 
 $VERSION_BUMP_PATTERNS = [
@@ -59,3 +60,5 @@ $GITHUB_ORG = 'flatsurf'
 $GITHUB_REPO = 'flatsurf'
 
 $GHRELEASE_ASSETS = ['flatsurf-' + $VERSION + '.tar.gz']
+
+$FORGE_FEEDSTOCK_ORG = "conda-forge"

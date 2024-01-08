@@ -18,8 +18,8 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#ifndef LIBFLATSURF_TEST_GENERATORS_VERTICAL_GENERATORS_HPP
-#define LIBFLATSURF_TEST_GENERATORS_VERTICAL_GENERATORS_HPP
+#ifndef LIBFLATSURF_TEST_GENERATORS_VERTICAL_GENERATOR_HPP
+#define LIBFLATSURF_TEST_GENERATORS_VERTICAL_GENERATOR_HPP
 
 #include <memory>
 #include <set>
@@ -96,7 +96,7 @@ class VerticalGenerator : public Catch::Generators::IGenerator<Vector<T>> {
 // good sample of verticals coming from very short saddle connections, coming
 // from actual edges of the surface and longer connections.
 template <typename T>
-Catch::Generators::GeneratorWrapper<Vector<T>> verticals(std::shared_ptr<FlatTriangulation<T>> surface, int count = -1, int skip = -1) {
+Catch::Generators::GeneratorWrapper<Vector<T>> verticals(std::shared_ptr<const FlatTriangulation<T>> surface, int count = -1, int skip = -1) {
   if (count == -1)
     count = static_cast<int>(surface->size());
   if (skip == -1)

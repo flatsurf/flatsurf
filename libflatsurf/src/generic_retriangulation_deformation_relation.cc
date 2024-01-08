@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2021-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #include "impl/generic_retriangulation_deformation_relation.hpp"
 
 #include <ostream>
+#include <unordered_set>
 
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
@@ -27,6 +28,7 @@
 #include "../flatsurf/half_edge_set_iterator.hpp"
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/path.hpp"
+#include "../flatsurf/point.hpp"
 #include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_by_length.hpp"
@@ -47,22 +49,22 @@ GenericRetriangulationDeformationRelation<Surface>::GenericRetriangulationDeform
 
 template <typename Surface>
 GenericRetriangulationDeformationRelation<Surface>::GenericRetriangulationDeformationRelation(const Surface& domain, const Surface& codomain, Path<Surface> preimage, Path<Surface> image) :
-  RetriangulationDeformationRelation<Surface>(domain, codomain), preimage(std::move(preimage)), image(std::move(image)) {
+  DeformationRelation<Surface>(domain, codomain), preimage(std::move(preimage)), image(std::move(image)) {
   LIBFLATSURF_ASSERT(this->preimage.begin() != this->preimage.end(), "preimage must be a non-trivial path");
   LIBFLATSURF_ASSERT(this->preimage.begin()->surface() == *this->domain, "preimage must live in the domain");
   LIBFLATSURF_ASSERT(rx::zip(this->preimage, this->preimage | rx::skip_n(1)) | rx::all_of([&](const auto& connections) {
-      return domain.angle(Vertex::source(std::get<0>(connections).target(), domain)) == 1
+      return domain.angle(Vertex::source(domain, std::get<0>(connections).target())) == 1
         && std::get<0>(connections).ccw(std::get<1>(connections)) == CCW::COLLINEAR
         && std::get<0>(connections).vector().orientation(std::get<1>(connections)) == ORIENTATION::SAME;
   }), "Preimage must be a sequence of collinear saddle connections only interrupted by marked points but it is not.");
   LIBFLATSURF_ASSERT(rx::zip(this->image, this->image | rx::skip_n(1)) | rx::all_of([&](const auto& connections) {
-      return domain.angle(Vertex::source(std::get<0>(connections).target(), codomain)) == 1
+      return domain.angle(Vertex::source(codomain, std::get<0>(connections).target())) == 1
         && std::get<0>(connections).ccw(std::get<1>(connections)) == CCW::COLLINEAR
         && std::get<0>(connections).vector().orientation(std::get<1>(connections)) == ORIENTATION::SAME;
   }), "Image must be a sequence of collinear saddle connections only interrupted by marked points but it is not.");
   LIBFLATSURF_ASSERT(this->image.begin() != this->image.end(), "image must be a non-trivial path");
   LIBFLATSURF_ASSERT(this->image.begin()->surface() == *this->codomain, "image must live in the codomain");
-  LIBFLATSURF_ASSERT(this->domain->angle(Vertex::source(this->preimage.begin()->source(), *this->domain)) == this->codomain->angle(Vertex::source(this->image.begin()->source(), *this->codomain)), "Paths in domain and codomain must be equivalent but the total angle at their starting points do not match.");
+  LIBFLATSURF_ASSERT(this->domain->angle(Vertex::source(*this->domain, this->preimage.begin()->source())) == this->codomain->angle(Vertex::source(*this->codomain, this->image.begin()->source())), "Paths in domain and codomain must be equivalent but the total angle at their starting points do not match.");
   LIBFLATSURF_ASSERT(this->preimage.begin()->vector().ccw(this->image.begin()->vector()) == CCW::COLLINEAR, "Preimage and image must be collinear but they are not.");
   LIBFLATSURF_ASSERT(this->preimage.begin()->vector().orientation(this->image.begin()->vector()) == ORIENTATION::SAME, "Preimage and image are not oriented identically. They do not define a retriangulation.");
   LIBFLATSURF_ASSERT((this->preimage | rx::transform([](const auto& connection) { return connection.vector(); }) | rx::sum())
@@ -84,7 +86,7 @@ std::optional<Path<Surface>> GenericRetriangulationDeformationRelation<Surface>:
 
   while (!pending.empty()) {
     auto vector_ = pending.begin()->vector();
-    if (vector.ccw(vector_) == CCW::COLLINEAR && vector.orientation(vector_) == ORIENTATION::SAME && this->domain->angle(Vertex::source(pending.begin()->source(), *this->domain)) == 1) {
+    if (vector.ccw(vector_) == CCW::COLLINEAR && vector.orientation(vector_) == ORIENTATION::SAME && this->domain->angle(Vertex::source(*this->domain, pending.begin()->source())) == 1) {
       // The first entries of the path are collinear and cross over a marked
       // point. Combine them into one (search) vector.
       vector += vector_;
@@ -105,6 +107,70 @@ std::optional<Path<Surface>> GenericRetriangulationDeformationRelation<Surface>:
 }
 
 template <typename Surface>
+Point<Surface> GenericRetriangulationDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
+  if (point.vertex()) {
+    const auto A = *point.vertex();
+
+    // We walk the domain surface trying to find a path to a vertex that
+    // survived the deformation.
+    std::unordered_set<Vertex> seen;
+
+    const std::function<std::optional<Point<Surface>>(std::optional<HalfEdge>)> walk = [&](std::optional<HalfEdge> step) -> std::optional<Point<Surface>> {
+      auto B = step ? Vertex::target(*this->domain, *step) : A;
+
+      if (seen.find(B) != seen.end())
+        return std::nullopt;
+
+      seen.insert(B);
+
+      if (!step) {
+        const auto relation = this->relation(B);
+        if (relation)
+          // This vertex still exists in the codomain.
+          return Point{*this->codomain, relation->second.source(), T(1), T(), T()};
+      } else {
+        const auto source = this->source(-*step, this->domain->fromHalfEdge(-*step));
+        if (source)
+          // This vertex still exists in the codomain.
+          return Point{*this->codomain, *source, this->domain->fromHalfEdge(-*step)};
+      }
+
+      LIBFLATSURF_ASSERT(this->domain->angle(B) == 1, "vertex that disappears in a retriangulation must have been a marked point");
+
+      // Walk recursively from the vertex.
+      for (const auto& next : B.outgoing()) {
+        auto image = walk(next);
+        if (image) {
+          if (step)
+            *image -= this->domain->fromHalfEdge(*step);
+          return *image;
+        }
+      }
+
+      return std::nullopt;
+    };
+
+    const auto image = walk(std::nullopt);
+
+    LIBFLATSURF_ASSERT(image, "vertex is not connected to anything that exists in the codomain after deformation");
+
+    return *image;
+  } else {
+    const HalfEdge face = point.face();
+    const Vector<T> toPoint = point.vector(face);
+    const auto source = this->source(face, toPoint);
+    const auto base = Vertex::source(*this->domain, face);
+
+    if (source)
+      return Point{*this->codomain, *source, toPoint};
+
+    LIBFLATSURF_ASSERT(this->domain->angle(base) == 1, "vertex that disappears in a retriangulation must have been a marked point");
+
+    return this->operator()(Point{*this->domain, base}) + toPoint;
+  }
+}
+
+template <typename Surface>
 std::optional<Path<Surface>> GenericRetriangulationDeformationRelation<Surface>::operator()(HalfEdge source, HalfEdge target, const Vector<T>& vector) const {
   auto source_ = this->source(source, vector);
   if (!source_)
@@ -120,7 +186,10 @@ std::optional<Path<Surface>> GenericRetriangulationDeformationRelation<Surface>:
   Path<Surface> image;
   Vector<T> vector_;
   while (true) {
-    const auto search = SaddleConnection<Surface>::counterclockwise(*this->codomain, SaddleConnection<Surface>(*this->codomain, *source_), Vertical<Surface>(*this->codomain, vector));
+    const auto search = SaddleConnection<Surface>::inSector(
+      this->codomain,
+      this->codomain->sector(*source_, this->codomain->fromHalfEdge(*source_), CCW::COUNTERCLOCKWISE, vector),
+      vector);
 
     vector_ += search;
     image += search;
@@ -129,7 +198,7 @@ std::optional<Path<Surface>> GenericRetriangulationDeformationRelation<Surface>:
       break;
 
     LIBFLATSURF_ASSERT((vector - vector_).orientation(vector) == ORIENTATION::SAME, "Partial path " << image << " was longer than its preimage " << vector << " from " << source << " to " << target << " but it can only be shorter when applying " << *this);
-    LIBFLATSURF_ASSERT(this->codomain->angle(Vertex::source(search.target(), *this->codomain)) == 1, "Image of path crosses over a singularity.");
+    LIBFLATSURF_ASSERT(this->codomain->angle(Vertex::source(*this->codomain, search.target())) == 1, "Image of path crosses over a singularity.");
 
     source_ = this->codomain->nextAtVertex(search.target());
   }
@@ -139,7 +208,7 @@ std::optional<Path<Surface>> GenericRetriangulationDeformationRelation<Surface>:
 
 template <typename Surface>
 std::optional<HalfEdge> GenericRetriangulationDeformationRelation<Surface>::source(HalfEdge source, const Vector<T>& vector) const {
-  const auto relation = this->relation(Vertex::source(source, *this->domain));
+  const auto relation = this->relation(Vertex::source(*this->domain, source));
   if (!relation)
     return std::nullopt;
 
@@ -154,7 +223,7 @@ std::optional<HalfEdge> GenericRetriangulationDeformationRelation<Surface>::sour
 
   HalfEdge source_ = baseimage.source();
   {
-    LIBFLATSURF_ASSERT(this->domain->angle(Vertex::source(source, *this->domain)) == this->codomain->angle(Vertex::source(source_, *this->codomain)), "Total angle at vertex must be the same in domain and codomain but turn angle at " << Vertex::source(source, *this->domain) << " in " << *this->domain << " is " << this->domain->angle(Vertex::source(source, *this->domain)) << " whereas it is " << this->codomain->angle(Vertex::source(source_, *this->codomain)) << " at " << Vertex::source(source_, *this->codomain) << " in " << *this->codomain << ". The relation of these two surfaces is based upon " << this->preimage << " being equal to " << this->image);
+    LIBFLATSURF_ASSERT(this->domain->angle(Vertex::source(*this->domain, source)) == this->codomain->angle(Vertex::source(*this->codomain, source_)), "Total angle at vertex must be the same in domain and codomain but turn angle at " << Vertex::source(*this->domain, source) << " in " << *this->domain << " is " << this->domain->angle(Vertex::source(*this->domain, source)) << " whereas it is " << this->codomain->angle(Vertex::source(*this->codomain, source_)) << " at " << Vertex::source(*this->codomain, source_) << " in " << *this->codomain << ". The relation of these two surfaces is based upon " << this->preimage << " being equal to " << this->image);
 
     // Perform `angle` full turns of baseimage.
     source_ = turn(this->codomain, source_, baseimage.vector(), angle);
@@ -170,13 +239,13 @@ std::optional<HalfEdge> GenericRetriangulationDeformationRelation<Surface>::sour
 
 template <typename Surface>
 std::optional<std::pair<SaddleConnection<Surface>, SaddleConnection<Surface>>> GenericRetriangulationDeformationRelation<Surface>::relation(const Vertex& search) const {
-  LIBFLATSURF_ASSERT(search == Vertex::source(*search.outgoing().begin(), *this->domain), "source " << search << " is not a vertex of " << *this->domain);
+  LIBFLATSURF_ASSERT(search == Vertex::source(*this->domain, *search.outgoing().begin()), "source " << search << " is not a vertex of " << *this->domain);
 
   if (relations.find(search) != relations.end())
     return relations.at(search);
 
   const auto insert = [&](const auto& a, const auto& b) {
-    this->relations.insert({Vertex::source(a.source(), *this->domain),
+    this->relations.insert({Vertex::source(*this->domain, a.source()),
         std::pair{a, b}});
   };
 
@@ -184,8 +253,8 @@ std::optional<std::pair<SaddleConnection<Surface>, SaddleConnection<Surface>>> G
   insert(*(-preimage).begin(), *(-image).begin());
 
   for (const auto& connectionInDomain : SaddleConnections<Surface>{*this->domain}.byLength()) {
-    const auto sourceInDomain = Vertex::source(connectionInDomain.source(), *this->domain);
-    const auto targetInDomain = Vertex::source(connectionInDomain.target(), *this->domain);
+    const auto sourceInDomain = Vertex::source(*this->domain, connectionInDomain.source());
+    const auto targetInDomain = Vertex::source(*this->domain, connectionInDomain.target());
 
     if (relations.find(sourceInDomain) == relations.end())
       continue;

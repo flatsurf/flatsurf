@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ class IntervalExchangeTransformation {
   using T = typename Surface::Coordinate;
   using Label = intervalxt::Label;
 
-  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
+  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type parameter must not have modifiers such as const");
 
   template <typename... Args>
   IntervalExchangeTransformation(PrivateConstructor, Args&&... args);
@@ -61,6 +61,23 @@ class IntervalExchangeTransformation {
 
   intervalxt::IntervalExchangeTransformation& intervalExchangeTransformation();
   const intervalxt::IntervalExchangeTransformation& intervalExchangeTransformation() const;
+
+  // Return a clone of this interval exchange transformation ignoring the
+  // structure of the underlying surface.
+  // Note that the labels are normalized to A, …, in the resulting interval
+  // exchange transformation. These labels are unrelated to the original
+  // labels.
+  // The lengths underlying the returned interval exchange transformation are
+  // such that all lengths can be safely `boost::type_erasure::any_cast` to a
+  // `T`.
+  // In fact, the lengths are of the type `intervalxt::sample::Lengths<T>`.
+  // However, since that is a static type (living in an unnamed namespace) one
+  // cannot `boost::type_erasure::any_cast` the result to that type. In
+  // principle one could `any_cast` to a `void*` and then `reinterpret_cast` to
+  // a `intervalxt::sample::Lengths<T>`. However, such a cast is only safe if
+  // the headers of intervalxt are binary compatible with the headers that were
+  // used to build libflatsurf.
+  intervalxt::IntervalExchangeTransformation forget() const;
 
   // The Edge in the (collapsed) surface from which this label was created originally.
   Edge edge(const Label&) const;

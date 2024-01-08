@@ -30,6 +30,9 @@
 namespace flatsurf::test {
 
 template <typename T>
+constexpr bool isField = std::is_same_v<T, mpq_class> || std::is_same_v<T, eantic::renf_elem_class>;
+
+template <typename T>
 constexpr bool hasFractions = std::is_same_v<T, mpq_class> || std::is_same_v<T, eantic::renf_elem_class> || std::is_same_v<T, exactreal::Element<exactreal::RationalField>> || std::is_same_v<T, exactreal::Element<exactreal::NumberField>>;
 
 template <typename T>

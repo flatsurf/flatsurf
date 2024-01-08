@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2021 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@
 #include "../flatsurf/orientation.hpp"
 #include "../flatsurf/path.hpp"
 #include "../flatsurf/path_iterator.hpp"
+#include "../flatsurf/point.hpp"
 #include "../flatsurf/saddle_connection.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/saddle_connections_iterator.hpp"
@@ -53,15 +54,16 @@
 #include "../flatsurf/vertical.hpp"
 #include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/approximation.hpp"
+#include "impl/combinatorial_deformation_relation.hpp"
 #include "impl/deformation.impl.hpp"
 #include "impl/flat_triangulation.impl.hpp"
 #include "impl/flat_triangulation_combinatorial.impl.hpp"
 #include "impl/flip_deformation_relation.hpp"
 #include "impl/generic_retriangulation_deformation_relation.hpp"
-#include "impl/insert_marked_deformation_relation.hpp"
+#include "impl/insert_marked_point_in_face_deformation_relation.hpp"
+#include "impl/insert_marked_point_on_edge_deformation_relation.hpp"
 #include "impl/linear_deformation_relation.hpp"
 #include "impl/quadratic_polynomial.hpp"
-#include "impl/retriangulation_deformation_relation.hpp"
 #include "impl/shift_deformation_relation.hpp"
 #include "impl/slit_deformation_relation.hpp"
 #include "util/assert.ipp"
@@ -266,9 +268,9 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
     Tracked<HalfEdgeMap<HalfEdge>> preimage(combinatorial, HalfEdgeMap<HalfEdge>(combinatorial, [](HalfEdge he) { return he; }),
         Tracked<HalfEdgeMap<HalfEdge>>::defaultFlip,
         [&](auto &self, const FlatTriangulationCombinatorial &surface, Edge e) {
-          for (const auto he : {e.positive(), e.negative()}) {
-            union_(self[surface.nextInFace(he)], self[-surface.previousInFace(he)]);
-            union_(self[-surface.nextInFace(he)], self[surface.previousInFace(he)]);
+          for (const auto& halfEdge : {e.positive(), e.negative()}) {
+            union_(self[surface.nextInFace(halfEdge)], self[-surface.previousInFace(halfEdge)]);
+            union_(self[-surface.nextInFace(halfEdge)], self[surface.previousInFace(halfEdge)]);
           }
         });
 
@@ -298,7 +300,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::operator+(const OddHalfE
         *this,
         codomain,
         OddHalfEdgeMap<Path<FlatTriangulation>>(*this, [&](HalfEdge he) {
-          for (const HalfEdge image : codomain.halfEdges()) {
+          for (const HalfEdge& image : codomain.halfEdges()) {
             if (find_((*preimage)[image]) == find_(he)) {
               LIBFLATSURF_ASSERT(vectors->get(image) == fromHalfEdge(he) + shift.get(he), "Half edge " << he << " should have been shifted from " << fromHalfEdge(he) << " to " << fromHalfEdge(he) + shift.get(he) << " but instead it became " << image << " which is " << vectors->get(image));
               return Path{SaddleConnection<FlatTriangulation>(codomain, image)};
@@ -326,11 +328,11 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
       // └ b ┴ a ┘
       // There are two vertices in this surface and both are marked. However, ┬
       // is connected to all edges whereas ┴ is not.
-      if (collapse && vertex.outgoing().size() > Vertex::source(*collapse, *this).outgoing().size())
+      if (collapse && vertex.outgoing().size() > Vertex::source(*this, *collapse).outgoing().size())
         continue;
 
       for (const auto &outgoing : this->atVertex(vertex)) {
-        const auto neighbour = Vertex::target(outgoing, *this);
+        const auto neighbour = Vertex::target(*this, outgoing);
         if (neighbour != vertex) {
           if (collapse && (fromHalfEdge(*collapse) * fromHalfEdge(*collapse)) < fromHalfEdge(outgoing) * fromHalfEdge(outgoing))
             continue;
@@ -343,14 +345,14 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
   if (!collapse)
     return Deformation(*this);
 
-  const auto marked = Vertex::source(*collapse, *this);
+  const auto marked = Vertex::source(*this, *collapse);
 
   const auto delta = OddHalfEdgeMap<Vector<T>>(*this, [&](const HalfEdge he) {
-    if (Vertex::source(he, *this) == marked && Vertex::target(he, *this) == marked)
+    if (Vertex::source(*this, he) == marked && Vertex::target(*this, he) == marked)
       return Vector<T>();
-    if (Vertex::source(he, *this) == marked)
+    if (Vertex::source(*this, he) == marked)
       return -fromHalfEdge(*collapse);
-    if (Vertex::target(he, *this) == marked)
+    if (Vertex::target(*this, he) == marked)
       return fromHalfEdge(*collapse);
 
     return Vector<T>();
@@ -368,7 +370,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
   // since one of their endpoints has disappeared. However, they might show up
   // in the preimage if two collinear half edges met at the marked point.
   for (auto preimage : this->halfEdges()) {
-    if (Vertex::source(preimage, *this) == marked || Vertex::target(preimage, *this) == marked)
+    if (Vertex::source(*this, preimage) == marked || Vertex::target(*this, preimage) == marked)
       continue;
 
     const auto image = shift(SaddleConnection<FlatTriangulation>(*this, preimage));
@@ -391,7 +393,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
         LIBFLATSURF_ASSERT(preimage, "Half edge " << image << " in surface " << elimination.codomain() << " which was created from " << *this << " by removing a marked point could not be pulled back to the original surface.");
         LIBFLATSURF_ASSERT(preimage->size(), "Half edge " << image << " in surface " << elimination.codomain() << " which was created from " << *this << " by removing a marked point pulled back to a trivial connection.");
 
-        LIBFLATSURF_ASSERT(elimination.codomain().angle(Vertex::source(image, elimination.codomain())) == this->angle(Vertex::source(preimage->begin()->source(), *this)), "Total angle at vertex changed. " << image << " in " << elimination.codomain() << " pulls back to [" << *preimage->begin() << ", ...] in " << *this << " but the the total turns at the source of the former is " << elimination.codomain().angle(Vertex::source(image, elimination.codomain())) << " and the total turn at the source of the latter is " << this->angle(Vertex::source(preimage->begin()->source(), *this)));
+        LIBFLATSURF_ASSERT(elimination.codomain().angle(Vertex::source(elimination.codomain(), image)) == this->angle(Vertex::source(*this, preimage->begin()->source())), "Total angle at vertex changed. " << image << " in " << elimination.codomain() << " pulls back to [" << *preimage->begin() << ", ...] in " << *this << " but the the total turns at the source of the former is " << elimination.codomain().angle(Vertex::source(elimination.codomain(), image)) << " and the total turn at the source of the latter is " << this->angle(Vertex::source(*this, preimage->begin()->source())));
 
         Vector<T> vector;
         for (const auto &segment : *preimage)
@@ -592,7 +594,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &nextT
       return deformation.codomain().fromHalfEdge(e);
     });
 
-    return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<InsertMarkedDeformationRelation<FlatTriangulation>>(deformation.codomain(), codomain, Vertex::source(a, codomain))) * deformation;
+    return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<InsertMarkedPointInFaceDeformationRelation<FlatTriangulation>>(deformation.codomain(), codomain, Vertex::source(codomain, a))) * deformation;
   } else {
     // After the flips we did, vector is collinear with the half edge nextTo (but shorter.)
 
@@ -620,10 +622,26 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &nextT
       return deformation.codomain().fromHalfEdge(e);
     });
 
+    const auto split = nextTo;
+
     nextTo = deformation.codomain().previousAtVertex(nextTo);
 
-    return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<InsertMarkedDeformationRelation<FlatTriangulation>>(deformation.codomain(), codomain, Vertex::source(a, codomain), nextTo, -a, c)) * deformation;
+    return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<InsertMarkedPointOnEdgeDeformationRelation<FlatTriangulation>>(deformation.codomain(), codomain, Vertex::source(codomain, a), split, -a, c)) * deformation;
   }
+}
+
+template <typename T>
+Deformation<FlatTriangulation<T>> FlatTriangulation<T>::insert(const Point<FlatTriangulation<T>>& point) const {
+  LIBFLATSURF_CHECK_ARGUMENT(!point.vertex(), "point " << point << " is already a vertex of " << *this);
+
+  const auto edge = point.edge();
+  if (edge) {
+    HalfEdge nextTo = edge->positive();
+    return this->insertAt(nextTo, point.vector(nextTo));
+  }
+
+  HalfEdge face = point.face();
+  return this->insertAt(face, point.vector(face));
 }
 
 template <typename T>
@@ -638,6 +656,16 @@ void FlatTriangulation<T>::delaunay() {
       }
     }
   } while (!isDelaunay);
+}
+
+template <typename T>
+Deformation<FlatTriangulation<T>> FlatTriangulation<T>::relabel(const Permutation<HalfEdge>& relabeling) const {
+  // Build the combinatorial image (and validate arguments.)
+  auto combinatorial = this->combinatorial().relabel(relabeling);
+
+  FlatTriangulation codomain{std::move(combinatorial), [&](HalfEdge halfEdge) { return this->fromHalfEdge(relabeling.preimage(halfEdge)); }};
+
+  return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<CombinatorialDeformationRelation<FlatTriangulation>>(*this, codomain, relabeling));
 }
 
 template <typename T>
@@ -696,6 +724,29 @@ FlatTriangulation<T> FlatTriangulation<T>::scale(const mpz_class &scalar) const 
 }
 
 template <typename T>
+Deformation<FlatTriangulation<T>> FlatTriangulation<T>::applyMatrix(const T& a, const T& b, const T& c, const T& d) const {
+  LIBFLATSURF_CHECK_ARGUMENT(a * d - b * c != 0, "matrix must have non-zero determinant");
+
+  if (this->hasBoundary())
+    throw std::logic_error("not implemented: cannot transform surface with boundary yet");
+
+  FlatTriangulationCombinatorial combinatorial = [&]() {
+    if (a*d - b*c < 0)
+      return FlatTriangulationCombinatorial{~self->vertices};
+    return this->combinatorial().clone();
+  }();
+
+  const FlatTriangulation codomain{std::move(combinatorial), [&](HalfEdge halfEdge) {
+    return this->fromHalfEdge(halfEdge).applyMatrix(a, b, c, d);
+  }};
+
+  return ImplementationOf<Deformation<FlatTriangulation>>::make(std::make_unique<LinearDeformationRelation<FlatTriangulation>>(
+    *this,
+    codomain,
+    a, b, c, d));
+}
+
+template <typename T>
 bool FlatTriangulation<T>::convex(HalfEdge e, bool strict) const {
   if (strict)
     return fromHalfEdge(this->previousAtVertex(e)).ccw(fromHalfEdge(this->nextAtVertex(e))) == CCW::COUNTERCLOCKWISE &&
@@ -711,8 +762,104 @@ bool FlatTriangulation<T>::inSector(const HalfEdge sector, const Vector<T> &vect
 }
 
 template <typename T>
-bool FlatTriangulation<T>::inSector(const HalfEdge sector, const Vertical<FlatTriangulation<T>> &vector) const {
-  return inSector(sector, vector.vertical());
+bool FlatTriangulation<T>::inHalfPlane(const HalfEdge side, const Vector<T> &vector) const {
+  return fromHalfEdge(side).orientation(vector) == ORIENTATION::SAME;
+}
+
+template <typename T>
+bool FlatTriangulation<T>::inPlane(const HalfEdge plane, const Vector<T> &direction) const {
+  return direction.ccw(fromHalfEdge(plane)) != CCW::COLLINEAR || direction.orientation(fromHalfEdge(plane)) != ORIENTATION::OPPOSITE;
+}
+
+template <typename T>
+HalfEdge FlatTriangulation<T>::sector(HalfEdge plane, const Vector<T>& direction) const {
+  LIBFLATSURF_CHECK_ARGUMENT(direction.ccw(fromHalfEdge(plane)) != CCW::COLLINEAR || direction.orientation(fromHalfEdge(plane)) != ORIENTATION::OPPOSITE, "vector must not be opposite to the HalfEdge defining the plane");
+
+  if (fromHalfEdge(plane).ccw(direction) == CCW::CLOCKWISE) {
+    while (fromHalfEdge(plane).ccw(direction) == CCW::CLOCKWISE)
+      plane = this->previousAtVertex(plane);
+  } else if (fromHalfEdge(plane).ccw(direction) == CCW::COUNTERCLOCKWISE) {
+    while (fromHalfEdge(plane).ccw(direction) != CCW::CLOCKWISE)
+      plane = this->nextAtVertex(plane);
+    plane = this->previousAtVertex(plane);
+  }
+
+  return plane;
+}
+
+template <typename T>
+HalfEdge FlatTriangulation<T>::sector(HalfEdge start, CCW ccw, const Vector<T>& direction, bool exclude) const {
+  LIBFLATSURF_CHECK_ARGUMENT(ccw != CCW::COLLINEAR, "cannot rotate in collinear direction");
+
+  if (fromHalfEdge(start).ccw(direction) == CCW::COLLINEAR && fromHalfEdge(start).orientation(direction) == ORIENTATION::SAME) {
+    if (!exclude)
+      return start;
+
+    start = ccw == CCW::CLOCKWISE ? this->previousAtVertex(start) : this->nextAtVertex(start);
+  }
+
+  // We now turn start in direction ccw until we find a sector containing
+  // direction, i.e.,
+  // while (!inSector(start, direction)) start = previous/nextAtVertex(start);
+  // However, each such iteration uses two CCW computations. The below only
+  // uses a single CCW computation.
+
+  if (ccw == CCW::COUNTERCLOCKWISE) {
+    while (fromHalfEdge(start).ccw(direction) == CCW::CLOCKWISE)
+      start = this->nextAtVertex(start);
+    while (fromHalfEdge(start).ccw(direction) != CCW::CLOCKWISE)
+      start = this->nextAtVertex(start);
+    start = this->previousAtVertex(start);
+  } else {
+    start = this->nextAtVertex(start);
+    while (fromHalfEdge(start).ccw(direction) != CCW::CLOCKWISE)
+      start = this->previousAtVertex(start);
+    while (fromHalfEdge(start).ccw(direction) == CCW::CLOCKWISE)
+      start = this->previousAtVertex(start);
+  }
+
+  return start;
+}
+
+template <typename T>
+HalfEdge FlatTriangulation<T>::sector(HalfEdge sector, const Vector<T>& start, CCW ccw, const Vector<T>& direction, bool exclude) const {
+  LIBFLATSURF_CHECK_ARGUMENT(ccw != CCW::COLLINEAR, "cannot rotate in collinear direction");
+  LIBFLATSURF_CHECK_ARGUMENT(inSector(sector, start), "start direction must be in the start sector");
+
+  if (inSector(sector, direction)) {
+    if (start.ccw(direction) == CCW::COLLINEAR)
+      // start and direction are equal as directions; we are done unless we
+      // explicitly want to exclude the start direction.
+      if (!exclude)
+        return sector;
+    if (start.ccw(direction) == ccw)
+      // direction is in the starting sector on the correct side of the
+      // starting vector; no need to walk, the initial sector is the correct
+      // one.
+      return sector;
+  }
+
+  if (ccw == CCW::COUNTERCLOCKWISE)
+    sector = this->nextAtVertex(sector);
+
+  return this->sector(sector, ccw, direction, ccw == CCW::CLOCKWISE);
+}
+
+template <typename T>
+HalfEdge FlatTriangulation<T>::sector(HalfEdge plane, const Vertical<FlatTriangulation<T>>& vertical, const Vector<T>& direction) const {
+  LIBFLATSURF_CHECK_ARGUMENT(inHalfPlane(plane, vertical), "vertical and half edge defining half plane must enclose an angle <π");
+  LIBFLATSURF_CHECK_ARGUMENT(direction.orientation(vertical) == ORIENTATION::SAME, "direction must be in the same half plane as the vertical");
+
+  // Both plane and direction enclose less than a π angle with vertical. We
+  // move plane clockwise to where the half plane starts and then swipe
+  // counterclockwise until we find the sector containing direction.
+  while(inHalfPlane(plane, vertical))
+    plane = this->previousAtVertex(plane);
+
+  while(!inSector(plane, direction))
+    plane = this->nextAtVertex(plane);
+
+  return plane;
 }
 
 template <typename T>
@@ -745,7 +892,6 @@ int FlatTriangulation<T>::angle(const Vertex &vertex) const {
   HalfEdge current = first;
   do {
     const HalfEdge next = this->nextAtVertex(current);
-
     if (fromHalfEdge(current).x() >= 0 && fromHalfEdge(next).x() < 0)
       angle++;
 
@@ -755,6 +901,16 @@ int FlatTriangulation<T>::angle(const Vertex &vertex) const {
   LIBFLATSURF_ASSERT(angle >= 1, "Total angle at vertex cannot be less than 2π");
 
   return angle;
+}
+
+template <typename T>
+int FlatTriangulation<T>::angle(const Point<FlatTriangulation> &point) const {
+  const auto vertex = point.vertex();
+
+  if (!vertex)
+    return 1;
+
+  return angle(*vertex);
 }
 
 template <typename T>
@@ -772,7 +928,7 @@ std::optional<Deformation<FlatTriangulation<T>>> FlatTriangulation<T>::isomorphi
     return kind == ISOMORPHISM::FACES ? false : this->delaunay(he.edge()) == DELAUNAY::AMBIGUOUS;
   };
   const auto ignoreImage = [&](HalfEdge he) {
-    return kind == ISOMORPHISM::FACES ? false : this->delaunay(he.edge()) == DELAUNAY::AMBIGUOUS;
+    return kind == ISOMORPHISM::FACES ? false : other.delaunay(he.edge()) == DELAUNAY::AMBIGUOUS;
   };
 
   if (kind == ISOMORPHISM::DELAUNAY_CELLS) {
@@ -780,10 +936,10 @@ std::optional<Deformation<FlatTriangulation<T>>> FlatTriangulation<T>::isomorphi
     LIBFLATSURF_ASSERT(other.edges() | rx::all_of([&](const auto e) { return other.delaunay(e) != DELAUNAY::NON_DELAUNAY; }), "target surface not Delaunay triangulated");
   }
 
-  // We pick a fixed half edge of this surfaces and try to map it to every
-  // other half edge in the other surface. Taking into account another half
-  // edge in the same face, we get a single possible 2×2 transformation matrix.
-  // (Or rather two possible matrices, if we allow reflections.)
+  // We pick a single "preimage" half edge of this surfaces and try to map it
+  // to every other half edge in the other surface. Taking into account another
+  // half edge in the same face, we get a single possible 2×2 transformation
+  // matrix. (Or rather two possible matrices, if we allow reflections.)
   HalfEdge preimage = [&]() {
     for (HalfEdge he : this->halfEdges())
       if (!ignore(he))
@@ -997,8 +1153,6 @@ void ImplementationOf<FlatTriangulation<T>>::flip(HalfEdge e) {
   LIBFLATSURF_CHECK_ARGUMENT(self.convex(e, true), "cannot flip this edge as a resulting face would not be strictly convex");
 
   ImplementationOf<FlatTriangulationCombinatorial>::flip(e);
-
-  check();
 }
 
 template <typename T>

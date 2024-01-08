@@ -1,4 +1,4 @@
-{% set version = '3.10.1' %}
+{% set version = '3.13.5' %}
 {% set build_number = '0' %}
 
 package:
@@ -19,20 +19,21 @@ requirements:
     - automake
     - coreutils
     - {{ compiler('cxx') }}
+    - make
   host:
     - python
     - setuptools
     - gmpxxyy >=1.0.1,<2
-    - pyexactreal >=2.2.1,<3
     - pyintervalxt >=3.2.0,<4
+    - pyexactreal >=3.0.1,<4
     - cppyythonizations
     - libflatsurf
   run:
     - python
     - cppyy >=2.1.0,<3
     - cppyythonizations
-    - pyexactreal >=2.2.1,<3
     - pyintervalxt >=3.2.0,<4
+    - pyexactreal >=3.0.1,<4
     - boost-cpp
 
 test:
