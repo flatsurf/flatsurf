@@ -43,6 +43,7 @@
 #include "impl/vector.impl.hpp"
 #include "util/assert.ipp"
 #include "util/hash.ipp"
+#include "util/streamed.ipp"
 
 namespace flatsurf {
 
@@ -456,6 +457,16 @@ T detail::VectorExact<Vector, T>::operator*(const Vector& rhs) const {
 }
 
 template <typename Vector, typename T>
+Vector& detail::VectorExact<Vector, T>::operator*=(const T& c) {
+  Vector& self = static_cast<Vector&>(*this);
+
+  self.self->x *= c;
+  self.self->y *= c;
+
+  return self;
+}
+
+template <typename Vector, typename T>
 bool detail::VectorExact<Vector, T>::operator>(Bound bound) const {
   const Vector& self = static_cast<const Vector&>(*this);
 
@@ -497,6 +508,16 @@ detail::VectorExact<Vector, T>::operator bool() const {
   const Vector& self = static_cast<const Vector&>(*this);
 
   return self.x() || self.y();
+}
+
+template <typename Vector, typename T>
+Vector detail::VectorExact<Vector, T>::applyMatrix(const T& a, const T& b, const T& c, const T& d) const {
+  const Vector& self = static_cast<const Vector&>(*this);
+
+  return Vector{
+    a * self.self->x + b * self.self->y,
+    c * self.self->x + d * self.self->y,
+  };
 }
 
 template <typename Vector, typename T>
@@ -565,7 +586,7 @@ T detail::VectorExact<Vector, T>::area(const std::vector<Vector>& perimeter) {
 
   LIBFLATSURF_ASSERT(!current, fmt::format("Polygon must be closed but this polygon's sides [{}] summed to {}", fmt::join(perimeter, ", "), current));
 
-  LIBFLATSURF_ASSERT(area >= 0, fmt::format("Area of polygon must be positive but the area of this polygon [{}] was {}; maybe the polygon was not oriented counterclockwise?", fmt::join(perimeter, ", "), area));
+  LIBFLATSURF_ASSERT(area >= 0, fmt::format("Area of polygon must be positive but the area of this polygon [{}] was {}; maybe the polygon was not oriented counterclockwise?", fmt::join(perimeter, ", "), streamed(area)));
 
   return area;
 }

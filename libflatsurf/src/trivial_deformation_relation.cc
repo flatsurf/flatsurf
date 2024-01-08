@@ -22,6 +22,7 @@
 #include <ostream>
 
 #include "../flatsurf/path.hpp"
+#include "../flatsurf/point.hpp"
 #include "impl/deformation_relation.hpp"
 
 namespace flatsurf {
@@ -33,6 +34,11 @@ TrivialDeformationRelation<Surface>::TrivialDeformationRelation(const Surface& s
 template <typename Surface>
 std::optional<Path<Surface>> TrivialDeformationRelation<Surface>::operator()(const Path<Surface>& path) const {
   return path;
+}
+
+template <typename Surface>
+Point<Surface> TrivialDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
+  return point;
 }
 
 template <typename Surface>

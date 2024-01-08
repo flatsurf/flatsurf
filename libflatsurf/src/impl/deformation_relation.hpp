@@ -41,6 +41,7 @@ class DeformationRelation {
   virtual std::unique_ptr<DeformationRelation<Surface>> section() const = 0;
 
   virtual std::optional<Path<Surface>> operator()(const Path<Surface>&) const = 0;
+  virtual Point<Surface> operator()(const Point<Surface>&) const = 0;
 
   virtual bool trivial() const;
 

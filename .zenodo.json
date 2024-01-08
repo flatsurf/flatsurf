@@ -1,0 +1,19 @@
+{
+    "creators": [
+        {   
+            "orcid": "0000-0002-9608-782X",
+            "name": "Delecroix, Vincent",
+            "affiliation": "CNRS - Université de Bordeaux"
+        },
+        {   
+            "orcid": "0000-0002-3930-9107",
+            "name": "Rüth, Julian"
+        }
+    ],    
+
+    "license": "GPL-3.0-or-later",
+    "title": "flatsurf",
+    "description": "<p>libflatsurf is C++ library to work with translation surfaces and pyflatsurf is a low-level wrapper to use libflatsurf from Python.</p>"
+}
+
+

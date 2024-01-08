@@ -34,6 +34,7 @@ class ShiftDeformationRelation : public DeformationRelation<Surface> {
   ShiftDeformationRelation(const Surface& domain, const Surface& codomain, OddHalfEdgeMap<Path<Surface>> shift);
 
   std::optional<Path<Surface>> operator()(const Path<Surface>&) const override;
+  Point<Surface> operator()(const Point<Surface>&) const override;
 
   std::unique_ptr<DeformationRelation<Surface>> clone() const override;
 

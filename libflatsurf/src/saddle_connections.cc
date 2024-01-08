@@ -105,7 +105,7 @@ SaddleConnections<Surface> SaddleConnections<Surface>::sector(const Vector<T>& s
 
   std::vector<typename ImplementationOf<SaddleConnections>::Sector> sectors;
   for (const auto& sector : ret.self->sectors)
-    for (const auto refined : sector.refine(surface(), sectorBegin, sectorEnd))
+    for (const auto& refined : sector.refine(surface(), sectorBegin, sectorEnd))
       sectors.push_back(refined);
 
   ret.self->sectors = sectors;

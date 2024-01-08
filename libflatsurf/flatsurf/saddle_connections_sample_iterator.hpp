@@ -35,7 +35,7 @@ namespace flatsurf {
 // short connections (in particular initially.)
 template <typename Surface>
 class SaddleConnectionsSampleIterator : public boost::iterator_facade<SaddleConnectionsSampleIterator<Surface>, const SaddleConnection<Surface>, boost::forward_traversal_tag> {
-  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
+  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type parameter must not have modifiers such as const");
 
   using T = typename Surface::Coordinate;
 

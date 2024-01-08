@@ -2,7 +2,7 @@
  *  This file is part of flatsurf.
  *
  *        Copyright (C) 2019-2020 Vincent Delecroix
- *        Copyright (C) 2019-2021 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ namespace flatsurf::test {
 
 using namespace flatsurf;
 
-TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimeter]") {
+TEST_CASE("Perimeter of Contour Decomposition", "[ContourDecomposition][perimeter]") {
   SECTION("A Trivial Case") {
     using T = long long;
     using R2 = Vector<T>;
@@ -95,29 +95,26 @@ TEST_CASE("Perimeter of Contour Decomposition", "[contour_decomposition][perimet
   };
 }
 
-TEMPLATE_TEST_CASE("Connections and IET from Contour Decomposition", "[contour_decomposition][iet]", (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+TEMPLATE_TEST_CASE("Connections and IET from Contour Decomposition", "[ContourDecomposition][iet]", (long long), (mpz_class), (mpq_class), (eantic::renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
 
-  const auto [name, surface_] = GENERATE(makeSurface<T>());
-  const auto surface = *surface_;
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
 
-  GIVEN("The surface " << *name << ", i.e., " << *surface) {
-    const auto saddleConnection = GENERATE_COPY(verticals<T>(surface));
+  const auto saddleConnection = GENERATE_COPY(verticals<T>(surface));
+  CAPTURE(saddleConnection);
 
-    AND_GIVEN("A direction of a Saddle Connection " << saddleConnection) {
-      THEN("The Contour Decomposition in that Direction can be Computed") {
-        auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), saddleConnection);
+  SECTION("The Contour Decomposition in that Direction can be Computed") {
+    auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), saddleConnection);
 
-        CAPTURE(decomposition);
-        CAPTURE(decomposition.collapsed());
+    CAPTURE(decomposition);
+    CAPTURE(decomposition.collapsed());
 
-        AND_THEN("We can construct the IETs from the components") {
-          for (auto component : decomposition.components()) {
-            REQUIRE(component.perimeter().tighten() == Path<FlatTriangulation<T>>{});
-            auto iet = component.intervalExchangeTransformation();
-            REQUIRE(iet.intervalExchangeTransformation().size() == component.topContour().size());
-          }
-        }
+    SECTION("We can construct the IETs from the components") {
+      for (auto component : decomposition.components()) {
+        REQUIRE(component.perimeter().tighten() == Path<FlatTriangulation<T>>{});
+        auto iet = component.intervalExchangeTransformation();
+        REQUIRE(iet.intervalExchangeTransformation().size() == component.topContour().size());
       }
     }
   }

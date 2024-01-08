@@ -1,8 +1,8 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Vincent Delecroix
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C)      2019 Vincent Delecroix
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,10 +20,10 @@
 
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/permutation.hpp"
-#include "external/catch2/single_include/catch2/catch.hpp"
+#include "cereal.helpers.hpp"
 
 namespace flatsurf::test {
-TEST_CASE("Permutation", "[permutation]") {
+TEST_CASE("Permutation", "[Permutation]") {
   auto size = GENERATE(range(0, 10));
   GIVEN("A Random Permutation on the Half Edges indexed from " << -size << " to " << size) {
     auto domain = std::vector<HalfEdge>();
@@ -38,7 +38,7 @@ TEST_CASE("Permutation", "[permutation]") {
     }
 
     THEN("Individual Cycles Are Consistent") {
-      for (const auto he : domain) {
+      for (const auto& he : domain) {
         const auto cycle = p.cycle(he);
         REQUIRE(std::find(begin(cycle), end(cycle), he) != end(cycle));
         for (int i = 0; i < cycle.size(); i++) {
@@ -49,4 +49,11 @@ TEST_CASE("Permutation", "[permutation]") {
     }
   }
 }
+
+TEST_CASE("Serialization of a Permutation", "[Permutation][save][load]") {
+  Permutation<HalfEdge> p({{HalfEdge(1), HalfEdge(2), HalfEdge(-1)}, {HalfEdge(-2)}});
+
+  testRoundtrip(p);
+}
+
 }  // namespace flatsurf::test

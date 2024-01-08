@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2021-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/path.hpp"
+#include "../flatsurf/point.hpp"
 #include "impl/deformation.impl.hpp"
 
 namespace flatsurf {
@@ -37,6 +38,11 @@ std::optional<Path<Surface>> CompositeDeformationRelation<Surface>::operator()(c
   if (ret)
     ret = lhs->operator()(*ret);
   return ret;
+}
+
+template <typename Surface>
+Point<Surface> CompositeDeformationRelation<Surface>::operator()(const Point<Surface>& point) const {
+  return lhs->operator()(rhs->operator()(point));
 }
 
 template <typename Surface>

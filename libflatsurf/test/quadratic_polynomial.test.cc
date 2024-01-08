@@ -25,7 +25,7 @@
 
 namespace flatsurf::test {
 
-TEMPLATE_TEST_CASE("Quadratic Polynomial", "[quadratic_polynomial]", LIBFLATSURF_TEST_REAL_TYPES) {
+TEMPLATE_TEST_CASE("Quadratic Polynomial", "[QuadraticPolynomial]", LIBFLATSURF_TEST_REAL_TYPES) {
   using T = TestType;
   using Arb = exactreal::Arb;
 

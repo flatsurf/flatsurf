@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2021 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,34 +37,60 @@ template <typename Surface>
 class SaddleConnection : public Serializable<SaddleConnection<Surface>>,
                          boost::equality_comparable<SaddleConnection<Surface>>,
                          boost::less_than_comparable<SaddleConnection<Surface>, Bound> {
-  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
+  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type parameter must not have modifiers such as const");
 
   using T = typename Surface::Coordinate;
 
  public:
   SaddleConnection(const Surface &, HalfEdge e);
   // The saddle connection described by the given chain that starts in the
-  // sector counterclockwise next to source and ends in the sector
-  // counterclockwise next to target.
+  // sector counterclockwise next to `source` (including source but excluding
+  // the direction given by the half edge that is next counterclockwise) and
+  // ends in the sector counterclockwise next to `target` (again, including
+  // target but excluding the following half edge.)
   SaddleConnection(const Surface &, HalfEdge source, HalfEdge target, const Chain<Surface> &);
   SaddleConnection(const Surface &, HalfEdge source, HalfEdge target, Chain<Surface> &&);
 
+  // Return the saddle connection in the sector counterclockwise (or collinear)
+  // next to `source` (excluding the counterclockwise following half edge) that
+  // is described by the vector.
   static SaddleConnection<Surface> inSector(const Surface &, HalfEdge source, const Vector<T> &);
+  // Return the saddle connection in the sector counterclockwise (or collinear)
+  // next to `source` (excluding the counterclockwise following half edge) in
+  // the given direction.
   static SaddleConnection<Surface> inSector(const Surface &, HalfEdge source, const Vertical<Surface> &direction);
+
+  // Return the saddle connection given by the vector in the half plane defined
+  // by `vertical` where vertical is taken to have a value strictly less than π
+  // with `side`.
+  [[deprecated("Use inSector() instead and determine the sector with surface.sector()")]]
   static SaddleConnection<Surface> inHalfPlane(const Surface &, HalfEdge side, const Vertical<Surface> &, const Vector<T> &);
+  [[deprecated("Use inSector() instead and determine the sector with surface.sector()")]]
   static SaddleConnection<Surface> inPlane(const Surface &, HalfEdge plane, const Vector<T> &);
+  [[deprecated("Use inSector() instead and determine the sector with surface.sector()")]]
   static SaddleConnection<Surface> inPlane(const Surface &, HalfEdge plane, const Vertical<Surface> &direction);
+  [[deprecated("Use SaddleConnection() instead and determine source & target with surface.sector()")]]
   static SaddleConnection<Surface> inPlane(const Surface &, HalfEdge sourcePlane, HalfEdge targetPlane, const Chain<Surface> &);
+
+  [[deprecated("Use inSector() instead and determine the sector with surface.sector()")]]
   static SaddleConnection<Surface> alongVertical(const Surface &, const Vertical<Surface> &direction, HalfEdge plane);
+
+  // Return the saddle connection strictly clockwise from the given saddle
+  // connection with the given direction.
+  [[deprecated("Use inSector() instead and determine the sector with surface.sector()")]]
   static SaddleConnection<Surface> clockwise(const SaddleConnection &from, const Vector<T> &);
-  // Return the saddle connection that starts counterclockwise from source
-  // (but not necessarily in the sector next to source) and ends
-  // counterclockwise from target (but not necessarily in the sector next to
-  // target.)
+
+  // Return the saddle connection that starts counterclockwise (or collinear)
+  // from source (but unlike the `SaddleConnection` constructor not necessarily
+  // in the sector formed with the counterclockwise next half edge after
+  // source) and ends counterclockwise (or collinear) from target (but, again,
+  // not necessarily in the sector next to target.)
+  [[deprecated("Use SaddleConnection() instead and determine the source & target with surface.sector()")]]
   static SaddleConnection<Surface> counterclockwise(const Surface &, HalfEdge source, HalfEdge target, const Chain<Surface> &);
 
   // Return the saddle connection that starts counterclockwise (or collinear)
   // from source and goes in `direction`.
+  [[deprecated("Use inSector() instead and determine the sector with surface.sector()")]]
   static SaddleConnection<Surface> counterclockwise(const Surface &, const SaddleConnection<Surface> &source, const Vertical<Surface> &direction);
 
   const Vector<T> &vector() const;

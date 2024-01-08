@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@
 
 #include "../flatsurf/ccw.hpp"
 #include "../flatsurf/chain.hpp"
+#include "../flatsurf/fmt.hpp"
 #include "../flatsurf/interval_exchange_transformation.hpp"
 #include "../flatsurf/vector.hpp"
 #include "../flatsurf/vertical.hpp"
@@ -57,6 +58,7 @@
 #include "impl/saddle_connection.impl.hpp"
 #include "util/assert.ipp"
 #include "util/false.ipp"
+#include "util/streamed.ipp"
 
 namespace flatsurf {
 
@@ -353,7 +355,7 @@ std::ostream& operator<<(std::ostream& os, const Lengths<Surface>& self) {
   std::vector<string> items;
   self.lengths.apply([&](const auto& key, const auto& value) {
     if (!value) return;
-    items.push_back(fmt::format("{}: {} = {}", key, *value, self.length(self.toLabel(key))));
+    items.push_back(fmt::format("{}: {} = {}", key, *value, streamed(self.length(self.toLabel(key)))));
   });
   return os << fmt::format("{}", fmt::join(items, ", "));
 }

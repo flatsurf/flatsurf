@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2021-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,16 +23,19 @@
 #include <iosfwd>
 
 #include "../../flatsurf/half_edge.hpp"
-#include "retriangulation_deformation_relation.hpp"
+#include "deformation_relation.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-class FlipDeformationRelation : public RetriangulationDeformationRelation<Surface> {
+class FlipDeformationRelation : public DeformationRelation<Surface> {
+  using T = typename Surface::Coordinate;
+
  public:
   FlipDeformationRelation(const Surface& domain, const Surface& codomain, HalfEdge flip);
 
   std::optional<Path<Surface>> operator()(const Path<Surface>&) const override;
+  Point<Surface> operator()(const Point<Surface>&) const override;
 
   std::unique_ptr<DeformationRelation<Surface>> clone() const override;
 

@@ -40,6 +40,7 @@
 #include "../flatsurf/edge.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/flat_triangulation_combinatorial.hpp"
+#include "../flatsurf/fmt.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_map.hpp"
 #include "../flatsurf/orientation.hpp"
@@ -239,7 +240,12 @@ void ImplementationOf<FlatTriangulationCollapsed<T>>::updateAfterFlip(HalfEdgeMa
   const HalfEdge d = surface.nextInFace(-flip);
 
   const auto sum = [&](const auto& lhs, const auto& rhs) {
-    return SaddleConnection::inPlane(surface.self->original, lhs.source(), rhs.target(), static_cast<const Chain<FlatTriangulation<T>>&>(lhs) + static_cast<const Chain<FlatTriangulation<T>>&>(rhs));
+    const auto chain = static_cast<const Chain<FlatTriangulation<T>>&>(lhs) + static_cast<const Chain<FlatTriangulation<T>>&>(rhs);
+    return SaddleConnection(
+      surface.self->original,
+      surface.self->original->sector(lhs.source(), chain),
+      surface.self->original->sector(rhs.target(), -chain),
+      chain);
   };
 
   auto& collapsedHalfEdges = surface.self->collapsedHalfEdges;

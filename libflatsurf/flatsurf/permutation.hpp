@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@ class Permutation : boost::equality_comparable<Permutation<T>>, boost::multiplia
 
   template <typename S>
   friend std::ostream &operator<<(std::ostream &, const Permutation<S> &);
+
   size_t size() const;
   const std::vector<T> &domain() const;
   std::vector<std::vector<T>> cycles() const;

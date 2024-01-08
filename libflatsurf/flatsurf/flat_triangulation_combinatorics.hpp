@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2021 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #include <boost/operators.hpp>
 #include <iosfwd>
 #include <vector>
+#include <array>
 
 #include "managed_movable.hpp"
 
@@ -31,7 +32,7 @@ namespace flatsurf {
 // A base class for all types representing triangulated translation surfaces.
 template <typename Surface>
 class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulationCombinatorial> {
-  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
+  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type parameter must not have modifiers such as const");
 
  protected:
   template <typename... Args>
@@ -55,6 +56,9 @@ class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulat
   // at the half edge e by removing the identification of the two corresponding
   // half edges there.
   FlatTriangulationCombinatorial slit(HalfEdge e) const;
+
+  // Create an independent clone of this triangulation with relabeled edges.
+  FlatTriangulationCombinatorial relabel(const Permutation<HalfEdge>&) const;
 
   HalfEdge nextAtVertex(HalfEdge e) const;
   HalfEdge previousAtVertex(HalfEdge e) const;
@@ -83,7 +87,13 @@ class FlatTriangulationCombinatorics : boost::equality_comparable<FlatTriangulat
   const std::vector<HalfEdge> &halfEdges() const;
   const std::vector<Vertex> &vertices() const;
 
+  /// Return the three half edges that delimit this face, i.e., the argument
+  /// and the one that is `nextInFace` and the one that is `previousInFace`.
+  std::array<HalfEdge, 3> face(HalfEdge) const;
+
   // Return the triples of half edges of each face in counterclockwise order.
+  // The return type of this method is somewhat unfortunate, see
+  // https://github.com/flatsurf/flatsurf/issues/307.
   std::vector<std::tuple<HalfEdge, HalfEdge, HalfEdge>> faces() const;
 
   // Return the outgoing half edges from this vertex in order.

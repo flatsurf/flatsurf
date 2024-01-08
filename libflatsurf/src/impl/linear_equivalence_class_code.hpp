@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2021 Julian Rüth
+ *        Copyright (C) 2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,21 +17,30 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
-#include "impl/retriangulation_deformation_relation.hpp"
+#ifndef LIBFLATSURF_LINEAR_EQUIVALENCE_CLASS_CODE_HPP
+#define LIBFLATSURF_LINEAR_EQUIVALENCE_CLASS_CODE_HPP
 
-#include "../flatsurf/flat_triangulation.hpp"
-#include "../flatsurf/path.hpp"
+#include "equivalence_class_code.hpp"
+#include "combinatorial_equivalence_class_code.hpp"
 
 namespace flatsurf {
 
 template <typename Surface>
-std::optional<Path<Surface>> RetriangulationDeformationRelation<Surface>::operator()(const Path<Surface>&) const {
-  throw std::logic_error("not implemented: cannot compute image of a path when a generic retriangulation happened");
+struct LinearEquivalenceClassCode : public EquivalenceClassCode {
+  using T = typename Surface::Coordinate;
+  using Word = std::tuple<CombinatorialEquivalenceClassCode::Word, std::vector<Vector<T>>>;
+
+  explicit LinearEquivalenceClassCode(Word word);
+
+  size_t hash() const override;
+  bool equal(const EquivalenceClassCode&) const override;
+  std::string toString() const override;
+
+ private:
+  Word word;
+};
+
 }
 
-}  // namespace flatsurf
+#endif
 
-// Instantiations of templates so implementations are generated for the linker
-#include "util/instantiate.ipp"
-
-LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_STATIC), RetriangulationDeformationRelation, LIBFLATSURF_FLAT_TRIANGULATION_TYPES)

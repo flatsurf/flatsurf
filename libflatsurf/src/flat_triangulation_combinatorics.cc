@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/half_edge.hpp"
 #include "../flatsurf/half_edge_map.hpp"
+#include "../flatsurf/odd_half_edge_map.hpp"
 #include "../flatsurf/half_edge_set_iterator.hpp"
 #include "../flatsurf/permutation.hpp"
 #include "../flatsurf/vertex.hpp"
@@ -124,6 +125,24 @@ FlatTriangulationCombinatorial FlatTriangulationCombinatorics<Surface>::insertAt
   return ImplementationOf<FlatTriangulationCombinatorial>::make(
       Permutation<HalfEdge>(cycles),
       self->faces.domain() | rx::filter([&](auto& edge) { return this->boundary(edge); }) | rx::to_vector());
+}
+
+template <typename Surface>
+FlatTriangulationCombinatorial FlatTriangulationCombinatorics<Surface>::relabel(const Permutation<HalfEdge>& relabeling) const {
+  if (hasBoundary())
+    throw std::logic_error("not implemented: relabeling not implemented for surfaces with boundaries");
+
+  LIBFLATSURF_CHECK_ARGUMENT(2*size() == relabeling.size(), "domain of relabeling " << relabeling << " must be half edges of " << *this);
+
+  for (const auto& edge : edges())
+    LIBFLATSURF_CHECK_ARGUMENT(relabeling(edge.negative()) == -relabeling(edge.positive()), "relabeling " << relabeling << " does not preserve edges");
+
+  return FlatTriangulationCombinatorial(relabeling * this->self->vertices * ~relabeling);
+}
+
+template <typename Surface>
+std::array<HalfEdge, 3> FlatTriangulationCombinatorics<Surface>::face(HalfEdge face) const {
+  return {face, nextInFace(face), previousInFace(face)};
 }
 
 template <typename Surface>

@@ -35,7 +35,7 @@ namespace flatsurf {
 template <class Surface>
 class ContourComponent : boost::equality_comparable<ContourComponent<Surface>> {
  private:
-  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type must not have modifiers such as const");
+  static_assert(std::is_same_v<Surface, std::decay_t<Surface>>, "type parameter must not have modifiers such as const");
 
   // Components can not be created directly (other than by copying & moving
   // them.) They are byproducts of a ContourDecomposition.
