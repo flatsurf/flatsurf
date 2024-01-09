@@ -14,6 +14,7 @@ dependencies:
   - ipywidgets
   - libtool
   - make
+  - pyintervalxt>=3.2.0,<4
   - pyexactreal>=3.0.1,<5
   - pytest
   - python

@@ -85,10 +85,49 @@ TEMPLATE_TEST_CASE("Flow Decomposition", "[FlowDecomposition]", (long long), (mp
     CAPTURE(flowDecomposition);
     REQUIRE(area(flowDecomposition.components()) == surface->area());
 
+    // Return the sum of the SAF invariants of the components that make up
+    // a flow decomposition.
+    // Note that the length of the SAF invariants can differ because some
+    // components can be rational and therefore their SAF invariant is
+    // trivial.
+    const auto safSum = [](const auto& components) {
+      std::vector<mpq_class> sum;
+      for (const auto& component : components) {
+        const auto saf = component.safInvariant();
+        if (saf.size() == 0)
+          continue;
+
+        if (sum.size() == 0) {
+          sum = saf;
+          continue;
+        }
+
+        REQUIRE(sum.size() == saf.size());
+
+        for (int i = 0; i < sum.size(); i++)
+          sum[i] += saf[i];
+      }
+
+      return sum;
+    };
+
+    auto saf = safSum(flowDecomposition.components());
+
     REQUIRE(flowDecomposition.decompose());
 
     CAPTURE(flowDecomposition);
     REQUIRE(area(flowDecomposition.components()) == surface->area());
+
+    SECTION("The SAF Invariants are Consistent") {
+      auto saf2 = safSum(flowDecomposition.components());
+
+      if (saf.size() == 0)
+        saf = std::vector<mpq_class>(saf2.size());
+      if (saf2.size() == 0)
+        saf2 = std::vector<mpq_class>(saf.size());
+
+      REQUIRE_THAT(saf2, Catch::Matchers::Equals(saf));
+    }
 
     SECTION("The Area of the Cylinders is Consistent with Their Width & Height (modulo some scaling)") {
       for (const auto& component : flowDecomposition.components()) {

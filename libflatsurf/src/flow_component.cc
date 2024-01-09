@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2021 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <intervalxt/decomposition_step.hpp>
 #include <intervalxt/fmt.hpp>
 #include <intervalxt/label.hpp>
+#include <intervalxt/interval_exchange_transformation.hpp>
 #include <memory>
 #include <ostream>
 #include <unordered_map>
@@ -413,6 +414,11 @@ FlowDecomposition<Surface> FlowComponent<Surface>::decomposition() { return Impl
 
 template <typename Surface>
 const FlowDecomposition<Surface> FlowComponent<Surface>::decomposition() const { return ImplementationOf<FlowDecomposition<Surface>>::make(self->state); }
+
+template <typename Surface>
+std::vector<mpq_class> FlowComponent<Surface>::safInvariant() const {
+  return dynamicalComponent().iet().safInvariant();
+}
 
 template <typename Surface>
 FlowComponent<Surface> ImplementationOf<FlowComponent<Surface>>::make(std::shared_ptr<FlowDecompositionState<Surface>> state, FlowComponentState<Surface>* component) {
