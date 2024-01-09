@@ -24,6 +24,7 @@ requirements:
     - python
     - setuptools
     - gmpxxyy >=1.0.1,<2
+    - pyintervalxt >=3.2.0,<4
     - pyexactreal >=3.0.1,<4
     - cppyythonizations
     - libflatsurf
@@ -31,6 +32,7 @@ requirements:
     - python
     - cppyy >=2.1.0,<3
     - cppyythonizations
+    - pyintervalxt >=3.2.0,<4
     - pyexactreal >=3.0.1,<4
     - boost-cpp
 
