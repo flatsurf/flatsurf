@@ -4,6 +4,20 @@ intervalxt Change Log
 
 .. current developments
 
+v3.14.0
+====================
+
+**Added:**
+
+* Added `FlowComponent::safInvariant()` to expose the SAF invariant of the underlying Interval Exchange Transformation.
+
+**Fixed:**
+
+* Fixed printing of the trivial deformation to actually print as a deformation and not as the underlying surface.
+* Fixed access to intervalxt objects through pyflatsurf, e.g., `FlowComoponent::dynamicalComponent`.
+
+
+
 v3.13.5
 ====================
 
