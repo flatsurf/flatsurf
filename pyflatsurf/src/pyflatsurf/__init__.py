@@ -6,8 +6,8 @@ EXAMPLES:
 
 The translation surface coming from a square::
 
-    >>> from pyflatsurf import Surface, flatsurf  # doctest: +ELLIPSIS
-    ...                                           # we ignore the output because cppyy produces some deprecation warnings
+    >>> from pyflatsurf import Surface, flatsurf  # random output  # we ignore the output because cppyy produces some deprecation warnings
+    ...                                           # doctest: +ELLIPSIS
     ...
     >>> R2 = flatsurf.Vector['long long']
     >>> square = Surface([[1, 3, 2, -1, -3, -2]], [R2(1, 0), R2(0, 1), R2(1, 1)])
