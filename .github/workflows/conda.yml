@@ -19,12 +19,10 @@ jobs:
       uses: flatsurf/actions/conda-forge-build@main
       with:
         recipe: libflatsurf/recipe
-        channels: flatsurf
     - name: Build pyflatsurf
       uses: flatsurf/actions/conda-forge-build@main
       with:
         recipe: pyflatsurf/recipe
-        channels: flatsurf
     - uses: actions/upload-artifact@v2
       with:
         name: conda-packages
