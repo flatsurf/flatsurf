@@ -3,8 +3,8 @@
 ######################################################################
 #  This file is part of flatsurf.
 #
-#        Copyright (C) 2019 Vincent Delecroix
-#        Copyright (C) 2019 Julian Rüth
+#        Copyright (C)      2019 Vincent Delecroix
+#        Copyright (C) 2019-2024 Julian Rüth
 #
 #  flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Lesser General Public License as published by
@@ -22,5 +22,10 @@
 
 set -ex
 
-TARGETS=`grep -l '>>>' @srcdir@/../src/pyflatsurf/*.py`
-pytest -vv --doctest-modules $TARGETS
+# We cannot run pytest directly since it would be invoked through its shebang
+# which makes macOS sanitize some environment variables. Instead, we go through
+# our bin/python wrapper to set the necessary environment variables and invoke
+# the Python binary to run pytest which keeps our environment intact on macOS.
+
+IGNORE=`grep -L '>>>' @abs_srcdir@/../src/pyflatsurf/*.py | awk '{ print "--ignore=" $0 }'`
+python -m pytest --verbose --doctest-modules $IGNORE '@abs_srcdir@/../src/pyflatsurf' $@
