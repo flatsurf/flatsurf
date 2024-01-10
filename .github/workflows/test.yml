@@ -9,17 +9,27 @@ concurrency:
 
 jobs:
   test-libflatsurf:
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.on }}
     strategy:
       matrix:
         include:
-        - target: check
+        - on: ubuntu-22.04
+          target: check
           libflint: '2'
-        - target: check
+        - on: ubuntu-22.04
+          target: check
           libflint: '3'
-        - target: check-valgrind
+        - on: macos-11
+          target: check
           libflint: '2'
-        - target: check-valgrind
+        - on: macos-11
+          target: check
+          libflint: '3'
+        - on: ubuntu-22.04
+          target: check-valgrind
+          libflint: '2'
+        - on: ubuntu-22.04
+          target: check-valgrind
           libflint: '3'
     steps:
       - uses: actions/checkout@v2
@@ -62,24 +72,45 @@ jobs:
       - uses: flatsurf/actions/show-logs@main
         if: ${{ always() }}
   test-pyflatsurf:
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.on }}
     strategy:
       matrix:
         include:
           # No released SageMath supports FLINT 3 yet. So we only test with FLINT 2.
-          - python: "3.8"
+          - on: macos-11
+            python: "3.8"
             libflint: "2"
             target: check
-          - python: "3.9"
+          - on: macos-11
+            python: "3.9"
             libflint: "2"
             target: check
-          - python: "3.10"
+          - on: macos-11
+            python: "3.10"
             libflint: "2"
             target: check
-          - python: "3.11"
+          - on: macos-11
+            python: "3.11"
             libflint: "2"
             target: check
-          - python: "3.11"
+          - on: ubuntu-22.04
+            python: "3.8"
+            libflint: "2"
+            target: check
+          - on: ubuntu-22.04
+            python: "3.9"
+            libflint: "2"
+            target: check
+          - on: ubuntu-22.04
+            python: "3.10"
+            libflint: "2"
+            target: check
+          - on: ubuntu-22.04
+            python: "3.11"
+            libflint: "2"
+            target: check
+          - on: ubuntu-22.04
+            python: "3.11"
             libflint: "2"
             target: check-valgrind
     steps:
@@ -110,6 +141,10 @@ jobs:
           echo "libflint ${{ matrix.libflint }}.*" >> $CONDA_PREFIX/conda-meta/pinned
           mamba env update --quiet -n test -f pyflatsurf/environment.yml
           conda list
+      - name: silence cppyy startup
+        shell: bash -l {0}
+        run: |
+          python -c 'import cppyy'
       - name: make ${{ matrix.target }}
         shell: bash -l {0}
         run: |
@@ -129,7 +164,7 @@ jobs:
       - uses: flatsurf/actions/show-logs@main
         if: ${{ always() }}
   distcheck:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
         with: { submodules: recursive }
