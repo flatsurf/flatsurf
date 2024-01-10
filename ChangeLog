@@ -4,6 +4,24 @@ intervalxt Change Log
 
 .. current developments
 
+v3.13.5
+====================
+
+**Added:**
+
+* Added compatibility with FLINT 3.
+
+
+
+v3.13.4
+====================
+
+**Fixed:**
+
+* Fixed checks for fmt library version 10.
+
+
+
 v3.13.3
 ====================
 

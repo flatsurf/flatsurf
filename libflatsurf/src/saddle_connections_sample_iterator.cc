@@ -17,6 +17,7 @@
  *  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
  *********************************************************************/
 
+#include <cmath>
 #include <ostream>
 #include <random>
 
@@ -121,7 +122,7 @@ void ImplementationOf<SaddleConnectionsSampleIterator<Surface>>::increment() {
     // The quotient |w|/|c| can safely be represented with double precision.
     double wc = sqrt(dbl(T(w * w)) / dbl(T(c * c)));
 
-    if (!isfinite(wc))
+    if (!std::isfinite(wc))
       throw std::logic_error("not implemented: saddle connection went into a sector with too distinct boundaries");
 
     // The cross products v×c and v×w are often virtually indistinguishable

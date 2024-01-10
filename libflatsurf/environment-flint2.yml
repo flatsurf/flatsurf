@@ -4,18 +4,19 @@
 name: libflatsurf-build
 channels:
   - conda-forge
+  - defaults
 dependencies:
   - automake
   - benchmark
-  - libboost-headers=1.82.0
+  - boost-cpp=1.78.0
   - coreutils
   - cxx-compiler
-  - libeantic>=2,<3
-  - libflint>=3,<4
+  - libeantic>=1.2.2,<2
+  - libflint>=2,<3
   - fmt=10
   - gmp=6
   - gmpxxll>=1.0.0,<2
-  - libexactreal>=4,<5
+  - libexactreal>=3.0.1,<4
   - libintervalxt>=3.0.2,<4
   - libtool
   - make
