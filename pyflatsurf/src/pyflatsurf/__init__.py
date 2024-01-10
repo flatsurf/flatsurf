@@ -4,9 +4,10 @@ A Python Interface to libflatsurf
 
 EXAMPLES:
 
-The translation surface coming from a square::
+The translation surface coming from a square (we ignore the output because
+cppyy produces some deprecation warnings)::
 
-    >>> from pyflatsurf import Surface, flatsurf  # doctest: +ELLIPSIS  # deprecation warnings caused by cppyy
+    >>> from pyflatsurf import Surface, flatsurf  # doctest: +ELLIPSIS
     ...
     >>> R2 = flatsurf.Vector['long long']
     >>> square = Surface([[1, 3, 2, -1, -3, -2]], [R2(1, 0), R2(0, 1), R2(1, 1)])
