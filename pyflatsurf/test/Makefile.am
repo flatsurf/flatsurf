@@ -26,6 +26,11 @@ BUILT_SOURCES = test-env.sh bin/python python-doctest.sh sage-doctest.sh
 EXTRA_DIST += test-env.sh.in bin/python.in python-doctest.sh.in sage-doctest.sh.in disable-pytest/pytest.py
 CLEANFILES = test-env.sh bin/python python-doctest.sh sage-doctest.sh
 
+$(builddir)/bin/python: $(srcdir)/bin/python.in Makefile
+	mkdir -p $(builddir)/bin
+	sed -e 's,[@]abs_srcdir[@],$(abs_srcdir),g' -e 's,[@]abs_builddir[@],$(abs_builddir),g' -e 's,[@]pythondir[@],$(pythondir),g' < $< > $@
+	chmod +x $@
+
 $(builddir)/test-env.sh: $(srcdir)/test-env.sh.in Makefile
 	sed -e 's,[@]abs_srcdir[@],$(abs_srcdir),g' -e 's,[@]abs_builddir[@],$(abs_builddir),g' -e 's,[@]pythondir[@],$(pythondir),g' < $< > $@
 
