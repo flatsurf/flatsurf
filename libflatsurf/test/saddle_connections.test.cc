@@ -2,7 +2,7 @@
  *  This file is part of flatsurf.
  *
  *        Copyright (C)      2019 Vincent Delecroix
- *        Copyright (C) 2019-2022 Julian Rüth
+ *        Copyright (C) 2019-2024 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -79,12 +79,13 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Torus", "[SaddleConnections]", (long
   }
 
   SECTION("Saddle Connections Within a Fixed Bound Correspond to Coprime Coordinates") {
-    auto bound = GENERATE(0, 2, 16);
+    auto [bound_x, bound_y] = GENERATE(std::tuple{0, 0}, std::tuple{2, 0}, std::tuple{3, 1}, std::tuple{16, 0});
+    Bound bound(bound_x, bound_y);
 
     int expected = 0;
-    for (int x = 1; x < bound + 1; x++)
+    for (int x = 1; x < bound_x + bound_y + 1; x++)
       for (int y = 1; y <= x; y++)
-        if (x * x + y * y < bound * bound && std::gcd(x, y) == 1)
+        if (x * x + y * y < bound.squared() && std::gcd(x, y) == 1)
           expected++;
 
     {
@@ -106,7 +107,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Torus", "[SaddleConnections]", (long
     SECTION("We Find the Same Connections if we Iterate By Length") {
       auto count = 0;
       for (auto connection : square->connections().byLength()) {
-        if (connection > Bound(bound, 0))
+        if (connection > bound)
           break;
         count++;
       }
