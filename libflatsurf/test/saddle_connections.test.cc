@@ -85,7 +85,7 @@ TEMPLATE_TEST_CASE("Saddle Connections on a Torus", "[SaddleConnections]", (long
     int expected = 0;
     for (int x = 1; x < bound_x + bound_y + 1; x++)
       for (int y = 1; y <= x; y++)
-        if (x * x + y * y < bound.squared() && std::gcd(x, y) == 1)
+        if (x * x + y * y <= bound.squared() && std::gcd(x, y) == 1)
           expected++;
 
     {
