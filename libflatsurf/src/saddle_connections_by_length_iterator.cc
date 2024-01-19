@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2020 Julian Rüth
+ *        Copyright (C) 2020-2024 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -91,7 +91,7 @@ void ImplementationOf<SaddleConnectionsByLengthIterator<Surface>>::increment() {
     auto withinBounds = connections.byAngle().bound(upperBoundInclusive).lowerBound(lowerBoundExclusive) | rx::to_vector();
     std::sort(begin(withinBounds), end(withinBounds), typename Vector<T>::CompareLength());
 
-    std::copy(rbegin(withinBounds), rend(withinBounds), std::back_inserter(connectionsWithinBounds));
+    std::copy(begin(withinBounds), end(withinBounds), std::back_inserter(connectionsWithinBounds));
   }
 }
 
