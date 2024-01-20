@@ -4,6 +4,16 @@ intervalxt Change Log
 
 .. current developments
 
+v3.14.1
+====================
+
+**Fixed:**
+
+* Fixed ordering of saddle connections when iterating ``byLength()``.
+* Fixed tests on macOS. All tests are now automatically run for macOS 11 on GitHub's CI.
+
+
+
 v3.14.0
 ====================
 
