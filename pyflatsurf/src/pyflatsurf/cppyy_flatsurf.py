@@ -112,6 +112,13 @@ cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(add_met
 # Return the SAF invariant as a Python list
 cppyy.py.add_pythonization(filtered(re.compile("FlowComponent<.*>"))(wrap_method("safInvariant")(lambda self, cpp: list(cpp()))), "flatsurf")
 
+# Work around https://github.com/wlav/cppyy/issues/245
+cppyy.py.add_pythonization(filtered(re.compile("FlowComponent<.*>"))(wrap_method("perimeter")(lambda self, cpp: cppyy.gbl.flatsurf.cppyy.vectorFromList(cpp()))), "flatsurf")
+cppyy.py.add_pythonization(filtered(re.compile("FlowComponent<.*>"))(wrap_method("bottom")(lambda self, cpp: cppyy.gbl.flatsurf.cppyy.vectorFromList(cpp()))), "flatsurf")
+cppyy.py.add_pythonization(filtered(re.compile("FlowComponent<.*>"))(wrap_method("right")(lambda self, cpp: cppyy.gbl.flatsurf.cppyy.vectorFromList(cpp()))), "flatsurf")
+cppyy.py.add_pythonization(filtered(re.compile("FlowComponent<.*>"))(wrap_method("top")(lambda self, cpp: cppyy.gbl.flatsurf.cppyy.vectorFromList(cpp()))), "flatsurf")
+cppyy.py.add_pythonization(filtered(re.compile("FlowComponent<.*>"))(wrap_method("left")(lambda self, cpp: cppyy.gbl.flatsurf.cppyy.vectorFromList(cpp()))), "flatsurf")
+
 for path in os.environ.get('PYFLATSURF_INCLUDE','').split(':'):
     if path: cppyy.add_include_path(path)
 
