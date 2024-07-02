@@ -115,6 +115,12 @@ class Vector : public ::flatsurf::Vector<T> {
     ::flatsurf::Vector<T>(static_cast<T>(x), static_cast<T>(y)) {}
 };
 
+// Work around https://github.com/wlav/cppyy/issues/245
+template <typename T>
+std::vector<T> vectorFromList(const std::list<T>& x) {
+  return std::vector(x.begin(), x.end());
+}
+
 }  // namespace cppyy
 
 }  // namespace flatsurf
