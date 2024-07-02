@@ -1,7 +1,7 @@
 ######################################################################
 #  This file is part of flatsurf.
 #
-#        Copyright (C) 2020 Julian Rüth
+#        Copyright (C) 2020-2024 Julian Rüth
 #
 #  pyeantic is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Lesser General Public License as published by
@@ -20,12 +20,10 @@ from rever.activity import Activity
 
 class AutotoolsDist(Activity):
     def __init__(self, **kwargs):
-        super().__init__()
-        self.name = "dist"
-        self.desc = "Creates a source tarball with make dist"
+        super().__init__(name="autodist", deps=frozenset(('tag',)), desc="Create a source tarball with make dist", func=self._func)
         self.requires = {"commands": {"make": "make"}}
 
-    def __call__(self):
+    def _func(self):
         from tempfile import TemporaryDirectory
         from xonsh.dirstack import DIRSTACK
         with TemporaryDirectory() as tmp:
@@ -36,5 +34,5 @@ class AutotoolsDist(Activity):
             mv *.tar.gz @(DIRSTACK[-1])
             popd
         return True
-    
+
 $DAG['autodist'] = AutotoolsDist()
