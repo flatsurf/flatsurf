@@ -4,6 +4,15 @@ intervalxt Change Log
 
 .. current developments
 
+v3.14.2
+====================
+
+**Fixed:**
+
+* Fixed memory leak in flow component perimeter methods.
+
+
+
 v3.14.1
 ====================
 
