@@ -4,7 +4,6 @@
         "name": "CopyAssignChain\u27e8long long\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -14,7 +13,6 @@
         "name": "CopyConstructChain\u27e8long long\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -24,7 +22,6 @@
         "name": "CreateChain\u27e8long long\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -34,7 +31,6 @@
         "name": "FlatTriangulationCollapsedFlipCollapsed\u27e8Vector\u27e8eantic\u2237renf_elem_class\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -44,7 +40,6 @@
         "name": "FlatTriangulationCollapsedFlipCollapsed\u27e8Vector\u27e8exactreal\u2237Element\u27e8exactreal\u2237IntegerRing\u27e9\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -54,7 +49,6 @@
         "name": "FlatTriangulationCollapsedFlipCollapsed\u27e8Vector\u27e8long long\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -64,7 +58,6 @@
         "name": "FlatTriangulationCollapsedFlipCollapsed\u27e8Vector\u27e8mpq_class\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -74,7 +67,6 @@
         "name": "FlatTriangulationCollapsedFlipUncollapsed\u27e8Vector\u27e8eantic\u2237renf_elem_class\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -84,7 +76,6 @@
         "name": "FlatTriangulationCollapsedFlipUncollapsed\u27e8Vector\u27e8exactreal\u2237Element\u27e8exactreal\u2237IntegerRing\u27e9\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -94,7 +85,6 @@
         "name": "FlatTriangulationCollapsedFlipUncollapsed\u27e8Vector\u27e8long long\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -104,7 +94,6 @@
         "name": "FlatTriangulationCollapsedFlipUncollapsed\u27e8Vector\u27e8mpq_class\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -114,7 +103,6 @@
         "name": "FlatTriangulationCombinatorialFlip.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -124,7 +112,6 @@
         "name": "FlatTriangulationEquality\u27e8Vector\u27e8eantic\u2237renf_elem_class\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -134,7 +121,6 @@
         "name": "FlatTriangulationEquality\u27e8Vector\u27e8exactreal\u2237Element\u27e8exactreal\u2237IntegerRing\u27e9\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -144,7 +130,6 @@
         "name": "FlatTriangulationEquality\u27e8Vector\u27e8long long\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -154,7 +139,6 @@
         "name": "FlatTriangulationEquality\u27e8Vector\u27e8mpq_class\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -164,7 +148,6 @@
         "name": "FlatTriangulationFlip\u27e8Vector\u27e8eantic\u2237renf_elem_class\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -174,7 +157,6 @@
         "name": "FlatTriangulationFlip\u27e8Vector\u27e8exactreal\u2237Element\u27e8exactreal\u2237IntegerRing\u27e9\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -184,7 +166,6 @@
         "name": "FlatTriangulationFlip\u27e8Vector\u27e8long long\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -194,7 +175,6 @@
         "name": "FlatTriangulationFlip\u27e8Vector\u27e8mpq_class\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -204,7 +184,6 @@
         "name": "FlatTriangulationTrivialEquality\u27e8Vector\u27e8eantic\u2237renf_elem_class\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -221,7 +200,6 @@
                 "'1'"
             ]
         ],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -231,7 +209,6 @@
         "name": "MoveChain\u27e8long long\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -241,7 +218,6 @@
         "name": "PathConstructor\u27e8Vector\u27e8eantic\u2237renf_elem_class\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -251,7 +227,6 @@
         "name": "PathConstructor\u27e8Vector\u27e8long long\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -261,7 +236,6 @@
         "name": "SaddleConnectionUnaryMinus\u27e8Vector\u27e8eantic\u2237renf_elem_class\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -271,7 +245,6 @@
         "name": "SaddleConnectionUnaryMinus\u27e8Vector\u27e8long long\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -288,7 +261,6 @@
                 "'64'"
             ]
         ],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -305,7 +277,6 @@
                 "'64'"
             ]
         ],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -323,7 +294,6 @@
                 "'64'"
             ]
         ],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -341,7 +311,6 @@
                 "'64'"
             ]
         ],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -359,7 +328,6 @@
                 "'64'"
             ]
         ],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -377,7 +345,6 @@
                 "'64'"
             ]
         ],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -395,7 +362,6 @@
                 "'64'"
             ]
         ],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -413,7 +379,6 @@
                 "'64'"
             ]
         ],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -430,7 +395,6 @@
                 "'65536'"
             ]
         ],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -447,7 +411,6 @@
                 "'65536'"
             ]
         ],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -464,7 +427,6 @@
                 "'65536'"
             ]
         ],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -481,7 +443,6 @@
                 "'65536'"
             ]
         ],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -499,7 +460,6 @@
                 "'64'"
             ]
         ],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -517,7 +477,6 @@
                 "'64'"
             ]
         ],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -535,7 +494,6 @@
                 "'64'"
             ]
         ],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -553,7 +511,6 @@
                 "'64'"
             ]
         ],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -563,7 +520,6 @@
         "name": "VectorArb\u27e8eantic\u2237renf_elem_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -573,7 +529,6 @@
         "name": "VectorArb\u27e8exactreal\u2237Element\u27e8exactreal\u2237IntegerRing\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -583,7 +538,6 @@
         "name": "VectorArb\u27e8exactreal\u2237Element\u27e8exactreal\u2237NumberField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -593,7 +547,6 @@
         "name": "VectorArb\u27e8exactreal\u2237Element\u27e8exactreal\u2237RationalField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -603,7 +556,6 @@
         "name": "VectorArb\u27e8long long\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -613,7 +565,6 @@
         "name": "VectorArb\u27e8mpq_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -623,7 +574,6 @@
         "name": "VectorArb\u27e8mpz_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -633,7 +583,6 @@
         "name": "VectorCcw\u27e8eantic\u2237renf_elem_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -643,7 +592,6 @@
         "name": "VectorCcw\u27e8exactreal\u2237Element\u27e8exactreal\u2237IntegerRing\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -653,7 +601,6 @@
         "name": "VectorCcw\u27e8exactreal\u2237Element\u27e8exactreal\u2237NumberField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -663,7 +610,6 @@
         "name": "VectorCcw\u27e8exactreal\u2237Element\u27e8exactreal\u2237RationalField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -673,7 +619,6 @@
         "name": "VectorCcw\u27e8long long\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -683,7 +628,6 @@
         "name": "VectorCcw\u27e8mpq_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -693,7 +637,6 @@
         "name": "VectorCcw\u27e8mpz_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -703,7 +646,6 @@
         "name": "VectorDivInt\u27e8eantic\u2237renf_elem_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -713,7 +655,6 @@
         "name": "VectorDivInt\u27e8exactreal\u2237Element\u27e8exactreal\u2237NumberField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -723,7 +664,6 @@
         "name": "VectorDivInt\u27e8exactreal\u2237Element\u27e8exactreal\u2237RationalField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -733,7 +673,6 @@
         "name": "VectorDivInt\u27e8long long\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -743,7 +682,6 @@
         "name": "VectorDivInt\u27e8mpq_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -753,7 +691,6 @@
         "name": "VectorDivInt\u27e8mpz_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -763,7 +700,6 @@
         "name": "VectorDivMpz\u27e8eantic\u2237renf_elem_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -773,7 +709,6 @@
         "name": "VectorDivMpz\u27e8exactreal\u2237Element\u27e8exactreal\u2237NumberField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -783,7 +718,6 @@
         "name": "VectorDivMpz\u27e8exactreal\u2237Element\u27e8exactreal\u2237RationalField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -793,7 +727,6 @@
         "name": "VectorDivMpz\u27e8long long\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -803,7 +736,6 @@
         "name": "VectorDivMpz\u27e8mpq_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -813,7 +745,6 @@
         "name": "VectorDivMpz\u27e8mpz_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -823,7 +754,6 @@
         "name": "VectorEqVector\u27e8eantic\u2237renf_elem_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -833,7 +763,6 @@
         "name": "VectorEqVector\u27e8exactreal\u2237Element\u27e8exactreal\u2237IntegerRing\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -843,7 +772,6 @@
         "name": "VectorEqVector\u27e8exactreal\u2237Element\u27e8exactreal\u2237NumberField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -853,7 +781,6 @@
         "name": "VectorEqVector\u27e8exactreal\u2237Element\u27e8exactreal\u2237RationalField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -863,7 +790,6 @@
         "name": "VectorEqVector\u27e8long long\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -873,7 +799,6 @@
         "name": "VectorEqVector\u27e8mpq_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -883,7 +808,6 @@
         "name": "VectorEqVector\u27e8mpz_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -893,7 +817,6 @@
         "name": "VectorLtBound\u27e8eantic\u2237renf_elem_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -903,7 +826,6 @@
         "name": "VectorLtBound\u27e8exactreal\u2237Element\u27e8exactreal\u2237IntegerRing\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -913,7 +835,6 @@
         "name": "VectorLtBound\u27e8exactreal\u2237Element\u27e8exactreal\u2237NumberField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -923,7 +844,6 @@
         "name": "VectorLtBound\u27e8exactreal\u2237Element\u27e8exactreal\u2237RationalField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -933,7 +853,6 @@
         "name": "VectorLtBound\u27e8long long\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -943,7 +862,6 @@
         "name": "VectorLtBound\u27e8mpq_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -953,7 +871,6 @@
         "name": "VectorLtBound\u27e8mpz_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -963,7 +880,6 @@
         "name": "VectorMinus\u27e8eantic\u2237renf_elem_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -973,7 +889,6 @@
         "name": "VectorMinus\u27e8exactreal\u2237Element\u27e8exactreal\u2237IntegerRing\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -983,7 +898,6 @@
         "name": "VectorMinus\u27e8exactreal\u2237Element\u27e8exactreal\u2237NumberField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -993,7 +907,6 @@
         "name": "VectorMinus\u27e8exactreal\u2237Element\u27e8exactreal\u2237RationalField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1003,7 +916,6 @@
         "name": "VectorMinus\u27e8long long\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1013,7 +925,6 @@
         "name": "VectorMinus\u27e8mpq_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1023,7 +934,6 @@
         "name": "VectorMinus\u27e8mpz_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1033,7 +943,6 @@
         "name": "VectorOrientation\u27e8eantic\u2237renf_elem_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1043,7 +952,6 @@
         "name": "VectorOrientation\u27e8exactreal\u2237Element\u27e8exactreal\u2237IntegerRing\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1053,7 +961,6 @@
         "name": "VectorOrientation\u27e8exactreal\u2237Element\u27e8exactreal\u2237NumberField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1063,7 +970,6 @@
         "name": "VectorOrientation\u27e8exactreal\u2237Element\u27e8exactreal\u2237RationalField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1073,7 +979,6 @@
         "name": "VectorOrientation\u27e8long long\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1083,7 +988,6 @@
         "name": "VectorOrientation\u27e8mpq_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1093,7 +997,6 @@
         "name": "VectorOrientation\u27e8mpz_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1103,7 +1006,6 @@
         "name": "VectorPerpendicular\u27e8eantic\u2237renf_elem_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1113,7 +1015,6 @@
         "name": "VectorPerpendicular\u27e8exactreal\u2237Element\u27e8exactreal\u2237IntegerRing\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1123,7 +1024,6 @@
         "name": "VectorPerpendicular\u27e8exactreal\u2237Element\u27e8exactreal\u2237NumberField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1133,7 +1033,6 @@
         "name": "VectorPerpendicular\u27e8exactreal\u2237Element\u27e8exactreal\u2237RationalField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1143,7 +1042,6 @@
         "name": "VectorPerpendicular\u27e8long long\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1153,7 +1051,6 @@
         "name": "VectorPerpendicular\u27e8mpq_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1163,7 +1060,6 @@
         "name": "VectorPerpendicular\u27e8mpz_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1173,7 +1069,6 @@
         "name": "VectorPlus\u27e8eantic\u2237renf_elem_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1183,7 +1078,6 @@
         "name": "VectorPlus\u27e8exactreal\u2237Element\u27e8exactreal\u2237IntegerRing\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1193,7 +1087,6 @@
         "name": "VectorPlus\u27e8exactreal\u2237Element\u27e8exactreal\u2237NumberField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1203,7 +1096,6 @@
         "name": "VectorPlus\u27e8exactreal\u2237Element\u27e8exactreal\u2237RationalField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1213,7 +1105,6 @@
         "name": "VectorPlus\u27e8long long\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1223,7 +1114,6 @@
         "name": "VectorPlus\u27e8mpq_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1233,7 +1123,6 @@
         "name": "VectorPlus\u27e8mpz_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1243,7 +1132,6 @@
         "name": "VectorTimesInt\u27e8eantic\u2237renf_elem_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1253,7 +1141,6 @@
         "name": "VectorTimesInt\u27e8exactreal\u2237Element\u27e8exactreal\u2237IntegerRing\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1263,7 +1150,6 @@
         "name": "VectorTimesInt\u27e8exactreal\u2237Element\u27e8exactreal\u2237NumberField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1273,7 +1159,6 @@
         "name": "VectorTimesInt\u27e8exactreal\u2237Element\u27e8exactreal\u2237RationalField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1283,7 +1168,6 @@
         "name": "VectorTimesInt\u27e8long long\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1293,7 +1177,6 @@
         "name": "VectorTimesInt\u27e8mpq_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1303,7 +1186,6 @@
         "name": "VectorTimesInt\u27e8mpz_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1313,7 +1195,6 @@
         "name": "VectorTimesMpz\u27e8eantic\u2237renf_elem_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1323,7 +1204,6 @@
         "name": "VectorTimesMpz\u27e8exactreal\u2237Element\u27e8exactreal\u2237IntegerRing\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1333,7 +1213,6 @@
         "name": "VectorTimesMpz\u27e8exactreal\u2237Element\u27e8exactreal\u2237NumberField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1343,7 +1222,6 @@
         "name": "VectorTimesMpz\u27e8exactreal\u2237Element\u27e8exactreal\u2237RationalField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1353,7 +1231,6 @@
         "name": "VectorTimesMpz\u27e8long long\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1363,7 +1240,6 @@
         "name": "VectorTimesMpz\u27e8mpq_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1373,7 +1249,6 @@
         "name": "VectorTimesMpz\u27e8mpz_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1383,7 +1258,6 @@
         "name": "VectorTimesVector\u27e8eantic\u2237renf_elem_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1393,7 +1267,6 @@
         "name": "VectorTimesVector\u27e8exactreal\u2237Element\u27e8exactreal\u2237IntegerRing\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1403,7 +1276,6 @@
         "name": "VectorTimesVector\u27e8exactreal\u2237Element\u27e8exactreal\u2237NumberField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1413,7 +1285,6 @@
         "name": "VectorTimesVector\u27e8exactreal\u2237Element\u27e8exactreal\u2237RationalField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1423,7 +1294,6 @@
         "name": "VectorTimesVector\u27e8long long\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1433,7 +1303,6 @@
         "name": "VectorTimesVector\u27e8mpq_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1443,7 +1312,6 @@
         "name": "VectorTimesVector\u27e8mpz_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1453,7 +1321,6 @@
         "name": "VectorUnaryMinus\u27e8eantic\u2237renf_elem_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1463,7 +1330,6 @@
         "name": "VectorUnaryMinus\u27e8exactreal\u2237Element\u27e8exactreal\u2237IntegerRing\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1473,7 +1339,6 @@
         "name": "VectorUnaryMinus\u27e8exactreal\u2237Element\u27e8exactreal\u2237NumberField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1483,7 +1348,6 @@
         "name": "VectorUnaryMinus\u27e8exactreal\u2237Element\u27e8exactreal\u2237RationalField\u27e9\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1493,7 +1357,6 @@
         "name": "VectorUnaryMinus\u27e8long long\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1503,7 +1366,6 @@
         "name": "VectorUnaryMinus\u27e8mpq_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1513,7 +1375,6 @@
         "name": "VectorUnaryMinus\u27e8mpz_class\u27e9.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1523,7 +1384,6 @@
         "name": "VertexAtSource.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
@@ -1533,7 +1393,6 @@
         "name": "VertexAtTarget.track_time",
         "param_names": [],
         "params": [],
-        "timeout": 60.0,
         "type": "track",
         "unit": "ns",
         "version": "0"
