@@ -67,4 +67,4 @@ jobs:
           codespell `git ls-files`
 
 env:
-  MAKEFLAGS: -j2
+  MAKEFLAGS: -j4

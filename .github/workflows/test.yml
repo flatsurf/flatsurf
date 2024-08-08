@@ -191,4 +191,4 @@ jobs:
         if: ${{ always() }}
 
 env:
-  MAKEFLAGS: -j2
+  MAKEFLAGS: -j4

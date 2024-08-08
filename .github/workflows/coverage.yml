@@ -40,4 +40,4 @@ jobs:
           curl -s https://codecov.io/bash | bash -s - -X gcov -R `pwd` .
 
 env:
-  MAKEFLAGS: -j2
+  MAKEFLAGS: -j4
