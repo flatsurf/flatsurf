@@ -86,7 +86,8 @@ struct EquivalenceWalker {
         switch (cmp(character, minimalCharacter)) {
           case -1:
             minimalCharacter = character;
-            stillMinimalWalkers = {walker};
+            stillMinimalWalkers.clear();
+            stillMinimalWalkers.push_back(walker);
             break;
           case 0:
             stillMinimalWalkers.push_back(walker);
