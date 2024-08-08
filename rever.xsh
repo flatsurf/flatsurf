@@ -33,8 +33,8 @@ $PROJECT = 'flatsurf'
 $ACTIVITIES = [
     'version_bump',
     'changelog',
-    'autodist',
     'tag',
+    'autodist',
     'push_tag',
     'ghrelease',
     'forge',

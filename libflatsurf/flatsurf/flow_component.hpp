@@ -92,7 +92,7 @@ class FlowComponent : boost::equality_comparable<FlowComponent<Surface>> {
   // vertical().
   T width() const;
 
-  // If this is a cylinder, return the height of this component multplied with
+  // If this is a cylinder, return the height of this component multiplied with
   // the length of the vertical(), i.e., the scalar product of
   // circumferenceHolonomy() and vertical().
   // In general this returns a lower bound of the height of any cylinder in

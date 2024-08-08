@@ -406,7 +406,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
     return elimination;
   }
 
-  LIBFLATSURF_UNREACHABLE("No half edge was sent to a single saddle conection in deformation " << shift << " which eliminated " << marked << " by applying " << delta);
+  LIBFLATSURF_UNREACHABLE("No half edge was sent to a single saddle connection in deformation " << shift << " which eliminated " << marked << " by applying " << delta);
 }
 
 template <typename T>
@@ -503,7 +503,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &nextT
     if (orient == ORIENTATION::ORTHOGONAL) {
       // It is a bit unclear what to do if the new edge should end at a
       // vertex, in particular if it is collinear with an existing half
-      // edge (after fliping.)
+      // edge (after flipping.)
       throw std::logic_error("not implemented: insertion of half edges that end at an existing vertex");
     }
   };
@@ -1080,7 +1080,7 @@ ImplementationOf<FlatTriangulation<T>>::ImplementationOf(FlatTriangulationCombin
         OddHalfEdgeMap<Vector<T>>(self, vectors),
         ImplementationOf::updateAfterFlip);
     // The shared pointer we used to build the Tracked is not going to remain
-    // valid so we assert that noone else is holding on to it because it won't
+    // valid so we assert that no one else is holding on to it because it won't
     // work for other use cases than Tracked<>.
     LIBFLATSURF_ASSERT(self.self.state.use_count() == 1, "Something is holding to an short lived shared pointer to a surface. This shared pointer is not actually valid and should not be used outside of Tracked<>.");
     return ret;
@@ -1103,7 +1103,7 @@ ImplementationOf<FlatTriangulation<T>>::ImplementationOf(FlatTriangulationCombin
             }),
         ImplementationOf::updateApproximationAfterFlip);
     // The shared pointer we used to build the Tracked is not going to remain
-    // valid so we assert that noone else is holding on to it because it won't
+    // valid so we assert that no one else is holding on to it because it won't
     // work for other use cases than Tracked<>.
     LIBFLATSURF_ASSERT(self.self.state.use_count() == 1, "Something is holding to an short lived shared pointer to a surface. This shared pointer is not actually valid and should not be used outside of Tracked<>.");
     return ret;

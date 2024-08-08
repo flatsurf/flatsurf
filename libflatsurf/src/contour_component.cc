@@ -170,7 +170,7 @@ void ImplementationOf<ContourComponent<Surface>>::makeContour(std::back_insert_i
     const HalfEdge source, const Surface& parent,
     const Vertical<Surface>& vertical) {
   LIBFLATSURF_ASSERT_ARGUMENT(vertical.ccw(source) != CCW::COLLINEAR, "vertical edges must have been collapsed before a contour can be built");
-  LIBFLATSURF_ASSERT_ARGUMENT(vertical.ccw(source) == CCW::CLOCKWISE, "contour must procede in positive direction");
+  LIBFLATSURF_ASSERT_ARGUMENT(vertical.ccw(source) == CCW::CLOCKWISE, "contour must proceed in positive direction");
   switch (vertical.classifyFace(source)) {
     case Vertical<Surface>::TRIANGLE::BACKWARD:
       // In a backward triangle, we recurse into both edges on the top.
