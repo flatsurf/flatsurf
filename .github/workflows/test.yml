@@ -53,11 +53,6 @@ jobs:
           mamba env update --quiet -n test -f libflatsurf/environment-flint2.yml
           conda list
         if: ${{ matrix.libflint == '2' }}
-      # Work around https://github.com/conda-forge/cppyy-feedstock/issues/78
-      - name: Fix cppyy dependencies on macOS
-        run: |
-          mamba install -n test -y libcxx=16
-        if: ${{ matrix.on == 'macos-13' }}
       - name: make ${{ matrix.target }}
         shell: bash -l {0}
         run: |
@@ -146,6 +141,11 @@ jobs:
           echo "libflint ${{ matrix.libflint }}.*" >> $CONDA_PREFIX/conda-meta/pinned
           mamba env update --quiet -n test -f pyflatsurf/environment.yml
           conda list
+      # Work around https://github.com/conda-forge/cppyy-feedstock/issues/78
+      - name: Fix cppyy dependencies on macOS
+        run: |
+          mamba install -n test -y libcxx=16
+        if: ${{ matrix.on == 'macos-13' }}
       - name: silence cppyy startup
         shell: bash -l {0}
         run: |
