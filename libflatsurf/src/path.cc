@@ -148,7 +148,7 @@ Path<Surface> tightenClockwise(const SaddleConnection<Surface>& a, const SaddleC
   // We store these points as saddle connections starting at the point where
   // a and b meet. Going in counterclockwise direction.
   // Due to the enumeration order of these saddle connections, this list
-  // might eventualy contain points that are not on the convex hull. These
+  // might eventually contain points that are not on the convex hull. These
   // are then filtered out later.
   auto rays = std::list{b, -a};
 
@@ -198,7 +198,7 @@ Path<Surface> tightenClockwise(const SaddleConnection<Surface>& a, const SaddleC
   }
 
   // The order in which saddle connections are enumerated by the saddle
-  // conections iterator, might lead to some points actually not on the
+  // connections iterator, might lead to some points actually not on the
   // convex hull. We filter them out with the customary monotone chain algorithm.
   std::vector<SaddleConnection<Surface>> hull;
   for (auto ray : rays) {
@@ -406,7 +406,7 @@ Path<Surface> Path<Surface>::tighten() const {
     if (b == path.end())
       break;
 
-    LIBFLATSURF_ASSERT(Vertex::source(b->source(), b->surface()) == Vertex::source(a->target(), a->surface()), "Path " << *this << " became disconnected at " << *a << ", " << *b << " during tigthening.");
+    LIBFLATSURF_ASSERT(Vertex::source(b->source(), b->surface()) == Vertex::source(a->target(), a->surface()), "Path " << *this << " became disconnected at " << *a << ", " << *b << " during tightening.");
 
     // We will now try to replace the subpath a → b with a more tight version.
     if (*a == -*b) {

@@ -47,7 +47,7 @@ Pickling works::
 
 # The API of flatsurf exposes intervalxt objects such as
 # intervalxt::Component. We therefore need the intervalxt headers to
-# be loaded so cppyy can make these parts of the API availalbe.
+# be loaded so cppyy can make these parts of the API available.
 import pyintervalxt
 
 from .cppyy_flatsurf import flatsurf

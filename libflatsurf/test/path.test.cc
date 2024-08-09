@@ -35,7 +35,7 @@ namespace flatsurf::test {
 using namespace flatsurf;
 
 TEMPLATE_TEST_CASE("Nullhomotopic Paths", "[Path]", (long long), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::NumberField>)) {
-  SECTION("Trivial Paths can be Tigthened") {
+  SECTION("Trivial Paths can be Tightened") {
     using T = TestType;
     using Surface = FlatTriangulation<T>;
 
@@ -58,7 +58,7 @@ TEMPLATE_TEST_CASE("Nullhomotopic Paths", "[Path]", (long long), (mpq_class), (r
     REQUIRE(path.tighten() == Path<Surface>());
   }
 
-  SECTION("Tigthening a Path Walking around a Face") {
+  SECTION("Tightening a Path Walking around a Face") {
     using T = TestType;
     using Surface = FlatTriangulation<T>;
 

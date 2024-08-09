@@ -49,7 +49,7 @@ class FlowTriangulation {
   // flow decomposition's full triangulation.
   HalfEdgeMap<HalfEdge> embedding() const;
 
-  // Return whether two trangulations are identical, i.e., triangulating the
+  // Return whether two triangulations are identical, i.e., triangulating the
   // same component in the same way.
   bool operator==(const FlowTriangulation&) const;
 

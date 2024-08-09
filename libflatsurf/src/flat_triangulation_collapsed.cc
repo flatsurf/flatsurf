@@ -168,7 +168,7 @@ ImplementationOf<FlatTriangulationCollapsed<T>>::ImplementationOf(const FlatTria
         CollapsedHalfEdge::updateAfterFlip,
         CollapsedHalfEdge::updateBeforeCollapse);
     // The shared pointer we used to build the Tracked is not going to remain
-    // valid so we assert that noone else is holding on to it because it won't
+    // valid so we assert that no one else is holding on to it because it won't
     // work for other use cases than Tracked<>.
     LIBFLATSURF_ASSERT(self.self.state.use_count() == 1, "Something is holding to an short lived shared pointer to a surface. This shared pointer is not actually valid and should not be used outside of Tracked<>.");
     return ret;
@@ -189,7 +189,7 @@ ImplementationOf<FlatTriangulationCollapsed<T>>::ImplementationOf(const FlatTria
             [&](HalfEdge e) { return SaddleConnection(original, e); }),
         updateAfterFlip, updateBeforeCollapse);
     // The shared pointer we used to build the Tracked is not going to remain
-    // valid so we assert that noone else is holding on to it because it won't
+    // valid so we assert that no one else is holding on to it because it won't
     // work for other use cases than Tracked<>.
     LIBFLATSURF_ASSERT(self.self.state.use_count() == 1, "Something is holding to an short lived shared pointer to a surface. This shared pointer is not actually valid and should not be used outside of Tracked<>.");
     return ret;
@@ -412,7 +412,7 @@ void ImplementationOf<FlatTriangulationCollapsed<T>>::flip(HalfEdge e) {
   auto self = from_this();
 
   LIBFLATSURF_CHECK_ARGUMENT(self.vertical().large(e), "in a CollapsedSurface, only large edges can be flipped");
-  LIBFLATSURF_CHECK_ARGUMENT(self.nextInFace(self.nextInFace(self.nextInFace(e))) == e && self.nextInFace(self.nextInFace(self.nextInFace(-e))) == -e, "in a CollapsedSurface, only edges that are not in a collapsed face can be fliped");
+  LIBFLATSURF_CHECK_ARGUMENT(self.nextInFace(self.nextInFace(self.nextInFace(e))) == e && self.nextInFace(self.nextInFace(self.nextInFace(-e))) == -e, "in a CollapsedSurface, only edges that are not in a collapsed face can be flipped");
 
   if (self.vertical().ccw(e) == CCW::COUNTERCLOCKWISE)
     e = -e;
