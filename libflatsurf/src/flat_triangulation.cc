@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2022 Julian Rüth
+ *        Copyright (C) 2019-2024 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -67,6 +67,7 @@
 #include "impl/shift_deformation_relation.hpp"
 #include "impl/slit_deformation_relation.hpp"
 #include "util/assert.ipp"
+#include "util/hash.ipp"
 
 namespace flatsurf {
 
@@ -1187,7 +1188,23 @@ std::ostream &operator<<(std::ostream &os, const FlatTriangulation<T> &self) {
 
 }  // namespace flatsurf
 
+namespace std {
+using namespace flatsurf;
+
+template <typename T>
+size_t hash<FlatTriangulation<T>>::operator()(const FlatTriangulation<T>& self) const {
+  size_t ret = hash<Permutation<HalfEdge>>{}(self.self->vertices);
+
+  for (const auto& edge : self.edges()) {
+    ret = hash_combine(ret, hash<Vector<T>>{}(self.fromHalfEdge(edge.positive())));
+  }
+
+  return ret;
+}
+
+}  // namespace std
+
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"
 
-LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), FlatTriangulation, LIBFLATSURF_REAL_TYPES)
+LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION)(LIBFLATSURF_INSTANTIATE_HASH), FlatTriangulation, LIBFLATSURF_REAL_TYPES)

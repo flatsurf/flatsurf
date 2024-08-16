@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2022 Julian Rüth
+ *        Copyright (C) 2019-2024 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -73,7 +73,18 @@ class Permutation : boost::equality_comparable<Permutation<T>>, boost::multiplia
  private:
   std::vector<T> permutation;
   std::vector<T> inverse;
+
+  friend class std::hash<Permutation>;
 };
 }  // namespace flatsurf
+
+namespace std {
+
+template<typename T>
+struct hash<flatsurf::Permutation<T>> {
+  size_t operator()(const flatsurf::Permutation<T> &) const;
+};
+
+}  // namespace std
 
 #endif

@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2022 Julian Rüth
+ *        Copyright (C) 2019-2024 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -196,11 +196,21 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
 
   friend ImplementationOf<FlatTriangulation<T>>;
   friend ImplementationOf<ManagedMovable<FlatTriangulation<T>>>;
+
+  friend class std::hash<FlatTriangulation>;
 };
 
 template <typename Vector>
 FlatTriangulation(const std::vector<std::vector<int>> &, const std::vector<Vector> &) -> FlatTriangulation<typename Vector::Coordinate>;
 
 }  // namespace flatsurf
+
+namespace std {
+template <typename T>
+struct hash<flatsurf::FlatTriangulation<T>> {
+  size_t operator()(const flatsurf::FlatTriangulation<T> &) const;
+};
+
+}  // namespace std
 
 #endif
