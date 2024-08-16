@@ -2,7 +2,7 @@
  *  This file is part of flatsurf.
  *
  *        Copyright (C)      2019 Vincent Delecroix
- *        Copyright (C) 2019-2022 Julian Rüth
+ *        Copyright (C) 2019-2024 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -52,6 +52,24 @@
 #include "surfaces.hpp"
 
 namespace flatsurf::test {
+
+TEMPLATE_TEST_CASE("Comparisons and Hashing", "[FlatTriangulation][angle]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
+  using T = TestType;
+  using R2 = Vector<eantic::renf_elem_class>;
+
+  const auto surface = GENERATE_SURFACES(T);
+  CAPTURE(surface);
+
+  const auto other = GENERATE_SURFACES(T);
+  CAPTURE(other);
+
+  REQUIRE(*surface == *surface);
+  REQUIRE(*surface == surface->clone());
+
+  if (*surface == *other) {
+    REQUIRE(std::hash<FlatTriangulation<T>>{}(*surface) == std::hash<FlatTriangulation<T>>{}(*other));
+  }
+}
 
 TEMPLATE_TEST_CASE("Compute Total Angle at a Point", "[FlatTriangulation][angle]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
