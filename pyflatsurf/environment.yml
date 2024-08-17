@@ -8,7 +8,7 @@ channels:
 dependencies:
   - automake
   - cppyy
-  - cppyythonizations >=1.2.2,<2
+  - cppyythonizations >=1.2.5,<2
   - gmpxxyy
   - ipywidgets
   - libtool

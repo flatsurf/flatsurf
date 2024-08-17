@@ -16,7 +16,8 @@ setup(
     packages = ['pyflatsurf',],
     license = 'GPL 3.0+',
     install_requires=[
-        'cppyy'
+        'cppyy',
+        'cppyythonizations>=1.2.5,<2',
     ],
     long_description = open('@abs_top_srcdir@/README.md').read(),
     include_package_data=True,

@@ -26,12 +26,12 @@ requirements:
     - gmpxxyy >=1.0.1,<2
     - pyintervalxt >=3.2.0,<4
     - pyexactreal >=3.0.1,<4
-    - cppyythonizations
+    - cppyythonizations >=1.2.5,<2
     - libflatsurf
   run:
     - python
     - cppyy >=2.1.0,<3
-    - cppyythonizations
+    - cppyythonizations >=1.2.5,<2
     - pyintervalxt >=3.2.0,<4
     - pyexactreal >=3.0.1,<4
     - boost-cpp
