@@ -395,7 +395,7 @@ namespace std {
 using namespace flatsurf;
 
 size_t hash<FlatTriangulationCombinatorial>::operator()(const FlatTriangulationCombinatorial& self) const {
-  return hash{}(self.self->vertices);
+  return hash<Permutation<HalfEdge>>{}(self.self->vertices);
 }
 
 }  // namespace std
