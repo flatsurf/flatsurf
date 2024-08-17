@@ -24,6 +24,7 @@
 #include <exact-real/number_field.hpp>
 #include <exact-real/rational_field.hpp>
 #include <exact-real/yap/arb.hpp>
+#include <exact-real/module.hpp>
 #include <functional>
 #include <iomanip>
 #include <iosfwd>
@@ -876,12 +877,33 @@ bool FlatTriangulation<T>::operator==(const FlatTriangulation<T> &rhs) const {
   if (this->self.state == rhs.self.state)
     return true;
 
-  if (static_cast<const FlatTriangulationCombinatorial &>(*this) != static_cast<const FlatTriangulationCombinatorial &>(rhs))
+  if (this->combinatorial() != rhs.combinatorial())
     return false;
-  for (auto &edge : this->halfEdges()) {
-    if (this->self->vectors->get(edge) != rhs.self->vectors->get(edge))
+
+  for (const auto& edge: this->edges()) {
+    const auto& v = fromHalfEdge(edge.positive());
+    const auto& w = rhs.fromHalfEdge(edge.positive());
+
+    // Since we want to decide whether surfaces are indistinguishable, we treat
+    // vectors defined over different rings as different (even if they are the
+    // same as real numbers.)
+    using S = std::decay_t<T>;
+    if constexpr (std::is_same_v<S, eantic::renf_elem_class>) {
+      if (v.x().parent() != w.x().parent())
+        return false;
+      if (v.y().parent() != w.y().parent())
+        return false;
+    } else if constexpr (std::is_same_v<S, exactreal::Element<exactreal::IntegerRing>> || std::is_same_v<S, exactreal::Element<exactreal::RationalField>> || std::is_same_v<S, exactreal::Element<exactreal::NumberField>>) {
+      if (*v.x().module() != *w.x().module())
+        return false;
+      if (*v.y().module() != *w.y().module())
+        return false;
+    }
+
+    if (v != w)
       return false;
   }
+
   return true;
 }
 
