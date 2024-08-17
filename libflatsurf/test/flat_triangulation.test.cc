@@ -55,7 +55,6 @@ namespace flatsurf::test {
 
 TEMPLATE_TEST_CASE("Comparisons and Hashing", "[FlatTriangulation][operator==]", (long long), (mpz_class), (mpq_class), (renf_elem_class), (exactreal::Element<exactreal::IntegerRing>), (exactreal::Element<exactreal::RationalField>), (exactreal::Element<exactreal::NumberField>)) {
   using T = TestType;
-  using R2 = Vector<eantic::renf_elem_class>;
 
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
