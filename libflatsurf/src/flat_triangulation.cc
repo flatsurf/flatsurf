@@ -898,6 +898,14 @@ bool FlatTriangulation<T>::operator==(const FlatTriangulation<T> &rhs) const {
         return false;
       if (*v.y().module() != *w.y().module())
         return false;
+    } else if constexpr (std::is_same_v<S, long long>) {
+      // no check necessary.
+    } else if constexpr (std::is_same_v<S, mpz_class>) {
+      // no check necessary.
+    } else if constexpr (std::is_same_v<S, mpq_class>) {
+      // no check necessary.
+    } else {
+      throw std::logic_error("not implemented: cannot compare base rings of these vectors yet");
     }
 
     if (v != w)
