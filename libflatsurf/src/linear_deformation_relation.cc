@@ -105,7 +105,10 @@ Point<Surface> LinearDeformationRelation<Surface>::operator()(const Point<Surfac
 
 template <typename Surface>
 bool LinearDeformationRelation<Surface>::trivial() const {
-  return a == 1 && b == 0 && c == 0 && d == 1;
+  if (a == 1 && b == 0 && c == 0 && d == 1) {
+    return *this->domain == *this->codomain;
+  }
+  return false;
 }
 
 template <typename Surface>
