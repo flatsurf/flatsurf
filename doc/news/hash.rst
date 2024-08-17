@@ -1,6 +1,6 @@
 **Added:**
 
-* Added hash functions for `FlatTriangulationCombinatorial`, `FlatTriangulation<T>`, and `Permutation<T>`.
+* Added hash functions for ``FlatTriangulationCombinatorial``, ``FlatTriangulation<T>``, and ``Permutation<T>``.
 
 **Fixed:**
 
