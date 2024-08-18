@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2024 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -389,3 +389,13 @@ std::ostream& operator<<(std::ostream& os, const FlatTriangulationCombinatorial&
 }
 
 }  // namespace flatsurf
+
+namespace std {
+
+using namespace flatsurf;
+
+size_t hash<FlatTriangulationCombinatorial>::operator()(const FlatTriangulationCombinatorial& self) const {
+  return hash<Permutation<HalfEdge>>{}(self.self->vertices);
+}
+
+}  // namespace std
