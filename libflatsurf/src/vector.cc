@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -100,10 +100,10 @@ Vector<T>::Vector(T&& x, T&& y) :
   self(spimpl::make_impl<ImplementationOf<Vector>>(std::move(x), std::move(y))) {}
 
 template <typename T>
-T Vector<T>::x() const { return self->x; }
+const T& Vector<T>::x() const { return self->x; }
 
 template <typename T>
-T Vector<T>::y() const { return self->y; }
+const T& Vector<T>::y() const { return self->y; }
 
 template <typename Vector>
 Vector& detail::VectorBase<Vector>::operator+=(const Vector& rhs) {
