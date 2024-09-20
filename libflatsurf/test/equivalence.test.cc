@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2022 Julian Rüth
+ *        Copyright (C) 2022-2024 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -270,7 +270,8 @@ TEMPLATE_TEST_CASE("Isomorphy of Surfaces", "[Equivalence][isomorphic]", (mpq_cl
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
 
-  const auto& equivalence = GENERATE_REF(equivalences(surface));
+  const auto eqs = equivalences(surface);
+  const auto& equivalence = GENERATE_REF(eqs);
   CAPTURE(equivalence);
 
   SECTION("Surfaces are Isomorphic to Themselves") {
@@ -284,7 +285,8 @@ TEMPLATE_TEST_CASE("Isomorphisms of Surfaces", "[Equivalence][isomorphisms]", (m
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
 
-  const auto& equivalence = GENERATE_REF(equivalences(surface));
+  const auto eqs = equivalences(surface);
+  const auto& equivalence = GENERATE_REF(eqs);
   CAPTURE(equivalence);
 
   SECTION("Surfaces have Isomorphisms to Themselves") {
