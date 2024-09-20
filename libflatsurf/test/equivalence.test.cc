@@ -270,8 +270,10 @@ TEMPLATE_TEST_CASE("Isomorphy of Surfaces", "[Equivalence][isomorphic]", (mpq_cl
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
 
-  const auto eqs = equivalences(surface);
-  const auto& equivalence = GENERATE_REF(eqs);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdangling-reference"
+  const auto& equivalence = GENERATE_REF(equivalences(surface));
+#pragma clang diagnostic pop
   CAPTURE(equivalence);
 
   SECTION("Surfaces are Isomorphic to Themselves") {
@@ -285,8 +287,10 @@ TEMPLATE_TEST_CASE("Isomorphisms of Surfaces", "[Equivalence][isomorphisms]", (m
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
 
-  const auto eqs = equivalences(surface);
-  const auto& equivalence = GENERATE_REF(eqs);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdangling-reference"
+  const auto& equivalence = GENERATE_REF(equivalences(surface));
+#pragma clang diagnostic pop
   CAPTURE(equivalence);
 
   SECTION("Surfaces have Isomorphisms to Themselves") {
