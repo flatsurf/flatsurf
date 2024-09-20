@@ -50,7 +50,7 @@ auto makeOddHalfEdgeMap(const FlatTriangulationCombinatorial &surface, const std
 // Work around https://bitbucket.org/wlav/cppyy/issues/310/templatized-reference-in-callback by not using references in the callback.
 template <typename Surface>
 bool decomposeFlowDecomposition(
-    FlowDecomposition<Surface> &decomposition, const std::function<bool(FlowComponent<Surface>)> &target = [](auto component) { return FlowDecomposition<Surface>::defaultTarget(component); }, int limit = -1) {
+    FlowDecomposition<Surface> &decomposition, const std::function<bool(FlowComponent<Surface>)> &target, int limit = -1) {
   return decomposition.decompose(target, limit);
 }
 
