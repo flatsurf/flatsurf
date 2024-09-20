@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
-      - uses: DoozyX/clang-format-lint-action@v0.11
+      - uses: DoozyX/clang-format-lint-action@v0.18
         with:
           source: libflatsurf
           clangFormatVersion: 10
