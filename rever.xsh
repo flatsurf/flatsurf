@@ -44,10 +44,6 @@ $VERSION_BUMP_PATTERNS = [
     ('configure.ac', r'AC_INIT', r'AC_INIT([flatsurf], [$VERSION], [julian.rueth@fsfe.org])'),
     ('libflatsurf/configure.ac', r'AC_INIT', r'AC_INIT([libflatsurf], [$VERSION], [julian.rueth@fsfe.org])'),
     ('pyflatsurf/configure.ac', r'AC_INIT', r'AC_INIT([pyflatsurf], [$VERSION], [julian.rueth@fsfe.org])'),
-    ('libflatsurf/recipe/meta.yaml', r"\{% set version =", r"{% set version = '$VERSION' %}"),
-    ('libflatsurf/recipe/meta.yaml', r"\{% set build_number =", r"{% set build_number = '0' %}"),
-    ('pyflatsurf/recipe/meta.yaml', r"\{% set version =", r"{% set version = '$VERSION' %}"),
-    ('pyflatsurf/recipe/meta.yaml', r"\{% set build_number =", r"{% set build_number = '0' %}"),
 ]
 
 $CHANGELOG_FILENAME = 'ChangeLog'
