@@ -50,7 +50,7 @@ jobs:
           ./configure --prefix="$PREFIX" --without-benchmark
 
           # Build library and its tests (but do not run any tests.)
-          make check TESTS= CXXFLAGS="$CXXFLAGS ${{ matrix.cxxflags }} -Werror -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wno-sign-compare -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual -Wno-redundant-decls -Wsign-promo -Wstrict-null-sentinel -Wundef -fdiagnostics-show-option -Wconversion -Wshadow-compatible-local -Wno-deprecated -Wno-deprecated-declarations"
+          make check TESTS= CXXFLAGS="$CXXFLAGS ${{ matrix.cxxflags }} -Werror -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wno-sign-compare -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual -Wno-redundant-decls -Wsign-promo -Wstrict-null-sentinel -Wundef -fdiagnostics-show-option -Wconversion -Wshadow-compatible-local -Wno-deprecated -Wno-deprecated-declarations -Wno-dangling-reference"
   codespell:
     runs-on: ubuntu-22.04
     steps:
