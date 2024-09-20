@@ -31,7 +31,10 @@ TEMPLATE_TEST_CASE("Equality of Equivalence Classes is Consistent", "[Equivalenc
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdangling-reference"
   const auto& equivalence = GENERATE_REF(equivalences(surface));
+#pragma clang diagnostic pop
   CAPTURE(equivalence);
 
   const auto equivalenceClass = EquivalenceClass(*surface, equivalence);
@@ -75,7 +78,10 @@ TEMPLATE_TEST_CASE("Representative of Equivalence Classes", "[EquivalenceClass][
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdangling-reference"
   const auto& equivalence = GENERATE_REF(equivalences(surface));
+#pragma clang diagnostic pop
   CAPTURE(equivalence);
 
   const auto equivalenceClass = EquivalenceClass(*surface, equivalence);
@@ -94,7 +100,10 @@ TEMPLATE_TEST_CASE("Automorphisms of Surfaces", "[EquivalenceClass][automorphism
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdangling-reference"
   const auto& equivalence = GENERATE_REF(equivalences(surface));
+#pragma clang diagnostic pop
   CAPTURE(equivalence);
 
   const auto equivalenceClass = EquivalenceClass(*surface, equivalence);
@@ -109,7 +118,10 @@ TEMPLATE_TEST_CASE("Equivalence Classes are Hashable", "[EquivalenceClass][hash]
   const auto surface = GENERATE_SURFACES(T);
   CAPTURE(surface);
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdangling-reference"
   const auto& equivalence = GENERATE_REF(equivalences(surface));
+#pragma clang diagnostic pop
   CAPTURE(equivalence);
 
   const auto equivalenceClass = EquivalenceClass(*surface, equivalence);
