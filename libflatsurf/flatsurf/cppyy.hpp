@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2021 Julian Rüth
+ *        Copyright (C) 2019-2024 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -50,8 +50,15 @@ auto makeOddHalfEdgeMap(const FlatTriangulationCombinatorial &surface, const std
 // Work around https://bitbucket.org/wlav/cppyy/issues/310/templatized-reference-in-callback by not using references in the callback.
 template <typename Surface>
 bool decomposeFlowDecomposition(
-    FlowDecomposition<Surface> &decomposition, const std::function<bool(FlowComponent<Surface>)> &target = [](auto component) { return FlowDecomposition<Surface>::defaultTarget(component); }, int limit = -1) {
+    FlowDecomposition<Surface> &decomposition, const std::function<bool(FlowComponent<Surface>)> &target, int limit = -1) {
   return decomposition.decompose(target, limit);
+}
+
+// Work around spurious issues on macOS: Failed to materialize symbols: { (main, { __ZN16__cppyy_internal10fptr_wrap3EN8flatsurf13FlowComponentINS0_17FlatTriangulationIN9exactreal7ElementINS3_13RationalFieldEEEEEEE }) }
+template <typename Surface>
+bool decomposeFlowDecomposition(
+    FlowDecomposition<Surface> &decomposition, int limit = -1) {
+  return decomposition.decompose([](auto component) { return FlowDecomposition<Surface>::defaultTarget(component); }, limit);
 }
 
 // Work around https://bitbucket.org/wlav/cppyy/issues/310/templatized-reference-in-callback by not using references in the callback.
