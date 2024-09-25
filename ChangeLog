@@ -4,6 +4,15 @@ intervalxt Change Log
 
 .. current developments
 
+v3.15.2
+====================
+
+**Fixed:**
+
+* Fixed more spurious JIT errors on macOS.
+
+
+
 v3.15.1
 ====================
 
