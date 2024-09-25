@@ -84,8 +84,6 @@ cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_met
 
 # Make the target parameter of FlowDecomposition::decompose() optional.
 def decomposeFlowDecomposition(self, *args):
-    if args and isinstance(args[0], int):
-        args = (lambda component: type(self).defaultTarget(component),) + args
     # Note that we need to call through a reference free callback wrapper due to https://bitbucket.org/wlav/cppyy/issues/310/templatized-reference-in-callback
     return cppyy.gbl.flatsurf.decomposeFlowDecomposition[cppyy.gbl.flatsurf.FlatTriangulation[type(self).T]](self, *args)
 
@@ -93,8 +91,6 @@ cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_met
 
 # Make the target parameter of FlowComponent::decompose() optional.
 def decomposeFlowComponent(self, *args):
-    if args and isinstance(args[0], int):
-        args = (lambda component: type(self).defaultTarget(component),) + args
     # Note that we need to call through a reference free callback wrapper due to https://bitbucket.org/wlav/cppyy/issues/310/templatized-reference-in-callback
     return cppyy.gbl.flatsurf.decomposeFlowComponent[cppyy.gbl.flatsurf.FlatTriangulation[type(self).T]](self, *args)
 

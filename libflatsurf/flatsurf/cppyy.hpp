@@ -64,8 +64,15 @@ bool decomposeFlowDecomposition(
 // Work around https://bitbucket.org/wlav/cppyy/issues/310/templatized-reference-in-callback by not using references in the callback.
 template <typename Surface>
 bool decomposeFlowComponent(
-    FlowComponent<Surface> &component, const std::function<bool(FlowComponent<Surface>)> &target = [](auto component) { return FlowComponent<Surface>::defaultTarget(component); }, int limit = -1) {
+    FlowComponent<Surface> &component, const std::function<bool(FlowComponent<Surface>)> &target, int limit = -1) {
   return component.decompose(target, limit);
+}
+
+// Work around spurious issues on macOS: Failed to materialize symbols: ...
+template <typename Surface>
+bool decomposeFlowComponent(
+    FlowComponent<Surface> &component, int limit = -1) {
+  return component.decompose([](auto component) { return FlowDecomposition<Surface>::defaultTarget(component); }, limit);
 }
 
 template <typename T>
