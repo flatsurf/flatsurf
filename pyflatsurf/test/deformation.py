@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 ######################################################################
 # This file is part of flatsurf.
@@ -148,9 +148,13 @@ def test_deformation(surface):
     domain = surface.clone()
     track = cppyy.gbl.flatsurf.Tracked(surface.combinatorial(), cppyy.gbl.flatsurf.Deformation[type(surface)](domain))
 
+    assert repr(track).startswith("Identity ")
+
     for edge in surface.edges():
         if surface.convex(edge.positive(), True):
             surface.flip(edge.positive())
+
+    assert not repr(track).startswith("Identity ")
 
     assert track.domain() == domain
     assert track.codomain() == surface

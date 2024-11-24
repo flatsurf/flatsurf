@@ -134,11 +134,11 @@ boost::logic::tribool FlowDecomposition<Surface>::completelyPeriodic() const {
 template <typename Surface>
 boost::logic::tribool FlowDecomposition<Surface>::parabolic() const {
   T a0(0), hnorm20(0);
-  boost::logic::tribool ans = true;
+  boost::logic::tribool answer = true;
   for (auto& component : components()) {
     boost::logic::tribool state = component.cylinder();
     if (state == false) return false;
-    ans = ans && state;
+    answer = answer && state;
     Vector<T> h = component.circumferenceHolonomy();
     T hnorm2 = h.x() * h.x() + h.y() * h.y();
     T a = component.area();
@@ -157,7 +157,7 @@ boost::logic::tribool FlowDecomposition<Surface>::parabolic() const {
       }
     }
   }
-  return ans;
+  return answer;
 }
 
 template <typename Surface>

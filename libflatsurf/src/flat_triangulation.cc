@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2022 Julian Rüth
+ *        Copyright (C) 2019-2024 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include <exact-real/number_field.hpp>
 #include <exact-real/rational_field.hpp>
 #include <exact-real/yap/arb.hpp>
+#include <exact-real/module.hpp>
 #include <functional>
 #include <iomanip>
 #include <iosfwd>
@@ -67,6 +68,7 @@
 #include "impl/shift_deformation_relation.hpp"
 #include "impl/slit_deformation_relation.hpp"
 #include "util/assert.ipp"
+#include "util/hash.ipp"
 
 namespace flatsurf {
 
@@ -406,7 +408,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::eliminateMarkedPoints() 
     return elimination;
   }
 
-  LIBFLATSURF_UNREACHABLE("No half edge was sent to a single saddle conection in deformation " << shift << " which eliminated " << marked << " by applying " << delta);
+  LIBFLATSURF_UNREACHABLE("No half edge was sent to a single saddle connection in deformation " << shift << " which eliminated " << marked << " by applying " << delta);
 }
 
 template <typename T>
@@ -503,7 +505,7 @@ Deformation<FlatTriangulation<T>> FlatTriangulation<T>::insertAt(HalfEdge &nextT
     if (orient == ORIENTATION::ORTHOGONAL) {
       // It is a bit unclear what to do if the new edge should end at a
       // vertex, in particular if it is collinear with an existing half
-      // edge (after fliping.)
+      // edge (after flipping.)
       throw std::logic_error("not implemented: insertion of half edges that end at an existing vertex");
     }
   };
@@ -875,12 +877,41 @@ bool FlatTriangulation<T>::operator==(const FlatTriangulation<T> &rhs) const {
   if (this->self.state == rhs.self.state)
     return true;
 
-  if (static_cast<const FlatTriangulationCombinatorial &>(*this) != static_cast<const FlatTriangulationCombinatorial &>(rhs))
+  if (this->combinatorial() != rhs.combinatorial())
     return false;
-  for (auto &edge : this->halfEdges()) {
-    if (this->self->vectors->get(edge) != rhs.self->vectors->get(edge))
+
+  for (const auto& edge: this->edges()) {
+    const auto& v = fromHalfEdge(edge.positive());
+    const auto& w = rhs.fromHalfEdge(edge.positive());
+
+    // Since we want to decide whether surfaces are indistinguishable, we treat
+    // vectors defined over different rings as different (even if they are the
+    // same as real numbers.)
+    using S = std::decay_t<T>;
+    if constexpr (std::is_same_v<S, eantic::renf_elem_class>) {
+      if (v.x().parent() != w.x().parent())
+        return false;
+      if (v.y().parent() != w.y().parent())
+        return false;
+    } else if constexpr (std::is_same_v<S, exactreal::Element<exactreal::IntegerRing>> || std::is_same_v<S, exactreal::Element<exactreal::RationalField>> || std::is_same_v<S, exactreal::Element<exactreal::NumberField>>) {
+      if (*v.x().module() != *w.x().module())
+        return false;
+      if (*v.y().module() != *w.y().module())
+        return false;
+    } else if constexpr (std::is_same_v<S, long long>) {
+      // no check necessary.
+    } else if constexpr (std::is_same_v<S, mpz_class>) {
+      // no check necessary.
+    } else if constexpr (std::is_same_v<S, mpq_class>) {
+      // no check necessary.
+    } else {
+      throw std::logic_error("not implemented: cannot compare base rings of these vectors yet");
+    }
+
+    if (v != w)
       return false;
   }
+
   return true;
 }
 
@@ -1080,7 +1111,7 @@ ImplementationOf<FlatTriangulation<T>>::ImplementationOf(FlatTriangulationCombin
         OddHalfEdgeMap<Vector<T>>(self, vectors),
         ImplementationOf::updateAfterFlip);
     // The shared pointer we used to build the Tracked is not going to remain
-    // valid so we assert that noone else is holding on to it because it won't
+    // valid so we assert that no one else is holding on to it because it won't
     // work for other use cases than Tracked<>.
     LIBFLATSURF_ASSERT(self.self.state.use_count() == 1, "Something is holding to an short lived shared pointer to a surface. This shared pointer is not actually valid and should not be used outside of Tracked<>.");
     return ret;
@@ -1103,7 +1134,7 @@ ImplementationOf<FlatTriangulation<T>>::ImplementationOf(FlatTriangulationCombin
             }),
         ImplementationOf::updateApproximationAfterFlip);
     // The shared pointer we used to build the Tracked is not going to remain
-    // valid so we assert that noone else is holding on to it because it won't
+    // valid so we assert that no one else is holding on to it because it won't
     // work for other use cases than Tracked<>.
     LIBFLATSURF_ASSERT(self.self.state.use_count() == 1, "Something is holding to an short lived shared pointer to a surface. This shared pointer is not actually valid and should not be used outside of Tracked<>.");
     return ret;
@@ -1187,7 +1218,23 @@ std::ostream &operator<<(std::ostream &os, const FlatTriangulation<T> &self) {
 
 }  // namespace flatsurf
 
+namespace std {
+using namespace flatsurf;
+
+template <typename T>
+size_t hash<FlatTriangulation<T>>::operator()(const FlatTriangulation<T>& self) const {
+  size_t ret = hash<Permutation<HalfEdge>>{}(self.self->vertices);
+
+  for (const auto& edge : self.edges()) {
+    ret = hash_combine(ret, hash<Vector<T>>{}(self.fromHalfEdge(edge.positive())));
+  }
+
+  return ret;
+}
+
+}  // namespace std
+
 // Instantiations of templates so implementations are generated for the linker
 #include "util/instantiate.ipp"
 
-LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION), FlatTriangulation, LIBFLATSURF_REAL_TYPES)
+LIBFLATSURF_INSTANTIATE_MANY_WRAPPED((LIBFLATSURF_INSTANTIATE_WITH_IMPLEMENTATION)(LIBFLATSURF_INSTANTIATE_HASH), FlatTriangulation, LIBFLATSURF_REAL_TYPES)

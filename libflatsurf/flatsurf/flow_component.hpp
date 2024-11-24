@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2022 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 #include <iosfwd>
 #include <list>
 #include <vector>
+#include <gmpxx.h>
 
 #include "copyable.hpp"
 
@@ -81,6 +82,8 @@ class FlowComponent : boost::equality_comparable<FlowComponent<Surface>> {
 
   FlowTriangulation<Surface> triangulation() const;
 
+  std::vector<mpq_class> safInvariant() const;
+
   const intervalxt::Component& dynamicalComponent() const;
 
   [[deprecated("This method returns a inconsistent version of the IET from which this component was created originally. Use dynamicalComponent().iet() instead.")]] const IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>& intervalExchangeTransformation() const;
@@ -89,7 +92,7 @@ class FlowComponent : boost::equality_comparable<FlowComponent<Surface>> {
   // vertical().
   T width() const;
 
-  // If this is a cylinder, return the height of this component multplied with
+  // If this is a cylinder, return the height of this component multiplied with
   // the length of the vertical(), i.e., the scalar product of
   // circumferenceHolonomy() and vertical().
   // In general this returns a lower bound of the height of any cylinder in

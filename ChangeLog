@@ -4,6 +4,75 @@ intervalxt Change Log
 
 .. current developments
 
+v3.15.2
+====================
+
+**Fixed:**
+
+* Fixed more spurious JIT errors on macOS.
+
+
+
+v3.15.1
+====================
+
+**Fixed:**
+
+* Fixed spurious JIT errors on macOS (these errors only seem to happen on GitHub runners, we couldn't reproduce them locally.)
+
+
+
+v3.15.0
+====================
+
+**Added:**
+
+* Added hash functions for ``FlatTriangulationCombinatorial``, ``FlatTriangulation<T>``, and ``Permutation<T>``.
+
+**Fixed:**
+
+* Fixed typos in documentation.
+
+* Fixed compiler warnings.
+* Fixed comparison of surfaces defined over different rings. Surfaces defined over different rings are now never considered to be equal.
+
+* Fixed ``trivial()`` for linear deformations. A linear deformation coming from the identity matrix is now only trivial if the domain and codomain are indistinguishable, i.e., if application of that matrix does not change the base ring.
+
+
+
+v3.14.2
+====================
+
+**Fixed:**
+
+* Fixed memory leak in flow component perimeter methods.
+
+
+
+v3.14.1
+====================
+
+**Fixed:**
+
+* Fixed ordering of saddle connections when iterating ``byLength()``.
+* Fixed tests on macOS. All tests are now automatically run for macOS 11 on GitHub's CI.
+
+
+
+v3.14.0
+====================
+
+**Added:**
+
+* Added `FlowComponent::safInvariant()` to expose the SAF invariant of the underlying Interval Exchange Transformation.
+
+**Fixed:**
+
+* Fixed printing of the trivial deformation to actually print as a deformation and not as the underlying surface.
+* Fixed access to intervalxt objects through pyflatsurf, e.g., `FlowComoponent::dynamicalComponent`.
+
+
+
 v3.13.5
 ====================
 
@@ -541,7 +610,7 @@ v2.3.0
 
 * speed up saddle connection assertions when collapsing half edges and during length computations
 * perform assertions less frequently in `FlowDecomposition::decompose()`; these assertions made up one third of the runtime in many triangle instances.
-* Perfom CCW and Orientation of e-antic vectors with inexact approximations first so we do not have to perform exact multiplications.
+* Perform CCW and Orientation of e-antic vectors with inexact approximations first so we do not have to perform exact multiplications.
 * with exact-real vectors, not actually performing that many exact scalar
   multiplication in `Vertical` might make a difference in some instances.
 

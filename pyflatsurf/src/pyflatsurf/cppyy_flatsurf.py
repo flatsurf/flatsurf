@@ -84,8 +84,6 @@ cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_met
 
 # Make the target parameter of FlowDecomposition::decompose() optional.
 def decomposeFlowDecomposition(self, *args):
-    if args and isinstance(args[0], int):
-        args = (lambda component: type(self).defaultTarget(component),) + args
     # Note that we need to call through a reference free callback wrapper due to https://bitbucket.org/wlav/cppyy/issues/310/templatized-reference-in-callback
     return cppyy.gbl.flatsurf.decomposeFlowDecomposition[cppyy.gbl.flatsurf.FlatTriangulation[type(self).T]](self, *args)
 
@@ -93,8 +91,6 @@ cppyy.py.add_pythonization(filtered(re.compile("FlowDecomposition<.*>"))(add_met
 
 # Make the target parameter of FlowComponent::decompose() optional.
 def decomposeFlowComponent(self, *args):
-    if args and isinstance(args[0], int):
-        args = (lambda component: type(self).defaultTarget(component),) + args
     # Note that we need to call through a reference free callback wrapper due to https://bitbucket.org/wlav/cppyy/issues/310/templatized-reference-in-callback
     return cppyy.gbl.flatsurf.decomposeFlowComponent[cppyy.gbl.flatsurf.FlatTriangulation[type(self).T]](self, *args)
 
@@ -108,6 +104,16 @@ cppyy.py.add_pythonization(filtered(re.compile("Tracked<.*>"))(add_method("value
 
 # We have to work around issues with complex std::function parameters in cppyy
 cppyy.py.add_pythonization(filtered(re.compile("FlatTriangulation<.*>"))(add_method("isomorphism")(lambda self, other, kind=None, filter_matrix=lambda a,b,c,d: a == 1 and b == 0 and c == 0 and d == 1, filter_map=lambda a, b: True: cppyy.gbl.flatsurf.isomorphism[type(self).Coordinate.__cpp_name__](self, other, kind or cppyy.gbl.flatsurf.ISOMORPHISM.FACES, lambda m: filter_matrix(m.a, m.b, m.c, m.d), filter_map))), "flatsurf")
+
+# Return the SAF invariant as a Python list
+cppyy.py.add_pythonization(filtered(re.compile("FlowComponent<.*>"))(wrap_method("safInvariant")(lambda self, cpp: list(cpp()))), "flatsurf")
+
+# Work around https://github.com/wlav/cppyy/issues/245
+cppyy.py.add_pythonization(filtered(re.compile("FlowComponent<.*>"))(wrap_method("perimeter")(lambda self, cpp: cppyy.gbl.flatsurf.cppyy.vectorFromList(cpp()))), "flatsurf")
+cppyy.py.add_pythonization(filtered(re.compile("FlowComponent<.*>"))(wrap_method("bottom")(lambda self, cpp: cppyy.gbl.flatsurf.cppyy.vectorFromList(cpp()))), "flatsurf")
+cppyy.py.add_pythonization(filtered(re.compile("FlowComponent<.*>"))(wrap_method("right")(lambda self, cpp: cppyy.gbl.flatsurf.cppyy.vectorFromList(cpp()))), "flatsurf")
+cppyy.py.add_pythonization(filtered(re.compile("FlowComponent<.*>"))(wrap_method("top")(lambda self, cpp: cppyy.gbl.flatsurf.cppyy.vectorFromList(cpp()))), "flatsurf")
+cppyy.py.add_pythonization(filtered(re.compile("FlowComponent<.*>"))(wrap_method("left")(lambda self, cpp: cppyy.gbl.flatsurf.cppyy.vectorFromList(cpp()))), "flatsurf")
 
 for path in os.environ.get('PYFLATSURF_INCLUDE','').split(':'):
     if path: cppyy.add_include_path(path)

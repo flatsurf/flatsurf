@@ -38,7 +38,7 @@ struct EquivalenceWalker {
   // Return the minimal code word amongst the code words produced by ``walkers``.
   // Also returns a (possibly canonical) normalization of the surface worked on
   // by the ``walkers`` and a vector of isomorphisms to the normalization
-  // corresponding to the minimial code words.
+  // corresponding to the minimal code words.
   static std::tuple<std::unique_ptr<EquivalenceClassCode>, ReadOnly<Surface>, std::vector<Deformation<Surface>>> word(std::vector<Walker>&& walkers) {
     // We describe the process for combinatorial equivalence; the general
     // algorithm is described below.
@@ -86,7 +86,8 @@ struct EquivalenceWalker {
         switch (cmp(character, minimalCharacter)) {
           case -1:
             minimalCharacter = character;
-            stillMinimalWalkers = {walker};
+            stillMinimalWalkers.clear();
+            stillMinimalWalkers.push_back(walker);
             break;
           case 0:
             stillMinimalWalkers.push_back(walker);
@@ -111,7 +112,7 @@ struct EquivalenceWalker {
       minimalWalkers = stillMinimalWalkers;
     }
 
-    LIBFLATSURF_ASSERT(!minimalWalkers.empty(), "At least one code must be minimal but all were found to be non-minimial.");
+    LIBFLATSURF_ASSERT(!minimalWalkers.empty(), "At least one code must be minimal but all were found to be non-minimal.");
 
     ReadOnly<Surface> normalization = minimalWalkers[0]->normalization();
 

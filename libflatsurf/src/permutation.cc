@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019 Julian Rüth
+ *        Copyright (C) 2019-2024 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 #include <unordered_map>
 
 #include "util/assert.ipp"
+#include "util/hash.ipp"
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
@@ -288,6 +289,23 @@ std::ostream &operator<<(std::ostream &os, const Permutation<T> &self) {
 }
 }  // namespace flatsurf
 
+namespace std {
+
+using namespace flatsurf;
+
+template <typename T>
+size_t hash<Permutation<T>>::operator()(const Permutation<T>& self) const {
+  size_t ret = 0;
+  for (const auto& t : self.permutation) {
+    ret = hash_combine(ret,  hash<T>{}(t));
+  }
+
+  return ret;
+}
+
+}
+
+
 using namespace flatsurf;
 
 // Instantiations of templates so implementations are generated for the linker
@@ -297,3 +315,4 @@ template class flatsurf::Permutation<HalfEdge>;
 template std::ostream &flatsurf::operator<<(std::ostream &os, const Permutation<HalfEdge> &self);
 template Permutation<HalfEdge> &flatsurf::operator*=(const std::vector<HalfEdge> &, Permutation<HalfEdge> &);
 template Permutation<HalfEdge> &flatsurf::operator*=(Permutation<HalfEdge> &, const std::vector<HalfEdge> &);
+template size_t std::hash<Permutation<HalfEdge>>::operator()(const Permutation<HalfEdge>&) const;

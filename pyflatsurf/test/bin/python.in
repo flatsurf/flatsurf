@@ -1,0 +1,42 @@
+#!/bin/sh
+
+# Run Python 3 with environment variables set so that local headers and
+# libraries in this repository are used when running tests.
+
+# Usually, one would do this setup as part of test-env.sh, i.e.,
+# AM_TESTS_ENVIRONMENT. However, macOS drops DYLD_LIBRARY_PATH whenever a
+# shebang is followed, so we actually need to execute the Python binary
+# directly and pass a script to it as a parameter to keep DYLD_LIBRARY_PATH
+# alive.
+
+# Disable warnings on macOS with FLINT 2.8.4, see https://github.com/conda-forge/libflint-feedstock/issues/26
+export EXTRA_CLING_ARGS="-Wno-macro-redefined $EXTRA_CLING_ARGS"
+
+# Resolve #include <flatsurf/*.hpp> relative to libflatsurf in the source tree and
+# resolve #include "local.h" relative to libflatsurf/flatsurf in the build tree.
+export EXTRA_CLING_ARGS="-I@abs_srcdir@/../../libflatsurf -I@abs_builddir@/../../libflatsurf/flatsurf $EXTRA_CLING_ARGS"
+
+# Load libflatsurf.so from our build tree.
+export LD_LIBRARY_PATH="@abs_builddir@/../../libflatsurf/src/.libs/:$LD_LIBRARY_PATH"
+
+# Load libflatsurf.dylib from our build tree.
+export DYLD_LIBRARY_PATH="@abs_builddir@/../../libflatsurf/src/.libs/:$DYLD_LIBRARY_PATH"
+
+# Load pyflatsurf from our source tree.
+export PYTHONPATH="@abs_srcdir@/../src/:$PYTHONPATH:@pythondir@"
+
+# Support libasan loading when our library has been built with -fsanitize=address.
+if [ ! -z "$FLATSURF_LD_PRELOAD" ]; then
+  export LD_PRELOAD="$FLATSURF_LD_PRELOAD:$LD_PRELOAD"
+fi
+
+# Support libasan loading on macOS when our library has been built with -fsanitize=address.
+if [ ! -z "$FLATSURF_DYLD_INSERT_LIBRARIES" ]; then
+  if [ -z "$DYLD_INSERT_LIBRARIES" ]; then
+    export DYLD_INSERT_LIBRARIES="$FLATSURF_DYLD_INSERT_LIBRARIES"
+  else
+    export DYLD_INSERT_LIBRARIES="$FLATSURF_DYLD_INSERT_LIBRARIES:$DYLD_INSERT_LIBRARIES"
+  fi
+fi
+
+exec python3 $@

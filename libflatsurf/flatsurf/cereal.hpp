@@ -342,7 +342,7 @@ struct Serialization<Vertex> {
   }
 };
 
-// Serialization and deserialization for a Vertial direction on a surface.
+// Serialization and deserialization for a Vertical direction on a surface.
 template <typename Surface>
 struct Serialization<Vertical<Surface>> {
   template <typename Archive>

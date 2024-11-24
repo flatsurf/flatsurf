@@ -2,7 +2,7 @@
  *  This file is part of flatsurf.
  *
  *        Copyright (C)      2019 Vincent Delecroix
- *        Copyright (C) 2019-2022 Julian Rüth
+ *        Copyright (C) 2019-2024 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -34,7 +34,9 @@ TEST_CASE("Permutation", "[Permutation]") {
     auto p = Permutation<HalfEdge>::random(domain);
 
     THEN("It can be Reconstructed From its Cycles") {
-      REQUIRE(p == Permutation<HalfEdge>(p.cycles()));
+      const auto q = Permutation<HalfEdge>(p.cycles());
+      REQUIRE(p == q);
+      REQUIRE(std::hash<Permutation<HalfEdge>>{}(p) == std::hash<Permutation<HalfEdge>>{}(q));
     }
 
     THEN("Individual Cycles Are Consistent") {

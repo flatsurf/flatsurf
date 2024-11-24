@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2024 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -48,8 +48,18 @@ class FlatTriangulationCombinatorial : public FlatTriangulationCombinatorics<Fla
   friend Serialization<ManagedMovable<FlatTriangulationCombinatorial>>;
 
   friend std::ostream &operator<<(std::ostream &, const FlatTriangulationCombinatorial &);
+  friend class std::hash<FlatTriangulationCombinatorial>;
 };
 
 }  // namespace flatsurf
+
+namespace std {
+template <>
+struct hash<flatsurf::FlatTriangulationCombinatorial> {
+  size_t operator()(const flatsurf::FlatTriangulationCombinatorial &) const;
+};
+
+}  // namespace std
+
 
 #endif

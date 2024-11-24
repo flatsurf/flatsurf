@@ -1,10 +1,9 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
 
 ######################################################################
 # This file is part of flatsurf.
 #
-#       Copyright (C) 2020 Julian Rüth
+#       Copyright (C) 2020-2022 Julian Rüth
 #
 # flatsurf is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -67,6 +66,8 @@ def test_hexagon_eantic():
                 assert area1 == 2 * area2
                 assert area3 == area2 * (vx*vx + vy*vy)
 
+            assert component.safInvariant() == [0]
+
         assert all(component.cylinder() for component in decomposition.cylinders())
         assert len(decomposition.cylinders()) == n_cylinders
 
@@ -93,16 +94,21 @@ def test_D33():
         assert str(decomposition).startswith("FlowDecomposition")
         decomposition.decompose(-1)
         n_cylinders, n_without_periodic_trajectory, n_indeterminate = 0, 0, 0
-        for dec in decomposition.components():
-            if dec.cylinder() == True:
+        for component in decomposition.components():
+            if component.cylinder() == True:
                 n_cylinders += 1
-                h = dec.circumferenceHolonomy()
+                h = component.circumferenceHolonomy()
                 assert h.x() or h.y()
                 assert h.x() * v.y() == h.y() * v.x()
-            elif dec.cylinder() == False:
+
+                assert all(saf == 0 for saf in component.safInvariant()), component.safInvariant()
+            elif component.cylinder() == False:
                 n_without_periodic_trajectory += 1
+
+                assert any(saf != 0 for saf in component.safInvariant()), component.safInvariant()
             else:
                 n_indeterminate = 0
+
         assert n_indeterminate == 0
         decompositions[(n_cylinders, n_without_periodic_trajectory)] += 1
 

@@ -58,7 +58,7 @@ bool TrivialDeformationRelation<Surface>::trivial() const {
 
 template <typename Surface>
 std::ostream& TrivialDeformationRelation<Surface>::operator>>(std::ostream& os) const {
-  return os << this->domain;
+  return os << "Identity on " << this->domain;
 }
 
 }  // namespace flatsurf

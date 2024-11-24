@@ -6,7 +6,9 @@ EXAMPLES:
 
 The translation surface coming from a square::
 
-    >>> from pyflatsurf import Surface, flatsurf
+    >>> from pyflatsurf import Surface, flatsurf  # random output  # we ignore the output because cppyy produces some deprecation warnings
+    ...                                           # doctest: +ELLIPSIS
+    ...
     >>> R2 = flatsurf.Vector['long long']
     >>> square = Surface([[1, 3, 2, -1, -3, -2]], [R2(1, 0), R2(0, 1), R2(1, 1)])
 
@@ -27,7 +29,7 @@ Pickling works::
 #*********************************************************************
 #  This file is part of flatsurf.
 #
-#        Copyright (C) 2019-2020 Julian Rüth
+#        Copyright (C) 2019-2022 Julian Rüth
 #
 #  Flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -42,6 +44,11 @@ Pickling works::
 #  You should have received a copy of the GNU General Public License
 #  along with flatsurf. If not, see <https://www.gnu.org/licenses/>.
 #*********************************************************************
+
+# The API of flatsurf exposes intervalxt objects such as
+# intervalxt::Component. We therefore need the intervalxt headers to
+# be loaded so cppyy can make these parts of the API available.
+import pyintervalxt
 
 from .cppyy_flatsurf import flatsurf
 

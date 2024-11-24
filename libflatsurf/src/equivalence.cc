@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2022 Julian Rüth
+ *        Copyright (C) 2022-2024 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,6 +27,8 @@
 #include "../flatsurf/vector.hpp"
 #include "impl/combinatorial_equivalence.hpp"
 #include "impl/linear_equivalence.hpp"
+
+#include "util/assert.ipp"
 
 #include "external/rx-ranges/include/rx/ranges.hpp"
 
@@ -91,8 +93,13 @@ std::vector<Deformation<Surface>> ImplementationOf<Equivalence<Surface>>::isomor
   if (domainNormalization != codomainNormalization)
     throw std::logic_error("not implemented: cannot determine isomorphisms when domain and codomain have different normalizations");
 
-  if (*codomainNormalization == codomain)
+  LIBFLATSURF_ASSERT(domainNormalizationMaps | rx::all_of([&](const auto& deformation) { return deformation.domain() == domain; }), "normalization must preserve domain");
+  LIBFLATSURF_ASSERT(codomainNormalizationMaps | rx::all_of([&](const auto& deformation) { return deformation.domain() == codomain; }), "normalization must preserve codomain");
+
+  if (*codomainNormalization == codomain) {
+    // Note that this condition is subtle. Surfaces defined over number fields are only considered equal if all their vectors are defined over the same number field.
     return domainNormalizationMaps;
+  }
 
   const auto codomainDenormalization = codomainNormalizationMaps.at(0).section();
 

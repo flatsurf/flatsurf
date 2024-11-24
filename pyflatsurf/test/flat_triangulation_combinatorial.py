@@ -1,8 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
+
 ######################################################################
 # This file is part of flatsurf.
 #
-#       Copyright (C) 2022 Julian Rüth
+#       Copyright (C) 2022-2024 Julian Rüth
 #
 # flatsurf is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,7 +31,9 @@ def test_serialization():
     hexagon = surfaces.random_hexagon(flatsurf.Vector['exactreal::Element<exactreal::NumberField>']).combinatorial()
 
     from pickle import loads, dumps
-    assert loads(dumps(hexagon)) == hexagon
+    clone = loads(dumps(hexagon))
+    assert clone == hexagon
+    assert hash(clone) == hash(hexagon)
 
 
 if __name__ == '__main__':

@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
 
 ######################################################################
 # This file is part of flatsurf.
@@ -84,6 +83,6 @@ def test_printing():
         assert str(connections) == "SaddleConnections()"
         connections = connections.byLength()
         assert str(connections) == "SaddleConnectionsByLength()"
-        assert str(next(iter(connections))) == "-2"
+        assert str(next(iter(connections))) == "1"
 
 if __name__ == '__main__': sys.exit(pytest.main(sys.argv))

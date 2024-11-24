@@ -4,7 +4,6 @@
 name: libflatsurf-build
 channels:
   - conda-forge
-  - defaults
 dependencies:
   - automake
   - benchmark

@@ -5,15 +5,15 @@
 name: pyflatsurf-build
 channels:
   - conda-forge
-  - defaults
 dependencies:
   - automake
   - cppyy
-  - cppyythonizations >=1.2.2,<2
+  - cppyythonizations >=1.2.5,<2
   - gmpxxyy
   - ipywidgets
   - libtool
   - make
+  - pyintervalxt>=3.2.0,<4
   - pyexactreal>=3.0.1,<5
   - pytest
   - python

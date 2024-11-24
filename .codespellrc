@@ -1,0 +1,3 @@
+[codespell]
+skip = libflatsurf/src/external/**/*,libflatsurf/test/external/**/*
+ignore-words-list = rever,vertexes
