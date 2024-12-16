@@ -1,0 +1,216 @@
+# This file describes the [pixi](https://pixi.sh) interface to flatsurf, see
+# the README for how to use pixi with flatsurf.
+
+[project]
+channels = ["conda-forge"]
+description = "A C++ library for Translation Surfaces"
+name = "flatsurf"
+platforms = ["linux-64", "osx-64"]
+
+[environments]
+flint-2 = ["libflatsurf", "pyflatsurf", "flint-2"]
+flint-3 = ["libflatsurf", "pyflatsurf", "flint-3"]
+dev = ["dev", "libflatsurf", "pyflatsurf"]
+env-coverage = ["coverage", "libflatsurf", "pyflatsurf"]
+
+##############
+# ACTIVATION #
+##############
+[activation.env]
+MAKEFLAGS = "-j$(nproc)"
+CFLAGS = "-g3"
+CXXFLAGS = "-g3 -fvisibility=hidden -fvisibility-inlines-hidden"
+
+[feature.coverage.activation.env]
+CFLAGS = "-coverage -O0 -UNDEBUG"
+CXXFLAGS = "-coverage -O0 -UNDEBUG"
+
+#########
+# TASKS #
+#########
+[tasks.bootstrap]
+cmd = "./bootstrap"
+inputs = ["configure.ac", "{libflatsurf,pyflatsurf}/configure.ac", "Makefile.am", "{libflatsurf,pyflatsurf}/**/Makefile.am"]
+outputs = ["configure", "{libflatsurf,pyflatsurf}/configure", "Makefile.in", "{libflatsurf,pyflatsurf}/**/*.in"]
+
+[feature.libflatsurf.tasks.configure-libflatsurf]
+cmd = './configure --prefix="$CONDA_PREFIX"'
+cwd = "libflatsurf"
+depends-on = ["bootstrap"]
+inputs = ["libflatsurf/configure", "libflatsurf/**/*.in"]
+
+[feature.libflatsurf.tasks.build-libflatsurf]
+cmd = "make check TESTS="
+cwd = "libflatsurf"
+depends-on = ["configure-libflatsurf"]
+
+[feature.libflatsurf.tasks.test-libflatsurf]
+cmd = "make check"
+cwd = "libflatsurf"
+depends-on = ["build-libflatsurf"]
+
+[feature.pyflatsurf.tasks.test-libflatsurf-valgrind]
+cmd = "make check-valgrind"
+cwd = "libflatsurf"
+depends-on = ["build-libflatsurf"]
+
+[feature.pyflatsurf.tasks.configure-pyflatsurf]
+cmd = './configure --prefix="$CONDA_PREFIX"'
+cwd = "pyflatsurf"
+depends-on = ["bootstrap"]
+inputs = ["pyflatsurf/configure", "pyflatsurf/**/*.in"]
+
+[feature.pyflatsurf.tasks.build-pyflatsurf]
+cmd = "make"
+cwd = "pyflatsurf"
+depends-on = ["configure-pyflatsurf"]
+
+[feature.pyflatsurf.tasks.test-pyflatsurf]
+cmd = "make check"
+cwd = "pyflatsurf"
+depends-on = ["build-pyflatsurf", "build-libflatsurf"]
+
+[feature.pyflatsurf.tasks.test-pyflatsurf-valgrind]
+cmd = "make check-valgrind"
+cwd = "pyflatsurf"
+depends-on = ["build-pyflatsurf", "build-libflatsurf"]
+
+[feature.dev.tasks]
+codespell = { cmd = "codespell $(git ls-files)" }
+
+# "build" is a shortcut that should (together with its dependencies) run in the "dev" environment.
+# To achieve this, we need to split it into two tasks like this (otherwise,
+# pixi is going to ask which environment the dependencies should run in.)
+build = { cmd = "pixi run dev-build" }
+dev-build = { depends-on = ["build-libflatsurf", "build-pyflatsurf"] }
+
+# "test" is a shortcut that should (together with its dependencies) run in the "dev" environment.
+# To achieve this, we need to split it into two tasks like this (otherwise,
+# pixi is going to ask which environment the dependencies should run in.)
+test = { cmd = "pixi run dev-test" }
+dev-test = { depends-on = ["test-libflatsurf", "test-pyflatsurf"] }
+
+# "sage" is a shortcut that should (together with its dependencies) run in the "dev" environment.
+# To achieve this, we need to split it into two tasks like this (otherwise,
+# pixi is going to ask which environment the dependencies should run in.)
+sage = { cmd = "pixi run dev-sage" }
+dev-sage = { cmd = "pyflatsurf-sage" , env = { PATH = "./pyflatsurf/test/bin/:$PATH"}, depends-on = ["build-libflatsurf", "build-pyflatsurf"] }
+
+# "clean" is a shortcut that should (together with its dependencies) run in the "dev" environment.
+# To achieve this, we need to split it into two tasks like this (otherwise,
+# pixi is going to ask which environment the dependencies should run in.)
+clean = { cmd = "pixi run dev-clean" }
+dev-clean = { cmd = "make clean", depends-on = ["configure"] }
+
+# "compile-commands" is a shortcut that generates a compile_commands.json that many
+# IDEs expect to make sense of C/C++ code.
+# This shortcut should run with its dependencies in the "dev" environment.
+# To achieve this, we need to split it into two tasks like this (otherwise,
+# pixi is going to ask which environment the dependencies should run in.)
+compile-commands = { cmd = "pixi run dev-compile-commands" }
+dev-compile-commands = { cwd = "libflatsurf", cmd = "compiledb make -n check TESTS=", depends-on = ["build-libflatsurf"] }
+
+[feature.dev.tasks.configure]
+cmd = './configure --prefix="$CONDA_PREFIX"'
+inputs = ["configure", "{libflatsurf,pyflatsurf}/configure", "Makefile.in", "{libflatsurf,pyflatsurf}/**/*.in"]
+outputs = ["Makefile", "{libflatsurf,pyflatsurf}/**/Makefile"]
+depends-on = ["bootstrap"]
+
+[feature.dev.tasks.distcheck]
+cmd = "make distcheck"
+depends-on = ["configure"]
+
+[feature.dev.tasks.compiler-warnings-clang]
+cmd = """
+make clean &&
+make check TESTS= CPP=$CPP CC=$CC CXX=$CXX CFLAGS=\"$CFLAGS -UNDEBUG\" CXXFLAGS=\"$CXXFLAGS -UNDEBUG\" &&
+make clean &&
+make check TESTS= CPP=$CPP CC=$CC CXX=$CXX CFLAGS=\"$CFLAGS -DNDEBUG\" CXXFLAGS=\"$CXXFLAGS -DNDEBUG\"
+"""
+cwd = "libflatsurf"
+depends-on = "configure-libflatsurf"
+# We need -Wno-reserved-identifiers since we extend FLINT using their style of having internal functions start with an underscore.
+# We need -Wno-unsafe-buffer-usage since we need unsafe pointer arithmetic to extend FLINT (efficiently.)
+env = { CPP="clang-cpp", CC="clang", CXX="clang++", CFLAGS="-Werror -Weverything -Wno-padded -Wno-disabled-macro-expansion -Wno-float-equal -Wno-documentation -Wno-reserved-identifier -Wno-declaration-after-statement -Wno-unsafe-buffer-usage", CXXFLAGS="-Wno-exit-time-destructors -Wno-undefined-func-template -Wno-global-constructors -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-zero-as-null-pointer-constant -Wno-deprecated-declarations -Wno-shadow-field-in-constructor -Wno-documentation" }
+
+[feature.dev.tasks.compiler-warnings-gcc]
+cmd = """
+make clean &&
+make check TESTS= CPP=$CPP CC=$CC CXX=$CXX CFLAGS=\"$CFLAGS -UNDEBUG\" CXXFLAGS=\"$CXXFLAGS -UNDEBUG\" &&
+make clean &&
+make check TESTS= CPP=$CPP CC=$CC CXX=$CXX CFLAGS=\"$CFLAGS -DNDEBUG\" CXXFLAGS=\"$CXXFLAGS -DNDEBUG\"
+"""
+cwd = "libflatsurf"
+depends-on = "configure-libflatsurf"
+# We need -Wno-dangling-reference because our tests rely on GENERATE_REF that does actually create a dangling reference.
+env = { CPP="cpp", CC="cc", CXX="c++", CFLAGS="-Werror -Wall -Wextra -pedantic", CXXFLAGS="-Werror -Wall -Wextra -pedantic -Wctor-dtor-privacy -Wold-style-cast -Woverloaded-virtual -Wcast-align -Wcast-qual -Wno-sign-compare -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-include-dirs -Wno-redundant-decls -Wundef -fdiagnostics-show-option -Wconversion -Wshadow-compatible-local -Wno-deprecated -Wno-deprecated-declarations -Wno-float-equal -Wsign-promo -Wstrict-null-sentinel -Wno-dangling-reference" }
+
+[feature.dev.tasks.configure-libflatsurf]
+cmd = './configure --prefix="$CONDA_PREFIX" --with-benchmark'
+cwd = "libflatsurf"
+depends-on = ["bootstrap"]
+inputs = ["libflatsurf/configure", "libflatsurf/**/*.in"]
+
+[feature.coverage.tasks.configure-libflatsurf]
+# The gcov build has visibility issues when the version script is enabled.
+cmd = './configure --prefix="$CONDA_PREFIX"'
+cwd = "libflatsurf"
+depends-on = ["bootstrap"]
+inputs = ["libflatsurf/configure", "libflatsurf/**/*.in"]
+
+################
+# DEPENDENCIES #
+################
+[dependencies]
+automake = "*"
+make = "*"
+libtool = "*"
+coreutils = "*"
+
+[feature.libflatsurf.dependencies]
+boost-cpp = "*"
+cxx-compiler = "*"
+fmt = "*"
+gmp = "*"
+gmpxxll = "*"
+libeantic = "*"
+libexactreal = "*"
+libflint = "*"
+libintervalxt = "*"
+
+[feature.pyflatsurf.dependencies]
+cppyy = "*"
+cppyythonizations = "*"
+pyexactreal = "*"
+pyintervalxt = "*"
+pytest = "*"
+python = "*"
+sagelib = "*"
+setuptools = "*"
+# Some extra dependencies that are needed by SageMath doctesting here.
+gmpxxyy = "*"
+ipywidgets = "*"
+realalg = "*"
+
+[feature.pyflatsurf.pypi-dependencies]
+pyflatsurf = { path = "pyflatsurf/src", editable = true }
+
+[feature.dev.dependencies]
+libflint = "3.*"
+benchmark = "*"
+byexample = "*"
+sagelib = "10.3"
+codespell = "*"
+clangdev = "*"
+compiledb = "*"
+
+[feature.dev.target.linux.dependencies]
+# A recent functioning valgrind is only available on conda-forge linux builds.
+valgrind = "*"
+
+[feature.flint-2.dependencies]
+libflint = "2.*"
+arb = "*"
+
+[feature.flint-3.dependencies]
+libflint = "3.*"
