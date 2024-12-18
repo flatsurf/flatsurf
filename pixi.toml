@@ -10,6 +10,7 @@ platforms = ["linux-64", "osx-64"]
 [environments]
 flint-2 = ["libflatsurf", "pyflatsurf", "flint-2"]
 flint-3 = ["libflatsurf", "pyflatsurf", "flint-3"]
+asv = ["asv"]
 dev = ["dev", "libflatsurf", "pyflatsurf"]
 env-coverage = ["coverage", "libflatsurf", "pyflatsurf"]
 
@@ -215,3 +216,8 @@ arb = "*"
 
 [feature.flint-3.dependencies]
 libflint = "3.*"
+
+[feature.asv.dependencies]
+asv = ">=0.6.4,<0.7"
+libmambapy = "*"
+conda-build = "*"
