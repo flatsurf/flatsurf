@@ -153,13 +153,6 @@ cwd = "libflatsurf"
 depends-on = ["bootstrap"]
 inputs = ["libflatsurf/configure", "libflatsurf/**/*.in"]
 
-[feature.coverage.tasks.configure-libflatsurf]
-# The gcov build has visibility issues when the version script is enabled.
-cmd = './configure --prefix="$CONDA_PREFIX"'
-cwd = "libflatsurf"
-depends-on = ["bootstrap"]
-inputs = ["libflatsurf/configure", "libflatsurf/**/*.in"]
-
 ################
 # DEPENDENCIES #
 ################
