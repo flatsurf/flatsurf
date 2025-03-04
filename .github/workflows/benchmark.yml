@@ -37,3 +37,5 @@ jobs:
         folder: .asv/html
         target-folder: asv
       if: ${{ github.event_name == 'push' }}
+    - uses: flatsurf/actions/show-logs@main
+      if: ${{ always() }}
