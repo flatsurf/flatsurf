@@ -195,7 +195,7 @@ pyflatsurf = { path = "pyflatsurf/src", editable = true }
 libflint = "3.*"
 benchmark = "*"
 byexample = "*"
-sagelib = "10.3"
+sagelib = "==10.3"
 codespell = "*"
 clangdev = "*"
 compiledb = "*"
@@ -215,3 +215,6 @@ libflint = "3.*"
 asv = ">=0.6.4,<0.7"
 libmambapy = "*"
 conda-build = "*"
+# asv installs its environments with the same Python version but not all of our
+# dependencies are ready for 3.13 yet.
+python = "3.12.*"
