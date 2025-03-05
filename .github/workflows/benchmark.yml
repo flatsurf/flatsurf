@@ -13,13 +13,36 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: prefix-dev/setup-pixi@v0.8.1
-      with: { pixi-version: v0.28.2, environments: asv, activate-environment: true }
+      with: { pixi-version: v0.28.2, environments: dev, activate-environment: true }
     - name: Checkout historic performance data
       uses: actions/checkout@v4
       with: { path: .asv/results, ref: asv }
+    - name: Install additional dependencies
+      run: conda install -y -c flatsurf cppasv
+    - name: Setup ASV configuration
+      run: |
+        export PYTHONUNBUFFERED=1
+
+        cat <<EOF > ~/.asv-machine.json
+        {
+            "azure": {
+                "arch": "x86_64",
+                "cpu": "Standard_DS2_v2",
+                "machine": "Azure",
+                "os": "Linux",
+                "ram": "61830880"
+            },
+            "version": 1
+        }
+        EOF
+    - name: Setup repository
+      run: |
+        # ASV will run benchmarks on the HEAD of master. So we need to pretend that this is where we are at the moment.
+        git checkout -b master || true
     - name: Run benchmarks
-      uses: flatsurf/actions/asv@main
-      with: { packages: pixi }
+      run: asv run -v --machine=azure --python=same
+    - name: Rerender GitHub Pages
+      run: asv publish --no-pull --verbose --html-dir .asv/html
     - name: Update historic performance data
       uses: EndBug/add-and-commit@v9
       with:
