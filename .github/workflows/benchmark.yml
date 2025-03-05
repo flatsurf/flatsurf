@@ -39,6 +39,8 @@ jobs:
       run: |
         # ASV will run benchmarks on the HEAD of master. So we need to pretend that this is where we are at the moment.
         git checkout -b master || true
+    - name: Build benchmarks
+      run: pixi run build-libflatsurf
     - name: Run benchmarks
       run: asv run -v --machine=azure --python=same
     - name: Rerender GitHub Pages
