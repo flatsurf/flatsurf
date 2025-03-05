@@ -17,8 +17,6 @@ jobs:
     - name: Checkout historic performance data
       uses: actions/checkout@v4
       with: { path: .asv/results, ref: asv }
-    - name: Install additional dependencies
-      run: conda install -y -c flatsurf cppasv
     - name: Setup ASV configuration
       run: |
         export PYTHONUNBUFFERED=1

@@ -2,7 +2,7 @@
 # the README for how to use pixi with flatsurf.
 
 [project]
-channels = ["conda-forge"]
+channels = ["conda-forge", "flatsurf"]
 description = "A C++ library for Translation Surfaces"
 name = "flatsurf"
 platforms = ["linux-64", "osx-64"]
@@ -199,6 +199,9 @@ sagelib = "==10.3"
 codespell = "*"
 clangdev = "*"
 compiledb = "*"
+
+[feature.dev.pypi-dependencies]
+cppasv = { git = "https://github.com/flatsurf/cppasv.git" }
 
 [feature.dev.target.linux.dependencies]
 # A recent functioning valgrind is only available on conda-forge linux builds.
