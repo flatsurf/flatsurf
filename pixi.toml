@@ -10,7 +10,6 @@ platforms = ["linux-64", "osx-64"]
 [environments]
 flint-2 = ["libflatsurf", "pyflatsurf", "flint-2"]
 flint-3 = ["libflatsurf", "pyflatsurf", "flint-3"]
-asv = ["asv"]
 dev = ["dev", "libflatsurf", "pyflatsurf"]
 env-coverage = ["coverage", "libflatsurf", "pyflatsurf"]
 
@@ -192,6 +191,7 @@ realalg = "*"
 pyflatsurf = { path = "pyflatsurf/src", editable = true }
 
 [feature.dev.dependencies]
+asv = ">=0.6.4,<0.7"
 libflint = "3.*"
 benchmark = "*"
 byexample = "*"
@@ -210,11 +210,3 @@ arb = "*"
 
 [feature.flint-3.dependencies]
 libflint = "3.*"
-
-[feature.asv.dependencies]
-asv = ">=0.6.4,<0.7"
-libmambapy = "*"
-conda-build = "*"
-# asv installs its environments with the same Python version but not all of our
-# dependencies are ready for 3.13 yet.
-python = "3.12.*"
