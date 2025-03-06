@@ -120,31 +120,38 @@ depends-on = ["bootstrap"]
 cmd = "make distcheck"
 depends-on = ["configure"]
 
-[feature.dev.tasks.compiler-warnings-clang]
-cmd = """
-make clean &&
-make check TESTS= CPP=$CPP CC=$CC CXX=$CXX CFLAGS=\"$CFLAGS -UNDEBUG\" CXXFLAGS=\"$CXXFLAGS -UNDEBUG\" &&
-make clean &&
-make check TESTS= CPP=$CPP CC=$CC CXX=$CXX CFLAGS=\"$CFLAGS -DNDEBUG\" CXXFLAGS=\"$CXXFLAGS -DNDEBUG\"
-"""
-cwd = "libflatsurf"
-depends-on = "configure-libflatsurf"
-# We need -Wno-reserved-identifiers since we extend FLINT using their style of having internal functions start with an underscore.
-# We need -Wno-unsafe-buffer-usage since we need unsafe pointer arithmetic to extend FLINT (efficiently.)
+[feature.dev.target.linux-64.tasks.compiler-warnings-clang]
+# The env hack is necessary to work around https://github.com/prefix-dev/pixi/issues/3287
+# We disable -Wsign-compare because .size() in C++ is well-known to be broken.
+# We disable -Wdeprecated-declarations because we use our own deprecated API, e.g., for testing.
+# We disable -Wunneeded-internal-declaration because clang optimizes away our noassert() and then complains that it is not used.
 # We need -fclang-abi-compat=17 to work around https://github.com/llvm/llvm-project/issues/85656
-env = { CPP="clang-cpp", CC="clang", CXX="clang++", CFLAGS="-Werror -Weverything -Wno-padded -Wno-disabled-macro-expansion -Wno-float-equal -Wno-documentation -Wno-reserved-identifier -Wno-declaration-after-statement -Wno-unsafe-buffer-usage", CXXFLAGS="-Wno-exit-time-destructors -Wno-undefined-func-template -Wno-global-constructors -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-zero-as-null-pointer-constant -Wno-deprecated-declarations -Wno-shadow-field-in-constructor -Wno-documentation -fclang-abi-compat=17" }
-
-[feature.dev.tasks.compiler-warnings-gcc]
 cmd = """
+/usr/bin/env -u '?' sh -c '
 make clean &&
-make check TESTS= CPP=$CPP CC=$CC CXX=$CXX CFLAGS=\"$CFLAGS -UNDEBUG\" CXXFLAGS=\"$CXXFLAGS -UNDEBUG\" &&
+make check TESTS= CPP=clang-cpp CC=clang CXX=clang++ CXXFLAGS=\"$CXXFLAGS -Werror -Wall -Wextra -Wno-sign-compare -Wno-deprecated-declarations -Wno-unneeded-internal-declaration -fclang-abi-compat=17 -UNDEBUG\" &&
 make clean &&
-make check TESTS= CPP=$CPP CC=$CC CXX=$CXX CFLAGS=\"$CFLAGS -DNDEBUG\" CXXFLAGS=\"$CXXFLAGS -DNDEBUG\"
+make check TESTS= CPP=clang-cpp CC=clang CXX=clang++ CXXFLAGS=\"$CXXFLAGS -Werror -Wall -Wextra -Wno-sign-compare -Wno-deprecated-declarations -Wno-unneeded-internal-declaration -fclang-abi-compat=17 -DNDEBUG\"
+'
 """
 cwd = "libflatsurf"
 depends-on = "configure-libflatsurf"
-# We need -Wno-dangling-reference because our tests rely on GENERATE_REF that does actually create a dangling reference.
-env = { CPP="cpp", CC="cc", CXX="c++", CFLAGS="-Werror -Wall -Wextra -pedantic", CXXFLAGS="-Werror -Wall -Wextra -pedantic -Wctor-dtor-privacy -Wold-style-cast -Woverloaded-virtual -Wcast-align -Wcast-qual -Wno-sign-compare -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-include-dirs -Wno-redundant-decls -Wundef -fdiagnostics-show-option -Wconversion -Wshadow-compatible-local -Wno-deprecated -Wno-deprecated-declarations -Wno-float-equal -Wsign-promo -Wstrict-null-sentinel -Wno-dangling-reference" }
+
+[feature.dev.target.linux-64.tasks.compiler-warnings-gcc]
+# The env hack is necessary to work around https://github.com/prefix-dev/pixi/issues/3287
+# We disable -Wsign-compare because .size() in C++ is well-known to be broken.
+# We disable -Wdeprecated-declarations because we use our own deprecated API, e.g., for testing.
+# We disable -Wdangling-reference because our tests rely on GENERATE_REF that does actually create a dangling reference.
+cmd = """
+/usr/bin/env -u '?' sh -c '
+make clean &&
+make check TESTS= CXXFLAGS=\"$CXXFLAGS -Werror -Wall -Wextra -Wno-sign-compare -Wno-deprecated-declarations -Wno-dangling-reference -UNDEBUG\" &&
+make clean &&
+make check TESTS= CXXFLAGS=\"$CXXFLAGS -Werror -Wall -Wextra -Wno-sign-compare -Wno-deprecated-declarations -Wno-dangling-reference -DNDEBUG\"
+'
+"""
+cwd = "libflatsurf"
+depends-on = "configure-libflatsurf"
 
 [feature.dev.tasks.configure-libflatsurf]
 cmd = './configure --prefix="$CONDA_PREFIX" --with-benchmark'
