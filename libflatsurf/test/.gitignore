@@ -57,3 +57,6 @@ stamp-h1
 *.log
 *.trs
 *.json
+
+### test binaries
+/main

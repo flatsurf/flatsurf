@@ -135,3 +135,7 @@ vgcore.*
 
 # Rever
 /rever
+
+# pixi environments
+.pixi
+

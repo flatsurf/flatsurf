@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2022 Julian Rüth
+ *        Copyright (C) 2022-2025 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,7 +29,8 @@
 namespace flatsurf {
 
 template <typename Surface>
-struct ImplementationOf<Equivalence<Surface>> {
+class ImplementationOf<Equivalence<Surface>> {
+ public:
   virtual ~ImplementationOf();
 
   // Return a code word that uniquely identifies this surface with respect to

@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2022 Julian Rüth
+ *        Copyright (C) 2022-2025 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,7 +26,8 @@
 namespace flatsurf {
 
 template <typename Surface>
-struct LinearEquivalenceClassCode : public EquivalenceClassCode {
+class LinearEquivalenceClassCode : public EquivalenceClassCode {
+ public:
   using T = typename Surface::Coordinate;
   using Word = std::tuple<CombinatorialEquivalenceClassCode::Word, std::vector<Vector<T>>>;
 
