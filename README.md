@@ -36,7 +36,108 @@ The dependencies are:
 
 ## Usage
 
-TODO
+We create a regular hexagon, and glue its opposites sides.
+
+```cpp
+#include <flatsurf/flatsurf.hpp>
+
+using flatsurf::FlatTriangulation;
+using R = eantic::renf_elem_class;
+using R2 = flatsurf::Vector<R>;
+
+// We create a number field to represent the edges of the hexagon.
+auto K = eantic::renf_class("x^2 - 3", "x", "1.73 +/- 0.1");
+auto x = K.gen();
+
+// The edge vectors of a regular hexagon.
+auto vectors = std::vector{R2(R(K, 2), R(K, 0)), R2(R(K, 1), x), R2(R(K, 3), x), R2(R(K, 1), -x), R2(R(K, 4), R(K, 0)), R2(R(K, 3), x)};
+
+// The edges are going to be labeled 1,…,6.
+// The labels -1,…,-6 refer to the negative of these edges.
+// We give the permutation obtained by walking around the two marked vertices
+of the hexagon to specify the edge gluing in our translation surface.
+auto vertices = std::vector<std::vector<int>>({{1, 3, -4, -5, -3, -2}, {2, -1, -6, 4, 5, 6}});
+
+auto hexagon = FlatTriangulation(vertices, vectors);
+
+std::cout << hexagon << std::endl;
+// FlatTriangulationCombinatorial(vertices = (1, 3, -4, -5, -3, -2)(-1, -6, 4, 5, 6, 2), faces = (1, 2, -3)(-1, -2, 6)(3, -5, 4)(-4, -6, 5)) with vectors {1: (2, 0), 2: (1, (x ~ 1.7320508)), 3: (3, (x ~ 1.7320508)), 4: (1, (-x ~ -1.7320508)), 5: (4, 0), 6: (3, (x ~ 1.7320508))}
+```
+
+We enumerate saddle connections in this hexagon up to length 4.
+
+```
+auto connections = flatsurf::SaddleConnections(hexagon).bound(4);
+for (auto c : connections)
+    std::cout << *c << std::endl;
+// 1
+// -1
+// 2
+// (-3, (x ~ 1.7320508)) from 2 to 4
+// (0, (2*x ~ 3.4641016)) from 2 to -6
+// (-2, (2*x ~ 3.4641016)) from 2 to -2
+// -2
+// (3, (-x ~ -1.7320508)) from -2 to -4
+// (0, (-2*x ~ -3.4641016)) from -2 to 3
+// (2, (-2*x ~ -3.4641016)) from -2 to 2
+// 3
+// (2, (2*x ~ 3.4641016)) from 3 to -6
+// (0, (2*x ~ 3.4641016)) from 3 to -2
+// -3
+// 4
+// (3, (-x ~ -1.7320508)) from 4 to 2
+// -4
+// (-3, (x ~ 1.7320508)) from -4 to -2
+// 5
+// -5
+// 6
+// -6
+// (-2, (-2*x ~ -3.4641016)) from -6 to 3
+// (0, (-2*x ~ -3.4641016)) from -6 to 2
+```
+
+We can perform the same computation with the Python interface (though we recommend you use sage-flatsurf which makes this much easier to accomplish):
+
+```py
+>>> import pyflatsurf
+>>> import cppyy
+>>> import pyeantic
+
+>>> K = pyeantic.eantic.renf_class.make("x^2 - 3", "x", "1.73 +/- 0.1")
+>>> x = K.gen()
+>>> R2 = pyflatsurf.flatsurf.Vector[cppyy.gbl.eantic.renf_elem_class]
+>>> R = pyeantic.eantic.renf_elem
+>>> vectors = [R2(R(K, 2), R(K, 0)), R2(R(K, 1), x), R2(R(K, 3), x), R2(R(K, 1), -x), R2(R(K, 4), R(K, 0)), R2(R(K, 3), x)]
+>>> vertices = [[1, 3, -4, -5, -3, -2], [2, -1, -6, 4, 5, 6]]
+>>> S = pyflatsurf.Surface(vertices, vectors)
+
+>>> C = S.connections().bound(4)
+>>> for c in C: print(c)
+1
+-1
+2
+(-3, (x ~ 1.7320508)) from 2 to 4
+(0, (2*x ~ 3.4641016)) from 2 to -6
+(-2, (2*x ~ 3.4641016)) from 2 to -2
+-2
+(3, (-x ~ -1.7320508)) from -2 to -4
+(0, (-2*x ~ -3.4641016)) from -2 to 3
+(2, (-2*x ~ -3.4641016)) from -2 to 2
+3
+(2, (2*x ~ 3.4641016)) from 3 to -6
+(0, (2*x ~ 3.4641016)) from 3 to -2
+-3
+4
+(3, (-x ~ -1.7320508)) from 4 to 2
+-4
+(-3, (x ~ 1.7320508)) from -4 to -2
+5
+-5
+6
+-6
+(-2, (-2*x ~ -3.4641016)) from -6 to 3
+(0, (-2*x ~ -3.4641016)) from -6 to 2
+```
 
 ## Build and Develop e-antic with pixi
 
