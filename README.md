@@ -279,13 +279,9 @@ are several ways to analyze the output,
 [hotspot](https://github.com/KDAB/hotspot) might be the most convenient one at
 the time of this writing.
 
-<!--
-TODO: Make sure that we set UNDEBUG in our build!
-
 Note that the C++ compiler package from conda disabled all assertions. To
 enable assertions `export CPPFLAGS="$CPPFLAGS -UNDEBUG"` before running
 configure and make.
--->
 
 ## Feedback and Contributions
 
