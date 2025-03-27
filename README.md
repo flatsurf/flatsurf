@@ -38,6 +38,7 @@ The dependencies are:
 
 We create a regular hexagon, and glue its opposites sides.
 
+<!-- when you make changes to this example, make sure to update the corresponding test case in flat_triangulation.test.cc -->
 ```cpp
 #include <flatsurf/flatsurf.hpp>
 
@@ -46,16 +47,16 @@ using R = eantic::renf_elem_class;
 using R2 = flatsurf::Vector<R>;
 
 // We create a number field to represent the edges of the hexagon.
-auto K = eantic::renf_class("x^2 - 3", "x", "1.73 +/- 0.1");
-auto x = K.gen();
+auto K = eantic::renf_class::make("x^2 - 3", "x", "1.73 +/- 0.1");
+auto x = K->gen();
 
 // The edge vectors of a regular hexagon.
-auto vectors = std::vector{R2(R(K, 2), R(K, 0)), R2(R(K, 1), x), R2(R(K, 3), x), R2(R(K, 1), -x), R2(R(K, 4), R(K, 0)), R2(R(K, 3), x)};
+auto vectors = std::vector{R2(R(*K, 2), R(*K, 0)), R2(R(*K, 1), x), R2(R(*K, 3), x), R2(R(*K, 1), -x), R2(R(*K, 4), R(*K, 0)), R2(R(*K, 3), x)};
 
 // The edges are going to be labeled 1,…,6.
 // The labels -1,…,-6 refer to the negative of these edges.
 // We give the permutation obtained by walking around the two marked vertices
-of the hexagon to specify the edge gluing in our translation surface.
+// of the hexagon to specify the edge gluing in our translation surface.
 auto vertices = std::vector<std::vector<int>>({{1, 3, -4, -5, -3, -2}, {2, -1, -6, 4, 5, 6}});
 
 auto hexagon = FlatTriangulation(vertices, vectors);
@@ -69,7 +70,7 @@ We enumerate saddle connections in this hexagon up to length 4.
 ```
 auto connections = flatsurf::SaddleConnections(hexagon).bound(4);
 for (auto c : connections)
-    std::cout << *c << std::endl;
+    std::cout << c << std::endl;
 // 1
 // -1
 // 2
@@ -98,6 +99,7 @@ for (auto c : connections)
 
 We can perform the same computation with the Python interface (though we recommend you use sage-flatsurf which makes this much easier to accomplish):
 
+<!-- when you make changes to this example, make sure to update the corresponding test case in flat_triangulation.py -->
 ```py
 >>> import pyflatsurf
 >>> import cppyy
