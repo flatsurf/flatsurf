@@ -67,7 +67,7 @@ std::cout << hexagon << std::endl;
 
 We enumerate saddle connections in this hexagon up to length 4.
 
-```
+```cpp
 auto connections = flatsurf::SaddleConnections(hexagon).bound(4);
 for (auto c : connections)
     std::cout << c << std::endl;
@@ -146,7 +146,7 @@ We can perform the same computation with the Python interface (though we recomme
 If you have cloned the source repository, make sure to pull in all the
 third-party header-only libraries by running:
 
-```
+```sh
 git submodule update --init
 ```
 
