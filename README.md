@@ -36,14 +36,6 @@ mamba create -n flatsurf -c flatsurf libflatsurf pyflatsurf
 conda activate flatsurf
 ```
 
-## Run with binder in the Cloud
-
-You can try out the projects in this repository in a very limited environment online by clicking the following links:
-
-* **libflatsurf** [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/flatsurf/master?filepath=doc%2Fbinder%2FSample.libflatsurf.ipynb)
-* **pyflatsurf** [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/flatsurf/master?filepath=doc%2Fbinder%2FSample.pyflatsurf.ipynb)
-* **pyflatsurf** with SageMath [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/flatsurf/master?filepath=doc%2Fbinder%2FSample.pyflatsurf.sage.ipynb)
-
 ## Build from the Source Code Repository
 
 We are following a standard autoconf setup, i.e., you can create the library
