@@ -141,7 +141,7 @@ We can perform the same computation with the Python interface (though we recomme
 (0, (-2*x ~ -3.4641016)) from -6 to 2
 ```
 
-## Build and Develop e-antic with pixi
+## Build and Develop flatsurf with pixi
 
 If you have cloned the source repository, make sure to pull in all the
 third-party header-only libraries by running:
