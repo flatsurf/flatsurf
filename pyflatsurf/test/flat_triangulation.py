@@ -3,7 +3,7 @@
 ######################################################################
 # This file is part of flatsurf.
 #
-#       Copyright (C) 2020-2024 Julian Rüth
+#       Copyright (C) 2020-2025 Julian Rüth
 #
 # flatsurf is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -52,5 +52,23 @@ def test_serialization():
     clone = loads(dumps(hexagon))
     assert clone == hexagon
     assert hash(clone) == hash(hexagon)
+
+def test_readme():
+    # Make sure to update the README.md if you make any changes to this test case.
+    import pyflatsurf
+    import cppyy
+    import pyeantic
+
+    K = pyeantic.eantic.renf_class.make("x^2 - 3", "x", "1.73 +/- 0.1")
+    x = K.gen()
+    R2 = pyflatsurf.flatsurf.Vector[cppyy.gbl.eantic.renf_elem_class]
+    R = pyeantic.eantic.renf_elem
+    vectors = [R2(R(K, 2), R(K, 0)), R2(R(K, 1), x), R2(R(K, 3), x), R2(R(K, 1), -x), R2(R(K, 4), R(K, 0)), R2(R(K, 3), x)]
+    vertices = [[1, 3, -4, -5, -3, -2], [2, -1, -6, 4, 5, 6]]
+    S = pyflatsurf.Surface(vertices, vectors)
+
+    C = S.connections().bound(4)
+    assert "\n".join(str(c) for c in C) == "1\n-1\n2\n(-3, (x ~ 1.7320508)) from 2 to 4\n(0, (2*x ~ 3.4641016)) from 2 to -6\n(-2, (2*x ~ 3.4641016)) from 2 to -2\n-2\n(3, (-x ~ -1.7320508)) from -2 to -4\n(0, (-2*x ~ -3.4641016)) from -2 to 3\n(2, (-2*x ~ -3.4641016)) from -2 to 2\n3\n(2, (2*x ~ 3.4641016)) from 3 to -6\n(0, (2*x ~ 3.4641016)) from 3 to -2\n-3\n4\n(3, (-x ~ -1.7320508)) from 4 to 2\n-4\n(-3, (x ~ 1.7320508)) from -4 to -2\n5\n-5\n6\n-6\n(-2, (-2*x ~ -3.4641016)) from -6 to 3\n(0, (-2*x ~ -3.4641016)) from -6 to 2"
+
 
 if __name__ == '__main__': sys.exit(pytest.main(sys.argv))

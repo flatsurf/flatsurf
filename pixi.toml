@@ -18,11 +18,9 @@ env-coverage = ["coverage", "libflatsurf", "pyflatsurf"]
 ##############
 [activation.env]
 MAKEFLAGS = "-j$(nproc)"
-CFLAGS = "-g3"
-CXXFLAGS = "-g3"
+CXXFLAGS = "-g3 -UNDEBUG"
 
 [feature.coverage.activation.env]
-CFLAGS = "-coverage -O0 -UNDEBUG"
 CXXFLAGS = "-coverage -O0 -UNDEBUG"
 
 #########
