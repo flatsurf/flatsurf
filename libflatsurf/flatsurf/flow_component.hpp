@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2022 Julian Rüth
+ *        Copyright (C) 2019-2025 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -100,9 +100,12 @@ class FlowComponent : boost::equality_comparable<FlowComponent<Surface>> {
   // of vertical().
   T height() const;
 
-  // Return twice the area of this component. Note that even for cylinders this
-  // is usually not width() * height().
+  [[deprecated("This method returns twice the area. To make this explicit, use area2() instead.")]]
   T area() const;
+
+  // Return twice the area of this component. Note that even for cylinders this
+  // is usually not 2 * width() * height().
+  T area2() const;
 
   // Return the vectors going from the non-vertical saddle connections on the
   // bottom to their counterparts on the top; ordered as on the bottom contour

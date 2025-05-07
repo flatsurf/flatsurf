@@ -64,8 +64,11 @@ class VectorExact : public VectorBase<Vector>,
   // Return the result of applying this matrix from the left.
   Vector applyMatrix(const T& a, const T& b, const T& c, const T& d) const;
 
-  // Return twice the area of the polygon described by the (counter-clockwise) perimeter.
+  [[deprecated("This method returns twice the area. To make this explicit, use area2() instead.")]]
   static T area(const std::vector<Vector> &perimeter);
+
+  // Return twice the area of the polygon described by the (counter-clockwise) perimeter.
+  static T area2(const std::vector<Vector> &perimeter);
 
   // Implements a less-than operator which orders vectors by their slope,
   // i.e., it orders vectors (x, y) by their quotient y/x (sending y/0 to +∞.)
