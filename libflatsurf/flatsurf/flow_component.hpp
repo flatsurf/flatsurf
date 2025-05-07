@@ -88,17 +88,26 @@ class FlowComponent : boost::equality_comparable<FlowComponent<Surface>> {
 
   [[deprecated("This method returns a inconsistent version of the IET from which this component was created originally. Use dynamicalComponent().iet() instead.")]] const IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>& intervalExchangeTransformation() const;
 
-  // Return the width of this component multiplied with the length of the
-  // vertical().
+  [[deprecated("This method does not return the actual width of the component, use widthRelative() instead to make this explicit.")]]
   T width() const;
 
-  // If this is a cylinder, return the height of this component multiplied with
-  // the length of the vertical(), i.e., the scalar product of
-  // circumferenceHolonomy() and vertical().
-  // In general this returns a lower bound of the height of any cylinder in
-  // vertical direction contained in this component, again scaled by the length
-  // of vertical().
+  // Return the width of this component multiplied with the norm of the
+  // vertical().
+  // Note that for a cylinder the following holds:
+  // 2 * widthRelative() * heightRelative() = area2() * norm(vertical())**2.
+  T widthRelative() const;
+
+  [[deprecated("This method does not return the actual height of the component, use heightRelative() instead to make this explicit.")]]
   T height() const;
+
+  // Return a lower bound of the relative height of any cylinder contained in
+  // this component.
+  // If this is a cylinder, return the actual relative height of the cylinder.
+  // The relative height is the actual height multiplied with the norm of the
+  // vertical().
+  // Note that for a cylinder the following holds:
+  // 2 * widthRelative() * heightRelative() = area2() * norm(vertical())**2.
+  T heightRelative() const;
 
   [[deprecated("This method returns twice the area. To make this explicit, use area2() instead.")]]
   T area() const;
