@@ -66,12 +66,12 @@ class ImplementationOf<FlatTriangulationCollapsed<T>> : protected Implementation
   // cross to the other face.
   Tracked<HalfEdgeMap<SaddleConnection>> vectors;
 
-  // Return the area of this triangulation.
-  // It is better to just call .area() on the collapsed triangulation directly
+  // Return twice the area of this triangulation.
+  // It is better to just call .area2() on the collapsed triangulation directly
   // which returns the area of the uncollapsed triangulation.
   // This method exists for the sake of asserting that no area was lost in the
   // process of collapsing triangles.
-  static T area(const FlatTriangulationCollapsed<T>&);
+  static T area2(const FlatTriangulationCollapsed<T>&);
 
   // Check that the face of this half edge is actually closed.
   bool faceClosed(HalfEdge);

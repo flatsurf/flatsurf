@@ -275,7 +275,6 @@ Vertical<Surface> FlowComponent<Surface>::vertical() const {
 template <typename Surface>
 typename Surface::Coordinate FlowComponent<Surface>::area() const {
   return area2();
-  return Vector<T>::area(perimeter() | rx::transform([&](const auto& connection) { return static_cast<const Vector<T>&>(connection.saddleConnection()); }) | rx::to_vector());
 }
 
 template <typename Surface>

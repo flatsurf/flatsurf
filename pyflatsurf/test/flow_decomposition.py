@@ -47,7 +47,7 @@ def test_hexagon_eantic():
 
             if component.cylinder():
                 # 3 ways to compute area
-                area1 = component.area()
+                area1 = component.area2()
 
                 h = component.circumferenceHolonomy()
                 p0 = [p for p in component.perimeter()][0]

@@ -248,7 +248,7 @@ TEMPLATE_TEST_CASE("Eliminate Marked Points", "[FlatTriangulation][eliminateMark
     REQUIRE(unmarkedPoints(simplified.codomain()).size() == 0);
   }
 
-  REQUIRE(surface->area() == simplified.codomain().area());
+  REQUIRE(surface->area2() == simplified.codomain().area2());
 
   for (const auto& preimage : surface->halfEdges()) {
     if (surface->angle(Vertex::source(*surface, preimage)) != 1 && surface->angle(Vertex::target(*surface, preimage)) != 1) {
