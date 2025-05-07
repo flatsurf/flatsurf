@@ -84,4 +84,3 @@ TEMPLATE_TEST_CASE("Connections and IET from Contour Decomposition", "[ContourDe
 }
 
 }  // namespace flatsurf::test
-
