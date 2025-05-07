@@ -15,6 +15,7 @@
 * Deprecated ``Vector::area()`` since it returns twice the area. Use ``area2()`` instead.
 * Deprecated ``ContourComponent::area()`` since it strangely returns 6 times the area. Use ``area2()`` instead.
 * Deprecated ``FlatTriangulation::area()`` since it returns twice the area. Use ``area2()`` instead.
+* Deprecated ``FlatTriangulationCollapsed::area()`` since it is not clear what the area of a collapsed surface would be. Use ``uncollapsed().area2()`` instead.
 
 **Removed:**
 
