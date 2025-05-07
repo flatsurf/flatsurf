@@ -16,6 +16,7 @@
 * Deprecated ``ContourComponent::area()`` since it strangely returns 6 times the area. Use ``area2()`` instead.
 * Deprecated ``FlatTriangulation::area()`` since it returns twice the area. Use ``area2()`` instead.
 * Deprecated ``FlatTriangulationCollapsed::area()`` since it is not clear what the area of a collapsed surface would be. Use ``uncollapsed().area2()`` instead.
+* Deprecated ``Path::area()`` since it is not really meaningful unless the the path describes a polygon inside a face.
 
 **Removed:**
 

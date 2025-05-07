@@ -65,6 +65,7 @@ class Path : public Serializable<Path<Surface>>,
 
   Path reversed() const;
 
+  [[deprecated("This method returns twice the signed area if this path describes a polygon in some obvious way. However, often this notion is not terribly meaningful so we are going to remove this method in a future release.")]]
   T area() const;
 
   void splice(const PathIterator<Surface>&, Path& other);
