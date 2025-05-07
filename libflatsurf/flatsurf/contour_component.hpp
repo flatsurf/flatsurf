@@ -69,7 +69,11 @@ class ContourComponent : boost::equality_comparable<ContourComponent<Surface>> {
   // The connections going around this component in counterclockwise order, i.e., bottom() + top().
   Path<FlatTriangulation<T>> perimeter() const;
 
+  [[deprecated("This method returns six times the area. Use 3 * area2() instead.")]]
   T area() const;
+
+  // Return twice the area of this component.
+  T area2() const;
 
   bool operator==(const ContourComponent<Surface> &) const;
 
