@@ -53,8 +53,8 @@ TEST_CASE("Area of a Contour Decomposition", "[ContourComponent][area]") {
 
     auto decomposition = ContourDecomposition<FlatTriangulation<T>>(surface->clone(), {2, 1});
 
-    auto area = decomposition.components() | rx::transform([&](const auto& component) { return component.area(); }) | rx::sum();
-    REQUIRE(area == surface->area());
+    auto area = decomposition.components() | rx::transform([&](const auto& component) { return component.area2(); }) | rx::sum();
+    REQUIRE(area == surface->area2());
   }
 }
 

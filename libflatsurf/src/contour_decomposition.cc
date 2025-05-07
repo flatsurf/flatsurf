@@ -196,8 +196,10 @@ void ImplementationOf<ContourDecomposition<Surface>>::check(const std::vector<Pa
 
   // Total Area has not Changed
   {
-    const auto area = decomposition | rx::transform([](const auto& component) { return component.area(); }) | rx::sum();
-    LIBFLATSURF_CHECK(area == surface.area(), "Total area of components does not match area of original surface, " << area << " != " << surface.area());
+    const auto area2 = decomposition | rx::transform([](const auto& component) {
+      return Vector<T>::area2(component | rx::transform([](const auto& connection) { return connection.vector(); }) | rx::to_vector());
+    }) | rx::sum();
+    LIBFLATSURF_CHECK(area2 == surface.area2(), "Total area of components does not match area of original surface, " << area2 << " != " << surface.area2());
   }
 
   // Components do not overlap
