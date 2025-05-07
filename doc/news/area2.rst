@@ -14,7 +14,7 @@
 
 **Removed:**
 
-* <news item>
+* Removed ``ContourComponent::width()`` from the API since it had no implementation at all.
 
 **Fixed:**
 

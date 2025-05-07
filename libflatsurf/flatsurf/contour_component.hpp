@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2020 Julian Rüth
+ *        Copyright (C) 2019-2025 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,8 +28,7 @@
 
 namespace flatsurf {
 
-// A component of a Contour Decomposition, i.e., a connected component whose
-// graph of faces when only considering faces adjacent that share a
+// A component of a Contour Decomposition, i.e., a connected component of the graph whose vertices correspond to faces and there is an edge when when only considering faces adjacent that share a
 // non-vertical edge.
 // Note that this object is immutable, all its members are const.
 template <class Surface>
@@ -70,7 +69,6 @@ class ContourComponent : boost::equality_comparable<ContourComponent<Surface>> {
   // The connections going around this component in counterclockwise order, i.e., bottom() + top().
   Path<FlatTriangulation<T>> perimeter() const;
 
-  T width() const;
   T area() const;
 
   bool operator==(const ContourComponent<Surface> &) const;
