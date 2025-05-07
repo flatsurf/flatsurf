@@ -709,7 +709,7 @@ T FlatTriangulation<T>::area() const {
 }
 
 template <typename T>
-T FlatTriangulation<T>::area() const {
+T FlatTriangulation<T>::area2() const {
   T area = T();
   for (auto e : this->halfEdges()) {
     if (this->boundary(e)) continue;
