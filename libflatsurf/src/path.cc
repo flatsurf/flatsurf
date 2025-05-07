@@ -351,7 +351,7 @@ void Path<Surface>::splice(const PathIterator<Surface>& pos, Path&& other) {
 template <typename Surface>
 typename Surface::Coordinate Path<Surface>::area() const {
   LIBFLATSURF_CHECK_ARGUMENT(closed(), "Area can only be computed for closed paths but " << *this << " is not closed.");
-  return Vector<T>::area(*this | rx::transform([](const auto& connection) { return connection.vector(); }) | rx::to_vector());
+  return Vector<T>::area2(*this | rx::transform([](const auto& connection) { return connection.vector(); }) | rx::to_vector());
 }
 
 template <typename Surface>

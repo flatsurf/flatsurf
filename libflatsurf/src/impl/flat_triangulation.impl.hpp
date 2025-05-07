@@ -41,8 +41,6 @@ class ImplementationOf<FlatTriangulation<T>> : protected ImplementationOf<Manage
 
   void check();
 
-  static T area(const Vector<T>& a, const Vector<T>& b, const Vector<T>& c);
-
   void flip(HalfEdge) override;
 
   std::string yaml() const;

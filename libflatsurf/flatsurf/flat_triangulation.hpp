@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2024 Julian Rüth
+ *        Copyright (C) 2019-2025 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -126,8 +126,11 @@ class FlatTriangulation : public FlatTriangulationCombinatorics<FlatTriangulatio
   // Return whether the two triangles attached to this half edge form a (strictly) convex quadrilateral.
   bool convex(HalfEdge, bool strict = false) const;
 
-  // Return twice the area of this triangulation.
+  [[deprecated("This method returns twice the area. To make this explicit, use area2() instead.")]]
   T area() const;
+
+  // Return twice the area of this triangulation.
+  T area2() const;
 
   // Return the total angle at this vertex as a multiple of 2π.
   int angle(const Vertex &) const;

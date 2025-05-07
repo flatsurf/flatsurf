@@ -59,6 +59,7 @@ class FlatTriangulationCollapsed : public FlatTriangulationCombinatorics<FlatTri
   // expects.
   FlatTriangulationCollapsed<T> clone() const;
 
+  [[deprecated("This method returns twice the area. Use uncollapsed().area2() instead.")]]
   T area() const;
 
   // Note that only the horizontal part of this vector is meaningful. Rather,

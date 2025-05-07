@@ -78,12 +78,12 @@ TEMPLATE_TEST_CASE("Flow Decomposition", "[FlowDecomposition]", (long long), (mp
   SECTION("The flow decomposition in that direction can be computed") {
     auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), vertical);
 
-    const auto area = [](const auto& components) {
-      return components | rx::transform([](const auto& component) { return component.area(); }) | rx::sum();
+    const auto area2 = [](const auto& components) {
+      return components | rx::transform([](const auto& component) { return component.area2(); }) | rx::sum();
     };
 
     CAPTURE(flowDecomposition);
-    REQUIRE(area(flowDecomposition.components()) == surface->area());
+    REQUIRE(area2(flowDecomposition.components()) == surface->area2());
 
     // Return the sum of the SAF invariants of the components that make up
     // a flow decomposition.
@@ -116,7 +116,7 @@ TEMPLATE_TEST_CASE("Flow Decomposition", "[FlowDecomposition]", (long long), (mp
     REQUIRE(flowDecomposition.decompose());
 
     CAPTURE(flowDecomposition);
-    REQUIRE(area(flowDecomposition.components()) == surface->area());
+    REQUIRE(area2(flowDecomposition.components()) == surface->area2());
 
     SECTION("The SAF Invariants are Consistent") {
       auto saf2 = safSum(flowDecomposition.components());
@@ -133,15 +133,15 @@ TEMPLATE_TEST_CASE("Flow Decomposition", "[FlowDecomposition]", (long long), (mp
       for (const auto& component : flowDecomposition.components()) {
         if (component.cylinder()) {
           REQUIRE(component.holonomy() == std::vector{component.circumferenceHolonomy()});
-          REQUIRE(2 * component.width() * component.height() == component.vertical().vertical() * component.vertical().vertical() * component.area());
+          REQUIRE(2 * component.width() * component.height() == component.vertical().vertical() * component.vertical().vertical() * component.area2());
         }
       }
     }
 
     SECTION("Each of its components can be triangulated") {
       const auto triangulations = flowDecomposition.components() | rx::transform([](const auto& component) { return component.triangulation(); }) | rx::to_vector();
-      REQUIRE((triangulations | rx::transform([](const auto& component) { return component.triangulation().area(); }) | rx::sum()) == surface->area());
-      REQUIRE(flowDecomposition.triangulation().area() == surface->area());
+      REQUIRE((triangulations | rx::transform([](const auto& component) { return component.triangulation().area2(); }) | rx::sum()) == surface->area2());
+      REQUIRE(flowDecomposition.triangulation().area2() == surface->area2());
     }
 
     SECTION("Each component's bottom contour goes to the right") {
@@ -293,7 +293,7 @@ TEST_CASE("Parabolic", "[FlowDecomposition][parabolic]") {
     using R2 = Vector<T>;
     auto surface = make235<R2>();
     CAPTURE(*surface);
-    CAPTURE(surface->area());
+    CAPTURE(surface->area2());
 
     const auto direction = Vector<T>(1, 0);
     auto flowDecomposition = FlowDecomposition<FlatTriangulation<T>>(surface->clone(), direction);
