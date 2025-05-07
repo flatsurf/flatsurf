@@ -198,7 +198,7 @@ void ImplementationOf<ContourDecomposition<Surface>>::check(const std::vector<Pa
   {
     const auto area2 = decomposition | rx::transform([](const auto& component) {
       return Vector<T>::area2(component | rx::transform([](const auto& connection) { return connection.vector(); }) | rx::to_vector());
-    }) | rx::sum();
+    }) | rx::to_vector() | rx::sum();
     LIBFLATSURF_CHECK(area2 == surface.area2(), "Total area of components does not match area of original surface, " << area2 << " != " << surface.area2());
   }
 
