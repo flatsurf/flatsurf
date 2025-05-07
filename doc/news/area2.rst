@@ -2,7 +2,8 @@
 
 * Added ``FlowComponent::area2()`` as a replacement for ``FlowComponent::area()``.
 * Added ``Vector::area2()`` as a replacement for ``Vector::area()``.
-* Added ``ContourComponent::area()`` as a replacement for ``ContourComponent::area()``.
+* Added ``ContourComponent::area2()`` as a replacement for ``ContourComponent::area()``.
+* Added ``FlatTriangulation::area2()`` as a replacement for ``FlatTriangulation::area()``.
 
 **Changed:**
 
@@ -13,6 +14,7 @@
 * Deprecated ``FlowComponent::area()`` since it returns twice the area. Use ``area2()`` instead.
 * Deprecated ``Vector::area()`` since it returns twice the area. Use ``area2()`` instead.
 * Deprecated ``ContourComponent::area()`` since it strangely returns 6 times the area. Use ``area2()`` instead.
+* Deprecated ``FlatTriangulation::area()`` since it returns twice the area. Use ``area2()`` instead.
 
 **Removed:**
 
