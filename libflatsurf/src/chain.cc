@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2022 Julian Rüth
+ *        Copyright (C) 2019-2025 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 #include "external/rx-ranges/include/rx/ranges.hpp"
 #include "impl/chain.impl.hpp"
 #include "impl/chain_iterator.impl.hpp"
-#include "util/assert.ipp"
 #include "util/hash.ipp"
 #include "util/streamed.ipp"
 

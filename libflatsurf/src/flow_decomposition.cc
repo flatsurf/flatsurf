@@ -141,7 +141,7 @@ boost::logic::tribool FlowDecomposition<Surface>::parabolic() const {
     answer = answer && state;
     Vector<T> h = component.circumferenceHolonomy();
     T hnorm2 = h.x() * h.x() + h.y() * h.y();
-    T a = component.area();
+    T a = component.area2();
     if (hnorm20 == 0) {
       hnorm20 = hnorm2;
       a0 = a;

@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2022 Julian Rüth
+ *        Copyright (C) 2019-2025 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -274,11 +274,21 @@ Vertical<Surface> FlowComponent<Surface>::vertical() const {
 
 template <typename Surface>
 typename Surface::Coordinate FlowComponent<Surface>::area() const {
+  return area2();
+}
+
+template <typename Surface>
+typename Surface::Coordinate FlowComponent<Surface>::area2() const {
   return Vector<T>::area(perimeter() | rx::transform([&](const auto& connection) { return static_cast<const Vector<T>&>(connection.saddleConnection()); }) | rx::to_vector());
 }
 
 template <typename Surface>
 typename Surface::Coordinate FlowComponent<Surface>::width() const {
+  return widthRelative();
+}
+
+template <typename Surface>
+typename Surface::Coordinate FlowComponent<Surface>::widthRelative() const {
   T sum = T();
   auto vertical = this->vertical();
   for (const auto& c : perimeter()) {
@@ -326,6 +336,11 @@ Vector<typename Surface::Coordinate> FlowComponent<Surface>::circumferenceHolono
 
 template <typename Surface>
 typename Surface::Coordinate FlowComponent<Surface>::height() const {
+  return heightRelative();
+}
+
+template <typename Surface>
+typename Surface::Coordinate FlowComponent<Surface>::heightRelative() const {
   // The vertical components of the holonomies are a lower bound for the
   // circumference of a cylinder. Note that these can be negative.
   // We have to use rx::max() because of a bug in rx::min(), see https://github.com/simonask/rx-ranges/pull/47

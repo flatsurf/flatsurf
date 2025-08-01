@@ -2,7 +2,7 @@
  *  This file is part of flatsurf.
  *
  *        Copyright (C)      2019 Vincent Delecroix
- *        Copyright (C) 2019-2024 Julian Rüth
+ *        Copyright (C) 2019-2025 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,19 +30,20 @@
 #include "../flatsurf/deformation.hpp"
 #include "../flatsurf/delaunay.hpp"
 #include "../flatsurf/equivalence.hpp"
+#include "../flatsurf/edge.hpp"
 #include "../flatsurf/flat_triangulation.hpp"
 #include "../flatsurf/fmt.hpp"
 #include "../flatsurf/half_edge.hpp"
-#include "../flatsurf/edge.hpp"
 #include "../flatsurf/half_edge_set.hpp"
-#include "../flatsurf/path.hpp"
-#include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/interval_exchange_transformation.hpp"
 #include "../flatsurf/isomorphism.hpp"
+#include "../flatsurf/odd_half_edge_map.hpp"
+#include "../flatsurf/path.hpp"
+#include "../flatsurf/path_iterator.hpp"
 #include "../flatsurf/saddle_connection.hpp"
+#include "../flatsurf/saddle_connections_iterator.hpp"
 #include "../flatsurf/saddle_connections.hpp"
 #include "../flatsurf/vector.hpp"
-#include "../flatsurf/odd_half_edge_map.hpp"
 #include "../src/external/rx-ranges/include/rx/ranges.hpp"
 #include "cereal.helpers.hpp"
 #include "generators/half_edge_generator.hpp"
@@ -247,7 +248,7 @@ TEMPLATE_TEST_CASE("Eliminate Marked Points", "[FlatTriangulation][eliminateMark
     REQUIRE(unmarkedPoints(simplified.codomain()).size() == 0);
   }
 
-  REQUIRE(surface->area() == simplified.codomain().area());
+  REQUIRE(surface->area2() == simplified.codomain().area2());
 
   for (const auto& preimage : surface->halfEdges()) {
     if (surface->angle(Vertex::source(*surface, preimage)) != 1 && surface->angle(Vertex::target(*surface, preimage)) != 1) {
@@ -555,6 +556,38 @@ TEMPLATE_TEST_CASE("Serialization of a FlatTriangulation", "[FlatTriangulation][
   auto square = makeSquare<R2>();
 
   testRoundtrip(*square);
+}
+
+TEST_CASE("Example from the README.md", "[FlatTriangulation]") {
+  // Make sure to update the README.md if you make any changes to this test case.
+  using flatsurf::FlatTriangulation;
+  using R = eantic::renf_elem_class;
+  using R2 = flatsurf::Vector<R>;
+
+  // We create a number field to represent the edges of the hexagon.
+  auto K = eantic::renf_class::make("x^2 - 3", "x", "1.73 +/- 0.1");
+  auto x = K->gen();
+
+  // The edge vectors of a regular hexagon.
+  auto vectors = std::vector{R2(R(*K, 2), R(*K, 0)), R2(R(*K, 1), x), R2(R(*K, 3), x), R2(R(*K, 1), -x), R2(R(*K, 4), R(*K, 0)), R2(R(*K, 3), x)};
+
+  // The edges are going to be labeled 1,…,6.
+  // The labels -1,…,-6 refer to the negative of these edges.
+  // We give the permutation obtained by walking around the two marked vertices
+  // of the hexagon to specify the edge gluing in our translation surface.
+  auto vertices = std::vector<std::vector<int>>({{1, 3, -4, -5, -3, -2}, {2, -1, -6, 4, 5, 6}});
+
+  auto hexagon = FlatTriangulation(vertices, vectors);
+
+  REQUIRE(fmt::format("{}", hexagon) == "FlatTriangulationCombinatorial(vertices = (1, 3, -4, -5, -3, -2)(-1, -6, 4, 5, 6, 2), faces = (1, 2, -3)(-1, -2, 6)(3, -5, 4)(-4, -6, 5)) with vectors {1: (2, 0), 2: (1, (x ~ 1.7320508)), 3: (3, (x ~ 1.7320508)), 4: (1, (-x ~ -1.7320508)), 5: (4, 0), 6: (3, (x ~ 1.7320508))}");
+
+  auto connections = flatsurf::SaddleConnections(hexagon).bound(4);
+
+  std::string out;
+  for (auto c : connections)
+    out += fmt::format("{}\n", c);
+
+  REQUIRE(out == "1\n-1\n2\n(-3, (x ~ 1.7320508)) from 2 to 4\n(0, (2*x ~ 3.4641016)) from 2 to -6\n(-2, (2*x ~ 3.4641016)) from 2 to -2\n-2\n(3, (-x ~ -1.7320508)) from -2 to -4\n(0, (-2*x ~ -3.4641016)) from -2 to 3\n(2, (-2*x ~ -3.4641016)) from -2 to 2\n3\n(2, (2*x ~ 3.4641016)) from 3 to -6\n(0, (2*x ~ 3.4641016)) from 3 to -2\n-3\n4\n(3, (-x ~ -1.7320508)) from 4 to 2\n-4\n(-3, (x ~ 1.7320508)) from -4 to -2\n5\n-5\n6\n-6\n(-2, (-2*x ~ -3.4641016)) from -6 to 3\n(0, (-2*x ~ -3.4641016)) from -6 to 2\n");
 }
 
 }  // namespace flatsurf::test

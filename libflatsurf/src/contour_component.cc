@@ -111,7 +111,15 @@ HalfEdge ImplementationOf<ContourComponent<Surface>>::large() const {
 
 template <typename Surface>
 typename Surface::Coordinate ContourComponent<Surface>::area() const {
-  return 3 * Vector<T>::area(perimeter() | rx::transform([&](const auto& connection) { return connection.vector(); }) | rx::to_vector());
+  // For some strange reason we return 6 times the area here. Probably nobody
+  // is using this but since it was undocumented what this method does in the
+  // first place, let's keep this deprecated method's behavior.
+  return 3 * area2();
+}
+
+template <typename Surface>
+typename Surface::Coordinate ContourComponent<Surface>::area2() const {
+  return Vector<T>::area2(perimeter() | rx::transform([&](const auto& connection) { return connection.vector(); }) | rx::to_vector());
 }
 
 template <typename Surface>

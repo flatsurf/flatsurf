@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2022 Julian Rüth
+ *        Copyright (C) 2019-2025 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -88,21 +88,33 @@ class FlowComponent : boost::equality_comparable<FlowComponent<Surface>> {
 
   [[deprecated("This method returns a inconsistent version of the IET from which this component was created originally. Use dynamicalComponent().iet() instead.")]] const IntervalExchangeTransformation<FlatTriangulationCollapsed<T>>& intervalExchangeTransformation() const;
 
-  // Return the width of this component multiplied with the length of the
-  // vertical().
+  [[deprecated("This method does not return the actual width of the component, use widthRelative() instead to make this explicit.")]]
   T width() const;
 
-  // If this is a cylinder, return the height of this component multiplied with
-  // the length of the vertical(), i.e., the scalar product of
-  // circumferenceHolonomy() and vertical().
-  // In general this returns a lower bound of the height of any cylinder in
-  // vertical direction contained in this component, again scaled by the length
-  // of vertical().
+  // Return the width of this component multiplied with the norm of the
+  // vertical().
+  // Note that for a cylinder the following holds:
+  // 2 * widthRelative() * heightRelative() = area2() * norm(vertical())**2.
+  T widthRelative() const;
+
+  [[deprecated("This method does not return the actual height of the component, use heightRelative() instead to make this explicit.")]]
   T height() const;
 
-  // Return twice the area of this component. Note that even for cylinders this
-  // is usually not width() * height().
+  // Return a lower bound of the relative height of any cylinder contained in
+  // this component.
+  // If this is a cylinder, return the actual relative height of the cylinder.
+  // The relative height is the actual height multiplied with the norm of the
+  // vertical().
+  // Note that for a cylinder the following holds:
+  // 2 * widthRelative() * heightRelative() = area2() * norm(vertical())**2.
+  T heightRelative() const;
+
+  [[deprecated("This method returns twice the area. To make this explicit, use area2() instead.")]]
   T area() const;
+
+  // Return twice the area of this component. Note that even for cylinders this
+  // is usually not 2 * width() * height().
+  T area2() const;
 
   // Return the vectors going from the non-vertical saddle connections on the
   // bottom to their counterparts on the top; ordered as on the bottom contour

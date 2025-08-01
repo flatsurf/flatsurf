@@ -1,7 +1,7 @@
 /**********************************************************************
  *  This file is part of flatsurf.
  *
- *        Copyright (C) 2019-2024 Julian Rüth
+ *        Copyright (C) 2019-2025 Julian Rüth
  *
  *  Flatsurf is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -705,6 +705,11 @@ DELAUNAY FlatTriangulation<T>::delaunay(const Edge edge) const {
 
 template <typename T>
 T FlatTriangulation<T>::area() const {
+  return area2();
+}
+
+template <typename T>
+T FlatTriangulation<T>::area2() const {
   T area = T();
   for (auto e : this->halfEdges()) {
     if (this->boundary(e)) continue;
@@ -713,7 +718,7 @@ T FlatTriangulation<T>::area() const {
     if (e.index() > this->nextInFace(e).index()) continue;
     if (e.index() > this->previousInFace(e).index()) continue;
 
-    area += Vector<T>::area({fromHalfEdge(e), fromHalfEdge(this->nextInFace(e)), fromHalfEdge(this->nextInFace(this->nextInFace(e)))});
+    area += Vector<T>::area2({fromHalfEdge(e), fromHalfEdge(this->nextInFace(e)), fromHalfEdge(this->nextInFace(this->nextInFace(e)))});
   }
   return area;
 }

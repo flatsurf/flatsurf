@@ -196,14 +196,14 @@ ImplementationOf<FlatTriangulationCollapsed<T>>::ImplementationOf(const FlatTria
   }()) {}
 
 template <typename T>
-T ImplementationOf<FlatTriangulationCollapsed<T>>::area(const FlatTriangulationCollapsed<T>& self) {
-  T area = T();
+T ImplementationOf<FlatTriangulationCollapsed<T>>::area2(const FlatTriangulationCollapsed<T>& self) {
+  T area2 = T();
 
   for (auto e : self.halfEdges()) {
     if (self.boundary(e)) throw std::logic_error("not implemented: area with boundary");
 
     for (auto connection : self.cross(e)) {
-      area += Vector<T>::area({connection, static_cast<Vector<T>>(self.fromHalfEdge(e)) - connection, -self.fromHalfEdge(e)});
+      area2 += Vector<T>::area2({connection, static_cast<Vector<T>>(self.fromHalfEdge(e)) - connection, -self.fromHalfEdge(e)});
     }
 
     // Fully collapsed triangles have no area themselves.
@@ -212,10 +212,10 @@ T ImplementationOf<FlatTriangulationCollapsed<T>>::area(const FlatTriangulationC
     if (e.index() > self.nextInFace(e).index()) continue;
     if (e.index() > self.previousInFace(e).index()) continue;
 
-    area += Vector<T>::area({self.fromHalfEdge(e), self.fromHalfEdge(self.nextInFace(e)), self.fromHalfEdge(self.previousInFace(e))});
+    area2 += Vector<T>::area2({self.fromHalfEdge(e), self.fromHalfEdge(self.nextInFace(e)), self.fromHalfEdge(self.previousInFace(e))});
   }
 
-  return area;
+  return area2;
 }
 
 template <typename T>

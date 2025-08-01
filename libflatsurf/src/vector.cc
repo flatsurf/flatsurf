@@ -572,6 +572,11 @@ T detail::VectorExact<Vector, T>::y() const {
 
 template <typename Vector, typename T>
 T detail::VectorExact<Vector, T>::area(const std::vector<Vector>& perimeter) {
+  return area2(perimeter);
+}
+
+template <typename Vector, typename T>
+T detail::VectorExact<Vector, T>::area2(const std::vector<Vector>& perimeter) {
   Vector current;
 
   T area = T();
