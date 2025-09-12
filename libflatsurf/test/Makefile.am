@@ -30,9 +30,9 @@ EXTRA_DIST += libflatsurf.test.sh
 @VALGRIND_CHECK_RULES@
 
 AM_CPPFLAGS = -isystem $(srcdir)/external/cereal/include
-AM_LDFLAGS = $(builddir)/../src/libflatsurf.la
+LDADD = $(builddir)/../src/libflatsurf.la
 if HAVE_ANTIC
 # Since e-antic uses ANTIC directly in its header files we need to
 # link against it as well.
-AM_LDFLAGS += -lantic
+LDADD += -lantic
 endif

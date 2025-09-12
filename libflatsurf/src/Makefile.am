@@ -225,16 +225,17 @@ noinst_HEADERS =                                                    \
 	util/union_find.ipp
 
 libflatsurf_la_LDFLAGS = -version-info $(libflatsurf_version_info)
+libflatsurf_la_LIBADD =
 if HAVE_ARB
 # some of our vectors use arb directly and through exact-real's arb wrappers
-libflatsurf_la_LDFLAGS += -larb
+libflatsurf_la_LIBADD += -larb
 endif
 # we use exact-real in our vectors
-libflatsurf_la_LDFLAGS += -lexactreal
+libflatsurf_la_LIBADD += -lexactreal
 # we use e-antic in our vectors
-libflatsurf_la_LDFLAGS += -leanticxx -leantic
+libflatsurf_la_LIBADD += -leanticxx -leantic
 # we build IETs with intervalxt
-libflatsurf_la_LDFLAGS += -lintervalxt
+libflatsurf_la_LIBADD += -lintervalxt
 
 $(builddir)/../flatsurf/local.hpp: $(srcdir)/../flatsurf/local.hpp.in Makefile
 	mkdir -p $(builddir)/../flatsurf
