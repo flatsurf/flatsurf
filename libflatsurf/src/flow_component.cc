@@ -20,6 +20,7 @@
 #include "../flatsurf/flow_component.hpp"
 
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 
 #include <boost/logic/tribool.hpp>
 #include <intervalxt/component.hpp>

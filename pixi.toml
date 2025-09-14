@@ -168,7 +168,7 @@ coreutils = "*"
 
 [feature.libflatsurf.dependencies]
 benchmark = "*"
-boost-cpp = "*"
+libboost-headers = "*"
 cxx-compiler = "*"
 fmt = "*"
 gmp = "*"
