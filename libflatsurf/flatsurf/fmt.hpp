@@ -31,6 +31,7 @@
 #define LIBFLATSURF_FMT_HPP
 
 #include <fmt/core.h>
+#include <fmt/ranges.h>
 
 #include <sstream>
 
@@ -108,5 +109,10 @@ template <typename Surface>
 struct fmt::formatter<::flatsurf::Path<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::Path<Surface>> {};
 template <typename Surface>
 struct fmt::formatter<::flatsurf::PathIterator<Surface>> : ::flatsurf::GenericFormatter<::flatsurf::PathIterator<Surface>> {};
+
+// Disable automatic formatter that fmt provides for ranges.
+// We provide our own formatter and do not want the generic formatter (that
+// produces compile errors complaining about ambiguous candidates.)
+template <typename Surface> struct fmt::is_range<flatsurf::Path<Surface>, char> : std::false_type {};
 
 #endif
