@@ -35,7 +35,8 @@ void VertexAtTarget(State& state) {
   HalfEdge e(1);
 
   for (auto _ : state) {
-    DoNotOptimize(Vertex::target(*surface, e));
+    auto target = Vertex::target(*surface, e)
+    DoNotOptimize(target);
   }
 }
 BENCHMARK(VertexAtTarget);
@@ -45,7 +46,8 @@ void VertexAtSource(State& state) {
   HalfEdge e(1);
 
   for (auto _ : state) {
-    DoNotOptimize(Vertex::source(*surface, e));
+    auto source = Vertex::source(*surface, e)
+    DoNotOptimize(source);
   }
 }
 BENCHMARK(VertexAtSource);
