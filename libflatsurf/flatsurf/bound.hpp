@@ -35,7 +35,16 @@ class Bound : boost::totally_ordered<Bound>, boost::multipliable<Bound, mpz_clas
  public:
   Bound() noexcept;
   Bound(const mpz_class& x);
+  Bound(char x);
+  Bound(unsigned char x);
+  Bound(short x);
+  Bound(unsigned short x);
   Bound(int x);
+  Bound(unsigned int x);
+  Bound(long x);
+  Bound(unsigned long x);
+  Bound(long long x);
+  Bound(unsigned long long x);
   Bound(const mpz_class& x, const mpz_class& y);
 
   template <typename T>

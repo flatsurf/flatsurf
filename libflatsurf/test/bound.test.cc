@@ -22,6 +22,20 @@
 
 namespace flatsurf::test {
 
+TEST_CASE("Bound Creation", "[Bound][constructor]") {
+  REQUIRE(Bound(1) == Bound((char)1));
+  REQUIRE(Bound(1) == Bound((unsigned char)1));
+  REQUIRE(Bound(1) == Bound((short)1));
+  REQUIRE(Bound(1) == Bound((unsigned short)1));
+  REQUIRE(Bound(1) == Bound((int)1));
+  REQUIRE(Bound(1) == Bound((unsigned int)1));
+  REQUIRE(Bound(1) == Bound((long)1));
+  REQUIRE(Bound(1) == Bound((unsigned long)1));
+  REQUIRE(Bound(1) == Bound((long long)1));
+  REQUIRE(Bound(1) == Bound((unsigned long long)1));
+  REQUIRE(Bound(1) == Bound(mpz_class(1)));
+}
+
 TEST_CASE("Bound Arithmetic", "[Bound][constructor][operator<][operator>][operator<=][operator>=][operator==]") {
   REQUIRE(Bound() < Bound(1));
 

@@ -29,8 +29,35 @@ namespace flatsurf {
 Bound::Bound() noexcept :
   square() {}
 
+Bound::Bound(char x) :
+  Bound(mpz_class(x)) {}
+
+Bound::Bound(unsigned char x) :
+  Bound(mpz_class(x)) {}
+
+Bound::Bound(short x) :
+  Bound(mpz_class(x)) {}
+
+Bound::Bound(unsigned short x) :
+  Bound(mpz_class(x)) {}
+
 Bound::Bound(int x) :
   Bound(mpz_class(x)) {}
+
+Bound::Bound(unsigned int x) :
+  Bound(mpz_class(x)) {}
+
+Bound::Bound(long x) :
+  Bound(mpz_class(x)) {}
+
+Bound::Bound(unsigned long x) :
+  Bound(mpz_class(x)) {}
+
+Bound::Bound(long long x) :
+  Bound(gmpxxll::mpz_class(x)) {}
+
+Bound::Bound(unsigned long long x) :
+  Bound(gmpxxll::mpz_class(x)) {}
 
 Bound::Bound(const mpz_class& x) :
   square(x * x) {}
