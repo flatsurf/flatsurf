@@ -212,7 +212,6 @@ benchmark = "*"
 byexample = "*"
 sagelib = "==10.3"
 codespell = "*"
-clangdev = "*"
 compiledb = "*"
 
 [feature.dev.pypi-dependencies]
