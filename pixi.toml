@@ -5,7 +5,7 @@
 channels = ["conda-forge", "flatsurf"]
 description = "A C++ library for Translation Surfaces"
 name = "flatsurf"
-platforms = ["linux-64", "osx-64"]
+platforms = ["linux-64", "osx-64", "osx-arm64"]
 
 [environments]
 flint-2 = ["libflatsurf", "pyflatsurf", "flint-2"]
@@ -22,6 +22,16 @@ CXXFLAGS = "-g3 -UNDEBUG"
 
 [feature.coverage.activation.env]
 CXXFLAGS = "-coverage -O0 -UNDEBUG"
+
+[target.osx-64.activation.env]
+# Cppyy still uses clang-17 symbols so we need to build libexactreal with such
+# symbols so cppyy can find templates that contain enable_if.
+CXXFLAGS = "-g3 -UNDEBUG -fclang-abi-compat=17"
+
+[target.osx-arm64.activation.env]
+# Cppyy still uses clang-17 symbols so we need to build libexactreal with such
+# symbols so cppyy can find templates that contain enable_if.
+CXXFLAGS = "-g3 -UNDEBUG -fclang-abi-compat=17"
 
 #########
 # TASKS #
@@ -168,42 +178,42 @@ coreutils = "*"
 
 [feature.libflatsurf.dependencies]
 benchmark = "*"
-libboost-headers = "*"
 cxx-compiler = "*"
 fmt = "*"
 gmp = "*"
 gmpxxll = "*"
+libboost-headers = "*"
 libeantic = "*"
 libexactreal = "*"
 libflint = "*"
 libintervalxt = "*"
+parallel = "*"
 
 [feature.pyflatsurf.dependencies]
 cppyy = "*"
 cppyythonizations = "*"
+# Some extra dependencies that are needed by SageMath doctesting here.
+gmpxxyy = "*"
+ipywidgets = "*"
 pyexactreal = "*"
 pyintervalxt = "*"
 pytest = "*"
 python = "*"
+realalg = "*"
 sagelib = "*"
 setuptools = "*"
-# Some extra dependencies that are needed by SageMath doctesting here.
-gmpxxyy = "*"
-ipywidgets = "*"
-realalg = "*"
 
 [feature.pyflatsurf.pypi-dependencies]
 pyflatsurf = { path = "pyflatsurf/src", editable = true }
 
 [feature.dev.dependencies]
 asv = ">=0.6.4,<0.7"
-libflint = "3.*"
 benchmark = "*"
 byexample = "*"
-sagelib = "==10.3"
 codespell = "*"
-clangdev = "*"
 compiledb = "*"
+libflint = "3.*"
+sagelib = "==10.3"
 
 [feature.dev.pypi-dependencies]
 cppasv = { git = "https://github.com/flatsurf/cppasv.git" }
@@ -211,6 +221,10 @@ cppasv = { git = "https://github.com/flatsurf/cppasv.git" }
 [feature.dev.target.linux.dependencies]
 # A recent functioning valgrind is only available on conda-forge linux builds.
 valgrind = "*"
+
+[feature.flint-2]
+# Not all dependencies are available for FLINT-2 on Silicon.
+platforms = ["linux-64", "osx-64"]
 
 [feature.flint-2.dependencies]
 libflint = "2.*"

@@ -14,12 +14,27 @@ jobs:
       matrix:
         include:
         - { task: "test-libflatsurf", environment: "flint-2", on: "ubuntu-24.04" }
+        - { task: "test-libflatsurf", environment: "flint-2", on: "macos-14" }
+        - { task: "test-libflatsurf", environment: "flint-2", on: "macos-14" }
         - { task: "test-libflatsurf", environment: "flint-3", on: "ubuntu-24.04" }
+        - { task: "test-libflatsurf", environment: "flint-3", on: "macos-15-intel" }
+        - { task: "test-libflatsurf", environment: "flint-3", on: "macos-14" }
         - { task: "test-libflatsurf-valgrind", environment: "dev", on: "ubuntu-24.04" }
         - { task: "test-pyflatsurf", environment: "flint-2", on: "ubuntu-24.04" }
+        # The latest build of cppyy-cling is not compatible with the xcode that comes with macos 15 yet.
+        # There is no runner available on GitHub anymore that supports a sufficiently old xcode.
+        # - { task: "test-pyflatsurf", environment: "flint-2", on: "macos-15-intel" }
         - { task: "test-pyflatsurf", environment: "flint-3", on: "ubuntu-24.04" }
+        # The latest build of cppyy-cling is not compatible with the xcode that comes with macos 15 yet.
+        # There is no runner available on GitHub anymore that supports a sufficiently old xcode.
+        # - { task: "test-pyflatsurf", environment: "flint-3", on: "macos-15-intel" }
+        - { task: "test-pyflatsurf", environment: "flint-3", on: "macos-14" }
         - { task: "test-pyflatsurf-valgrind", environment: "dev", on: "ubuntu-24.04" }
         - { task: "distcheck", environment: "dev", on: "ubuntu-24.04" }
+        # The latest build of cppyy-cling is not compatible with the xcode that comes with macos 15 yet.
+        # There is no runner available on GitHub anymore that supports a sufficiently old xcode.
+        # - { task: "distcheck", environment: "dev", on: "macos-15-intel" }
+        - { task: "distcheck", environment: "dev", on: "macos-14" }
     steps:
       - uses: actions/checkout@v5
         with: { submodules: recursive }

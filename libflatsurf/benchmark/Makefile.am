@@ -10,4 +10,4 @@ if HAVE_ANTIC
 LDADD += -lantic
 endif
 # Google Benchmark and its dependencies
-LDADD += -lbenchmark -lrt -lpthread
+LDADD += -lbenchmark -lpthread
