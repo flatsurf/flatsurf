@@ -62,6 +62,336 @@ Bound::Bound(unsigned long long x) :
 Bound::Bound(const mpz_class& x) :
   square(x * x) {}
 
+Bound::Bound(char x, const mpz_class& y):
+  Bound(mpz_class(x), y) {}
+
+Bound::Bound(char x, char y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(char x, unsigned char y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(char x, short y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(char x, unsigned short y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(char x, int y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(char x, unsigned int y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(char x, long y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(char x, unsigned long y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(char x, long long y):
+  Bound(mpz_class(x), gmpxxll::mpz_class(y)) {}
+
+Bound::Bound(char x, unsigned long long y):
+  Bound(mpz_class(x), gmpxxll::mpz_class(y)) {}
+
+Bound::Bound(unsigned char x, const mpz_class& y):
+  Bound(mpz_class(x), y) {}
+
+Bound::Bound(unsigned char x, char y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned char x, unsigned char y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned char x, short y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned char x, unsigned short y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned char x, int y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned char x, unsigned int y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned char x, long y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned char x, unsigned long y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned char x, long long y):
+  Bound(mpz_class(x), gmpxxll::mpz_class(y)) {}
+
+Bound::Bound(unsigned char x, unsigned long long y):
+  Bound(mpz_class(x), gmpxxll::mpz_class(y)) {}
+
+Bound::Bound(short x, const mpz_class& y):
+  Bound(mpz_class(x), y) {}
+
+Bound::Bound(short x, char y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(short x, unsigned char y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(short x, short y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(short x, unsigned short y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(short x, int y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(short x, unsigned int y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(short x, long y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(short x, unsigned long y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(short x, long long y):
+  Bound(mpz_class(x), gmpxxll::mpz_class(y)) {}
+
+Bound::Bound(short x, unsigned long long y):
+  Bound(mpz_class(x), gmpxxll::mpz_class(y)) {}
+
+Bound::Bound(unsigned short x, const mpz_class& y):
+  Bound(mpz_class(x), y) {}
+
+Bound::Bound(unsigned short x, char y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned short x, unsigned char y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned short x, short y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned short x, unsigned short y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned short x, int y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned short x, unsigned int y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned short x, long y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned short x, unsigned long y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned short x, long long y):
+  Bound(mpz_class(x), gmpxxll::mpz_class(y)) {}
+
+Bound::Bound(unsigned short x, unsigned long long y):
+  Bound(mpz_class(x), gmpxxll::mpz_class(y)) {}
+
+Bound::Bound(int x, const mpz_class& y):
+  Bound(mpz_class(x), y) {}
+
+Bound::Bound(int x, char y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(int x, unsigned char y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(int x, short y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(int x, unsigned short y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(int x, int y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(int x, unsigned int y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(int x, long y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(int x, unsigned long y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(int x, long long y):
+  Bound(mpz_class(x), gmpxxll::mpz_class(y)) {}
+
+Bound::Bound(int x, unsigned long long y):
+  Bound(mpz_class(x), gmpxxll::mpz_class(y)) {}
+
+Bound::Bound(unsigned int x, const mpz_class& y):
+  Bound(mpz_class(x), y) {}
+
+Bound::Bound(unsigned int x, char y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned int x, unsigned char y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned int x, short y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned int x, unsigned short y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned int x, int y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned int x, unsigned int y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned int x, long y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned int x, unsigned long y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned int x, long long y):
+  Bound(mpz_class(x), gmpxxll::mpz_class(y)) {}
+
+Bound::Bound(unsigned int x, unsigned long long y):
+  Bound(mpz_class(x), gmpxxll::mpz_class(y)) {}
+
+Bound::Bound(long x, const mpz_class& y):
+  Bound(mpz_class(x), y) {}
+
+Bound::Bound(long x, char y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(long x, unsigned char y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(long x, short y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(long x, unsigned short y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(long x, int y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(long x, unsigned int y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(long x, long y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(long x, unsigned long y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(long x, long long y):
+  Bound(mpz_class(x), gmpxxll::mpz_class(y)) {}
+
+Bound::Bound(long x, unsigned long long y):
+  Bound(mpz_class(x), gmpxxll::mpz_class(y)) {}
+
+Bound::Bound(unsigned long x, const mpz_class& y):
+  Bound(mpz_class(x), y) {}
+
+Bound::Bound(unsigned long x, char y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned long x, unsigned char y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned long x, short y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned long x, unsigned short y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned long x, int y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned long x, unsigned int y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned long x, long y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned long x, unsigned long y):
+  Bound(mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned long x, long long y):
+  Bound(mpz_class(x), gmpxxll::mpz_class(y)) {}
+
+Bound::Bound(unsigned long x, unsigned long long y):
+  Bound(mpz_class(x), gmpxxll::mpz_class(y)) {}
+
+Bound::Bound(long long x, const mpz_class& y):
+  Bound(gmpxxll::mpz_class(x), y) {}
+
+Bound::Bound(long long x, char y):
+  Bound(gmpxxll::mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(long long x, unsigned char y):
+  Bound(gmpxxll::mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(long long x, short y):
+  Bound(gmpxxll::mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(long long x, unsigned short y):
+  Bound(gmpxxll::mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(long long x, int y):
+  Bound(gmpxxll::mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(long long x, unsigned int y):
+  Bound(gmpxxll::mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(long long x, long y):
+  Bound(gmpxxll::mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(long long x, unsigned long y):
+  Bound(gmpxxll::mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(long long x, long long y):
+  Bound(gmpxxll::mpz_class(x), gmpxxll::mpz_class(y)) {}
+
+Bound::Bound(long long x, unsigned long long y):
+  Bound(gmpxxll::mpz_class(x), gmpxxll::mpz_class(y)) {}
+
+Bound::Bound(unsigned long long x, const mpz_class& y):
+  Bound(gmpxxll::mpz_class(x), y) {}
+
+Bound::Bound(unsigned long long x, char y):
+  Bound(gmpxxll::mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned long long x, unsigned char y):
+  Bound(gmpxxll::mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned long long x, short y):
+  Bound(gmpxxll::mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned long long x, unsigned short y):
+  Bound(gmpxxll::mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned long long x, int y):
+  Bound(gmpxxll::mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned long long x, unsigned int y):
+  Bound(gmpxxll::mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned long long x, long y):
+  Bound(gmpxxll::mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned long long x, unsigned long y):
+  Bound(gmpxxll::mpz_class(x), mpz_class(y)) {}
+
+Bound::Bound(unsigned long long x, long long y):
+  Bound(gmpxxll::mpz_class(x), gmpxxll::mpz_class(y)) {}
+
+Bound::Bound(unsigned long long x, unsigned long long y):
+  Bound(gmpxxll::mpz_class(x), gmpxxll::mpz_class(y)) {}
+
 Bound::Bound(const mpz_class& x, const mpz_class& y) :
   square(x * x + y * y) {}
 
