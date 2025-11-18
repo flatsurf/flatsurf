@@ -178,41 +178,42 @@ coreutils = "*"
 
 [feature.libflatsurf.dependencies]
 benchmark = "*"
-libboost-headers = "*"
 cxx-compiler = "*"
 fmt = "*"
 gmp = "*"
 gmpxxll = "*"
+libboost-headers = "*"
 libeantic = "*"
 libexactreal = "*"
 libflint = "*"
 libintervalxt = "*"
+parallel = "*"
 
 [feature.pyflatsurf.dependencies]
 cppyy = "*"
 cppyythonizations = "*"
+# Some extra dependencies that are needed by SageMath doctesting here.
+gmpxxyy = "*"
+ipywidgets = "*"
 pyexactreal = "*"
 pyintervalxt = "*"
 pytest = "*"
 python = "*"
+realalg = "*"
 sagelib = "*"
 setuptools = "*"
-# Some extra dependencies that are needed by SageMath doctesting here.
-gmpxxyy = "*"
-ipywidgets = "*"
-realalg = "*"
 
 [feature.pyflatsurf.pypi-dependencies]
 pyflatsurf = { path = "pyflatsurf/src", editable = true }
 
 [feature.dev.dependencies]
 asv = ">=0.6.4,<0.7"
-libflint = "3.*"
 benchmark = "*"
 byexample = "*"
-sagelib = "==10.3"
 codespell = "*"
 compiledb = "*"
+libflint = "3.*"
+sagelib = "==10.3"
 
 [feature.dev.pypi-dependencies]
 cppasv = { git = "https://github.com/flatsurf/cppasv.git" }
