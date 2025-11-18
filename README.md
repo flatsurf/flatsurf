@@ -261,10 +261,12 @@ but the latter results in poor performance.
 Additionally, you might want to run configure with ` --disable-static`
 which improves the build time.
 
+<!--
 If your compiler supports it, you can try to add `-fvisibility=hidden
 -fvisibility-inlines-hidden` to your `CXXFLAGS`. This hides internal bits in
 the resulting library which have lead to crashes in the past due to conflicting
 header-only libraries.
+-->
 
 <!--
 If your linker supports it, you should use `./configure --with-version-script`
