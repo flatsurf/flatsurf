@@ -1,7 +1,7 @@
 # This file describes the [pixi](https://pixi.sh) interface to flatsurf, see
 # the README for how to use pixi with flatsurf.
 
-[project]
+[workspace]
 channels = ["conda-forge", "flatsurf"]
 description = "A C++ library for Translation Surfaces"
 name = "flatsurf"

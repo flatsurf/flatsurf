@@ -45,7 +45,9 @@ AX_CXX_CHECK_LIB([fmt], [fmt::v7::getpagesize()], , [
   AX_CXX_CHECK_LIB([fmt], [fmt::v8::report_system_error(int code=0, const char* message=nullptr)], , [
     AX_CXX_CHECK_LIB([fmt], [fmt::v9::report_system_error(int code=0, const char* message=nullptr)], , [
       AX_CXX_CHECK_LIB([fmt], [fmt::v10::report_system_error(int code=0, const char* message=nullptr)], , [
-        AX_CXX_CHECK_LIB([fmt], [fmt::v11::report_system_error(int code=0, const char* message=nullptr)], , [AC_MSG_ERROR([fmt library not found])], [-lfmt])
+        AX_CXX_CHECK_LIB([fmt], [fmt::v11::report_system_error(int code=0, const char* message=nullptr)], , [
+          AX_CXX_CHECK_LIB([fmt], [fmt::v12::report_system_error(int code=0, const char* message=nullptr)], , [AC_MSG_ERROR([fmt library not found])], [-lfmt])
+        ], [-lfmt])
       ], [-lfmt])
     ], [-lfmt])
   ], [-lfmt])
