@@ -18,6 +18,7 @@
  *********************************************************************/
 
 #include <string>
+#include <ostream>
 
 #include "impl/equivalence_class_code.hpp"
 
