@@ -11,3 +11,6 @@ LDADD += -lantic
 endif
 # Google Benchmark and its dependencies
 LDADD += -lbenchmark -lpthread
+
+# We use e-antic (C++ interface) directly in our benchmarks
+LDADD += -leanticxx

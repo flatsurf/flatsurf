@@ -31,8 +31,6 @@ EXTRA_DIST += libflatsurf.test.sh
 
 AM_CPPFLAGS = -isystem $(srcdir)/external/cereal/include
 LDADD = $(builddir)/../src/libflatsurf.la
-if HAVE_ANTIC
-# Since e-antic uses ANTIC directly in its header files we need to
-# link against it as well.
-LDADD += -lantic
-endif
+
+# We use e-antic (C++ interface) directly in the tests
+LDADD += -leanticxx
