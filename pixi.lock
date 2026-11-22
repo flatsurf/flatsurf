@@ -84,7 +84,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/cppyy-cling-6.32.8-py314h6d19f1e_3.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/cpycppyy-1.13.0-py314h5383ef5_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/cxx-compiler-2.0.0-hdab9b82_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/cypari2-2.2.8-py314hf5b8713_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/cypari2-2.2.4-py314hf5b8713_5.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/cysignals-1.13.1-py314hc75f4c6_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/cython-3.3.1-py314he5485c0_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/ecl-24.5.10-h75482ee_1.conda
@@ -1880,7 +1880,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/cppyy-cling-6.32.8-py314h6d19f1e_3.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/cpycppyy-1.13.0-py314h5383ef5_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/cxx-compiler-2.0.0-hdab9b82_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/cypari2-2.2.8-py314hf5b8713_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/cypari2-2.2.4-py314hf5b8713_5.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/cysignals-1.13.1-py314hc75f4c6_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/cython-3.3.1-py314he5485c0_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/ecl-26.5.5-h1b6f47c_1.conda
@@ -2153,7 +2153,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/cppyy-cling-6.32.8-py314h38b4bb2_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/cpycppyy-1.13.0-py314h83cadc3_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/cxx-compiler-1.10.0-h20888b2_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-64/cypari2-2.2.8-py314h452e031_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/cypari2-2.2.4-py314h452e031_5.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/cysignals-1.13.1-py314h8b73c47_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/cython-3.3.1-py314h56d56b3_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/ecl-26.5.5-h3b4fa63_1.conda
@@ -2372,7 +2372,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/cppyy-cling-6.32.8-py314he409fe2_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/cpycppyy-1.13.0-py314h1433326_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/cxx-compiler-1.10.0-hba80287_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/cypari2-2.2.8-py314h6296058_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/cypari2-2.2.4-py314h6296058_5.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/cysignals-1.13.1-py314ha630e2e_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/cython-3.3.1-py314ha551cab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/ecl-26.5.5-h957fd77_1.conda
@@ -2988,24 +2988,24 @@ packages:
   run_exports: {}
   size: 1562709
   timestamp: 1734694852203
-- conda: https://conda.anaconda.org/conda-forge/linux-64/cypari2-2.2.8-py314hf5b8713_0.conda
-  sha256: dc3862726dea6aea8f453ac71442fa992cf4757882ec4dbcba7c2a3d3e1f9fe7
-  md5: 030f5bb9742e86a05a49729cb187c864
+- conda: https://conda.anaconda.org/conda-forge/linux-64/cypari2-2.2.4-py314hf5b8713_5.conda
+  sha256: 4cb88c3017180dbcdc807bf3446ae7e2f37949d14440bf04641bd7ab3563d5b3
+  md5: 10c8dd5d8fa4944adfc030a5a567b777
   depends:
   - python
   - cysignals >=1.11.3
   - __glibc >=2.17,<3.0.a0
   - libgcc >=15
-  - gmp >=6.3.0,<7.0a0
   - python_abi 3.14.* *_cp314
+  - gmp >=6.3.0,<7.0a0
   - pari >=2.17.4,<2.18.0a0
   - pari * *_pthread
   license: GPL-2.0-or-later
   purls:
-  - pkg:pypi/cypari2?source=hash-mapping
+  - pkg:pypi/cypari2?source=compressed-mapping
   run_exports: {}
-  size: 2322142
-  timestamp: 1795306447058
+  size: 2057689
+  timestamp: 1795330067903
 - conda: https://conda.anaconda.org/conda-forge/linux-64/cysignals-1.12.5-py311h1ddb823_0.conda
   sha256: a8a8587864f9425de6628dbf70eb3f2abd6fddbd6e45a1425dbf4f688341a039
   md5: 9c651c4c402a6b80bedeb080dc1aef3b
@@ -8868,23 +8868,23 @@ packages:
   run_exports: {}
   size: 1620060
   timestamp: 1795047717485
-- conda: https://conda.anaconda.org/conda-forge/osx-64/cypari2-2.2.8-py314h452e031_0.conda
-  sha256: dd99a8e3f5d00b0fb93d51b43cdd0bf764d61f546a82956a0fb0e5c343509286
-  md5: 3a059f292383c3cc933d79ce6f46121c
+- conda: https://conda.anaconda.org/conda-forge/osx-64/cypari2-2.2.4-py314h452e031_5.conda
+  sha256: 029c5fb1d696fba8c414e30ca4d68fd4efe77050029519e1276581fb233e384a
+  md5: 9572a2a7fd087ec9760e032dbd5a34bd
   depends:
   - python
   - cysignals >=1.11.3
   - __osx >=11.0
+  - python_abi 3.14.* *_cp314
   - pari >=2.17.4,<2.18.0a0
   - pari * *_pthread
   - gmp >=6.3.0,<7.0a0
-  - python_abi 3.14.* *_cp314
   license: GPL-2.0-or-later
   purls:
-  - pkg:pypi/cypari2?source=hash-mapping
+  - pkg:pypi/cypari2?source=compressed-mapping
   run_exports: {}
-  size: 2113226
-  timestamp: 1795306520201
+  size: 1790630
+  timestamp: 1795330121979
 - conda: https://conda.anaconda.org/conda-forge/osx-64/cysignals-1.12.5-py311h11ccb26_0.conda
   sha256: e24f70c3db86d73f67c9784bab5fce7279c3a619ee3d410915fd7883b854e78c
   md5: 63b1512cbbe214721d6c49b7f506f9fb
@@ -13259,6 +13259,23 @@ packages:
   run_exports: {}
   size: 1786478
   timestamp: 1795047660460
+- conda: https://conda.anaconda.org/conda-forge/osx-arm64/cypari2-2.2.4-py314h6296058_5.conda
+  sha256: c836befb88493f76dfe5fa0000824738c39be80bc2dc0e8699228a9a2b2c0456
+  md5: 91f93fc77e86ef6f6172b6b0ab250ac0
+  depends:
+  - python
+  - cysignals >=1.11.3
+  - __osx >=11.0
+  - gmp >=6.3.0,<7.0a0
+  - python_abi 3.14.* *_cp314
+  - pari >=2.17.4,<2.18.0a0
+  - pari * *_pthread
+  license: GPL-2.0-or-later
+  purls:
+  - pkg:pypi/cypari2?source=hash-mapping
+  run_exports: {}
+  size: 1790767
+  timestamp: 1795330063133
 - conda: https://conda.anaconda.org/conda-forge/osx-arm64/cypari2-2.2.8-py314h6296058_0.conda
   sha256: 341f2ac05768fbce1ee844a5945ca750ca70a98cb3428ac948c2807568d23acd
   md5: fddaf5bff33b217f9cea0d008332115e
