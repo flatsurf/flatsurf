@@ -22,4 +22,12 @@
 
 set -ex
 
+# `sage.doctest` assumes that `sage-env-config` and `sage-env` have been
+# sourced already. However, not all systems (ArchLinux) ship `sage-env` and
+# `sage-env-config`. So instead, we start sage directly, record the set
+# environment variables and set them locally.
+OLD_PATH=$PATH
+source <(sage -c 'import os;print("\n".join(["export %s='"'"%s"'"'"%(key, value) for (key, value) in os.environ.items()]))')
+export PATH=$OLD_PATH
+
 python -m sage.doctest -p --long --force-lib @abs_srcdir@/../src/pyflatsurf @abs_srcdir@
