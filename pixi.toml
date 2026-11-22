@@ -189,6 +189,18 @@ libflint = "*"
 libintervalxt = "*"
 parallel = "*"
 
+# Run the compiler activation script on Linux.
+[feature.libflatsurf.target.linux-64.dependencies]
+gxx_linux-64 = "*"
+
+# Run the compiler activation script on macOS.
+[feature.libflatsurf.target.osx-64.dependencies]
+clangxx_osx-64 = "*"
+
+# Run the compiler activation script on macOS.
+[feature.libflatsurf.target.osx-arm64.dependencies]
+clangxx_osx-arm64 = "*"
+
 [feature.pyflatsurf.dependencies]
 cppyy = "*"
 cppyythonizations = "*"
