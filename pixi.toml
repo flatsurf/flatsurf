@@ -213,7 +213,7 @@ byexample = "*"
 codespell = "*"
 compiledb = "*"
 libflint = "3.*"
-sagelib = "==10.3"
+sagelib = "==10.9"
 
 [feature.dev.pypi-dependencies]
 cppasv = { git = "https://github.com/flatsurf/cppasv.git" }
