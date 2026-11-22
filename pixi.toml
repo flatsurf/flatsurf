@@ -226,6 +226,8 @@ codespell = "*"
 compiledb = "*"
 libflint = "3.*"
 sagelib = "==10.9"
+# Work around https://github.com/conda-forge/admin-requests/pull/2493 until it is merged
+cypari2 = "!=2.2.8"
 
 [feature.dev.pypi-dependencies]
 cppasv = { git = "https://github.com/flatsurf/cppasv.git" }
@@ -244,3 +246,5 @@ arb = "*"
 
 [feature.flint-3.dependencies]
 libflint = "3.*"
+# Work around https://github.com/conda-forge/admin-requests/pull/2493 until it is merged
+cypari2 = "!=2.2.8"
