@@ -67,7 +67,7 @@ class Vector(SageVector):
         sage: from pyeantic import eantic, RealEmbeddedNumberField
         sage: x = polygen(QQ)
         sage: K = NumberField(x^3 - 2, 'a', embedding=AA(2)**(1/3))
-        sage: R = RealEmbeddedNumberField(K)
+        sage: R = RealEmbeddedNumberField(K)  # random output due to deprecation warnings in pyeantic with recent SageMath
         sage: V = Vectors(K)
         sage: x = R(K.gen())
         sage: y = R(K.gen()**2 - 2/3)
@@ -325,7 +325,7 @@ class Vectors(UniqueRepresentation, Parent):
         (1, a - 3/2)
 
         sage: from pyeantic import RealEmbeddedNumberField
-        sage: R = RealEmbeddedNumberField(K)
+        sage: R = RealEmbeddedNumberField(K)  # random output due to deprecation warnings in pyeantic with recent SageMath
         sage: Vectors(R) is V
         True
         sage: Vectors(R.renf) is V
