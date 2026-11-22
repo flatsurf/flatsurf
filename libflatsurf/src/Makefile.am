@@ -226,10 +226,6 @@ noinst_HEADERS =                                                    \
 
 libflatsurf_la_LDFLAGS = -version-info $(libflatsurf_version_info)
 libflatsurf_la_LIBADD =
-if HAVE_ARB
-# some of our vectors use arb directly and through exact-real's arb wrappers
-libflatsurf_la_LIBADD += -larb
-endif
 # we use exact-real in our vectors
 libflatsurf_la_LIBADD += -lexactreal
 # we use e-antic in our vectors

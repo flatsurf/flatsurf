@@ -4,10 +4,5 @@ benchmark_SOURCES = main.cc vector.benchmark.cc flat_triangulation_combinatorial
 
 AM_CPPFLAGS = -I $(srcdir)/.. -I $(builddir)/..
 LDADD = $(builddir)/../src/libflatsurf.la
-if HAVE_ANTIC
-# Since e-antic uses ANTIC directly in its header files we need to
-# link against it as well.
-LDADD += -lantic
-endif
 # Google Benchmark and its dependencies
 LDADD += -lbenchmark -lpthread

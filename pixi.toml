@@ -8,8 +8,7 @@ name = "flatsurf"
 platforms = ["linux-64", "osx-64", "osx-arm64"]
 
 [environments]
-flint-2 = ["libflatsurf", "pyflatsurf", "flint-2"]
-flint-3 = ["libflatsurf", "pyflatsurf", "flint-3"]
+default = ["libflatsurf", "pyflatsurf"]
 dev = ["dev", "libflatsurf", "pyflatsurf"]
 env-coverage = ["coverage", "libflatsurf", "pyflatsurf"]
 
@@ -189,9 +188,23 @@ libflint = "*"
 libintervalxt = "*"
 parallel = "*"
 
+# Run the compiler activation script on Linux.
+[feature.libflatsurf.target.linux-64.dependencies]
+gxx_linux-64 = "*"
+
+# Run the compiler activation script on macOS.
+[feature.libflatsurf.target.osx-64.dependencies]
+clangxx_osx-64 = "*"
+
+# Run the compiler activation script on macOS.
+[feature.libflatsurf.target.osx-arm64.dependencies]
+clangxx_osx-arm64 = "*"
+
 [feature.pyflatsurf.dependencies]
 cppyy = "*"
 cppyythonizations = "*"
+# Work around https://github.com/conda-forge/admin-requests/pull/2493 until it is merged
+cypari2 = "!=2.2.8"
 # Some extra dependencies that are needed by SageMath doctesting here.
 gmpxxyy = "*"
 ipywidgets = "*"
@@ -212,8 +225,9 @@ benchmark = "*"
 byexample = "*"
 codespell = "*"
 compiledb = "*"
-libflint = "3.*"
-sagelib = "==10.3"
+sagelib = "==10.9"
+# Work around https://github.com/conda-forge/admin-requests/pull/2493 until it is merged
+cypari2 = "!=2.2.8"
 
 [feature.dev.pypi-dependencies]
 cppasv = { git = "https://github.com/flatsurf/cppasv.git" }
@@ -221,14 +235,3 @@ cppasv = { git = "https://github.com/flatsurf/cppasv.git" }
 [feature.dev.target.linux.dependencies]
 # A recent functioning valgrind is only available on conda-forge linux builds.
 valgrind = "*"
-
-[feature.flint-2]
-# Not all dependencies are available for FLINT-2 on Silicon.
-platforms = ["linux-64", "osx-64"]
-
-[feature.flint-2.dependencies]
-libflint = "2.*"
-arb = "*"
-
-[feature.flint-3.dependencies]
-libflint = "3.*"

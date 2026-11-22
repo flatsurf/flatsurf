@@ -47,6 +47,15 @@ if os.environ.get('PYFLATSURF_CYSIGNALS', True):
 cppyy.py.add_pythonization(enable_iterable, "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("Vector<.*>"))(enable_arithmetic), "flatsurf")
 
+# Load the coefficient type of a Vector by name as soon as the Vector is
+# created. Otherwise, cppyy (seen with cppyy 3.5 on macOS) only loads it
+# when it ranks overloads of the Vector's constructor. If the coefficient type
+# is an exactreal::Element<Ring>, cling then tries to instantiate an invalid
+# boost::mp11::mp_inherit<...> that appears (wrapped in an mp_unique) as a base
+# class of exactreal::Element. That fails and crashes the interpreter with a
+# SIGILL or SIGSEGV.
+cppyy.py.add_pythonization(filtered(re.compile("Vector<.*>"))(lambda proxy, name: proxy.Coordinate), "flatsurf")
+
 cppyy.py.add_pythonization(filtered(re.compile("Point<.*>"))(enable_addable), "flatsurf")
 cppyy.py.add_pythonization(filtered(re.compile("Point<.*>"))(enable_subtractable), "flatsurf")
 cppyy.py.add_pythonization(filtered("Bound")(enable_total_order), "flatsurf")
